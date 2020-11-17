@@ -10,7 +10,7 @@
     "watch-ts": "tsc -w",
     "watch-node": "DEBUG=gov-starter-server* DB_PORT=5433 nodemon --watch dist/ dist/server.js | bunyan -o short",
     "start:dev": "npm run record-build-info -- --dev && npm run build && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\"",
-    "build": "npm run css-build && npm run typecheck && npm run copy-views",
+    "build": "npm run css-build && tsc && npm run copy-views",
     "css-build": "./bin/build-css",
     "clean": "rm -rf dist/* .port.tmp *.log build/* uploads/* test-results.xml build-info.json",
     "typecheck": "tsc",
