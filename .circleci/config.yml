@@ -50,11 +50,19 @@ workflows:
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
-          name: build_docker
+          name: build_docker_publish
           snyk-scan: true
           filters:
             branches:
               only:
+                - main
+      - hmpps/build_docker:
+          name: build_docker
+          publish: false
+          snyk-scan: true
+          filters:
+            branches:
+              ignore:
                 - main
       - hmpps/deploy_env:
           name: deploy_dev
@@ -65,7 +73,7 @@ workflows:
                 - main
           requires:
             - helm_lint
-            - build_docker
+            - build_docker_publish
 
   scheduled:
     triggers:
