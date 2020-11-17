@@ -36,6 +36,7 @@ workflows:
           name: helm_lint
       - hmpps/build_docker:
           name: build_docker
+          snyk-scan: true
           filters:
             branches:
               only:
