@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+const { execSync } = require('child_process')
+const fs = require('fs')
+const path = require('path')
+
+const dev = process.argv.includes('--dev')
+const target = path.resolve(__dirname, '../build-info.json')
+
+function getEnv(name, fallback = null) {
+  if (process.env[name]) {
+    return process.env[name]
+  }
+
+  if (fallback === null) {
+    throw new Error(`Missing env var ${name}`)
+  }
+
+  return fallback
+}
+
+function getGitRef() {
+    return execSync('git rev-parse HEAD').toString().trim()
+}
+
+fs.writeFileSync(
+  target,
+  JSON.stringify({
+    buildNumber: getEnv('BUILD_NUMBER', dev ? 'dev-build' : null),
+    gitRef: getEnv('GIT_REF', dev ? getGitRef() : null),
+  })
+)

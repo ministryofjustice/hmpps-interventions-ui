@@ -1,0 +1,38 @@
+{% extends "govuk/template.njk" %}
+
+{% set pageTitle = pageTitle | default('HMPPS Interventions') %}
+
+{% block pageTitle %}
+{{ pageTitle }}
+{% endblock %}
+
+{% block headIcons %}
+<link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/assets/images/favicon.ico" type="image/x-icon" />
+{% endblock %}
+
+{% block head %}
+
+<!--[if !IE 8]><!-->
+<link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
+<!--<![endif]-->
+
+<!--[if lt IE 9]>
+<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
+<script src="/assets/js/html5shiv-3.7.3.min.js"></script>
+<![endif]-->
+
+{% endblock %}
+
+{% block header %}
+{% include "./header.html" %}
+{% endblock %}
+
+{% block bodyEnd %}
+{# Run JavaScript at end of the
+<body>, to avoid blocking the initial render. #}
+<script src="/assets/govuk/all.js"></script>
+<script src="/assets/govuk-frontend-init.js"></script>
+{% block script %}
+{% endblock %}
+
+{% endblock %}
