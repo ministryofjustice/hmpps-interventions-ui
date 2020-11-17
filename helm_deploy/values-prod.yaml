@@ -10,7 +10,6 @@ image:
 
 ingress:
   enabled: true
-  enable_whitelist: true
   hosts:
     - host: hmpps-interventions-service.hmpps.service.justice.gov.uk
       cert_secret: hmpps-interventions-service-cert
@@ -18,11 +17,3 @@ ingress:
 
 env:
   JAVA_OPTS: "-Xmx512m"
-
-whitelist:
-  office: "217.33.148.210/32"
-  health-kick: "35.177.252.195/32"
-  mojvpn: "81.134.202.29/32"
-  cloudplatform-live1-1: "35.178.209.113/32"
-  cloudplatform-live1-2: "3.8.51.207/32"
-  cloudplatform-live1-3: "35.177.252.54/32"
