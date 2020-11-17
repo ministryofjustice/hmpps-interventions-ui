@@ -37,10 +37,11 @@ COPY . .
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 ENV GIT_REF ${GIT_REF:-dummy}
 
-RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && ls && npm run build  && \
+RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && \
     export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
-    npm run record-build-info
+    npm run record-build-info && \
+    npm run build
 
 # Build stage 3.
 # This stage builds the final Docker image that we'll use in production.
