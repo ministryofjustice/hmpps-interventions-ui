@@ -43,6 +43,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          retrieve_secrets: "none"
           filters:
             branches:
               only:
