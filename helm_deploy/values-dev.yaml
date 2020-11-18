@@ -12,8 +12,7 @@ ingress:
   enabled: true
   enable_whitelist: true
   hosts:
-    - host: hmpps-interventions-service-dev.hmpps.service.justice.gov.uk
-      cert_secret: hmpps-interventions-service-cert
+    - host: hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk
   path: /
 
 env:
