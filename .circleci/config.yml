@@ -51,7 +51,7 @@ workflows:
 #          name: helm_lint
       - hmpps/build_docker:
           name: build_docker_publish
-          snyk-scan: true
+          snyk-scan: false # fixme!
           filters:
             branches:
               only:
@@ -59,7 +59,7 @@ workflows:
       - hmpps/build_docker:
           name: build_docker
           publish: false
-          snyk-scan: true
+          snyk-scan: false # fixme!
           filters:
             branches:
               ignore:
