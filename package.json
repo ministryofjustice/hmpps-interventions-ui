@@ -72,6 +72,11 @@
     "delay": 2500,
     "ext": "js,json,html,njk"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{ts,js,css}": [
       "prettier --write",
