@@ -88,6 +88,7 @@ workflows:
             - validate
             - build_and_publish_docker
             - helm_lint
+            - vulnerability_scan_and_monitor
 
   nightly:
     triggers:
