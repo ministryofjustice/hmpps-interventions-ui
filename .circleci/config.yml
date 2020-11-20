@@ -47,8 +47,8 @@ workflows:
         filters:
           tags:
             ignore: /.*/
-#      - hmpps/helm_lint:
-#          name: helm_lint
+      - hmpps/helm_lint:
+          name: helm_lint
       - hmpps/build_docker:
           name: build_docker_publish
           snyk-scan: false # fixme!
@@ -72,7 +72,7 @@ workflows:
               only:
                 - main
           requires:
-#            - helm_lint
+            - helm_lint
             - build_docker_publish
 
   scheduled:
