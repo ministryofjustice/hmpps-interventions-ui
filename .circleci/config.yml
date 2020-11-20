@@ -4,11 +4,6 @@ orbs:
   hmpps: ministryofjustice/hmpps@1.1.3
   snyk: snyk/snyk@0.0.12
 
-_snyk_options: &snyk_options
-  organization: "digital-probation-services"
-  severity-threshold: "high" # note: this does not affect snyk 'monitor' commands
-  fail-on-issues: true
-
 jobs:
   validate:
     executor: hmpps/java
@@ -40,7 +35,9 @@ jobs:
       - snyk/scan:
           project: '${CIRCLE_PROJECT_REPONAME}'
           monitor-on-build: << parameters.monitor >>
-          <<: *snyk_options
+          organization: "digital-probation-services"
+          severity-threshold: "high" # note: this does not affect snyk 'monitor' commands
+          fail-on-issues: true
 
 workflows:
   version: 2
