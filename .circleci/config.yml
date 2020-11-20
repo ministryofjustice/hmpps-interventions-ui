@@ -47,7 +47,7 @@ jobs:
         default: false
     steps:
       - checkout
-      - npm install -q
+      - run: npm install -q
       - snyk/scan:
           project: '${CIRCLE_PROJECT_REPONAME}'
           monitor-on-build: << parameters.monitor >>
