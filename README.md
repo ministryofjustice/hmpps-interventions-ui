@@ -4,6 +4,11 @@ This is the HMPPS Interventions Service
 
 ## Quickstart
 
+### Requirements
+
+- Docker 
+- Java
+
 Build and test:
 ```
 ./gradlew build
@@ -11,7 +16,9 @@ Build and test:
 
 Run:
 ```
-./gradlew bootRun
+docker-compose pull
+docker-compose up -d
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
 ## Architecture

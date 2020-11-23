@@ -1,17 +1,18 @@
 version: "3"
 services:
-  hmpps-interventions-service:
-    build:
-      context: .
-    network_mode: "host"
-    container_name: hmpps-interventions-service
+  hmpps-auth:
+    image: quay.io/hmpps/hmpps-auth:latest
+    networks:
+      - hmpps
+    container_name: hmpps-auth
     ports:
-      - "8081:8080"
+      - "8090:8080"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
 
 networks:
   hmpps:
