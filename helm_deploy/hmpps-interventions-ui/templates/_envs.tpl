@@ -10,26 +10,20 @@ env:
   - name: CLIENT_ID
     valueFrom:
       secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CLIENT_ID
+        name: hmpps-auth
+        key: client-id
 
   - name: CLIENT_SECRET
     valueFrom:
       secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CLIENT_SECRET
-
-  - name: APPINSIGHTS_INSTRUMENTATIONKEY
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: APPINSIGHTS_INSTRUMENTATIONKEY
+        name: hmpps-auth
+        key: client-secret
 
   - name: SESSION_SECRET
     valueFrom:
       secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: SESSION_SECRET
+        name: session
+        key: ui-session-secret
 
   - name: REDIS_HOST
     valueFrom:
