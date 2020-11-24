@@ -53,9 +53,6 @@ COPY --from=build --chown=appuser:appgroup \
 COPY --from=build --chown=appuser:appgroup \
         /app/node_modules ./node_modules
 
-COPY --from=build --chown=appuser:appgroup \
-        /app/server/views ./server/views
-
 RUN npm prune --production
 
 EXPOSE 3000
