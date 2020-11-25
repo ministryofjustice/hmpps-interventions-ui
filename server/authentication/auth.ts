@@ -41,10 +41,10 @@ export interface UserRequest extends Request {
 function init(): void {
   const strategy = new Strategy(
     {
-      authorizationURL: `${config.apis.hmppsAuth.externalUrl}/oauth/authorize`,
+      authorizationURL: `${config.apis.hmppsAuth.url}/oauth/authorize`,
       tokenURL: `${config.apis.hmppsAuth.url}/oauth/token`,
-      clientID: config.apis.hmppsAuth.clientId,
-      clientSecret: config.apis.hmppsAuth.clientSecret,
+      clientID: config.apis.hmppsAuth.loginClientId,
+      clientSecret: config.apis.hmppsAuth.loginClientSecret,
       callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: { Authorization: generateOauthClientToken() },

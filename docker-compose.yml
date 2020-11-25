@@ -1,6 +1,5 @@
 version: '3.1'
 services:
-
   redis:
     image: 'bitnami/redis:5.0'
     networks:
@@ -17,12 +16,26 @@ services:
       - hmpps
     container_name: hmpps-auth 
     ports:
-      - "9090:8080"
+      - "8090:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
+      - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
-      - DELIUS_ENABLED=false
+      - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
+
+  community-api:
+    image: quay.io/hmpps/community-api:latest
+    networks:
+      - hmpps
+    container_name: community-api
+    ports:
+      - "8091:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
 
 networks:
   hmpps:

@@ -50,16 +50,25 @@ export default {
     expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120'),
   },
   apis: {
+    communityApi: {
+      url: get('COMMUNITY_API_URL', 'http://localhost:8091', requiredInProduction),
+      timeout: {
+        response: get('COMMUNITY_API_TIMEOUT_RESPONSE', 10000),
+        deadline: get('COMMUNITY_API_TIMEOUT_DEADLINE', 10000),
+      },
+      agent: new AgentConfig(),
+    },
     hmppsAuth: {
-      url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
-      externalUrl: get('HMPPS_AUTH_EXTERNAL_URL', get('HMPPS_AUTH_URL', 'http://localhost:9090/auth')),
+      url: get('HMPPS_AUTH_URL', 'http://localhost:8090/auth', requiredInProduction),
       timeout: {
         response: get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000),
         deadline: get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000),
       },
       agent: new AgentConfig(),
-      clientId: get('CLIENT_ID', 'sentence-plan-client', requiredInProduction),
-      clientSecret: get('CLIENT_SECRET', 'clientsecret', requiredInProduction),
+      apiClientId: get('API_CLIENT_ID', 'interventions', requiredInProduction),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
+      loginClientId: get('LOGIN_CLIENT_ID', 'interventions', requiredInProduction),
+      loginClientSecret: get('LOGIN_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
     tokenVerification: {
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
