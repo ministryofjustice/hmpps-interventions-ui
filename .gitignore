@@ -27,3 +27,4 @@ integration_tests/screenshots/
 *secrets*.yaml
 !secrets-example.yaml
 !**/templates/secrets.yaml
+pact/
