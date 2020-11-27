@@ -1,4 +1,5 @@
 import { pactWith } from 'jest-pact'
+import { Matchers } from '@pact-foundation/pact'
 import InterventionsService from './interventionsService'
 import config from '../config'
 
@@ -45,6 +46,33 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const referral = await interventionsService.getReferral('1')
       expect(referral.id).toBe('1')
       expect(referral.desiredOutcomes).toContainEqual({ id: '1', text: 'Desired outcome text 1' })
+    })
+  })
+
+  describe('createReferral', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        // We're not sure what is an appropriate state here
+        state: 'a referral can be created',
+        uponReceiving: 'a POST request to create a referral',
+        withRequest: {
+          method: 'POST',
+          path: '/referrals',
+          headers: { Accept: 'application/json' },
+        },
+        willRespondWith: {
+          status: 201,
+          body: {
+            id: Matchers.like('1'),
+          },
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+    })
+
+    it('returns a referral', async () => {
+      const referral = await interventionsService.createReferral()
+      expect(referral.id).toBe('1')
     })
   })
 })
