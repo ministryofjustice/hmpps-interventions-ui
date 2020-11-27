@@ -38,4 +38,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.id).toBe('1')
     })
   })
+
+  describe('createReferral', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        // We're not sure what is an appropriate state here
+        state: 'a referral can be created',
+        uponReceiving: 'a POST request to create a referral',
+        withRequest: {
+          method: 'POST',
+          path: '/referrals',
+          headers: { Accept: 'application/json' },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like({
+            id: '1',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like('/referrals/1'),
+          },
+        },
+      })
+    })
+
+    it('returns a referral', async () => {
+      const referral = await interventionsService.createReferral()
+      expect(referral.id).toBe('1')
+    })
+  })
 })
