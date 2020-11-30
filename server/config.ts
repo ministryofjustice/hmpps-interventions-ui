@@ -70,6 +70,14 @@ export default {
       loginClientId: get('LOGIN_CLIENT_ID', 'interventions', requiredInProduction),
       loginClientSecret: get('LOGIN_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
+    interventionsService: {
+      url: 'http://localhost:8091',
+      timeout: {
+        response: 10000,
+        deadline: 10000,
+      },
+      agent: new AgentConfig(),
+    },
     tokenVerification: {
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
       timeout: {
