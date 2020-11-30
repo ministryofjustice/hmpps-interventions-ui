@@ -5,6 +5,16 @@ orbs:
   snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
 
+executors:
+  integration:
+    docker:
+      - image: circleci/node:10-buster-browsers
+      - image: rodolpheche/wiremock:2.27.2-alpine
+        command: ["--port", "9091"]
+      - image: bitnami/redis:6.0
+        environment:
+          ALLOW_EMPTY_PASSWORD: "yes"
+
 jobs:
   build:
     executor: hmpps/node
@@ -17,6 +27,24 @@ jobs:
           path: 'pact/pacts'
       - run: npm run build
       - run: npm run lint
+
+  integration_test:
+    executor: integration
+    steps:
+      - checkout
+      - node/install-npm
+      - node/install-packages
+      - run: npm run build
+      - run: # Run linter after build because the integration test code depends on compiled typescript...
+          command: npm run lint
+      - run:
+          command: npm run start:test
+          background: true
+      - run: npm run int-test
+      - store_artifacts:
+          path: integration_tests/videos
+      - store_artifacts:
+          path: integration_tests/screenshots
 
   vulnerability_scan:
     executor: hmpps/node
@@ -39,6 +67,7 @@ workflows:
   build_test_and_deploy:
     jobs:
       - build
+      - integration_test
       - hmpps/helm_lint
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
