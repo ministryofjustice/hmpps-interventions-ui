@@ -1,4 +1,4 @@
-hmpps-auth:
+hmppsauth:
   baseurl: http://localhost:8090/auth
 
 postgres:

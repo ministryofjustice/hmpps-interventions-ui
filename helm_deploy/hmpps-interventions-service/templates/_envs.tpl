@@ -13,7 +13,7 @@ env:
   - name: SPRING_PROFILES_ACTIVE
     value: "logstash"
 
-  - name: HMPPS_AUTH_BASEURL
-    value: "{{ .Values.env.HMPPS_AUTH_BASEURL }}"
+  - name: HMPPSAUTH_BASEURL
+    value: "{{ .Values.env.HMPPSAUTH_BASEURL }}"
 
 {{- end -}}

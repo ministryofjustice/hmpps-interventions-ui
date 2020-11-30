@@ -16,3 +16,4 @@ ingress:
 
 env:
   JAVA_OPTS: "-Xmx512m"
+  HMPPSAUTH_BASEURL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"

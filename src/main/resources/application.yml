@@ -15,8 +15,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${hmpps-auth.baseurl}/issuer
-          jwk-set-uri: ${hmpps-auth.baseurl}/.well-known/jwks.json
+          issuer-uri: ${hmppsauth.baseurl}/issuer
+          jwk-set-uri: ${hmppsauth.baseurl}/.well-known/jwks.json
   datasource:
     url: jdbc:postgresql://${postgres.uri}/${postgres.db}
     username: ${postgres.username}
