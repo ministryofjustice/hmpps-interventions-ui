@@ -17,6 +17,14 @@ spring:
         jwt:
           issuer-uri: ${hmpps-auth.baseurl}/issuer
           jwk-set-uri: ${hmpps-auth.baseurl}/.well-known/jwks.json
+  datasource:
+    url: jdbc:postgresql://${postgres.uri}/${postgres.db}
+    username: ${postgres.username}
+    password: ${postgres.password}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    hibernate:
+      ddl-auto: update
 
 server:
   port: 8080
