@@ -3,46 +3,21 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@1.1.3
   snyk: snyk/snyk@0.0.12
+  node: circleci/node@4.1.0
 
 jobs:
   build:
     executor: hmpps/node
     steps:
       - checkout
-      - run:
-          name: Update npm
-          command: 'sudo npm install -g npm@latest'
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Install Dependencies
-          command: npm ci
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
-            - ~/.cache
-      - run:
-          command: npm run test
+      - node/install-npm
+      - node/install-packages
+      - run: npm run test
       - store_artifacts:
           path: 'pact/pacts'
-      - run:
-          command: |
-            npm run build
-            DATE=$(date '+%Y-%m-%d')
-            export BUILD_NUMBER=${DATE}.${CIRCLE_BUILD_NUM}
-            export GIT_REF="$CIRCLE_SHA1"
-            npm run record-build-info
-      - run: # Run linter after build because the integration test code depends on compiled typescript...
-          name: Linter check
-          command: npm run lint
-      - persist_to_workspace:
-          root: .
-          paths:
-            - node_modules
-            - build-info.json
-            - dist
-            - assets/stylesheets
+      - run: npm run build
+      - run: npm run lint
+
   vulnerability_scan:
     executor: hmpps/node
     parameters:
@@ -63,10 +38,7 @@ workflows:
   version: 2
   build_test_and_deploy:
     jobs:
-      - build:
-        filters:
-          tags:
-            ignore: /.*/
+      - build
       - hmpps/helm_lint
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
