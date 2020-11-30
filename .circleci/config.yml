@@ -4,6 +4,11 @@ orbs:
   hmpps: ministryofjustice/hmpps@1.1.3
   snyk: snyk/snyk@0.0.12
 
+_snyk_options: &snyk_options
+  snyk-scan: true
+  snyk-fail-build: true
+  snyk-args: --policy-path=.snyk --configuration-matching='^((?!test).)*$'
+
 jobs:
   validate:
     executor: hmpps/java
@@ -51,7 +56,7 @@ workflows:
           name: helm_lint
       - hmpps/build_docker:
           name: build_and_publish_docker
-          snyk-scan: false # fixme!
+          <<: *snyk_options
           filters:
             branches:
               only:
@@ -71,7 +76,7 @@ workflows:
       - hmpps/build_docker:
           name: build_docker
           publish: false
-          snyk-scan: false # fixme!
+          <<: *snyk_options
           filters:
             branches:
               ignore:
@@ -104,4 +109,4 @@ workflows:
           monitor: true
       - hmpps/build_docker:
           publish: false
-          snyk-scan: true
+          <<: *snyk_options
