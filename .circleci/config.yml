@@ -24,6 +24,8 @@ jobs:
             - ~/.cache
       - run:
           command: npm run test
+      - store_artifacts:
+          path: 'pact/pacts'
       - run:
           command: |
             npm run build
