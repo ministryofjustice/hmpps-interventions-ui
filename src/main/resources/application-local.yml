@@ -1,6 +1,12 @@
 hmpps-auth:
   baseurl: http://localhost:8090/auth
 
+postgres:
+  uri: localhost:5432
+  db: interventions
+  username: postgres
+  password: password
+
 logging:
   level:
     org:

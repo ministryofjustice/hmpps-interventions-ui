@@ -14,5 +14,15 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
 
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./src/main/resources/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+
 networks:
   hmpps:
