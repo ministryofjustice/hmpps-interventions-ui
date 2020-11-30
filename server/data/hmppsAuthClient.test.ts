@@ -57,16 +57,16 @@ describe('hmppsAuthClient', () => {
     })
   })
 
-  describe('getSystemClientToken', () => {
+  describe('getApiClientToken', () => {
     it('should instantiate the redis client', async () => {
       givenRedisResponse(token.access_token)
-      await hmppsAuthClient.getSystemClientToken(username)
+      await hmppsAuthClient.getApiClientToken(username)
       expect(redis.createClient).toBeCalledTimes(1)
     })
 
     it('should return token from redis if one exists', async () => {
       givenRedisResponse(token.access_token)
-      const output = await hmppsAuthClient.getSystemClientToken(username)
+      const output = await hmppsAuthClient.getApiClientToken(username)
       expect(output).toEqual(token.access_token)
     })
 
@@ -75,11 +75,11 @@ describe('hmppsAuthClient', () => {
 
       fakeHmppsAuthApi
         .post(`/oauth/token`, 'grant_type=client_credentials&username=Bob')
-        .basicAuth({ user: config.apis.hmppsAuth.clientId, pass: config.apis.hmppsAuth.clientSecret })
+        .basicAuth({ user: config.apis.hmppsAuth.apiClientId, pass: config.apis.hmppsAuth.apiClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .reply(200, token)
 
-      const output = await hmppsAuthClient.getSystemClientToken(username)
+      const output = await hmppsAuthClient.getApiClientToken(username)
 
       expect(output).toEqual(token.access_token)
       expect(redis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
@@ -90,11 +90,11 @@ describe('hmppsAuthClient', () => {
 
       fakeHmppsAuthApi
         .post(`/oauth/token`, 'grant_type=client_credentials')
-        .basicAuth({ user: config.apis.hmppsAuth.clientId, pass: config.apis.hmppsAuth.clientSecret })
+        .basicAuth({ user: config.apis.hmppsAuth.apiClientId, pass: config.apis.hmppsAuth.apiClientSecret })
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .reply(200, token)
 
-      const output = await hmppsAuthClient.getSystemClientToken()
+      const output = await hmppsAuthClient.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
       expect(redis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))

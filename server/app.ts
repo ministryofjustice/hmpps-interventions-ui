@@ -23,10 +23,14 @@ import errorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
+import CommunityApiService from './services/communityApiService'
 
 const RedisStore = connectRedis(session)
 
-export default function createApp(userService: UserService): express.Application {
+export default function createApp(
+  userService: UserService,
+  communityApiService: CommunityApiService
+): express.Application {
   const app = express()
 
   auth.init()
@@ -172,7 +176,7 @@ export default function createApp(userService: UserService): express.Application
     })(req, res, next)
   )
 
-  const authLogoutUrl = `${config.apis.hmppsAuth.externalUrl}/logout?client_id=${config.apis.hmppsAuth.clientId}&redirect_uri=${config.domain}`
+  const authLogoutUrl = `${config.apis.hmppsAuth.url}/logout?client_id=${config.apis.hmppsAuth.loginClientId}&redirect_uri=${config.domain}`
 
   app.use('/logout', (req, res) => {
     if (req.user) {
@@ -184,7 +188,7 @@ export default function createApp(userService: UserService): express.Application
   })
 
   app.use(authorisationMiddleware())
-  app.use('/', indexRoutes(standardRouter(userService)))
+  app.use('/', indexRoutes(standardRouter(userService), communityApiService))
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(config.production))
 

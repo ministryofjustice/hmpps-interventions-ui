@@ -7,23 +7,35 @@ env:
   - name: INGRESS_URL
     value: "https://{{ .Values.ingress.host }}/"
 
-  - name: CLIENT_ID
+  - name: API_CLIENT_ID
     valueFrom:
       secretKeyRef:
         name: hmpps-auth
-        key: client-id
+        key: interventions-ui-client-id
 
-  - name: CLIENT_SECRET
+  - name: API_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
         name: hmpps-auth
-        key: client-secret
+        key: interventions-ui-client-secret
+
+  - name: LOGIN_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: hmpps-auth
+        key: interventions-login-client-id
+
+  - name: LOGIN_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: hmpps-auth
+        key: interventions-login-client-secret
 
   - name: SESSION_SECRET
     valueFrom:
       secretKeyRef:
         name: session
-        key: ui-session-secret
+        key: interventions-ui-session-secret
 
   - name: REDIS_HOST
     valueFrom:

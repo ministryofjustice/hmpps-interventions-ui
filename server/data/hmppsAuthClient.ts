@@ -25,15 +25,15 @@ redisClient.on('error', error => {
 const getRedisAsync = promisify(redisClient.get).bind(redisClient)
 const setRedisAsync = promisify(redisClient.set).bind(redisClient)
 
-function getSystemClientTokenFromHmppsAuth(username?: string): Promise<superagent.Response> {
-  const clientToken = generateOauthClientToken(config.apis.hmppsAuth.clientId, config.apis.hmppsAuth.clientSecret)
+function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.Response> {
+  const clientToken = generateOauthClientToken(config.apis.hmppsAuth.apiClientId, config.apis.hmppsAuth.apiClientSecret)
 
   const authRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
     : querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
-    `HMPPS Auth request '${authRequest}' for client id '${config.apis.hmppsAuth.clientId}' and user '${username}'`
+    `HMPPS Auth request '${authRequest}' for client id '${config.apis.hmppsAuth.apiClientId}' and user '${username}'`
   )
 
   return superagent
@@ -69,7 +69,7 @@ export default class HmppsAuthClient {
       .then(roles => (<UserRole[]>roles).map(role => role.roleCode)) as Promise<string[]>
   }
 
-  async getSystemClientToken(username?: string): Promise<string> {
+  async getApiClientToken(username?: string): Promise<string> {
     const redisKey = username || '%ANONYMOUS%'
 
     const tokenFromRedis = await getRedisAsync(redisKey)
@@ -77,7 +77,7 @@ export default class HmppsAuthClient {
       return tokenFromRedis
     }
 
-    const newToken = await getSystemClientTokenFromHmppsAuth(username)
+    const newToken = await getApiClientTokenFromHmppsAuth(username)
 
     // set TTL slightly less than expiry of token. Async but no need to wait
     await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
