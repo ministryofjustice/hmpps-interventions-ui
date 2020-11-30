@@ -8,24 +8,22 @@ import java.time.format.DateTimeFormatter
 import java.util.function.Consumer
 
 class HealthCheckTest : IntegrationTestBase() {
-
   @Test
-  fun `Health page reports ok`() {
+  fun `Health info reports ok`() {
     webTestClient.get()
-      .uri("/health")
+      .uri("/health/healthInfo")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }
 
   @Test
   fun `Health info reports version`() {
-    webTestClient.get().uri("/health")
+    webTestClient.get().uri("/health/healthInfo")
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("components.healthInfo.details.version").value(
+      .expectBody().jsonPath("details.version").value(
         Consumer<String> {
           assertThat(it).startsWith(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE))
         }
@@ -37,8 +35,7 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health/ping")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }
@@ -48,8 +45,7 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health/readiness")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }
@@ -59,9 +55,18 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health/liveness")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
+  }
+
+  @Test
+  fun `db reports down (db not currently running for integration tests)`() {
+    webTestClient.get()
+      .uri("/health/db")
+      .exchange()
+      .expectStatus().isEqualTo(503)
+      .expectBody()
+      .jsonPath("status").isEqualTo("DOWN")
   }
 }
