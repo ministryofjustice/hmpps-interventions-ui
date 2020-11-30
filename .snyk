@@ -1,0 +1,47 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-DEBIAN10-SYSTEMD-345386:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-SYSTEMD-345391:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-SYSTEMD-346788:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-LIBSSH2-452460:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-LIBIDN2-474100:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-GNUTLS28-609778:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-GLIBC-559488:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-GLIBC-559493:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-GCC8-347558:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+  SNYK-DEBIAN10-GCC8-469413:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+
+patch: {}
