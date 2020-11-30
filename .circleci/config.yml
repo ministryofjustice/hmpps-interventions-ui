@@ -23,6 +23,8 @@ jobs:
             - node_modules
             - ~/.cache
       - run:
+          command: npm run test
+      - run:
           command: |
             npm run build
             DATE=$(date '+%Y-%m-%d')
