@@ -18,7 +18,7 @@ describe('GET 404', () => {
       .expect(404)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('NotFoundError: Not found')
+        expect(res.text).toContain('failfailfail')
         expect(res.text).not.toContain('Something went wrong. The error has been logged. Please try again')
       })
   })
