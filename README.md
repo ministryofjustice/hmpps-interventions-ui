@@ -21,34 +21,25 @@ npm run start:dev
 
 Navigate to `http://localhost:3000` and login to the application using HMPPS Auth dev credentials e.g. `AUTH_ADM/password123456`
 
-### Test
+### Unit Test
 
 `npm run test`
 
 ### Lint
 
 `npm run lint`
+
+### Integration Test
+
+The integration tests require a different docker-compose stack and a different application configuration. Run each of the following commands in its own shell. 
+
+`docker-compose -f docker-compose-test.yml up`
+
+`npm run start:test`
+
+`npm run int-test(-ui)`
  
 ## Dependencies
 
 - hmpps-auth - for authentication
 - redis - session store and token caching
-
-
-## Integration tests
-
-For local running, start a test db, redis, and wiremock instance by:
-
-`docker-compose -f docker-compose-test.yml up`
-
-Then run the server in test mode by:
-
-`npm run start-feature` (or `npm run start-feature:dev` to run with nodemon)
-
-And then either, run tests in headless mode with:
-
-`npm run int-test`
- 
-Or run tests with the Cypress UI:
-
-`npm run int-test-ui`
