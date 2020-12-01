@@ -10,7 +10,7 @@ const createToken = () => {
     auth_source: 'nomis',
     authorities: [],
     jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
-    client_id: 'clientid',
+    client_id: 'interventions',
   }
 
   return jwt.sign(payload, 'secret', { expiresIn: '1h' })
@@ -50,7 +50,7 @@ const redirect = () =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/auth/oauth/authorize\\?response_type=code&redirect_uri=.+?&state=.+?&client_id=clientid',
+      urlPattern: '/auth/oauth/authorize\\?response_type=code&redirect_uri=.+?&state=.+?&client_id=interventions',
     },
     response: {
       status: 200,
