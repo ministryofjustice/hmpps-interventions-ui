@@ -20,4 +20,11 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as Referral
   }
+
+  async createReferral(): Promise<Referral> {
+    return (await this.restClient('token').post({
+      path: `/referrals`,
+      headers: { Accept: 'application/json' },
+    })) as Referral
+  }
 }
