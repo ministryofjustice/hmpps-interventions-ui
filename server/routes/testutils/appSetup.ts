@@ -4,13 +4,15 @@ import cookieSession from 'cookie-session'
 import createError from 'http-errors'
 import path from 'path'
 
-import allRoutes from '../index'
+import allRoutes, { Services } from '../index'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
 import * as auth from '../../authentication/auth'
 import { user, MockUserService } from './mocks/mockUserService'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
+import InterventionsService from '../../services/interventionsService'
+import CommunityApiService from '../../services/communityApiService'
 
 function appSetup(route: Router, production: boolean): Express {
   const app = express()
@@ -36,7 +38,20 @@ function appSetup(route: Router, production: boolean): Express {
   return app
 }
 
-export default function appWithAllRoutes({ production = false }: { production?: boolean }): Express {
+export default function appWithAllRoutes({
+  production = false,
+  overrides = {},
+}: {
+  production?: boolean
+  overrides?: Partial<Services>
+}): Express {
   auth.default.authenticationMiddleware = () => (req, res, next) => next()
-  return appSetup(allRoutes(standardRouter(new MockUserService()), new MockCommunityApiService()), production)
+  return appSetup(
+    allRoutes(standardRouter(new MockUserService()), {
+      communityApiService: new MockCommunityApiService(),
+      interventionsService: {} as InterventionsService,
+      ...overrides,
+    }),
+    production
+  )
 }
