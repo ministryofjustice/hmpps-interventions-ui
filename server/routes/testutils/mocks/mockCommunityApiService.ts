@@ -1,11 +1,11 @@
-import CommunityApiService from '../../../services/communityApiService'
+import CommunityApiService, { DeliusUser } from '../../../services/communityApiService'
 
 export = class MockCommunityApiService extends CommunityApiService {
   constructor() {
     super(undefined)
   }
 
-  async getUserByUsername(username: string) {
+  async getUserByUsername(username: string): Promise<DeliusUser> {
     return {
       userId: '987123876',
       username: 'maijam',

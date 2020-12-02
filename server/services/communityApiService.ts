@@ -3,7 +3,7 @@ import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../log'
 
-interface DeliusUser {
+export interface DeliusUser {
   userId: string
   username: string
   firstName: string

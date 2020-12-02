@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import appWithAllRoutes from '../testutils/appSetup'
 
@@ -6,7 +7,7 @@ jest.mock('../../services/interventionsService')
 
 const interventionsService = new InterventionsService(null) as jest.Mocked<InterventionsService>
 
-let app
+let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({ overrides: { interventionsService } })
