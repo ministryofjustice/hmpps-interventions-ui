@@ -63,10 +63,7 @@ workflows:
   version: 2
   build_test_and_deploy:
     jobs:
-      - build:
-        filters:
-          tags:
-            ignore: /.*/
+      - build
       - hmpps/helm_lint
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
