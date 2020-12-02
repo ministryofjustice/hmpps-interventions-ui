@@ -17,7 +17,7 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get upgrade -y
 
-# Build stage 2.
+# Stage: build assets
 FROM base as build
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -33,6 +33,8 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && npm run build  && \
     export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
+
+RUN npm prune --no-audit --production
 
 # Build stage 3.
 FROM base
@@ -52,8 +54,6 @@ COPY --from=build --chown=appuser:appgroup \
 
 COPY --from=build --chown=appuser:appgroup \
         /app/node_modules ./node_modules
-
-RUN npm prune --production
 
 EXPOSE 3000
 ENV NODE_ENV='production'
