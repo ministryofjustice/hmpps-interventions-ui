@@ -71,7 +71,7 @@ export default {
       loginClientSecret: get('LOGIN_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
     interventionsService: {
-      url: 'http://localhost:8091',
+      url: get('INTERVENTIONS_SERVICE_URL', 'http://localhost:8092', requiredInProduction),
       timeout: {
         response: 10000,
         deadline: 10000,
