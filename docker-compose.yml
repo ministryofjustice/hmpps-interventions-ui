@@ -22,7 +22,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=password
     volumes:
-      - ./src/main/resources/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+      - ./src/main/resources/db/init:/docker-entrypoint-initdb.d:ro
 
 networks:
   hmpps:

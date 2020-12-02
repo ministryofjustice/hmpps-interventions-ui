@@ -12,6 +12,14 @@ _snyk_options: &snyk_options
 jobs:
   validate:
     executor: hmpps/java
+    docker:
+      - image: cimg/openjdk:11.0
+        environment:
+          POSTGRES_DB: circle_test
+
+      - image: circleci/postgres:13-ram
+        environment:
+          POSTGRES_PASSWORD: password
     steps:
       - checkout
       - restore_cache:

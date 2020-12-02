@@ -9,9 +9,9 @@ import java.util.function.Consumer
 
 class HealthCheckTest : IntegrationTestBase() {
   @Test
-  fun `Health info reports ok`() {
+  fun `Health page reports ok`() {
     webTestClient.get()
-      .uri("/health/healthInfo")
+      .uri("/health")
       .exchange()
       .expectStatus().isOk
       .expectBody()
@@ -61,12 +61,12 @@ class HealthCheckTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `db reports down (db not currently running for integration tests)`() {
+  fun `db reports ok`() {
     webTestClient.get()
       .uri("/health/db")
       .exchange()
-      .expectStatus().isEqualTo(503)
+      .expectStatus().isOk
       .expectBody()
-      .jsonPath("status").isEqualTo("DOWN")
+      .jsonPath("status").isEqualTo("UP")
   }
 }
