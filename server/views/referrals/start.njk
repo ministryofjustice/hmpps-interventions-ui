@@ -1,0 +1,31 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        Make a referral
+      </h1>
+
+      <p class="govuk-body-m">You can make a new referral here:</p>
+
+      <form action="/referrals" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+          Start now
+          <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewbox="0 0 33 40" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

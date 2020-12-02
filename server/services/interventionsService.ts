@@ -2,7 +2,7 @@ import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
 
-interface Referral {
+export interface Referral {
   id: string
 }
 
