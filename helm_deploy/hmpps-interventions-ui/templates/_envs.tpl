@@ -50,8 +50,7 @@ env:
         key: auth_token
 
   - name: REDIS_TLS_ENABLED
-    value: {{ .Values.env.REDIS_TLS_ENABLED }}
-    value: "true"
+    value: {{ .Values.env.REDIS_TLS_ENABLED | quote }}
 
   - name: HMPPS_AUTH_URL
     value: {{ .Values.env.HMPPS_AUTH_URL | quote }}
