@@ -36,7 +36,7 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit && npm run build  && \
 
 RUN npm prune --no-audit --production
 
-# Build stage 3.
+# Stage: copy production assets and dependencies
 FROM base
 
 RUN apt-get autoremove -y && \
@@ -45,12 +45,14 @@ RUN apt-get autoremove -y && \
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
         /app/package-lock.json \
-        /app/dist \
         /app/build-info.json \
         ./
 
 COPY --from=build --chown=appuser:appgroup \
        /app/assets ./assets
+
+COPY --from=build --chown=appuser:appgroup \
+        /app/dist ./dist
 
 COPY --from=build --chown=appuser:appgroup \
         /app/node_modules ./node_modules
