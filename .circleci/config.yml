@@ -12,6 +12,14 @@ _snyk_options: &snyk_options
 jobs:
   validate:
     executor: hmpps/java
+    docker:
+      - image: cimg/openjdk:11.0
+        environment:
+          POSTGRES_DB: circle_test
+
+      - image: circleci/postgres:13-ram
+        environment:
+          POSTGRES_PASSWORD: password
     steps:
       - checkout
       - restore_cache:
@@ -35,6 +43,12 @@ jobs:
       monitor:
         type: boolean
         default: false
+      snyk-scan:
+        type: boolean
+      snyk-fail-build:
+        type: boolean
+      snyk-args:
+        type: string
     steps:
       - checkout
       - snyk/scan:
@@ -42,7 +56,9 @@ jobs:
           monitor-on-build: << parameters.monitor >>
           organization: "digital-probation-services"
           severity-threshold: "high" # note: this does not affect snyk 'monitor' commands
-          fail-on-issues: true
+          fail-on-issues: << parameters.snyk-fail-build >>
+          additional-arguments: << parameters.snyk-args >>
+
 
 workflows:
   version: 2
@@ -64,11 +80,13 @@ workflows:
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
           monitor: true
+          <<: *snyk_options
           filters:
             branches:
               only:
                 - main
       - vulnerability_scan:
+          <<: *snyk_options
           filters:
             branches:
               ignore:
@@ -107,6 +125,7 @@ workflows:
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
           monitor: true
+          <<: *snyk_options
       - hmpps/build_docker:
           publish: false
           <<: *snyk_options
