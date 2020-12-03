@@ -11,47 +11,46 @@ env:
     valueFrom:
       secretKeyRef:
         name: hmpps-auth
-        key: interventions-ui-client-id
+        key: interventions-ui-client-id.txt
 
   - name: API_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
         name: hmpps-auth
-        key: interventions-ui-client-secret
+        key: interventions-ui-client-secret.txt
 
   - name: LOGIN_CLIENT_ID
     valueFrom:
       secretKeyRef:
         name: hmpps-auth
-        key: interventions-login-client-id
+        key: interventions-login-client-id.txt
 
   - name: LOGIN_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
         name: hmpps-auth
-        key: interventions-login-client-secret
+        key: interventions-login-client-secret.txt
 
   - name: SESSION_SECRET
     valueFrom:
       secretKeyRef:
         name: session
-        key: interventions-ui-session-secret
+        key: interventions-ui-session-secret.txt
 
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:
-        name: hmpps_template_typescript_elasticache_redis
+        name: elasticache-redis
         key: primary_endpoint_address
 
   - name: REDIS_AUTH_TOKEN
     valueFrom:
       secretKeyRef:
-        name: hmpps_template_typescript_elasticache_redis
+        name: elasticache-redis
         key: auth_token
 
   - name: REDIS_TLS_ENABLED
-    value: {{ .Values.env.REDIS_TLS_ENABLED }}
-    value: "true"
+    value: {{ .Values.env.REDIS_TLS_ENABLED | quote }}
 
   - name: HMPPS_AUTH_URL
     value: {{ .Values.env.HMPPS_AUTH_URL | quote }}

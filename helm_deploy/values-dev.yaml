@@ -18,5 +18,6 @@ env:
   HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/
   HMPPS_COOKIE_NAME: hmpps-session-dev
   TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
-  TOKEN_VERIFICATION_API_ENABLED: true
+  TOKEN_VERIFICATION_ENABLED: true
   REDIS_ENABLED: true
+  REDIS_TLS_ENABLED: true
