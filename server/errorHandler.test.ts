@@ -1,7 +1,8 @@
 import request from 'supertest'
+import { Express } from 'express'
 import appWithAllRoutes from './routes/testutils/appSetup'
 
-let app
+let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({})

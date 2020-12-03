@@ -14,8 +14,16 @@ jest.mock('redis', () => ({
   set: jest.fn().mockImplementation((key, value, command, ttl, callback) => callback(null, null)),
 }))
 
+interface MockRedis {
+  on: jest.Mock
+  get: jest.Mock
+  set: jest.Mock
+}
+
+const mockRedis = (redis as unknown) as MockRedis
+
 function givenRedisResponse(storedToken: string) {
-  redis.get.mockImplementation((key, callback) => callback(null, storedToken))
+  mockRedis.get.mockImplementation((key, callback) => callback(null, storedToken))
 }
 
 describe('hmppsAuthClient', () => {
@@ -82,7 +90,7 @@ describe('hmppsAuthClient', () => {
       const output = await hmppsAuthClient.getApiClientToken(username)
 
       expect(output).toEqual(token.access_token)
-      expect(redis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
+      expect(mockRedis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
     })
 
     it('should return token from HMPPS Auth without username', async () => {
@@ -97,7 +105,7 @@ describe('hmppsAuthClient', () => {
       const output = await hmppsAuthClient.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
-      expect(redis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
+      expect(mockRedis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
     })
   })
 })

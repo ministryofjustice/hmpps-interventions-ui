@@ -1,19 +1,21 @@
+import HmppsAuthClient from '../data/hmppsAuthClient'
 import UserService from './userService'
 import MockedHmppsAuthClient from '../data/testutils/hmppsAuthClientSetup'
 
 const token = 'some token'
 
 describe('User service', () => {
-  let hmppsAuthClient
+  let hmppsAuthClient: jest.Mocked<HmppsAuthClient>
   let userService: UserService
 
   describe('getUser', () => {
     beforeEach(() => {
-      hmppsAuthClient = new MockedHmppsAuthClient()
+      hmppsAuthClient = new MockedHmppsAuthClient() as jest.Mocked<HmppsAuthClient>
+
       userService = new UserService(hmppsAuthClient)
     })
     it('Retrieves and formats user name', async () => {
-      hmppsAuthClient.getUser.mockResolvedValue({ name: 'john smith' })
+      hmppsAuthClient.getUser.mockResolvedValue({ name: 'john smith', activeCaseLoadId: '1' })
 
       const result = await userService.getUser(token)
 
