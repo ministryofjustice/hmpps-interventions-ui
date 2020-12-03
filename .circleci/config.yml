@@ -104,6 +104,8 @@ workflows:
               only:
                 - main
           requires:
+            - build
+            - integration_test
             - hmpps/helm_lint
             - build_docker_publish
             - vulnerability_scan_and_monitor
