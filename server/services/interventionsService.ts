@@ -14,16 +14,16 @@ export default class InterventionsService {
   }
 
   async getReferral(id: string): Promise<Referral> {
-    logger.info(`Getting referral with id ${id}`)
+    logger.info(`Getting draft referral with id ${id}`)
     return (await this.restClient('token').get({
-      path: `/referrals/${id}`,
+      path: `/draft-referral/${id}`,
       headers: { Accept: 'application/json' },
     })) as Referral
   }
 
   async createReferral(): Promise<Referral> {
     return (await this.restClient('token').post({
-      path: `/referrals`,
+      path: `/draft-referral`,
       headers: { Accept: 'application/json' },
     })) as Referral
   }

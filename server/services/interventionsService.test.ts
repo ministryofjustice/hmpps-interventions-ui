@@ -16,17 +16,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     beforeEach(async () => {
       // This is just an example for getting Pact set up; we’ll properly design this endpoint later
       await provider.addInteraction({
-        state: 'There is an existing referral with ID of 1',
+        state: 'There is an existing referral with ID of ac386c25-52c8-41fa-9213-fcf42e24b0b5',
         uponReceiving: 'a request for that referral',
         withRequest: {
           method: 'GET',
-          path: '/referrals/1',
+          path: '/draft-referral/ac386c25-52c8-41fa-9213-fcf42e24b0b5',
           headers: { Accept: 'application/json' },
         },
         willRespondWith: {
           status: 200,
           body: Matchers.like({
-            id: '1',
+            id: 'ac386c25-52c8-41fa-9213-fcf42e24b0b5',
           }),
           headers: { 'Content-Type': 'application/json' },
         },
@@ -34,8 +34,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns a referral for the given ID', async () => {
-      const referral = await interventionsService.getReferral('1')
-      expect(referral.id).toBe('1')
+      const referral = await interventionsService.getReferral('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
+      expect(referral.id).toBe('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
     })
   })
 
@@ -47,17 +47,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         uponReceiving: 'a POST request to create a referral',
         withRequest: {
           method: 'POST',
-          path: '/referrals',
+          path: '/draft-referral',
           headers: { Accept: 'application/json' },
         },
         willRespondWith: {
           status: 201,
           body: Matchers.like({
-            id: '1',
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
           }),
           headers: {
             'Content-Type': 'application/json',
-            Location: Matchers.like('/referrals/1'),
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed'
+            ),
           },
         },
       })
@@ -65,7 +67,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns a referral', async () => {
       const referral = await interventionsService.createReferral()
-      expect(referral.id).toBe('1')
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
   })
 })
