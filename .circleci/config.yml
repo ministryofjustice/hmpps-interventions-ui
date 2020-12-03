@@ -99,11 +99,14 @@ workflows:
           name: deploy_dev
           env: "dev"
           retrieve_secrets: "none"
+          slack_notification: true
           filters:
             branches:
               only:
                 - main
           requires:
+            - build
+            - integration_test
             - hmpps/helm_lint
             - build_docker_publish
             - vulnerability_scan_and_monitor
