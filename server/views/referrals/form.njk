@@ -1,1 +1,45 @@
-Viewing referral with ID {{referral.id}}
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">
+        Make a referral
+      </h1>
+
+      <p class="govuk-body-m">Viewing referral with ID {{ presenter.referralID }}</p>
+
+      <ol class="moj-task-list">
+        {% for section in presenter.sections %}
+          {% if section.type === 'multi' %}
+            <li>
+              <h2 class="moj-task-list__section">
+                <span class="moj-task-list__section-number">{{ section.number }}.</span>
+                {{ section.title }}
+              </h2>
+            </li>
+
+            {% for taskListSection in section.taskListSections %}
+              <li class="govuk-!-margin-left-5">
+                {% set nested = true %}
+                {% include "./partials/taskListSection.njk" %}
+              </li>
+            {% endfor %}
+          {% elif section.type === 'single' %}
+            <li>
+              {% set taskListSection = section %}
+              {% set nested = false %}
+              {% include "./partials/taskListSection.njk" %}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+{% endblock %}
