@@ -5,7 +5,7 @@ import appWithAllRoutes from '../testutils/appSetup'
 
 jest.mock('../../services/interventionsService')
 
-const interventionsService = new InterventionsService(null) as jest.Mocked<InterventionsService>
+const interventionsService = new InterventionsService(null, null) as jest.Mocked<InterventionsService>
 
 let app: Express
 
