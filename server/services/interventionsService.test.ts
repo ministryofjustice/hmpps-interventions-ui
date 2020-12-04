@@ -2,14 +2,20 @@ import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
 import InterventionsService from './interventionsService'
+import HmppsAuthClient from '../data/hmppsAuthClient'
 import config from '../config'
+import MockedHmppsAuthClient from '../data/testutils/hmppsAuthClientSetup'
+
+jest.mock('../data/hmppsAuthClient')
 
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
 
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
-    interventionsService = new InterventionsService(testConfig)
+    const hmppsAuthClient = new MockedHmppsAuthClient() as jest.Mocked<HmppsAuthClient>
+    hmppsAuthClient.getApiClientToken.mockResolvedValue('mockedToken')
+    interventionsService = new InterventionsService(testConfig, hmppsAuthClient)
   })
 
   describe('getReferral', () => {
@@ -21,7 +27,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/draft-referral/ac386c25-52c8-41fa-9213-fcf42e24b0b5',
-          headers: { Accept: 'application/json' },
+          headers: { Accept: 'application/json', Authorization: 'Bearer mockedToken' },
         },
         willRespondWith: {
           status: 200,
@@ -48,7 +54,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-referral',
-          headers: { Accept: 'application/json' },
+          headers: { Accept: 'application/json', Authorization: 'Bearer mockedToken' },
         },
         willRespondWith: {
           status: 201,
