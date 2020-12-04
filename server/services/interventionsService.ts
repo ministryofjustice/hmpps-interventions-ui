@@ -36,4 +36,14 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as DraftReferral
   }
+
+  async patchDraftReferral(id: string, patch: Partial<DraftReferral>): Promise<DraftReferral> {
+    const restClient = await this.createRestClient()
+
+    return (await restClient.patch({
+      path: `/draft-referral/${id}`,
+      headers: { Accept: 'application/json' },
+      data: patch,
+    })) as DraftReferral
+  }
 }

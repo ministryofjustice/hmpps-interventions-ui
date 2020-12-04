@@ -76,4 +76,41 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
   })
+
+  describe('patchDraftReferral', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update the completion deadline',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer mockedToken',
+          },
+          body: { completionDeadline: '2021-04-01' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            completionDeadline: '2021-04-01',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns the updated referral', async () => {
+      const referral = await interventionsService.patchDraftReferral('dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        completionDeadline: '2021-04-01',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.completionDeadline).toBe('2021-04-01')
+    })
+  })
 })
