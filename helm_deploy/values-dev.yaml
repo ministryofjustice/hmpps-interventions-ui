@@ -15,7 +15,7 @@ ingress:
   path: /
 
 env:
-  HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/
+  HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
   COMMUNITY_API_URL: https://community-api-secure.test.delius.probation.hmpps.dsd.io
   INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk
   TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
