@@ -6,7 +6,7 @@ describe('ReferralFormPresenter', () => {
     // as the task list starts to handle different referral states.
 
     it('returns an array of section presenters', () => {
-      const presenter = new ReferralFormPresenter({ id: '1' })
+      const presenter = new ReferralFormPresenter({ id: '1', completionDeadline: '2021-03-01' })
 
       const expected = [
         {

@@ -14,10 +14,12 @@ beforeEach(() => {
 
   interventionsService.createDraftReferral.mockResolvedValue({
     id: '1',
+    completionDeadline: null,
   })
 
   interventionsService.getDraftReferral.mockResolvedValue({
     id: '1',
+    completionDeadline: null,
   })
 })
 
