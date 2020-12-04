@@ -55,6 +55,12 @@ env:
   - name: HMPPS_AUTH_URL
     value: {{ .Values.env.HMPPS_AUTH_URL | quote }}
 
+  - name: COMMUNITY_API_URL
+    value: {{ .Values.env.COMMUNITY_API_URL | quote }}
+
+  - name: INTERVENTIONS_SERVICE_URL
+    value: {{ .Values.env.INTERVENTIONS_SERVICE_URL | quote }}
+
   - name: TOKEN_VERIFICATION_API_URL
     value: {{ .Values.env.TOKEN_VERIFICATION_API_URL | quote }}
 
