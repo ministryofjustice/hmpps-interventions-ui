@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import InterventionsService from '../../services/interventionsService'
+import ReferralFormPresenter from './referralFormPresenter'
+import ReferralFormView from './referralFormView'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -17,6 +19,9 @@ export default class ReferralsController {
   async viewReferralForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getReferral(req.params.id)
 
-    res.render('referrals/form', { referral })
+    const presenter = new ReferralFormPresenter(referral)
+    const view = new ReferralFormView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

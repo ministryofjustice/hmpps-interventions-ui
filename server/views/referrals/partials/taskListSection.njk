@@ -1,0 +1,26 @@
+{#
+Our use of the task-completed class is a misuse - we’re just using
+it to get a right-floated tag. There’s a broader question of whether
+we’ve mis-implemented the MoJ task list pattern, in which tags are
+only used on individual completed tasks. Needs some design review.
+#}
+<strong class="{{ classForStatus(taskListSection.status) }} moj-task-list__task-completed">
+  {{ taskListSection.status }}
+</strong>
+
+<h2 class="moj-task-list__section">
+  <span class="moj-task-list__section-number {{ "govuk-!-padding-right-2" if nested }}">{{ taskListSection.number }}.</span>
+  {{ taskListSection.title }}
+</h2>
+
+<ul class="moj-task-list__items">
+  {% for task in taskListSection.tasks %}
+    <li class="moj-task-list__item">
+      {% if task.url !== null %}
+        <a class="moj-task-list__task-name" href="{{ task.url }}">{{ task.title }}</a>
+      {% else %}
+        <span class="app-task-list__task-name">{{ task.title }}</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
