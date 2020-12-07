@@ -18,14 +18,13 @@ spring:
           issuer-uri: ${hmppsauth.baseurl}/issuer
           jwk-set-uri: ${hmppsauth.baseurl}/.well-known/jwks.json
   datasource:
-    driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${postgres.uri}/${postgres.db}
     username: ${postgres.username}
     password: ${postgres.password}
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     hibernate:
-      ddl-auto: update
+      show-sql: false
+      ddl-auto: validate
 
 server:
   port: 8080
