@@ -39,15 +39,18 @@ export interface UserRequest extends Request {
 }
 
 function init(): void {
+  const authConfig = config.apis.hmppsAuth
   const strategy = new Strategy(
     {
-      authorizationURL: `${config.apis.hmppsAuth.url}/oauth/authorize`,
-      tokenURL: `${config.apis.hmppsAuth.url}/oauth/token`,
-      clientID: config.apis.hmppsAuth.loginClientId,
-      clientSecret: config.apis.hmppsAuth.loginClientSecret,
+      authorizationURL: `${authConfig.url}/oauth/authorize`,
+      tokenURL: `${authConfig.url}/oauth/token`,
+      clientID: authConfig.loginClientId,
+      clientSecret: authConfig.loginClientSecret,
       callbackURL: `${config.domain}/login/callback`,
       state: true,
-      customHeaders: { Authorization: generateOauthClientToken() },
+      customHeaders: {
+        Authorization: generateOauthClientToken(authConfig.loginClientId, authConfig.loginClientSecret),
+      },
     },
     (token, refreshToken, params, profile, done) => {
       return done(null, { token, username: params.user_name, authSource: params.auth_source })

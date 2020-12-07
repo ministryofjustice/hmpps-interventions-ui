@@ -1,9 +1,7 @@
 import config from '../config'
 
-export default function generateOauthClientToken(
-  clientId: string = config.apis.hmppsAuth.apiClientId,
-  clientSecret: string = config.apis.hmppsAuth.apiClientSecret
-): string {
+export default function generateOauthClientToken(clientId: string, clientSecret: string): string {
+  // create a base64 encoded basic auth header for oauth2 token requests
   const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
   return `Basic ${token}`
 }
