@@ -41,15 +41,13 @@ spec:
             - containerPort: {{ .Values.image.port }}
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /ping
+            tcpSocket:
               port: {{ .Values.image.port }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
             failureThreshold: 5
           readinessProbe:
-            httpGet:
-              path: /ping
+            tcpSocket:
               port: {{ .Values.image.port }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
