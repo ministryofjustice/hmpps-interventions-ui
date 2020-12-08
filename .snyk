@@ -3,6 +3,11 @@ version: v1.14.1
 
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-DEBIAN10-GLIBC-1048309:
+    - '*':
+        reason: base image vuln with no upgrade path; will reassess in 2 months
+        expiry: 2021-02-01T00:00:00.000Z
+
   SNYK-DEBIAN10-SYSTEMD-345386:
     - '*':
         reason: base image vuln with no upgrade path; will reassess in 2 months
