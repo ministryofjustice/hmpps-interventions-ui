@@ -1,7 +1,7 @@
-import { Referral } from '../../services/interventionsService'
+import { DraftReferral } from '../../services/interventionsService'
 
 export default class ReferralFormPresenter {
-  constructor(private readonly referral: Referral) {}
+  constructor(private readonly referral: DraftReferral) {}
 
   // This is just temporary, will remove it once we get rid of the referral ID output in the template
   get referralID(): string {

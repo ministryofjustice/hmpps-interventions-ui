@@ -18,11 +18,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     interventionsService = new InterventionsService(testConfig, hmppsAuthClient)
   })
 
-  describe('getReferral', () => {
+  describe('getDraftReferral', () => {
     beforeEach(async () => {
       // This is just an example for getting Pact set up; we’ll properly design this endpoint later
       await provider.addInteraction({
-        state: 'There is an existing referral with ID of ac386c25-52c8-41fa-9213-fcf42e24b0b5',
+        state: 'There is an existing draft referral with ID of ac386c25-52c8-41fa-9213-fcf42e24b0b5',
         uponReceiving: 'a request for that referral',
         withRequest: {
           method: 'GET',
@@ -40,17 +40,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns a referral for the given ID', async () => {
-      const referral = await interventionsService.getReferral('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
+      const referral = await interventionsService.getDraftReferral('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
       expect(referral.id).toBe('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
     })
   })
 
-  describe('createReferral', () => {
+  describe('createDraftReferral', () => {
     beforeEach(async () => {
       await provider.addInteraction({
         // We're not sure what is an appropriate state here
-        state: 'a referral can be created',
-        uponReceiving: 'a POST request to create a referral',
+        state: 'a draft referral can be created',
+        uponReceiving: 'a POST request to create a draft referral',
         withRequest: {
           method: 'POST',
           path: '/draft-referral',
@@ -72,8 +72,45 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns a referral', async () => {
-      const referral = await interventionsService.createReferral()
+      const referral = await interventionsService.createDraftReferral()
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+    })
+  })
+
+  describe('patchDraftReferral', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update the completion deadline',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer mockedToken',
+          },
+          body: { completionDeadline: '2021-04-01' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            completionDeadline: '2021-04-01',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns the updated referral', async () => {
+      const referral = await interventionsService.patchDraftReferral('dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        completionDeadline: '2021-04-01',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.completionDeadline).toBe('2021-04-01')
     })
   })
 })
