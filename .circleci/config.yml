@@ -16,7 +16,7 @@ jobs:
       - image: cimg/openjdk:11.0
         environment:
           POSTGRES_DB: circle_test
-      - image: circleci/postgres:13-ram
+      - image: circleci/postgres:10-alpine-ram
         environment:
           POSTGRES_PASSWORD: password
     steps:
@@ -45,7 +45,7 @@ jobs:
       - image: cimg/openjdk:11.0
         environment:
           POSTGRES_DB: circle_test
-      - image: circleci/postgres:13-ram
+      - image: circleci/postgres:10-alpine-ram
         environment:
           POSTGRES_PASSWORD: password
     steps:

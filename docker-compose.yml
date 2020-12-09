@@ -15,7 +15,7 @@ services:
       - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
 
   postgres:
-    image: postgres:13-alpine
+    image: postgres:10-alpine
     container_name: postgres
     ports:
       - "5432:5432"
