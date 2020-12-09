@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -11,13 +12,24 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 
 @Configuration
 @EnableWebSecurity
-class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
-  // todo: add custom token validator which calls token verification service
+@Profile("test")
+class BasicResourceServerConfiguration : WebSecurityConfigurerAdapter() {
   override fun configure(http: HttpSecurity) {
     http
       .sessionManagement()
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and().csrf().disable()
+  }
+}
+
+@Configuration
+@EnableWebSecurity
+@Profile("!test")
+class ResourceServerConfiguration : BasicResourceServerConfiguration() {
+  // todo: add custom token validator which calls token verification service
+  override fun configure(http: HttpSecurity) {
+    super.configure(http)
+    http
       .authorizeRequests {
         it.antMatchers("/health/**", "/info", "/test/**").permitAll()
         it.anyRequest().hasAuthority("ROLE_INTERVENTIONS")
