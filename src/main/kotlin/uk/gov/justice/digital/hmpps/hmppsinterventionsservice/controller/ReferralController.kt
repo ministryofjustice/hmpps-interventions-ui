@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
 import java.util.UUID
 
 @RestController
@@ -46,7 +47,7 @@ class ReferralController(private val repository: ReferralRepository) {
   }
 
   @PatchMapping("/draft-referral/{id}")
-  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: Referral): ResponseEntity<Any> {
+  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: DraftReferral): ResponseEntity<Any> {
     val uuid = try {
       UUID.fromString(id)
     } catch (e: IllegalArgumentException) {
@@ -54,10 +55,10 @@ class ReferralController(private val repository: ReferralRepository) {
     }
 
     return repository.findByIdOrNull(uuid)
-      ?.let { ref ->
-        partialUpdate.completionDeadline?.let { ref.completionDeadline = it }
-        repository.save(ref)
-        ResponseEntity.ok(ref)
+      ?.let {
+        ReferralService.updateReferral(it, partialUpdate)
+        repository.save(it)
+        ResponseEntity.ok(it)
       }
       ?: ResponseEntity.notFound().build()
   }
