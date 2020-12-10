@@ -16,7 +16,6 @@ jobs:
       - image: cimg/openjdk:11.0
         environment:
           POSTGRES_DB: circle_test
-
       - image: circleci/postgres:13-ram
         environment:
           POSTGRES_PASSWORD: password
@@ -36,6 +35,34 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
+
+  pact_check_and_publish:
+    environment:
+      PACT_BROKER_HOST: "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
+      PACT_BROKER_USERNAME: "interventions"
+    executor: hmpps/java
+    docker:
+      - image: cimg/openjdk:11.0
+        environment:
+          POSTGRES_DB: circle_test
+      - image: circleci/postgres:13-ram
+        environment:
+          POSTGRES_PASSWORD: password
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          command: |
+            PACT_PROVIDER_VERSION="$CIRCLE_SHA1" \
+              PACT_PROVIDER_TAG="$CIRCLE_BRANCH" \
+              ./gradlew pactTestPublish
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
 
   vulnerability_scan:
     executor: hmpps/java
@@ -64,10 +91,8 @@ workflows:
   version: 2
   build_test_and_deploy:
     jobs:
-      - validate:
-          filters:
-            tags:
-              ignore: /.*/
+      - validate
+      - pact_check_and_publish
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -110,6 +135,7 @@ workflows:
                 - main
           requires:
             - validate
+            - pact_check_and_publish
             - build_and_publish_docker
             - helm_lint
             - vulnerability_scan_and_monitor
