@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.util.UUID
@@ -14,7 +15,7 @@ import java.util.UUID
 @RestController
 class ReferralController(private val repository: ReferralRepository) {
   @PostMapping("/draft-referral")
-  fun createDraftReferral(): ResponseEntity<Referral> {
+  fun createDraftReferral(): ResponseEntity<DraftReferral> {
     val referral = Referral()
     repository.save(referral)
 
@@ -26,7 +27,7 @@ class ReferralController(private val repository: ReferralRepository) {
 
     return ResponseEntity
       .created(location)
-      .body(referral)
+      .body(DraftReferral(referral))
   }
 
   @GetMapping("/draft-referral/{id}")
@@ -38,7 +39,7 @@ class ReferralController(private val repository: ReferralRepository) {
     }
 
     return repository.findByIdOrNull(uuid)
-      ?.let { ResponseEntity.ok(it) }
+      ?.let { ResponseEntity.ok(DraftReferral(it)) }
       ?: ResponseEntity.notFound().build()
   }
 }
