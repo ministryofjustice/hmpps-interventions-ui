@@ -15,11 +15,7 @@ beforeEach(() => {
   interventionsService.createDraftReferral.mockResolvedValue({
     id: '1',
     completionDeadline: null,
-  })
-
-  interventionsService.getDraftReferral.mockResolvedValue({
-    id: '1',
-    completionDeadline: null,
+    serviceCategory: null,
   })
 })
 
@@ -65,6 +61,14 @@ describe('POST /referrals', () => {
 })
 
 describe('GET /referrals/:id/form', () => {
+  beforeEach(() => {
+    interventionsService.getDraftReferral.mockResolvedValue({
+      id: '1',
+      completionDeadline: null,
+      serviceCategory: null,
+    })
+  })
+
   it('fetches the referral from the interventions service and renders a page with information about the referral', async () => {
     await request(app)
       .get('/referrals/1/form')
