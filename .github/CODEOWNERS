@@ -1,2 +1,2 @@
 * @ministryofjustice/hmpps-interventions
-src/main/resources/db/ @ministryofjustice/interventions-data-engineers
+src/main/resources/db/migration/ @ministryofjustice/interventions-data-engineers
