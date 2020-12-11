@@ -8,7 +8,7 @@ import InterventionsService from './services/interventionsService'
 const hmppsAuthClient = new HmppsAuthClient()
 const userService = new UserService(hmppsAuthClient)
 const communityApiService = new CommunityApiService(hmppsAuthClient)
-const interventionsService = new InterventionsService(config.apis.interventionsService, hmppsAuthClient)
+const interventionsService = new InterventionsService(config.apis.interventionsService)
 
 const app = createApp(userService, communityApiService, interventionsService)
 

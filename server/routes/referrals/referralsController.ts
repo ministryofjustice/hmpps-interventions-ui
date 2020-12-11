@@ -11,13 +11,13 @@ export default class ReferralsController {
   }
 
   async createReferral(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.createDraftReferral()
+    const referral = await this.interventionsService.createDraftReferral(res.locals.user.token)
 
     res.redirect(303, `/referrals/${referral.id}/form`)
   }
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
     const presenter = new ReferralFormPresenter(referral)
     const view = new ReferralFormView(presenter)

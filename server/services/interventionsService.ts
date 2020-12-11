@@ -9,18 +9,16 @@ export interface DraftReferral {
 }
 
 export default class InterventionsService {
-  constructor(private readonly config: ApiConfig, private readonly hmppsAuthClient: HmppsAuthClient) {}
+  constructor(private readonly config: ApiConfig) {}
 
-  private async createRestClient(): Promise<RestClient> {
-    const token = await this.hmppsAuthClient.getApiClientToken()
-
+  private createRestClient(token: string): RestClient {
     return new RestClient('Interventions Service API Client', this.config, token)
   }
 
-  async getDraftReferral(id: string): Promise<DraftReferral> {
+  async getDraftReferral(token: string, id: string): Promise<DraftReferral> {
     logger.info(`Getting draft referral with id ${id}`)
 
-    const restClient = await this.createRestClient()
+    const restClient = await this.createRestClient(token)
 
     return (await restClient.get({
       path: `/draft-referral/${id}`,
@@ -28,8 +26,8 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
-  async createDraftReferral(): Promise<DraftReferral> {
-    const restClient = await this.createRestClient()
+  async createDraftReferral(token: string): Promise<DraftReferral> {
+    const restClient = await this.createRestClient(token)
 
     return (await restClient.post({
       path: `/draft-referral`,
@@ -37,8 +35,8 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
-  async patchDraftReferral(id: string, patch: Partial<DraftReferral>): Promise<DraftReferral> {
-    const restClient = await this.createRestClient()
+  async patchDraftReferral(token: string, id: string, patch: Partial<DraftReferral>): Promise<DraftReferral> {
+    const restClient = await this.createRestClient(token)
 
     return (await restClient.patch({
       path: `/draft-referral/${id}`,

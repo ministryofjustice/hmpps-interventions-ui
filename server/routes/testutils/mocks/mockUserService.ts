@@ -6,6 +6,7 @@ export const user = {
   lastName: 'smith',
   username: 'user1',
   displayName: 'John Smith',
+  token: 'token',
 }
 
 export class MockUserService extends UserService {
