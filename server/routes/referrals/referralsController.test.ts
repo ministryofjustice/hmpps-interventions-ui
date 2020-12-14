@@ -192,3 +192,41 @@ describe('POST /referrals/:id/completion-deadline', () => {
     })
   })
 })
+
+describe('GET /referrals/:id/complexity-level', () => {
+  beforeEach(() => {
+    interventionsService.getDraftReferral.mockResolvedValue({
+      id: '1',
+      completionDeadline: null,
+      serviceCategory: { id: 'b33c19d1-7414-4014-b543-e543e59c5b39', name: 'accommodation' },
+      complexityLevelId: null,
+    })
+  })
+
+  it('renders a form page', async () => {
+    interventionsService.getComplexityLevels.mockResolvedValue([])
+
+    await request(app)
+      .get('/referrals/1/complexity-level')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What is the complexity level for the accommodation service?')
+      })
+
+    expect(interventionsService.getComplexityLevels.mock.calls[0]).toEqual([
+      'token',
+      'b33c19d1-7414-4014-b543-e543e59c5b39',
+    ])
+  })
+
+  it('renders an error when the get complexity levels call fails', async () => {
+    interventionsService.getComplexityLevels.mockRejectedValue(new Error('Failed to get complexity levels'))
+
+    await request(app)
+      .get('/referrals/1/complexity-level')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get complexity levels')
+      })
+  })
+})
