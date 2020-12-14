@@ -55,6 +55,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             body: Matchers.like({
               id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
               serviceCategory: {
+                id: '428ee70f-3001-4399-95a6-ad25eaaede16',
                 name: 'accommodation',
               },
             }),
@@ -67,7 +68,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         const referral = await interventionsService.getDraftReferral('token', 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-        expect(referral.serviceCategory.name).toEqual('accommodation')
+        expect(referral.serviceCategory).toEqual({ id: '428ee70f-3001-4399-95a6-ad25eaaede16', name: 'accommodation' })
       })
     })
   })
