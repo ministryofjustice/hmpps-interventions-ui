@@ -7,11 +7,18 @@ export interface DraftReferral {
   id: string
   completionDeadline: string | null
   serviceCategory: ServiceCategory | null
+  complexityLevelId: string | null
 }
 
 export interface ServiceCategory {
   id: string
   name: string
+}
+
+export interface ComplexityLevel {
+  id: string
+  title: string
+  description: string
 }
 
 export default class InterventionsService {

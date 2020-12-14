@@ -10,6 +10,7 @@ describe('ReferralFormPresenter', () => {
         id: '1',
         completionDeadline: '2021-03-01',
         serviceCategory: { id: 'b33c19d1-7414-4014-b543-e543e59c5b39', name: 'social inclusion' },
+        complexityLevelId: null,
       })
 
       const expected = [
