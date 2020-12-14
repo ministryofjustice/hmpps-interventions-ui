@@ -5,7 +5,7 @@ import appWithAllRoutes from '../testutils/appSetup'
 
 jest.mock('../../services/interventionsService')
 
-const interventionsService = new InterventionsService(null, null) as jest.Mocked<InterventionsService>
+const interventionsService = new InterventionsService(null) as jest.Mocked<InterventionsService>
 
 let app: Express
 
@@ -73,7 +73,7 @@ describe('GET /referrals/:id/form', () => {
         expect(res.text).toContain('Viewing referral with ID 1')
       })
 
-    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['1'])
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
   })
 
   describe('when the interventions service returns an error', () => {
