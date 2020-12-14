@@ -15,11 +15,7 @@ beforeEach(() => {
   interventionsService.createDraftReferral.mockResolvedValue({
     id: '1',
     completionDeadline: null,
-  })
-
-  interventionsService.getDraftReferral.mockResolvedValue({
-    id: '1',
-    completionDeadline: null,
+    serviceCategory: null,
   })
 })
 
@@ -65,6 +61,14 @@ describe('POST /referrals', () => {
 })
 
 describe('GET /referrals/:id/form', () => {
+  beforeEach(() => {
+    interventionsService.getDraftReferral.mockResolvedValue({
+      id: '1',
+      completionDeadline: null,
+      serviceCategory: null,
+    })
+  })
+
   it('fetches the referral from the interventions service and renders a page with information about the referral', async () => {
     await request(app)
       .get('/referrals/1/form')
@@ -88,6 +92,98 @@ describe('GET /referrals/:id/form', () => {
         .expect(res => {
           expect(res.text).toContain('Failed to get intervention')
         })
+    })
+  })
+})
+
+describe('GET /referrals/:id/completion-deadline', () => {
+  beforeEach(() => {
+    interventionsService.getDraftReferral.mockResolvedValue({
+      id: '1',
+      completionDeadline: null,
+      serviceCategory: { name: 'accommodation' },
+    })
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/completion-deadline')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What date does the accommodation service need to be completed by?')
+      })
+  })
+  // TODO how do we (or indeed, do we) test what happens when the request has a completion deadline - i.e. that the
+  // day/month/year fields are correctly populated? Do we just do it as a presenter test?
+})
+
+describe('POST /referrals/:id/completion-deadline', () => {
+  beforeEach(() => {
+    interventionsService.getDraftReferral.mockResolvedValue({
+      id: '1',
+      completionDeadline: null,
+      serviceCategory: { name: 'accommodation' },
+    })
+  })
+
+  describe('when the user inputs a valid date', () => {
+    it('updates the referral on the backend and redirects to the referral form if the API call succeeds', async () => {
+      interventionsService.patchDraftReferral.mockResolvedValue({
+        id: '1',
+        completionDeadline: '2021-09-15',
+        serviceCategory: { name: 'social inclusion' },
+      })
+
+      await request(app)
+        .post('/referrals/1/completion-deadline')
+        .type('form')
+        .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
+        .expect(302)
+        .expect('Location', '/referrals/1/form')
+
+      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        { completionDeadline: '2021-09-15' },
+      ])
+    })
+
+    it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
+      interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+      await request(app)
+        .post('/referrals/1/completion-deadline')
+        .type('form')
+        .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Backend error message')
+        })
+
+      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        { completionDeadline: '2021-09-15' },
+      ])
+    })
+  })
+
+  describe('when the user inputs an invalid date', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/completion-deadline')
+        .type('form')
+        .send({
+          'completion-deadline-day': '15',
+          'completion-deadline-month': '9',
+          'completion-deadline-year': 'this year',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('The date by which the service needs to be completed must be a real date')
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
     })
   })
 })

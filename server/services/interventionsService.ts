@@ -6,6 +6,11 @@ import HmppsAuthClient from '../data/hmppsAuthClient'
 export interface DraftReferral {
   id: string
   completionDeadline: string | null
+  serviceCategory: ServiceCategory | null
+}
+
+export interface ServiceCategory {
+  name: string
 }
 
 export default class InterventionsService {
