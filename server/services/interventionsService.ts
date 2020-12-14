@@ -1,7 +1,6 @@
 import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
-import HmppsAuthClient from '../data/hmppsAuthClient'
 
 export interface DraftReferral {
   id: string
