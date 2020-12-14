@@ -28,6 +28,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             id: 'ac386c25-52c8-41fa-9213-fcf42e24b0b5',
+            created: '2020-12-07T18:02:01Z',
           }),
           headers: { 'Content-Type': 'application/json' },
         },
@@ -84,6 +85,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 201,
           body: Matchers.like({
             id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            created: '2020-12-07T20:45:21Z',
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -120,6 +122,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: {
             id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            created: '2020-12-07T20:45:21Z',
             completionDeadline: '2021-04-01',
           },
           headers: {

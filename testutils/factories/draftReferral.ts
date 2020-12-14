@@ -17,6 +17,7 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 
 export default DraftReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
+  createdAt: new Date(Date.now()).toISOString(),
   completionDeadline: null,
   serviceCategoryId: null,
   complexityLevelId: null,
