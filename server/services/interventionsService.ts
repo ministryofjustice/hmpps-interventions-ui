@@ -57,4 +57,13 @@ export default class InterventionsService {
       data: patch,
     })) as DraftReferral
   }
+
+  async getComplexityLevels(token: string, serviceCategoryId: string): Promise<ComplexityLevel[]> {
+    const restClient = await this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/service-category/${serviceCategoryId}/complexity-levels`,
+      headers: { Accept: 'application/json' },
+    })) as ComplexityLevel[]
+  }
 }
