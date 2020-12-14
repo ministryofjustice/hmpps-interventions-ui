@@ -7,6 +7,7 @@ import CompletionDeadlineView from './completionDeadlineView'
 import CompletionDeadlineForm, { CompletionDeadlineErrors } from './completionDeadlineForm'
 import ComplexityLevelView from './complexityLevelView'
 import ComplexityLevelPresenter, { ComplexityLevelError } from './complexityLevelPresenter'
+import ComplexityLevelForm from './complexityLevelForm'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -41,6 +42,40 @@ export default class ReferralsController {
     const view = new ComplexityLevelView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async updateComplexityLevel(req: Request, res: Response): Promise<void> {
+    const form = await ComplexityLevelForm.createForm(req)
+
+    let error: ComplexityLevelError | null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+      } catch (e) {
+        error = {
+          message: e.message,
+        }
+      }
+    } else {
+      error = form.error
+    }
+
+    if (!error) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const complexityLevels = await this.interventionsService.getComplexityLevels(
+        res.locals.user.token,
+        referral.serviceCategory.id
+      )
+
+      const presenter = new ComplexityLevelPresenter(referral, complexityLevels, error)
+      const view = new ComplexityLevelView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
   }
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {

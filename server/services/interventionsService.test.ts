@@ -104,7 +104,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('patchDraftReferral', () => {
-    beforeEach(async () => {
+    it('returns the updated referral when setting the completion date', async () => {
       await provider.addInteraction({
         state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
         uponReceiving: 'a PATCH request to update the completion deadline',
@@ -129,14 +129,45 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         },
       })
-    })
 
-    it('returns the updated referral', async () => {
       const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
         completionDeadline: '2021-04-01',
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.completionDeadline).toBe('2021-04-01')
+    })
+
+    it('returns the updated referral when selecting the complexity level', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update the complexity level ID',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer token',
+          },
+          body: { complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.complexityLevelId).toBe('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
     })
   })
 
