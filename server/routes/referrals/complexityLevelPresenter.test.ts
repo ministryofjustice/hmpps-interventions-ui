@@ -62,6 +62,36 @@ describe('ComplexityLevelPresenter', () => {
 
       expect(expectedHints).toEqual(complexityLevelIds)
     })
+
+    describe('when the referral already has a selected complexity level', () => {
+      it('sets checked to true for the referral’s selected complexity level', () => {
+        draftReferral.complexityLevelId = '110f2405-d944-4c15-836c-0c6684e2aa78'
+        const presenter = new ComplexityLevelPresenter(draftReferral, socialInclusionComplexityLevels)
+
+        expect(presenter.complexityDescriptions.map(description => description.checked)).toEqual([false, true, false])
+      })
+    })
+
+    describe('when there is user input data', () => {
+      it('sets checked to true for the complexity level that the user chose', () => {
+        const presenter = new ComplexityLevelPresenter(draftReferral, socialInclusionComplexityLevels, null, {
+          'complexity-level': '110f2405-d944-4c15-836c-0c6684e2aa78',
+        })
+
+        expect(presenter.complexityDescriptions.map(description => description.checked)).toEqual([false, true, false])
+      })
+    })
+
+    describe('when the referral already has a selected complexity level and there is user input data', () => {
+      it('sets checked to true for the complexity level that the user chose', () => {
+        draftReferral.complexityLevelId = 'd0db50b0-4a50-4fc7-a006-9c97530e38b2'
+        const presenter = new ComplexityLevelPresenter(draftReferral, socialInclusionComplexityLevels, null, {
+          'complexity-level': '110f2405-d944-4c15-836c-0c6684e2aa78',
+        })
+
+        expect(presenter.complexityDescriptions.map(description => description.checked)).toEqual([false, true, false])
+      })
+    })
   })
 
   describe('title', () => {

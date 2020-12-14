@@ -70,7 +70,7 @@ export default class ReferralsController {
         referral.serviceCategory.id
       )
 
-      const presenter = new ComplexityLevelPresenter(referral, complexityLevels, error)
+      const presenter = new ComplexityLevelPresenter(referral, complexityLevels, error, req.body)
       const view = new ComplexityLevelView(presenter)
 
       res.status(400)
