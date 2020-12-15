@@ -1,16 +1,11 @@
 import { DraftReferral } from '../../services/interventionsService'
 import ComplexityLevelPresenter from './complexityLevelPresenter'
+import draftReferralFactory from '../../../testutils/factories/draftReferral'
 
 describe('ComplexityLevelPresenter', () => {
-  const draftReferral: DraftReferral = {
-    id: '1',
-    completionDeadline: null,
-    serviceCategory: {
-      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      name: 'social inclusion',
-    },
-    complexityLevelId: null,
-  }
+  const draftReferral = draftReferralFactory
+    .serviceCategorySelected()
+    .build({ serviceCategory: { name: 'social inclusion' } })
 
   const socialInclusionComplexityLevels = [
     {
