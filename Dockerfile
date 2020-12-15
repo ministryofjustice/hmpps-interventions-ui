@@ -7,18 +7,20 @@ WORKDIR /app
 ADD . .
 RUN ./gradlew clean assemble -Dorg.gradle.daemon=false
 
-FROM openjdk:11-slim
+FROM adoptopenjdk/openjdk11:alpine-jre
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-RUN apt-get update && \
-    apt-get install -y curl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk upgrade --no-cache && \
+    apk add --no-cache \
+      curl \
+      tzdata
 
 ENV TZ=Europe/London
 RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
 
 RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser --gid 2000
+    adduser --uid 2000 --system appuser && \
+    adduser appuser appgroup
 
 WORKDIR /app
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/hmpps-interventions-service*.jar /app/app.jar
