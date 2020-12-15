@@ -429,3 +429,120 @@ describe('POST /referrals/:id/desired-outcomes', () => {
     ])
   })
 })
+
+describe('GET /referrals/:id/needs-and-requirements', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/needs-and-requirements')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Geoffrey’s needs and requirements')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/needs-and-requirements')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/needs-and-requirements', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the referral on the backend and redirects to the referral form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
+      accessibilityNeeds: 'He uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'He works on Fridays 7am - midday',
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/needs-and-requirements')
+      .type('form')
+      .send({
+        'additional-needs-information': 'Alex is currently sleeping on his aunt’s sofa',
+        'accessibility-needs': 'He uses a wheelchair',
+        'needs-interpreter': 'yes',
+        'interpreter-language': 'Spanish',
+        'has-additional-responsibilities': 'yes',
+        'when-unavailable': 'He works on Fridays 7am - midday',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
+        accessibilityNeeds: 'He uses a wheelchair',
+        needsInterpreter: true,
+        interpreterLanguage: 'Spanish',
+        hasAdditionalResponsibilities: true,
+        whenUnavailable: 'He works on Fridays 7am - midday',
+      },
+    ])
+  })
+
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/needs-and-requirements')
+        .type('form')
+        .send({
+          'needs-interpreter': 'yes',
+          'interpreter-language': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter the language for which Geoffrey needs an interpreter')
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
+  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+    await request(app)
+      .post('/referrals/1/needs-and-requirements')
+      .type('form')
+      .send({
+        'additional-needs-information': 'Alex is currently sleeping on his aunt’s sofa',
+        'accessibility-needs': 'He uses a wheelchair',
+        'needs-interpreter': 'yes',
+        'interpreter-language': 'Spanish',
+        'has-additional-responsibilities': 'yes',
+        'when-unavailable': 'He works on Fridays 7am - midday',
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.text).toContain('Backend error message')
+      })
+  })
+})

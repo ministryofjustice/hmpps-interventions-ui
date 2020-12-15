@@ -39,6 +39,8 @@ export default function routes(router: Router, services: Services): Router {
   post('/referrals/:id/further-information', (req, res) => referralsController.updateFurtherInformation(req, res))
   get('/referrals/:id/desired-outcomes', (req, res) => referralsController.viewDesiredOutcomes(req, res))
   post('/referrals/:id/desired-outcomes', (req, res) => referralsController.updateDesiredOutcomes(req, res))
+  get('/referrals/:id/needs-and-requirements', (req, res) => referralsController.viewNeedsAndRequirements(req, res))
+  post('/referrals/:id/needs-and-requirements', (req, res) => referralsController.updateNeedsAndRequirements(req, res))
 
   return router
 }
