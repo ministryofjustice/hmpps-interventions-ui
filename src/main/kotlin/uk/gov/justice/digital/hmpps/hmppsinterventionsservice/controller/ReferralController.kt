@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
@@ -56,5 +57,10 @@ class ReferralController(private val referralService: ReferralService) {
         ResponseEntity.ok(DraftReferral(it))
       }
       ?: ResponseEntity.notFound().build()
+  }
+
+  @GetMapping("/draft-referrals")
+  fun getDraftReferralsCreatedByUserID(@RequestParam userID: String): List<DraftReferral> {
+    return referralService.getDraftReferralsCreatedByUserID(userID)
   }
 }

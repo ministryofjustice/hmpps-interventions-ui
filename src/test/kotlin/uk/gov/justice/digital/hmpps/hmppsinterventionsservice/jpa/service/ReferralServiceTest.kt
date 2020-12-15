@@ -111,4 +111,24 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(savedDraftReferral.created).isEqualTo(referral.created)
     assertThat(savedDraftReferral.completionDeadline).isEqualTo(referral.completionDeadline)
   }
+
+  @Test
+  fun `find by userID returns list of draft referrals`() {
+    val referrals = listOf(
+      Referral(createdByUserID = "123"),
+      Referral(createdByUserID = "123"),
+      Referral(createdByUserID = "456"),
+    )
+    referrals.forEach { entityManager.persist(it) }
+    entityManager.flush()
+
+    val single = referralService.getDraftReferralsCreatedByUserID("456")
+    assertThat(single).hasSize(1)
+
+    val multiple = referralService.getDraftReferralsCreatedByUserID("123")
+    assertThat(multiple).hasSize(2)
+
+    val none = referralService.getDraftReferralsCreatedByUserID("789")
+    assertThat(none).hasSize(0)
+  }
 }

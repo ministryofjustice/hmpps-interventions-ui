@@ -25,24 +25,4 @@ class ReferralRepositoryTest @Autowired constructor(
     val found = referralRepository.findByIdOrNull(referrals[0].id!!)
     Assertions.assertThat(found).isEqualTo(referrals[0])
   }
-
-  @Test
-  fun `when findByCreatedByUserID then return list of referrals`() {
-    val referrals = listOf(
-      Referral(createdByUserID = "123"),
-      Referral(createdByUserID = "123"),
-      Referral(createdByUserID = "456"),
-    )
-    referrals.forEach { entityManager.persist(it) }
-    entityManager.flush()
-
-    val single = referralRepository.findByCreatedByUserID("456")
-    Assertions.assertThat(single).hasSize(1)
-
-    val multiple = referralRepository.findByCreatedByUserID("123")
-    Assertions.assertThat(multiple).hasSize(2)
-
-    val none = referralRepository.findByCreatedByUserID("789")
-    Assertions.assertThat(none).hasSize(0)
-  }
 }
