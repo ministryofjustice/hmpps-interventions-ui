@@ -1,16 +1,23 @@
 import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
-import HmppsAuthClient from '../data/hmppsAuthClient'
 
 export interface DraftReferral {
   id: string
   completionDeadline: string | null
   serviceCategory: ServiceCategory | null
+  complexityLevelId: string | null
 }
 
 export interface ServiceCategory {
+  id: string
   name: string
+}
+
+export interface ComplexityLevel {
+  id: string
+  title: string
+  description: string
 }
 
 export default class InterventionsService {
@@ -48,5 +55,14 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
       data: patch,
     })) as DraftReferral
+  }
+
+  async getComplexityLevels(token: string, serviceCategoryId: string): Promise<ComplexityLevel[]> {
+    const restClient = await this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/service-category/${serviceCategoryId}/complexity-levels`,
+      headers: { Accept: 'application/json' },
+    })) as ComplexityLevel[]
   }
 }
