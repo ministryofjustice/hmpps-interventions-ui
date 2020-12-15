@@ -10,6 +10,7 @@ import javax.persistence.Id
 
 @Entity
 data class Referral(
+  var createdByUserID: String? = null,
   var completionDeadline: LocalDate? = null,
   @CreationTimestamp var created: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,
