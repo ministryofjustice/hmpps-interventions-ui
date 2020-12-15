@@ -1,0 +1,47 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      {{ govukSummaryList(summaryListArgs) }}
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {{ govukTextarea(additionalNeedsInformationTextareaArgs) }}
+        {{ govukTextarea(accessibilityNeedsTextareaArgs) }}
+
+        {% set interpreterLanguageHtml %}
+        {{ govukInput(interpreterLanguageInputArgs) }}
+        {% endset -%}
+        {{ govukRadios(interpreterRadiosArgs(interpreterLanguageHtml)) }}
+
+        {% set whenUnavailableHtml %}
+        {{ govukInput(whenUnavailableInputArgs) }}
+        {% endset -%}
+        {{ govukRadios(responsibilitiesRadiosArgs(whenUnavailableHtml)) }}
+
+        {{ govukButton({ text: "Save and continue" }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
