@@ -3,6 +3,7 @@ import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import appWithAllRoutes from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 
 jest.mock('../../services/interventionsService')
 
@@ -93,8 +94,11 @@ describe('GET /referrals/:id/form', () => {
 
 describe('GET /referrals/:id/completion-deadline', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory.serviceCategorySelected().build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
   it('renders a form page', async () => {
@@ -111,13 +115,20 @@ describe('GET /referrals/:id/completion-deadline', () => {
 
 describe('POST /referrals/:id/completion-deadline', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory.serviceCategorySelected().build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
   describe('when the user inputs a valid date', () => {
     it('updates the referral on the backend and redirects to the referral form if the API call succeeds', async () => {
-      const referral = draftReferralFactory.serviceCategorySelected().build({ completionDeadline: '2021-09-15' })
+      const serviceCategory = serviceCategoryFactory.build()
+      const referral = draftReferralFactory
+        .serviceCategorySelected(serviceCategory.id)
+        .build({ completionDeadline: '2021-09-15' })
+
       interventionsService.patchDraftReferral.mockResolvedValue(referral)
 
       await request(app)
@@ -176,15 +187,14 @@ describe('POST /referrals/:id/completion-deadline', () => {
 
 describe('GET /referrals/:id/complexity-level', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory
-      .serviceCategorySelected()
-      .build({ serviceCategory: { id: 'b33c19d1-7414-4014-b543-e543e59c5b39', name: 'accommodation' } })
+    const serviceCategory = serviceCategoryFactory.build({ id: 'b33c19d1-7414-4014-b543-e543e59c5b39' })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
   it('renders a form page', async () => {
-    interventionsService.getComplexityLevels.mockResolvedValue([])
-
     await request(app)
       .get('/referrals/1/complexity-level')
       .expect(200)
@@ -192,49 +202,31 @@ describe('GET /referrals/:id/complexity-level', () => {
         expect(res.text).toContain('What is the complexity level for the accommodation service?')
       })
 
-    expect(interventionsService.getComplexityLevels.mock.calls[0]).toEqual([
+    expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
       'token',
       'b33c19d1-7414-4014-b543-e543e59c5b39',
     ])
   })
 
   it('renders an error when the get complexity levels call fails', async () => {
-    interventionsService.getComplexityLevels.mockRejectedValue(new Error('Failed to get complexity levels'))
+    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
 
     await request(app)
       .get('/referrals/1/complexity-level')
       .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Failed to get complexity levels')
+        expect(res.text).toContain('Failed to get service category')
       })
   })
 })
 
 describe('POST /referrals/:id/complexity-level', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory.serviceCategorySelected().build()
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
 
-    interventionsService.getComplexityLevels.mockResolvedValue([
-      {
-        id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-        title: 'Low complexity',
-        description:
-          'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
-      },
-      {
-        id: '110f2405-d944-4c15-836c-0c6684e2aa78',
-        title: 'Medium complexity',
-        description:
-          'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
-      },
-      {
-        id: 'c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6',
-        title: 'High complexity',
-        description:
-          'Service User is homeless or in temporary/unstable accommodation, or will be on release from prison. Service User has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
-      },
-    ])
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
   it('updates the referral on the backend and redirects to the referral form', async () => {

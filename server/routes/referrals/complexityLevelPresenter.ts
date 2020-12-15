@@ -1,4 +1,4 @@
-import { ComplexityLevel, DraftReferral } from '../../services/interventionsService'
+import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 
 export interface ComplexityLevelError {
   message: string
@@ -7,7 +7,7 @@ export interface ComplexityLevelError {
 export default class ComplexityLevelPresenter {
   constructor(
     private readonly referral: DraftReferral,
-    private readonly complexityLevels: ComplexityLevel[],
+    private readonly serviceCategory: ServiceCategory,
     readonly error?: ComplexityLevelError | null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -17,7 +17,7 @@ export default class ComplexityLevelPresenter {
     value: string
     hint: string
     checked: boolean
-  }[] = this.complexityLevels.map(complexityLevel => {
+  }[] = this.serviceCategory.complexityLevels.map(complexityLevel => {
     return {
       title: complexityLevel.title,
       value: complexityLevel.id,
@@ -30,5 +30,5 @@ export default class ComplexityLevelPresenter {
     return this.userInputData ? this.userInputData['complexity-level'] : this.referral.complexityLevelId
   }
 
-  readonly title = `What is the complexity level for the ${this.referral.serviceCategory.name} service?`
+  readonly title = `What is the complexity level for the ${this.serviceCategory.name} service?`
 }

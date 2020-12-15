@@ -1,14 +1,13 @@
 import { Factory } from 'fishery'
 import { DraftReferral } from '../../server/services/interventionsService'
-import serviceCategoryFactory from './serviceCategory'
 
 class DraftReferralFactory extends Factory<DraftReferral> {
   justCreated() {
     return this
   }
 
-  serviceCategorySelected() {
-    return this.params({ serviceCategory: serviceCategoryFactory.build() })
+  serviceCategorySelected(serviceCategoryId: string) {
+    return this.params({ serviceCategoryId })
   }
 
   completionDeadlineSet() {
@@ -19,6 +18,6 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 export default DraftReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   completionDeadline: null,
-  serviceCategory: null,
+  serviceCategoryId: null,
   complexityLevelId: null,
 }))

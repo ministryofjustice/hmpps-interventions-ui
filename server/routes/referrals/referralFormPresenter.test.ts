@@ -1,5 +1,6 @@
 import ReferralFormPresenter, { ReferralFormStatus } from './referralFormPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 
 describe('ReferralFormPresenter', () => {
   describe('sections', () => {
@@ -7,7 +8,8 @@ describe('ReferralFormPresenter', () => {
     // as the task list starts to handle different referral states.
 
     it('returns an array of section presenters', () => {
-      const referral = draftReferralFactory.serviceCategorySelected().completionDeadlineSet().build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).completionDeadlineSet().build()
       const presenter = new ReferralFormPresenter(referral)
 
       const expected = [
