@@ -32,7 +32,7 @@ class ResourceServerConfiguration : BasicResourceServerConfiguration() {
     http
       .authorizeRequests {
         it.antMatchers("/health/**", "/info", "/test/**").permitAll()
-        it.anyRequest().hasAuthority("ROLE_INTERVENTIONS")
+        it.anyRequest().authenticated()
       }
       .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
   }
