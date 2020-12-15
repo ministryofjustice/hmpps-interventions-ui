@@ -94,7 +94,10 @@
         "functions": "never"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts"] }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "testutils/factories/*.ts"] }
+    ],
     "prettier/prettier": [
       "error",
       {
