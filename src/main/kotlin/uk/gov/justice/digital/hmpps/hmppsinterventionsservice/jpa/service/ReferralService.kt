@@ -1,11 +1,30 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
 
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import java.util.UUID
 
-object ReferralService {
-  fun updateReferral(original: Referral, update: DraftReferral): Referral {
-    update.completionDeadline?.let { original.completionDeadline = it }
-    return original
+@Service
+class ReferralService(val repository: ReferralRepository) {
+
+  fun createDraftReferral(): Referral {
+    return repository.save(Referral())
+  }
+
+  fun getDraftReferral(id: UUID): Referral? {
+    return repository.findByIdOrNull(id)
+  }
+
+  fun updateDraftReferral(id: UUID, update: DraftReferral): Referral? {
+    val ref = getDraftReferral(id) ?: return null
+
+    update.completionDeadline?.let {
+      ref.completionDeadline = update.completionDeadline
+      return repository.save(ref)
+    }
+    return ref
   }
 }

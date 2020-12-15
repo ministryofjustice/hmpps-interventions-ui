@@ -1,57 +1,112 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
-
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 
-class ReferralServiceTest {
-  private fun newOriginal(): Referral {
-    return Referral(
-      id = UUID.fromString("3529d30e-3480-4686-b14b-485beb3431ed"),
-      created = OffsetDateTime.parse("2021-05-05T13:00:01+01:00"),
-      // 👇 business fields
-      completionDeadline = LocalDate.parse("2021-06-26")
-    )
-  }
+@DataJpaTest
+class ReferralServiceTest @Autowired constructor(
+  val entityManager: TestEntityManager,
+  val referralRepository: ReferralRepository
+) {
+
+  private val referralService = ReferralService(referralRepository)
 
   @Test
   fun `update cannot overwrite identifier fields`() {
-    val update = DraftReferral(
+    val referral = Referral()
+    entityManager.persist(referral)
+    entityManager.flush()
+
+    val draftReferral = DraftReferral(
       id = UUID.fromString("ce364949-7301-497b-894d-130f34a98bff"),
-      created = OffsetDateTime.parse("2020-12-01T00:00:00+00:00")
+      created = OffsetDateTime.of(LocalDate.of(2020, 12, 1), LocalTime.MIN, ZoneOffset.UTC)
     )
 
-    val updated = ReferralService.updateReferral(newOriginal(), update)
-    assertThat(updated.id).isEqualTo(UUID.fromString("3529d30e-3480-4686-b14b-485beb3431ed"))
-    assertThat(updated.created).isEqualTo(OffsetDateTime.parse("2021-05-05T13:00:01+01:00"))
+    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    assertThat(updated!!.id).isEqualTo(referral.id!!)
+    assertThat(updated.created).isEqualTo(referral.created)
   }
 
   @Test
   fun `null fields in the update do not overwrite original fields`() {
-    val update = DraftReferral(completionDeadline = null)
+    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    entityManager.persist(referral)
+    entityManager.flush()
 
-    val updated = ReferralService.updateReferral(newOriginal(), update)
-    assertThat(updated.completionDeadline).isEqualTo(LocalDate.parse("2021-06-26"))
+    val draftReferral = DraftReferral(completionDeadline = null)
+
+    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    assertThat(updated!!.completionDeadline).isEqualTo(LocalDate.of(2021, 6, 26))
   }
 
   @Test
   fun `non-null fields in the update overwrite original fields`() {
-    val update = DraftReferral(completionDeadline = LocalDate.parse("2020-12-01"))
+    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    entityManager.persist(referral)
+    entityManager.flush()
 
-    val updated = ReferralService.updateReferral(newOriginal(), update)
-    assertThat(updated.completionDeadline).isEqualTo(LocalDate.parse("2020-12-01"))
+    val draftReferral = DraftReferral(completionDeadline = LocalDate.of(2020, 12, 1))
+
+    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    assertThat(updated!!.completionDeadline).isEqualTo(LocalDate.of(2020, 12, 1))
   }
 
   @Test
   fun `update mutates the original object`() {
-    val original = newOriginal()
-    val update = DraftReferral(completionDeadline = LocalDate.parse("2020-12-01"))
+    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    entityManager.persist(referral)
+    entityManager.flush()
 
-    ReferralService.updateReferral(original, update)
-    assertThat(original.completionDeadline).isEqualTo(LocalDate.parse("2020-12-01"))
+    val draftReferral = DraftReferral(completionDeadline = LocalDate.of(2020, 12, 1))
+
+    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    assertThat(updated!!.completionDeadline).isEqualTo(LocalDate.of(2020, 12, 1))
+  }
+
+  @Test
+  fun `update successfully persists the updated draft referral`() {
+    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    entityManager.persist(referral)
+    entityManager.flush()
+
+    val draftReferral = DraftReferral(completionDeadline = LocalDate.of(2020, 12, 1))
+    referralService.updateDraftReferral(referral.id!!, draftReferral)
+
+    val savedDraftReferral = referralService.getDraftReferral(referral.id!!)
+    assertThat(savedDraftReferral!!.id).isEqualTo(referral.id)
+    assertThat(savedDraftReferral.created).isEqualTo(referral.created)
+    assertThat(savedDraftReferral.completionDeadline).isEqualTo(draftReferral.completionDeadline)
+  }
+
+  @Test
+  fun `create and persist draft referral`() {
+    val draftReferral = referralService.createDraftReferral()
+    entityManager.flush()
+
+    val savedDraftReferral = referralService.getDraftReferral(draftReferral.id!!)
+    assertThat(savedDraftReferral!!.id).isNotNull
+    assertThat(savedDraftReferral!!.created).isNotNull
+  }
+
+  @Test
+  fun `get a draft referral`() {
+    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    entityManager.persist(referral)
+    entityManager.flush()
+
+    val savedDraftReferral = referralService.getDraftReferral(referral.id!!)
+    assertThat(savedDraftReferral!!.id).isEqualTo(referral.id)
+    assertThat(savedDraftReferral.created).isEqualTo(referral.created)
+    assertThat(savedDraftReferral.completionDeadline).isEqualTo(referral.completionDeadline)
   }
 }
