@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles
 @PactBroker(
   host = "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk",
   scheme = "https",
-  consumerVersionSelectors = [VersionSelector(tag = "main")],
+  consumerVersionSelectors = [VersionSelector(tag = "last-implemented")],
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test", "local")
