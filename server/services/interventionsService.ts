@@ -10,6 +10,12 @@ export interface DraftReferral {
   complexityLevelId: string | null
   furtherInformation: string | null
   desiredOutcomesIds: string[] | null
+  additionalNeedsInformation: string | null
+  accessibilityNeeds: string | null
+  needsInterpreter: boolean | null
+  interpreterLanguage: string | null
+  hasAdditionalResponsibilities: boolean | null
+  whenUnavailable: string | null
 }
 
 export interface ServiceCategory {

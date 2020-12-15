@@ -279,6 +279,189 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '5352cfb6-c9ee-468c-b539-434a3e9b506e',
       ])
     })
+
+    it('returns the updated referral when setting additionalNeedsInformation and accessibilityNeeds', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to set additionalNeedsInformation and accessibilityNeeds',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            accessibilityNeeds: 'She uses a wheelchair',
+            additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            accessibilityNeeds: 'She uses a wheelchair',
+            additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        accessibilityNeeds: 'She uses a wheelchair',
+        additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.accessibilityNeeds).toBe('She uses a wheelchair')
+      expect(referral.additionalNeedsInformation).toBe('Alex is currently sleeping on her aunt’s sofa')
+    })
+
+    it('returns the updated referral when setting needsInterpreter to true', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to set needsInterpreter to true',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { needsInterpreter: true, interpreterLanguage: 'Spanish' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            needsInterpreter: true,
+            interpreterLanguage: 'Spanish',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        needsInterpreter: true,
+        interpreterLanguage: 'Spanish',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.needsInterpreter).toBe(true)
+      expect(referral.interpreterLanguage).toEqual('Spanish')
+    })
+
+    it('returns the updated referral when setting needsInterpreter to false', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to set needsInterpreter to false',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { needsInterpreter: false, interpreterLanguage: null },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            needsInterpreter: false,
+            interpreterLanguage: null,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        needsInterpreter: false,
+        interpreterLanguage: null,
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.needsInterpreter).toBe(false)
+      expect(referral.interpreterLanguage).toBeNull()
+    })
+
+    it('returns the updated referral when setting hasAdditionalResponsibilities to true', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to set hasAdditionalResponsibilities to true',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { hasAdditionalResponsibilities: true, whenUnavailable: 'She works Mondays 9am - midday' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            hasAdditionalResponsibilities: true,
+            whenUnavailable: 'She works Mondays 9am - midday',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        hasAdditionalResponsibilities: true,
+        whenUnavailable: 'She works Mondays 9am - midday',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.hasAdditionalResponsibilities).toBe(true)
+      expect(referral.whenUnavailable).toEqual('She works Mondays 9am - midday')
+    })
+
+    it('returns the updated referral when setting hasAdditionalResponsibilities to false', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to set hasAdditionalResponsibilities to false',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { hasAdditionalResponsibilities: false, whenUnavailable: null },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            hasAdditionalResponsibilities: false,
+            whenUnavailable: null,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        hasAdditionalResponsibilities: false,
+        whenUnavailable: null,
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.hasAdditionalResponsibilities).toBe(false)
+      expect(referral.whenUnavailable).toBeNull()
+    })
   })
 
   describe('getServiceCategory', () => {
