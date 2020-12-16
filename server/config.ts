@@ -17,11 +17,11 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 const requiredInProduction = { requireInProduction: true }
 
 export class AgentConfig {
-  maxSockets: 100
+  maxSockets = 100
 
-  maxFreeSockets: 10
+  maxFreeSockets = 10
 
-  freeSocketTimeout: 30000
+  freeSocketTimeout = 30000
 }
 
 export interface ApiConfig {
