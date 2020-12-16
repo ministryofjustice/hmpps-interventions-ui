@@ -2,7 +2,9 @@ import { Request, Response } from 'express'
 import CommunityApiService from '../services/communityApiService'
 
 // fixme: this is just sample code to validate secure API access
-export default function IntegrationSamplesRoutes(communityApiService: CommunityApiService) {
+export default function IntegrationSamplesRoutes(
+  communityApiService: CommunityApiService
+): { viewDeliusUserSample: (req: Request, res: Response) => Promise<void> } {
   return {
     viewDeliusUserSample: async (req: Request, res: Response) => {
       const deliusUser = await communityApiService.getUserByUsername(req.query.username as string)

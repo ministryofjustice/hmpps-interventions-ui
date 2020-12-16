@@ -6,7 +6,7 @@ export = class MockCommunityApiService extends CommunityApiService {
     super(new MockedHmppsAuthClient())
   }
 
-  async getUserByUsername(username: string): Promise<DeliusUser> {
+  async getUserByUsername(_username: string): Promise<DeliusUser> {
     return {
       userId: '987123876',
       username: 'maijam',
