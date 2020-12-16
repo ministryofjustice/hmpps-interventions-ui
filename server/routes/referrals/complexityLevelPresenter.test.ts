@@ -48,7 +48,7 @@ describe('ComplexityLevelPresenter', () => {
     describe('when there is user input data', () => {
       it('sets checked to true for the complexity level that the user chose', () => {
         const presenter = new ComplexityLevelPresenter(draftReferral, serviceCategory, null, {
-          'complexity-level': serviceCategory.complexityLevels[1].id,
+          'complexity-level-id': serviceCategory.complexityLevels[1].id,
         })
 
         expect(presenter.complexityDescriptions.map(description => description.checked)).toEqual([false, true, false])
@@ -59,7 +59,7 @@ describe('ComplexityLevelPresenter', () => {
       it('sets checked to true for the complexity level that the user chose', () => {
         draftReferral.complexityLevelId = serviceCategory.complexityLevels[0].id
         const presenter = new ComplexityLevelPresenter(draftReferral, serviceCategory, null, {
-          'complexity-level': serviceCategory.complexityLevels[1].id,
+          'complexity-level-id': serviceCategory.complexityLevels[1].id,
         })
 
         expect(presenter.complexityDescriptions.map(description => description.checked)).toEqual([false, true, false])

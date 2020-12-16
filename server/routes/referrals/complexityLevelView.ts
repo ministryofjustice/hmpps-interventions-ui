@@ -9,7 +9,7 @@ export default class ComplexityLevelView {
     return {
       classes: 'govuk-radios',
       idPrefix: 'complexity-level',
-      name: 'complexity-level',
+      name: 'complexity-level-id',
       fieldset: {
         legend: {
           text: this.presenter.title,
