@@ -16,7 +16,8 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "noImplicitAny": true,
-    "strictBindCallApply": true
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true
   },
   "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist"],
   "include": ["**/*.js", "**/*.ts"]
