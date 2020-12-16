@@ -33,12 +33,12 @@ export default class ReferralsController {
 
   async viewComplexityLevel(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
-    const complexityLevels = await this.interventionsService.getComplexityLevels(
+    const serviceCategory = await this.interventionsService.getServiceCategory(
       res.locals.user.token,
-      referral.serviceCategory.id
+      referral.serviceCategoryId
     )
 
-    const presenter = new ComplexityLevelPresenter(referral, complexityLevels)
+    const presenter = new ComplexityLevelPresenter(referral, serviceCategory)
     const view = new ComplexityLevelView(presenter)
 
     res.render(...view.renderArgs)
@@ -65,12 +65,12 @@ export default class ReferralsController {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
-      const complexityLevels = await this.interventionsService.getComplexityLevels(
+      const serviceCategory = await this.interventionsService.getServiceCategory(
         res.locals.user.token,
-        referral.serviceCategory.id
+        referral.serviceCategoryId
       )
 
-      const presenter = new ComplexityLevelPresenter(referral, complexityLevels, error, req.body)
+      const presenter = new ComplexityLevelPresenter(referral, serviceCategory, error, req.body)
       const view = new ComplexityLevelView(presenter)
 
       res.status(400)
@@ -80,8 +80,13 @@ export default class ReferralsController {
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
 
-    const presenter = new CompletionDeadlinePresenter(referral)
+    const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
+
     const view = new CompletionDeadlineView(presenter)
 
     res.render(...view.renderArgs)
@@ -111,8 +116,12 @@ export default class ReferralsController {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const serviceCategory = await this.interventionsService.getServiceCategory(
+        res.locals.user.token,
+        referral.serviceCategoryId
+      )
 
-      const presenter = new CompletionDeadlinePresenter(referral, errors, req.body)
+      const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, errors, req.body)
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)

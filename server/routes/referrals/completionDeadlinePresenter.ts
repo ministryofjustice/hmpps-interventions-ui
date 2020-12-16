@@ -1,4 +1,4 @@
-import { DraftReferral } from '../../services/interventionsService'
+import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 import { CompletionDeadlineErrors } from './completionDeadlineForm'
 import CalendarDay from '../../utils/calendarDay'
 
@@ -15,17 +15,20 @@ export default class CompletionDeadlinePresenter {
 
   readonly errorSummary: CompletionDeadlineErrorSummaryPresenter | null
 
-  readonly title = `What date does the ${this.referral.serviceCategory.name} service need to be completed by?`
+  readonly title = `What date does the ${this.serviceCategory.name} service need to be completed by?`
 
   readonly hint = 'For example, 27 10 2021'
 
   constructor(
     private readonly referral: DraftReferral,
+    private readonly serviceCategory: ServiceCategory,
     errors: CompletionDeadlineErrors | null = null,
     userInputData: Record<string, unknown> | null = null
   ) {
     if (!userInputData) {
-      const calendarDay = referral.completionDeadline ? CalendarDay.parseIso8601(referral.completionDeadline) : null
+      const calendarDay = referral.completionDeadline
+        ? CalendarDay.parseIso8601(this.referral.completionDeadline)
+        : null
 
       if (!calendarDay) {
         this.day = ''

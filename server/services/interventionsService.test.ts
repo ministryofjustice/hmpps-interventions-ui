@@ -52,21 +52,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             status: 200,
             body: Matchers.like({
               id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-              serviceCategory: {
-                id: '428ee70f-3001-4399-95a6-ad25eaaede16',
-                name: 'accommodation',
-              },
+              serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+              complexityLevelId: null,
             }),
             headers: { 'Content-Type': 'application/json' },
           },
         })
       })
 
-      it('returns a referral for the given ID, with the service category fields populated', async () => {
+      it('returns a referral for the given ID, with the service category id field populated', async () => {
         const referral = await interventionsService.getDraftReferral('token', 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-        expect(referral.serviceCategory).toEqual({ id: '428ee70f-3001-4399-95a6-ad25eaaede16', name: 'accommodation' })
+        expect(referral.serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
       })
     })
   })
@@ -171,14 +169,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getComplexityLevels', () => {
+  describe('getServiceCategory', () => {
     beforeEach(async () => {
       await provider.addInteraction({
         state: 'a service category with ID 428ee70f-3001-4399-95a6-ad25eaaede16 exists',
-        uponReceiving: 'a GET request to fetch the service category’s complexity levels',
+        uponReceiving: 'a GET request to fetch the service category',
         withRequest: {
           method: 'GET',
-          path: '/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-levels',
+          path: '/service-category/428ee70f-3001-4399-95a6-ad25eaaede16',
           headers: {
             Accept: 'application/json',
             Authorization: 'Bearer token',
@@ -186,26 +184,30 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like([
-            {
-              id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-              title: 'Low complexity',
-              description:
-                'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
-            },
-            {
-              id: '110f2405-d944-4c15-836c-0c6684e2aa78',
-              title: 'Medium complexity',
-              description:
-                'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
-            },
-            {
-              id: 'c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6',
-              title: 'High complexity',
-              description:
-                'Service User is homeless or in temporary/unstable accommodation, or will be on release from prison. Service User has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
-            },
-          ]),
+          body: Matchers.like({
+            id: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            name: 'accommodation',
+            complexityLevels: [
+              {
+                id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+                title: 'Low complexity',
+                description:
+                  'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+              },
+              {
+                id: '110f2405-d944-4c15-836c-0c6684e2aa78',
+                title: 'Medium complexity',
+                description:
+                  'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
+              },
+              {
+                id: 'c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6',
+                title: 'High complexity',
+                description:
+                  'Service User is homeless or in temporary/unstable accommodation, or will be on release from prison. Service User has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
+              },
+            ],
+          }),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -213,13 +215,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
-    it('returns a list of complexity levels', async () => {
-      const complexityLevels = await interventionsService.getComplexityLevels(
+    it('returns a service category', async () => {
+      const serviceCategory = await interventionsService.getServiceCategory(
         'token',
         '428ee70f-3001-4399-95a6-ad25eaaede16'
       )
 
-      expect(complexityLevels).toEqual([
+      expect(serviceCategory.id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(serviceCategory.name).toEqual('accommodation')
+      expect(serviceCategory.complexityLevels).toEqual([
         {
           id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
           title: 'Low complexity',

@@ -5,13 +5,14 @@ import { ApiConfig } from '../config'
 export interface DraftReferral {
   id: string
   completionDeadline: string | null
-  serviceCategory: ServiceCategory | null
+  serviceCategoryId: string | null
   complexityLevelId: string | null
 }
 
 export interface ServiceCategory {
   id: string
   name: string
+  complexityLevels: ComplexityLevel[]
 }
 
 export interface ComplexityLevel {
@@ -57,12 +58,12 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
-  async getComplexityLevels(token: string, serviceCategoryId: string): Promise<ComplexityLevel[]> {
-    const restClient = await this.createRestClient(token)
+  async getServiceCategory(token: string, serviceCategoryId: string): Promise<ServiceCategory> {
+    const restClient = this.createRestClient(token)
 
     return (await restClient.get({
-      path: `/service-category/${serviceCategoryId}/complexity-levels`,
+      path: `/service-category/${serviceCategoryId}`,
       headers: { Accept: 'application/json' },
-    })) as ComplexityLevel[]
+    })) as ServiceCategory
   }
 }
