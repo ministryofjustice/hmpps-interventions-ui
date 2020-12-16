@@ -1,0 +1,24 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {{ govukCheckboxes(checkboxArgs) }}
+
+        {{ govukButton({ text: "Save and continue" }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

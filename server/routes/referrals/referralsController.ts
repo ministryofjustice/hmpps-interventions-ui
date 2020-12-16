@@ -10,6 +10,8 @@ import ComplexityLevelPresenter, { ComplexityLevelError } from './complexityLeve
 import ComplexityLevelForm from './complexityLevelForm'
 import FurtherInformationPresenter, { FurtherInformationError } from './furtherInformationPresenter'
 import FurtherInformationView from './furtherInformationView'
+import DesiredOutcomesPresenter from './desiredOutcomesPresenter'
+import DesiredOutcomesView from './desiredOutcomesView'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -205,5 +207,23 @@ export default class ReferralsController {
       res.status(400)
       res.render(...view.renderArgs)
     }
+  }
+
+  async viewDesiredOutcomes(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (!referral.serviceCategoryId) {
+      throw new Error('Attempting to view desired outcomes without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new DesiredOutcomesPresenter(serviceCategory)
+    const view = new DesiredOutcomesView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

@@ -327,3 +327,41 @@ describe('POST /referrals/:id/further-information', () => {
     ])
   })
 })
+
+describe('GET /referrals/:id/desired-outcomes', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/desired-outcomes')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What are the desired outcomes for the social inclusion service?')
+      })
+
+    expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
+      'token',
+      'b33c19d1-7414-4014-b543-e543e59c5b39',
+    ])
+  })
+
+  it('renders an error when the request for a service category fails', async () => {
+    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+
+    await request(app)
+      .get('/referrals/1/desired-outcomes')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get service category')
+      })
+  })
+})

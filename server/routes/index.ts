@@ -37,6 +37,7 @@ export default function routes(router: Router, services: Services): Router {
   post('/referrals/:id/completion-deadline', (req, res) => referralsController.updateCompletionDeadline(req, res))
   get('/referrals/:id/further-information', (req, res) => referralsController.viewFurtherInformation(req, res))
   post('/referrals/:id/further-information', (req, res) => referralsController.updateFurtherInformation(req, res))
+  get('/referrals/:id/desired-outcomes', (req, res) => referralsController.viewDesiredOutcomes(req, res))
 
   return router
 }
