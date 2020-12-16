@@ -162,7 +162,7 @@ export default function createApp(
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.
   app.use((req, res, next) => {
-    req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
+    req.session!.nowInMinutes = Math.floor(Date.now() / 60e3)
     next()
   })
 
@@ -175,7 +175,7 @@ export default function createApp(
 
   app.get('/login/callback', (req, res, next) =>
     passport.authenticate('oauth2', {
-      successReturnToOrRedirect: req.session.returnTo || '/',
+      successReturnToOrRedirect: req.session!.returnTo || '/',
       failureRedirect: '/autherror',
     })(req, res, next)
   )
@@ -185,7 +185,7 @@ export default function createApp(
   app.use('/logout', (req, res) => {
     if (req.user) {
       req.logout()
-      req.session.destroy(() => res.redirect(authLogoutUrl))
+      req.session!.destroy(() => res.redirect(authLogoutUrl))
       return
     }
     res.redirect(authLogoutUrl)

@@ -48,7 +48,7 @@ export default class RestClient {
     logger.warn(sanitiseError(error), `Error calling ${this.name}`)
   }
 
-  async get({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetRequest): Promise<unknown> {
+  async get({ path, query = '', headers = {}, responseType = '', raw = false }: GetRequest): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path} ${query}`)
     try {
       const result = await superagent
@@ -72,9 +72,7 @@ export default class RestClient {
     }
   }
 
-  async post({ path = null, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<
-    unknown
-  > {
+  async post({ path, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<unknown> {
     logger.info(`Post using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
@@ -99,9 +97,7 @@ export default class RestClient {
   }
 
   // This is copied from the post method above
-  async patch({ path = null, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<
-    unknown
-  > {
+  async patch({ path, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<unknown> {
     logger.info(`Patch using user credentials: calling ${this.name}: ${path}`)
     try {
       const result = await superagent
@@ -125,9 +121,7 @@ export default class RestClient {
     }
   }
 
-  async stream({ path = null, headers = {}, errorLogger = this.defaultErrorLogger }: StreamRequest = {}): Promise<
-    unknown
-  > {
+  async stream({ path, headers = {}, errorLogger = this.defaultErrorLogger }: StreamRequest = {}): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path}`)
     return new Promise((resolve, reject) => {
       superagent

@@ -5,7 +5,7 @@ interface SanitisedError {
   status?: number
   headers?: unknown
   data?: unknown
-  stack: string
+  stack?: string
   message: string
 }
 

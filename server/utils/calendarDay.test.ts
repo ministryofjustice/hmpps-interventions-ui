@@ -3,7 +3,7 @@ import CalendarDay from './calendarDay'
 describe('CalendarDay', () => {
   describe('iso8601', () => {
     it('returns an ISO 8601 formatted date describing the day', () => {
-      const calendarDay = CalendarDay.fromComponents(15, 9, 1992)
+      const calendarDay = CalendarDay.fromComponents(15, 9, 1992)!
 
       expect(calendarDay.iso8601).toBe('1992-09-15')
     })
@@ -11,7 +11,7 @@ describe('CalendarDay', () => {
 
   describe('.fromComponents', () => {
     it('returns a date when given components for a day that exists', () => {
-      const date = CalendarDay.fromComponents(15, 9, 1992)
+      const date = CalendarDay.fromComponents(15, 9, 1992)!
 
       expect(date.day).toBe(15)
       expect(date.month).toBe(9)

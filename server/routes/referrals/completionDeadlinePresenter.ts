@@ -26,7 +26,7 @@ export default class CompletionDeadlinePresenter {
     userInputData: Record<string, unknown> | null = null
   ) {
     if (!userInputData) {
-      const calendarDay = referral.completionDeadline
+      const calendarDay = this.referral.completionDeadline
         ? CalendarDay.parseIso8601(this.referral.completionDeadline)
         : null
 

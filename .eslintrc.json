@@ -55,7 +55,8 @@
             "semi": false,
             "arrowParens": "avoid"
           }
-        ]
+        ],
+        "@typescript-eslint/no-non-null-assertion": 0
       }
     }
   ],

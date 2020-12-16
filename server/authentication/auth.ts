@@ -23,7 +23,7 @@ const authenticationMiddleware: AuthenticationMiddleware = verifyToken => {
     if (req.isAuthenticated() && (await verifyToken(req as VerifiableRequest))) {
       return next()
     }
-    req.session.returnTo = req.originalUrl
+    req.session!.returnTo = req.originalUrl
     return res.redirect('/login')
   }
 }
