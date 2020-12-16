@@ -22,7 +22,7 @@
     "int-test-ui": "cypress open",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "lint": "eslint . --cache --max-warnings 200",
+    "lint": "eslint . --cache --max-warnings 0",
     "clean": "rm -rf dist build node_modules stylesheets"
   },
   "engines": {
@@ -80,7 +80,7 @@
   "lint-staged": {
     "*.{ts,js,css}": [
       "prettier --write",
-      "eslint --fix"
+      "eslint --fix --max-warnings 0"
     ],
     "*.{json}": [
       "prettier --write"
