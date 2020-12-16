@@ -15,11 +15,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true
+    "strict": true
   },
   "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist"],
   "include": ["**/*.js", "**/*.ts"]
