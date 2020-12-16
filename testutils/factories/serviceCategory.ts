@@ -24,4 +24,23 @@ export default Factory.define<ServiceCategory>(({ sequence }) => ({
         'Service User is homeless or in temporary/unstable accommodation, or will be on release from prison. Service User has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
     },
   ],
+  desiredOutcomes: [
+    {
+      id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+      description:
+        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+    },
+    {
+      id: '65924ac6-9724-455b-ad30-906936291421',
+      description: 'Service User makes progress in obtaining accommodation',
+    },
+    {
+      id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
+      description: 'Service User is helped to secure social or supported housing',
+    },
+    {
+      id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
+      description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+    },
+  ],
 }))
