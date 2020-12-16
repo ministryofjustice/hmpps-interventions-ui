@@ -26,6 +26,26 @@ describe('DesiredOutcomesPresenter', () => {
     })
   })
 
+  describe('error information', () => {
+    describe('when no errors are passed in', () => {
+      it('returns no errors', () => {
+        const presenter = new DesiredOutcomesPresenter(serviceCategory)
+
+        expect(presenter.error).toBeNull()
+      })
+    })
+
+    describe('when errors are passed in', () => {
+      it('returns error information', () => {
+        const presenter = new DesiredOutcomesPresenter(serviceCategory, {
+          message: 'Select desired outcomes',
+        })
+
+        expect(presenter.error).toEqual({ message: 'Select desired outcomes' })
+      })
+    })
+  })
+
   describe('title', () => {
     it('returns a title', () => {
       const presenter = new DesiredOutcomesPresenter(serviceCategory)

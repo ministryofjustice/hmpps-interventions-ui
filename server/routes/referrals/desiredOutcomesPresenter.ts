@@ -1,7 +1,11 @@
 import { ServiceCategory } from '../../services/interventionsService'
 
+export interface DesiredOutcomesError {
+  message: string
+}
+
 export default class DesiredOutcomesPresenter {
-  constructor(private readonly serviceCategory: ServiceCategory) {}
+  constructor(private readonly serviceCategory: ServiceCategory, readonly error: DesiredOutcomesError | null = null) {}
 
   readonly desiredOutcomes: { value: string; text: string }[] = this.serviceCategory.desiredOutcomes.map(
     desiredOutcome => {

@@ -8,4 +8,7 @@ export default {
   complexityLevel: {
     empty: 'Select a complexity level',
   },
+  desiredOutcomes: {
+    empty: 'Select desired outcomes',
+  },
 }
