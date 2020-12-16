@@ -3,15 +3,18 @@ import { Matchers } from '@pact-foundation/pact'
 
 import InterventionsService from './interventionsService'
 import config from '../config'
+import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 
 jest.mock('../data/hmppsAuthClient')
 
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
+  let token: string
 
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
+    token = oauth2TokenFactory.deliusToken().build()
   })
 
   describe('getDraftReferral', () => {
@@ -22,7 +25,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/draft-referral/ac386c25-52c8-41fa-9213-fcf42e24b0b5',
-          headers: { Accept: 'application/json', Authorization: 'Bearer token' },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
           status: 200,
@@ -33,7 +36,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.getDraftReferral('token', 'ac386c25-52c8-41fa-9213-fcf42e24b0b5')
+      const referral = await interventionsService.getDraftReferral(token, 'ac386c25-52c8-41fa-9213-fcf42e24b0b5')
       expect(referral.id).toBe('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
     })
 
@@ -46,7 +49,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
-            headers: { Accept: 'application/json', Authorization: 'Bearer token' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           },
           willRespondWith: {
             status: 200,
@@ -61,7 +64,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the service category id field populated', async () => {
-        const referral = await interventionsService.getDraftReferral('token', 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
+        const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
         expect(referral.serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
@@ -78,7 +81,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-referral',
-          headers: { Accept: 'application/json', Authorization: 'Bearer token' },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
           status: 201,
@@ -96,7 +99,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns a referral', async () => {
-      const referral = await interventionsService.createDraftReferral('token')
+      const referral = await interventionsService.createDraftReferral(token)
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
   })
@@ -112,7 +115,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer token',
+            Authorization: `Bearer ${token}`,
           },
           body: { completionDeadline: '2021-04-01' },
         },
@@ -128,7 +131,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
         completionDeadline: '2021-04-01',
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
@@ -145,7 +148,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer token',
+            Authorization: `Bearer ${token}`,
           },
           body: { complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
         },
@@ -161,7 +164,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
         complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
@@ -179,7 +182,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/service-category/428ee70f-3001-4399-95a6-ad25eaaede16',
           headers: {
             Accept: 'application/json',
-            Authorization: 'Bearer token',
+            Authorization: `Bearer ${token}`,
           },
         },
         willRespondWith: {
@@ -217,7 +220,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns a service category', async () => {
       const serviceCategory = await interventionsService.getServiceCategory(
-        'token',
+        token,
         '428ee70f-3001-4399-95a6-ad25eaaede16'
       )
 
