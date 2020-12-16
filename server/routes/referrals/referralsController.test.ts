@@ -209,7 +209,7 @@ describe('GET /referrals/:id/complexity-level', () => {
     ])
   })
 
-  it('renders an error when the get complexity levels call fails', async () => {
+  it('renders an error when the request for a service category fails', async () => {
     interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
 
     await request(app)
