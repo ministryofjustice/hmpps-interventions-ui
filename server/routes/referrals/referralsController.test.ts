@@ -283,3 +283,47 @@ describe('GET /referrals/:id/further-information', () => {
       })
   })
 })
+
+describe('POST /referrals/:id/further-information', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('updates the referral on the backend and redirects to the referral form', async () => {
+    await request(app)
+      .post('/referrals/1/further-information')
+      .type('form')
+      .send({ 'further-information': 'Further information about the service user' })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      { furtherInformation: 'Further information about the service user' },
+    ])
+  })
+
+  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+    await request(app)
+      .post('/referrals/1/further-information')
+      .type('form')
+      .send({ 'further-information': 'Further information about the service user' })
+      .expect(400)
+      .expect(res => {
+        expect(res.text).toContain('Backend error message')
+      })
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      { furtherInformation: 'Further information about the service user' },
+    ])
+  })
+})
