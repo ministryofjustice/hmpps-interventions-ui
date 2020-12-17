@@ -12,7 +12,6 @@ import * as auth from '../../authentication/auth'
 import { user, MockUserService } from './mocks/mockUserService'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
-import CommunityApiService from '../../services/communityApiService'
 
 function appSetup(route: Router, production: boolean): Express {
   const app = express()
