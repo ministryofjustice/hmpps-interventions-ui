@@ -1,11 +1,10 @@
 import ComplexityLevelPresenter from './complexityLevelPresenter'
+import ViewUtils from '../../utils/viewUtils'
 
 export default class ComplexityLevelView {
   constructor(readonly presenter: ComplexityLevelPresenter) {}
 
   get radioButtonArgs(): Record<string, unknown> {
-    const errorMessage = this.presenter.error ? { text: this.presenter.error.message } : null
-
     return {
       classes: 'govuk-radios',
       idPrefix: 'complexity-level',
@@ -17,7 +16,7 @@ export default class ComplexityLevelView {
           classes: 'govuk-fieldset__legend--xl',
         },
       },
-      errorMessage,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.error?.message),
       items: this.presenter.complexityDescriptions.map(complexityDescription => {
         return {
           value: complexityDescription.value,

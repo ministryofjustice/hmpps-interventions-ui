@@ -1,11 +1,10 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
+import ViewUtils from '../../utils/viewUtils'
 
 export default class CompletionDeadlineView {
   constructor(private readonly presenter: CompletionDeadlinePresenter) {}
 
   private get dateInputArgs(): Record<string, unknown> {
-    const errorMessage = this.presenter.errorMessage ? { text: this.presenter.errorMessage } : null
-
     return {
       id: 'completion-deadline',
       namePrefix: 'completion-deadline',
@@ -19,7 +18,7 @@ export default class CompletionDeadlineView {
       hint: {
         text: this.presenter.hint,
       },
-      errorMessage,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       items: [
         {
           classes: `govuk-input--width-2${this.presenter.erroredFields.includes('day') ? ' govuk-input--error' : ''}`,

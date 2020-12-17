@@ -5,4 +5,8 @@ export default class ViewUtils {
     const escape = new nunjucks.Environment().getFilter('escape')
     return escape(val).val
   }
+
+  static govukErrorMessage(message: string | null | undefined): { text: string } | null {
+    return message === null || message === undefined ? null : { text: message }
+  }
 }
