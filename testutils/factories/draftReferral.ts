@@ -15,6 +15,10 @@ class DraftReferralFactory extends Factory<DraftReferral> {
   completionDeadlineSet() {
     return this.params({ completionDeadline: '2021-08-24' })
   }
+
+  serviceUserSelected() {
+    return this.params({ serviceUser: { firstName: 'Marsha' } })
+  }
 }
 
 export default DraftReferralFactory.define(({ sequence }) => ({
@@ -31,4 +35,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   interpreterLanguage: null,
   hasAdditionalResponsibilities: null,
   whenUnavailable: null,
+  serviceUser: null,
 }))

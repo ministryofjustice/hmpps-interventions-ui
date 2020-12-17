@@ -106,6 +106,38 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         ])
       })
     })
+
+    describe('for a referral that has had a service user selected', () => {
+      beforeEach(async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing draft referral with ID of 1219a064-709b-4b6c-a11e-10b8cb3966f6, and it has had a service user selected',
+          uponReceiving: 'a request for that referral',
+          withRequest: {
+            method: 'GET',
+            path: '/draft-referral/1219a064-709b-4b6c-a11e-10b8cb3966f6',
+            headers: { Accept: 'application/json', Authorization: 'Bearer token' },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              id: '1219a064-709b-4b6c-a11e-10b8cb3966f6',
+              serviceUser: {
+                firstName: 'Alex',
+              },
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+      })
+
+      it('returns a referral for the given ID, with the service category id field populated', async () => {
+        const referral = await interventionsService.getDraftReferral('token', '1219a064-709b-4b6c-a11e-10b8cb3966f6')
+
+        expect(referral.id).toBe('1219a064-709b-4b6c-a11e-10b8cb3966f6')
+        expect(referral.serviceUser!.firstName).toEqual('Alex')
+      })
+    })
   })
 
   describe('createDraftReferral', () => {

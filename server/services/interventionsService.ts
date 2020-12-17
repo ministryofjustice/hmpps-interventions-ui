@@ -16,6 +16,7 @@ export interface DraftReferral {
   interpreterLanguage: string | null
   hasAdditionalResponsibilities: boolean | null
   whenUnavailable: string | null
+  serviceUser: ServiceUser | null
 }
 
 export interface ServiceCategory {
@@ -34,6 +35,10 @@ export interface ComplexityLevel {
 export interface DesiredOutcome {
   id: string
   description: string
+}
+
+export interface ServiceUser {
+  firstName: string | null
 }
 
 export default class InterventionsService {
