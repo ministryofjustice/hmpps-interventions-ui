@@ -222,7 +222,7 @@ export default class ReferralsController {
       referral.serviceCategoryId
     )
 
-    const presenter = new DesiredOutcomesPresenter(serviceCategory)
+    const presenter = new DesiredOutcomesPresenter(referral, serviceCategory)
     const view = new DesiredOutcomesView(presenter)
 
     res.render(...view.renderArgs)
@@ -259,7 +259,7 @@ export default class ReferralsController {
         referral.serviceCategoryId
       )
 
-      const presenter = new DesiredOutcomesPresenter(serviceCategory, error) // , req.body)
+      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, error, req.body)
       const view = new DesiredOutcomesView(presenter)
 
       res.status(400)

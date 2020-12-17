@@ -24,6 +24,7 @@ export default class DesiredOutcomesView {
         return {
           value: desiredOutcome.value,
           text: desiredOutcome.text,
+          checked: desiredOutcome.checked,
         }
       }),
     }
