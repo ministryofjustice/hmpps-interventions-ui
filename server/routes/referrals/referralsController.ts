@@ -163,7 +163,7 @@ export default class ReferralsController {
       referral.serviceCategoryId
     )
 
-    const presenter = new FurtherInformationPresenter(serviceCategory)
+    const presenter = new FurtherInformationPresenter(referral, serviceCategory)
 
     const view = new FurtherInformationView(presenter)
 
@@ -199,7 +199,7 @@ export default class ReferralsController {
         referral.serviceCategoryId
       )
 
-      const presenter = new FurtherInformationPresenter(serviceCategory, error)
+      const presenter = new FurtherInformationPresenter(referral, serviceCategory, error, req.body)
       const view = new FurtherInformationView(presenter)
 
       res.status(400)

@@ -18,6 +18,7 @@ export default class FurtherInformationView {
       hint: {
         text: this.presenter.hint,
       },
+      value: this.presenter.value,
     }
   }
 
