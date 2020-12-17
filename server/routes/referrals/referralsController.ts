@@ -33,6 +33,11 @@ export default class ReferralsController {
 
   async viewComplexityLevel(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to view complexity level without service category selected')
+    }
+
     const serviceCategory = await this.interventionsService.getServiceCategory(
       res.locals.user.token,
       referral.serviceCategoryId
@@ -47,7 +52,7 @@ export default class ReferralsController {
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
     const form = await ComplexityLevelForm.createForm(req)
 
-    let error: ComplexityLevelError | null
+    let error: ComplexityLevelError | null = null
 
     if (form.isValid) {
       try {
@@ -65,6 +70,11 @@ export default class ReferralsController {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+      if (referral.serviceCategoryId === null) {
+        throw new Error('Attempting to view complexity level without service category selected')
+      }
+
       const serviceCategory = await this.interventionsService.getServiceCategory(
         res.locals.user.token,
         referral.serviceCategoryId
@@ -80,6 +90,11 @@ export default class ReferralsController {
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to view completion deadline without service category selected')
+    }
+
     const serviceCategory = await this.interventionsService.getServiceCategory(
       res.locals.user.token,
       referral.serviceCategoryId
@@ -116,6 +131,11 @@ export default class ReferralsController {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+      if (referral.serviceCategoryId === null) {
+        throw new Error('Attempting to view completion deadline without service category selected')
+      }
+
       const serviceCategory = await this.interventionsService.getServiceCategory(
         res.locals.user.token,
         referral.serviceCategoryId

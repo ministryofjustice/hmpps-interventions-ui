@@ -23,7 +23,7 @@ redisClient.on('error', error => {
 })
 
 const getRedisAsync = promisify(redisClient.get).bind(redisClient)
-const setRedisAsync = promisify(redisClient.set).bind(redisClient)
+const setRedisAsync = promisify<string, string, string, number>(redisClient.set).bind(redisClient)
 
 function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.Response> {
   const clientToken = generateOauthClientToken(config.apis.hmppsAuth.apiClientId, config.apis.hmppsAuth.apiClientSecret)

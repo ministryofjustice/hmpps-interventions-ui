@@ -15,7 +15,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "noImplicitAny": true
+    "strict": true
   },
   "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist"],
   "include": ["**/*.js", "**/*.ts"]

@@ -2,7 +2,7 @@ function properCase(word: string): string {
   return word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 }
 
-function isBlank(str: string): boolean {
+function isBlank(str: string | null): boolean {
   return !str || /^\s*$/.test(str)
 }
 
@@ -16,6 +16,6 @@ function properCaseName(name: string): string {
   return isBlank(name) ? '' : name.split('-').map(properCase).join('-')
 }
 
-export default function convertToTitleCase(sentence: string): string {
-  return isBlank(sentence) ? '' : sentence.split(' ').map(properCaseName).join(' ')
+export default function convertToTitleCase(sentence: string | null): string {
+  return isBlank(sentence) ? '' : sentence!.split(' ').map(properCaseName).join(' ')
 }

@@ -4,10 +4,11 @@ import InterventionsService from '../../services/interventionsService'
 import appWithAllRoutes from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import apiConfig from '../../config'
 
 jest.mock('../../services/interventionsService')
 
-const interventionsService = new InterventionsService(null) as jest.Mocked<InterventionsService>
+const interventionsService = new InterventionsService(apiConfig.apis.hmppsAuth) as jest.Mocked<InterventionsService>
 
 let app: Express
 

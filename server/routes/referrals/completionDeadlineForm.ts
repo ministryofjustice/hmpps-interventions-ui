@@ -47,6 +47,10 @@ export default class CompletionDeadlineForm {
   }
 
   get paramsForUpdate(): Partial<DraftReferral> {
+    if (this.completionDeadline === null) {
+      return {}
+    }
+
     return {
       completionDeadline: this.completionDeadline.iso8601,
     }

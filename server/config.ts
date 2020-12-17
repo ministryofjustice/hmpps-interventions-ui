@@ -4,8 +4,9 @@ dotenv.config()
 const production = process.env.NODE_ENV === 'production'
 
 function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
-  if (process.env[name]) {
-    return process.env[name]
+  const fromEnv = process.env[name]
+  if (fromEnv !== undefined) {
+    return fromEnv
   }
   if (fallback !== undefined && (!production || !options.requireInProduction)) {
     return fallback
@@ -16,11 +17,11 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 const requiredInProduction = { requireInProduction: true }
 
 export class AgentConfig {
-  maxSockets: 100
+  maxSockets = 100
 
-  maxFreeSockets: 10
+  maxFreeSockets = 10
 
-  freeSocketTimeout: 30000
+  freeSocketTimeout = 30000
 }
 
 export interface ApiConfig {

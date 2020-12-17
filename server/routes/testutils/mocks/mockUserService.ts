@@ -1,4 +1,5 @@
 import UserService from '../../../services/userService'
+import MockedHmppsAuthClient from '../../../data/testutils/hmppsAuthClientSetup'
 
 export const user = {
   name: 'john smith',
@@ -11,13 +12,13 @@ export const user = {
 
 export class MockUserService extends UserService {
   constructor() {
-    super(undefined)
+    super(new MockedHmppsAuthClient())
   }
 
   async getUser(token: string) {
     return {
-      token,
       ...user,
+      token,
     }
   }
 }
