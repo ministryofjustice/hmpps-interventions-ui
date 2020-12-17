@@ -8,6 +8,8 @@ import CompletionDeadlineForm, { CompletionDeadlineErrors } from './completionDe
 import ComplexityLevelView from './complexityLevelView'
 import ComplexityLevelPresenter, { ComplexityLevelError } from './complexityLevelPresenter'
 import ComplexityLevelForm from './complexityLevelForm'
+import FurtherInformationPresenter from './furtherInformationPresenter'
+import FurtherInformationView from './furtherInformationView'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -147,5 +149,24 @@ export default class ReferralsController {
       res.status(400)
       res.render(...view.renderArgs)
     }
+  }
+
+  async viewFurtherInformation(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to view further information without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new FurtherInformationPresenter(serviceCategory)
+
+    const view = new FurtherInformationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

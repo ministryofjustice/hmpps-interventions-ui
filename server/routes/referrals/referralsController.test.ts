@@ -264,3 +264,22 @@ describe('POST /referrals/:id/complexity-level', () => {
     ])
   })
 })
+
+describe('GET /referrals/:id/further-information', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/further-information')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Do you have further information for the accommodation service provider? (optional)')
+      })
+  })
+})
