@@ -4,6 +4,7 @@ import { ApiConfig } from '../config'
 
 export interface DraftReferral {
   id: string
+  createdAt: string
   completionDeadline: string | null
   serviceCategoryId: string | null
   complexityLevelId: string | null
