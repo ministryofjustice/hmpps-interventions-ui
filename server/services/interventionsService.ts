@@ -54,7 +54,7 @@ export default class InterventionsService {
   async getDraftReferral(token: string, id: string): Promise<DraftReferral> {
     logger.info(`Getting draft referral with id ${id}`)
 
-    const restClient = await this.createRestClient(token)
+    const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: `/draft-referral/${id}`,
@@ -63,7 +63,7 @@ export default class InterventionsService {
   }
 
   async createDraftReferral(token: string): Promise<DraftReferral> {
-    const restClient = await this.createRestClient(token)
+    const restClient = this.createRestClient(token)
 
     return (await restClient.post({
       path: `/draft-referral`,
@@ -72,7 +72,7 @@ export default class InterventionsService {
   }
 
   async patchDraftReferral(token: string, id: string, patch: Partial<DraftReferral>): Promise<DraftReferral> {
-    const restClient = await this.createRestClient(token)
+    const restClient = this.createRestClient(token)
 
     return (await restClient.patch({
       path: `/draft-referral/${id}`,
@@ -88,5 +88,15 @@ export default class InterventionsService {
       path: `/service-category/${serviceCategoryId}`,
       headers: { Accept: 'application/json' },
     })) as ServiceCategory
+  }
+
+  async getDraftReferralsForUser(token: string, userId: string): Promise<DraftReferral[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: '/draft-referrals',
+      query: `userID=${userId}`,
+      headers: { Accept: 'application/json' },
+    })) as DraftReferral[]
   }
 }

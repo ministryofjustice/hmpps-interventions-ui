@@ -24,6 +24,10 @@ afterEach(() => {
 })
 
 describe('GET /referrals/start', () => {
+  beforeEach(() => {
+    interventionsService.getDraftReferralsForUser.mockResolvedValue([])
+  })
+
   it('renders a start page', () => {
     return request(app)
       .get('/referrals/start')

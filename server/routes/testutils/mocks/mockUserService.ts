@@ -9,6 +9,7 @@ export const user = {
   displayName: 'John Smith',
   token: 'token',
   authSource: 'nomis',
+  userId: '123',
 }
 
 export class MockUserService extends UserService {
