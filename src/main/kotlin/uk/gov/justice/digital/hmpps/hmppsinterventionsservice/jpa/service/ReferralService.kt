@@ -27,4 +27,8 @@ class ReferralService(val repository: ReferralRepository) {
     }
     return ref
   }
+
+  fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferral> {
+    return repository.findByCreatedByUserID(userID).map { DraftReferral(it) }
+  }
 }
