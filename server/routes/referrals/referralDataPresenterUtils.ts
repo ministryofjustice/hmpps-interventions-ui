@@ -32,4 +32,26 @@ export default class ReferralDataPresenterUtils {
     }
     return null
   }
+
+  static sortedErrors<T extends { field: string }>(
+    errors: T[] | null,
+    { fieldOrder }: { fieldOrder: string[] }
+  ): T[] | null {
+    if (errors === null) {
+      return null
+    }
+
+    const copiedErrors = errors.slice()
+    return copiedErrors.sort((a, b) => {
+      const [aIndex, bIndex] = [fieldOrder.indexOf(a.field), fieldOrder.indexOf(b.field)]
+      if (aIndex === -1) {
+        return 1
+      }
+      if (bIndex === -1) {
+        return -1
+      }
+
+      return aIndex - bIndex
+    })
+  }
 }

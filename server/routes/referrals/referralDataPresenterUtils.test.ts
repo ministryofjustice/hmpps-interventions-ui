@@ -249,4 +249,64 @@ describe('ReferralDataPresenterUtils', () => {
       })
     })
   })
+
+  describe('.sortedErrors', () => {
+    describe('with null errors', () => {
+      it('returns null', () => {
+        expect(ReferralDataPresenterUtils.sortedErrors(null, { fieldOrder: ['first', 'second', 'third'] })).toBeNull()
+      })
+    })
+
+    describe('when an empty array of errors', () => {
+      it('returns an empty array', () => {
+        expect(ReferralDataPresenterUtils.sortedErrors([], { fieldOrder: ['first', 'second', 'third'] })).toEqual([])
+      })
+    })
+
+    describe('with a non-empty array of errors', () => {
+      it('returns the errors ordered according to their fields’ positions in the fieldOrder array', () => {
+        expect(
+          ReferralDataPresenterUtils.sortedErrors(
+            [
+              { field: 'second', msg: 'second msg' },
+              { field: 'first', msg: 'first msg' },
+              { field: 'third', msg: 'third msg' },
+            ],
+            { fieldOrder: ['first', 'second', 'third'] }
+          )
+        ).toEqual([
+          { field: 'first', msg: 'first msg' },
+          { field: 'second', msg: 'second msg' },
+          { field: 'third', msg: 'third msg' },
+        ])
+      })
+
+      it('does not modify the original array', () => {
+        const original = [{ field: 'second' }, { field: 'first' }]
+        ReferralDataPresenterUtils.sortedErrors(original, { fieldOrder: ['first', 'second'] })
+        expect(original).toEqual([{ field: 'second' }, { field: 'first' }])
+      })
+
+      describe('when a field in the array of errors is missing from the fieldOrder array', () => {
+        it('places that field at the end of the return value', () => {
+          expect(
+            ReferralDataPresenterUtils.sortedErrors(
+              [
+                { field: 'second', msg: 'second msg' },
+                { field: 'first', msg: 'first msg' },
+                { field: 'fourth', msg: 'fourth msg' },
+                { field: 'third', msg: 'third msg' },
+              ],
+              { fieldOrder: ['first', 'second', 'third'] }
+            )
+          ).toEqual([
+            { field: 'first', msg: 'first msg' },
+            { field: 'second', msg: 'second msg' },
+            { field: 'third', msg: 'third msg' },
+            { field: 'fourth', msg: 'fourth msg' },
+          ])
+        })
+      })
+    })
+  })
 })
