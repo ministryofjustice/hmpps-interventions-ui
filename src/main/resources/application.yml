@@ -23,6 +23,7 @@ spring:
     password: ${postgres.password}
   jpa:
     hibernate:
+      dialect: PostgreSQLDialect
       show-sql: false
       ddl-auto: validate
 

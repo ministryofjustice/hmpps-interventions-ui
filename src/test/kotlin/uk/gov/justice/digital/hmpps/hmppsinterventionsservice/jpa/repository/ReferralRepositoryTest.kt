@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
 @DataJpaTest
-@ActiveProfiles("db")
+@ActiveProfiles("jpa-test")
 class ReferralRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val referralRepository: ReferralRepository
