@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@1.1.3
+  hmpps: ministryofjustice/hmpps@2.1.0
   snyk: snyk/snyk@0.0.12
 
 _snyk_options: &snyk_options
