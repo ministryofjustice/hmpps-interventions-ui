@@ -5,14 +5,18 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
-data class DraftReferral(
+data class DraftReferralDTO(
   val id: UUID? = null,
   val created: OffsetDateTime? = null,
-  val completionDeadline: LocalDate? = null
+  val completionDeadline: LocalDate? = null,
 ) {
-  constructor(referral: Referral) : this(
-    referral.id!!,
-    referral.created!!,
-    referral.completionDeadline,
-  )
+  companion object {
+    fun from(referral: Referral): DraftReferralDTO {
+      return DraftReferralDTO(
+        referral.id!!,
+        referral.created!!,
+        referral.completionDeadline,
+      )
+    }
+  }
 }
