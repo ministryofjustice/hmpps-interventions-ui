@@ -19,7 +19,14 @@ class ReferralService(val repository: ReferralRepository) {
 
   fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
     update.completionDeadline?.let {
+      // fixme: error if completion deadline is after sentence end date
       referral.completionDeadline = it
+    }
+
+    update.complexityLevelId?.let {
+      // fixme: error if service category not set for referral
+      //        error if complexity level not valid for service category
+      referral.complexityLevelID = it
     }
 
     return repository.save(referral)

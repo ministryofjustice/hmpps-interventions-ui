@@ -9,6 +9,8 @@ data class DraftReferralDTO(
   val id: UUID? = null,
   val created: OffsetDateTime? = null,
   val completionDeadline: LocalDate? = null,
+  val serviceCategoryId: UUID? = null,
+  val complexityLevelId: UUID? = null,
 ) {
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
@@ -16,6 +18,8 @@ data class DraftReferralDTO(
         referral.id!!,
         referral.created!!,
         referral.completionDeadline,
+        referral.serviceCategoryID,
+        referral.complexityLevelID,
       )
     }
   }

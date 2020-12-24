@@ -14,6 +14,8 @@ import javax.persistence.Table
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
 data class Referral(
+  var complexityLevelID: UUID? = null,
+  var serviceCategoryID: UUID? = null,
   @Column(name = "created_by_userid") var createdByUserID: String? = null,
   var completionDeadline: LocalDate? = null,
   @CreationTimestamp var created: OffsetDateTime? = null,
