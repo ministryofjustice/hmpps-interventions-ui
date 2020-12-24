@@ -34,7 +34,7 @@ class ReferralServiceTest @Autowired constructor(
       created = OffsetDateTime.of(LocalDate.of(2020, 12, 1), LocalTime.MIN, ZoneOffset.UTC)
     )
 
-    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    val updated = referralService.updateDraftReferral(referral, draftReferral)
     assertThat(updated!!.id).isEqualTo(referral.id!!)
     assertThat(updated.created).isEqualTo(referral.created)
   }
@@ -47,7 +47,7 @@ class ReferralServiceTest @Autowired constructor(
 
     val draftReferral = DraftReferral(completionDeadline = null)
 
-    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    val updated = referralService.updateDraftReferral(referral, draftReferral)
     assertThat(updated!!.completionDeadline).isEqualTo(LocalDate.of(2021, 6, 26))
   }
 
@@ -59,7 +59,7 @@ class ReferralServiceTest @Autowired constructor(
 
     val draftReferral = DraftReferral(completionDeadline = LocalDate.of(2020, 12, 1))
 
-    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    val updated = referralService.updateDraftReferral(referral, draftReferral)
     assertThat(updated!!.completionDeadline).isEqualTo(LocalDate.of(2020, 12, 1))
   }
 
@@ -71,7 +71,7 @@ class ReferralServiceTest @Autowired constructor(
 
     val draftReferral = DraftReferral(completionDeadline = LocalDate.of(2020, 12, 1))
 
-    val updated = referralService.updateDraftReferral(referral.id!!, draftReferral)
+    val updated = referralService.updateDraftReferral(referral, draftReferral)
     assertThat(updated!!.completionDeadline).isEqualTo(LocalDate.of(2020, 12, 1))
   }
 
@@ -82,7 +82,7 @@ class ReferralServiceTest @Autowired constructor(
     entityManager.flush()
 
     val draftReferral = DraftReferral(completionDeadline = LocalDate.of(2020, 12, 1))
-    referralService.updateDraftReferral(referral.id!!, draftReferral)
+    referralService.updateDraftReferral(referral, draftReferral)
 
     val savedDraftReferral = referralService.getDraftReferral(referral.id!!)
     assertThat(savedDraftReferral!!.id).isEqualTo(referral.id)

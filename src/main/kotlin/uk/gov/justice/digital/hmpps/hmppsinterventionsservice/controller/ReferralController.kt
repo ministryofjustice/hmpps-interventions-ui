@@ -57,11 +57,11 @@ class ReferralController(
       return ResponseEntity.badRequest().body("malformed id")
     }
 
-    return referralService.updateDraftReferral(uuid, partialUpdate)
-      ?.let {
-        ResponseEntity.ok(DraftReferral(it))
-      }
-      ?: ResponseEntity.notFound().build()
+    val referralToUpdate = referralService.getDraftReferral(uuid)
+      ?: return ResponseEntity.notFound().build()
+
+    val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
+    return ResponseEntity.ok(DraftReferral(updatedReferral))
   }
 
   @GetMapping("/draft-referrals")

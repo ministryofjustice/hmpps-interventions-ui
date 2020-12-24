@@ -9,7 +9,6 @@ import java.util.UUID
 
 @Service
 class ReferralService(val repository: ReferralRepository) {
-
   fun createDraftReferral(): Referral {
     return repository.save(Referral())
   }
@@ -18,14 +17,11 @@ class ReferralService(val repository: ReferralRepository) {
     return repository.findByIdOrNull(id)
   }
 
-  fun updateDraftReferral(id: UUID, update: DraftReferral): Referral? {
-    val ref = getDraftReferral(id) ?: return null
-
+  fun updateDraftReferral(referral: Referral, update: DraftReferral): Referral {
     update.completionDeadline?.let {
-      ref.completionDeadline = update.completionDeadline
-      return repository.save(ref)
+      referral.completionDeadline = it
     }
-    return ref
+    return repository.save(referral)
   }
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferral> {
