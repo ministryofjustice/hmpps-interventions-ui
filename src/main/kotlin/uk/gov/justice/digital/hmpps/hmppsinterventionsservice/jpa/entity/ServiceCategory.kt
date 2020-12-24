@@ -4,12 +4,14 @@ import org.hibernate.annotations.CreationTimestamp
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.OneToMany
 
 @Entity
 data class ServiceCategory(
-  @Id @GeneratedValue var id: UUID? = null,
-  @CreationTimestamp var created: OffsetDateTime? = null,
-  var name: String
+  @Id val id: UUID,
+  @CreationTimestamp val created: OffsetDateTime,
+  val name: String,
+  @OneToMany @JoinColumn(name = "service_category_id") val complexityLevels: List<ComplexityLevel>,
 )

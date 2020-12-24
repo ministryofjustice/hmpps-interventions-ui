@@ -10,11 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ServiceCategoryService
 import java.util.UUID
 
 @RestController
-class ReferralController(private val referralService: ReferralService) {
+class ReferralController(
+  private val referralService: ReferralService,
+  private val serviceCategoryService: ServiceCategoryService
+) {
 
   @PostMapping("/draft-referral")
   fun createDraftReferral(): ResponseEntity<DraftReferral> {
@@ -62,5 +67,18 @@ class ReferralController(private val referralService: ReferralService) {
   @GetMapping("/draft-referrals")
   fun getDraftReferralsCreatedByUserID(@RequestParam userID: String): List<DraftReferral> {
     return referralService.getDraftReferralsCreatedByUserID(userID)
+  }
+
+  @GetMapping("/service-category/{id}")
+  fun getServiceCategoryByID(@PathVariable id: String): ResponseEntity<Any> {
+    val uuid = try {
+      UUID.fromString(id)
+    } catch (e: IllegalArgumentException) {
+      return ResponseEntity.badRequest().body("malformed id")
+    }
+
+    return serviceCategoryService.getServiceCategoryByID(uuid)
+      ?.let { ResponseEntity.ok(ServiceCategoryDTO.from(it)) }
+      ?: ResponseEntity.notFound().build()
   }
 }

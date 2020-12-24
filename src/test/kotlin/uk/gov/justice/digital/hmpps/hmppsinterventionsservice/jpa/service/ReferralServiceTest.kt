@@ -15,7 +15,7 @@ import java.time.ZoneOffset
 import java.util.UUID
 
 @DataJpaTest
-@ActiveProfiles("db")
+@ActiveProfiles("jpa-test")
 class ReferralServiceTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val referralRepository: ReferralRepository
@@ -97,7 +97,7 @@ class ReferralServiceTest @Autowired constructor(
 
     val savedDraftReferral = referralService.getDraftReferral(draftReferral.id!!)
     assertThat(savedDraftReferral!!.id).isNotNull
-    assertThat(savedDraftReferral!!.created).isNotNull
+    assertThat(savedDraftReferral.created).isNotNull
   }
 
   @Test

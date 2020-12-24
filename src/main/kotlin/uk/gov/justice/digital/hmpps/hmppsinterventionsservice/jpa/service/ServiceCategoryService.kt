@@ -8,12 +8,7 @@ import java.util.UUID
 
 @Service
 class ServiceCategoryService(val repository: ServiceCategoryRepository) {
-
   fun getServiceCategoryByID(id: UUID): ServiceCategory? {
     return repository.findByIdOrNull(id)
-  }
-
-  fun getServiceCategories(): List<ServiceCategory> {
-    return repository.findAll().toList()
   }
 }
