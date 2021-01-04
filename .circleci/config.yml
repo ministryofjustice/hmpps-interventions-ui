@@ -129,6 +129,7 @@ workflows:
           env: "dev"
           retrieve_secrets: "none"
           slack_notification: true
+          slack_channel_name: "interventions-dev-notifications"
           filters:
             branches:
               only:
@@ -139,6 +140,8 @@ workflows:
             - build_and_publish_docker
             - helm_lint
             - vulnerability_scan_and_monitor
+          context:
+            - moj-slack-notifications
 
   nightly:
     triggers:
