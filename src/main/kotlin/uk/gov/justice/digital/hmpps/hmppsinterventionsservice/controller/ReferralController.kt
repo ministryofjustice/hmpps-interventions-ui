@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ReferralBadIDException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ReferralNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ServiceCategoryNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
@@ -37,31 +40,23 @@ class ReferralController(
   }
 
   @GetMapping("/draft-referral/{id}")
-  fun getDraftReferralByID(@PathVariable id: String): ResponseEntity<Any> {
-    val uuid = try {
-      UUID.fromString(id)
-    } catch (e: IllegalArgumentException) {
-      return ResponseEntity.badRequest().body("malformed id")
-    }
+  fun getDraftReferralByID(@PathVariable id: String): DraftReferralDTO {
+    val uuid = parseID(id)
 
     return referralService.getDraftReferral(uuid)
-      ?.let { ResponseEntity.ok(DraftReferralDTO.from(it)) }
-      ?: ResponseEntity.notFound().build()
+      ?.let { DraftReferralDTO.from(it) }
+      ?: throw ReferralNotFoundException(uuid)
   }
 
   @PatchMapping("/draft-referral/{id}")
-  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: DraftReferralDTO): ResponseEntity<Any> {
-    val uuid = try {
-      UUID.fromString(id)
-    } catch (e: IllegalArgumentException) {
-      return ResponseEntity.badRequest().body("malformed id")
-    }
+  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: DraftReferralDTO): DraftReferralDTO {
+    val uuid = parseID(id)
 
     val referralToUpdate = referralService.getDraftReferral(uuid)
-      ?: return ResponseEntity.notFound().build()
+      ?: throw ReferralNotFoundException(uuid)
 
     val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
-    return ResponseEntity.ok(DraftReferralDTO.from(updatedReferral))
+    return DraftReferralDTO.from(updatedReferral)
   }
 
   @GetMapping("/draft-referrals")
@@ -70,15 +65,19 @@ class ReferralController(
   }
 
   @GetMapping("/service-category/{id}")
-  fun getServiceCategoryByID(@PathVariable id: String): ResponseEntity<Any> {
-    val uuid = try {
-      UUID.fromString(id)
-    } catch (e: IllegalArgumentException) {
-      return ResponseEntity.badRequest().body("malformed id")
-    }
+  fun getServiceCategoryByID(@PathVariable id: String): ServiceCategoryDTO {
+    val uuid = parseID(id)
 
     return serviceCategoryService.getServiceCategoryByID(uuid)
-      ?.let { ResponseEntity.ok(ServiceCategoryDTO.from(it)) }
-      ?: ResponseEntity.notFound().build()
+      ?.let { ServiceCategoryDTO.from(it) }
+      ?: throw ServiceCategoryNotFoundException(uuid)
+  }
+
+  private fun parseID(id: String): UUID {
+    return try {
+      UUID.fromString(id)
+    } catch (e: IllegalArgumentException) {
+      throw ReferralBadIDException(id)
+    }
   }
 }
