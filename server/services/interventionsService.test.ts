@@ -173,6 +173,39 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.complexityLevelId).toBe('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
     })
+
+    it('returns the updated referral adding further information', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update further information',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer token',
+          },
+          body: { furtherInformation: 'Some information about the service user' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            furtherInformation: 'Some information about the service user',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        furtherInformation: 'Some information about the service user',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.furtherInformation).toBe('Some information about the service user')
+    })
   })
 
   describe('getServiceCategory', () => {

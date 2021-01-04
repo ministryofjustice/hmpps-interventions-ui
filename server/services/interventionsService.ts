@@ -8,6 +8,7 @@ export interface DraftReferral {
   completionDeadline: string | null
   serviceCategoryId: string | null
   complexityLevelId: string | null
+  furtherInformation: string | null
 }
 
 export interface ServiceCategory {

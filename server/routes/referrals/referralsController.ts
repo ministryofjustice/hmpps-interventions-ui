@@ -8,6 +8,8 @@ import CompletionDeadlineForm, { CompletionDeadlineErrors } from './completionDe
 import ComplexityLevelView from './complexityLevelView'
 import ComplexityLevelPresenter, { ComplexityLevelError } from './complexityLevelPresenter'
 import ComplexityLevelForm from './complexityLevelForm'
+import FurtherInformationPresenter, { FurtherInformationError } from './furtherInformationPresenter'
+import FurtherInformationView from './furtherInformationView'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -143,6 +145,62 @@ export default class ReferralsController {
 
       const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, errors, req.body)
       const view = new CompletionDeadlineView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
+  }
+
+  async viewFurtherInformation(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to view further information without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new FurtherInformationPresenter(referral, serviceCategory)
+
+    const view = new FurtherInformationView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async updateFurtherInformation(req: Request, res: Response): Promise<void> {
+    let error: FurtherInformationError | null = null
+
+    const paramsForUpdate = {
+      furtherInformation: req.body['further-information'],
+    }
+
+    try {
+      await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
+    } catch (e) {
+      error = {
+        message: e.message,
+      }
+    }
+
+    if (!error) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+      if (!referral.serviceCategoryId) {
+        throw new Error('Attempting to view complexity level without service category selected')
+      }
+
+      const serviceCategory = await this.interventionsService.getServiceCategory(
+        res.locals.user.token,
+        referral.serviceCategoryId
+      )
+
+      const presenter = new FurtherInformationPresenter(referral, serviceCategory, error, req.body)
+      const view = new FurtherInformationView(presenter)
 
       res.status(400)
       res.render(...view.renderArgs)
