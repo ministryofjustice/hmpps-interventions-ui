@@ -42,9 +42,6 @@ class PactTest {
   @State("a service category with ID 428ee70f-3001-4399-95a6-ad25eaaede16 exists")
   fun `use service category 428ee70f from the seed`() {}
 
-//  @State("there is an existing draft referral with ID of 1219a064-709b-4b6c-a11e-10b8cb3966f6")
-//  fun `use ...`() {}
-//
-//  @State("there is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected")
-//  fun `use ...`() {}
+  @State("There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected")
+  fun `use referral d496e4a7 from the seed`() {}
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ServiceCategoryService
@@ -22,7 +22,7 @@ class ReferralController(
 ) {
 
   @PostMapping("/draft-referral")
-  fun createDraftReferral(): ResponseEntity<DraftReferral> {
+  fun createDraftReferral(): ResponseEntity<DraftReferralDTO> {
 
     val referral = referralService.createDraftReferral()
     val location = ServletUriComponentsBuilder
@@ -33,7 +33,7 @@ class ReferralController(
 
     return ResponseEntity
       .created(location)
-      .body(DraftReferral(referral))
+      .body(DraftReferralDTO.from(referral))
   }
 
   @GetMapping("/draft-referral/{id}")
@@ -45,27 +45,27 @@ class ReferralController(
     }
 
     return referralService.getDraftReferral(uuid)
-      ?.let { ResponseEntity.ok(DraftReferral(it)) }
+      ?.let { ResponseEntity.ok(DraftReferralDTO.from(it)) }
       ?: ResponseEntity.notFound().build()
   }
 
   @PatchMapping("/draft-referral/{id}")
-  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: DraftReferral): ResponseEntity<Any> {
+  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: DraftReferralDTO): ResponseEntity<Any> {
     val uuid = try {
       UUID.fromString(id)
     } catch (e: IllegalArgumentException) {
       return ResponseEntity.badRequest().body("malformed id")
     }
 
-    return referralService.updateDraftReferral(uuid, partialUpdate)
-      ?.let {
-        ResponseEntity.ok(DraftReferral(it))
-      }
-      ?: ResponseEntity.notFound().build()
+    val referralToUpdate = referralService.getDraftReferral(uuid)
+      ?: return ResponseEntity.notFound().build()
+
+    val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
+    return ResponseEntity.ok(DraftReferralDTO.from(updatedReferral))
   }
 
   @GetMapping("/draft-referrals")
-  fun getDraftReferralsCreatedByUserID(@RequestParam userID: String): List<DraftReferral> {
+  fun getDraftReferralsCreatedByUserID(@RequestParam userID: String): List<DraftReferralDTO> {
     return referralService.getDraftReferralsCreatedByUserID(userID)
   }
 

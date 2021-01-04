@@ -2,14 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.util.UUID
 
 @Service
 class ReferralService(val repository: ReferralRepository) {
-
   fun createDraftReferral(): Referral {
     return repository.save(Referral())
   }
@@ -18,17 +17,22 @@ class ReferralService(val repository: ReferralRepository) {
     return repository.findByIdOrNull(id)
   }
 
-  fun updateDraftReferral(id: UUID, update: DraftReferral): Referral? {
-    val ref = getDraftReferral(id) ?: return null
-
+  fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
     update.completionDeadline?.let {
-      ref.completionDeadline = update.completionDeadline
-      return repository.save(ref)
+      // fixme: error if completion deadline is after sentence end date
+      referral.completionDeadline = it
     }
-    return ref
+
+    update.complexityLevelId?.let {
+      // fixme: error if service category not set for referral
+      //        error if complexity level not valid for service category
+      referral.complexityLevelID = it
+    }
+
+    return repository.save(referral)
   }
 
-  fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferral> {
-    return repository.findByCreatedByUserID(userID).map { DraftReferral(it) }
+  fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
+    return repository.findByCreatedByUserID(userID).map { DraftReferralDTO.from(it) }
   }
 }
