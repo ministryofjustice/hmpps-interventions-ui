@@ -10,6 +10,9 @@ import ComplexityLevelPresenter, { ComplexityLevelError } from './complexityLeve
 import ComplexityLevelForm from './complexityLevelForm'
 import FurtherInformationPresenter, { FurtherInformationError } from './furtherInformationPresenter'
 import FurtherInformationView from './furtherInformationView'
+import DesiredOutcomesPresenter, { DesiredOutcomesError } from './desiredOutcomesPresenter'
+import DesiredOutcomesView from './desiredOutcomesView'
+import DesiredOutcomesForm from './desiredOutcomesForm'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -201,6 +204,63 @@ export default class ReferralsController {
 
       const presenter = new FurtherInformationPresenter(referral, serviceCategory, error, req.body)
       const view = new FurtherInformationView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
+  }
+
+  async viewDesiredOutcomes(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (!referral.serviceCategoryId) {
+      throw new Error('Attempting to view desired outcomes without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new DesiredOutcomesPresenter(referral, serviceCategory)
+    const view = new DesiredOutcomesView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
+    const form = await DesiredOutcomesForm.createForm(req)
+
+    let error: DesiredOutcomesError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+      } catch (e) {
+        error = {
+          message: e.message,
+        }
+      }
+    } else {
+      error = form.error
+    }
+
+    if (!error) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+      if (!referral.serviceCategoryId) {
+        throw new Error('Attempting to view desired outcomes without service category selected')
+      }
+
+      const serviceCategory = await this.interventionsService.getServiceCategory(
+        res.locals.user.token,
+        referral.serviceCategoryId
+      )
+
+      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, error, req.body)
+      const view = new DesiredOutcomesView(presenter)
 
       res.status(400)
       res.render(...view.renderArgs)

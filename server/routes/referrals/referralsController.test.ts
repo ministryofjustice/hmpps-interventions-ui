@@ -209,7 +209,7 @@ describe('GET /referrals/:id/complexity-level', () => {
     ])
   })
 
-  it('renders an error when the get complexity levels call fails', async () => {
+  it('renders an error when the request for a service category fails', async () => {
     interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
 
     await request(app)
@@ -324,6 +324,108 @@ describe('POST /referrals/:id/further-information', () => {
       'token',
       '1',
       { furtherInformation: 'Further information about the service user' },
+    ])
+  })
+})
+
+describe('GET /referrals/:id/desired-outcomes', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/desired-outcomes')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What are the desired outcomes for the social inclusion service?')
+      })
+
+    expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
+      'token',
+      'b33c19d1-7414-4014-b543-e543e59c5b39',
+    ])
+  })
+
+  it('renders an error when the request for a service category fails', async () => {
+    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+
+    await request(app)
+      .get('/referrals/1/desired-outcomes')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get service category')
+      })
+  })
+})
+
+describe('POST /referrals/:id/desired-outcomes', () => {
+  const desiredOutcomes = [
+    {
+      id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+      description:
+        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+    },
+    {
+      id: '65924ac6-9724-455b-ad30-906936291421',
+      description: 'Service User makes progress in obtaining accommodation',
+    },
+    {
+      id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
+      description: 'Service User is helped to secure social or supported housing',
+    },
+    {
+      id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
+      description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+    },
+  ]
+
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('updates the referral on the backend and redirects to the referral form', async () => {
+    await request(app)
+      .post('/referrals/1/desired-outcomes')
+      .type('form')
+      .send({ 'desired-outcomes-ids': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      { desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id] },
+    ])
+  })
+
+  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+    await request(app)
+      .post('/referrals/1/desired-outcomes')
+      .type('form')
+      .send({ 'desired-outcomes-ids': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+      .expect(400)
+      .expect(res => {
+        expect(res.text).toContain('Backend error message')
+      })
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      { desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id] },
     ])
   })
 })

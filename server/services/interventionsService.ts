@@ -9,17 +9,24 @@ export interface DraftReferral {
   serviceCategoryId: string | null
   complexityLevelId: string | null
   furtherInformation: string | null
+  desiredOutcomesIds: string[] | null
 }
 
 export interface ServiceCategory {
   id: string
   name: string
   complexityLevels: ComplexityLevel[]
+  desiredOutcomes: DesiredOutcome[]
 }
 
 export interface ComplexityLevel {
   id: string
   title: string
+  description: string
+}
+
+export interface DesiredOutcome {
+  id: string
   description: string
 }
 
