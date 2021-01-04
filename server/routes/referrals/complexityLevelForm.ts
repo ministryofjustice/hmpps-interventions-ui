@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import { DraftReferral } from '../../services/interventionsService'
 import { ComplexityLevelError } from './complexityLevelPresenter'
+import errorMessages from '../../utils/errorMessages'
 
 export default class ComplexityLevelForm {
   private constructor(private readonly request: Request) {}
@@ -24,6 +25,6 @@ export default class ComplexityLevelForm {
       return null
     }
 
-    return { message: 'Select a complexity level' }
+    return { message: errorMessages.complexityLevel.empty }
   }
 }
