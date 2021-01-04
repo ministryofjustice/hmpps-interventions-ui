@@ -81,7 +81,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/037cc90b-beaa-4a32-9ab7-7f79136e1d27',
-            headers: { Accept: 'application/json', Authorization: 'Bearer token' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           },
           willRespondWith: {
             status: 200,
@@ -97,7 +97,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the desired outcomes selected', async () => {
-        const referral = await interventionsService.getDraftReferral('token', '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+        const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
 
         expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
         expect(referral.desiredOutcomesIds).toEqual([
@@ -219,7 +219,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer token',
+            Authorization: `Bearer ${token}`,
           },
           body: { furtherInformation: 'Some information about the service user' },
         },
@@ -235,7 +235,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
         furtherInformation: 'Some information about the service user',
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
@@ -252,7 +252,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer token',
+            Authorization: `Bearer ${token}`,
           },
           body: {
             desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
@@ -270,7 +270,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral('token', 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
         desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
