@@ -5,4 +5,7 @@ export default {
     yearEmpty: 'The date by which the service needs to be completed must include a year',
     invalidDate: 'The date by which the service needs to be completed must be a real date',
   },
+  complexityLevel: {
+    empty: 'Select a complexity level',
+  },
 }
