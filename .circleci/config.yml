@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@1.1.3
+  hmpps: ministryofjustice/hmpps@2.1.0
   snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
 
@@ -110,6 +110,7 @@ workflows:
           env: "dev"
           retrieve_secrets: "none"
           slack_notification: true
+          slack_channel_name: "interventions-dev-notifications"
           filters:
             branches:
               only:
@@ -120,6 +121,8 @@ workflows:
             - hmpps/helm_lint
             - build_docker_publish
             - vulnerability_scan_and_monitor
+          context:
+            - moj-slack-notifications
 
   nightly:
     triggers:
