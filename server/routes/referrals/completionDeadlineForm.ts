@@ -5,9 +5,7 @@ import CalendarDay from '../../utils/calendarDay'
 import errorMessages from '../../utils/errorMessages'
 
 export default class CompletionDeadlineForm {
-  private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {
-    this.result = validationResult(request)
-  }
+  private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
 
   static async createForm(request: Request): Promise<CompletionDeadlineForm> {
     await Promise.all(this.validations.map(validation => validation.run(request)))

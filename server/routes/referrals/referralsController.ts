@@ -13,6 +13,9 @@ import FurtherInformationView from './furtherInformationView'
 import DesiredOutcomesPresenter, { DesiredOutcomesError } from './desiredOutcomesPresenter'
 import DesiredOutcomesView from './desiredOutcomesView'
 import DesiredOutcomesForm from './desiredOutcomesForm'
+import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
+import NeedsAndRequirementsView from './needsAndRequirementsView'
+import NeedsAndRequirementsForm, { NeedsAndRequirementsError } from './needsAndRequirementsForm'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -261,6 +264,43 @@ export default class ReferralsController {
 
       const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, error, req.body)
       const view = new DesiredOutcomesView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
+  }
+
+  async viewNeedsAndRequirements(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    const presenter = new NeedsAndRequirementsPresenter(referral)
+    const view = new NeedsAndRequirementsView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async updateNeedsAndRequirements(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const form = await NeedsAndRequirementsForm.createForm(req, referral)
+
+    let errors: NeedsAndRequirementsError[] | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+      } catch (e) {
+        // TODO IC-615 use proper error information
+        errors = [{ field: 'additional-needs-information', message: e.message }]
+      }
+    } else {
+      errors = form.errors
+    }
+
+    if (errors === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const presenter = new NeedsAndRequirementsPresenter(referral, errors, req.body)
+      const view = new NeedsAndRequirementsView(presenter)
 
       res.status(400)
       res.render(...view.renderArgs)
