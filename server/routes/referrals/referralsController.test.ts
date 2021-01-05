@@ -546,3 +546,81 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
       })
   })
 })
+
+describe('GET /referrals/:id/risk-information', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Geoffrey’s risk information')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/risk-information', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the referral on the backend and redirects to the referral form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      additionalRiskInformation: 'High risk to the elderly',
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/risk-information')
+      .type('form')
+      .send({
+        'additional-risk-information': 'High risk to the elderly',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        additionalRiskInformation: 'High risk to the elderly',
+      },
+    ])
+  })
+
+  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+    await request(app)
+      .post('/referrals/1/risk-information')
+      .type('form')
+      .send({
+        'additional-risk-information': 'High risk to the elderly',
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.text).toContain('Backend error message')
+      })
+  })
+})
