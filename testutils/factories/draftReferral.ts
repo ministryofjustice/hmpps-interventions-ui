@@ -36,4 +36,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   hasAdditionalResponsibilities: null,
   whenUnavailable: null,
   serviceUser: null,
+  additionalRiskInformation: null,
 }))
