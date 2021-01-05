@@ -17,6 +17,7 @@ export interface DraftReferral {
   hasAdditionalResponsibilities: boolean | null
   whenUnavailable: string | null
   serviceUser: ServiceUser | null
+  additionalRiskInformation: string | null
 }
 
 export interface ServiceCategory {

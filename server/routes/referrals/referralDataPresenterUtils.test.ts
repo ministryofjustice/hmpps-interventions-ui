@@ -309,4 +309,29 @@ describe('ReferralDataPresenterUtils', () => {
       })
     })
   })
+
+  describe('.errorMessage', () => {
+    describe('when errors is null', () => {
+      it('returns null', () => {
+        expect(ReferralDataPresenterUtils.errorMessage(null, 'my-field')).toBeNull()
+      })
+    })
+
+    describe('when errors is non-null and contains an error for that field', () => {
+      it('returns the message for that error', () => {
+        const errors = [
+          { field: 'other-field', message: 'other message' },
+          { field: 'my-field', message: 'my message' },
+        ]
+        expect(ReferralDataPresenterUtils.errorMessage(errors, 'my-field')).toEqual('my message')
+      })
+    })
+
+    describe('when errors is non-null and doesn’t contain an error for that field', () => {
+      it('returns null', () => {
+        const errors = [{ field: 'other-field', message: 'other message' }]
+        expect(ReferralDataPresenterUtils.errorMessage(errors, 'my-field')).toBeNull()
+      })
+    })
+  })
 })

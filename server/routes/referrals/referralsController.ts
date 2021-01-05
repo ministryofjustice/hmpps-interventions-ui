@@ -16,6 +16,8 @@ import DesiredOutcomesForm from './desiredOutcomesForm'
 import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
 import NeedsAndRequirementsView from './needsAndRequirementsView'
 import NeedsAndRequirementsForm, { NeedsAndRequirementsError } from './needsAndRequirementsForm'
+import RiskInformationPresenter from './riskInformationPresenter'
+import RiskInformationView from './riskInformationView'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -301,6 +303,46 @@ export default class ReferralsController {
     } else {
       const presenter = new NeedsAndRequirementsPresenter(referral, errors, req.body)
       const view = new NeedsAndRequirementsView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
+  }
+
+  async viewRiskInformation(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const presenter = new RiskInformationPresenter(referral)
+    const view = new RiskInformationView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async updateRiskInformation(req: Request, res: Response): Promise<void> {
+    let errors: { field: string; message: string }[] | null = null
+
+    const paramsForUpdate = {
+      additionalRiskInformation: req.body['additional-risk-information'],
+    }
+
+    try {
+      await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
+    } catch (e) {
+      errors = [
+        {
+          field: 'additional-risk-information',
+          // TODO (IC-615) there’s probably a more appropriate message to use from the response
+          message: e.message,
+        },
+      ]
+    }
+
+    if (errors === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+      const presenter = new RiskInformationPresenter(referral, errors, req.body)
+      const view = new RiskInformationView(presenter)
 
       res.status(400)
       res.render(...view.renderArgs)
