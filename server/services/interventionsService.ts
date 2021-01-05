@@ -18,6 +18,8 @@ export interface DraftReferral {
   whenUnavailable: string | null
   serviceUser: ServiceUser | null
   additionalRiskInformation: string | null
+  usingRarDays: boolean | null
+  maximumRarDays: number | null
 }
 
 export interface ServiceCategory {
