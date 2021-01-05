@@ -141,7 +141,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('createDraftReferral', () => {
-    beforeEach(async () => {
+    it('returns a newly created draft referral', async () => {
       await provider.addInteraction({
         // We're not sure what is an appropriate state here
         state: 'a draft referral can be created',
@@ -165,9 +165,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         },
       })
-    })
 
-    it('returns a referral', async () => {
       const referral = await interventionsService.createDraftReferral(token)
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
@@ -526,6 +524,40 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.additionalRiskInformation).toEqual('A danger to the elderly')
+    })
+
+    it('returns the updated referral when setting the service category ID', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update the service category ID',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16' },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            createdAt: '2020-12-07T20:45:21.986389Z',
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.serviceCategoryId).toBe('428ee70f-3001-4399-95a6-ad25eaaede16')
     })
 
     it('returns the updated referral when setting usingRarDays to true', async () => {
