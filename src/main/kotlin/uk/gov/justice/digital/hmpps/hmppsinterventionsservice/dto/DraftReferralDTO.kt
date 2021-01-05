@@ -11,6 +11,14 @@ data class DraftReferralDTO(
   val completionDeadline: LocalDate? = null,
   val serviceCategoryId: UUID? = null,
   val complexityLevelId: UUID? = null,
+  val furtherInformation: String? = null,
+  val additionalNeedsInformation: String? = null,
+  val accessibilityNeeds: String? = null,
+  val needsInterpreter: Boolean? = null,
+  val interpreterLanguage: String? = null,
+  val hasAdditionalResponsibilities: Boolean? = null,
+  val whenUnavailable: String? = null,
+  val additionalRiskInformation: String? = null,
 ) {
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
@@ -20,6 +28,14 @@ data class DraftReferralDTO(
         referral.completionDeadline,
         referral.serviceCategoryID,
         referral.complexityLevelID,
+        referral.furtherInformation,
+        referral.additionalNeedsInformation,
+        referral.accessibilityNeeds,
+        referral.needsInterpreter,
+        referral.interpreterLanguage,
+        referral.hasAdditionalResponsibilities,
+        referral.whenUnavailable,
+        referral.additionalRiskInformation,
       )
     }
   }
