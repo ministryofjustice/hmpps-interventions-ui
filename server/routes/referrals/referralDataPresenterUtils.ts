@@ -54,4 +54,8 @@ export default class ReferralDataPresenterUtils {
       return aIndex - bIndex
     })
   }
+
+  static errorMessage(errors: { field: string; message: string }[] | null, field: string): string | null {
+    return errors?.find(error => error.field === field)?.message ?? null
+  }
 }

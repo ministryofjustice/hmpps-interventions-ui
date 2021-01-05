@@ -16,7 +16,7 @@ export default class NeedsAndRequirementsPresenter {
   ]
 
   private errorMessageForField(field: string): string | null {
-    return this.errors?.find(error => error.field === field)?.message ?? null
+    return ReferralDataPresenterUtils.errorMessage(this.errors, field)
   }
 
   readonly text = {
