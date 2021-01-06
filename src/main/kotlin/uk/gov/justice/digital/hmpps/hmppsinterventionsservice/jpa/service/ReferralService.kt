@@ -18,6 +18,11 @@ class ReferralService(val repository: ReferralRepository) {
   }
 
   fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
+    update.serviceCategoryId?.let {
+      // fixme: error if service category is already set
+      referral.serviceCategoryID = it
+    }
+
     update.completionDeadline?.let {
       // fixme: error if completion deadline is after sentence end date
       referral.completionDeadline = it
