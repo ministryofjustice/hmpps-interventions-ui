@@ -18,6 +18,9 @@ import NeedsAndRequirementsView from './needsAndRequirementsView'
 import NeedsAndRequirementsForm, { NeedsAndRequirementsError } from './needsAndRequirementsForm'
 import RiskInformationPresenter from './riskInformationPresenter'
 import RiskInformationView from './riskInformationView'
+import RarDaysView from './rarDaysView'
+import RarDaysPresenter from './rarDaysPresenter'
+import RarDaysForm from './rarDaysForm'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -343,6 +346,62 @@ export default class ReferralsController {
 
       const presenter = new RiskInformationPresenter(referral, errors, req.body)
       const view = new RiskInformationView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
+  }
+
+  async viewRarDays(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to view RAR days without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new RarDaysPresenter(referral, serviceCategory)
+    const view = new RarDaysView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async updateRarDays(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to update RAR days without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const form = await RarDaysForm.createForm(req, serviceCategory)
+
+    let errors: { field: string; message: string }[] | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+      } catch (e) {
+        // TODO IC-615 use proper error information
+        errors = [{ field: 'using-rar-days', message: e.message }]
+      }
+    } else {
+      errors = form.errors
+    }
+
+    if (errors === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const presenter = new RarDaysPresenter(referral, serviceCategory, errors, req.body)
+      const view = new RarDaysView(presenter)
 
       res.status(400)
       res.render(...view.renderArgs)
