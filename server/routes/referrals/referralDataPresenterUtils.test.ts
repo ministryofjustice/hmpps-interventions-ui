@@ -66,11 +66,22 @@ describe('ReferralDataPresenterUtils', () => {
 
     describe('when the referral has a non-null value for the property', () => {
       describe('when there is no user input data', () => {
-        it('returns the value from the referral', () => {
-          const referral = draftReferralFactory.build({ additionalNeedsInformation: 'foo' })
-          const utils = new ReferralDataPresenterUtils(referral, null)
+        describe('when the referral’s value is a string', () => {
+          it('returns the value from the referral', () => {
+            const referral = draftReferralFactory.build({ additionalNeedsInformation: 'foo' })
+            const utils = new ReferralDataPresenterUtils(referral, null)
 
-          expect(utils.stringValue('additionalNeedsInformation', 'additional-needs-information')).toBe('foo')
+            expect(utils.stringValue('additionalNeedsInformation', 'additional-needs-information')).toBe('foo')
+          })
+        })
+
+        describe('when the referral’s value is a number', () => {
+          it('returns the formatted value from the referral', () => {
+            const referral = draftReferralFactory.build({ maximumRarDays: 10 })
+            const utils = new ReferralDataPresenterUtils(referral, null)
+
+            expect(utils.stringValue('maximumRarDays', 'maximum-rar-days')).toBe('10')
+          })
         })
       })
 

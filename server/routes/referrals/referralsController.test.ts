@@ -624,3 +624,118 @@ describe('POST /referrals/:id/risk-information', () => {
       })
   })
 })
+
+describe('GET /referrals/:id/rar-days', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/rar-days')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Are you using RAR days for the accommodation service?')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/rar-days')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+
+  it('renders an error when the service category call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get service category'))
+
+    await request(app)
+      .get('/referrals/1/rar-days')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get service category')
+      })
+  })
+})
+
+describe('POST /referrals/:id/rar-days', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the referral on the backend and redirects to the referral form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      usingRarDays: true,
+      maximumRarDays: 10,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/rar-days')
+      .type('form')
+      .send({
+        'using-rar-days': 'yes',
+        'maximum-rar-days': '10',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        usingRarDays: true,
+        maximumRarDays: 10,
+      },
+    ])
+  })
+
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/rar-days')
+        .type('form')
+        .send({
+          'using-rar-days': 'yes',
+          'maximum-rar-days': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter the maximum number of RAR days for the accommodation service')
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
+  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+    await request(app)
+      .post('/referrals/1/rar-days')
+      .type('form')
+      .send({
+        'using-rar-days': 'yes',
+        'maximum-rar-days': '10',
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.text).toContain('Backend error message')
+      })
+  })
+})

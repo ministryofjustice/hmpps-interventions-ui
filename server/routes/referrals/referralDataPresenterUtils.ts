@@ -10,9 +10,12 @@ export default class ReferralDataPresenterUtils {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  stringValue<K extends PropertiesOfType<DraftReferral, string | null>>(referralKey: K, userInputKey: string): string {
+  stringValue<K extends PropertiesOfType<DraftReferral, string | number | null>>(
+    referralKey: K,
+    userInputKey: string
+  ): string {
     if (this.userInputData === null) {
-      return this.referral[referralKey] ?? ''
+      return String(this.referral[referralKey] ?? '')
     }
     return String(this.userInputData[userInputKey] ?? '')
   }
