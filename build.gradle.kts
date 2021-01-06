@@ -29,9 +29,6 @@ tasks {
 }
 
 dependencies {
-  // errors
-  implementation("me.alidg:errors-spring-boot-starter:1.4.0")
-
   // security
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
