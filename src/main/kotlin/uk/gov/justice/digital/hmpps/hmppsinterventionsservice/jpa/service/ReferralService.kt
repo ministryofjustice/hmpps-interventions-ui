@@ -2,9 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
@@ -17,20 +21,60 @@ class ReferralService(val repository: ReferralRepository) {
     return repository.findByIdOrNull(id)
   }
 
-  fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
+  private fun validateDraftReferralUpdate(referral: Referral, update: DraftReferralDTO) {
+    val errors = mutableListOf<FieldError>()
+
     update.serviceCategoryId?.let {
-      // fixme: error if service category is already set
+      if (referral.serviceCategoryID != null) {
+        errors.add(FieldError(field = "serviceCategoryId", error = Code.SERVICE_CATEGORY_CANNOT_BE_CHANGED))
+      }
+    }
+
+    update.completionDeadline?.let {
+      if (it.isBefore(LocalDate.now())) {
+        errors.add(FieldError(field = "completionDeadline", error = Code.DATE_MUST_BE_IN_THE_FUTURE))
+      }
+
+      // fixme: error if completion deadline is after sentence end date
+    }
+
+    update.complexityLevelId?.let {
+      if (referral.serviceCategoryID == null && update.serviceCategoryId == null) {
+        errors.add(FieldError(field = "complexityLevelId", error = Code.SERVICE_CATEGORY_MUST_BE_SET))
+      }
+
+      // fixme: error if complexity level not valid for service category
+    }
+
+    update.needsInterpreter?.let {
+      if (it && update.interpreterLanguage == null) {
+        errors.add(FieldError(field = "needsInterpreter", error = Code.CONDITIONAL_FIELD_MUST_BE_SET))
+      }
+    }
+
+    update.hasAdditionalResponsibilities?.let {
+      if (it && update.whenUnavailable == null) {
+        errors.add(FieldError(field = "hasAdditionalResponsibilities", error = Code.CONDITIONAL_FIELD_MUST_BE_SET))
+      }
+    }
+
+    if (errors.isNotEmpty()) {
+      throw ValidationError("draft referral update invalid", errors)
+    }
+  }
+
+  fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
+    validateDraftReferralUpdate(referral, update)
+
+    update.serviceCategoryId?.let {
       referral.serviceCategoryID = it
     }
 
     update.completionDeadline?.let {
-      // fixme: error if completion deadline is after sentence end date
       referral.completionDeadline = it
     }
 
     update.complexityLevelId?.let {
-      // fixme: error if service category not set for referral
-      //        error if complexity level not valid for service category
       referral.complexityLevelID = it
     }
 
@@ -47,7 +91,6 @@ class ReferralService(val repository: ReferralRepository) {
     }
 
     update.needsInterpreter?.let {
-      // fixme: error if this is true and interpreterLangyage is missing
       referral.needsInterpreter = it
     }
 
@@ -56,7 +99,6 @@ class ReferralService(val repository: ReferralRepository) {
     }
 
     update.hasAdditionalResponsibilities?.let {
-      // fixme: error if this is true and whenUnavailable is missing
       referral.hasAdditionalResponsibilities = it
     }
 

@@ -8,12 +8,27 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.server.ResponseStatusException
 
+enum class Code {
+  SERVICE_CATEGORY_CANNOT_BE_CHANGED,
+  DATE_MUST_BE_IN_THE_FUTURE,
+  SERVICE_CATEGORY_MUST_BE_SET,
+  CONDITIONAL_FIELD_MUST_BE_SET,
+}
+
 data class FieldError(
   val field: String,
-  val error: String,
+  val error: Code,
 )
 
 class ValidationError(override val message: String, val errors: List<FieldError>) : RuntimeException(message)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class ErrorResponse(
+  val status: Int,
+  val error: String,
+  val message: String?,
+  val validationErrors: List<FieldError>? = null,
+)
 
 @RestControllerAdvice
 class ErrorConfiguration {
@@ -64,11 +79,3 @@ class ErrorConfiguration {
     private val log = LoggerFactory.getLogger(ErrorConfiguration::class.java)
   }
 }
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ErrorResponse(
-  val status: Int,
-  val error: String,
-  val message: String?,
-  val validationErrors: List<FieldError>? = null,
-)
