@@ -34,6 +34,40 @@ class ReferralService(val repository: ReferralRepository) {
       referral.complexityLevelID = it
     }
 
+    update.furtherInformation?.let {
+      referral.furtherInformation = it
+    }
+
+    update.additionalNeedsInformation?.let {
+      referral.additionalNeedsInformation = it
+    }
+
+    update.accessibilityNeeds?.let {
+      referral.accessibilityNeeds = it
+    }
+
+    update.needsInterpreter?.let {
+      // fixme: error if this is true and interpreterLangyage is missing
+      referral.needsInterpreter = it
+    }
+
+    update.interpreterLanguage?.let {
+      referral.interpreterLanguage = it
+    }
+
+    update.hasAdditionalResponsibilities?.let {
+      // fixme: error if this is true and whenUnavailable is missing
+      referral.hasAdditionalResponsibilities = it
+    }
+
+    update.whenUnavailable?.let {
+      referral.whenUnavailable = it
+    }
+
+    update.additionalRiskInformation?.let {
+      referral.additionalRiskInformation = it
+    }
+
     return repository.save(referral)
   }
 
