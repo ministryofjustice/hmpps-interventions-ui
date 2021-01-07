@@ -5,8 +5,6 @@ export default class FurtherInformationView {
   constructor(private readonly presenter: FurtherInformationPresenter) {}
 
   private get textAreaArgs(): Record<string, unknown> {
-    const errorMessage = this.presenter.errorMessage ? { text: this.presenter.errorMessage } : null
-
     return {
       name: 'further-information',
       id: 'further-information',
@@ -15,7 +13,7 @@ export default class FurtherInformationView {
         classes: 'govuk-label--xl',
         isPageHeading: true,
       },
-      errorMessage,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       hint: {
         text: this.presenter.hint,
       },

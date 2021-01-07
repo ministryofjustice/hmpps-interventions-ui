@@ -5,8 +5,6 @@ export default class DesiredOutcomesView {
   constructor(readonly presenter: DesiredOutcomesPresenter) {}
 
   get checkboxArgs(): Record<string, unknown> {
-    const errorMessage = this.presenter.errorMessage ? { text: this.presenter.errorMessage } : null
-
     return {
       idPrefix: 'desired-outcomes-ids',
       name: 'desired-outcomes-ids',
@@ -17,7 +15,7 @@ export default class DesiredOutcomesView {
           classes: 'govuk-fieldset__legend--xl',
         },
       },
-      errorMessage,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       hint: {
         text: 'Select all that apply.',
       },
