@@ -39,8 +39,8 @@ describe('ReferralFormPresenter', () => {
           number: '3',
           status: ReferralFormStatus.Completed,
           tasks: [
-            { title: 'Service user’s risk information', url: '#' },
-            { title: 'Service user’s needs and requirements', url: '#' },
+            { title: 'Service user’s risk information', url: 'risk-information' },
+            { title: 'Service user’s needs and requirements', url: 'needs-and-requirements' },
           ],
         },
         {
@@ -54,11 +54,14 @@ describe('ReferralFormPresenter', () => {
               status: ReferralFormStatus.InProgress,
               tasks: [
                 { title: 'Select the relevant sentence for the accommodation referral', url: '#' },
-                { title: 'Select desired outcomes', url: '#' },
-                { title: 'Select required complexity level', url: '#' },
-                { title: 'What date does the accommodation service need to be completed by?', url: '#' },
-                { title: 'Enter RAR days used', url: null },
-                { title: 'Further information for service provider', url: null },
+                { title: 'Select desired outcomes', url: 'desired-outcomes' },
+                { title: 'Select required complexity level', url: 'complexity-level' },
+                {
+                  title: 'What date does the accommodation service need to be completed by?',
+                  url: 'completion-deadline',
+                },
+                { title: 'Enter RAR days used', url: 'rar-days' },
+                { title: 'Further information for service provider', url: 'further-information' },
               ],
             },
             {

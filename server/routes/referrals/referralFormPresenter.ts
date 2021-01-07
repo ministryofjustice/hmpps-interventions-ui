@@ -50,11 +50,11 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Service user’s risk information',
-            url: '#',
+            url: 'risk-information',
           },
           {
             title: 'Service user’s needs and requirements',
-            url: '#',
+            url: 'needs-and-requirements',
           },
         ],
       },
@@ -74,23 +74,23 @@ export default class ReferralFormPresenter {
               },
               {
                 title: 'Select desired outcomes',
-                url: '#',
+                url: 'desired-outcomes',
               },
               {
                 title: 'Select required complexity level',
-                url: '#',
+                url: 'complexity-level',
               },
               {
                 title: 'What date does the accommodation service need to be completed by?',
-                url: '#',
+                url: 'completion-deadline',
               },
               {
                 title: 'Enter RAR days used',
-                url: null,
+                url: 'rar-days',
               },
               {
                 title: 'Further information for service provider',
-                url: null,
+                url: 'further-information',
               },
             ],
           },
