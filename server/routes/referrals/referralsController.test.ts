@@ -124,7 +124,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
   })
 
   describe('when the user inputs a valid date', () => {
-    it('updates the referral on the backend and redirects to the referral form if the API call succeeds', async () => {
+    it('updates the referral on the backend and redirects to the next question if the API call succeeds', async () => {
       const serviceCategory = serviceCategoryFactory.build()
       const referral = draftReferralFactory
         .serviceCategorySelected(serviceCategory.id)
@@ -137,7 +137,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .type('form')
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
-        .expect('Location', '/referrals/1/form')
+        .expect('Location', '/referrals/1/rar-days')
 
       expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
         'token',
@@ -230,13 +230,13 @@ describe('POST /referrals/:id/complexity-level', () => {
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
-  it('updates the referral on the backend and redirects to the referral form', async () => {
+  it('updates the referral on the backend and redirects to the next question', async () => {
     await request(app)
       .post('/referrals/1/complexity-level')
       .type('form')
       .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/completion-deadline')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -395,13 +395,13 @@ describe('POST /referrals/:id/desired-outcomes', () => {
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
-  it('updates the referral on the backend and redirects to the referral form', async () => {
+  it('updates the referral on the backend and redirects to the next question', async () => {
     await request(app)
       .post('/referrals/1/desired-outcomes')
       .type('form')
       .send({ 'desired-outcomes-ids': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/complexity-level')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -584,7 +584,7 @@ describe('POST /referrals/:id/risk-information', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  it('updates the referral on the backend and redirects to the referral form', async () => {
+  it('updates the referral on the backend and redirects to the next question', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       additionalRiskInformation: 'High risk to the elderly',
     })
@@ -598,7 +598,7 @@ describe('POST /referrals/:id/risk-information', () => {
         'additional-risk-information': 'High risk to the elderly',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/needs-and-requirements')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -677,7 +677,7 @@ describe('POST /referrals/:id/rar-days', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  it('updates the referral on the backend and redirects to the referral form', async () => {
+  it('updates the referral on the backend and redirects to the next question', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       usingRarDays: true,
       maximumRarDays: 10,
@@ -693,7 +693,7 @@ describe('POST /referrals/:id/rar-days', () => {
         'maximum-rar-days': '10',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/further-information')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',

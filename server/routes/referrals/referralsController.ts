@@ -80,7 +80,7 @@ export default class ReferralsController {
     }
 
     if (!error) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/completion-deadline`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
@@ -141,7 +141,7 @@ export default class ReferralsController {
     }
 
     if (errors === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/rar-days`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
@@ -254,7 +254,7 @@ export default class ReferralsController {
     }
 
     if (!error) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/complexity-level`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
@@ -340,7 +340,7 @@ export default class ReferralsController {
     }
 
     if (errors === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
@@ -398,7 +398,7 @@ export default class ReferralsController {
     }
 
     if (errors === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/further-information`)
     } else {
       const presenter = new RarDaysPresenter(referral, serviceCategory, errors, req.body)
       const view = new RarDaysView(presenter)
