@@ -13,8 +13,8 @@ import java.util.UUID
 
 @Service
 class ReferralService(val repository: ReferralRepository) {
-  fun createDraftReferral(): Referral {
-    return repository.save(Referral())
+  fun createDraftReferral(userID: String): Referral {
+    return repository.save(Referral(createdByUserID = userID))
   }
 
   fun getDraftReferral(id: UUID): Referral? {

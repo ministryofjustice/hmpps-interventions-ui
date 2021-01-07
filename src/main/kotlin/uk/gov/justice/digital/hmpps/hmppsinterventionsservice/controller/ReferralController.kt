@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,9 +26,11 @@ class ReferralController(
 ) {
 
   @PostMapping("/draft-referral")
-  fun createDraftReferral(): ResponseEntity<DraftReferralDTO> {
+  fun createDraftReferral(authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
+    val userID = authentication.token.getClaimAsString("user_id")
+      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
 
-    val referral = referralService.createDraftReferral()
+    val referral = referralService.createDraftReferral(userID!!)
     val location = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")

@@ -97,12 +97,13 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `create and persist draft referral`() {
-    val draftReferral = referralService.createDraftReferral()
+    val draftReferral = referralService.createDraftReferral("user_id")
     entityManager.flush()
 
     val savedDraftReferral = referralService.getDraftReferral(draftReferral.id!!)
     assertThat(savedDraftReferral!!.id).isNotNull
     assertThat(savedDraftReferral.created).isNotNull
+    assertThat(savedDraftReferral.createdByUserID).isEqualTo("user_id")
   }
 
   @Test
