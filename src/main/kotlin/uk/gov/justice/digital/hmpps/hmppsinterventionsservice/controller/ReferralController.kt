@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -8,10 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ReferralBadIDException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ReferralNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ServiceCategoryNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
@@ -45,7 +45,7 @@ class ReferralController(
 
     return referralService.getDraftReferral(uuid)
       ?.let { DraftReferralDTO.from(it) }
-      ?: throw ReferralNotFoundException(uuid)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$uuid]")
   }
 
   @PatchMapping("/draft-referral/{id}")
@@ -53,7 +53,7 @@ class ReferralController(
     val uuid = parseID(id)
 
     val referralToUpdate = referralService.getDraftReferral(uuid)
-      ?: throw ReferralNotFoundException(uuid)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$uuid]")
 
     val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
     return DraftReferralDTO.from(updatedReferral)
@@ -70,14 +70,14 @@ class ReferralController(
 
     return serviceCategoryService.getServiceCategoryByID(uuid)
       ?.let { ServiceCategoryDTO.from(it) }
-      ?: throw ServiceCategoryNotFoundException(uuid)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$uuid]")
   }
 
   private fun parseID(id: String): UUID {
     return try {
       UUID.fromString(id)
     } catch (e: IllegalArgumentException) {
-      throw ReferralBadIDException(id)
+      throw ServerWebInputException("could not parse id [id=$id]")
     }
   }
 }
