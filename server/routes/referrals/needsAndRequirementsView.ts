@@ -4,16 +4,7 @@ import ViewUtils from '../../utils/viewUtils'
 export default class NeedsAndRequirementsView {
   constructor(private readonly presenter: NeedsAndRequirementsPresenter) {}
 
-  private get errorSummaryArgs() {
-    if (!this.presenter.errorSummary) {
-      return null
-    }
-
-    return {
-      titleText: 'There is a problem',
-      errorList: this.presenter.errorSummary.map(error => ({ text: error.message, href: `#${error.field}` })),
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private get summaryListArgs() {
     return {

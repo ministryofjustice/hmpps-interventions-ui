@@ -7,7 +7,7 @@ export default class ComplexityLevelView {
   get radioButtonArgs(): Record<string, unknown> {
     return {
       classes: 'govuk-radios',
-      idPrefix: 'complexity-level',
+      idPrefix: 'complexity-level-id',
       name: 'complexity-level-id',
       fieldset: {
         legend: {
@@ -16,7 +16,7 @@ export default class ComplexityLevelView {
           classes: 'govuk-fieldset__legend--xl',
         },
       },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.error?.message),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       items: this.presenter.complexityDescriptions.map(complexityDescription => {
         return {
           value: complexityDescription.value,
@@ -30,21 +30,7 @@ export default class ComplexityLevelView {
     }
   }
 
-  get errorSummaryArgs(): Record<string, unknown> | null {
-    if (!this.presenter.error) {
-      return null
-    }
-
-    return {
-      titleText: 'There is a problem',
-      errorList: [
-        {
-          text: this.presenter.error.message,
-          href: '#complexity-level',
-        },
-      ],
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [

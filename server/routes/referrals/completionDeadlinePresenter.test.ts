@@ -50,33 +50,41 @@ describe('CompletionDeadlinePresenter', () => {
   })
 
   describe('error information', () => {
-    describe('when no errors are passed in', () => {
+    describe('when a null error is passed in', () => {
       it('returns no errors', () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
         const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
 
         expect(presenter.errorMessage).toBeNull()
-        expect(presenter.erroredFields).toEqual([])
+        expect(presenter.hasDayError).toEqual(false)
+        expect(presenter.hasMonthError).toEqual(false)
+        expect(presenter.hasYearError).toEqual(false)
         expect(presenter.errorSummary).toBeNull()
       })
     })
 
-    describe('when errors are passed in', () => {
+    describe('when a non-null error is passed in', () => {
       it('returns error information', () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
         const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, {
-          firstErroredField: 'month',
-          erroredFields: ['month', 'year'],
-          message: 'Please enter a month and a year',
+          errors: [
+            {
+              errorSummaryLinkedField: 'completion-deadline-month',
+              formFields: ['completion-deadline-month', 'completion-deadline-year'],
+              message: 'Please enter a month and a year',
+            },
+          ],
         })
 
         expect(presenter.errorMessage).toBe('Please enter a month and a year')
-        expect(presenter.erroredFields).toEqual(['month', 'year'])
-        expect(presenter.errorSummary).toEqual({
-          errors: [{ message: 'Please enter a month and a year', linkedField: 'month' }],
-        })
+        expect(presenter.hasDayError).toEqual(false)
+        expect(presenter.hasMonthError).toEqual(true)
+        expect(presenter.hasYearError).toEqual(true)
+        expect(presenter.errorSummary).toEqual([
+          { message: 'Please enter a month and a year', field: 'completion-deadline-month' },
+        ])
       })
     })
   })

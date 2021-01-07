@@ -1,10 +1,11 @@
 import { DraftReferral } from '../../services/interventionsService'
+import { FormValidationError } from '../../utils/formValidationError'
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class RiskInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
-    private readonly errors: { field: string; message: string }[] | null = null,
+    private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
@@ -20,11 +21,11 @@ export default class RiskInformationPresenter {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
     additionalRiskInformation: {
       label: `Additional information for the provider about ${this.referral.serviceUser?.firstName}’s risks (optional)`,
-      errorMessage: ReferralDataPresenterUtils.errorMessage(this.errors, 'additional-risk-information'),
+      errorMessage: ReferralDataPresenterUtils.errorMessage(this.error, 'additional-risk-information'),
     },
   }
 
-  readonly errorSummary = this.errors
+  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
 
   private readonly utils = new ReferralDataPresenterUtils(this.referral, this.userInputData)
 

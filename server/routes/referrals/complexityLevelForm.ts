@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { DraftReferral } from '../../services/interventionsService'
-import { ComplexityLevelError } from './complexityLevelPresenter'
 import errorMessages from '../../utils/errorMessages'
+import { FormValidationError } from '../../utils/formValidationError'
 
 export default class ComplexityLevelForm {
   private constructor(private readonly request: Request) {}
@@ -20,11 +20,19 @@ export default class ComplexityLevelForm {
     return this.request.body['complexity-level-id'] !== null && this.request.body['complexity-level-id'] !== undefined
   }
 
-  get error(): ComplexityLevelError | null {
+  get error(): FormValidationError | null {
     if (this.isValid) {
       return null
     }
 
-    return { message: errorMessages.complexityLevel.empty }
+    return {
+      errors: [
+        {
+          formFields: ['complexity-level-id'],
+          errorSummaryLinkedField: 'complexity-level-id',
+          message: errorMessages.complexityLevel.empty,
+        },
+      ],
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { DraftReferral } from '../../services/interventionsService'
-import { DesiredOutcomesError } from './desiredOutcomesPresenter'
 import errorMessages from '../../utils/errorMessages'
+import { FormValidationError } from '../../utils/formValidationError'
 
 export default class DesiredOutcomesForm {
   private constructor(private readonly request: Request) {}
@@ -20,11 +20,19 @@ export default class DesiredOutcomesForm {
     return this.request.body['desired-outcomes-ids'] !== null && this.request.body['desired-outcomes-ids'] !== undefined
   }
 
-  get error(): DesiredOutcomesError | null {
+  get error(): FormValidationError | null {
     if (this.isValid) {
       return null
     }
 
-    return { message: errorMessages.desiredOutcomes.empty }
+    return {
+      errors: [
+        {
+          errorSummaryLinkedField: 'desired-outcomes-ids',
+          formFields: ['desired-outcomes-ids'],
+          message: errorMessages.desiredOutcomes.empty,
+        },
+      ],
+    }
   }
 }

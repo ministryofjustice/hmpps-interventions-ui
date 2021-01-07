@@ -1,16 +1,18 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
-
-export interface DesiredOutcomesError {
-  message: string
-}
+import { FormValidationError } from '../../utils/formValidationError'
+import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class DesiredOutcomesPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    readonly error: DesiredOutcomesError | null = null,
+    private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string[]> | null = null
   ) {}
+
+  readonly errorMessage = ReferralDataPresenterUtils.errorMessage(this.error, 'desired-outcomes-ids')
+
+  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
 
   readonly desiredOutcomes: {
     value: string

@@ -25,9 +25,15 @@ describe('RiskInformationPresenter', () => {
           .serviceCategorySelected()
           .serviceUserSelected()
           .build({ serviceUser: { firstName: 'Geoffrey' } })
-        const presenter = new RiskInformationPresenter(referral, [
-          { field: 'additional-risk-information', message: 'additionalRiskInformation msg' },
-        ])
+        const presenter = new RiskInformationPresenter(referral, {
+          errors: [
+            {
+              formFields: ['additional-risk-information'],
+              errorSummaryLinkedField: 'additional-risk-information',
+              message: 'additionalRiskInformation msg',
+            },
+          ],
+        })
 
         expect(presenter.text).toMatchObject({
           additionalRiskInformation: {
@@ -92,9 +98,15 @@ describe('RiskInformationPresenter', () => {
     describe('when errors is not null', () => {
       it('returns the errors', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
-        const presenter = new RiskInformationPresenter(referral, [
-          { field: 'additional-risk-information', message: 'msg' },
-        ])
+        const presenter = new RiskInformationPresenter(referral, {
+          errors: [
+            {
+              formFields: ['additional-risk-information'],
+              errorSummaryLinkedField: 'additional-risk-information',
+              message: 'msg',
+            },
+          ],
+        })
 
         expect(presenter.errorSummary).toEqual([{ field: 'additional-risk-information', message: 'msg' }])
       })

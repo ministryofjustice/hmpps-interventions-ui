@@ -3,6 +3,7 @@ import { body, Result, SanitizationChain, ValidationError, validationResult } fr
 import { DraftReferral } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import errorMessages from '../../utils/errorMessages'
+import { FormValidationError } from '../../utils/formValidationError'
 
 export default class CompletionDeadlineForm {
   private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
@@ -55,10 +56,10 @@ export default class CompletionDeadlineForm {
   }
 
   get isValid(): boolean {
-    return this.errors === null
+    return this.error === null
   }
 
-  get errors(): CompletionDeadlineErrors | null {
+  get error(): FormValidationError | null {
     if (this.result.isEmpty() && this.completionDeadline) {
       return null
     }
@@ -66,9 +67,13 @@ export default class CompletionDeadlineForm {
     // TODO (IC-706) use `result`, implement all the rules of the GOV.UK Design
     // System date input component error handling
     return {
-      firstErroredField: 'day',
-      erroredFields: ['day', 'month', 'year'],
-      message: errorMessages.completionDeadline.invalidDate,
+      errors: [
+        {
+          errorSummaryLinkedField: 'completion-deadline-day',
+          formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
+          message: errorMessages.completionDeadline.invalidDate,
+        },
+      ],
     }
   }
 
@@ -79,11 +84,4 @@ export default class CompletionDeadlineForm {
       this.request.body['completion-deadline-year']
     )
   }
-}
-
-// This interface is up for debate
-export interface CompletionDeadlineErrors {
-  firstErroredField: 'day' | 'month' | 'year'
-  erroredFields: ('day' | 'month' | 'year')[]
-  message: string
 }

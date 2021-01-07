@@ -46,7 +46,15 @@ describe(DesiredOutcomesForm, () => {
         body: {},
       } as Request)
 
-      expect(form.error).toEqual({ message: 'Select desired outcomes' })
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'desired-outcomes-ids',
+            formFields: ['desired-outcomes-ids'],
+            message: 'Select desired outcomes',
+          },
+        ],
+      })
     })
 
     it('returns an error object when the desired-outcomes-ids property is null in the body', async () => {
@@ -54,7 +62,15 @@ describe(DesiredOutcomesForm, () => {
         body: { 'desired-outcomes-ids': null },
       } as Request)
 
-      expect(form.error).toEqual({ message: 'Select desired outcomes' })
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'desired-outcomes-ids',
+            formFields: ['desired-outcomes-ids'],
+            message: 'Select desired outcomes',
+          },
+        ],
+      })
     })
   })
 

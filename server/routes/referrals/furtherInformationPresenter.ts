@@ -1,14 +1,12 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
-
-export interface FurtherInformationError {
-  message: string
-}
+import { FormValidationError } from '../../utils/formValidationError'
+import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class FurtherInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    readonly error: FurtherInformationError | null = null,
+    private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {}
 
@@ -16,6 +14,10 @@ export default class FurtherInformationPresenter {
 
   readonly hint =
     'For example, relevant previous offences, previously completed programmes or further reasons for this referral'
+
+  readonly errorMessage = ReferralDataPresenterUtils.errorMessage(this.error, 'further-information')
+
+  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
 
   get value(): string {
     if (this.userInputData !== null) {

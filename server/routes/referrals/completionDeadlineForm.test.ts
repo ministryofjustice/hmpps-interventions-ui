@@ -50,7 +50,7 @@ describe('CompletionDeadlineForm', () => {
 
       const form = await CompletionDeadlineForm.createForm(req)
 
-      expect(form.errors).toBeNull()
+      expect(form.error).toBeNull()
     })
 
     it('returns an error when a field is empty', async () => {
@@ -64,10 +64,14 @@ describe('CompletionDeadlineForm', () => {
 
       const form = await CompletionDeadlineForm.createForm(req)
 
-      expect(form.errors).toEqual({
-        firstErroredField: 'day',
-        erroredFields: ['day', 'month', 'year'],
-        message: 'The date by which the service needs to be completed must be a real date',
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'completion-deadline-day',
+            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
+            message: 'The date by which the service needs to be completed must be a real date',
+          },
+        ],
       })
     })
 
@@ -82,10 +86,14 @@ describe('CompletionDeadlineForm', () => {
 
       const form = await CompletionDeadlineForm.createForm(req)
 
-      expect(form.errors).toEqual({
-        firstErroredField: 'day',
-        erroredFields: ['day', 'month', 'year'],
-        message: 'The date by which the service needs to be completed must be a real date',
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'completion-deadline-day',
+            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
+            message: 'The date by which the service needs to be completed must be a real date',
+          },
+        ],
       })
     })
 
@@ -100,10 +108,14 @@ describe('CompletionDeadlineForm', () => {
 
       const form = await CompletionDeadlineForm.createForm(req)
 
-      expect(form.errors).toEqual({
-        firstErroredField: 'day',
-        erroredFields: ['day', 'month', 'year'],
-        message: 'The date by which the service needs to be completed must be a real date',
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'completion-deadline-day',
+            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
+            message: 'The date by which the service needs to be completed must be a real date',
+          },
+        ],
       })
     })
 
@@ -118,10 +130,14 @@ describe('CompletionDeadlineForm', () => {
 
       const form = await CompletionDeadlineForm.createForm(req)
 
-      expect(form.errors).toEqual({
-        firstErroredField: 'day',
-        erroredFields: ['day', 'month', 'year'],
-        message: 'The date by which the service needs to be completed must be a real date',
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'completion-deadline-day',
+            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
+            message: 'The date by which the service needs to be completed must be a real date',
+          },
+        ],
       })
     })
   })

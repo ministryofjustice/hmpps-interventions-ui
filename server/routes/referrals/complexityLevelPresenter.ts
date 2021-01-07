@@ -1,16 +1,18 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
-
-export interface ComplexityLevelError {
-  message: string
-}
+import { FormValidationError } from '../../utils/formValidationError'
+import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class ComplexityLevelPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    readonly error?: ComplexityLevelError | null,
+    private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
+
+  readonly errorMessage = ReferralDataPresenterUtils.errorMessage(this.error, 'complexity-level-id')
+
+  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
 
   readonly complexityDescriptions: {
     title: string

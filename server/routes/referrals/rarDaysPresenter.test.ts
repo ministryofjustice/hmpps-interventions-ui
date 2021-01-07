@@ -27,10 +27,16 @@ describe(RarDaysPresenter, () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory, [
-          { field: 'using-rar-days', message: 'usingRarDays msg' },
-          { field: 'maximum-rar-days', message: 'maximumRarDays msg' },
-        ])
+        const presenter = new RarDaysPresenter(referral, serviceCategory, {
+          errors: [
+            { formFields: ['using-rar-days'], errorSummaryLinkedField: 'using-rar-days', message: 'usingRarDays msg' },
+            {
+              formFields: ['maximum-rar-days'],
+              errorSummaryLinkedField: 'maximum-rar-days',
+              message: 'maximumRarDays msg',
+            },
+          ],
+        })
 
         expect(presenter.text).toMatchObject({
           usingRarDays: {
@@ -109,7 +115,7 @@ describe(RarDaysPresenter, () => {
   })
 
   describe('errorSummary', () => {
-    describe('when errors is null', () => {
+    describe('when error is null', () => {
       it('returns null', () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
@@ -120,15 +126,21 @@ describe(RarDaysPresenter, () => {
       })
     })
 
-    describe('when errors is not null', () => {
-      it('returns the errors sorted by the order the fields appear on the page', () => {
+    describe('when error is not null', () => {
+      it('returns a summary of the errors sorted by the order the fields appear on the page', () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory, [
-          { field: 'maximum-rar-days', message: 'maximumRarDays msg' },
-          { field: 'using-rar-days', message: 'usingRarDays msg' },
-        ])
+        const presenter = new RarDaysPresenter(referral, serviceCategory, {
+          errors: [
+            {
+              formFields: ['maximum-rar-days'],
+              errorSummaryLinkedField: 'maximum-rar-days',
+              message: 'maximumRarDays msg',
+            },
+            { formFields: ['using-rar-days'], errorSummaryLinkedField: 'using-rar-days', message: 'usingRarDays msg' },
+          ],
+        })
 
         expect(presenter.errorSummary).toEqual([
           { field: 'using-rar-days', message: 'usingRarDays msg' },

@@ -1,15 +1,16 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
+import { FormValidationError } from '../../utils/formValidationError'
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class RarDaysPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    private readonly errors: { field: string; message: string }[] | null = null,
+    private readonly errors: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly errorSummary = ReferralDataPresenterUtils.sortedErrors(this.errors, {
+  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.errors, {
     fieldOrder: ['using-rar-days', 'maximum-rar-days'],
   })
 

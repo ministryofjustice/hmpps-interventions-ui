@@ -1,6 +1,7 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
-import { CompletionDeadlineErrors } from './completionDeadlineForm'
 import CalendarDay from '../../utils/calendarDay'
+import { FormValidationError } from '../../utils/formValidationError'
+import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class CompletionDeadlinePresenter {
   readonly day: string
@@ -11,9 +12,13 @@ export default class CompletionDeadlinePresenter {
 
   readonly errorMessage: string | null
 
-  readonly erroredFields: ('day' | 'month' | 'year')[]
+  readonly hasMonthError: boolean
 
-  readonly errorSummary: CompletionDeadlineErrorSummaryPresenter | null
+  readonly hasDayError: boolean
+
+  readonly hasYearError: boolean
+
+  readonly errorSummary: { field: string; message: string }[] | null
 
   readonly title = `What date does the ${this.serviceCategory.name} service need to be completed by?`
 
@@ -22,7 +27,7 @@ export default class CompletionDeadlinePresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    errors: CompletionDeadlineErrors | null = null,
+    error: FormValidationError | null = null,
     userInputData: Record<string, unknown> | null = null
   ) {
     if (!userInputData) {
@@ -45,20 +50,14 @@ export default class CompletionDeadlinePresenter {
       this.year = String(userInputData['completion-deadline-year'] || '')
     }
 
-    if (!errors) {
-      this.errorSummary = null
-      this.errorMessage = null
-      this.erroredFields = []
-    } else {
-      this.errorSummary = {
-        errors: [{ message: errors.message, linkedField: errors.firstErroredField }],
-      }
-      this.errorMessage = errors.message
-      this.erroredFields = errors.erroredFields
-    }
-  }
-}
+    this.errorSummary = ReferralDataPresenterUtils.errorSummary(error)
+    this.errorMessage =
+      ReferralDataPresenterUtils.errorMessage(error, 'completion-deadline-day') ??
+      ReferralDataPresenterUtils.errorMessage(error, 'completion-deadline-month') ??
+      ReferralDataPresenterUtils.errorMessage(error, 'completion-deadline-year')
 
-export interface CompletionDeadlineErrorSummaryPresenter {
-  errors: { message: string; linkedField: 'day' | 'month' | 'year' }[]
+    this.hasDayError = ReferralDataPresenterUtils.hasError(error, 'completion-deadline-day')
+    this.hasMonthError = ReferralDataPresenterUtils.hasError(error, 'completion-deadline-month')
+    this.hasYearError = ReferralDataPresenterUtils.hasError(error, 'completion-deadline-year')
+  }
 }
