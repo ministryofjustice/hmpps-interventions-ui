@@ -18,11 +18,11 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Enter service user case identifier',
-            url: '#',
+            url: null,
           },
           {
             title: 'Confirm service user details',
-            url: '#',
+            url: null,
           },
         ],
       },
@@ -34,11 +34,11 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Find and select service user interventions',
-            url: '#',
+            url: null,
           },
           {
             title: 'Confirm interventions',
-            url: '#',
+            url: null,
           },
         ],
       },
@@ -50,11 +50,11 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Service user’s risk information',
-            url: '#',
+            url: 'risk-information',
           },
           {
             title: 'Service user’s needs and requirements',
-            url: '#',
+            url: 'needs-and-requirements',
           },
         ],
       },
@@ -70,58 +70,27 @@ export default class ReferralFormPresenter {
             tasks: [
               {
                 title: 'Select the relevant sentence for the accommodation referral',
-                url: '#',
+                url: null,
               },
               {
                 title: 'Select desired outcomes',
-                url: '#',
+                url: 'desired-outcomes',
               },
               {
                 title: 'Select required complexity level',
-                url: '#',
+                url: 'complexity-level',
               },
               {
                 title: 'What date does the accommodation service need to be completed by?',
-                url: '#',
+                url: 'completion-deadline',
               },
               {
                 title: 'Enter RAR days used',
-                url: null,
+                url: 'rar-days',
               },
               {
                 title: 'Further information for service provider',
-                url: null,
-              },
-            ],
-          },
-          {
-            title: 'Social inclusion referral',
-            number: '4.2',
-            status: ReferralFormStatus.NotStarted,
-            tasks: [
-              {
-                title: 'Select the relevant sentence for the social inclusion referral',
-                url: '#',
-              },
-              {
-                title: 'Select desired outcomes',
-                url: null,
-              },
-              {
-                title: 'Select required complexity level',
-                url: null,
-              },
-              {
-                title: 'What date does the social inclusion service need to be completed by?',
-                url: null,
-              },
-              {
-                title: 'Enter RAR days used',
-                url: null,
-              },
-              {
-                title: 'Further information for service provider',
-                url: null,
+                url: 'further-information',
               },
             ],
           },
@@ -135,7 +104,7 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Responsible officer information',
-            url: '#',
+            url: null,
           },
         ],
       },
