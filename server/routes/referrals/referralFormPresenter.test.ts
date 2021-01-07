@@ -64,19 +64,6 @@ describe('ReferralFormPresenter', () => {
                 { title: 'Further information for service provider', url: 'further-information' },
               ],
             },
-            {
-              title: 'Social inclusion referral',
-              number: '4.2',
-              status: ReferralFormStatus.NotStarted,
-              tasks: [
-                { title: 'Select the relevant sentence for the social inclusion referral', url: null },
-                { title: 'Select desired outcomes', url: null },
-                { title: 'Select required complexity level', url: null },
-                { title: 'What date does the social inclusion service need to be completed by?', url: null },
-                { title: 'Enter RAR days used', url: null },
-                { title: 'Further information for service provider', url: null },
-              ],
-            },
           ],
         },
         {
