@@ -18,11 +18,11 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Enter service user case identifier',
-            url: '#',
+            url: null,
           },
           {
             title: 'Confirm service user details',
-            url: '#',
+            url: null,
           },
         ],
       },
@@ -34,11 +34,11 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Find and select service user interventions',
-            url: '#',
+            url: null,
           },
           {
             title: 'Confirm interventions',
-            url: '#',
+            url: null,
           },
         ],
       },
@@ -70,7 +70,7 @@ export default class ReferralFormPresenter {
             tasks: [
               {
                 title: 'Select the relevant sentence for the accommodation referral',
-                url: '#',
+                url: null,
               },
               {
                 title: 'Select desired outcomes',
@@ -101,7 +101,7 @@ export default class ReferralFormPresenter {
             tasks: [
               {
                 title: 'Select the relevant sentence for the social inclusion referral',
-                url: '#',
+                url: null,
               },
               {
                 title: 'Select desired outcomes',
@@ -135,7 +135,7 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Responsible officer information',
-            url: '#',
+            url: null,
           },
         ],
       },

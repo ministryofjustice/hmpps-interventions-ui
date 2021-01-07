@@ -19,8 +19,8 @@ describe('ReferralFormPresenter', () => {
           number: '1',
           status: ReferralFormStatus.Completed,
           tasks: [
-            { title: 'Enter service user case identifier', url: '#' },
-            { title: 'Confirm service user details', url: '#' },
+            { title: 'Enter service user case identifier', url: null },
+            { title: 'Confirm service user details', url: null },
           ],
         },
         {
@@ -29,8 +29,8 @@ describe('ReferralFormPresenter', () => {
           number: '2',
           status: ReferralFormStatus.Completed,
           tasks: [
-            { title: 'Find and select service user interventions', url: '#' },
-            { title: 'Confirm interventions', url: '#' },
+            { title: 'Find and select service user interventions', url: null },
+            { title: 'Confirm interventions', url: null },
           ],
         },
         {
@@ -53,7 +53,7 @@ describe('ReferralFormPresenter', () => {
               number: '4.1',
               status: ReferralFormStatus.InProgress,
               tasks: [
-                { title: 'Select the relevant sentence for the accommodation referral', url: '#' },
+                { title: 'Select the relevant sentence for the accommodation referral', url: null },
                 { title: 'Select desired outcomes', url: 'desired-outcomes' },
                 { title: 'Select required complexity level', url: 'complexity-level' },
                 {
@@ -69,7 +69,7 @@ describe('ReferralFormPresenter', () => {
               number: '4.2',
               status: ReferralFormStatus.NotStarted,
               tasks: [
-                { title: 'Select the relevant sentence for the social inclusion referral', url: '#' },
+                { title: 'Select the relevant sentence for the social inclusion referral', url: null },
                 { title: 'Select desired outcomes', url: null },
                 { title: 'Select required complexity level', url: null },
                 { title: 'What date does the social inclusion service need to be completed by?', url: null },
@@ -84,7 +84,7 @@ describe('ReferralFormPresenter', () => {
           title: 'Review responsible officer’s information',
           number: '5',
           status: ReferralFormStatus.NotStarted,
-          tasks: [{ title: 'Responsible officer information', url: '#' }],
+          tasks: [{ title: 'Responsible officer information', url: null }],
         },
         {
           type: 'single',
