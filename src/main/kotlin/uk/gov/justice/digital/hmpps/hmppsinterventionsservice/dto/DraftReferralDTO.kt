@@ -8,6 +8,7 @@ import java.util.UUID
 data class DraftReferralDTO(
   val id: UUID? = null,
   val created: OffsetDateTime? = null,
+  val createdByUserId: String? = null,
   val completionDeadline: LocalDate? = null,
   val serviceCategoryId: UUID? = null,
   val complexityLevelId: UUID? = null,
@@ -25,21 +26,22 @@ data class DraftReferralDTO(
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
       return DraftReferralDTO(
-        referral.id!!,
-        referral.created!!,
-        referral.completionDeadline,
-        referral.serviceCategoryID,
-        referral.complexityLevelID,
-        referral.furtherInformation,
-        referral.additionalNeedsInformation,
-        referral.accessibilityNeeds,
-        referral.needsInterpreter,
-        referral.interpreterLanguage,
-        referral.hasAdditionalResponsibilities,
-        referral.whenUnavailable,
-        referral.additionalRiskInformation,
-        referral.usingRarDays,
-        referral.maximumRarDays
+        id = referral.id!!,
+        created = referral.created!!,
+        createdByUserId = referral.createdByUserID!!,
+        completionDeadline = referral.completionDeadline,
+        serviceCategoryId = referral.serviceCategoryID,
+        complexityLevelId = referral.complexityLevelID,
+        furtherInformation = referral.furtherInformation,
+        additionalNeedsInformation = referral.additionalNeedsInformation,
+        accessibilityNeeds = referral.accessibilityNeeds,
+        needsInterpreter = referral.needsInterpreter,
+        interpreterLanguage = referral.interpreterLanguage,
+        hasAdditionalResponsibilities = referral.hasAdditionalResponsibilities,
+        whenUnavailable = referral.whenUnavailable,
+        additionalRiskInformation = referral.additionalRiskInformation,
+        usingRarDays = referral.usingRarDays,
+        maximumRarDays = referral.maximumRarDays,
       )
     }
   }
