@@ -9,13 +9,24 @@
 - npm >= 6
 - Docker
 
-### Build & Run 
+### Initial setup
 
 ```
 docker-compose pull
-docker-compose up -d 
 (nvm use)
-npm install 
+npm install
+```
+
+You'll also need to add the following line to your `/etc/hosts` file:
+
+```
+127.0.0.1 hmpps-auth
+```
+
+### Running the app
+
+```
+docker-compose up -d
 npm run start:dev
 ```
 
