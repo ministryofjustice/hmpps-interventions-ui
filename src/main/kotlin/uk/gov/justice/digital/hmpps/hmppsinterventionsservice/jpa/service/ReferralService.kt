@@ -58,6 +58,12 @@ class ReferralService(val repository: ReferralRepository) {
       }
     }
 
+    update.usingRarDays?.let {
+      if (it && update.maximumRarDays == null) {
+        errors.add(FieldError(field = "usingRarDays", error = Code.CONDITIONAL_FIELD_MUST_BE_SET))
+      }
+    }
+
     if (errors.isNotEmpty()) {
       throw ValidationError("draft referral update invalid", errors)
     }
@@ -108,6 +114,14 @@ class ReferralService(val repository: ReferralRepository) {
 
     update.additionalRiskInformation?.let {
       referral.additionalRiskInformation = it
+    }
+
+    update.usingRarDays?.let {
+      referral.usingRarDays = it
+    }
+
+    update.maximumRarDays?.let {
+      referral.maximumRarDays = it
     }
 
     return repository.save(referral)

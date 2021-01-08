@@ -221,6 +221,23 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
+  fun `when usingRarDays is true, maximumRarDays must be set`() {
+    val referral = Referral()
+    // this is fine
+    referralService.updateDraftReferral(referral, DraftReferralDTO(usingRarDays = false))
+
+    val error = assertThrows<ValidationError> {
+      // this throws ValidationError
+      referralService.updateDraftReferral(referral, DraftReferralDTO(usingRarDays = true))
+    }
+    assertThat(error.errors.size).isEqualTo(1)
+    assertThat(error.errors[0].field).isEqualTo("usingRarDays")
+
+    // this is also fine
+    referralService.updateDraftReferral(referral, DraftReferralDTO(usingRarDays = true, maximumRarDays = 12))
+  }
+
+  @Test
   fun `multiple errors at once`() {
     val referral = Referral()
     val update = DraftReferralDTO(completionDeadline = LocalDate.of(2020, 1, 1), needsInterpreter = true)

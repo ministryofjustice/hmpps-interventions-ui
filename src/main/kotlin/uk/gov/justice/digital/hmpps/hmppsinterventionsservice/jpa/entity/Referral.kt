@@ -24,6 +24,8 @@ data class Referral(
   var whenUnavailable: String? = null,
   var complexityLevelID: UUID? = null,
   var serviceCategoryID: UUID? = null,
+  var usingRarDays: Boolean? = null,
+  var maximumRarDays: Int? = null,
   @Column(name = "created_by_userid") var createdByUserID: String? = null,
   var completionDeadline: LocalDate? = null,
   @CreationTimestamp var created: OffsetDateTime? = null,
