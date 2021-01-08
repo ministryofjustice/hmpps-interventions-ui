@@ -150,8 +150,10 @@ describe('POST /referrals/:id/completion-deadline', () => {
       ])
     })
 
-    it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-      interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+    it('updates the referral on the backend and returns a 400, rendering the question page with an error message, if the API call fails with a validation error', async () => {
+      interventionsService.patchDraftReferral.mockRejectedValue({
+        validationErrors: [{ field: 'completionDeadline', error: 'DATE_MUST_BE_IN_THE_FUTURE' }],
+      })
 
       await request(app)
         .post('/referrals/1/completion-deadline')
@@ -159,7 +161,29 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('Backend error message')
+          expect(res.text).toContain('What date does the accommodation service need to be completed by?')
+          expect(res.text).toContain('The date by which the service needs to be completed must be in the future')
+        })
+
+      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        { completionDeadline: '2021-09-15' },
+      ])
+    })
+
+    it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+      interventionsService.patchDraftReferral.mockRejectedValue({
+        message: 'Some backend error message',
+      })
+
+      await request(app)
+        .post('/referrals/1/completion-deadline')
+        .type('form')
+        .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Some backend error message')
         })
 
       expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
@@ -249,16 +273,18 @@ describe('POST /referrals/:id/complexity-level', () => {
     ])
   })
 
-  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
 
     await request(app)
       .post('/referrals/1/complexity-level')
       .type('form')
       .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
-      .expect(400)
+      .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Backend error message')
+        expect(res.text).toContain('Some backend error message')
       })
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
@@ -312,16 +338,18 @@ describe('POST /referrals/:id/further-information', () => {
     ])
   })
 
-  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
 
     await request(app)
       .post('/referrals/1/further-information')
       .type('form')
       .send({ 'further-information': 'Further information about the service user' })
-      .expect(400)
+      .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Backend error message')
+        expect(res.text).toContain('Some backend error message')
       })
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
@@ -392,7 +420,7 @@ describe('POST /referrals/:id/desired-outcomes', () => {
   ]
 
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes })
+    const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes, name: 'social inclusion' })
     const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
@@ -414,16 +442,18 @@ describe('POST /referrals/:id/desired-outcomes', () => {
     ])
   })
 
-  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
 
     await request(app)
       .post('/referrals/1/desired-outcomes')
       .type('form')
       .send({ 'desired-outcomes-ids': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
-      .expect(400)
+      .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Backend error message')
+        expect(res.text).toContain('Some backend error message')
       })
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
@@ -530,8 +560,10 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
     })
   })
 
-  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
 
     await request(app)
       .post('/referrals/1/needs-and-requirements')
@@ -544,9 +576,9 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
         'has-additional-responsibilities': 'yes',
         'when-unavailable': 'He works on Fridays 7am - midday',
       })
-      .expect(400)
+      .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Backend error message')
+        expect(res.text).toContain('Some backend error message')
       })
   })
 })
@@ -613,8 +645,10 @@ describe('POST /referrals/:id/risk-information', () => {
     ])
   })
 
-  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
 
     await request(app)
       .post('/referrals/1/risk-information')
@@ -622,9 +656,9 @@ describe('POST /referrals/:id/risk-information', () => {
       .send({
         'additional-risk-information': 'High risk to the elderly',
       })
-      .expect(400)
+      .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Backend error message')
+        expect(res.text).toContain('Some backend error message')
       })
   })
 })
@@ -727,8 +761,10 @@ describe('POST /referrals/:id/rar-days', () => {
     })
   })
 
-  it('updates the referral on the backend and returns a 400 with an error message if the API call fails', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue(new Error('Backend error message'))
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
 
     await request(app)
       .post('/referrals/1/rar-days')
@@ -737,9 +773,9 @@ describe('POST /referrals/:id/rar-days', () => {
         'using-rar-days': 'yes',
         'maximum-rar-days': '10',
       })
-      .expect(400)
+      .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Backend error message')
+        expect(res.text).toContain('Some backend error message')
       })
   })
 })

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
+import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import ReferralFormPresenter from './referralFormPresenter'
 import DraftReferralsListPresenter from './draftReferralsListPresenter'
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
@@ -85,15 +86,7 @@ export default class ReferralsController {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        error = {
-          errors: [
-            {
-              formFields: ['complexity-level-id'],
-              errorSummaryLinkedField: 'complexity-level-id',
-              message: e.message,
-            },
-          ],
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
@@ -149,16 +142,7 @@ export default class ReferralsController {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        error = {
-          errors: [
-            {
-              formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
-              errorSummaryLinkedField: 'completion-deadline-day',
-              // TODO (IC-615) there’s probably a more appropriate message to use from the response
-              message: e.message,
-            },
-          ],
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
@@ -215,15 +199,7 @@ export default class ReferralsController {
     try {
       await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
     } catch (e) {
-      error = {
-        errors: [
-          {
-            formFields: ['further-information'],
-            errorSummaryLinkedField: 'further-information',
-            message: e.message,
-          },
-        ],
-      }
+      error = createFormValidationErrorOrRethrow(e)
     }
 
     if (!error) {
@@ -275,15 +251,7 @@ export default class ReferralsController {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        error = {
-          errors: [
-            {
-              formFields: ['desired-outcomes-ids'],
-              errorSummaryLinkedField: 'desired-outcomes-ids',
-              message: e.message,
-            },
-          ],
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
@@ -330,16 +298,7 @@ export default class ReferralsController {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        // TODO IC-615 use proper error information
-        error = {
-          errors: [
-            {
-              formFields: ['additional-needs-information'],
-              errorSummaryLinkedField: 'additional-needs-information',
-              message: e.message,
-            },
-          ],
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
@@ -374,16 +333,7 @@ export default class ReferralsController {
     try {
       await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
     } catch (e) {
-      error = {
-        errors: [
-          {
-            formFields: ['additional-risk-information'],
-            errorSummaryLinkedField: 'additional-risk-information',
-            // TODO (IC-615) there’s probably a more appropriate message to use from the response
-            message: e.message,
-          },
-        ],
-      }
+      error = createFormValidationErrorOrRethrow(e)
     }
 
     if (error === null) {
@@ -437,10 +387,7 @@ export default class ReferralsController {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        // TODO IC-615 use proper error information
-        error = {
-          errors: [{ formFields: ['using-rar-days'], errorSummaryLinkedField: 'using-rar-days', message: e.message }],
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
