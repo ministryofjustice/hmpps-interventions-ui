@@ -202,6 +202,54 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('patchDraftReferral', () => {
+    it('throws a validation error when submitting invalid data', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update the completion deadline to a date in the past',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { completionDeadline: '2020-04-01' },
+        },
+        willRespondWith: {
+          status: 400,
+          body: {
+            status: 400,
+            message: Matchers.like('Validation error'),
+            validationErrors: [
+              {
+                field: 'completionDeadline',
+                error: 'DATE_MUST_BE_IN_THE_FUTURE',
+              },
+            ],
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      await expect(
+        interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+          completionDeadline: '2020-04-01',
+        })
+      ).rejects.toMatchObject({
+        status: 400,
+        message: 'Bad Request',
+        validationErrors: [
+          {
+            field: 'completionDeadline',
+            error: 'DATE_MUST_BE_IN_THE_FUTURE',
+          },
+        ],
+      })
+    })
+
     it('returns the updated referral when setting the completion date', async () => {
       await provider.addInteraction({
         state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
