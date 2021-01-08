@@ -27,10 +27,15 @@ class ReferralController(
 
   @PostMapping("/draft-referral")
   fun createDraftReferral(authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
+    // fixme: should we allow tokens granted with client credentials to create referrals?
+
     val userID = authentication.token.getClaimAsString("user_id")
       ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
 
-    val referral = referralService.createDraftReferral(userID!!)
+    val authSource = authentication.token.getClaimAsString("auth_source")
+      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
+
+    val referral = referralService.createDraftReferral(userID!!, authSource!!)
     val location = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")
