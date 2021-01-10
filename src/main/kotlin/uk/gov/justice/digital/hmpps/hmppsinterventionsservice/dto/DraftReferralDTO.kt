@@ -7,7 +7,7 @@ import java.util.UUID
 
 data class DraftReferralDTO(
   val id: UUID? = null,
-  val created: OffsetDateTime? = null,
+  val createdAt: OffsetDateTime? = null,
   val createdByUserId: String? = null,
   val completionDeadline: LocalDate? = null,
   val serviceCategoryId: UUID? = null,
@@ -27,7 +27,7 @@ data class DraftReferralDTO(
     fun from(referral: Referral): DraftReferralDTO {
       return DraftReferralDTO(
         id = referral.id!!,
-        created = referral.created!!,
+        createdAt = referral.createdAt!!,
         createdByUserId = referral.createdByUserID!!,
         completionDeadline = referral.completionDeadline,
         serviceCategoryId = referral.serviceCategoryID,
