@@ -25,6 +25,8 @@ import RarDaysView from './rarDaysView'
 import RarDaysPresenter from './rarDaysPresenter'
 import RarDaysForm from './rarDaysForm'
 import ReferralStartView from './referralStartView'
+import CheckAnswersView from './checkAnswersView'
+import CheckAnswersPresenter from './checkAnswersPresenter'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -402,5 +404,21 @@ export default class ReferralsController {
       res.status(400)
       res.render(...view.renderArgs)
     }
+  }
+
+  async checkAnswers(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to check answers without service category selected')
+    }
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+    const view = new CheckAnswersView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

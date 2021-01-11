@@ -779,3 +779,38 @@ describe('POST /referrals/:id/rar-days', () => {
       })
   })
 })
+
+describe('GET /referrals/:id/check-answers', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = draftReferralFactory
+      .serviceCategorySelected(serviceCategory.id)
+      .build({ serviceUser: { firstName: 'Johnny' } })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('displays a summary of the draft referral', async () => {
+    await request(app)
+      .get('/referrals/1/check-answers')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Johnny')
+        expect(res.text).toContain('Information for the accommodation referral')
+      })
+  })
+
+  describe('when an API call returns an error', () => {
+    it('returns a 500 and displays an error message', async () => {
+      interventionsService.getDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+      await request(app)
+        .get('/referrals/1/check-answers')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Backend error message')
+        })
+    })
+  })
+})

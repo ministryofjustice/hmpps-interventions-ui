@@ -1,0 +1,28 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">Check your answers</h1>
+
+      <h2 class="govuk-heading-l">Service user’s information</h2>
+      
+      <p>{{ presenter.serviceUserName }}</p>
+
+      <h2 class="govuk-heading-l">{{ presenter.referralSectionHeading }}</h2>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukButton({ text: "Submit referral" }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

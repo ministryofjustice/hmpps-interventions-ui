@@ -78,7 +78,7 @@ describe('ReferralFormPresenter', () => {
           title: 'Check your answers',
           number: '6',
           status: ReferralFormStatus.CannotStartYet,
-          tasks: [{ title: 'Check your answers', url: null }],
+          tasks: [{ title: 'Check your answers', url: 'check-answers' }],
         },
       ]
 

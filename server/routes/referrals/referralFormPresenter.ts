@@ -116,7 +116,7 @@ export default class ReferralFormPresenter {
         tasks: [
           {
             title: 'Check your answers',
-            url: null,
+            url: 'check-answers',
           },
         ],
       },
