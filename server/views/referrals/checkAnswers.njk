@@ -19,7 +19,7 @@
 
       <h2 class="govuk-heading-l">{{ presenter.referralSectionHeading }}</h2>
 
-      <form method="post">
+      <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukButton({ text: "Submit referral" }) }}
       </form>

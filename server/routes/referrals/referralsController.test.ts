@@ -3,6 +3,7 @@ import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import appWithAllRoutes from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import apiConfig from '../../config'
 
@@ -811,6 +812,37 @@ describe('GET /referrals/:id/check-answers', () => {
         .expect(res => {
           expect(res.text).toContain('Backend error message')
         })
+    })
+  })
+})
+
+describe('POST /referrals/:id/send', () => {
+  it('sends the draft referral on the interventions service and redirects to the confirmation page', async () => {
+    const referral = sentReferralFactory.build()
+    interventionsService.sendDraftReferral.mockResolvedValue(referral)
+
+    await request(app)
+      .post('/referrals/1/send')
+      .expect(303)
+      .expect('Location', `/referrals/${referral.id}/confirmation`)
+
+    expect(interventionsService.sendDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  describe('when the interventions service returns an error', () => {
+    beforeEach(() => {
+      interventionsService.sendDraftReferral.mockRejectedValue(new Error('Failed to create referral'))
+    })
+
+    it('displays an error page', async () => {
+      await request(app)
+        .post('/referrals/1/send')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Failed to create referral')
+        })
+
+      expect(interventionsService.sendDraftReferral).toHaveBeenCalledTimes(1)
     })
   })
 })

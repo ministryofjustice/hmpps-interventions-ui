@@ -421,4 +421,10 @@ export default class ReferralsController {
 
     res.render(...view.renderArgs)
   }
+
+  async sendDraftReferral(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.sendDraftReferral(res.locals.user.token, req.params.id)
+
+    res.redirect(303, `/referrals/${referral.id}/confirmation`)
+  }
 }
