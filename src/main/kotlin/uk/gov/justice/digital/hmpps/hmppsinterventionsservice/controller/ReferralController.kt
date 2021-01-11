@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,9 +26,16 @@ class ReferralController(
 ) {
 
   @PostMapping("/draft-referral")
-  fun createDraftReferral(): ResponseEntity<DraftReferralDTO> {
+  fun createDraftReferral(authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
+    // fixme: should we allow tokens granted with client credentials to create referrals?
 
-    val referral = referralService.createDraftReferral()
+    val userID = authentication.token.getClaimAsString("user_id")
+      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
+
+    val authSource = authentication.token.getClaimAsString("auth_source")
+      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
+
+    val referral = referralService.createDraftReferral(userID!!, authSource!!)
     val location = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")

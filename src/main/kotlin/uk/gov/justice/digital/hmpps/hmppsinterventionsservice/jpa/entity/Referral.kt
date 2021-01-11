@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
@@ -26,7 +27,8 @@ data class Referral(
   var serviceCategoryID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
-  @Column(name = "created_by_userid") var createdByUserID: String? = null,
+  @NotNull var createdByUserAuthSource: String? = null,
+  @Column(name = "created_by_userid") @NotNull var createdByUserID: String? = null,
   var completionDeadline: LocalDate? = null,
   @CreationTimestamp var created: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,
