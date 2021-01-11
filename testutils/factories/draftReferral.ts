@@ -7,6 +7,10 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     return this
   }
 
+  createdAt(date: Date) {
+    return this.params({ createdAt: date.toISOString() })
+  }
+
   serviceCategorySelected(serviceCategoryId?: string) {
     const resolvedServiceCategoryId = serviceCategoryId ?? serviceCategoryFactory.build().id
     return this.params({ serviceCategoryId: resolvedServiceCategoryId })

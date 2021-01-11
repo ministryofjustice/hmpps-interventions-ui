@@ -46,7 +46,10 @@ function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.R
 
 interface User {
   name: string
-  activeCaseLoadId: string
+  userId: string
+  username: string
+  authSource: string
+  active: boolean
 }
 
 interface UserRole {

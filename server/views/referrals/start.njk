@@ -1,3 +1,5 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "HMPPS Interventions" %}
@@ -25,6 +27,15 @@
           </svg>
         </button>
       </form>
+
+      <h2 class="govuk-heading-l">
+        Draft referrals
+      </h2>
+      {% if presenter.orderedReferrals | length %}
+        {{ govukTable(tableArgs) }}
+      {% else %}
+        <p class="govuk-body-m">{{ presenter.emptyText }}</p>
+      {% endif %}
     </div>
   </div>
 

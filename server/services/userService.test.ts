@@ -15,7 +15,13 @@ describe('User service', () => {
       userService = new UserService(hmppsAuthClient)
     })
     it('Retrieves and formats user name', async () => {
-      hmppsAuthClient.getUser.mockResolvedValue({ name: 'john smith', activeCaseLoadId: '1' })
+      hmppsAuthClient.getUser.mockResolvedValue({
+        name: 'john smith',
+        authSource: 'delius',
+        username: 'johnsmith',
+        userId: '123',
+        active: true,
+      })
 
       const result = await userService.getUser(token)
 

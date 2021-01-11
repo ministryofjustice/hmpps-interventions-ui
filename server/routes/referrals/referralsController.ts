@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import ReferralFormPresenter from './referralFormPresenter'
+import DraftReferralsListPresenter from './draftReferralsListPresenter'
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ReferralFormView from './referralFormView'
 import CompletionDeadlineView from './completionDeadlineView'
@@ -21,12 +22,18 @@ import RiskInformationView from './riskInformationView'
 import RarDaysView from './rarDaysView'
 import RarDaysPresenter from './rarDaysPresenter'
 import RarDaysForm from './rarDaysForm'
+import ReferralStartView from './referralStartView'
 
 export default class ReferralsController {
   constructor(private readonly interventionsService: InterventionsService) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
-    res.render('referrals/start')
+    const { token, userId } = res.locals.user
+    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
+    const presenter = new DraftReferralsListPresenter(existingDraftReferrals)
+    const view = new ReferralStartView(presenter)
+
+    res.render(...view.renderArgs)
   }
 
   async createReferral(req: Request, res: Response): Promise<void> {

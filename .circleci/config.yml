@@ -8,7 +8,7 @@ orbs:
 executors:
   integration:
     docker:
-      - image: circleci/node:10-buster-browsers
+      - image: circleci/node:14-stretch-browsers
       - image: rodolpheche/wiremock:2.27.2-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.0
@@ -20,7 +20,9 @@ jobs:
     environment:
       PACT_BROKER_BASE_URL: "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
       PACT_BROKER_USERNAME: "interventions"
-    executor: hmpps/node
+    executor:
+      name: hmpps/node
+      tag: 14-stretch-browsers
     steps:
       - checkout
       - node/install-npm
@@ -57,7 +59,9 @@ jobs:
           path: integration_tests/screenshots
 
   vulnerability_scan:
-    executor: hmpps/node
+    executor:
+      name: hmpps/node
+      tag: 14-stretch-browsers
     parameters:
       monitor:
         type: boolean
