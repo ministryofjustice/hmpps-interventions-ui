@@ -6,6 +6,7 @@ export interface DraftReferral {
   id: string
   createdAt: string
   completionDeadline: string | null
+  serviceProviderId: string | null
   serviceCategoryId: string | null
   complexityLevelId: string | null
   furtherInformation: string | null
