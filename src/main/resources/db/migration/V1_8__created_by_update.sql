@@ -3,8 +3,8 @@ alter table referral
 
 update referral
     set created_by_userid = 'unknown'
-    where created_by_userid = null;
+    where created_by_userid IS NULL;
 
 update referral
     set created_by_user_auth_source = 'unknown'
-    where created_by_user_auth_source = null;
+    where created_by_user_auth_source IS NULL;
