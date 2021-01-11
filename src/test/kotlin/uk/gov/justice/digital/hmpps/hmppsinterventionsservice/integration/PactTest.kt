@@ -1,30 +1,27 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext
-import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider
 import au.com.dius.pact.provider.junitsupport.Provider
 import au.com.dius.pact.provider.junitsupport.State
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker
-import au.com.dius.pact.provider.junitsupport.loader.VersionSelector
+import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @Disabled
+@ExtendWith(SpringExtension::class)
 @Provider("Interventions Service")
-@PactBroker(
-  host = "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk",
-  scheme = "https",
-  consumerVersionSelectors = [VersionSelector(tag = "last-implemented")],
-)
+@PactBroker
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test", "local")
 class PactTest {
 
   @TestTemplate
-  @ExtendWith(PactVerificationInvocationContextProvider::class)
+  @ExtendWith(PactVerificationSpringProvider::class)
   fun pactVerificationTestTemplate(context: PactVerificationContext) {
     context.verifyInteraction()
   }
@@ -42,8 +39,10 @@ class PactTest {
   }
 
   @State("a service category with ID 428ee70f-3001-4399-95a6-ad25eaaede16 exists")
-  fun `use service category 428ee70f from the seed`() {}
+  fun `use service category 428ee70f from the seed`() {
+  }
 
   @State("There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected")
-  fun `use referral d496e4a7 from the seed`() {}
+  fun `use referral d496e4a7 from the seed`() {
+  }
 }

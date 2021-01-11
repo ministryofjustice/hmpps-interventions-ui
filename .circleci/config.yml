@@ -38,8 +38,8 @@ jobs:
 
   pact_check_and_publish:
     environment:
-      PACT_BROKER_HOST: "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
-      PACT_BROKER_USERNAME: "interventions"
+      PACTBROKER_HOST: "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
+      PACTBROKER_AUTH_USERNAME: "interventions"
     executor: hmpps/java
     docker:
       - image: cimg/openjdk:11.0

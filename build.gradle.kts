@@ -15,11 +15,7 @@ tasks {
 
     systemProperty("pact.provider.tag", System.getenv("PACT_PROVIDER_TAG"))
     systemProperty("pact.provider.version", System.getenv("PACT_PROVIDER_VERSION"))
-
     systemProperty("pact.verifier.publishResults", "true")
-    systemProperty("pactbroker.host", System.getenv("PACT_BROKER_HOST"))
-    systemProperty("pactbroker.auth.username", System.getenv("PACT_BROKER_USERNAME"))
-    systemProperty("pactbroker.auth.password", System.getenv("PACT_BROKER_PASSWORD"))
 
     useJUnitPlatform()
     filter {
@@ -40,6 +36,6 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql")
 
-  testImplementation("au.com.dius.pact.provider:junit5:4.1.11")
+  testImplementation("au.com.dius.pact.provider:junit5spring:4.1.14")
   testImplementation("com.h2database:h2:1.4.200")
 }
