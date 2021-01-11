@@ -821,4 +821,41 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referrals.length).toBe(0)
     })
   })
+
+  describe('getServiceProvider', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a service provider with ID 674b47a0-39bf-4514-82ae-61885b9c0cb4 exists',
+        uponReceiving: 'a GET request to fetch the service provider',
+        withRequest: {
+          method: 'GET',
+          path: '/service-provider/674b47a0-39bf-4514-82ae-61885b9c0cb4',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+            name: 'Harmony Living',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns a service provider', async () => {
+      const serviceProvider = await interventionsService.getServiceProvider(
+        token,
+        '674b47a0-39bf-4514-82ae-61885b9c0cb4'
+      )
+
+      expect(serviceProvider.id).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
+      expect(serviceProvider.name).toEqual('Harmony Living')
+    })
+  })
 })

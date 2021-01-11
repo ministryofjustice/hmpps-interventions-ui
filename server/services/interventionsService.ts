@@ -45,6 +45,11 @@ export interface ServiceUser {
   firstName: string | null
 }
 
+export interface ServiceProvider {
+  id: string
+  name: string
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -82,11 +87,11 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
-  async getServiceCategory(token: string, serviceCategoryId: string): Promise<ServiceCategory> {
+  async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
-      path: `/service-category/${serviceCategoryId}`,
+      path: `/service-category/${id}`,
       headers: { Accept: 'application/json' },
     })) as ServiceCategory
   }
@@ -99,5 +104,14 @@ export default class InterventionsService {
       query: `userID=${userId}`,
       headers: { Accept: 'application/json' },
     })) as DraftReferral[]
+  }
+
+  async getServiceProvider(token: string, id: string): Promise<ServiceProvider> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/service-provider/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as ServiceProvider
   }
 }
