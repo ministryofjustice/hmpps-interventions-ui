@@ -31,6 +31,7 @@ export interface DraftReferral extends WithNullableValues<ReferralFields> {
 export interface SentReferral {
   id: string
   createdAt: string
+  referenceNumber: string
   referral: ReferralFields
 }
 
