@@ -2,25 +2,36 @@ import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
 
-export interface DraftReferral {
+type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
+
+export interface ReferralFields {
+  completionDeadline: string
+  serviceProviderId: string
+  serviceCategoryId: string
+  complexityLevelId: string
+  furtherInformation: string
+  desiredOutcomesIds: string[]
+  additionalNeedsInformation: string
+  accessibilityNeeds: string
+  needsInterpreter: boolean
+  interpreterLanguage: string | null
+  hasAdditionalResponsibilities: boolean
+  whenUnavailable: string | null
+  serviceUser: ServiceUser
+  additionalRiskInformation: string
+  usingRarDays: boolean
+  maximumRarDays: number | null
+}
+
+export interface DraftReferral extends WithNullableValues<ReferralFields> {
   id: string
   createdAt: string
-  completionDeadline: string | null
-  serviceProviderId: string | null
-  serviceCategoryId: string | null
-  complexityLevelId: string | null
-  furtherInformation: string | null
-  desiredOutcomesIds: string[] | null
-  additionalNeedsInformation: string | null
-  accessibilityNeeds: string | null
-  needsInterpreter: boolean | null
-  interpreterLanguage: string | null
-  hasAdditionalResponsibilities: boolean | null
-  whenUnavailable: string | null
-  serviceUser: ServiceUser | null
-  additionalRiskInformation: string | null
-  usingRarDays: boolean | null
-  maximumRarDays: number | null
+}
+
+export interface SentReferral {
+  id: string
+  createdAt: string
+  referral: ReferralFields
 }
 
 export interface ServiceCategory {
@@ -113,5 +124,14 @@ export default class InterventionsService {
       path: `/service-provider/${id}`,
       headers: { Accept: 'application/json' },
     })) as ServiceProvider
+  }
+
+  async sendDraftReferral(token: string, id: string): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/draft-referral/${id}/send`,
+      headers: { Accept: 'application/json' },
+    })) as SentReferral
   }
 }
