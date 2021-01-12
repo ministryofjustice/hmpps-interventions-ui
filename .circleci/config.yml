@@ -58,6 +58,7 @@ jobs:
           command: |
             PACT_PROVIDER_VERSION="$CIRCLE_SHA1" \
               PACT_PROVIDER_TAG="$CIRCLE_BRANCH" \
+              PACTBROKER_CONSUMERVERSIONSELECTORS_TAGS="main,last-implemented" \
               ./gradlew pactTestPublish
       - save_cache:
           paths:
