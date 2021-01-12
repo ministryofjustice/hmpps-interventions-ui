@@ -53,7 +53,7 @@ class PactTest {
   @State("There is an existing draft referral with ID of 1219a064-709b-4b6c-a11e-10b8cb3966f6, and it has had a service user selected")
   fun `tmp2`() {}
 
-  @State("a referral for user with ID 2500128586 exists")
+  @State("a single referral for user with ID 8751622134 exists")
   fun `tmp3`() {}
 
   @State("a referral does not exist for user with ID 123344556")
