@@ -135,4 +135,13 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as SentReferral
   }
+
+  async getSentReferral(token: string, id: string): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/sent-referral/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as SentReferral
+  }
 }

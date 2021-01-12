@@ -914,4 +914,27 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
     })
   })
+
+  describe('getSentReferral', () => {
+    it('returns a referral for the given ID', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request for the sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(sentReferral),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getSentReferral(token, '81d754aa-d868-4347-9c0f-50690773014e')).toEqual(
+        sentReferral
+      )
+    })
+  })
 })
