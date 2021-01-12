@@ -5,6 +5,7 @@ import appWithAllRoutes from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import apiConfig from '../../config'
 
 jest.mock('../../services/interventionsService')
@@ -843,6 +844,37 @@ describe('POST /referrals/:id/send', () => {
         })
 
       expect(interventionsService.sendDraftReferral).toHaveBeenCalledTimes(1)
+    })
+  })
+})
+
+describe('GET /referrals/:id/confirmation', () => {
+  it('displays a submission confirmation page', async () => {
+    const referral = sentReferralFactory.build()
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+
+    const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
+    interventionsService.getServiceProvider.mockResolvedValue(serviceProvider)
+
+    await request(app)
+      .get('/referrals/1/confirmation')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('We’ve sent your referral to Harmony Living')
+        expect(res.text).toContain(referral.referenceNumber)
+      })
+  })
+
+  describe('when an API call returns an error', () => {
+    it('returns a 500 and displays an error message', async () => {
+      interventionsService.getSentReferral.mockRejectedValue(new Error('Backend error message'))
+
+      await request(app)
+        .get('/referrals/1/confirmation')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Backend error message')
+        })
     })
   })
 })
