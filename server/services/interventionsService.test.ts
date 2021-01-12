@@ -146,7 +146,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/1219a064-709b-4b6c-a11e-10b8cb3966f6',
-            headers: { Accept: 'application/json', Authorization: 'Bearer token' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           },
           willRespondWith: {
             status: 200,
@@ -162,7 +162,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the service category id field populated', async () => {
-        const referral = await interventionsService.getDraftReferral('token', '1219a064-709b-4b6c-a11e-10b8cb3966f6')
+        const referral = await interventionsService.getDraftReferral(token, '1219a064-709b-4b6c-a11e-10b8cb3966f6')
 
         expect(referral.id).toBe('1219a064-709b-4b6c-a11e-10b8cb3966f6')
         expect(referral.serviceUser!.firstName).toEqual('Alex')
