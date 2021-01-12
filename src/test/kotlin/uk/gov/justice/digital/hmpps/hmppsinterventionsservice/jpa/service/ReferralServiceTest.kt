@@ -240,6 +240,62 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
+  fun `setting desired outcomes requires service category`() {
+    var referral = Referral()
+    val update = DraftReferralDTO(desiredOutcomeIds = mutableListOf(UUID.fromString("8e77d70e-52a8-428f-9372-070e12e93154")))
+    val error = assertThrows<ValidationError> {
+      referralService.updateDraftReferral(referral, update)
+    }
+    assertThat(error.errors.size).isEqualTo(1)
+    assertThat(error.errors[0].field).isEqualTo("desiredOutcomeIds")
+
+    val updateWithServiceCategory = DraftReferralDTO(
+      desiredOutcomeIds = listOf(UUID.fromString("8e77d70e-52a8-428f-9372-070e12e93154")),
+      serviceCategoryId = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")
+    )
+    referral = referralService.updateDraftReferral(referral, updateWithServiceCategory)
+    assertThat(referral.serviceCategoryID).isNotNull
+    assertThat(referral.desiredOutcomeIDs).size().isEqualTo(1)
+    assertThat(referral.desiredOutcomeIDs).contains(UUID.fromString("8e77d70e-52a8-428f-9372-070e12e93154"))
+
+    // now service category has been set in the previous step, the desired outcomes can be updated
+    // without the service category in the update fields
+    val updateWithNewDesiredOutcomes = DraftReferralDTO(desiredOutcomeIds = mutableListOf(UUID.fromString("9b30ffad-dfcb-44ce-bdca-0ea49239a21a")))
+    referral = referralService.updateDraftReferral(referral, updateWithNewDesiredOutcomes)
+    assertThat(referral.desiredOutcomeIDs).size().isEqualTo(1)
+    assertThat(referral.desiredOutcomeIDs).contains(UUID.fromString("9b30ffad-dfcb-44ce-bdca-0ea49239a21a"))
+  }
+
+  @Test
+  fun `desired outcomes, once set, can not be reset back to null or empty`() {
+    var referral = Referral()
+
+    val updateWithServiceCategory = DraftReferralDTO(
+      desiredOutcomeIds = mutableListOf(
+        UUID.fromString("301ead30-30a4-4c7c-8296-2768abfb59b5"),
+        UUID.fromString("9b30ffad-dfcb-44ce-bdca-0ea49239a21a")
+      ),
+      serviceCategoryId = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")
+    )
+    referral = referralService.updateDraftReferral(referral, updateWithServiceCategory)
+    assertThat(referral.desiredOutcomeIDs).size().isEqualTo(2)
+
+    var error = assertThrows<ValidationError> {
+      // this throws ValidationError
+      referralService.updateDraftReferral(referral, DraftReferralDTO(desiredOutcomeIds = mutableListOf()))
+    }
+    assertThat(error.errors.size).isEqualTo(1)
+    assertThat(error.errors[0].field).isEqualTo("desiredOutcomeIds")
+
+    // update with null is ignored
+    referralService.updateDraftReferral(referral, DraftReferralDTO(desiredOutcomeIds = null))
+
+    // Ensure no changes
+    referral = referralService.getDraftReferral(referral.id!!)!!
+    assertThat(referral.desiredOutcomeIDs).size().isEqualTo(2)
+  }
+
+  @Test
   fun `multiple errors at once`() {
     val referral = Referral()
     val update = DraftReferralDTO(completionDeadline = LocalDate.of(2020, 1, 1), needsInterpreter = true)
