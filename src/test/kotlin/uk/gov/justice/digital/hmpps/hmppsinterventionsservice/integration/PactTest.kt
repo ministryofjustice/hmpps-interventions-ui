@@ -12,12 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
-@Disabled
+//@Disabled
 @Provider("Interventions Service")
 @PactBroker(
   host = "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk",
   scheme = "https",
-  consumerVersionSelectors = [VersionSelector(tag = "last-implemented")],
+  consumerVersionSelectors = [VersionSelector(tag = "main")],
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test", "local")
@@ -46,4 +46,16 @@ class PactTest {
 
   @State("There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected")
   fun `use referral d496e4a7 from the seed`() {}
+
+  @State("There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had desired outcomes selected")
+  fun `tmp`() {}
+
+  @State("There is an existing draft referral with ID of 1219a064-709b-4b6c-a11e-10b8cb3966f6, and it has had a service user selected")
+  fun `tmp2`() {}
+
+  @State("a referral for user with ID 2500128586 exists")
+  fun `tmp3`() {}
+
+  @State("a referral does not exist for user with ID 123344556")
+  fun `tmp4`() {}
 }
