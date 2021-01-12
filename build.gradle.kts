@@ -9,6 +9,12 @@ configurations {
 }
 
 tasks {
+  test {
+    useJUnitPlatform() {
+      excludeTags("pact")
+    }
+  }
+
   register<Test>("pactTestPublish") {
     description = "Run and publish Pact provider tests"
     group = "verification"
@@ -17,9 +23,8 @@ tasks {
     systemProperty("pact.provider.version", System.getenv("PACT_PROVIDER_VERSION"))
     systemProperty("pact.verifier.publishResults", "true")
 
-    useJUnitPlatform()
-    filter {
-      includeTestsMatching("PactTest")
+    useJUnitPlatform() {
+      includeTags("pact")
     }
   }
 }
