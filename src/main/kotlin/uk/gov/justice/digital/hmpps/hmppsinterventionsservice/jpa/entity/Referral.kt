@@ -30,6 +30,6 @@ data class Referral(
   @NotNull var createdByUserAuthSource: String? = null,
   @Column(name = "created_by_userid") @NotNull var createdByUserID: String? = null,
   var completionDeadline: LocalDate? = null,
-  @CreationTimestamp var created: OffsetDateTime? = null,
+  @CreationTimestamp var createdAt: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,
 )

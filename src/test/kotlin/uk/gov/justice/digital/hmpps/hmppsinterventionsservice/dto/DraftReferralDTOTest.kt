@@ -25,7 +25,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
     val createdDate = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
 
     assertThrows<RuntimeException> {
-      DraftReferralDTO.from(Referral(created = createdDate))
+      DraftReferralDTO.from(Referral(createdAt = createdDate))
     }
   }
 
@@ -42,7 +42,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
   fun `test serialization of newly created referral`() {
     val referral = Referral(
       id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C"),
-      created = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+      createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
       createdByUserID = "123456",
       createdByUserAuthSource = "delius",
     )
@@ -51,7 +51,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       """
       {
         "id": "3b9ed289-8412-41a9-8291-45e33e60276c", 
-        "created": "2020-12-04T10:42:43Z",
+        "createdAt": "2020-12-04T10:42:43Z",
         "createdByUserId": "123456"
       }
     """
@@ -62,7 +62,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
   fun `test serialization of referral with completionDeadline`() {
     val referral = Referral(
       id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C"),
-      created = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+      createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
       createdByUserID = "123456",
       createdByUserAuthSource = "delius",
       completionDeadline = LocalDate.of(2021, 2, 12)
@@ -72,7 +72,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       """
       {
         "id": "3b9ed289-8412-41a9-8291-45e33e60276c", 
-        "created": "2020-12-04T10:42:43Z",
+        "createdAt": "2020-12-04T10:42:43Z",
         "createdByUserId": "123456",
         "completionDeadline": "2021-02-12"
       }
