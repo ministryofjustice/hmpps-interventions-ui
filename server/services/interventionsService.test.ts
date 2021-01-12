@@ -734,12 +734,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('getDraftReferralsForUser', () => {
     it('returns a list of draft referrals for a given userID', async () => {
       await provider.addInteraction({
-        state: 'a referral for user with ID 2500128586 exists',
+        state: 'a single referral for user with ID 8751622134 exists',
         uponReceiving: 'a GET request to return the referrals for that user ID',
         withRequest: {
           method: 'GET',
           path: '/draft-referrals',
-          query: 'userID=2500128586',
+          query: 'userID=8751622134',
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
@@ -749,14 +749,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: [
             {
-              id: 'ac386c25-52c8-41fa-9213-fcf42e24b0b5',
-              createdAt: '2020-12-07T18:02:01.599803Z',
-              createdByUserID: '2500128586',
-            },
-            {
-              id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-              createdAt: '2020-12-24 09:32:32.871623+00',
-              createdByUserID: '2500128586',
+              id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+              createdAt: '2020-12-07T20:45:21.986389Z',
+              createdByUserID: '8751622134',
             },
           ],
           headers: {
@@ -765,10 +760,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUser(token, '2500128586')
-      expect(referrals.length).toBe(2)
-      expect(referrals[0].id).toBe('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
-      expect(referrals[1].id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
+      const referrals = await interventionsService.getDraftReferralsForUser(token, '8751622134')
+      expect(referrals.length).toBe(1)
+      expect(referrals[0].id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
 
     it('returns an empty list for an unknown user ID', async () => {
