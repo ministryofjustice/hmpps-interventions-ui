@@ -98,18 +98,12 @@ class ReferralService(val repository: ReferralRepository) {
 
     update.needsInterpreter?.let {
       referral.needsInterpreter = it
-    }
-
-    update.interpreterLanguage?.let {
-      referral.interpreterLanguage = it
+      referral.interpreterLanguage = if (it) update.interpreterLanguage else null
     }
 
     update.hasAdditionalResponsibilities?.let {
       referral.hasAdditionalResponsibilities = it
-    }
-
-    update.whenUnavailable?.let {
-      referral.whenUnavailable = it
+      referral.whenUnavailable = if (it) update.whenUnavailable else null
     }
 
     update.additionalRiskInformation?.let {
@@ -118,10 +112,7 @@ class ReferralService(val repository: ReferralRepository) {
 
     update.usingRarDays?.let {
       referral.usingRarDays = it
-    }
-
-    update.maximumRarDays?.let {
-      referral.maximumRarDays = it
+      referral.maximumRarDays = if (it) update.maximumRarDays else null
     }
 
     return repository.save(referral)
