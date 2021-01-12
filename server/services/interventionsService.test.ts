@@ -751,7 +751,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             {
               id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
               createdAt: '2020-12-07T20:45:21.986389Z',
-              createdByUserID: '8751622134',
+              createdByUserId: '8751622134',
             },
           ],
           headers: {
