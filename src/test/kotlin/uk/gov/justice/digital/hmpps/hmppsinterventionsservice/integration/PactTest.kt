@@ -12,12 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
-//@Disabled
+@Disabled
 @Provider("Interventions Service")
 @PactBroker(
   host = "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk",
   scheme = "https",
-  consumerVersionSelectors = [VersionSelector(tag = "main")],
+  consumerVersionSelectors = [VersionSelector(tag = "last-implemented")],
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test", "local")
