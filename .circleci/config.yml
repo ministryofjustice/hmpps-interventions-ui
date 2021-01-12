@@ -92,7 +92,7 @@ workflows:
   build_test_and_deploy:
     jobs:
       - validate
-#      - pact_check_and_publish
+      - pact_check_and_publish
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -136,7 +136,6 @@ workflows:
                 - main
           requires:
             - validate
-#            - pact_check_and_publish
             - build_and_publish_docker
             - helm_lint
             - vulnerability_scan_and_monitor
