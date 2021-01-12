@@ -72,6 +72,36 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
+    describe('for a referral that has had a service provider selected', () => {
+      beforeEach(async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service provider selected',
+          uponReceiving: 'a request for that referral',
+          withRequest: {
+            method: 'GET',
+            path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+              serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+      })
+
+      it('returns a referral for the given ID, with the serviceProviderId field populated', async () => {
+        const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
+
+        expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
+        expect(referral.serviceProviderId).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
+      })
+    })
+
     describe('for a referral that has had desired outcomes selected', () => {
       beforeEach(async () => {
         await provider.addInteraction({
@@ -789,6 +819,43 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       const referrals = await interventionsService.getDraftReferralsForUser(token, '123344556')
       expect(referrals.length).toBe(0)
+    })
+  })
+
+  describe('getServiceProvider', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a service provider with ID 674b47a0-39bf-4514-82ae-61885b9c0cb4 exists',
+        uponReceiving: 'a GET request to fetch the service provider',
+        withRequest: {
+          method: 'GET',
+          path: '/service-provider/674b47a0-39bf-4514-82ae-61885b9c0cb4',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+            name: 'Harmony Living',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns a service provider', async () => {
+      const serviceProvider = await interventionsService.getServiceProvider(
+        token,
+        '674b47a0-39bf-4514-82ae-61885b9c0cb4'
+      )
+
+      expect(serviceProvider.id).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
+      expect(serviceProvider.name).toEqual('Harmony Living')
     })
   })
 })

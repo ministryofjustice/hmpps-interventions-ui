@@ -6,6 +6,7 @@ export interface DraftReferral {
   id: string
   createdAt: string
   completionDeadline: string | null
+  serviceProviderId: string | null
   serviceCategoryId: string | null
   complexityLevelId: string | null
   furtherInformation: string | null
@@ -42,6 +43,11 @@ export interface DesiredOutcome {
 
 export interface ServiceUser {
   firstName: string | null
+}
+
+export interface ServiceProvider {
+  id: string
+  name: string
 }
 
 export default class InterventionsService {
@@ -81,11 +87,11 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
-  async getServiceCategory(token: string, serviceCategoryId: string): Promise<ServiceCategory> {
+  async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
-      path: `/service-category/${serviceCategoryId}`,
+      path: `/service-category/${id}`,
       headers: { Accept: 'application/json' },
     })) as ServiceCategory
   }
@@ -98,5 +104,14 @@ export default class InterventionsService {
       query: `userID=${userId}`,
       headers: { Accept: 'application/json' },
     })) as DraftReferral[]
+  }
+
+  async getServiceProvider(token: string, id: string): Promise<ServiceProvider> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/service-provider/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as ServiceProvider
   }
 }

@@ -29,6 +29,7 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   createdAt: new Date(Date.now()).toISOString(),
   completionDeadline: null,
+  serviceProviderId: null,
   serviceCategoryId: null,
   complexityLevelId: null,
   furtherInformation: null,
