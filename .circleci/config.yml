@@ -38,8 +38,8 @@ jobs:
 
   pact_check_and_publish:
     environment:
-      PACT_BROKER_HOST: "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
-      PACT_BROKER_USERNAME: "interventions"
+      PACTBROKER_HOST: "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
+      PACTBROKER_AUTH_USERNAME: "interventions"
     executor: hmpps/java
     docker:
       - image: cimg/openjdk:11.0
@@ -58,11 +58,17 @@ jobs:
           command: |
             PACT_PROVIDER_VERSION="$CIRCLE_SHA1" \
               PACT_PROVIDER_TAG="$CIRCLE_BRANCH" \
+              PACTBROKER_CONSUMERVERSIONSELECTORS_TAGS="main,last-implemented" \
+              PACT_PUBLISH_RESULTS="true" \
               ./gradlew pactTestPublish
       - save_cache:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests
 
   vulnerability_scan:
     executor: hmpps/java
@@ -92,7 +98,7 @@ workflows:
   build_test_and_deploy:
     jobs:
       - validate
-#      - pact_check_and_publish
+      - pact_check_and_publish
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -136,7 +142,6 @@ workflows:
                 - main
           requires:
             - validate
-#            - pact_check_and_publish
             - build_and_publish_docker
             - helm_lint
             - vulnerability_scan_and_monitor
