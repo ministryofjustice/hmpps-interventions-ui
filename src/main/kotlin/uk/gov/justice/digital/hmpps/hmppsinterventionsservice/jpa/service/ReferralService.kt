@@ -26,7 +26,7 @@ class ReferralService(val repository: ReferralRepository) {
 
     update.serviceCategoryId?.let {
       if (referral.serviceCategoryID != null) {
-        errors.add(FieldError(field = "serviceCategoryId", error = Code.SERVICE_CATEGORY_CANNOT_BE_CHANGED))
+        errors.add(FieldError(field = "serviceCategoryId", error = Code.FIELD_CANNOT_BE_CHANGED))
       }
     }
 

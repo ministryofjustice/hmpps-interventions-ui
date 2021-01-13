@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.server.ResponseStatusException
 
 enum class Code {
-  SERVICE_CATEGORY_CANNOT_BE_CHANGED,
+  FIELD_CANNOT_BE_CHANGED,
   DATE_MUST_BE_IN_THE_FUTURE,
   SERVICE_CATEGORY_MUST_BE_SET,
   CONDITIONAL_FIELD_MUST_BE_SET,
