@@ -8,7 +8,6 @@ import java.util.UUID
 data class DraftReferralDTO(
   val id: UUID? = null,
   val createdAt: OffsetDateTime? = null,
-  val createdByUserId: String? = null,
   val completionDeadline: LocalDate? = null,
   val serviceCategoryId: UUID? = null,
   val complexityLevelId: UUID? = null,
@@ -30,7 +29,6 @@ data class DraftReferralDTO(
       return DraftReferralDTO(
         id = referral.id!!,
         createdAt = referral.createdAt!!,
-        createdByUserId = referral.createdByUserID!!,
         completionDeadline = referral.completionDeadline,
         serviceCategoryId = referral.serviceCategoryID,
         complexityLevelId = referral.complexityLevelID,

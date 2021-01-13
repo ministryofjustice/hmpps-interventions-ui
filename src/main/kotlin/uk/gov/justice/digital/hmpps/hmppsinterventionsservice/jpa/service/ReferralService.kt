@@ -25,15 +25,9 @@ class ReferralService(val repository: ReferralRepository) {
     return repository.save(referral)
   }
 
-  fun createDraftReferral(userID: String, authSource: String): Referral {
+  fun createDraftReferral(user: AuthUser): Referral {
     val dummyCRN = "X320741"
-    return repository.save(
-      Referral(
-        serviceUserCRN = dummyCRN,
-        createdByUserID = userID,
-        createdByUserAuthSource = authSource
-      )
-    )
+    return repository.save(Referral(serviceUserCRN = dummyCRN, createdBy = user))
   }
 
   fun getDraftReferral(id: UUID): Referral? {
@@ -174,6 +168,6 @@ class ReferralService(val repository: ReferralRepository) {
   }
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
-    return repository.findByCreatedByUserIDAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
+    return repository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
   }
 }

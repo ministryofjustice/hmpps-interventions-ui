@@ -21,7 +21,7 @@ import javax.persistence.UniqueConstraint
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
+@Table(indexes = arrayOf(Index(columnList = "created_by_id")))
 data class Referral(
   var sentAt: OffsetDateTime? = null,
   @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) var sentBy: AuthUser? = null,
@@ -41,8 +41,7 @@ data class Referral(
   var serviceCategoryID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
-  @NotNull var createdByUserAuthSource: String? = null,
-  @Column(name = "created_by_userid") @NotNull var createdByUserID: String? = null,
+  @NotNull @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) var createdBy: AuthUser? = null,
   @ElementCollection
   @CollectionTable(
     name = "referral_desired_outcome",

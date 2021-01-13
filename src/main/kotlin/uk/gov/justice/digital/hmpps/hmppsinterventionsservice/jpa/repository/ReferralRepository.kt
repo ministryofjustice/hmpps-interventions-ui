@@ -10,5 +10,5 @@ interface ReferralRepository : CrudRepository<Referral, UUID> {
 
   // queries for draft referrals
   fun findByIdAndSentAtIsNull(id: UUID): Referral?
-  fun findByCreatedByUserIDAndSentAtIsNull(userId: String): List<Referral>
+  fun findByCreatedByIdAndSentAtIsNull(userId: String): List<Referral>
 }

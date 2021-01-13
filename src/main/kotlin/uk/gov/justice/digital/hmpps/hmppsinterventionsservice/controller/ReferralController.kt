@@ -15,6 +15,7 @@ import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ServiceCategoryService
 import java.util.UUID
@@ -27,15 +28,8 @@ class ReferralController(
 
   @PostMapping("/draft-referral")
   fun createDraftReferral(authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
-    // fixme: should we allow tokens granted with client credentials to create referrals?
-
-    val userID = authentication.token.getClaimAsString("user_id")
-      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
-
-    val authSource = authentication.token.getClaimAsString("auth_source")
-      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
-
-    val referral = referralService.createDraftReferral(userID!!, authSource!!)
+    val user = parseAuthUserToken(authentication)
+    val referral = referralService.createDraftReferral(user)
     val location = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")
@@ -87,5 +81,17 @@ class ReferralController(
     } catch (e: IllegalArgumentException) {
       throw ServerWebInputException("could not parse id [id=$id]")
     }
+  }
+
+  private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
+    // note: this does not allow tokens for client_credentials grant types use this API
+
+    val userID = authentication.token.getClaimAsString("user_id")
+      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
+
+    val authSource = authentication.token.getClaimAsString("auth_source")
+      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
+
+    return AuthUser(id = userID, authSource = authSource)
   }
 }
