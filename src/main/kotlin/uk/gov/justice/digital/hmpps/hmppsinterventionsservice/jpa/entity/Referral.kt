@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull
 data class Referral(
   var sentAt: OffsetDateTime? = null,
   @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) var sentBy: AuthUser? = null,
+  var referenceNumber: String? = null,
 
   // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn

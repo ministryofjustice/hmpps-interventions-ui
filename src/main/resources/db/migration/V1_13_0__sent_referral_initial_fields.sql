@@ -7,4 +7,5 @@ create table auth_user(
 alter table referral
     add column sent_at timestamp with time zone,
     add column sent_by_id text,
+    add column reference_number text,
     add constraint fk_sent_by_id foreign key (sent_by_id) references auth_user;

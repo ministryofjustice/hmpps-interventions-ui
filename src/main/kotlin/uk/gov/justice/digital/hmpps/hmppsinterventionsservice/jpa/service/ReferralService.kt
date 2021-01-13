@@ -22,6 +22,9 @@ class ReferralService(val repository: ReferralRepository) {
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
     referral.sentBy = user
+
+    // fixme: hardcoded for now
+    referral.referenceNumber = "HDJ2123F"
     return repository.save(referral)
   }
 

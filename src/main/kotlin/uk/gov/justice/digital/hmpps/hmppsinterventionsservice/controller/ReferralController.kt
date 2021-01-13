@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service.ReferralService
@@ -25,6 +26,35 @@ class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService
 ) {
+
+  @PostMapping("/draft-referral/{id}/send")
+  fun sendDraftReferral(@PathVariable id: String, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
+    val uuid = parseID(id)
+
+    val draftReferral = referralService.getDraftReferral(uuid)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$uuid]")
+
+    val user = parseAuthUserToken(authentication)
+    val sentReferral = referralService.sendDraftReferral(draftReferral, user)
+
+    val location = ServletUriComponentsBuilder
+      .fromCurrentContextPath()
+      .path("/sent-referral/{id}")
+      .buildAndExpand(sentReferral.id)
+      .toUri()
+
+    return ResponseEntity
+      .created(location)
+      .body(SentReferralDTO.from(sentReferral))
+  }
+
+  @GetMapping("/sent-referral/{id}")
+  fun getSentReferral(@PathVariable id: String): SentReferralDTO {
+    val uuid = parseID(id)
+    return referralService.getSentReferral(uuid)
+      ?.let { SentReferralDTO.from(it) }
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$uuid]")
+  }
 
   @PostMapping("/draft-referral")
   fun createDraftReferral(authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
@@ -47,7 +77,7 @@ class ReferralController(
 
     return referralService.getDraftReferral(uuid)
       ?.let { DraftReferralDTO.from(it) }
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$uuid]")
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$uuid]")
   }
 
   @PatchMapping("/draft-referral/{id}")
@@ -55,7 +85,7 @@ class ReferralController(
     val uuid = parseID(id)
 
     val referralToUpdate = referralService.getDraftReferral(uuid)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$uuid]")
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$uuid]")
 
     val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
     return DraftReferralDTO.from(updatedReferral)
