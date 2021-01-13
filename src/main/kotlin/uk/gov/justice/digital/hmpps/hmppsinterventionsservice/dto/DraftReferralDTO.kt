@@ -1,12 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class DraftReferralDTO(
   val id: UUID? = null,
   val createdAt: OffsetDateTime? = null,

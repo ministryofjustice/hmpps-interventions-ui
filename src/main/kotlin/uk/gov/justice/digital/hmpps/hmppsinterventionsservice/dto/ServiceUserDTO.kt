@@ -1,11 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Sex
 import java.util.Date
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ServiceUserDTO(
   var pncNumber: String? = null,
   var crn: String? = null,
