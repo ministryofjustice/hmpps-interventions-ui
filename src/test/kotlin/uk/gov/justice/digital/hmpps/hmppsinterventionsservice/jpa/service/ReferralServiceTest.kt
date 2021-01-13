@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
@@ -97,14 +98,14 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `create and persist draft referral`() {
-    val draftReferral = referralService.createDraftReferral("user_id", "auth_source")
+    val authUser = AuthUser("user_id", "auth_source")
+    val draftReferral = referralService.createDraftReferral(authUser)
     entityManager.flush()
 
     val savedDraftReferral = referralService.getDraftReferral(draftReferral.id!!)
     assertThat(savedDraftReferral!!.id).isNotNull
     assertThat(savedDraftReferral.createdAt).isNotNull
-    assertThat(savedDraftReferral.createdByUserID).isEqualTo("user_id")
-    assertThat(savedDraftReferral.createdByUserAuthSource).isEqualTo("auth_source")
+    assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
   }
 
   @Test
@@ -121,10 +122,12 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `find by userID returns list of draft referrals`() {
+    val user1 = AuthUser("123", "delius")
+    val user2 = AuthUser("456", "delius")
     val referrals = listOf(
-      Referral(serviceUserCRN = "X123456", createdByUserID = "123"),
-      Referral(serviceUserCRN = "X123456", createdByUserID = "123"),
-      Referral(serviceUserCRN = "X123456", createdByUserID = "456"),
+      Referral(serviceUserCRN = "X123456", createdByUserID = user1),
+      Referral(serviceUserCRN = "X123456", createdByUserID = user1),
+      Referral(serviceUserCRN = "X123456", createdByUserID = user2),
     )
     referrals.forEach { entityManager.persist(it) }
     entityManager.flush()
@@ -329,5 +332,18 @@ class ReferralServiceTest @Autowired constructor(
 
     entityManager.flush()
     assertThat(referralService.getDraftReferral(referral.id!!)!!.serviceCategoryID).isNull()
+  }
+
+  @Test
+  fun `once a draft referral is sent it's id is no longer is a valid draft referral`() {
+    val user = AuthUser("user_id", "auth_source")
+    val draftReferral = referralService.createDraftReferral(user)
+
+    assertThat(referralService.getDraftReferral(draftReferral.id!!)).isNotNull()
+
+    val sentReferral = referralService.sendDraftReferral(draftReferral, user)
+
+    assertThat(referralService.getDraftReferral(draftReferral.id!!)).isNull()
+    assertThat(referralService.getSentReferral(sentReferral.id!!)).isNotNull()
   }
 }
