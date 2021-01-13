@@ -261,60 +261,76 @@ describe('ReferralDataPresenterUtils', () => {
     })
   })
 
-  describe('.sortedErrors', () => {
-    describe('with null errors', () => {
+  describe('.errorSummary', () => {
+    describe('with null error', () => {
       it('returns null', () => {
-        expect(ReferralDataPresenterUtils.sortedErrors(null, { fieldOrder: ['first', 'second', 'third'] })).toBeNull()
+        expect(ReferralDataPresenterUtils.errorSummary(null, { fieldOrder: ['first', 'second', 'third'] })).toBeNull()
       })
     })
 
-    describe('when an empty array of errors', () => {
+    describe('with an empty errors array', () => {
       it('returns an empty array', () => {
-        expect(ReferralDataPresenterUtils.sortedErrors([], { fieldOrder: ['first', 'second', 'third'] })).toEqual([])
+        expect(
+          ReferralDataPresenterUtils.errorSummary({ errors: [] }, { fieldOrder: ['first', 'second', 'third'] })
+        ).toEqual([])
       })
     })
 
-    describe('with a non-empty array of errors', () => {
-      it('returns the errors ordered according to their fields’ positions in the fieldOrder array', () => {
+    describe('when the errors array is non-empty', () => {
+      it('returns an error summary ordered according to the errorSummaryLinkedFields’ positions in the fieldOrder array', () => {
         expect(
-          ReferralDataPresenterUtils.sortedErrors(
-            [
-              { field: 'second', msg: 'second msg' },
-              { field: 'first', msg: 'first msg' },
-              { field: 'third', msg: 'third msg' },
-            ],
+          ReferralDataPresenterUtils.errorSummary(
+            {
+              errors: [
+                { errorSummaryLinkedField: 'second', message: 'second msg' },
+                { errorSummaryLinkedField: 'first', message: 'first msg' },
+                { errorSummaryLinkedField: 'third', message: 'third msg' },
+              ],
+            },
             { fieldOrder: ['first', 'second', 'third'] }
           )
         ).toEqual([
-          { field: 'first', msg: 'first msg' },
-          { field: 'second', msg: 'second msg' },
-          { field: 'third', msg: 'third msg' },
+          { field: 'first', message: 'first msg' },
+          { field: 'second', message: 'second msg' },
+          { field: 'third', message: 'third msg' },
         ])
       })
 
-      it('does not modify the original array', () => {
-        const original = [{ field: 'second' }, { field: 'first' }]
-        ReferralDataPresenterUtils.sortedErrors(original, { fieldOrder: ['first', 'second'] })
-        expect(original).toEqual([{ field: 'second' }, { field: 'first' }])
+      it('does not modify the error', () => {
+        const original = {
+          errors: [
+            { errorSummaryLinkedField: 'second', message: '' },
+            { errorSummaryLinkedField: 'first', message: '' },
+          ],
+        }
+
+        ReferralDataPresenterUtils.errorSummary(original, { fieldOrder: ['first', 'second'] })
+
+        expect(original.errors).toEqual([
+          { errorSummaryLinkedField: 'second', message: '' },
+          { errorSummaryLinkedField: 'first', message: '' },
+        ])
       })
 
       describe('when a field in the array of errors is missing from the fieldOrder array', () => {
         it('places that field at the end of the return value', () => {
           expect(
-            ReferralDataPresenterUtils.sortedErrors(
-              [
-                { field: 'second', msg: 'second msg' },
-                { field: 'first', msg: 'first msg' },
-                { field: 'fourth', msg: 'fourth msg' },
-                { field: 'third', msg: 'third msg' },
-              ],
+            ReferralDataPresenterUtils.errorSummary(
+              {
+                errors: [
+                  { errorSummaryLinkedField: 'second', message: 'second msg' },
+                  { errorSummaryLinkedField: 'first', message: 'first msg' },
+                  { errorSummaryLinkedField: 'fourth', message: 'fourth msg' },
+                  { errorSummaryLinkedField: 'third', message: 'third msg' },
+                ],
+              },
               { fieldOrder: ['first', 'second', 'third'] }
             )
           ).toEqual([
-            { field: 'first', msg: 'first msg' },
-            { field: 'second', msg: 'second msg' },
-            { field: 'third', msg: 'third msg' },
-            { field: 'fourth', msg: 'fourth msg' },
+            { field: 'first', message: 'first msg' },
+            { field: 'second', message: 'second msg' },
+            { field: 'third', message: 'third msg' },
+            { field: 'fourth', message: 'fourth msg' },
           ])
         })
       })
@@ -322,26 +338,59 @@ describe('ReferralDataPresenterUtils', () => {
   })
 
   describe('.errorMessage', () => {
-    describe('when errors is null', () => {
+    describe('when error is null', () => {
       it('returns null', () => {
         expect(ReferralDataPresenterUtils.errorMessage(null, 'my-field')).toBeNull()
       })
     })
 
-    describe('when errors is non-null and contains an error for that field', () => {
+    describe('when error is non-null and contains an error for that field', () => {
       it('returns the message for that error', () => {
-        const errors = [
-          { field: 'other-field', message: 'other message' },
-          { field: 'my-field', message: 'my message' },
-        ]
-        expect(ReferralDataPresenterUtils.errorMessage(errors, 'my-field')).toEqual('my message')
+        const error = {
+          errors: [
+            { formFields: ['other-field'], message: 'other message' },
+            { formFields: ['my-field', 'yet-another-field'], message: 'my message' },
+          ],
+        }
+        expect(ReferralDataPresenterUtils.errorMessage(error, 'my-field')).toEqual('my message')
       })
     })
 
-    describe('when errors is non-null and doesn’t contain an error for that field', () => {
+    describe('when error is non-null and doesn’t contain an error for that field', () => {
       it('returns null', () => {
-        const errors = [{ field: 'other-field', message: 'other message' }]
-        expect(ReferralDataPresenterUtils.errorMessage(errors, 'my-field')).toBeNull()
+        const error = {
+          errors: [{ formFields: ['other-field'], message: 'other message' }],
+        }
+        expect(ReferralDataPresenterUtils.errorMessage(error, 'my-field')).toBeNull()
+      })
+    })
+  })
+
+  describe('.errorMessage', () => {
+    describe('when error is null', () => {
+      it('returns false', () => {
+        expect(ReferralDataPresenterUtils.hasError(null, 'my-field')).toBe(false)
+      })
+    })
+
+    describe('when error is non-null and contains an error for that field', () => {
+      it('return true', () => {
+        const error = {
+          errors: [
+            { formFields: ['other-field'], message: 'other message' },
+            { formFields: ['my-field', 'yet-another-field'], message: 'my message' },
+          ],
+        }
+        expect(ReferralDataPresenterUtils.hasError(error, 'my-field')).toBe(true)
+      })
+    })
+
+    describe('when error is non-null and doesn’t contain an error for that field', () => {
+      it('returns false', () => {
+        const error = {
+          errors: [{ formFields: ['other-field'], message: 'other message' }],
+        }
+        expect(ReferralDataPresenterUtils.hasError(error, 'my-field')).toBe(false)
       })
     })
   })

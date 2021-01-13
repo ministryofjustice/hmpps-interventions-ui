@@ -24,7 +24,7 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toBeNull()
+      expect(form.error).toBeNull()
     })
 
     it('returns no error with the optional fields empty', async () => {
@@ -42,7 +42,7 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toBeNull()
+      expect(form.error).toBeNull()
     })
 
     it('returns multiple errors when there are multiple errors in the input', async () => {
@@ -56,16 +56,20 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toEqual([
-        {
-          field: 'needs-interpreter',
-          message: 'Select yes if Alex needs an interpreter',
-        },
-        {
-          field: 'has-additional-responsibilities',
-          message: 'Select yes if Alex has caring or employment responsibilities',
-        },
-      ])
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['needs-interpreter'],
+            errorSummaryLinkedField: 'needs-interpreter',
+            message: 'Select yes if Alex needs an interpreter',
+          },
+          {
+            formFields: ['has-additional-responsibilities'],
+            errorSummaryLinkedField: 'has-additional-responsibilities',
+            message: 'Select yes if Alex has caring or employment responsibilities',
+          },
+        ],
+      })
     })
 
     it('returns an error when needs-interpreter is not answered', async () => {
@@ -82,7 +86,15 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toEqual([{ field: 'needs-interpreter', message: 'Select yes if Alex needs an interpreter' }])
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['needs-interpreter'],
+            errorSummaryLinkedField: 'needs-interpreter',
+            message: 'Select yes if Alex needs an interpreter',
+          },
+        ],
+      })
     })
 
     it('returns an error when needs-interpreter is yes and interpreter-language is empty', async () => {
@@ -100,9 +112,15 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toEqual([
-        { field: 'interpreter-language', message: 'Enter the language for which Alex needs an interpreter' },
-      ])
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['interpreter-language'],
+            errorSummaryLinkedField: 'interpreter-language',
+            message: 'Enter the language for which Alex needs an interpreter',
+          },
+        ],
+      })
     })
 
     it('returns no error when needs-interpreter is no and interpreter-language is empty', async () => {
@@ -120,7 +138,7 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toBeNull()
+      expect(form.error).toBeNull()
     })
 
     it('returns an error when has-additional-responsibilities is not answered', async () => {
@@ -137,12 +155,15 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toEqual([
-        {
-          field: 'has-additional-responsibilities',
-          message: 'Select yes if Alex has caring or employment responsibilities',
-        },
-      ])
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['has-additional-responsibilities'],
+            errorSummaryLinkedField: 'has-additional-responsibilities',
+            message: 'Select yes if Alex has caring or employment responsibilities',
+          },
+        ],
+      })
     })
 
     it('returns an error when has-additional-responsibilities is yes and when-unavailable is empty', async () => {
@@ -160,9 +181,15 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toEqual([
-        { field: 'when-unavailable', message: 'Enter details of when Alex will not be able to attend sessions' },
-      ])
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['when-unavailable'],
+            errorSummaryLinkedField: 'when-unavailable',
+            message: 'Enter details of when Alex will not be able to attend sessions',
+          },
+        ],
+      })
     })
 
     it('returns no error when has-additional-responsibilities is no and when-unavailable is empty', async () => {
@@ -180,7 +207,7 @@ describe('NeedsAndRequirementsForm', () => {
         referral
       )
 
-      expect(form.errors).toBeNull()
+      expect(form.error).toBeNull()
     })
   })
 

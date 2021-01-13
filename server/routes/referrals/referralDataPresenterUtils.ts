@@ -36,17 +36,13 @@ export default class ReferralDataPresenterUtils {
     return null
   }
 
-  static sortedErrors<T extends { field: string }>(
-    errors: T[] | null,
-    { fieldOrder }: { fieldOrder: string[] }
-  ): T[] | null {
-    if (errors === null) {
-      return null
-    }
-
+  private static sortedErrors<T extends { errorSummaryLinkedField: string }>(errors: T[], fieldOrder: string[]): T[] {
     const copiedErrors = errors.slice()
     return copiedErrors.sort((a, b) => {
-      const [aIndex, bIndex] = [fieldOrder.indexOf(a.field), fieldOrder.indexOf(b.field)]
+      const [aIndex, bIndex] = [
+        fieldOrder.indexOf(a.errorSummaryLinkedField),
+        fieldOrder.indexOf(b.errorSummaryLinkedField),
+      ]
       if (aIndex === -1) {
         return 1
       }
@@ -58,7 +54,39 @@ export default class ReferralDataPresenterUtils {
     })
   }
 
-  static errorMessage(errors: { field: string; message: string }[] | null, field: string): string | null {
-    return errors?.find(error => error.field === field)?.message ?? null
+  static errorSummary(
+    error: { errors: { errorSummaryLinkedField: string; message: string }[] } | null,
+    options: { fieldOrder: string[] } = { fieldOrder: [] }
+  ): { field: string; message: string }[] | null {
+    if (error === null) {
+      return null
+    }
+
+    const sortedErrors = this.sortedErrors(error.errors, options.fieldOrder)
+
+    return sortedErrors.map(subError => {
+      return { field: subError.errorSummaryLinkedField, message: subError.message }
+    })
+  }
+
+  static errorMessage(
+    error: { errors: { formFields: string[]; message: string }[] } | null,
+    field: string
+  ): string | null {
+    if (error === null) {
+      return null
+    }
+
+    const errorForField = error.errors.find(subError => subError.formFields.includes(field))
+
+    return errorForField?.message ?? null
+  }
+
+  static hasError(error: { errors: { formFields: string[]; message: string }[] } | null, field: string): boolean {
+    if (error === null) {
+      return false
+    }
+
+    return !!error.errors.find(subError => subError.formFields.includes(field))
   }
 }

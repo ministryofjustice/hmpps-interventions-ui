@@ -3,6 +3,7 @@ import { Result, ValidationChain, ValidationError } from 'express-validator'
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 import errorMessages from '../../utils/errorMessages'
 import FormUtils from '../../utils/formUtils'
+import { FormValidationError } from '../../utils/formValidationError'
 
 export default class RarDaysForm {
   private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
@@ -36,7 +37,7 @@ export default class RarDaysForm {
   }
 
   get isValid(): boolean {
-    return this.errors == null
+    return this.error == null
   }
 
   get paramsForUpdate(): Partial<DraftReferral> {
@@ -50,11 +51,17 @@ export default class RarDaysForm {
     return this.request.body['using-rar-days'] === 'yes'
   }
 
-  get errors(): { field: string; message: string }[] | null {
+  get error(): FormValidationError | null {
     if (this.result.isEmpty()) {
       return null
     }
 
-    return this.result.array().map(validationError => ({ field: validationError.param, message: validationError.msg }))
+    return {
+      errors: this.result.array().map(validationError => ({
+        formFields: [validationError.param],
+        errorSummaryLinkedField: validationError.param,
+        message: validationError.msg,
+      })),
+    }
   }
 }

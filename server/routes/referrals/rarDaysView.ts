@@ -4,16 +4,7 @@ import RarDaysPresenter from './rarDaysPresenter'
 export default class RarDaysView {
   constructor(private readonly presenter: RarDaysPresenter) {}
 
-  private get errorSummaryArgs() {
-    if (!this.presenter.errorSummary) {
-      return null
-    }
-
-    return {
-      titleText: 'There is a problem',
-      errorList: this.presenter.errorSummary.map(error => ({ text: error.message, href: `#${error.field}` })),
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private usingRarDaysRadiosArgs(yesHtml: string) {
     return {

@@ -1,22 +1,24 @@
 import { Request, Response } from 'express'
 import InterventionsService from '../../services/interventionsService'
+import { FormValidationError } from '../../utils/formValidationError'
+import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import ReferralFormPresenter from './referralFormPresenter'
 import DraftReferralsListPresenter from './draftReferralsListPresenter'
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ReferralFormView from './referralFormView'
 import CompletionDeadlineView from './completionDeadlineView'
-import CompletionDeadlineForm, { CompletionDeadlineErrors } from './completionDeadlineForm'
+import CompletionDeadlineForm from './completionDeadlineForm'
 import ComplexityLevelView from './complexityLevelView'
-import ComplexityLevelPresenter, { ComplexityLevelError } from './complexityLevelPresenter'
+import ComplexityLevelPresenter from './complexityLevelPresenter'
 import ComplexityLevelForm from './complexityLevelForm'
-import FurtherInformationPresenter, { FurtherInformationError } from './furtherInformationPresenter'
+import FurtherInformationPresenter from './furtherInformationPresenter'
 import FurtherInformationView from './furtherInformationView'
-import DesiredOutcomesPresenter, { DesiredOutcomesError } from './desiredOutcomesPresenter'
+import DesiredOutcomesPresenter from './desiredOutcomesPresenter'
 import DesiredOutcomesView from './desiredOutcomesView'
 import DesiredOutcomesForm from './desiredOutcomesForm'
 import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
 import NeedsAndRequirementsView from './needsAndRequirementsView'
-import NeedsAndRequirementsForm, { NeedsAndRequirementsError } from './needsAndRequirementsForm'
+import NeedsAndRequirementsForm from './needsAndRequirementsForm'
 import RiskInformationPresenter from './riskInformationPresenter'
 import RiskInformationView from './riskInformationView'
 import RarDaysView from './rarDaysView'
@@ -78,15 +80,13 @@ export default class ReferralsController {
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
     const form = await ComplexityLevelForm.createForm(req)
 
-    let error: ComplexityLevelError | null = null
+    let error: FormValidationError | null = null
 
     if (form.isValid) {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        error = {
-          message: e.message,
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
@@ -136,24 +136,19 @@ export default class ReferralsController {
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
     const form = await CompletionDeadlineForm.createForm(req)
 
-    let errors: CompletionDeadlineErrors | null = null
+    let error: FormValidationError | null = null
 
     if (form.isValid) {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        errors = {
-          firstErroredField: 'day',
-          erroredFields: ['day', 'month', 'year'],
-          // TODO (IC-615) there’s probably a more appropriate message to use from the response
-          message: e.message,
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      errors = form.errors
+      error = form.error
     }
 
-    if (errors === null) {
+    if (error === null) {
       res.redirect(`/referrals/${req.params.id}/rar-days`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
@@ -167,7 +162,7 @@ export default class ReferralsController {
         referral.serviceCategoryId
       )
 
-      const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, errors, req.body)
+      const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, error, req.body)
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)
@@ -195,7 +190,7 @@ export default class ReferralsController {
   }
 
   async updateFurtherInformation(req: Request, res: Response): Promise<void> {
-    let error: FurtherInformationError | null = null
+    let error: FormValidationError | null = null
 
     const paramsForUpdate = {
       furtherInformation: req.body['further-information'],
@@ -204,9 +199,7 @@ export default class ReferralsController {
     try {
       await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
     } catch (e) {
-      error = {
-        message: e.message,
-      }
+      error = createFormValidationErrorOrRethrow(e)
     }
 
     if (!error) {
@@ -252,15 +245,13 @@ export default class ReferralsController {
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
     const form = await DesiredOutcomesForm.createForm(req)
 
-    let error: DesiredOutcomesError | null = null
+    let error: FormValidationError | null = null
 
     if (form.isValid) {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        error = {
-          message: e.message,
-        }
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
       error = form.error
@@ -301,23 +292,22 @@ export default class ReferralsController {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
     const form = await NeedsAndRequirementsForm.createForm(req, referral)
 
-    let errors: NeedsAndRequirementsError[] | null = null
+    let error: FormValidationError | null = null
 
     if (form.isValid) {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        // TODO IC-615 use proper error information
-        errors = [{ field: 'additional-needs-information', message: e.message }]
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      errors = form.errors
+      error = form.error
     }
 
-    if (errors === null) {
+    if (error === null) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
-      const presenter = new NeedsAndRequirementsPresenter(referral, errors, req.body)
+      const presenter = new NeedsAndRequirementsPresenter(referral, error, req.body)
       const view = new NeedsAndRequirementsView(presenter)
 
       res.status(400)
@@ -334,7 +324,7 @@ export default class ReferralsController {
   }
 
   async updateRiskInformation(req: Request, res: Response): Promise<void> {
-    let errors: { field: string; message: string }[] | null = null
+    let error: FormValidationError | null = null
 
     const paramsForUpdate = {
       additionalRiskInformation: req.body['additional-risk-information'],
@@ -343,21 +333,15 @@ export default class ReferralsController {
     try {
       await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
     } catch (e) {
-      errors = [
-        {
-          field: 'additional-risk-information',
-          // TODO (IC-615) there’s probably a more appropriate message to use from the response
-          message: e.message,
-        },
-      ]
+      error = createFormValidationErrorOrRethrow(e)
     }
 
-    if (errors === null) {
+    if (error === null) {
       res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
-      const presenter = new RiskInformationPresenter(referral, errors, req.body)
+      const presenter = new RiskInformationPresenter(referral, error, req.body)
       const view = new RiskInformationView(presenter)
 
       res.status(400)
@@ -397,23 +381,22 @@ export default class ReferralsController {
 
     const form = await RarDaysForm.createForm(req, serviceCategory)
 
-    let errors: { field: string; message: string }[] | null = null
+    let error: FormValidationError | null = null
 
     if (form.isValid) {
       try {
         await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
       } catch (e) {
-        // TODO IC-615 use proper error information
-        errors = [{ field: 'using-rar-days', message: e.message }]
+        error = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      errors = form.errors
+      error = form.error
     }
 
-    if (errors === null) {
+    if (error === null) {
       res.redirect(`/referrals/${req.params.id}/further-information`)
     } else {
-      const presenter = new RarDaysPresenter(referral, serviceCategory, errors, req.body)
+      const presenter = new RarDaysPresenter(referral, serviceCategory, error, req.body)
       const view = new RarDaysView(presenter)
 
       res.status(400)

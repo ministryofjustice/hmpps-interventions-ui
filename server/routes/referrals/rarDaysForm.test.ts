@@ -28,9 +28,15 @@ describe(RarDaysForm, () => {
       it('gives an error for using-rar-days', async () => {
         const form = await RarDaysForm.createForm({ body: {} } as Request, serviceCategory)
 
-        expect(form.errors).toEqual([
-          { field: 'using-rar-days', message: 'Select yes if you are using RAR days for the accommodation service' },
-        ])
+        expect(form.error).toEqual({
+          errors: [
+            {
+              formFields: ['using-rar-days'],
+              errorSummaryLinkedField: 'using-rar-days',
+              message: 'Select yes if you are using RAR days for the accommodation service',
+            },
+          ],
+        })
       })
     })
 
@@ -38,7 +44,7 @@ describe(RarDaysForm, () => {
       it('gives no error', async () => {
         const form = await RarDaysForm.createForm({ body: { 'using-rar-days': 'no' } } as Request, serviceCategory)
 
-        expect(form.errors).toBeNull()
+        expect(form.error).toBeNull()
       })
     })
 
@@ -50,7 +56,7 @@ describe(RarDaysForm, () => {
             serviceCategory
           )
 
-          expect(form.errors).toBeNull()
+          expect(form.error).toBeNull()
         })
       })
 
@@ -61,7 +67,7 @@ describe(RarDaysForm, () => {
             serviceCategory
           )
 
-          expect(form.errors).toBeNull()
+          expect(form.error).toBeNull()
         })
       })
 
@@ -72,12 +78,15 @@ describe(RarDaysForm, () => {
             serviceCategory
           )
 
-          expect(form.errors).toEqual([
-            {
-              field: 'maximum-rar-days',
-              message: 'Enter the maximum number of RAR days for the accommodation service',
-            },
-          ])
+          expect(form.error).toEqual({
+            errors: [
+              {
+                formFields: ['maximum-rar-days'],
+                errorSummaryLinkedField: 'maximum-rar-days',
+                message: 'Enter the maximum number of RAR days for the accommodation service',
+              },
+            ],
+          })
         })
       })
 
@@ -88,12 +97,15 @@ describe(RarDaysForm, () => {
             serviceCategory
           )
 
-          expect(form.errors).toEqual([
-            {
-              field: 'maximum-rar-days',
-              message: 'The maximum number of RAR days for the accommodation service must be a number, like 5',
-            },
-          ])
+          expect(form.error).toEqual({
+            errors: [
+              {
+                formFields: ['maximum-rar-days'],
+                errorSummaryLinkedField: 'maximum-rar-days',
+                message: 'The maximum number of RAR days for the accommodation service must be a number, like 5',
+              },
+            ],
+          })
         })
       })
 
@@ -104,12 +116,15 @@ describe(RarDaysForm, () => {
             serviceCategory
           )
 
-          expect(form.errors).toEqual([
-            {
-              field: 'maximum-rar-days',
-              message: 'The maximum number of RAR days for the accommodation service must be a whole number, like 5',
-            },
-          ])
+          expect(form.error).toEqual({
+            errors: [
+              {
+                formFields: ['maximum-rar-days'],
+                errorSummaryLinkedField: 'maximum-rar-days',
+                message: 'The maximum number of RAR days for the accommodation service must be a whole number, like 5',
+              },
+            ],
+          })
         })
       })
     })

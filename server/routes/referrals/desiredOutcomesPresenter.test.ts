@@ -49,22 +49,54 @@ describe('DesiredOutcomesPresenter', () => {
     })
   })
 
-  describe('error information', () => {
-    describe('when no errors are passed in', () => {
-      it('returns no errors', () => {
+  describe('errorMessage', () => {
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
         const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory)
 
-        expect(presenter.error).toBeNull()
+        expect(presenter.errorMessage).toBeNull()
       })
     })
 
-    describe('when errors are passed in', () => {
+    describe('when an error is passed in', () => {
       it('returns error information', () => {
         const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory, {
-          message: 'Select desired outcomes',
+          errors: [
+            {
+              formFields: ['desired-outcomes-ids'],
+              errorSummaryLinkedField: 'desired-outcomes-ids',
+              message: 'Select desired outcomes',
+            },
+          ],
         })
 
-        expect(presenter.error).toEqual({ message: 'Select desired outcomes' })
+        expect(presenter.errorMessage).toEqual('Select desired outcomes')
+      })
+    })
+  })
+
+  describe('errorSummary', () => {
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
+        const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory)
+
+        expect(presenter.errorSummary).toBeNull()
+      })
+    })
+
+    describe('when an error is passed in', () => {
+      it('returns error information', () => {
+        const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory, {
+          errors: [
+            {
+              formFields: ['desired-outcomes-ids'],
+              errorSummaryLinkedField: 'desired-outcomes-ids',
+              message: 'Select desired outcomes',
+            },
+          ],
+        })
+
+        expect(presenter.errorSummary).toEqual([{ field: 'desired-outcomes-ids', message: 'Select desired outcomes' }])
       })
     })
   })

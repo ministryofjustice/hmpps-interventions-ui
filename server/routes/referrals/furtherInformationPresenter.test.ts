@@ -24,22 +24,59 @@ describe('FurtherInformationPresenter', () => {
     })
   })
 
-  describe('error information', () => {
-    describe('when no errors are passed in', () => {
-      it('returns no errors', () => {
+  describe('errorMessage', () => {
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
         const presenter = new FurtherInformationPresenter(draftReferral, serviceCategory)
 
-        expect(presenter.error).toBeNull()
+        expect(presenter.errorMessage).toBeNull()
       })
     })
 
-    describe('when errors are passed in', () => {
-      it('returns error information', () => {
+    describe('when an error is passed in', () => {
+      it('returns an error message', () => {
         const presenter = new FurtherInformationPresenter(draftReferral, serviceCategory, {
-          message: 'Something went wrong, please try again',
+          errors: [
+            {
+              formFields: ['further-information'],
+              errorSummaryLinkedField: 'further-information',
+              message: 'Something went wrong, please try again',
+            },
+          ],
         })
 
-        expect(presenter.error).toEqual({ message: 'Something went wrong, please try again' })
+        expect(presenter.errorMessage).toEqual('Something went wrong, please try again')
+      })
+    })
+  })
+
+  describe('errorSummary', () => {
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
+        const presenter = new FurtherInformationPresenter(draftReferral, serviceCategory)
+
+        expect(presenter.errorSummary).toBeNull()
+      })
+    })
+
+    describe('when an error is passed in', () => {
+      it('returns error information', () => {
+        const presenter = new FurtherInformationPresenter(draftReferral, serviceCategory, {
+          errors: [
+            {
+              formFields: ['further-information'],
+              errorSummaryLinkedField: 'further-information',
+              message: 'Something went wrong, please try again',
+            },
+          ],
+        })
+
+        expect(presenter.errorSummary).toEqual([
+          {
+            field: 'further-information',
+            message: 'Something went wrong, please try again',
+          },
+        ])
       })
     })
   })

@@ -15,7 +15,7 @@ describe('NeedsAndRequirementsPresenter', () => {
   })
 
   describe('errorSummary', () => {
-    describe('when errors is null', () => {
+    describe('when error is null', () => {
       it('returns null', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
         const presenter = new NeedsAndRequirementsPresenter(referral, null)
@@ -24,13 +24,23 @@ describe('NeedsAndRequirementsPresenter', () => {
       })
     })
 
-    describe('when errors is not null', () => {
-      it('returns the errors sorted into the order their fields appear on the page', () => {
+    describe('when error is not null', () => {
+      it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
-        const presenter = new NeedsAndRequirementsPresenter(referral, [
-          { field: 'has-additional-responsibilities', message: 'has-additional-responsibilities msg' },
-          { field: 'needs-interpreter', message: 'needs-interpreter msg' },
-        ])
+        const presenter = new NeedsAndRequirementsPresenter(referral, {
+          errors: [
+            {
+              formFields: ['has-additional-responsibilities'],
+              errorSummaryLinkedField: 'has-additional-responsibilities',
+              message: 'has-additional-responsibilities msg',
+            },
+            {
+              formFields: ['needs-interpreter'],
+              errorSummaryLinkedField: 'needs-interpreter',
+              message: 'needs-interpreter msg',
+            },
+          ],
+        })
 
         expect(presenter.errorSummary).toEqual([
           { field: 'needs-interpreter', message: 'needs-interpreter msg' },
@@ -85,10 +95,20 @@ describe('NeedsAndRequirementsPresenter', () => {
           .serviceCategorySelected()
           .serviceUserSelected()
           .build({ serviceUser: { firstName: 'Geoffrey' } })
-        const presenter = new NeedsAndRequirementsPresenter(referral, [
-          { field: 'accessibility-needs', message: 'accessibilityNeeds msg' },
-          { field: 'interpreter-language', message: 'interpreterLanguage msg' },
-        ])
+        const presenter = new NeedsAndRequirementsPresenter(referral, {
+          errors: [
+            {
+              formFields: ['accessibility-needs'],
+              errorSummaryLinkedField: 'accessibility-needs',
+              message: 'accessibilityNeeds msg',
+            },
+            {
+              formFields: ['interpreter-language'],
+              errorSummaryLinkedField: 'interpreter-language',
+              message: 'interpreterLanguage msg',
+            },
+          ],
+        })
 
         expect(presenter.text).toMatchObject({
           accessibilityNeeds: {

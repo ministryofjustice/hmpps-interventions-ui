@@ -42,7 +42,15 @@ describe(ComplexityLevelForm, () => {
         body: {},
       } as Request)
 
-      expect(form.error).toEqual({ message: 'Select a complexity level' })
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'complexity-level-id',
+            formFields: ['complexity-level-id'],
+            message: 'Select a complexity level',
+          },
+        ],
+      })
     })
 
     it('returns an error object when the complexity-level-id property is null in the body', async () => {
@@ -50,7 +58,15 @@ describe(ComplexityLevelForm, () => {
         body: { 'complexity-level-id': null },
       } as Request)
 
-      expect(form.error).toEqual({ message: 'Select a complexity level' })
+      expect(form.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'complexity-level-id',
+            formFields: ['complexity-level-id'],
+            message: 'Select a complexity level',
+          },
+        ],
+      })
     })
   })
 

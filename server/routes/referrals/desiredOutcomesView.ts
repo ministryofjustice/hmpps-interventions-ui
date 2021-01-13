@@ -1,11 +1,10 @@
+import ViewUtils from '../../utils/viewUtils'
 import DesiredOutcomesPresenter from './desiredOutcomesPresenter'
 
 export default class DesiredOutcomesView {
   constructor(readonly presenter: DesiredOutcomesPresenter) {}
 
   get checkboxArgs(): Record<string, unknown> {
-    const errorMessage = this.presenter.error ? { text: this.presenter.error.message } : null
-
     return {
       idPrefix: 'desired-outcomes-ids',
       name: 'desired-outcomes-ids',
@@ -16,7 +15,7 @@ export default class DesiredOutcomesView {
           classes: 'govuk-fieldset__legend--xl',
         },
       },
-      errorMessage,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       hint: {
         text: 'Select all that apply.',
       },
@@ -30,21 +29,7 @@ export default class DesiredOutcomesView {
     }
   }
 
-  get errorSummaryArgs(): Record<string, unknown> | null {
-    if (!this.presenter.error) {
-      return null
-    }
-
-    return {
-      titleText: 'There is a problem',
-      errorList: [
-        {
-          text: this.presenter.error.message,
-          href: '#desired-outcomes-ids',
-        },
-      ],
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [

@@ -21,17 +21,17 @@ export default class CompletionDeadlineView {
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       items: [
         {
-          classes: `govuk-input--width-2${this.presenter.erroredFields.includes('day') ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-2${this.presenter.hasDayError ? ' govuk-input--error' : ''}`,
           name: 'day',
           value: this.presenter.day,
         },
         {
-          classes: `govuk-input--width-2${this.presenter.erroredFields.includes('month') ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-2${this.presenter.hasMonthError ? ' govuk-input--error' : ''}`,
           name: 'month',
           value: this.presenter.month,
         },
         {
-          classes: `govuk-input--width-4${this.presenter.erroredFields.includes('year') ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-4${this.presenter.hasYearError ? ' govuk-input--error' : ''}`,
           name: 'year',
           value: this.presenter.year,
         },
@@ -39,21 +39,7 @@ export default class CompletionDeadlineView {
     }
   }
 
-  private get errorSummaryArgs(): Record<string, unknown> | null {
-    if (this.presenter.errorSummary === null) {
-      return null
-    }
-
-    return {
-      titleText: 'There is a problem',
-      errorList: this.presenter.errorSummary.errors.map(error => {
-        return {
-          text: error.message,
-          href: `#completion-deadline-${error.linkedField}`,
-        }
-      }),
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [

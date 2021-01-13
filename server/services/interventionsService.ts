@@ -1,6 +1,14 @@
 import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
+import { SanitisedError } from '../sanitisedError'
+
+export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
+
+export interface InterventionsServiceValidationError {
+  field: string
+  error: string
+}
 
 type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 
@@ -69,43 +77,74 @@ export default class InterventionsService {
     return new RestClient('Interventions Service API Client', this.config, token)
   }
 
+  private createServiceError(error: unknown): InterventionsServiceError {
+    // TODO IC-620 validate this data properly
+    const sanitisedError = error as SanitisedError
+
+    const bodyObject = sanitisedError.data as Record<string, unknown>
+    if ('validationErrors' in bodyObject) {
+      return {
+        ...sanitisedError,
+        validationErrors: bodyObject.validationErrors as InterventionsServiceValidationError[],
+      }
+    }
+
+    return sanitisedError
+  }
+
   async getDraftReferral(token: string, id: string): Promise<DraftReferral> {
     logger.info(`Getting draft referral with id ${id}`)
 
     const restClient = this.createRestClient(token)
 
-    return (await restClient.get({
-      path: `/draft-referral/${id}`,
-      headers: { Accept: 'application/json' },
-    })) as DraftReferral
+    try {
+      return (await restClient.get({
+        path: `/draft-referral/${id}`,
+        headers: { Accept: 'application/json' },
+      })) as DraftReferral
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
   }
 
   async createDraftReferral(token: string): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
-    return (await restClient.post({
-      path: `/draft-referral`,
-      headers: { Accept: 'application/json' },
-    })) as DraftReferral
+    try {
+      return (await restClient.post({
+        path: `/draft-referral`,
+        headers: { Accept: 'application/json' },
+      })) as DraftReferral
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
   }
 
   async patchDraftReferral(token: string, id: string, patch: Partial<DraftReferral>): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
-    return (await restClient.patch({
-      path: `/draft-referral/${id}`,
-      headers: { Accept: 'application/json' },
-      data: patch,
-    })) as DraftReferral
+    try {
+      return (await restClient.patch({
+        path: `/draft-referral/${id}`,
+        headers: { Accept: 'application/json' },
+        data: patch,
+      })) as DraftReferral
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
   }
 
   async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 
-    return (await restClient.get({
-      path: `/service-category/${id}`,
-      headers: { Accept: 'application/json' },
-    })) as ServiceCategory
+    try {
+      return (await restClient.get({
+        path: `/service-category/${id}`,
+        headers: { Accept: 'application/json' },
+      })) as ServiceCategory
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
   }
 
   async getDraftReferralsForUser(token: string, userId: string): Promise<DraftReferral[]> {

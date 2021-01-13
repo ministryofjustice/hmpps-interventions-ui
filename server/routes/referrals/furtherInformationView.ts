@@ -1,11 +1,10 @@
+import ViewUtils from '../../utils/viewUtils'
 import FurtherInformationPresenter from './furtherInformationPresenter'
 
 export default class FurtherInformationView {
   constructor(private readonly presenter: FurtherInformationPresenter) {}
 
   private get textAreaArgs(): Record<string, unknown> {
-    const errorMessage = this.presenter.error ? { text: this.presenter.error.message } : null
-
     return {
       name: 'further-information',
       id: 'further-information',
@@ -14,7 +13,7 @@ export default class FurtherInformationView {
         classes: 'govuk-label--xl',
         isPageHeading: true,
       },
-      errorMessage,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       hint: {
         text: this.presenter.hint,
       },
@@ -22,21 +21,7 @@ export default class FurtherInformationView {
     }
   }
 
-  get errorSummaryArgs(): Record<string, unknown> | null {
-    if (!this.presenter.error) {
-      return null
-    }
-
-    return {
-      titleText: 'There is a problem',
-      errorList: [
-        {
-          text: this.presenter.error.message,
-          href: '#further-information',
-        },
-      ],
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
