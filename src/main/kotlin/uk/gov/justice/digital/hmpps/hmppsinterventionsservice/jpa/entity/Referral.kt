@@ -9,11 +9,13 @@ import javax.persistence.CollectionTable
 import javax.persistence.Column
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.UniqueConstraint
 import javax.validation.constraints.NotNull
@@ -22,7 +24,9 @@ import javax.validation.constraints.NotNull
 @Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
 data class Referral(
   var sentAt: OffsetDateTime? = null,
+  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) var sentBy: AuthUser? = null,
 
+  // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn
   var serviceUserData: ServiceUserData? = null,
   var additionalRiskInformation: String? = null,
