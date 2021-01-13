@@ -157,8 +157,13 @@ class ReferralServiceTest @Autowired constructor(
 
     referral = referralService.updateDraftReferral(referral, update)
 
+    // this is fine, since the service category is the same
+    referralService.updateDraftReferral(referral, update)
+
+    val updateWithDifferentServiceCategory = DraftReferralDTO(serviceCategoryId = UUID.fromString("9556a399-3529-4993-8030-41db2090555e"))
+
     val error = assertThrows<ValidationError> {
-      referralService.updateDraftReferral(referral, update)
+      referralService.updateDraftReferral(referral, updateWithDifferentServiceCategory)
     }
     assertThat(error.errors.size).isEqualTo(1)
     assertThat(error.errors[0].field).isEqualTo("serviceCategoryId")

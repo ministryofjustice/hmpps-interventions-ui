@@ -33,7 +33,7 @@ class ReferralService(val repository: ReferralRepository) {
     val errors = mutableListOf<FieldError>()
 
     update.serviceCategoryId?.let {
-      if (referral.serviceCategoryID != null) {
+      if (referral.serviceCategoryID != null && it != referral.serviceCategoryID) {
         errors.add(FieldError(field = "serviceCategoryId", error = Code.FIELD_CANNOT_BE_CHANGED))
       }
     }
