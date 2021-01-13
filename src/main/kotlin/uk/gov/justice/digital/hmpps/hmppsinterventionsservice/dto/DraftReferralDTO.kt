@@ -21,7 +21,8 @@ data class DraftReferralDTO(
   val whenUnavailable: String? = null,
   val additionalRiskInformation: String? = null,
   val usingRarDays: Boolean? = null,
-  val maximumRarDays: Int? = null
+  val maximumRarDays: Int? = null,
+  val desiredOutcomeIds: List<UUID>? = null
 ) {
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
@@ -42,6 +43,7 @@ data class DraftReferralDTO(
         additionalRiskInformation = referral.additionalRiskInformation,
         usingRarDays = referral.usingRarDays,
         maximumRarDays = referral.maximumRarDays,
+        desiredOutcomeIds = referral.desiredOutcomeIDs
       )
     }
   }

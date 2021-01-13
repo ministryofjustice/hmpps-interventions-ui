@@ -14,4 +14,7 @@ data class ServiceCategory(
   @CreationTimestamp val created: OffsetDateTime,
   val name: String,
   @OneToMany @JoinColumn(name = "service_category_id") val complexityLevels: List<ComplexityLevel>,
+
+  @OneToMany @JoinColumn(name = "service_category_id")
+  val desiredOutcomes: List<DesiredOutcome>
 )

@@ -4,12 +4,15 @@ import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.CollectionTable
 import javax.persistence.Column
+import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 import javax.validation.constraints.NotNull
 
 @Entity
@@ -29,6 +32,13 @@ data class Referral(
   var maximumRarDays: Int? = null,
   @NotNull var createdByUserAuthSource: String? = null,
   @Column(name = "created_by_userid") @NotNull var createdByUserID: String? = null,
+  @ElementCollection
+  @CollectionTable(
+    name = "referral_desired_outcome",
+    uniqueConstraints = [UniqueConstraint(columnNames = arrayOf("referral_id", "desired_outcome_id"))]
+  )
+  @Column(name = "desired_outcome_id")
+  var desiredOutcomeIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
   @CreationTimestamp var createdAt: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,

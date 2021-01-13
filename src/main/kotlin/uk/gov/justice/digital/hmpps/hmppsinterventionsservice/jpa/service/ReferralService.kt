@@ -64,6 +64,16 @@ class ReferralService(val repository: ReferralRepository) {
       }
     }
 
+    update.desiredOutcomeIds?.let {
+      if (it.isEmpty()) {
+        errors.add(FieldError(field = "desiredOutcomeIds", error = Code.CANNOT_BE_EMPTY))
+      }
+      if (referral.serviceCategoryID == null && update.serviceCategoryId == null) {
+        errors.add(FieldError(field = "desiredOutcomeIds", error = Code.SERVICE_CATEGORY_MUST_BE_SET))
+      }
+    }
+    // fixme: error if desiredOutcomeIds not valid for service category
+
     if (errors.isNotEmpty()) {
       throw ValidationError("draft referral update invalid", errors)
     }
@@ -113,6 +123,10 @@ class ReferralService(val repository: ReferralRepository) {
     update.usingRarDays?.let {
       referral.usingRarDays = it
       referral.maximumRarDays = if (it) update.maximumRarDays else null
+    }
+
+    update.desiredOutcomeIds?.let {
+      referral.desiredOutcomeIDs = it
     }
 
     return repository.save(referral)
