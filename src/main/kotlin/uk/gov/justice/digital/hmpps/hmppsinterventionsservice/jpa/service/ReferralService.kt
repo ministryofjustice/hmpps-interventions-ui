@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
 import java.util.UUID
@@ -71,8 +72,15 @@ class ReferralService(val repository: ReferralRepository) {
       if (referral.serviceCategoryID == null && update.serviceCategoryId == null) {
         errors.add(FieldError(field = "desiredOutcomeIds", error = Code.SERVICE_CATEGORY_MUST_BE_SET))
       }
+
+      // fixme: error if desiredOutcomeIds not valid for service category
     }
-    // fixme: error if desiredOutcomeIds not valid for service category
+
+    update.serviceUser?.let {
+      if (referral.serviceUser != null) {
+        errors.add(FieldError(field = "serviceUser", error = Code.FIELD_CANNOT_BE_CHANGED))
+      }
+    }
 
     if (errors.isNotEmpty()) {
       throw ValidationError("draft referral update invalid", errors)
@@ -127,6 +135,28 @@ class ReferralService(val repository: ReferralRepository) {
 
     update.desiredOutcomeIds?.let {
       referral.desiredOutcomeIDs = it
+    }
+
+    update.serviceUser?.let {
+      referral.serviceUser = ServiceUser(
+        referral = referral,
+        title = it.title,
+        firstName = it.firstName,
+        lastName = it.lastName,
+        otherNames = it.otherNames,
+        dob = it.dob,
+        sex = it.sex,
+        address = it.address,
+        needs = it.needs,
+        preferredLanguage = it.preferredLanguage,
+        religionOrBelief = it.religionOrBelief,
+        sexualOrientation = it.sexualOrientation,
+        disabilities = it.disabilities,
+        ethnicity = it.ethnicity,
+        pncNumber = it.pncNumber,
+        crn = it.crn,
+        nomisNumber = it.nomisNumber,
+      )
     }
 
     return repository.save(referral)
