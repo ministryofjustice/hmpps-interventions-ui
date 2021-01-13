@@ -1,7 +1,7 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
-import InterventionsService from './interventionsService'
+import InterventionsService, { SentReferral } from './interventionsService'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 
@@ -856,6 +856,85 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       expect(serviceProvider.id).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
       expect(serviceProvider.name).toEqual('Harmony Living')
+    })
+  })
+
+  const sentReferral: SentReferral = {
+    id: '81d754aa-d868-4347-9c0f-50690773014e',
+    createdAt: '2021-01-11T10:32:12.382884Z',
+    referenceNumber: 'HDJ2123F',
+    referral: {
+      completionDeadline: '2021-04-01',
+      serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+      serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      furtherInformation: 'Some information about the service user',
+      desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+      additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      accessibilityNeeds: 'She uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'She works Mondays 9am - midday',
+      serviceUser: {
+        firstName: 'Alex',
+      },
+      additionalRiskInformation: 'A danger to the elderly',
+      usingRarDays: true,
+      maximumRarDays: 10,
+    },
+  }
+
+  describe('sendDraftReferral', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists and is ready to be sent',
+        uponReceiving: 'a POST request to send the draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed/send',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(sentReferral),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/referral/81d754aa-d868-4347-9c0f-50690773014e'
+            ),
+          },
+        },
+      })
+    })
+
+    it('returns a sent referral', async () => {
+      expect(await interventionsService.sendDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed')).toEqual(
+        sentReferral
+      )
+    })
+  })
+
+  describe('getSentReferral', () => {
+    it('returns a referral for the given ID', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request for the sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(sentReferral),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getSentReferral(token, '81d754aa-d868-4347-9c0f-50690773014e')).toEqual(
+        sentReferral
+      )
     })
   })
 })
