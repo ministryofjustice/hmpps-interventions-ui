@@ -5,5 +5,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import java.util.UUID
 
 interface ReferralRepository : CrudRepository<Referral, UUID> {
-  fun findByCreatedByUserID(userId: String): List<Referral>
+  // queries for sent referrals
+  fun findByIdAndSentAtIsNotNull(id: UUID): Referral?
+
+  // queries for draft referrals
+  fun findByIdAndSentAtIsNull(id: UUID): Referral?
+  fun findByCreatedByUserIDAndSentAtIsNull(userId: String): List<Referral>
 }

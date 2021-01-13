@@ -21,6 +21,8 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
 data class Referral(
+  var sentAt: OffsetDateTime? = null,
+
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn
   var serviceUserData: ServiceUserData? = null,
   var additionalRiskInformation: String? = null,

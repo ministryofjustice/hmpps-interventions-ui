@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -10,10 +9,20 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @Service
 class ReferralService(val repository: ReferralRepository) {
+  fun getSentReferral(id: UUID): Referral? {
+    return repository.findByIdAndSentAtIsNotNull(id)
+  }
+
+  fun sendDraftReferral(referral: Referral): Referral {
+    referral.sentAt = OffsetDateTime.now()
+    return repository.save(referral)
+  }
+
   fun createDraftReferral(userID: String, authSource: String): Referral {
     val dummyCRN = "X320741"
     return repository.save(
@@ -26,7 +35,7 @@ class ReferralService(val repository: ReferralRepository) {
   }
 
   fun getDraftReferral(id: UUID): Referral? {
-    return repository.findByIdOrNull(id)
+    return repository.findByIdAndSentAtIsNull(id)
   }
 
   private fun validateDraftReferralUpdate(referral: Referral, update: DraftReferralDTO) {
@@ -163,6 +172,6 @@ class ReferralService(val repository: ReferralRepository) {
   }
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
-    return repository.findByCreatedByUserID(userID).map { DraftReferralDTO.from(it) }
+    return repository.findByCreatedByUserIDAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
   }
 }
