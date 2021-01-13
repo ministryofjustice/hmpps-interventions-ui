@@ -45,7 +45,7 @@ data class DraftReferralDTO(
         usingRarDays = referral.usingRarDays,
         maximumRarDays = referral.maximumRarDays,
         desiredOutcomeIds = referral.desiredOutcomeIDs,
-        serviceUser = ServiceUserDTO.from(referral.serviceUser),
+        serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
       )
     }
   }

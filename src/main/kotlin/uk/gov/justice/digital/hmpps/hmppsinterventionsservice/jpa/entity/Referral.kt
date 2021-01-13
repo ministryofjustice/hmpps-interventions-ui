@@ -21,11 +21,8 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
 data class Referral(
-  // this seems like it should be a OneToMany relationship, however it is OneToOne
-  // for good reason. all service user information we pull from nDelius can change,
-  // and often does. storing a snapshot of the current information for each
-  // referral avoids any issues which may arise due to out of date information.
-  @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn var serviceUser: ServiceUser? = null,
+  @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn
+  var serviceUserData: ServiceUserData? = null,
   var additionalRiskInformation: String? = null,
   var furtherInformation: String? = null,
   var additionalNeedsInformation: String? = null,
@@ -48,6 +45,8 @@ data class Referral(
   @Column(name = "desired_outcome_id")
   var desiredOutcomeIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
+
+  @NotNull val serviceUserCRN: String,
   @CreationTimestamp var createdAt: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,
 )

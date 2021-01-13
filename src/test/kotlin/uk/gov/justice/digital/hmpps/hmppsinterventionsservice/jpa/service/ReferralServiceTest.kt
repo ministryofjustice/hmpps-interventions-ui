@@ -27,7 +27,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `update cannot overwrite identifier fields`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     entityManager.persist(referral)
     entityManager.flush()
 
@@ -43,7 +43,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `null fields in the update do not overwrite original fields`() {
-    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    val referral = Referral(serviceUserCRN = "X123456", completionDeadline = LocalDate.of(2021, 6, 26))
     entityManager.persist(referral)
     entityManager.flush()
 
@@ -55,7 +55,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `non-null fields in the update overwrite original fields`() {
-    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    val referral = Referral(serviceUserCRN = "X123456", completionDeadline = LocalDate.of(2021, 6, 26))
     entityManager.persist(referral)
     entityManager.flush()
 
@@ -68,7 +68,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `update mutates the original object`() {
-    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    val referral = Referral(serviceUserCRN = "X123456", completionDeadline = LocalDate.of(2021, 6, 26))
     entityManager.persist(referral)
     entityManager.flush()
 
@@ -81,7 +81,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `update successfully persists the updated draft referral`() {
-    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    val referral = Referral(serviceUserCRN = "X123456", completionDeadline = LocalDate.of(2021, 6, 26))
     entityManager.persist(referral)
     entityManager.flush()
 
@@ -109,7 +109,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `get a draft referral`() {
-    val referral = Referral(completionDeadline = LocalDate.of(2021, 6, 26))
+    val referral = Referral(serviceUserCRN = "X123456", completionDeadline = LocalDate.of(2021, 6, 26))
     entityManager.persist(referral)
     entityManager.flush()
 
@@ -122,9 +122,9 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `find by userID returns list of draft referrals`() {
     val referrals = listOf(
-      Referral(createdByUserID = "123"),
-      Referral(createdByUserID = "123"),
-      Referral(createdByUserID = "456"),
+      Referral(serviceUserCRN = "X123456", createdByUserID = "123"),
+      Referral(serviceUserCRN = "X123456", createdByUserID = "123"),
+      Referral(serviceUserCRN = "X123456", createdByUserID = "456"),
     )
     referrals.forEach { entityManager.persist(it) }
     entityManager.flush()
@@ -141,7 +141,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `completion date must be in the future`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     val update = DraftReferralDTO(completionDeadline = LocalDate.of(2020, 1, 1))
     val error = assertThrows<ValidationError> {
       referralService.updateDraftReferral(referral, update)
@@ -152,7 +152,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `service category cannot be changed once set`() {
-    var referral = Referral()
+    var referral = Referral(serviceUserCRN = "X123456")
     val update = DraftReferralDTO(serviceCategoryId = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16"))
 
     referral = referralService.updateDraftReferral(referral, update)
@@ -166,7 +166,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `setting complexity level id requires service category`() {
-    var referral = Referral()
+    var referral = Referral(serviceUserCRN = "X123456")
     val update = DraftReferralDTO(complexityLevelId = UUID.fromString("110f2405-d944-4c15-836c-0c6684e2aa78"))
     val error = assertThrows<ValidationError> {
       referralService.updateDraftReferral(referral, update)
@@ -190,7 +190,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `when needsInterpreter is true, interpreterLanguage must be set`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     // this is fine
     referralService.updateDraftReferral(referral, DraftReferralDTO(needsInterpreter = false))
 
@@ -207,7 +207,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `when hasAdditionalResponsibilities is true, whenUnavailable must be set`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     // this is fine
     referralService.updateDraftReferral(referral, DraftReferralDTO(hasAdditionalResponsibilities = false))
 
@@ -224,7 +224,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `when usingRarDays is true, maximumRarDays must be set`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     // this is fine
     referralService.updateDraftReferral(referral, DraftReferralDTO(usingRarDays = false))
 
@@ -241,7 +241,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `setting desired outcomes requires service category`() {
-    var referral = Referral()
+    var referral = Referral(serviceUserCRN = "X123456")
     val update = DraftReferralDTO(desiredOutcomeIds = mutableListOf(UUID.fromString("8e77d70e-52a8-428f-9372-070e12e93154")))
     val error = assertThrows<ValidationError> {
       referralService.updateDraftReferral(referral, update)
@@ -268,7 +268,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `desired outcomes, once set, can not be reset back to null or empty`() {
-    var referral = Referral()
+    var referral = Referral(serviceUserCRN = "X123456")
 
     val updateWithServiceCategory = DraftReferralDTO(
       desiredOutcomeIds = mutableListOf(
@@ -297,7 +297,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `multiple errors at once`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     val update = DraftReferralDTO(completionDeadline = LocalDate.of(2020, 1, 1), needsInterpreter = true)
     val error = assertThrows<ValidationError> {
       referralService.updateDraftReferral(referral, update)
@@ -307,7 +307,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `the referral isn't actually updated if any of the fields contain validation errors`() {
-    val referral = Referral()
+    val referral = Referral(serviceUserCRN = "X123456")
     entityManager.persist(referral)
     entityManager.flush()
 

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Sex
 import java.util.Date
 
@@ -23,27 +23,27 @@ data class ServiceUserDTO(
   var disabilities: String? = null,
 ) {
   companion object {
-    fun from(serviceUser: ServiceUser?): ServiceUserDTO? {
-      return serviceUser?.let {
-        ServiceUserDTO(
-          pncNumber = serviceUser.pncNumber,
-          crn = serviceUser.crn,
-          nomisNumber = serviceUser.nomisNumber,
-          dob = serviceUser.dob,
-          sex = serviceUser.sex,
-          ethnicity = serviceUser.ethnicity,
-          title = serviceUser.title,
-          firstName = serviceUser.firstName,
-          lastName = serviceUser.lastName,
-          otherNames = serviceUser.otherNames,
-          address = serviceUser.address,
-          needs = serviceUser.needs,
-          preferredLanguage = serviceUser.preferredLanguage,
-          religionOrBelief = serviceUser.religionOrBelief,
-          sexualOrientation = serviceUser.sexualOrientation,
-          disabilities = serviceUser.disabilities,
-        )
+    fun from(crn: String, serviceUserData: ServiceUserData?): ServiceUserDTO {
+      val dto = ServiceUserDTO(crn = crn)
+      serviceUserData?.let {
+        dto.crn = crn
+        dto.pncNumber = serviceUserData.pncNumber
+        dto.nomisNumber = serviceUserData.nomisNumber
+        dto.dob = serviceUserData.dob
+        dto.sex = serviceUserData.sex
+        dto.ethnicity = serviceUserData.ethnicity
+        dto.title = serviceUserData.title
+        dto.firstName = serviceUserData.firstName
+        dto.lastName = serviceUserData.lastName
+        dto.otherNames = serviceUserData.otherNames
+        dto.address = serviceUserData.address
+        dto.needs = serviceUserData.needs
+        dto.preferredLanguage = serviceUserData.preferredLanguage
+        dto.religionOrBelief = serviceUserData.religionOrBelief
+        dto.sexualOrientation = serviceUserData.sexualOrientation
+        dto.disabilities = serviceUserData.disabilities
       }
+      return dto
     }
   }
 }

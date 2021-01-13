@@ -10,6 +10,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.MapsId
 import javax.persistence.OneToOne
+import javax.persistence.Table
 
 // this is enumerated in this way since the only use for this data is to
 // refer service users to male or female specific services. the nuance of
@@ -19,7 +20,8 @@ enum class Sex {
 }
 
 @Entity
-data class ServiceUser(
+@Table(name = "referral_service_user_data")
+data class ServiceUserData(
   var title: String? = null,
   var firstName: String? = null,
   var lastName: String? = null,
@@ -34,7 +36,6 @@ data class ServiceUser(
   var disabilities: String? = null,
   var ethnicity: String? = null,
   var pncNumber: String? = null,
-  var crn: String? = null,
   var nomisNumber: String? = null,
 
   @OneToOne @MapsId @JoinColumn(name = "referral_id") var referral: Referral? = null,

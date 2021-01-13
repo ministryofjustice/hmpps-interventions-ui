@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
 import java.util.UUID
@@ -15,7 +15,14 @@ import java.util.UUID
 @Service
 class ReferralService(val repository: ReferralRepository) {
   fun createDraftReferral(userID: String, authSource: String): Referral {
-    return repository.save(Referral(createdByUserID = userID, createdByUserAuthSource = authSource))
+    val dummyCRN = "X320741"
+    return repository.save(
+      Referral(
+        serviceUserCRN = dummyCRN,
+        createdByUserID = userID,
+        createdByUserAuthSource = authSource
+      )
+    )
   }
 
   fun getDraftReferral(id: UUID): Referral? {
@@ -77,8 +84,8 @@ class ReferralService(val repository: ReferralRepository) {
     }
 
     update.serviceUser?.let {
-      if (referral.serviceUser != null) {
-        errors.add(FieldError(field = "serviceUser", error = Code.FIELD_CANNOT_BE_CHANGED))
+      if (it.crn != null && it.crn != referral.serviceUserCRN) {
+        errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
       }
     }
 
@@ -138,7 +145,7 @@ class ReferralService(val repository: ReferralRepository) {
     }
 
     update.serviceUser?.let {
-      referral.serviceUser = ServiceUser(
+      referral.serviceUserData = ServiceUserData(
         referral = referral,
         title = it.title,
         firstName = it.firstName,
@@ -154,7 +161,6 @@ class ReferralService(val repository: ReferralRepository) {
         disabilities = it.disabilities,
         ethnicity = it.ethnicity,
         pncNumber = it.pncNumber,
-        crn = it.crn,
         nomisNumber = it.nomisNumber,
       )
     }
