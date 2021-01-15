@@ -150,18 +150,12 @@ class ReferralService(val repository: ReferralRepository) {
         title = it.title,
         firstName = it.firstName,
         lastName = it.lastName,
-        otherNames = it.otherNames,
         dob = it.dob,
-        sex = it.sex,
-        address = it.address,
-        needs = it.needs,
+        gender = it.gender,
+        ethnicity = it.ethnicity,
         preferredLanguage = it.preferredLanguage,
         religionOrBelief = it.religionOrBelief,
-        sexualOrientation = it.sexualOrientation,
         disabilities = it.disabilities,
-        ethnicity = it.ethnicity,
-        pncNumber = it.pncNumber,
-        nomisNumber = it.nomisNumber,
       )
     }
 

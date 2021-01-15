@@ -3,20 +3,14 @@ alter table referral
 
 create table referral_service_user_data (
     referral_id uuid not null unique,
-    nomis_number text,
-    pnc_number text,
-    address text,
     disabilities text,
     dob date,
     ethnicity text,
     first_name text,
     last_name text,
-    needs text,
-    other_names text,
     preferred_language text,
     religion_or_belief text,
-    sex text,
-    sexual_orientation text,
+    gender text,
     title text,
     primary key (referral_id)
 );
