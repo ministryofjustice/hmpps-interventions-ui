@@ -58,6 +58,9 @@ env:
   - name: COMMUNITY_API_URL
     value: {{ .Values.env.COMMUNITY_API_URL | quote }}
 
+  - name: OFFENDER_ASSESSMENTS_API_URL
+    value: {{ .Values.env.OFFENDER_ASSESSMENTS_API_URL | quote }}
+
   - name: INTERVENTIONS_SERVICE_URL
     value: {{ .Values.env.INTERVENTIONS_SERVICE_URL | quote }}
 

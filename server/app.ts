@@ -25,12 +25,14 @@ import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
 import CommunityApiService from './services/communityApiService'
 import InterventionsService from './services/interventionsService'
+import OffenderAssessmentsApiService from './services/offenderAssessmentsApiService'
 
 const RedisStore = connectRedis(session)
 
 export default function createApp(
   userService: UserService,
   communityApiService: CommunityApiService,
+  offenderAssessmentsApiService: OffenderAssessmentsApiService,
   interventionsService: InterventionsService
 ): express.Application {
   const app = express()
@@ -192,7 +194,14 @@ export default function createApp(
   })
 
   app.use(authorisationMiddleware())
-  app.use('/', indexRoutes(standardRouter(userService), { communityApiService, interventionsService }))
+  app.use(
+    '/',
+    indexRoutes(standardRouter(userService), {
+      communityApiService,
+      offenderAssessmentsApiService,
+      interventionsService,
+    })
+  )
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(config.production))
 

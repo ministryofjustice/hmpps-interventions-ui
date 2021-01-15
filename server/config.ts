@@ -59,8 +59,16 @@ export default {
       },
       agent: new AgentConfig(),
     },
+    offenderAssessmentsApi: {
+      url: get('OFFENDER_ASSESSMENTS_API', 'http://localhost:8092', requiredInProduction),
+      timeout: {
+        response: Number(get('OFFENDER_ASSESSMENTS_API_RESPONSE', 10000)),
+        deadline: Number(get('OFFENDER_ASSESSMENTS_API_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(),
+    },
     hmppsAuth: {
-      url: get('HMPPS_AUTH_URL', 'http://localhost:8090/auth', requiredInProduction),
+      url: get('HMPPS_AUTH_URL', 'http://hmpps-auth:8090/auth', requiredInProduction),
       timeout: {
         response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),

@@ -16,11 +16,11 @@ services:
       - hmpps
     container_name: hmpps-auth
     ports:
-      - "8090:8080"
+      - '8090:8090'
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8090/auth/health']
     environment:
-      - SERVER_PORT=8080
+      - SERVER_PORT=8090
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
 
@@ -30,12 +30,29 @@ services:
       - hmpps
     container_name: community-api
     ports:
-      - "8091:8080"
+      - '8091:8080'
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
+
+  offender-assessments-api:
+    image: mojdigitalstudio/offender-assessments-api:latest
+    restart: always
+    networks:
+      - hmpps
+    container_name: offender-assessments-api
+    depends_on:
+      - hmpps-auth
+    ports:
+      - '8092:8080'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
 
 networks:
   hmpps:

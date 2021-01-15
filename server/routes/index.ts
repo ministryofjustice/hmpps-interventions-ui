@@ -3,6 +3,7 @@ import type { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
+import OffenderAssessmentsApiService from '../services/offenderAssessmentsApiService'
 import IntegrationSamplesRoutes from './integrationSamples'
 import ReferralsController from './referrals/referralsController'
 
@@ -12,6 +13,7 @@ interface RouteProvider {
 
 export interface Services {
   communityApiService: CommunityApiService
+  offenderAssessmentsApiService: OffenderAssessmentsApiService
   interventionsService: InterventionsService
 }
 
@@ -19,7 +21,10 @@ export default function routes(router: Router, services: Services): Router {
   const get = (path: string, handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
   const post = (path: string, handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
 
-  const integrationSamples: RouteProvider = IntegrationSamplesRoutes(services.communityApiService)
+  const integrationSamples: RouteProvider = IntegrationSamplesRoutes(
+    services.communityApiService,
+    services.offenderAssessmentsApiService
+  )
   const referralsController = new ReferralsController(services.interventionsService)
 
   get('/', (req, res, next) => {
@@ -27,6 +32,7 @@ export default function routes(router: Router, services: Services): Router {
   })
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
+  get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)
 
   get('/referrals/start', (req, res) => referralsController.startReferral(req, res))
   post('/referrals', (req, res) => referralsController.createReferral(req, res))
