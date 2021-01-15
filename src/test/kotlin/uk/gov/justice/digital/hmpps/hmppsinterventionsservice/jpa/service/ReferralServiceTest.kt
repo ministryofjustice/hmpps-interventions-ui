@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -25,10 +26,11 @@ import java.util.UUID
 class ReferralServiceTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val referralRepository: ReferralRepository,
-  val authUserRepository: AuthUserRepository
+  val authUserRepository: AuthUserRepository,
+  private val referralEventPublisher: ReferralEventPublisher,
 ) {
 
-  private val referralService = ReferralService(referralRepository, authUserRepository)
+  private val referralService = ReferralService(referralRepository, authUserRepository, referralEventPublisher)
 
   @Test
   fun `update cannot overwrite identifier fields`() {
