@@ -1,5 +1,13 @@
 version: 2.1
 
+parameters:
+  only_pacts:
+    type: boolean
+    default: false
+  pact_consumer_tags:
+    type: string
+    default: main,last-implemented
+
 orbs:
   hmpps: ministryofjustice/hmpps@2.1.0
   snyk: snyk/snyk@0.0.12
@@ -37,6 +45,9 @@ jobs:
           path: build/reports/tests
 
   pact_check_and_publish:
+    parameters:
+      consumer_tags:
+        type: string
     environment:
       PACTBROKER_HOST: "pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
       PACTBROKER_AUTH_USERNAME: "interventions"
@@ -58,7 +69,7 @@ jobs:
           command: |
             PACT_PROVIDER_VERSION="$CIRCLE_SHA1" \
               PACT_PROVIDER_TAG="$CIRCLE_BRANCH" \
-              PACTBROKER_CONSUMERVERSIONSELECTORS_TAGS="main,last-implemented" \
+              PACTBROKER_CONSUMERVERSIONSELECTORS_TAGS="<< parameters.consumer_tags >>" \
               PACT_PUBLISH_RESULTS="true" \
               ./gradlew pactTestPublish
       - save_cache:
@@ -95,10 +106,15 @@ jobs:
 
 workflows:
   version: 2
+  pact:
+    jobs:
+      - pact_check_and_publish:
+          consumer_tags: << pipeline.parameters.pact_consumer_tags >>
+
   build_test_and_deploy:
+    unless: << pipeline.parameters.only_pacts >>
     jobs:
       - validate
-      - pact_check_and_publish
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
