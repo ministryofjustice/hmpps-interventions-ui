@@ -7,6 +7,9 @@ alter table referral
 update referral
 set created_by_id = created_by_userid;
 
+alter table referral
+    alter column created_by_id set not null;
+
 -- create any auth user entities that exist in the referral table but not the auth_user table.
 insert into auth_user (id, auth_source)
     select created_by_userid, created_by_user_auth_source

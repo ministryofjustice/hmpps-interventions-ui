@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull
 @Table(indexes = arrayOf(Index(columnList = "created_by_id")))
 data class Referral(
   var sentAt: OffsetDateTime? = null,
-  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) var sentBy: AuthUser? = null,
+  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
 
   // draft referral fields
@@ -42,7 +42,7 @@ data class Referral(
   var serviceCategoryID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
-  @NotNull @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) var createdBy: AuthUser? = null,
+  @NotNull @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) var createdBy: AuthUser? = null,
   @ElementCollection
   @CollectionTable(
     name = "referral_desired_outcome",
