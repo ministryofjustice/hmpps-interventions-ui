@@ -7,7 +7,7 @@ import java.util.UUID
 class SentReferralDTO(
   val id: UUID,
   val sentAt: OffsetDateTime,
-  val referenceNumber: String?,
+  val referenceNumber: String,
   val referral: DraftReferralDTO,
 ) {
   companion object {
@@ -15,7 +15,7 @@ class SentReferralDTO(
       return SentReferralDTO(
         id = referral.id!!,
         sentAt = referral.sentAt!!,
-        referenceNumber = referral.referenceNumber,
+        referenceNumber = referral.referenceNumber!!,
         referral = DraftReferralDTO.from(referral),
       )
     }
