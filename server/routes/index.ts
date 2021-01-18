@@ -51,6 +51,9 @@ export default function routes(router: Router, services: Services): Router {
   post('/referrals/:id/risk-information', (req, res) => referralsController.updateRiskInformation(req, res))
   get('/referrals/:id/rar-days', (req, res) => referralsController.viewRarDays(req, res))
   post('/referrals/:id/rar-days', (req, res) => referralsController.updateRarDays(req, res))
+  get('/referrals/:id/check-answers', (req, res) => referralsController.checkAnswers(req, res))
+  post('/referrals/:id/send', (req, res) => referralsController.sendDraftReferral(req, res))
+  get('/referrals/:id/confirmation', (req, res) => referralsController.viewConfirmation(req, res))
 
   return router
 }

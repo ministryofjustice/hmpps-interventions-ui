@@ -3,7 +3,9 @@ import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import appWithAllRoutes from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import apiConfig from '../../config'
 
 jest.mock('../../services/interventionsService')
@@ -777,5 +779,102 @@ describe('POST /referrals/:id/rar-days', () => {
       .expect(res => {
         expect(res.text).toContain('Some backend error message')
       })
+  })
+})
+
+describe('GET /referrals/:id/check-answers', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = draftReferralFactory
+      .serviceCategorySelected(serviceCategory.id)
+      .build({ serviceUser: { firstName: 'Johnny' } })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('displays a summary of the draft referral', async () => {
+    await request(app)
+      .get('/referrals/1/check-answers')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Johnny')
+        expect(res.text).toContain('Information for the accommodation referral')
+      })
+  })
+
+  describe('when an API call returns an error', () => {
+    it('returns a 500 and displays an error message', async () => {
+      interventionsService.getDraftReferral.mockRejectedValue(new Error('Backend error message'))
+
+      await request(app)
+        .get('/referrals/1/check-answers')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Backend error message')
+        })
+    })
+  })
+})
+
+describe('POST /referrals/:id/send', () => {
+  it('sends the draft referral on the interventions service and redirects to the confirmation page', async () => {
+    const referral = sentReferralFactory.build()
+    interventionsService.sendDraftReferral.mockResolvedValue(referral)
+
+    await request(app)
+      .post('/referrals/1/send')
+      .expect(303)
+      .expect('Location', `/referrals/${referral.id}/confirmation`)
+
+    expect(interventionsService.sendDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  describe('when the interventions service returns an error', () => {
+    beforeEach(() => {
+      interventionsService.sendDraftReferral.mockRejectedValue(new Error('Failed to create referral'))
+    })
+
+    it('displays an error page', async () => {
+      await request(app)
+        .post('/referrals/1/send')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Failed to create referral')
+        })
+
+      expect(interventionsService.sendDraftReferral).toHaveBeenCalledTimes(1)
+    })
+  })
+})
+
+describe('GET /referrals/:id/confirmation', () => {
+  it('displays a submission confirmation page', async () => {
+    const referral = sentReferralFactory.build()
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+
+    const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
+    interventionsService.getServiceProvider.mockResolvedValue(serviceProvider)
+
+    await request(app)
+      .get('/referrals/1/confirmation')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('We’ve sent your referral to Harmony Living')
+        expect(res.text).toContain(referral.referenceNumber)
+      })
+  })
+
+  describe('when an API call returns an error', () => {
+    it('returns a 500 and displays an error message', async () => {
+      interventionsService.getSentReferral.mockRejectedValue(new Error('Backend error message'))
+
+      await request(app)
+        .get('/referrals/1/confirmation')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Backend error message')
+        })
+    })
   })
 })
