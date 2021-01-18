@@ -1,5 +1,5 @@
 hmppsauth:
-  baseurl: http://localhost:8090/auth
+  baseurl: http://hmpps-auth:8090/auth
 
 postgres:
   uri: localhost:5432
