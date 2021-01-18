@@ -99,13 +99,14 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `create and persist draft referral`() {
     val authUser = AuthUser("user_id", "auth_source")
-    val draftReferral = referralService.createDraftReferral(authUser)
+    val draftReferral = referralService.createDraftReferral(authUser, "X123456")
     entityManager.flush()
 
     val savedDraftReferral = referralService.getDraftReferral(draftReferral.id!!)
     assertThat(savedDraftReferral!!.id).isNotNull
     assertThat(savedDraftReferral.createdAt).isNotNull
     assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
+    assertThat(savedDraftReferral.serviceUserCRN).isEqualTo("X123456")
   }
 
   @Test
@@ -337,7 +338,7 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `once a draft referral is sent it's id is no longer is a valid draft referral`() {
     val user = AuthUser("user_id", "auth_source")
-    val draftReferral = referralService.createDraftReferral(user)
+    val draftReferral = referralService.createDraftReferral(user, "X123456")
 
     assertThat(referralService.getDraftReferral(draftReferral.id!!)).isNotNull()
 
