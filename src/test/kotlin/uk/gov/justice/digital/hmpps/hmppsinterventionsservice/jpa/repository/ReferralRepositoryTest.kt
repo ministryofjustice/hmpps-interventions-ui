@@ -31,7 +31,7 @@ class ReferralRepositoryTest @Autowired constructor(
   @Test
   fun `removing a referral does not remove associated auth_user`() {
     val user = AuthUser("user_id", "auth_source")
-    val referral = Referral(createdBy = user)
+    val referral = Referral(serviceUserCRN = "X123456", createdBy = user)
     entityManager.persist(referral)
     entityManager.flush()
 

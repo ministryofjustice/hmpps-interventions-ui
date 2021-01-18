@@ -13,24 +13,28 @@ import java.util.UUID
 @JsonTest
 class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferralDTO>) {
   @Test
-  fun `sent referral requires id, created and sent timestamp`() {
+  fun `sent referral requires id, reference number, and created and sent timestamps`() {
     val id = UUID.randomUUID()
     val timestamp = OffsetDateTime.now()
 
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(Referral())
+      SentReferralDTO.from(Referral(serviceUserCRN = "X123456"))
     }
 
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(Referral(id = id))
+      SentReferralDTO.from(Referral(id = id, serviceUserCRN = "X123456"))
     }
 
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(Referral(id = id, createdAt = timestamp))
+      SentReferralDTO.from(Referral(id = id, createdAt = timestamp, serviceUserCRN = "X123456"))
+    }
+
+    assertThrows<RuntimeException> {
+      SentReferralDTO.from(Referral(id = id, createdAt = timestamp, serviceUserCRN = "X123456"))
     }
 
     SentReferralDTO.from(
-      Referral(id = id, createdAt = timestamp, sentAt = timestamp)
+      Referral(id = id, createdAt = timestamp, sentAt = timestamp, referenceNumber = "something", serviceUserCRN = "X123456")
     )
   }
 
@@ -43,6 +47,8 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     val referral = Referral(
       id = id,
       createdAt = createdAt,
+      serviceUserCRN = "X123456",
+      referenceNumber = "something",
       needsInterpreter = true,
       interpreterLanguage = "french",
       sentAt = sentAt,

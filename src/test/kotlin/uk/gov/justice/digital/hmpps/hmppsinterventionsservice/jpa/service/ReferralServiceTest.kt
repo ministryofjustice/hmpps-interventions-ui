@@ -125,9 +125,9 @@ class ReferralServiceTest @Autowired constructor(
     val user1 = AuthUser("123", "delius")
     val user2 = AuthUser("456", "delius")
     val referrals = listOf(
-      Referral(serviceUserCRN = "X123456", createdByUserID = user1),
-      Referral(serviceUserCRN = "X123456", createdByUserID = user1),
-      Referral(serviceUserCRN = "X123456", createdByUserID = user2),
+      Referral(serviceUserCRN = "X123456", createdBy = user1),
+      Referral(serviceUserCRN = "X123456", createdBy = user1),
+      Referral(serviceUserCRN = "X123456", createdBy = user2),
     )
     referrals.forEach { entityManager.persist(it) }
     entityManager.flush()
