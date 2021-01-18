@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
 import java.util.UUID
@@ -14,7 +15,14 @@ import java.util.UUID
 @Service
 class ReferralService(val repository: ReferralRepository) {
   fun createDraftReferral(userID: String, authSource: String): Referral {
-    return repository.save(Referral(createdByUserID = userID, createdByUserAuthSource = authSource))
+    val dummyCRN = "X320741"
+    return repository.save(
+      Referral(
+        serviceUserCRN = dummyCRN,
+        createdByUserID = userID,
+        createdByUserAuthSource = authSource
+      )
+    )
   }
 
   fun getDraftReferral(id: UUID): Referral? {
@@ -25,8 +33,8 @@ class ReferralService(val repository: ReferralRepository) {
     val errors = mutableListOf<FieldError>()
 
     update.serviceCategoryId?.let {
-      if (referral.serviceCategoryID != null) {
-        errors.add(FieldError(field = "serviceCategoryId", error = Code.SERVICE_CATEGORY_CANNOT_BE_CHANGED))
+      if (referral.serviceCategoryID != null && it != referral.serviceCategoryID) {
+        errors.add(FieldError(field = "serviceCategoryId", error = Code.FIELD_CANNOT_BE_CHANGED))
       }
     }
 
@@ -71,8 +79,15 @@ class ReferralService(val repository: ReferralRepository) {
       if (referral.serviceCategoryID == null && update.serviceCategoryId == null) {
         errors.add(FieldError(field = "desiredOutcomeIds", error = Code.SERVICE_CATEGORY_MUST_BE_SET))
       }
+
+      // fixme: error if desiredOutcomeIds not valid for service category
     }
-    // fixme: error if desiredOutcomeIds not valid for service category
+
+    update.serviceUser?.let {
+      if (it.crn != null && it.crn != referral.serviceUserCRN) {
+        errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
+      }
+    }
 
     if (errors.isNotEmpty()) {
       throw ValidationError("draft referral update invalid", errors)
@@ -127,6 +142,21 @@ class ReferralService(val repository: ReferralRepository) {
 
     update.desiredOutcomeIds?.let {
       referral.desiredOutcomeIDs = it
+    }
+
+    update.serviceUser?.let {
+      referral.serviceUserData = ServiceUserData(
+        referral = referral,
+        title = it.title,
+        firstName = it.firstName,
+        lastName = it.lastName,
+        dob = it.dob,
+        gender = it.gender,
+        ethnicity = it.ethnicity,
+        preferredLanguage = it.preferredLanguage,
+        religionOrBelief = it.religionOrBelief,
+        disabilities = it.disabilities,
+      )
     }
 
     return repository.save(referral)

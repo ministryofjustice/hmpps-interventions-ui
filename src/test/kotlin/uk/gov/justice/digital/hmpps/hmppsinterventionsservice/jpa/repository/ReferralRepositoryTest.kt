@@ -18,7 +18,7 @@ class ReferralRepositoryTest @Autowired constructor(
 
   @Test
   fun `when findByIdOrNull then return referral`() {
-    val referrals = listOf(Referral(), Referral())
+    val referrals = listOf(Referral(serviceUserCRN = "X123456"), Referral(serviceUserCRN = "X123456"))
     referrals.forEach { entityManager.persist(it) }
     entityManager.flush()
 
