@@ -60,7 +60,7 @@ export default {
       agent: new AgentConfig(),
     },
     offenderAssessmentsApi: {
-      url: get('OFFENDER_ASSESSMENTS_API', 'http://localhost:8092', requiredInProduction),
+      url: get('OFFENDER_ASSESSMENTS_API_URL', 'http://localhost:8092', requiredInProduction),
       timeout: {
         response: Number(get('OFFENDER_ASSESSMENTS_API_RESPONSE', 10000)),
         deadline: Number(get('OFFENDER_ASSESSMENTS_API_DEADLINE', 10000)),
