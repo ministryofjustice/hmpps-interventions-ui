@@ -9,9 +9,11 @@ import javax.persistence.CollectionTable
 import javax.persistence.Column
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Index
+import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
 import javax.persistence.Table
@@ -19,8 +21,13 @@ import javax.persistence.UniqueConstraint
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(indexes = arrayOf(Index(columnList = "created_by_userid")))
+@Table(indexes = arrayOf(Index(columnList = "created_by_id")))
 data class Referral(
+  var sentAt: OffsetDateTime? = null,
+  @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) var sentBy: AuthUser? = null,
+  var referenceNumber: String? = null,
+
+  // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn
   var serviceUserData: ServiceUserData? = null,
   var additionalRiskInformation: String? = null,
@@ -35,8 +42,7 @@ data class Referral(
   var serviceCategoryID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
-  @NotNull var createdByUserAuthSource: String? = null,
-  @Column(name = "created_by_userid") @NotNull var createdByUserID: String? = null,
+  @NotNull @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST]) var createdBy: AuthUser? = null,
   @ElementCollection
   @CollectionTable(
     name = "referral_desired_outcome",

@@ -44,16 +44,13 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       serviceUserCRN = "X123456",
       id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C"),
       createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
-      createdByUserID = "123456",
-      createdByUserAuthSource = "delius",
     )
     val out = json.write(DraftReferralDTO.from(referral))
     assertThat(out).isEqualToJson(
       """
       {
-        "id": "3b9ed289-8412-41a9-8291-45e33e60276c", 
+        "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
         "createdAt": "2020-12-04T10:42:43Z",
-        "createdByUserId": "123456",
         "serviceUser": {
           "crn": "X123456"
         }
@@ -68,17 +65,14 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       serviceUserCRN = "X123456",
       id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C"),
       createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
-      createdByUserID = "123456",
-      createdByUserAuthSource = "delius",
       completionDeadline = LocalDate.of(2021, 2, 12)
     )
     val out = json.write(DraftReferralDTO.from(referral))
     assertThat(out).isEqualToJson(
       """
       {
-        "id": "3b9ed289-8412-41a9-8291-45e33e60276c", 
+        "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
         "createdAt": "2020-12-04T10:42:43Z",
-        "createdByUserId": "123456",
         "completionDeadline": "2021-02-12",
         "serviceUser": {
           "crn": "X123456"
