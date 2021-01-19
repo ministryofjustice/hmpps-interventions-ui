@@ -21,13 +21,14 @@ class DraftReferralFactory extends Factory<DraftReferral> {
   }
 
   serviceUserSelected() {
-    return this.params({ serviceUser: { firstName: 'Marsha' } })
+    return this.params({ serviceUser: { crn: 'X78910', firstName: 'Marsha' } })
   }
 }
 
 export default DraftReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   createdAt: new Date(Date.now()).toISOString(),
+  serviceUser: { crn: 'X123456', firstName: null },
   completionDeadline: null,
   serviceProviderId: null,
   serviceCategoryId: null,
@@ -40,7 +41,6 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   interpreterLanguage: null,
   hasAdditionalResponsibilities: null,
   whenUnavailable: null,
-  serviceUser: null,
   additionalRiskInformation: null,
   usingRarDays: null,
   maximumRarDays: null,

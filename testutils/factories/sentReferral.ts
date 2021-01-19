@@ -19,6 +19,7 @@ const exampleReferralFields = {
   whenUnavailable: 'She works Mondays 9am - midday',
   serviceUser: {
     firstName: 'Alex',
+    crn: 'X012345',
   },
   additionalRiskInformation: 'A danger to the elderly',
   usingRarDays: true,

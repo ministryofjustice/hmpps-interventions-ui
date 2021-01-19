@@ -180,12 +180,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'POST',
           path: '/draft-referral',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: { serviceUserCrn: 'X862134' },
         },
         willRespondWith: {
           status: 201,
           body: Matchers.like({
             id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
             createdAt: '2020-12-07T20:45:21.986389Z',
+            serviceUser: { crn: 'X862134' },
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -196,8 +198,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.createDraftReferral(token)
+      const referral = await interventionsService.createDraftReferral(token, 'X862134')
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.serviceUser.crn).toBe('X862134')
     })
   })
 
@@ -926,6 +929,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       hasAdditionalResponsibilities: true,
       whenUnavailable: 'She works Mondays 9am - midday',
       serviceUser: {
+        crn: 'X862134',
         firstName: 'Alex',
       },
       additionalRiskInformation: 'A danger to the elderly',

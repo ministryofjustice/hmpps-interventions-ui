@@ -35,6 +35,7 @@ export interface ReferralFields {
 export interface DraftReferral extends WithNullableValues<ReferralFields> {
   id: string
   createdAt: string
+  serviceUser: ServiceUser
 }
 
 export interface SentReferral {
@@ -63,6 +64,7 @@ export interface DesiredOutcome {
 }
 
 export interface ServiceUser {
+  crn: string
   firstName: string | null
 }
 
@@ -108,13 +110,14 @@ export default class InterventionsService {
     }
   }
 
-  async createDraftReferral(token: string): Promise<DraftReferral> {
+  async createDraftReferral(token: string, crn: string): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
     try {
       return (await restClient.post({
         path: `/draft-referral`,
         headers: { Accept: 'application/json' },
+        data: { serviceUserCrn: crn },
       })) as DraftReferral
     } catch (e) {
       throw this.createServiceError(e)
