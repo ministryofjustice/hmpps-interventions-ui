@@ -13,6 +13,7 @@ export interface InterventionsServiceValidationError {
 type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 
 export interface ReferralFields {
+  createdAt: string
   completionDeadline: string
   serviceProviderId: string
   serviceCategoryId: string
@@ -38,7 +39,7 @@ export interface DraftReferral extends WithNullableValues<ReferralFields> {
 
 export interface SentReferral {
   id: string
-  createdAt: string
+  sentAt: string
   referenceNumber: string
   referral: ReferralFields
 }

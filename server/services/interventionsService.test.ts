@@ -909,9 +909,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   const sentReferral: SentReferral = {
     id: '81d754aa-d868-4347-9c0f-50690773014e',
-    createdAt: '2021-01-11T10:32:12.382884Z',
+    sentAt: '2021-01-14T15:56:45.382884Z',
     referenceNumber: 'HDJ2123F',
     referral: {
+      createdAt: '2021-01-11T10:32:12.382884Z',
       completionDeadline: '2021-04-01',
       serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
