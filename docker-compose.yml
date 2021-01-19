@@ -46,7 +46,7 @@ services:
     depends_on:
       - hmpps-auth
     ports:
-      - '8092:8080'
+      - '8093:8080'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
     environment:
