@@ -1,0 +1,58 @@
+version: '3.1'
+services:
+  redis:
+    image: 'bitnami/redis:6.0'
+    networks:
+      - hmpps
+    container_name: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+
+  hmpps-auth:
+    image: quay.io/hmpps/hmpps-auth:latest
+    networks:
+      - hmpps
+    container_name: hmpps-auth
+    ports:
+      - '8090:8090'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8090/auth/health']
+    environment:
+      - SERVER_PORT=8090
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
+
+  community-api:
+    image: quay.io/hmpps/community-api:latest
+    networks:
+      - hmpps
+    container_name: community-api
+    ports:
+      - '8091:8080'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+
+  offender-assessments-api:
+    image: mojdigitalstudio/offender-assessments-api:latest
+    restart: always
+    networks:
+      - hmpps
+    container_name: offender-assessments-api
+    depends_on:
+      - hmpps-auth
+    ports:
+      - '8093:8080'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
+
+networks:
+  hmpps:

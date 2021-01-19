@@ -32,6 +32,17 @@ npm run start:dev
 
 Navigate to `http://localhost:3000` and login to the application using HMPPS Auth dev credentials e.g. `AUTH_ADM/password123456`
 
+### Running the app without the interventions service
+
+You may want to run the UI without the overhead of the whole
+interventions service and its database, e.g. using the Pact Mock
+Server or WireMock.
+
+```
+docker-compose -f docker-compose-ui.yml up
+npm run start:dev
+```
+
 ### Unit Test
 
 `npm run test`
