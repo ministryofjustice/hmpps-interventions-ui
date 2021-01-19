@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
@@ -26,7 +27,6 @@ class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService
 ) {
-
   @PostMapping("/draft-referral/{id}/send")
   fun sendDraftReferral(@PathVariable id: String, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
     val uuid = parseID(id)
@@ -57,9 +57,10 @@ class ReferralController(
   }
 
   @PostMapping("/draft-referral")
-  fun createDraftReferral(authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
+  fun createDraftReferral(@RequestBody createReferralRequestDTO: CreateReferralRequestDTO, authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
     val user = parseAuthUserToken(authentication)
-    val referral = referralService.createDraftReferral(user)
+
+    val referral = referralService.createDraftReferral(user, createReferralRequestDTO.serviceUserCrn)
     val location = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")

@@ -15,6 +15,13 @@ Build and test:
 ```
 
 Run:
+
+First, add the following line to your `/etc/hosts` file to allow hmpps-auth interoperability with other docker services:
+
+```127.0.0.1 hmpps-auth```
+
+Then run: 
+
 ```
 docker-compose pull
 docker-compose up -d
