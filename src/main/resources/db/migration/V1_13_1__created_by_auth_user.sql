@@ -6,8 +6,8 @@ alter table referral
 -- create any auth user entities that exist in the referral table but not the auth_user table.
 insert into auth_user (id, auth_source)
     select created_by_userid, created_by_user_auth_source
-    from referral r
-    where not exists (select from auth_user where id = r.created_by_userid);
+    from referral
+    on conflict do nothing;
 
 -- copy over all 'created_by_userid' values to the 'created_by_id' column. these columns hold the same value.
 update referral
