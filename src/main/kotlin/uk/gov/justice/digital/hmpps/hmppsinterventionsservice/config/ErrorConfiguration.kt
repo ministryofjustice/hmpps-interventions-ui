@@ -36,42 +36,30 @@ class ErrorConfiguration {
   @ExceptionHandler(ValidationError::class)
   fun handleValidationException(e: ValidationError): ResponseEntity<ErrorResponse> {
     log.info("validation exception: {}", e.message)
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(
-        ErrorResponse(
-          status = HttpStatus.BAD_REQUEST.value(),
-          error = "validation error",
-          message = e.message,
-          validationErrors = e.errors,
-        )
-      )
+    return errorResponse(HttpStatus.BAD_REQUEST, "validation error", e.message, e.errors)
   }
 
   @ExceptionHandler(ResponseStatusException::class)
   fun handleResponseException(e: ResponseStatusException): ResponseEntity<ErrorResponse> {
     log.info("internal exception: {}", e.message)
-    return ResponseEntity
-      .status(e.status)
-      .body(
-        ErrorResponse(
-          status = e.status.value(),
-          error = e.status.reasonPhrase,
-          message = e.reason,
-        )
-      )
+    return errorResponse(e.status, e.status.reasonPhrase, e.reason)
   }
 
   @ExceptionHandler(java.lang.Exception::class)
-  fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
+  fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse> {
     log.error("unexpected exception: {}", e)
+    return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "unexpected error", e.message)
+  }
+
+  private fun errorResponse(status: HttpStatus, summary: String, description: String?, validationErrors: List<FieldError>? = null): ResponseEntity<ErrorResponse> {
     return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .status(status)
       .body(
         ErrorResponse(
-          status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-          error = "unexpected error",
-          message = e.message,
+          status = status.value(),
+          error = summary,
+          message = description,
+          validationErrors = validationErrors,
         )
       )
   }
