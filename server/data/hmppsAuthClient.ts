@@ -56,6 +56,11 @@ interface UserRole {
   roleCode: string
 }
 
+interface UserGroup {
+  groupCode: string
+  groupName: string
+}
+
 export default class HmppsAuthClient {
   private restClient(token: string): RestClient {
     return new RestClient('HMPPS Auth Client', config.apis.hmppsAuth, token)
@@ -70,6 +75,10 @@ export default class HmppsAuthClient {
     return this.restClient(token)
       .get({ path: '/api/user/me/roles' })
       .then(roles => (<UserRole[]>roles).map(role => role.roleCode)) as Promise<string[]>
+  }
+
+  getAuthUserGroups(token: string, username: string): Promise<UserGroup[]> {
+    return this.restClient(token).get({ path: `/api/authuser/${username}/groups` }) as Promise<UserGroup[]>
   }
 
   async getApiClientToken(username?: string): Promise<string> {
