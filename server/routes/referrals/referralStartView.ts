@@ -1,8 +1,8 @@
-import DraftReferralsListPresenter from './draftReferralsListPresenter'
+import ReferralStartPresenter from './referralStartPresenter'
 import viewUtils from '../../utils/viewUtils'
 
 export default class ReferralStartView {
-  constructor(private readonly presenter: DraftReferralsListPresenter) {}
+  constructor(private readonly presenter: ReferralStartPresenter) {}
 
   private get tableArgs(): Record<string, unknown> {
     return {

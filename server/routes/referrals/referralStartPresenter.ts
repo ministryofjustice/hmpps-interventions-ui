@@ -2,7 +2,7 @@ import { DraftReferral } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
-export default class DraftReferralsListPresenter {
+export default class ReferralStartPresenter {
   constructor(
     private readonly draftReferrals: DraftReferral[],
     private readonly error: FormValidationError | null = null

@@ -3,7 +3,7 @@ import InterventionsService from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import ReferralFormPresenter from './referralFormPresenter'
-import DraftReferralsListPresenter from './draftReferralsListPresenter'
+import ReferralStartPresenter from './referralStartPresenter'
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ReferralFormView from './referralFormView'
 import CompletionDeadlineView from './completionDeadlineView'
@@ -43,7 +43,7 @@ export default class ReferralsController {
   async startReferral(req: Request, res: Response): Promise<void> {
     const { token, userId } = res.locals.user
     const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-    const presenter = new DraftReferralsListPresenter(existingDraftReferrals)
+    const presenter = new ReferralStartPresenter(existingDraftReferrals)
     const view = new ReferralStartView(presenter)
 
     res.render(...view.renderArgs)
@@ -99,7 +99,7 @@ export default class ReferralsController {
     } else {
       const { token, userId } = res.locals.user
       const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-      const presenter = new DraftReferralsListPresenter(existingDraftReferrals, error)
+      const presenter = new ReferralStartPresenter(existingDraftReferrals, error)
       const view = new ReferralStartView(presenter)
 
       res.status(400)
