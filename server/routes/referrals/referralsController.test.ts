@@ -2,7 +2,7 @@ import request from 'supertest'
 import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import CommunityApiService from '../../services/communityApiService'
-import appWithAllRoutes from '../testutils/appSetup'
+import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
@@ -19,7 +19,10 @@ const communityApiService = new CommunityApiService(new MockedHmppsAuthClient())
 let app: Express
 
 beforeEach(() => {
-  app = appWithAllRoutes({ overrides: { interventionsService, communityApiService } })
+  app = appWithAllRoutes({
+    overrides: { interventionsService, communityApiService },
+    userType: AppSetupUserType.probationPractitioner,
+  })
 
   const referral = draftReferralFactory.justCreated().build({ id: '1' })
   interventionsService.createDraftReferral.mockResolvedValue(referral)

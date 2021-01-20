@@ -3,11 +3,11 @@ const jwt = require('jsonwebtoken')
 const { stubFor, getRequests } = require('./wiremock')
 const tokenVerification = require('./tokenVerification')
 
-const createToken = () => {
+const createToken = authSource => {
   const payload = {
     user_name: 'USER1',
     scope: ['read'],
-    auth_source: 'nomis',
+    auth_source: authSource,
     authorities: [],
     jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
     client_id: 'interventions',
@@ -77,7 +77,7 @@ const logout = () =>
     },
   })
 
-const token = () =>
+const token = authSource =>
   stubFor({
     request: {
       method: 'POST',
@@ -90,7 +90,7 @@ const token = () =>
         Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
-        access_token: createToken(),
+        access_token: createToken(authSource),
         token_type: 'bearer',
         user_name: 'USER1',
         expires_in: 599,
@@ -100,7 +100,7 @@ const token = () =>
     },
   })
 
-const stubUser = () =>
+const stubUser = authSource =>
   stubFor({
     request: {
       method: 'GET',
@@ -116,6 +116,7 @@ const stubUser = () =>
         username: 'USER1',
         active: true,
         name: 'john smith',
+        authSource,
       },
     },
   })
@@ -135,9 +136,31 @@ const stubUserRoles = () =>
     },
   })
 
+const stubAuthUserGroups = () =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: '/auth/api/authuser/\\w+/groups',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+      jsonBody: [{ groupCode: 'INT_SP_EXAMPLE_1', groupName: 'Example Service Provider' }],
+    },
+  })
+
+const stubToken = authSource => Promise.all([token(authSource), tokenVerification.stubVerifyToken()])
+
+const stubUserAndRoles = authSource => Promise.all([stubUser(authSource), stubUserRoles()])
+
 module.exports = {
   getLoginUrl,
   stubPing: () => Promise.all([ping(), tokenVerification.stubPing()]),
-  stubLogin: () => Promise.all([favicon(), redirect(), logout(), token(), tokenVerification.stubVerifyToken()]),
-  stubUser: () => Promise.all([stubUser(), stubUserRoles()]),
+  stubLogin: () => Promise.all([favicon(), redirect(), logout()]),
+  stubServiceProviderToken: () => stubToken('delius'),
+  stubProbationPractitionerToken: () => stubToken('auth'),
+  stubServiceProviderUser: () => Promise.all([stubUserAndRoles('auth'), stubAuthUserGroups()]),
+  stubProbationPractitionerUser: () => stubUserAndRoles('delius'),
 }

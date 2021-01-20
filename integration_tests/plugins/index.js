@@ -9,8 +9,11 @@ module.exports = on => {
 
     getLoginUrl: auth.getLoginUrl,
     stubLogin: auth.stubLogin,
+    stubServiceProviderToken: auth.stubServiceProviderToken,
+    stubProbationPractitionerToken: auth.stubProbationPractitionerToken,
 
-    stubAuthUser: auth.stubUser,
+    stubServiceProviderAuthUser: auth.stubServiceProviderUser,
+    stubProbationPractitionerAuthUser: auth.stubProbationPractitionerUser,
     stubAuthPing: auth.stubPing,
 
     stubTokenVerificationPing: tokenVerification.stubPing,

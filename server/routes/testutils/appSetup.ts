@@ -14,12 +14,19 @@ import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
 import MockOffenderAssessmentsApiService from './mocks/mockOffenderAssessmentsApiService'
 
-function appSetup(route: Router, production: boolean): Express {
+export enum AppSetupUserType {
+  probationPractitioner = 'delius',
+  serviceProvider = 'auth',
+}
+
+function appSetup(route: Router, production: boolean, userType: AppSetupUserType): Express {
   const app = express()
 
   app.set('view engine', 'njk')
 
   nunjucksSetup(app, path)
+
+  user.authSource = userType
 
   app.use((req, res, next) => {
     req.user = user
@@ -41,9 +48,11 @@ function appSetup(route: Router, production: boolean): Express {
 export default function appWithAllRoutes({
   production = false,
   overrides = {},
+  userType,
 }: {
   production?: boolean
   overrides?: Partial<Services>
+  userType: AppSetupUserType
 }): Express {
   auth.default.authenticationMiddleware = () => (req, res, next) => next()
   return appSetup(
@@ -53,6 +62,7 @@ export default function appWithAllRoutes({
       interventionsService: {} as InterventionsService,
       ...overrides,
     }),
-    production
+    production,
+    userType
   )
 }

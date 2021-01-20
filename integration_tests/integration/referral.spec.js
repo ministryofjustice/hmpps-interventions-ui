@@ -8,12 +8,11 @@ describe('Referral form', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubAuthUser')
+    cy.task('stubProbationPractitionerToken')
+    cy.task('stubProbationPractitionerAuthUser')
   })
 
   it('User starts a referral, fills in the form, and submits it', () => {
-    cy.login()
-
     const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Geoffrey' })
 
     const serviceCategory = serviceCategoryFactory.build({
@@ -62,7 +61,7 @@ describe('Referral form', () => {
     cy.stubSendDraftReferral(draftReferral.id, sentReferral)
     cy.stubGetSentReferral(sentReferral.id, sentReferral)
 
-    cy.visit('/referrals/start')
+    cy.login()
 
     cy.contains('Service User CRN').type('X320741')
 

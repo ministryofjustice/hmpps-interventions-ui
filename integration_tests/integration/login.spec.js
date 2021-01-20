@@ -1,26 +1,57 @@
-const IndexPage = require('../pages/index')
 const AuthLoginPage = require('../pages/authLogin')
 
 context('Login', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubLogin')
-    cy.task('stubAuthUser')
   })
 
   it('Unauthenticated user directed to auth', () => {
     cy.visit('/')
     AuthLoginPage.verifyOnPage()
   })
-  it('User name visible in header', () => {
-    cy.login()
-    const landingPage = IndexPage.verifyOnPage()
-    landingPage.headerUserName().should('contain.text', 'J. Smith')
+
+  describe('after logging in as a probation practitioner', () => {
+    beforeEach(() => {
+      cy.task('stubProbationPractitionerToken')
+      cy.task('stubProbationPractitionerAuthUser')
+      cy.stubGetDraftReferralsForUser([])
+      cy.login()
+    })
+
+    it('the user is redirected to the referral start page', () => {
+      cy.location('pathname').should('equal', '/referrals/start')
+    })
+
+    it('the user name is visible in the header', () => {
+      cy.get('[data-qa=header-user-name]').should('contain.text', 'J. Smith')
+    })
+
+    it('the user can log out', () => {
+      cy.get('[data-qa=logout]').click()
+      AuthLoginPage.verifyOnPage()
+    })
   })
-  it('User can log out', () => {
-    cy.login()
-    const landingPage = IndexPage.verifyOnPage()
-    landingPage.logout().click()
-    AuthLoginPage.verifyOnPage()
+
+  describe('after logging in as a service provider', () => {
+    beforeEach(() => {
+      cy.task('stubServiceProviderToken')
+      cy.task('stubServiceProviderAuthUser')
+      cy.login()
+    })
+
+    it('the user is redirected to the receive dashboard', () => {
+      cy.visit('/')
+      cy.location('pathname').should('equal', '/receive/dashboard')
+    })
+
+    it('the user name is visible in the header', () => {
+      cy.get('[data-qa=header-user-name]').should('contain.text', 'J. Smith')
+    })
+
+    it('the user can log out', () => {
+      cy.get('[data-qa=logout]').click()
+      AuthLoginPage.verifyOnPage()
+    })
   })
 })
