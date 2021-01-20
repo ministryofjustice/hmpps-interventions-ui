@@ -23,6 +23,7 @@ services:
       - SERVER_PORT=8090
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
+      - SPRING_H2_CONSOLE_SETTINGS_WEBALLOWOTHERS=true
 
   community-api:
     image: quay.io/hmpps/community-api:latest
