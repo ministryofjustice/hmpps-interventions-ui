@@ -30,7 +30,10 @@ docker-compose up -d
 npm run start:dev
 ```
 
-Navigate to `http://localhost:3000` and login to the application using HMPPS Auth dev credentials e.g. `AUTH_ADM/password123456`
+Navigate to `http://localhost:3000` and log in:
+
+- To log in as a service provider user, use HMPPS Auth dev credentials e.g. `AUTH_ADM/password123456`
+- To log in as a probation practitioner user, use [Community API dev credentials](https://github.com/ministryofjustice/community-api/blob/main/src/main/resources/schema.ldif) e.g. `bernard.beaks/secret`.
 
 ### Running the app without the interventions service
 
