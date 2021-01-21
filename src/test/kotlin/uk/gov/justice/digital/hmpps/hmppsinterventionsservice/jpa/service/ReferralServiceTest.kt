@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
+
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -10,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
 import java.time.LocalTime
@@ -21,10 +24,11 @@ import java.util.UUID
 @ActiveProfiles("jpa-test")
 class ReferralServiceTest @Autowired constructor(
   val entityManager: TestEntityManager,
-  val referralRepository: ReferralRepository
+  val referralRepository: ReferralRepository,
+  val authUserRepository: AuthUserRepository
 ) {
 
-  private val referralService = ReferralService(referralRepository)
+  private val referralService = ReferralService(referralRepository, authUserRepository)
 
   @Test
   fun `update cannot overwrite identifier fields`() {
@@ -346,5 +350,14 @@ class ReferralServiceTest @Autowired constructor(
 
     assertThat(referralService.getDraftReferral(draftReferral.id!!)).isNull()
     assertThat(referralService.getSentReferral(sentReferral.id!!)).isNotNull()
+  }
+
+  @Test
+  fun `multiple draft referrals can be started by the same user`() {
+    for (i in 1..3) {
+      val user = AuthUser("multi_user_id", "auth_source")
+      assertDoesNotThrow { referralService.createDraftReferral(user, "X123456") }
+    }
+    assertThat(referralService.getDraftReferralsCreatedByUserID("multi_user_id")).hasSize(3)
   }
 }
