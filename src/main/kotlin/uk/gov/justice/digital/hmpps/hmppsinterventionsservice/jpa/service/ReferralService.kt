@@ -8,20 +8,21 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
 @Service
-class ReferralService(val repository: ReferralRepository) {
+class ReferralService(val repository: ReferralRepository, val authUserRepository: AuthUserRepository) {
   fun getSentReferral(id: UUID): Referral? {
     return repository.findByIdAndSentAtIsNotNull(id)
   }
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
-    referral.sentBy = user
+    referral.sentBy = authUserRepository.save(user)
 
     // fixme: hardcoded for now
     referral.referenceNumber = "HDJ2123F"
@@ -29,7 +30,7 @@ class ReferralService(val repository: ReferralRepository) {
   }
 
   fun createDraftReferral(user: AuthUser, crn: String): Referral {
-    return repository.save(Referral(serviceUserCRN = crn, createdBy = user))
+    return repository.save(Referral(serviceUserCRN = crn, createdBy = authUserRepository.save(user)))
   }
 
   fun getDraftReferral(id: UUID): Referral? {
