@@ -6,22 +6,22 @@ export default class RarDaysPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    private readonly errors: FormValidationError | null = null,
+    private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.errors, {
+  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error, {
     fieldOrder: ['using-rar-days', 'maximum-rar-days'],
   })
 
   readonly text = {
     title: `Are you using RAR days for the ${this.serviceCategory.name} service?`,
     usingRarDays: {
-      errorMessage: ReferralDataPresenterUtils.errorMessage(this.errors, 'using-rar-days'),
+      errorMessage: ReferralDataPresenterUtils.errorMessage(this.error, 'using-rar-days'),
     },
     maximumRarDays: {
       label: `What is the maximum number of RAR days for the ${this.serviceCategory.name} service?`,
-      errorMessage: ReferralDataPresenterUtils.errorMessage(this.errors, 'maximum-rar-days'),
+      errorMessage: ReferralDataPresenterUtils.errorMessage(this.error, 'maximum-rar-days'),
     },
   }
 
