@@ -253,6 +253,55 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
+    it('returns the updated referral when setting the service user details', async () => {
+      const serviceUser = {
+        crn: 'X862134',
+        title: 'Mr',
+        firstName: 'Alex',
+        lastName: 'River',
+        dateOfBirth: '1980-01-01',
+        gender: 'Male',
+        ethnicity: 'British',
+        preferredLanguage: 'English',
+        religionOrBelief: 'Agnostic',
+        disabilities: 'Autism spectrum condition, sciatica',
+      } as ServiceUser
+
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update service user',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceUser,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            createdAt: '2020-12-07T20:45:21.986389Z',
+            serviceUser,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        serviceUser,
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.serviceUser).toEqual(serviceUser)
+    })
+
     it('returns the updated referral when setting the completion date', async () => {
       await provider.addInteraction({
         state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
