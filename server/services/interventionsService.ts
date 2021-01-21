@@ -2,6 +2,8 @@ import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
 import { SanitisedError } from '../sanitisedError'
+import { DeliusServiceUser } from './communityApiService'
+import CalendarDay from '../utils/calendarDay'
 
 export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
@@ -101,6 +103,34 @@ export default class InterventionsService {
     }
 
     return sanitisedError
+  }
+
+  serializeDeliusServiceUser(deliusServiceUser: DeliusServiceUser | null): ServiceUser {
+    if (!deliusServiceUser) {
+      return {} as ServiceUser
+    }
+
+    const currentDisabilities = deliusServiceUser.disabilities
+      .filter(disability => {
+        const today = new Date().toString()
+        return disability.endDate === '' || Date.parse(disability.endDate) >= Date.parse(today)
+      })
+      .map(disability => disability.disabilityType.description)
+
+    const iso8601DateOfBirth = CalendarDay.parseIso8601(deliusServiceUser.dateOfBirth)?.iso8601 || null
+
+    return {
+      crn: deliusServiceUser.otherIds.crn,
+      title: deliusServiceUser.title,
+      firstName: deliusServiceUser.firstName,
+      lastName: deliusServiceUser.surname,
+      dateOfBirth: iso8601DateOfBirth,
+      gender: deliusServiceUser.gender,
+      ethnicity: deliusServiceUser.ethnicity,
+      preferredLanguage: deliusServiceUser.offenderProfile.offenderLanguages.primaryLanguage,
+      religionOrBelief: deliusServiceUser.religionOrBelief,
+      disabilities: currentDisabilities,
+    }
   }
 
   async getDraftReferral(token: string, id: string): Promise<DraftReferral> {

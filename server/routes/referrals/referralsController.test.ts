@@ -9,6 +9,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import apiConfig from '../../config'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
+import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -52,12 +53,7 @@ describe('GET /referrals/start', () => {
 describe('POST /referrals/start', () => {
   describe('when searching for a CRN found in Delius', () => {
     beforeEach(() => {
-      communityApiService.getServiceUserByCRN.mockResolvedValue({
-        offenderId: '12345',
-        firstName: 'Alex',
-        surname: 'River',
-        dateOfBirth: '05/05/1992',
-      })
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     })
 
     it('creates a referral on the interventions service and redirects to the referral form', async () => {

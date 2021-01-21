@@ -14,14 +14,41 @@ export interface DeliusUser {
 }
 
 export interface DeliusServiceUser {
-  offenderId: string
+  // TODO IC-620 validate this data properly
+  otherIds: OtherIds
+  offenderProfile: OffenderProfile
+  title: string
   firstName: string
   surname: string
   dateOfBirth: string
+  gender: string
+  ethnicity: string
+  religionOrBelief: string
+  disabilities: Disability[]
 }
 
 interface DeliusRole {
   name: string
+}
+
+interface Disability {
+  disabilityType: {
+    description: string
+  }
+  endDate: string
+  notes: string
+  startDate: string
+}
+interface OtherIds {
+  crn: string
+}
+
+interface OffenderProfile {
+  offenderLanguages: OffenderLanguages
+}
+
+interface OffenderLanguages {
+  primaryLanguage: string
 }
 
 export default class CommunityApiService {
