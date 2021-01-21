@@ -1,7 +1,7 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
-import InterventionsService, { SentReferral } from './interventionsService'
+import InterventionsService, { SentReferral, ServiceUser } from './interventionsService'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 
@@ -910,6 +910,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  const serviceUser = {
+    crn: 'X862134',
+    title: 'Mr',
+    firstName: 'Alex',
+    lastName: 'River',
+    dateOfBirth: '1980-01-01',
+    gender: 'Male',
+    ethnicity: 'British',
+    preferredLanguage: 'English',
+    religionOrBelief: 'Agnostic',
+    disabilities: ['Autism spectrum condition', 'sciatica'],
+  } as ServiceUser
+
   const sentReferral: SentReferral = {
     id: '81d754aa-d868-4347-9c0f-50690773014e',
     sentAt: '2021-01-14T15:56:45.382884Z',
@@ -928,10 +941,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       interpreterLanguage: 'Spanish',
       hasAdditionalResponsibilities: true,
       whenUnavailable: 'She works Mondays 9am - midday',
-      serviceUser: {
-        crn: 'X862134',
-        firstName: 'Alex',
-      },
+      serviceUser,
       additionalRiskInformation: 'A danger to the elderly',
       usingRarDays: true,
       maximumRarDays: 10,
