@@ -1,24 +1,29 @@
 import request from 'supertest'
 import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
+import CommunityApiService from '../../services/communityApiService'
 import appWithAllRoutes from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import apiConfig from '../../config'
+import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 
 jest.mock('../../services/interventionsService')
+jest.mock('../../services/communityApiService')
 
 const interventionsService = new InterventionsService(apiConfig.apis.hmppsAuth) as jest.Mocked<InterventionsService>
+const communityApiService = new CommunityApiService(new MockedHmppsAuthClient()) as jest.Mocked<CommunityApiService>
 
 let app: Express
 
 beforeEach(() => {
-  app = appWithAllRoutes({ overrides: { interventionsService } })
+  app = appWithAllRoutes({ overrides: { interventionsService, communityApiService } })
 
   const referral = draftReferralFactory.justCreated().build({ id: '1' })
   interventionsService.createDraftReferral.mockResolvedValue(referral)
+  interventionsService.getDraftReferralsForUser.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -41,11 +46,26 @@ describe('GET /referrals/start', () => {
   })
 })
 
-describe('POST /referrals', () => {
-  it('creates a referral on the interventions service and redirects to the referral form', async () => {
-    await request(app).post('/referrals').expect(303).expect('Location', '/referrals/1/form')
+describe('POST /referrals/start', () => {
+  describe('when searching for a CRN found in Delius', () => {
+    beforeEach(() => {
+      communityApiService.getServiceUserByCRN.mockResolvedValue({
+        offenderId: '12345',
+        firstName: 'Alex',
+        surname: 'River',
+        dateOfBirth: '05/05/1992',
+      })
+    })
 
-    expect(interventionsService.createDraftReferral).toHaveBeenCalledTimes(1)
+    it('creates a referral on the interventions service and redirects to the referral form', async () => {
+      await request(app)
+        .post('/referrals/start')
+        .send({ 'service-user-crn': 'X123456' })
+        .expect(303)
+        .expect('Location', '/referrals/1/form')
+
+      expect(interventionsService.createDraftReferral).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('when the interventions service returns an error', () => {
@@ -55,13 +75,48 @@ describe('POST /referrals', () => {
 
     it('displays an error page', async () => {
       await request(app)
-        .post('/referrals')
+        .post('/referrals/start')
+        .send({ 'service-user-crn': 'X123456' })
         .expect(500)
         .expect(res => {
           expect(res.text).toContain('Failed to create intervention')
         })
 
       expect(interventionsService.createDraftReferral).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('when a crn is not entered', () => {
+    it('renders a validation error', async () => {
+      await request(app)
+        .post('/referrals/start')
+        .type('form')
+        .send({ 'service-user-crn': '' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('CRN is required')
+        })
+
+      expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  describe('when there is an issue with the crn', () => {
+    beforeEach(() => {
+      communityApiService.getServiceUserByCRN.mockRejectedValue({ status: 404 })
+    })
+
+    it('renders a validation error', async () => {
+      await request(app)
+        .post('/referrals/start')
+        .type('form')
+        .send({ 'service-user-crn': 'X123456' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('CRN not found in nDelius')
+        })
+
+      expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledTimes(1)
     })
   })
 })

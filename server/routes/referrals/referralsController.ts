@@ -3,7 +3,7 @@ import InterventionsService from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import ReferralFormPresenter from './referralFormPresenter'
-import DraftReferralsListPresenter from './draftReferralsListPresenter'
+import ReferralStartPresenter from './referralStartPresenter'
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ReferralFormView from './referralFormView'
 import CompletionDeadlineView from './completionDeadlineView'
@@ -29,29 +29,82 @@ import CheckAnswersView from './checkAnswersView'
 import CheckAnswersPresenter from './checkAnswersPresenter'
 import ConfirmationView from './confirmationView'
 import ConfirmationPresenter from './confirmationPresenter'
+import CommunityApiService from '../../services/communityApiService'
+import errorMessages from '../../utils/errorMessages'
+import logger from '../../../log'
+import ReferralStartForm from './referralStartForm'
 
 export default class ReferralsController {
-  constructor(private readonly interventionsService: InterventionsService) {}
+  constructor(
+    private readonly interventionsService: InterventionsService,
+    private readonly communityApiService: CommunityApiService
+  ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
     const { token, userId } = res.locals.user
     const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-    const presenter = new DraftReferralsListPresenter(existingDraftReferrals)
+    const presenter = new ReferralStartPresenter(existingDraftReferrals)
     const view = new ReferralStartView(presenter)
 
     res.render(...view.renderArgs)
   }
 
   async createReferral(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.createDraftReferral(res.locals.user.token)
+    const form = await ReferralStartForm.createForm(req)
 
-    // fixme: this sets some static data for the new referral which will need to be
-    //  changed to allow these fields to be set properly
-    await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
-      serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-    })
+    let error: FormValidationError | null = null
 
-    res.redirect(303, `/referrals/${referral.id}/form`)
+    const crn = req.body['service-user-crn']
+
+    if (form.isValid) {
+      try {
+        await this.communityApiService.getServiceUserByCRN(crn)
+      } catch (e) {
+        if (e.status === 404) {
+          error = {
+            errors: [
+              {
+                formFields: ['service-user-crn'],
+                errorSummaryLinkedField: 'service-user-crn',
+                message: errorMessages.startReferral.crnNotFound,
+              },
+            ],
+          }
+        } else {
+          logger.error('crn lookup failed', e)
+          error = {
+            errors: [
+              {
+                formFields: ['service-user-crn'],
+                errorSummaryLinkedField: 'service-user-crn',
+                message: errorMessages.startReferral.unknownError,
+              },
+            ],
+          }
+        }
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      const referral = await this.interventionsService.createDraftReferral(res.locals.user.token, crn)
+      // fixme: this sets some static data for the new referral which will need to be
+      //  changed to allow these fields to be set properly
+      await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
+        serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+      })
+
+      res.redirect(303, `/referrals/${referral.id}/form`)
+    } else {
+      const { token, userId } = res.locals.user
+      const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
+      const presenter = new ReferralStartPresenter(existingDraftReferrals, error)
+      const view = new ReferralStartView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
   }
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {

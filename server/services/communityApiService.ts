@@ -13,6 +13,13 @@ export interface DeliusUser {
   roles: Array<DeliusRole>
 }
 
+export interface DeliusServiceUser {
+  offenderId: string
+  firstName: string
+  surname: string
+  dateOfBirth: string
+}
+
 interface DeliusRole {
   name: string
 }
@@ -29,5 +36,11 @@ export default class CommunityApiService {
 
     logger.info(`getting user details for username ${username}`)
     return (await this.restClient(token).get({ path: `/secure/users/${username}/details` })) as DeliusUser
+  }
+
+  async getServiceUserByCRN(crn: string): Promise<DeliusServiceUser> {
+    const token = await this.hmppsAuthClient.getApiClientToken()
+    logger.info(`getting details for offender with crn ${crn}`)
+    return (await this.restClient(token).get({ path: `/secure/offenders/crn/${crn}` })) as DeliusServiceUser
   }
 }

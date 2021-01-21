@@ -1,3 +1,4 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% extends "../partials/layout.njk" %}
@@ -17,8 +18,10 @@
 
       <p class="govuk-body-m">You can make a new referral here:</p>
 
-      <form action="/referrals" method="POST">
+      <form action="/referrals/start" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {{govukInput(crnInputArgs)}}
 
         <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
           Start now

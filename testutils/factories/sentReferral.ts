@@ -4,6 +4,7 @@ import serviceProviderFactory from './serviceProvider'
 import serviceCategoryFactory from './serviceCategory'
 
 const exampleReferralFields = {
+  createdAt: '2020-12-07T20:45:21.986389Z',
   completionDeadline: '2021-04-01',
   serviceProviderId: serviceProviderFactory.build().id,
   serviceCategoryId: serviceCategoryFactory.build().id,
@@ -18,6 +19,7 @@ const exampleReferralFields = {
   whenUnavailable: 'She works Mondays 9am - midday',
   serviceUser: {
     firstName: 'Alex',
+    crn: 'X012345',
   },
   additionalRiskInformation: 'A danger to the elderly',
   usingRarDays: true,
@@ -38,7 +40,7 @@ class SentReferralFactory extends Factory<SentReferral> {
 
 export default SentReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
-  createdAt: new Date().toISOString(),
+  sentAt: new Date().toISOString(),
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
   referral: exampleReferralFields,
 }))

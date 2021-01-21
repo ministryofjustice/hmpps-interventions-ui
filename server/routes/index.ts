@@ -25,7 +25,8 @@ export default function routes(router: Router, services: Services): Router {
     services.communityApiService,
     services.offenderAssessmentsApiService
   )
-  const referralsController = new ReferralsController(services.interventionsService)
+
+  const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
 
   get('/', (req, res, next) => {
     res.render('pages/index')
@@ -35,7 +36,7 @@ export default function routes(router: Router, services: Services): Router {
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)
 
   get('/referrals/start', (req, res) => referralsController.startReferral(req, res))
-  post('/referrals', (req, res) => referralsController.createReferral(req, res))
+  post('/referrals/start', (req, res) => referralsController.createReferral(req, res))
   get('/referrals/:id/form', (req, res) => referralsController.viewReferralForm(req, res))
   get('/referrals/:id/complexity-level', (req, res) => referralsController.viewComplexityLevel(req, res))
   post('/referrals/:id/complexity-level', (req, res) => referralsController.updateComplexityLevel(req, res))

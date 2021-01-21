@@ -1,7 +1,12 @@
 import { DraftReferral } from '../../services/interventionsService'
+import { FormValidationError } from '../../utils/formValidationError'
+import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
-export default class DraftReferralsListPresenter {
-  constructor(private readonly draftReferrals: DraftReferral[]) {}
+export default class ReferralStartPresenter {
+  constructor(
+    private readonly draftReferrals: DraftReferral[],
+    private readonly error: FormValidationError | null = null
+  ) {}
 
   get orderedReferrals(): DraftReferralSummaryPresenter[] {
     return this.draftReferrals
@@ -13,7 +18,10 @@ export default class DraftReferralsListPresenter {
       }))
   }
 
-  readonly emptyText = 'You do not have any draft referrals at this moment.'
+  readonly text = {
+    noDraftReferrals: 'You do not have any draft referrals at this moment.',
+    errorMessage: ReferralDataPresenterUtils.errorMessage(this.error, 'service-user-crn'),
+  }
 }
 
 interface DraftReferralSummaryPresenter {

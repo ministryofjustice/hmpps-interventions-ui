@@ -2,6 +2,7 @@ import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../testutils/factories/serviceProvider'
+import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 
 describe('Referral form', () => {
   beforeEach(() => {
@@ -12,6 +13,8 @@ describe('Referral form', () => {
 
   it('User starts a referral, fills in the form, and submits it', () => {
     cy.login()
+
+    const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Geoffrey' })
 
     const serviceCategory = serviceCategoryFactory.build({
       name: 'accommodation',
@@ -49,6 +52,7 @@ describe('Referral form', () => {
 
     const sentReferral = sentReferralFactory.fromFields(draftReferral).build()
 
+    cy.stubGetServiceUserByCRN('X320741', deliusServiceUser)
     cy.stubCreateDraftReferral(draftReferral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetServiceProvider(serviceProvider.id, serviceProvider)
@@ -59,6 +63,8 @@ describe('Referral form', () => {
     cy.stubGetSentReferral(sentReferral.id, sentReferral)
 
     cy.visit('/referrals/start')
+
+    cy.contains('Service User CRN').type('X320741')
 
     cy.contains('Start now').click()
 

@@ -54,33 +54,5 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
 
-  interventions-service:
-    image: quay.io/hmpps/hmpps-interventions-service
-    restart: always
-    networks:
-      - hmpps
-    container_name: interventions-service
-    depends_on:
-      - postgres
-    ports:
-      - '8092:8080'
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
-    environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - POSTGRES_URI=postgres:5432
-
-  postgres:
-    image: postgres:10-alpine
-    container_name: postgres
-    networks:
-      - hmpps
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - ./testutils/docker/postgres:/docker-entrypoint-initdb.d:ro
-
 networks:
   hmpps:

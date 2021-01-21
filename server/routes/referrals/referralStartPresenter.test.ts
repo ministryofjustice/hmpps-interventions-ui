@@ -1,7 +1,7 @@
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
-import DraftReferralsListPresenter from './draftReferralsListPresenter'
+import ReferralStartPresenter from './referralStartPresenter'
 
-describe('DraftReferralsListPresenter', () => {
+describe('ReferralStartPresenter', () => {
   describe('orderedReferrals', () => {
     it('returns an ordered list of draft referrals with formatted dates', () => {
       const referrals = [
@@ -10,7 +10,7 @@ describe('DraftReferralsListPresenter', () => {
         draftReferralFactory.createdAt(new Date('2021-01-01T12:00:00Z')).build(),
       ]
 
-      const presenter = new DraftReferralsListPresenter(referrals)
+      const presenter = new ReferralStartPresenter(referrals)
 
       // referrals are ordered oldest first
       expect(presenter.orderedReferrals).toEqual([

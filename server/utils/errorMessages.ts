@@ -3,6 +3,11 @@
 // informational — everything returned is a string, since they’re messages!
 
 export default {
+  startReferral: {
+    crnEmpty: 'A CRN is required',
+    crnNotFound: 'CRN not found in nDelius',
+    unknownError: 'Could not start referral due to service interruption; please try again later',
+  },
   completionDeadline: {
     dayEmpty: 'The date by which the service needs to be completed must include a day',
     monthEmpty: 'The date by which the service needs to be completed must include a month',
