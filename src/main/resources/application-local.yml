@@ -12,7 +12,6 @@ logging:
     org:
       springframework:
         security: DEBUG
-      flywaydb: DEBUG
 
 spring:
   flyway:
