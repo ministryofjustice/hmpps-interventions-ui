@@ -29,7 +29,7 @@ import CheckAnswersView from './checkAnswersView'
 import CheckAnswersPresenter from './checkAnswersPresenter'
 import ConfirmationView from './confirmationView'
 import ConfirmationPresenter from './confirmationPresenter'
-import CommunityApiService from '../../services/communityApiService'
+import CommunityApiService, { DeliusServiceUser } from '../../services/communityApiService'
 import errorMessages from '../../utils/errorMessages'
 import logger from '../../../log'
 import ReferralStartForm from './referralStartForm'
@@ -54,11 +54,13 @@ export default class ReferralsController {
 
     let error: FormValidationError | null = null
 
+    let serviceUser: DeliusServiceUser | null = null
+
     const crn = req.body['service-user-crn']
 
     if (form.isValid) {
       try {
-        await this.communityApiService.getServiceUserByCRN(crn)
+        serviceUser = await this.communityApiService.getServiceUserByCRN(crn)
       } catch (e) {
         if (e.status === 404) {
           error = {
@@ -93,6 +95,7 @@ export default class ReferralsController {
       //  changed to allow these fields to be set properly
       await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
         serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+        serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 
       res.redirect(303, `/referrals/${referral.id}/form`)
