@@ -97,14 +97,14 @@ workflows:
                 - main
       - hmpps/build_docker:
           name: build_docker_publish
-          snyk-scan: false # fixme!
+          snyk-scan: true
           filters:
             branches:
               only:
                 - main
       - hmpps/build_docker:
           publish: false
-          snyk-scan: false # fixme!
+          snyk-scan: true
           filters:
             branches:
               ignore:
