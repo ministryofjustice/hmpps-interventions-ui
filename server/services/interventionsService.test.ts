@@ -1116,4 +1116,35 @@ describe('serializeDeliusServiceUser', () => {
     expect(serviceUser.preferredLanguage).toEqual('English')
     expect(serviceUser.disabilities).toEqual(['Autism', 'Sciatica'])
   })
+
+  describe('when there are fields missing in the response', () => {
+    // this is the current response when running the Community API locally
+    const incompleteDeliusServiceUser = {
+      firstName: 'Aadland',
+      surname: 'Bertrand',
+      dateOfBirth: '2065-07-19',
+      gender: 'Male',
+      otherIds: {
+        crn: 'X320741',
+      },
+      offenderProfile: {
+        offenderLanguages: {},
+      },
+    } as DeliusServiceUser
+
+    it('sets null values on the serialized user for the missing values', () => {
+      const serviceUser = interventionsService.serializeDeliusServiceUser(incompleteDeliusServiceUser)
+
+      expect(serviceUser.crn).toEqual('X320741')
+      expect(serviceUser.title).toEqual(null)
+      expect(serviceUser.firstName).toEqual('Aadland')
+      expect(serviceUser.lastName).toEqual('Bertrand')
+      expect(serviceUser.dateOfBirth).toEqual('2065-07-19')
+      expect(serviceUser.gender).toEqual('Male')
+      expect(serviceUser.ethnicity).toEqual(null)
+      expect(serviceUser.religionOrBelief).toEqual(null)
+      expect(serviceUser.preferredLanguage).toEqual(null)
+      expect(serviceUser.disabilities).toEqual(null)
+    })
+  })
 })

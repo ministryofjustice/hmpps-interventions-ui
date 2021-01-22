@@ -17,14 +17,14 @@ export interface DeliusServiceUser {
   // TODO IC-620 validate this data properly
   otherIds: OtherIds
   offenderProfile: OffenderProfile
-  title: string
-  firstName: string
-  surname: string
-  dateOfBirth: string
-  gender: string
-  ethnicity: string
-  religionOrBelief: string
-  disabilities: Disability[]
+  title: string | null
+  firstName: string | null
+  surname: string | null
+  dateOfBirth: string | null
+  gender: string | null
+  ethnicity: string | null
+  religionOrBelief: string | null
+  disabilities: Disability[] | null
 }
 
 interface DeliusRole {
