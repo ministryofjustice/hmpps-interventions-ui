@@ -9,4 +9,4 @@ values ('ac386c25-52c8-41fa-9213-fcf42e24b0b5', '2020-12-07 18:02:01.599803+00',
        ('1219a064-709b-4b6c-a11e-10b8cb3966f6', '2021-01-12 14:46:21.987234+00', 'X862134', null, '2500128586', '428ee70f-3001-4399-95a6-ad25eaaede16');
 
 insert into referral_service_user_data (referral_id, disabilities, dob, ethnicity, title, first_name, last_name, preferred_language, religion_or_belief, gender)
-values ('1219a064-709b-4b6c-a11e-10b8cb3966f6', 'Autism spectrum condition', TO_DATE('1980-08-10', 'YYYY-MM-DD'), 'White British', 'Mr', 'Alex', 'River', 'English', 'None', 'Male');
+values ('1219a064-709b-4b6c-a11e-10b8cb3966f6', '{Autism spectrum condition}', TO_DATE('1980-08-10', 'YYYY-MM-DD'), 'White British', 'Mr', 'Alex', 'River', 'English', 'None', 'Male');

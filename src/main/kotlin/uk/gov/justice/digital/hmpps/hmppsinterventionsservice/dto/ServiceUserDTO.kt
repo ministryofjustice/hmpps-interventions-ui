@@ -13,7 +13,7 @@ data class ServiceUserDTO(
   var ethnicity: String? = null,
   var preferredLanguage: String? = null,
   var religionOrBelief: String? = null,
-  var disabilities: String? = null,
+  var disabilities: List<String>? = null,
 ) {
   companion object {
     fun from(crn: String, serviceUserData: ServiceUserData?): ServiceUserDTO {
