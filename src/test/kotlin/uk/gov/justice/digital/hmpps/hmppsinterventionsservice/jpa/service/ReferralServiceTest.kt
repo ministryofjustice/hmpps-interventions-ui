@@ -129,12 +129,9 @@ class ReferralServiceTest @Autowired constructor(
   fun `find by userID returns list of draft referrals`() {
     val user1 = AuthUser("123", "delius")
     val user2 = AuthUser("456", "delius")
-    val referrals = listOf(
-      Referral(serviceUserCRN = "X123456", createdBy = user1),
-      Referral(serviceUserCRN = "X123456", createdBy = user1),
-      Referral(serviceUserCRN = "X123456", createdBy = user2),
-    )
-    referrals.forEach { entityManager.persist(it) }
+    referralService.createDraftReferral(user1, "X123456")
+    referralService.createDraftReferral(user1, "X123456")
+    referralService.createDraftReferral(user2, "X123456")
     entityManager.flush()
 
     val single = referralService.getDraftReferralsCreatedByUserID("456")
