@@ -1,24 +1,22 @@
 import request from 'supertest'
-import { Express } from 'express'
-import appWithAllRoutes from './testutils/appSetup'
-
-let app: Express
-
-beforeEach(() => {
-  app = appWithAllRoutes({})
-})
+import appWithAllRoutes, { AppSetupUserType } from './testutils/appSetup'
 
 afterEach(() => {
   jest.resetAllMocks()
 })
 
 describe('GET /', () => {
-  it('should render index page', () => {
-    return request(app)
-      .get('/')
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('This site is under construction...')
-      })
+  describe('when logged in as a probation practitioner', () => {
+    it('redirects to the referral start page', () => {
+      const app = appWithAllRoutes({ userType: AppSetupUserType.probationPractitioner })
+      return request(app).get('/').expect(302).expect('Location', '/referrals/start')
+    })
+  })
+
+  describe('when logged in as a service provider', () => {
+    it('redirects to the receive dashboard', () => {
+      const app = appWithAllRoutes({ userType: AppSetupUserType.serviceProvider })
+      return request(app).get('/').expect(302).expect('Location', '/receive/dashboard')
+    })
   })
 })

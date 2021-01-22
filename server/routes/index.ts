@@ -29,8 +29,15 @@ export default function routes(router: Router, services: Services): Router {
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
 
   get('/', (req, res, next) => {
-    res.render('pages/index')
+    const { authSource } = res.locals.user
+    if (authSource === 'delius') {
+      res.redirect('/referrals/start')
+    } else {
+      res.redirect('/receive/dashboard')
+    }
   })
+
+  get('/receive/dashboard', (req, res) => res.render('receive/dashboard'))
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)
