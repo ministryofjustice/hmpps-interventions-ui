@@ -2,7 +2,7 @@
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-FROM node:14-buster-slim as base
+FROM node:14-alpine3.12 as base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
@@ -10,19 +10,17 @@ ENV TZ=Europe/London
 RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
 
 RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser --gid 2000
+    adduser --uid 2000 --system appuser && \
+    adduser appuser appgroup
 
 WORKDIR /app
-
-RUN apt-get update && \
-    apt-get upgrade -y
 
 # Stage: build assets
 FROM base as build
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-RUN apt-get install -y make python g++
+RUN apk add --no-cache make python3
 
 COPY package*.json ./
 RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
@@ -40,9 +38,6 @@ RUN npm prune --no-audit --production
 
 # Stage: copy production assets and dependencies
 FROM base
-
-RUN apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
 
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
