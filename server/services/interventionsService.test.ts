@@ -943,11 +943,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('sendDraftReferral', () => {
     beforeEach(async () => {
       await provider.addInteraction({
-        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists and is ready to be sent',
-        uponReceiving: 'a POST request to send the draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        state: 'a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent',
+        uponReceiving: 'a POST request to send the draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
         withRequest: {
           method: 'POST',
-          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed/send',
+          path: '/draft-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6/send',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -955,16 +955,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: Matchers.like(sentReferral),
           headers: {
             'Content-Type': 'application/json',
-            Location: Matchers.like(
-              'https://hmpps-interventions-service.com/referral/81d754aa-d868-4347-9c0f-50690773014e'
-            ),
+            Location: 'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
           },
         },
       })
     })
 
     it('returns a sent referral', async () => {
-      expect(await interventionsService.sendDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed')).toEqual(
+      expect(await interventionsService.sendDraftReferral(token, '2a67075a-9c77-4103-9de0-63c4cfe3e8d6')).toEqual(
         sentReferral
       )
     })
