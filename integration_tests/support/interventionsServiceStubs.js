@@ -126,3 +126,19 @@ Cypress.Commands.add('stubGetSentReferral', (id, responseJson) => {
     },
   })
 })
+
+Cypress.Commands.add('stubGetSentReferrals', responseJson => {
+  cy.task('stubFor', {
+    request: {
+      method: 'GET',
+      urlPattern: `/interventions/sent-referrals`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      jsonBody: responseJson,
+    },
+  })
+})

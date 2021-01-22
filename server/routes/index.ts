@@ -5,6 +5,7 @@ import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
 import OffenderAssessmentsApiService from '../services/offenderAssessmentsApiService'
 import IntegrationSamplesRoutes from './integrationSamples'
+import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import ReferralsController from './referrals/referralsController'
 
 interface RouteProvider {
@@ -27,17 +28,18 @@ export default function routes(router: Router, services: Services): Router {
   )
 
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
+  const serviceProviderReferralsController = new ServiceProviderReferralsController(services.interventionsService)
 
   get('/', (req, res, next) => {
     const { authSource } = res.locals.user
     if (authSource === 'delius') {
       res.redirect('/referrals/start')
     } else {
-      res.redirect('/receive/dashboard')
+      res.redirect('/service-provider/dashboard')
     }
   })
 
-  get('/receive/dashboard', (req, res) => res.render('receive/dashboard'))
+  get('/service-provider/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)

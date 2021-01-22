@@ -14,9 +14,9 @@ describe('GET /', () => {
   })
 
   describe('when logged in as a service provider', () => {
-    it('redirects to the receive dashboard', () => {
+    it('redirects to the service provider dashboard', () => {
       const app = appWithAllRoutes({ userType: AppSetupUserType.serviceProvider })
-      return request(app).get('/').expect(302).expect('Location', '/receive/dashboard')
+      return request(app).get('/').expect(302).expect('Location', '/service-provider/dashboard')
     })
   })
 })
