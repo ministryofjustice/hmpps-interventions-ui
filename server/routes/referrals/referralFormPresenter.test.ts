@@ -20,7 +20,7 @@ describe('ReferralFormPresenter', () => {
           status: ReferralFormStatus.Completed,
           tasks: [
             { title: 'Enter service user case identifier', url: null },
-            { title: 'Confirm service user details', url: null },
+            { title: 'Confirm service user details', url: 'service-user-details' },
           ],
         },
         {

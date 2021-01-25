@@ -176,6 +176,43 @@ describe('GET /referrals/:id/form', () => {
   })
 })
 
+describe('GET /referrals/:id/service-user-details', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('renders a service user details page', async () => {
+    await request(app)
+      .get('/referrals/1/service-user-details')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain(`Alex&#39;s information`)
+      })
+  })
+})
+
+describe('POST /referrals/:id/confirm-service-user-details', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('redirects to the form page', async () => {
+    await request(app)
+      .post('/referrals/1/service-user-details')
+      .type('form')
+      .expect(303)
+      .expect('Location', '/referrals/1/form')
+  })
+})
+
 describe('GET /referrals/:id/completion-deadline', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build()

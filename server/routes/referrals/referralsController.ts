@@ -32,6 +32,8 @@ import ConfirmationPresenter from './confirmationPresenter'
 import CommunityApiService, { DeliusServiceUser } from '../../services/communityApiService'
 import errorMessages from '../../utils/errorMessages'
 import logger from '../../../log'
+import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
+import ServiceUserDetailsView from './serviceUserDetailsView'
 import ReferralStartForm from './referralStartForm'
 
 export default class ReferralsController {
@@ -108,6 +110,21 @@ export default class ReferralsController {
       res.status(400)
       res.render(...view.renderArgs)
     }
+  }
+
+  async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser)
+    const view = new ServiceUserDetailsView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async confirmServiceUserDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    res.redirect(303, `/referrals/${referral.id}/form`)
   }
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {
