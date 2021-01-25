@@ -154,7 +154,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             body: Matchers.like({
               id: '1219a064-709b-4b6c-a11e-10b8cb3966f6',
               serviceUser: {
+                crn: 'X862134',
+                title: 'Mr',
                 firstName: 'Alex',
+                lastName: 'River',
+                dateOfBirth: '1980-01-01',
+                gender: 'Male',
+                preferredLanguage: 'English',
+                ethnicity: 'British',
+                religionOrBelief: 'Agnostic',
+                disabilities: ['Autism spectrum condition'],
               },
             }),
             headers: { 'Content-Type': 'application/json' },
@@ -162,11 +171,20 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         })
       })
 
-      it('returns a referral for the given ID, with the service category id field populated', async () => {
+      it('returns a referral for the given ID, with the service user details', async () => {
         const referral = await interventionsService.getDraftReferral(token, '1219a064-709b-4b6c-a11e-10b8cb3966f6')
 
         expect(referral.id).toBe('1219a064-709b-4b6c-a11e-10b8cb3966f6')
-        expect(referral.serviceUser!.firstName).toEqual('Alex')
+        expect(referral.serviceUser.crn).toEqual('X862134')
+        expect(referral.serviceUser.title).toEqual('Mr')
+        expect(referral.serviceUser.firstName).toEqual('Alex')
+        expect(referral.serviceUser.lastName).toEqual('River')
+        expect(referral.serviceUser.dateOfBirth).toEqual('1980-01-01')
+        expect(referral.serviceUser.gender).toEqual('Male')
+        expect(referral.serviceUser.ethnicity).toEqual('British')
+        expect(referral.serviceUser.preferredLanguage).toEqual('English')
+        expect(referral.serviceUser.religionOrBelief).toEqual('Agnostic')
+        expect(referral.serviceUser.disabilities).toEqual(['Autism spectrum condition'])
       })
     })
   })
