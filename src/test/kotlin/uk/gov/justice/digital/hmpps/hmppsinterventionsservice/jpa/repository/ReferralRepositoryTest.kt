@@ -31,14 +31,10 @@ class ReferralRepositoryTest @Autowired constructor(
   @Test
   fun `removing a referral does not remove associated auth_user`() {
     val user = AuthUser("user_id", "auth_source")
+    entityManager.persist(user)
     val referral = Referral(serviceUserCRN = "X123456", createdBy = user)
     entityManager.persist(referral)
     entityManager.flush()
-
-    // check the user has been persisted by the cascade setting
-    val users = authUserRepository.findAll() as List<AuthUser>
-    Assertions.assertThat(users.size).isEqualTo(1)
-    Assertions.assertThat(users[0]).isEqualTo(user)
 
     // check that when the referral is deleted, the user is not
     entityManager.remove(referral)
