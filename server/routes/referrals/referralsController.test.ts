@@ -1,6 +1,6 @@
 import request from 'supertest'
 import { Express } from 'express'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { ServiceUser } from '../../services/interventionsService'
 import CommunityApiService from '../../services/communityApiService'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
@@ -9,12 +9,26 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import apiConfig from '../../config'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
+import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 
 const interventionsService = new InterventionsService(apiConfig.apis.hmppsAuth) as jest.Mocked<InterventionsService>
 const communityApiService = new CommunityApiService(new MockedHmppsAuthClient()) as jest.Mocked<CommunityApiService>
+
+const serviceUser = {
+  crn: 'X123456',
+  title: 'Mr',
+  firstName: 'Alex',
+  lastName: 'River',
+  dateOfBirth: '1980-01-01',
+  gender: 'Male',
+  preferredLanguage: 'English',
+  ethnicity: 'British',
+  religionOrBelief: 'Agnostic',
+  disabilities: ['Autism'],
+} as ServiceUser
 
 let app: Express
 
@@ -27,6 +41,7 @@ beforeEach(() => {
   const referral = draftReferralFactory.justCreated().build({ id: '1' })
   interventionsService.createDraftReferral.mockResolvedValue(referral)
   interventionsService.getDraftReferralsForUser.mockResolvedValue([])
+  interventionsService.serializeDeliusServiceUser.mockReturnValue(serviceUser)
 })
 
 afterEach(() => {
@@ -52,12 +67,7 @@ describe('GET /referrals/start', () => {
 describe('POST /referrals/start', () => {
   describe('when searching for a CRN found in Delius', () => {
     beforeEach(() => {
-      communityApiService.getServiceUserByCRN.mockResolvedValue({
-        offenderId: '12345',
-        firstName: 'Alex',
-        surname: 'River',
-        dateOfBirth: '05/05/1992',
-      })
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     })
 
     it('creates a referral on the interventions service and redirects to the referral form', async () => {
@@ -68,6 +78,15 @@ describe('POST /referrals/start', () => {
         .expect('Location', '/referrals/1/form')
 
       expect(interventionsService.createDraftReferral).toHaveBeenCalledTimes(1)
+    })
+
+    it('updates the newly-created referral on the interventions service with the found service user', async () => {
+      await request(app).post('/referrals/start').send({ 'service-user-crn': 'X123456' })
+
+      expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+        serviceUser,
+      })
     })
   })
 

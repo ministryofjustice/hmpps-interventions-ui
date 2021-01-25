@@ -1,9 +1,10 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
-import InterventionsService, { SentReferral } from './interventionsService'
+import InterventionsService, { SentReferral, ServiceUser } from './interventionsService'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
+import { DeliusServiceUser } from './communityApiService'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -251,6 +252,55 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         ],
       })
+    })
+
+    it('returns the updated referral when setting the service user details', async () => {
+      const serviceUser = {
+        crn: 'X862134',
+        title: 'Mr',
+        firstName: 'Alex',
+        lastName: 'River',
+        dateOfBirth: '1980-01-01',
+        gender: 'Male',
+        ethnicity: 'British',
+        preferredLanguage: 'English',
+        religionOrBelief: 'Agnostic',
+        disabilities: ['Autism spectrum condition', 'sciatica'],
+      } as ServiceUser
+
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to update service user',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceUser,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            createdAt: '2020-12-07T20:45:21.986389Z',
+            serviceUser,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        serviceUser,
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.serviceUser).toEqual(serviceUser)
     })
 
     it('returns the updated referral when setting the completion date', async () => {
@@ -910,6 +960,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  const serviceUser = {
+    crn: 'X862134',
+    title: 'Mr',
+    firstName: 'Alex',
+    lastName: 'River',
+    dateOfBirth: '1980-01-01',
+    gender: 'Male',
+    ethnicity: 'British',
+    preferredLanguage: 'English',
+    religionOrBelief: 'Agnostic',
+    disabilities: ['Autism spectrum condition', 'sciatica'],
+  } as ServiceUser
+
   const sentReferral: SentReferral = {
     id: '81d754aa-d868-4347-9c0f-50690773014e',
     sentAt: '2021-01-14T15:56:45.382884Z',
@@ -928,10 +991,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       interpreterLanguage: 'Spanish',
       hasAdditionalResponsibilities: true,
       whenUnavailable: 'She works Mondays 9am - midday',
-      serviceUser: {
-        crn: 'X862134',
-        firstName: 'Alex',
-      },
+      serviceUser,
       additionalRiskInformation: 'A danger to the elderly',
       usingRarDays: true,
       maximumRarDays: 10,
@@ -988,6 +1048,103 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.getSentReferral(token, '81d754aa-d868-4347-9c0f-50690773014e')).toEqual(
         sentReferral
       )
+    })
+  })
+})
+
+describe('serializeDeliusServiceUser', () => {
+  const interventionsService = new InterventionsService(config.apis.interventionsService)
+
+  it('transforms a DeliusServiceUser into a format expected by the Interventions Service, removing "expired" disabilities', () => {
+    const currentDisabilityEndDate = new Date()
+    currentDisabilityEndDate.setDate(currentDisabilityEndDate.getDate() + 1)
+
+    const deliusServiceUser = {
+      otherIds: {
+        crn: 'X123456',
+      },
+      offenderProfile: {
+        offenderLanguages: {
+          primaryLanguage: 'English',
+        },
+      },
+      title: 'Mr',
+      firstName: 'Alex',
+      surname: 'River',
+      dateOfBirth: '1980-01-01',
+      gender: 'Male',
+      ethnicity: 'British',
+      religionOrBelief: 'Agnostic',
+      disabilities: [
+        {
+          disabilityType: {
+            description: 'Autism',
+          },
+          endDate: '',
+          notes: 'Some notes',
+          startDate: '2019-01-22',
+        },
+        {
+          disabilityType: {
+            description: 'Sciatica',
+          },
+          endDate: currentDisabilityEndDate.toString(),
+          notes: 'Some notes',
+          startDate: '2020-01-01',
+        },
+        {
+          disabilityType: {
+            description: 'An old disability',
+          },
+          endDate: '2020-01-22',
+          notes: 'Some notes',
+          startDate: '2020-01-22',
+        },
+      ],
+    } as DeliusServiceUser
+
+    const serviceUser = interventionsService.serializeDeliusServiceUser(deliusServiceUser)
+
+    expect(serviceUser.crn).toEqual('X123456')
+    expect(serviceUser.title).toEqual('Mr')
+    expect(serviceUser.firstName).toEqual('Alex')
+    expect(serviceUser.lastName).toEqual('River')
+    expect(serviceUser.dateOfBirth).toEqual('1980-01-01')
+    expect(serviceUser.gender).toEqual('Male')
+    expect(serviceUser.ethnicity).toEqual('British')
+    expect(serviceUser.religionOrBelief).toEqual('Agnostic')
+    expect(serviceUser.preferredLanguage).toEqual('English')
+    expect(serviceUser.disabilities).toEqual(['Autism', 'Sciatica'])
+  })
+
+  describe('when there are fields missing in the response', () => {
+    // this is the current response when running the Community API locally
+    const incompleteDeliusServiceUser = {
+      firstName: 'Aadland',
+      surname: 'Bertrand',
+      dateOfBirth: '2065-07-19',
+      gender: 'Male',
+      otherIds: {
+        crn: 'X320741',
+      },
+      offenderProfile: {
+        offenderLanguages: {},
+      },
+    } as DeliusServiceUser
+
+    it('sets null values on the serialized user for the missing values', () => {
+      const serviceUser = interventionsService.serializeDeliusServiceUser(incompleteDeliusServiceUser)
+
+      expect(serviceUser.crn).toEqual('X320741')
+      expect(serviceUser.title).toEqual(null)
+      expect(serviceUser.firstName).toEqual('Aadland')
+      expect(serviceUser.lastName).toEqual('Bertrand')
+      expect(serviceUser.dateOfBirth).toEqual('2065-07-19')
+      expect(serviceUser.gender).toEqual('Male')
+      expect(serviceUser.ethnicity).toEqual(null)
+      expect(serviceUser.religionOrBelief).toEqual(null)
+      expect(serviceUser.preferredLanguage).toEqual(null)
+      expect(serviceUser.disabilities).toEqual(null)
     })
   })
 })

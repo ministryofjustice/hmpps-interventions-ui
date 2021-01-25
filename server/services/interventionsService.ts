@@ -2,6 +2,8 @@ import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
 import { SanitisedError } from '../sanitisedError'
+import { DeliusServiceUser } from './communityApiService'
+import CalendarDay from '../utils/calendarDay'
 
 export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
@@ -65,7 +67,15 @@ export interface DesiredOutcome {
 
 export interface ServiceUser {
   crn: string
+  title: string | null
   firstName: string | null
+  lastName: string | null
+  dateOfBirth: string | null
+  gender: string | null
+  ethnicity: string | null
+  preferredLanguage: string | null
+  religionOrBelief: string | null
+  disabilities: string[] | null
 }
 
 export interface ServiceProvider {
@@ -93,6 +103,38 @@ export default class InterventionsService {
     }
 
     return sanitisedError
+  }
+
+  serializeDeliusServiceUser(deliusServiceUser: DeliusServiceUser | null): ServiceUser {
+    if (!deliusServiceUser) {
+      return {} as ServiceUser
+    }
+
+    const currentDisabilities = deliusServiceUser.disabilities
+      ? deliusServiceUser.disabilities
+          .filter(disability => {
+            const today = new Date().toString()
+            return disability.endDate === '' || Date.parse(disability.endDate) >= Date.parse(today)
+          })
+          .map(disability => disability.disabilityType.description)
+      : null
+
+    const iso8601DateOfBirth = deliusServiceUser.dateOfBirth
+      ? CalendarDay.parseIso8601(deliusServiceUser.dateOfBirth)?.iso8601 || null
+      : null
+
+    return {
+      crn: deliusServiceUser.otherIds.crn,
+      title: deliusServiceUser.title || null,
+      firstName: deliusServiceUser.firstName || null,
+      lastName: deliusServiceUser.surname || null,
+      dateOfBirth: iso8601DateOfBirth || null,
+      gender: deliusServiceUser.gender || null,
+      ethnicity: deliusServiceUser.ethnicity || null,
+      preferredLanguage: deliusServiceUser.offenderProfile?.offenderLanguages?.primaryLanguage || null,
+      religionOrBelief: deliusServiceUser.religionOrBelief || null,
+      disabilities: currentDisabilities,
+    }
   }
 
   async getDraftReferral(token: string, id: string): Promise<DraftReferral> {
