@@ -1,4 +1,6 @@
 import { DraftReferral } from '../../services/interventionsService'
+import CalendarDay from '../../utils/calendarDay'
+import utils from '../../utils/utils'
 
 // This way of extracting all of a type’s properties of a particular type is taken from
 // https://stackoverflow.com/questions/56558289/typescript-generic-type-restriction-on-return-value-of-keyof
@@ -88,5 +90,25 @@ export default class ReferralDataPresenterUtils {
     }
 
     return !!error.errors.find(subError => subError.formFields.includes(field))
+  }
+
+  // https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style#dates
+  static govukFormattedDate(day: CalendarDay): string {
+    const format = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+    const date = day.utcDate
+
+    return format.format(date)
+  }
+
+  static govukShortFormattedDate(day: CalendarDay): string {
+    const format = new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+    const date = day.utcDate
+
+    return format.format(date)
   }
 }

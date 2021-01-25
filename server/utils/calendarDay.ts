@@ -21,12 +21,46 @@ export default class CalendarDay {
     return new CalendarDay(day, month, year)
   }
 
+  private static dayForDate(date: Date, ianaTimeZoneIdentifier: string): CalendarDay {
+    /*
+    It seems that JavaScript only exposes time zone conversion functionality
+    through its date formatting methods.
+
+    So, to find the day / month / year components of a Date in a given time zone,
+    we format the date in that time zone and then extract the formatted components.
+    */
+
+    const format = Intl.DateTimeFormat('en-US', { timeZone: ianaTimeZoneIdentifier })
+
+    const parts = format.formatToParts(date)
+    const componentStrings = ['day', 'month', 'year'].map(
+      component => parts.find(part => part.type === component)?.value
+    )
+    const components = componentStrings.map(componentString => {
+      if (componentString === undefined) {
+        throw new Error('Failed to extract component from date')
+      }
+
+      return Number.parseInt(componentString, 10)
+    })
+
+    return new CalendarDay(components[0], components[1], components[2])
+  }
+
+  static britishDayForDate(date: Date): CalendarDay {
+    return this.dayForDate(date, 'Europe/London')
+  }
+
   get iso8601(): string {
     return [
       String(this.year).padStart(4, '0'),
       String(this.month).padStart(2, '0'),
       String(this.day).padStart(2, '0'),
     ].join('-')
+  }
+
+  get utcDate(): Date {
+    return new Date(Date.UTC(this.year, this.month - 1, this.day))
   }
 }
 

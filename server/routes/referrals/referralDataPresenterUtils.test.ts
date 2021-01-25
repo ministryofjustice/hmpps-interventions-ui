@@ -1,5 +1,6 @@
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import CalendarDay from '../../utils/calendarDay'
 
 describe('ReferralDataPresenterUtils', () => {
   describe('stringValue', () => {
@@ -392,6 +393,20 @@ describe('ReferralDataPresenterUtils', () => {
         }
         expect(ReferralDataPresenterUtils.hasError(error, 'my-field')).toBe(false)
       })
+    })
+  })
+
+  describe('govukFormattedDate', () => {
+    it('returns a formatted date', () => {
+      const date = CalendarDay.fromComponents(4, 6, 2017)!
+      expect(ReferralDataPresenterUtils.govukFormattedDate(date)).toEqual('4 June 2017')
+    })
+  })
+
+  describe('govukShortFormattedDate', () => {
+    it('returns a formatted date', () => {
+      const date = CalendarDay.fromComponents(4, 6, 2017)!
+      expect(ReferralDataPresenterUtils.govukShortFormattedDate(date)).toEqual('4 Jun 2017')
     })
   })
 })
