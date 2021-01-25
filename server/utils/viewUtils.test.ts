@@ -61,4 +61,73 @@ describe('ViewUtils', () => {
       })
     })
   })
+
+  describe('summaryListArgs', () => {
+    it('returns a summary list args object for passing to the govukSummaryList macro', () => {
+      expect(
+        ViewUtils.summaryListArgs([
+          { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], isList: true },
+          { key: 'Gender', lines: ['Male'], isList: false },
+          { key: 'Address', lines: ['Flat 2', '27 Test Walk', 'SY16 1AQ'], isList: false },
+        ])
+      ).toEqual({
+        rows: [
+          {
+            key: {
+              text: 'Needs',
+            },
+            value: {
+              html: `<ul class="govuk-list"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
+            },
+          },
+          {
+            key: {
+              text: 'Gender',
+            },
+            value: {
+              text: 'Male',
+            },
+          },
+          {
+            key: {
+              text: 'Address',
+            },
+            value: {
+              html:
+                '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 Test Walk</p>\n<p class="govuk-body">SY16 1AQ</p>',
+            },
+          },
+        ],
+      })
+    })
+  })
+
+  it('escapes special characters passed iin', () => {
+    expect(
+      ViewUtils.summaryListArgs([
+        { key: 'Needs', lines: ['Accommodation&', 'Social inclusion'], isList: true },
+        { key: 'Address', lines: ['Flat 2', "27 St James's Road", 'SY16 1AQ'], isList: false },
+      ])
+    ).toEqual({
+      rows: [
+        {
+          key: {
+            text: 'Needs',
+          },
+          value: {
+            html: `<ul class="govuk-list"><li>Accommodation&amp;</li>\n<li>Social inclusion</li></ul>`,
+          },
+        },
+        {
+          key: {
+            text: 'Address',
+          },
+          value: {
+            html:
+              '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 St James&#39;s Road</p>\n<p class="govuk-body">SY16 1AQ</p>',
+          },
+        },
+      ],
+    })
+  })
 })

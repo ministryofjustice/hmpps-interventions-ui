@@ -1,4 +1,5 @@
 import * as nunjucks from 'nunjucks'
+import { SummaryListArgs, SummaryListItem } from './summaryList'
 
 export default class ViewUtils {
   static escape(val: string): string {
@@ -23,6 +24,31 @@ export default class ViewUtils {
         return {
           text: error.message,
           href: `#${error.field}`,
+        }
+      }),
+    }
+  }
+
+  static summaryListArgs(summaryListItems: SummaryListItem[]): SummaryListArgs {
+    return {
+      rows: summaryListItems.map(item => {
+        return {
+          key: {
+            text: item.key,
+          },
+          value: (() => {
+            if (item.isList) {
+              const html = `<ul class="govuk-list">${item.lines
+                .map(line => `<li>${ViewUtils.escape(line)}</li>`)
+                .join('\n')}</ul>`
+              return { html }
+            }
+            if (item.lines.length > 1) {
+              const html = item.lines.map(line => `<p class="govuk-body">${ViewUtils.escape(line)}</p>`).join('\n')
+              return { html }
+            }
+            return { text: item.lines[0] || '' }
+          })(),
         }
       }),
     }
