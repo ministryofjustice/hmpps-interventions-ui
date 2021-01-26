@@ -1064,43 +1064,43 @@ describe('serializeDeliusServiceUser', () => {
         crn: 'X123456',
       },
       offenderProfile: {
+        ethnicity: 'British',
+        religion: 'Agnostic',
         offenderLanguages: {
           primaryLanguage: 'English',
         },
+        disabilities: [
+          {
+            disabilityType: {
+              description: 'Autism',
+            },
+            endDate: '',
+            notes: 'Some notes',
+            startDate: '2019-01-22',
+          },
+          {
+            disabilityType: {
+              description: 'Sciatica',
+            },
+            endDate: currentDisabilityEndDate.toString(),
+            notes: 'Some notes',
+            startDate: '2020-01-01',
+          },
+          {
+            disabilityType: {
+              description: 'An old disability',
+            },
+            endDate: '2020-01-22',
+            notes: 'Some notes',
+            startDate: '2020-01-22',
+          },
+        ],
       },
       title: 'Mr',
       firstName: 'Alex',
       surname: 'River',
       dateOfBirth: '1980-01-01',
       gender: 'Male',
-      ethnicity: 'British',
-      religionOrBelief: 'Agnostic',
-      disabilities: [
-        {
-          disabilityType: {
-            description: 'Autism',
-          },
-          endDate: '',
-          notes: 'Some notes',
-          startDate: '2019-01-22',
-        },
-        {
-          disabilityType: {
-            description: 'Sciatica',
-          },
-          endDate: currentDisabilityEndDate.toString(),
-          notes: 'Some notes',
-          startDate: '2020-01-01',
-        },
-        {
-          disabilityType: {
-            description: 'An old disability',
-          },
-          endDate: '2020-01-22',
-          notes: 'Some notes',
-          startDate: '2020-01-22',
-        },
-      ],
     } as DeliusServiceUser
 
     const serviceUser = interventionsService.serializeDeliusServiceUser(deliusServiceUser)

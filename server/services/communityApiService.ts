@@ -22,9 +22,6 @@ export interface DeliusServiceUser {
   surname: string | null
   dateOfBirth: string | null
   gender: string | null
-  ethnicity: string | null
-  religionOrBelief: string | null
-  disabilities: Disability[] | null
 }
 
 interface DeliusRole {
@@ -45,6 +42,9 @@ interface OtherIds {
 
 interface OffenderProfile {
   offenderLanguages: OffenderLanguages
+  ethnicity: string
+  religion: string
+  disabilities: Disability[] | null
 }
 
 interface OffenderLanguages {

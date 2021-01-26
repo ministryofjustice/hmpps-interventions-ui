@@ -6,6 +6,18 @@ export default Factory.define<DeliusServiceUser>(() => ({
     crn: 'X123456',
   },
   offenderProfile: {
+    ethnicity: 'British',
+    religion: 'Agnostic',
+    disabilities: [
+      {
+        disabilityType: {
+          description: 'Autism',
+        },
+        endDate: '',
+        notes: 'Some notes',
+        startDate: '2019-01-22',
+      },
+    ],
     offenderLanguages: {
       primaryLanguage: 'English',
     },
@@ -15,16 +27,4 @@ export default Factory.define<DeliusServiceUser>(() => ({
   surname: 'River',
   dateOfBirth: '1980-01-01',
   gender: 'Male',
-  ethnicity: 'British',
-  religionOrBelief: 'Agnostic',
-  disabilities: [
-    {
-      disabilityType: {
-        description: 'Autism',
-      },
-      endDate: '',
-      notes: 'Some notes',
-      startDate: '2019-01-22',
-    },
-  ],
 }))
