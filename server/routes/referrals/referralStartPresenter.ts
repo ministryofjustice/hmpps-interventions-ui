@@ -1,6 +1,7 @@
 import { DraftReferral } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
+import convertToTitleCase from '../../utils/utils'
 
 export default class ReferralStartPresenter {
   constructor(
@@ -12,7 +13,7 @@ export default class ReferralStartPresenter {
     return this.draftReferrals
       .sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? -1 : 1))
       .map(referral => ({
-        id: referral.id.slice(0, 8), // this is totally arbitrary, and probably meaningless to the user
+        serviceUserFullName: convertToTitleCase(`${referral.serviceUser.firstName} ${referral.serviceUser.lastName}`),
         createdAt: new Date(referral.createdAt).toLocaleDateString('en-GB'),
         url: `/referrals/${referral.id}/form`,
       }))
@@ -25,7 +26,7 @@ export default class ReferralStartPresenter {
 }
 
 interface DraftReferralSummaryPresenter {
-  id: string
+  serviceUserFullName: string
   createdAt: string
   url: string
 }
