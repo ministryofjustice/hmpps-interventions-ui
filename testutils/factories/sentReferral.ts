@@ -3,35 +3,37 @@ import { ReferralFields, SentReferral } from '../../server/services/intervention
 import serviceProviderFactory from './serviceProvider'
 import serviceCategoryFactory from './serviceCategory'
 
-const exampleReferralFields = {
-  createdAt: '2020-12-07T20:45:21.986389Z',
-  completionDeadline: '2021-04-01',
-  serviceProviderId: serviceProviderFactory.build().id,
-  serviceCategoryId: serviceCategoryFactory.build().id,
-  complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  furtherInformation: 'Some information about the service user',
-  desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
-  additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
-  accessibilityNeeds: 'She uses a wheelchair',
-  needsInterpreter: true,
-  interpreterLanguage: 'Spanish',
-  hasAdditionalResponsibilities: true,
-  whenUnavailable: 'She works Mondays 9am - midday',
-  serviceUser: {
-    crn: 'X123456',
-    title: 'Mr',
-    firstName: 'Alex',
-    lastName: 'River',
-    dateOfBirth: '1980-01-01',
-    gender: 'Male',
-    ethnicity: 'British',
-    preferredLanguage: 'English',
-    religionOrBelief: 'Agnostic',
-    disabilities: ['Autism spectrum condition', 'sciatica'],
-  },
-  additionalRiskInformation: 'A danger to the elderly',
-  usingRarDays: true,
-  maximumRarDays: 10,
+const exampleReferralFields = () => {
+  return {
+    createdAt: '2020-12-07T20:45:21.986389Z',
+    completionDeadline: '2021-04-01',
+    serviceProviderId: serviceProviderFactory.build().id,
+    serviceCategoryId: serviceCategoryFactory.build().id,
+    complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+    furtherInformation: 'Some information about the service user',
+    desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+    additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+    accessibilityNeeds: 'She uses a wheelchair',
+    needsInterpreter: true,
+    interpreterLanguage: 'Spanish',
+    hasAdditionalResponsibilities: true,
+    whenUnavailable: 'She works Mondays 9am - midday',
+    serviceUser: {
+      crn: 'X123456',
+      title: 'Mr',
+      firstName: 'Alex',
+      lastName: 'River',
+      dateOfBirth: '1980-01-01',
+      gender: 'Male',
+      ethnicity: 'British',
+      preferredLanguage: 'English',
+      religionOrBelief: 'Agnostic',
+      disabilities: ['Autism spectrum condition', 'sciatica'],
+    },
+    additionalRiskInformation: 'A danger to the elderly',
+    usingRarDays: true,
+    maximumRarDays: 10,
+  }
 }
 
 class SentReferralFactory extends Factory<SentReferral> {
@@ -39,7 +41,7 @@ class SentReferralFactory extends Factory<SentReferral> {
     const referralParams = {}
     // This is a possibly clunky way of getting the
     // keys of the ReferralFields type at runtime
-    Object.keys(exampleReferralFields).forEach(key => {
+    Object.keys(exampleReferralFields()).forEach(key => {
       referralParams[key] = fields[key]
     })
     return this.params({ referral: referralParams })
@@ -50,5 +52,5 @@ export default SentReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   sentAt: new Date().toISOString(),
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
-  referral: exampleReferralFields,
+  referral: exampleReferralFields(),
 }))
