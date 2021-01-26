@@ -870,13 +870,13 @@ describe('GET /referrals/:id/check-answers', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  it('displays a summary of the draft referral', async () => {
+  it('displays placeholder text in place of a summary of the referral', async () => {
     await request(app)
       .get('/referrals/1/check-answers')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Johnny')
-        expect(res.text).toContain('Information for the accommodation referral')
+        expect(res.text).toContain('Submit your referral')
+        expect(res.text).toContain('Make sure you have checked your answers before submitting your referral')
       })
   })
 
