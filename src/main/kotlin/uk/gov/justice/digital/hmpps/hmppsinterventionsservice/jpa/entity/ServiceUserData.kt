@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 import com.vladmihalcea.hibernate.type.array.ListArrayType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
-import java.util.Date
+import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -20,7 +20,7 @@ data class ServiceUserData(
   var title: String? = null,
   var firstName: String? = null,
   var lastName: String? = null,
-  @Column(name = "dob", columnDefinition = "DATE") var dob: Date? = null,
+  @Column(name = "dob") var dateOfBirth: LocalDate? = null,
   var gender: String? = null,
   var ethnicity: String? = null,
   var preferredLanguage: String? = null,

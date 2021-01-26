@@ -158,7 +158,7 @@ class ReferralService(val repository: ReferralRepository, val authUserRepository
         title = it.title,
         firstName = it.firstName,
         lastName = it.lastName,
-        dob = it.dob,
+        dateOfBirth = it.dateOfBirth,
         gender = it.gender,
         ethnicity = it.ethnicity,
         preferredLanguage = it.preferredLanguage,
