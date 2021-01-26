@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
@@ -14,10 +14,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ref
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
+import kotlin.random.Random
 
 @Service
-class ReferralService(val repository: ReferralRepository, val authUserRepository: AuthUserRepository,
-                      val eventPublisher: ReferralEventPublisher) {
+class ReferralService(
+  val repository: ReferralRepository,
+  val authUserRepository: AuthUserRepository,
+  val eventPublisher: ReferralEventPublisher
+) {
   fun getSentReferral(id: UUID): Referral? {
     return repository.findByIdAndSentAtIsNotNull(id)
   }

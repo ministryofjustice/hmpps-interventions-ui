@@ -1,10 +1,9 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.service.notify.NotificationClient
-import uk.gov.service.notify.NotificationClientException
 import java.net.URI
 
 @Service

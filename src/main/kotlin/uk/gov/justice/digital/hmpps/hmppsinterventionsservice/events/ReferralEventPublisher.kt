@@ -5,11 +5,11 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
-enum class ReferralEventType{
+enum class ReferralEventType {
   SENT
 }
 
-class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Referral): ApplicationEvent(source)
+class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Referral) : ApplicationEvent(source)
 
 @Component
 class ReferralEventPublisher(private val applicationEventPublisher: ApplicationEventPublisher) {
