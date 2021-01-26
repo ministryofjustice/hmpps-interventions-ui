@@ -1,4 +1,4 @@
-import convertToTitleCase from '../utils/utils'
+import utils from '../utils/utils'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 
 export interface UserDetails {
@@ -20,7 +20,7 @@ export default class UserService {
 
   async getUser(token: string): Promise<UserDetails> {
     const user = await this.hmppsAuthClient.getUser(token)
-    const userDetails: UserDetails = { ...user, displayName: convertToTitleCase(user.name as string) }
+    const userDetails: UserDetails = { ...user, displayName: utils.convertToTitleCase(user.name as string) }
 
     if (user.authSource === 'auth') {
       userDetails.organizations = (await this.hmppsAuthClient.getAuthUserGroups(token, user.username))
