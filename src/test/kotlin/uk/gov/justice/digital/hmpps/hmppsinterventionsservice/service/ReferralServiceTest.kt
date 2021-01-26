@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -27,9 +29,9 @@ class ReferralServiceTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
-  private val referralEventPublisher: ReferralEventPublisher,
 ) {
 
+  private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referralService = ReferralService(referralRepository, authUserRepository, referralEventPublisher)
 
   @Test
@@ -349,6 +351,14 @@ class ReferralServiceTest @Autowired constructor(
 
     assertThat(referralService.getDraftReferral(draftReferral.id!!)).isNull()
     assertThat(referralService.getSentReferral(sentReferral.id!!)).isNotNull()
+  }
+
+  @Test
+  fun `sending a draft referral triggers an event`() {
+    val user = AuthUser("user_id", "auth_source")
+    val draftReferral = referralService.createDraftReferral(user, "X123456")
+    referralService.sendDraftReferral(draftReferral, user)
+    verify(referralEventPublisher).referralSentEvent(draftReferral)
   }
 
   @Test

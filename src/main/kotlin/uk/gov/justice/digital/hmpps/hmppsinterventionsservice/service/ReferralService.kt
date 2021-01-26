@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ref
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
-import kotlin.random.Random
 
 @Service
 class ReferralService(
