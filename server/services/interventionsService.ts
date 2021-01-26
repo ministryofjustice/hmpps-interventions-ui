@@ -110,8 +110,8 @@ export default class InterventionsService {
       return {} as ServiceUser
     }
 
-    const currentDisabilities = deliusServiceUser.disabilities
-      ? deliusServiceUser.disabilities
+    const currentDisabilities = deliusServiceUser.offenderProfile?.disabilities
+      ? deliusServiceUser.offenderProfile.disabilities
           .filter(disability => {
             const today = new Date().toString()
             return disability.endDate === '' || Date.parse(disability.endDate) >= Date.parse(today)
@@ -130,9 +130,9 @@ export default class InterventionsService {
       lastName: deliusServiceUser.surname || null,
       dateOfBirth: iso8601DateOfBirth || null,
       gender: deliusServiceUser.gender || null,
-      ethnicity: deliusServiceUser.ethnicity || null,
+      ethnicity: deliusServiceUser.offenderProfile?.ethnicity || null,
       preferredLanguage: deliusServiceUser.offenderProfile?.offenderLanguages?.primaryLanguage || null,
-      religionOrBelief: deliusServiceUser.religionOrBelief || null,
+      religionOrBelief: deliusServiceUser.offenderProfile?.religion || null,
       disabilities: currentDisabilities,
     }
   }
