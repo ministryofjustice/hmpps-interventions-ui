@@ -409,4 +409,28 @@ describe('ReferralDataPresenterUtils', () => {
       expect(ReferralDataPresenterUtils.govukShortFormattedDate(date)).toEqual('4 Jun 2017')
     })
   })
+
+  describe('fullName', () => {
+    // There’s probably going to turn out to be a whole bunch of nuance here but let’s start with this
+    it('returns the service user’s first name followed by last name', () => {
+      const { serviceUser } = draftReferralFactory.build({ serviceUser: { firstName: 'Daniel', lastName: 'Grove' } })
+      expect(ReferralDataPresenterUtils.fullName(serviceUser)).toEqual('Daniel Grove')
+    })
+
+    it('converts the names to title case', () => {
+      const { serviceUser } = draftReferralFactory.build({
+        serviceUser: { firstName: 'rob', lastName: 'shah-BROOKES' },
+      })
+      expect(ReferralDataPresenterUtils.fullName(serviceUser)).toEqual('Rob Shah-Brookes')
+    })
+  })
+
+  describe('fullNameSortValue', () => {
+    // I’ve not yet given this enough thought to be convinced this is correct;
+    // there are probably counterexamples
+    it('returns a value which, when lexicographically sorted, gives a (last name, first name) sort order', () => {
+      const { serviceUser } = draftReferralFactory.build({ serviceUser: { firstName: 'Daniel', lastName: 'Grove' } })
+      expect(ReferralDataPresenterUtils.fullNameSortValue(serviceUser)).toEqual('grove, daniel')
+    })
+  })
 })

@@ -1,4 +1,4 @@
-import { DraftReferral } from '../../services/interventionsService'
+import { DraftReferral, ServiceUser } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import utils from '../../utils/utils'
 
@@ -110,5 +110,13 @@ export default class ReferralDataPresenterUtils {
     const date = day.utcDate
 
     return format.format(date)
+  }
+
+  static fullName(serviceUser: ServiceUser): string {
+    return utils.convertToTitleCase(`${serviceUser.firstName ?? ''} ${serviceUser.lastName ?? ''}`)
+  }
+
+  static fullNameSortValue(serviceUser: ServiceUser): string {
+    return `${serviceUser.lastName ?? ''}, ${serviceUser.firstName ?? ''}`.toLocaleLowerCase('en-GB')
   }
 }
