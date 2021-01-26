@@ -7,9 +7,9 @@ export default class ReferralStartView {
   private get tableArgs(): Record<string, unknown> {
     return {
       firstCellIsHeader: true,
-      head: [{ text: 'ID' }, { text: 'Started on' }, { text: 'Link' }],
+      head: [{ text: 'Service User' }, { text: 'Started on' }],
       rows: this.presenter.orderedReferrals.map(referral => {
-        return [{ text: referral.id }, { text: referral.createdAt }, { html: `<a href="${referral.url}">Continue</a>` }]
+        return [{ html: `<a href="${referral.url}">${referral.serviceUserFullName}</a>` }, { text: referral.createdAt }]
       }),
     }
   }
