@@ -112,11 +112,11 @@ export default class ReferralFormPresenter {
         type: 'single',
         title: 'Check your answers',
         number: '6',
-        status: ReferralFormStatus.CannotStartYet,
+        status: this.canSubmitReferral ? ReferralFormStatus.NotStarted : ReferralFormStatus.CannotStartYet,
         tasks: [
           {
             title: 'Check your answers',
-            url: 'check-answers',
+            url: this.canSubmitReferral ? 'check-answers' : null,
           },
         ],
       },
@@ -132,6 +132,10 @@ export default class ReferralFormPresenter {
     ].every(field => field !== null)
 
     return hasCompletedSection ? ReferralFormStatus.Completed : ReferralFormStatus.NotStarted
+  }
+
+  private get canSubmitReferral(): boolean {
+    return this.determineInterventionDetailsSectionStatus() === ReferralFormStatus.Completed
   }
 }
 

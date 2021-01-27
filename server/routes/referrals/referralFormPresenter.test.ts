@@ -79,7 +79,7 @@ describe('ReferralFormPresenter', () => {
             title: 'Check your answers',
             number: '6',
             status: ReferralFormStatus.CannotStartYet,
-            tasks: [{ title: 'Check your answers', url: 'check-answers' }],
+            tasks: [{ title: 'Check your answers', url: null }],
           },
         ]
 
@@ -88,7 +88,7 @@ describe('ReferralFormPresenter', () => {
     })
 
     describe('when the intervention details section has all required fields filled in', () => {
-      it('returns an array of section presenters, with a "completed" label for the intervention details', () => {
+      it('returns an array of section presenters, with a "completed" label for the intervention details, and allows the user to submit the referral', () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({
           createdAt: '2021-01-11T10:32:12.382884Z',
@@ -175,7 +175,7 @@ describe('ReferralFormPresenter', () => {
             type: 'single',
             title: 'Check your answers',
             number: '6',
-            status: ReferralFormStatus.CannotStartYet,
+            status: ReferralFormStatus.NotStarted,
             tasks: [{ title: 'Check your answers', url: 'check-answers' }],
           },
         ]
