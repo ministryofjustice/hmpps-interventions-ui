@@ -46,7 +46,18 @@ describe('Referral form', () => {
     const draftReferral = draftReferralFactory.build({
       serviceCategoryId: serviceCategory.id,
       serviceProviderId: serviceProvider.id,
-      serviceUser: { firstName: 'Geoffrey' },
+      serviceUser: {
+        crn: 'X320741',
+        title: 'Mr',
+        firstName: 'Geoffrey',
+        lastName: 'River',
+        dateOfBirth: '1980-01-01',
+        gender: 'Male',
+        preferredLanguage: 'English',
+        ethnicity: 'British',
+        religionOrBelief: 'Agnostic',
+        disabilities: ['Autism'],
+      },
     })
 
     const sentReferral = sentReferralFactory.fromFields(draftReferral).build()
@@ -68,6 +79,22 @@ describe('Referral form', () => {
     cy.contains('Start now').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
+
+    cy.contains('Confirm service user details').click()
+
+    cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
+    cy.get('h1').contains("Geoffrey's information")
+    cy.contains('X320741')
+    cy.contains('Mr')
+    cy.contains('River')
+    cy.contains('1980-01-01')
+    cy.contains('Male')
+    cy.contains('British')
+    cy.contains('English')
+    cy.contains('Agnostic')
+    cy.contains('Autism')
+
+    cy.contains('Save and continue').click()
 
     cy.contains('Service user’s needs and requirements').click()
 

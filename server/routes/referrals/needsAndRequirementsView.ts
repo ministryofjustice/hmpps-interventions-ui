@@ -7,28 +7,7 @@ export default class NeedsAndRequirementsView {
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private get summaryListArgs() {
-    return {
-      rows: this.presenter.summary.map(item => {
-        return {
-          key: {
-            text: item.key,
-          },
-          value: (() => {
-            if (item.isList) {
-              const html = `<ul class="govuk-list">${item.lines
-                .map(line => `<li>${ViewUtils.escape(line)}</li>`)
-                .join('\n')}</ul>`
-              return { html }
-            }
-            if (item.lines.length > 1) {
-              const html = item.lines.map(line => `<p class="govuk-body">${ViewUtils.escape(line)}</p>`).join('\n')
-              return { html }
-            }
-            return { text: item.lines[0] || '' }
-          })(),
-        }
-      }),
-    }
+    return ViewUtils.summaryListArgs(this.presenter.summary)
   }
 
   private get additionalNeedsInformationTextareaArgs() {

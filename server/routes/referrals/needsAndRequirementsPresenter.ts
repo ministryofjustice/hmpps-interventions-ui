@@ -1,5 +1,6 @@
 import { DraftReferral } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
+import { SummaryListItem } from '../../utils/summaryList'
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
 
 export default class NeedsAndRequirementsPresenter {
@@ -9,7 +10,7 @@ export default class NeedsAndRequirementsPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly summary: { key: string; lines: string[]; isList: boolean }[] = [
+  readonly summary: SummaryListItem[] = [
     { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], isList: true },
     { key: 'Gender', lines: ['Male'], isList: false },
     // TODO IC-746 populate with service user data once we have it

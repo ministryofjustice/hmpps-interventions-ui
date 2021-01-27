@@ -22,7 +22,7 @@ export default class ReferralFormPresenter {
           },
           {
             title: 'Confirm service user details',
-            url: null,
+            url: 'service-user-details',
           },
         ],
       },
