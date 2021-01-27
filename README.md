@@ -35,17 +35,6 @@ Navigate to `http://localhost:3000` and log in:
 - To log in as a service provider user, use HMPPS Auth dev credentials e.g. `AUTH_ADM/password123456`
 - To log in as a probation practitioner user, use [Community API dev credentials](https://github.com/ministryofjustice/community-api/blob/main/src/main/resources/schema.ldif) e.g. `bernard.beaks/secret`.
 
-### Running the app without the interventions service
-
-You may want to run the UI without the overhead of the whole
-interventions service and its database, e.g. using the Pact Mock
-Server or WireMock.
-
-```
-docker-compose -f docker-compose-ui.yml up
-npm run start:dev
-```
-
 ### Unit Test
 
 `npm run test`
