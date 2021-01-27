@@ -1,5 +1,4 @@
 import { DraftReferral } from '../../services/interventionsService'
-import utils from '../../utils/utils'
 
 export default class ReferralFormPresenter {
   constructor(private readonly referral: DraftReferral, private readonly serviceCategoryName: string) {}
@@ -61,7 +60,7 @@ export default class ReferralFormPresenter {
       },
       {
         type: 'single',
-        title: 'Add intervention referrals detail',
+        title: `Add ${this.serviceCategoryName} referral details`,
         number: '4',
         status: this.determineInterventionDetailsSectionStatus(),
         tasks: [

@@ -46,7 +46,7 @@ describe('ReferralFormPresenter', () => {
           },
           {
             type: 'single',
-            title: 'Add intervention referrals detail',
+            title: `Add social inclusion referral details`,
             number: '4',
             status: ReferralFormStatus.NotStarted,
             tasks: [
@@ -137,7 +137,7 @@ describe('ReferralFormPresenter', () => {
           },
           {
             type: 'single',
-            title: 'Add intervention referrals detail',
+            title: 'Add accommodation referral details',
             number: '4',
             status: ReferralFormStatus.Completed,
             tasks: [
