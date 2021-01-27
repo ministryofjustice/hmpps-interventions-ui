@@ -9,15 +9,15 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.NotifyServ
 
 @Component
 class NotifyReferralEventListener(
-  @Value("\${interventions.ui.uri}") private val interventionsUIURI: String,
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
   private val notifyService: NotifyService,
 ) : ApplicationListener<ReferralEvent> {
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {
-        // fixme: is it ok that this class implicitly knows the URL for the sent referral location?
-        val location = UriComponentsBuilder.fromHttpUrl(interventionsUIURI)
-          .path("referrals/{id}/confirmation")
+        val location = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(interventionsUISentReferralLocation)
           .buildAndExpand(event.referral.id)
           .toUri()
 

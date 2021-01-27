@@ -15,7 +15,7 @@ class NotifyService(
   fun referralSent(referenceNumber: String, location: URI, recipientEmail: String) {
     if (enabled) {
       try {
-        val response = client.sendEmail(
+        client.sendEmail(
           referralSentTemplateID,
           recipientEmail,
           mapOf(
@@ -25,6 +25,7 @@ class NotifyService(
           null,
         )
       } catch (e: Exception) {
+        // fixme: this failure is super important and we need a better way to reason about async errors of this nature
         log.error("referral sent notification failed", e)
       }
     }
