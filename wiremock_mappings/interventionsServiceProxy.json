@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "ANY",
+    "urlPattern": ".*"
+  },
+  "response": {
+    "proxyBaseUrl": "http://interventions-service:8080"
+  },
+  "priority": 10
+}

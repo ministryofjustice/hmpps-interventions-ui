@@ -10,7 +10,7 @@ services:
     ports:
       - '6380:6379'
 
-  wiremock:
+  test-wiremock:
     image: rodolpheche/wiremock
     networks:
     - hmpps_int

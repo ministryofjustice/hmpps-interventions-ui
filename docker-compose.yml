@@ -84,5 +84,15 @@ services:
     volumes:
       - ./testutils/docker/postgres:/docker-entrypoint-initdb.d:ro
 
+  wiremock:
+    image: rodolpheche/wiremock
+    networks:
+      - hmpps
+    restart: always
+    ports:
+      - "9092:8080"
+    volumes:
+      - ./wiremock_mappings:/home/wiremock/mappings
+
 networks:
   hmpps:
