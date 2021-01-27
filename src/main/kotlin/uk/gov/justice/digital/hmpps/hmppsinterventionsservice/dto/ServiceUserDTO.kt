@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
-import java.util.Date
+import java.time.LocalDate
 
 data class ServiceUserDTO(
   var crn: String? = null,
   var title: String? = null,
   var firstName: String? = null,
   var lastName: String? = null,
-  var dob: Date? = null,
+  var dateOfBirth: LocalDate? = null,
   var gender: String? = null,
   var ethnicity: String? = null,
   var preferredLanguage: String? = null,
@@ -23,7 +23,7 @@ data class ServiceUserDTO(
         dto.title = serviceUserData.title
         dto.firstName = serviceUserData.firstName
         dto.lastName = serviceUserData.lastName
-        dto.dob = serviceUserData.dob
+        dto.dateOfBirth = serviceUserData.dateOfBirth
         dto.gender = serviceUserData.gender
         dto.ethnicity = serviceUserData.ethnicity
         dto.preferredLanguage = serviceUserData.preferredLanguage
