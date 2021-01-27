@@ -60,40 +60,34 @@ export default class ReferralFormPresenter {
         ],
       },
       {
-        type: 'multi',
+        type: 'single',
         title: 'Add intervention referrals detail',
         number: '4',
-        taskListSections: [
+        status: this.determineInterventionDetailsSectionStatus(),
+        tasks: [
           {
-            title: `${utils.convertToProperCase(this.serviceCategoryName)} referral`,
-            number: '4.1',
-            status: this.determineInterventionDetailsSectionStatus(),
-            tasks: [
-              {
-                title: `Select the relevant sentence for the ${this.serviceCategoryName} referral`,
-                url: null,
-              },
-              {
-                title: 'Select desired outcomes',
-                url: 'desired-outcomes',
-              },
-              {
-                title: 'Select required complexity level',
-                url: 'complexity-level',
-              },
-              {
-                title: `What date does the ${this.serviceCategoryName} service need to be completed by?`,
-                url: 'completion-deadline',
-              },
-              {
-                title: 'Enter RAR days used',
-                url: 'rar-days',
-              },
-              {
-                title: 'Further information for service provider',
-                url: 'further-information',
-              },
-            ],
+            title: `Select the relevant sentence for the ${this.serviceCategoryName} referral`,
+            url: null,
+          },
+          {
+            title: 'Select desired outcomes',
+            url: 'desired-outcomes',
+          },
+          {
+            title: 'Select required complexity level',
+            url: 'complexity-level',
+          },
+          {
+            title: `What date does the ${this.serviceCategoryName} service need to be completed by?`,
+            url: 'completion-deadline',
+          },
+          {
+            title: 'Enter RAR days used',
+            url: 'rar-days',
+          },
+          {
+            title: 'Further information for service provider',
+            url: 'further-information',
           },
         ],
       },

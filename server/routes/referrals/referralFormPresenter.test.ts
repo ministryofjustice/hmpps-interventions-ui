@@ -45,26 +45,20 @@ describe('ReferralFormPresenter', () => {
             ],
           },
           {
-            type: 'multi',
+            type: 'single',
             title: 'Add intervention referrals detail',
             number: '4',
-            taskListSections: [
+            status: ReferralFormStatus.NotStarted,
+            tasks: [
+              { title: 'Select the relevant sentence for the social inclusion referral', url: null },
+              { title: 'Select desired outcomes', url: 'desired-outcomes' },
+              { title: 'Select required complexity level', url: 'complexity-level' },
               {
-                title: 'Social inclusion referral',
-                number: '4.1',
-                status: ReferralFormStatus.NotStarted,
-                tasks: [
-                  { title: 'Select the relevant sentence for the social inclusion referral', url: null },
-                  { title: 'Select desired outcomes', url: 'desired-outcomes' },
-                  { title: 'Select required complexity level', url: 'complexity-level' },
-                  {
-                    title: 'What date does the social inclusion service need to be completed by?',
-                    url: 'completion-deadline',
-                  },
-                  { title: 'Enter RAR days used', url: 'rar-days' },
-                  { title: 'Further information for service provider', url: 'further-information' },
-                ],
+                title: 'What date does the social inclusion service need to be completed by?',
+                url: 'completion-deadline',
               },
+              { title: 'Enter RAR days used', url: 'rar-days' },
+              { title: 'Further information for service provider', url: 'further-information' },
             ],
           },
           {
@@ -142,26 +136,20 @@ describe('ReferralFormPresenter', () => {
             ],
           },
           {
-            type: 'multi',
+            type: 'single',
             title: 'Add intervention referrals detail',
             number: '4',
-            taskListSections: [
+            status: ReferralFormStatus.Completed,
+            tasks: [
+              { title: 'Select the relevant sentence for the accommodation referral', url: null },
+              { title: 'Select desired outcomes', url: 'desired-outcomes' },
+              { title: 'Select required complexity level', url: 'complexity-level' },
               {
-                title: 'Accommodation referral',
-                number: '4.1',
-                status: ReferralFormStatus.Completed,
-                tasks: [
-                  { title: 'Select the relevant sentence for the accommodation referral', url: null },
-                  { title: 'Select desired outcomes', url: 'desired-outcomes' },
-                  { title: 'Select required complexity level', url: 'complexity-level' },
-                  {
-                    title: 'What date does the accommodation service need to be completed by?',
-                    url: 'completion-deadline',
-                  },
-                  { title: 'Enter RAR days used', url: 'rar-days' },
-                  { title: 'Further information for service provider', url: 'further-information' },
-                ],
+                title: 'What date does the accommodation service need to be completed by?',
+                url: 'completion-deadline',
               },
+              { title: 'Enter RAR days used', url: 'rar-days' },
+              { title: 'Further information for service provider', url: 'further-information' },
             ],
           },
           {
