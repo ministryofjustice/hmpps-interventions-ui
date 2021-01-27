@@ -1068,6 +1068,27 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
     })
   })
+
+  describe('getSentReferrals', () => {
+    it('returns a list of all sent referrals', async () => {
+      await provider.addInteraction({
+        state: 'There are some existing sent referrals',
+        uponReceiving: 'a request for all sent referrals',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([sentReferral, sentReferral]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getSentReferrals(token)).toEqual([sentReferral, sentReferral])
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {

@@ -1,7 +1,7 @@
 import { DraftReferral } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralDataPresenterUtils from './referralDataPresenterUtils'
-import convertToTitleCase from '../../utils/utils'
+import CalendarDay from '../../utils/calendarDay'
 
 export default class ReferralStartPresenter {
   constructor(
@@ -13,8 +13,10 @@ export default class ReferralStartPresenter {
     return this.draftReferrals
       .sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? -1 : 1))
       .map(referral => ({
-        serviceUserFullName: convertToTitleCase(`${referral.serviceUser.firstName} ${referral.serviceUser.lastName}`),
-        createdAt: new Date(referral.createdAt).toLocaleDateString('en-GB'),
+        serviceUserFullName: ReferralDataPresenterUtils.fullName(referral.serviceUser),
+        createdAt: ReferralDataPresenterUtils.govukShortFormattedDate(
+          CalendarDay.britishDayForDate(new Date(referral.createdAt))
+        ),
         url: `/referrals/${referral.id}/form`,
       }))
   }

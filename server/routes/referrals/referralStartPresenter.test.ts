@@ -29,9 +29,9 @@ describe('ReferralStartPresenter', () => {
 
       // referrals are ordered oldest first
       expect(presenter.orderedReferrals).toEqual([
-        expect.objectContaining({ createdAt: '01/01/2021', serviceUserFullName: 'Jenny Catherine' }),
-        expect.objectContaining({ createdAt: '02/01/2021', serviceUserFullName: 'Rob Shah-Brookes' }),
-        expect.objectContaining({ createdAt: '03/01/2021', serviceUserFullName: 'Hardip Fraiser' }),
+        expect.objectContaining({ createdAt: '1 Jan 2021', serviceUserFullName: 'Jenny Catherine' }),
+        expect.objectContaining({ createdAt: '2 Jan 2021', serviceUserFullName: 'Rob Shah-Brookes' }),
+        expect.objectContaining({ createdAt: '3 Jan 2021', serviceUserFullName: 'Hardip Fraiser' }),
       ])
     })
   })

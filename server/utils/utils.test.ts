@@ -1,4 +1,6 @@
-import convertToTitleCase from './utils'
+import utils from './utils'
+
+const { convertToTitleCase, convertToProperCase } = utils
 
 describe('Convert to title case', () => {
   it('null string', () => {
@@ -27,5 +29,23 @@ describe('Convert to title case', () => {
   })
   it('Hyphenated', () => {
     expect(convertToTitleCase('Robert-John SmiTH-jONes-WILSON')).toEqual('Robert-John Smith-Jones-Wilson')
+  })
+})
+
+describe('Convert to proper case', () => {
+  it('empty string', () => {
+    expect(convertToProperCase('')).toEqual('')
+  })
+
+  it('lower case', () => {
+    expect(convertToProperCase('accommodation')).toEqual('Accommodation')
+  })
+
+  it('mixed case', () => {
+    expect(convertToProperCase('AccomModaTion')).toEqual('Accommodation')
+  })
+
+  it('multiple words', () => {
+    expect(convertToProperCase('social inclusion')).toEqual('Social inclusion')
   })
 })
