@@ -1,7 +1,8 @@
 import { DraftReferral } from '../../services/interventionsService'
+import utils from '../../utils/utils'
 
 export default class ReferralFormPresenter {
-  constructor(private readonly referral: DraftReferral) {}
+  constructor(private readonly referral: DraftReferral, private readonly serviceCategoryName: string) {}
 
   // This is just temporary, will remove it once we get rid of the referral ID output in the template
   get referralID(): string {
@@ -64,12 +65,12 @@ export default class ReferralFormPresenter {
         number: '4',
         taskListSections: [
           {
-            title: 'Accommodation referral',
+            title: `${utils.convertToProperCase(this.serviceCategoryName)} referral`,
             number: '4.1',
             status: this.determineInterventionDetailsSectionStatus(),
             tasks: [
               {
-                title: 'Select the relevant sentence for the accommodation referral',
+                title: `Select the relevant sentence for the ${this.serviceCategoryName} referral`,
                 url: null,
               },
               {
@@ -81,7 +82,7 @@ export default class ReferralFormPresenter {
                 url: 'complexity-level',
               },
               {
-                title: 'What date does the accommodation service need to be completed by?',
+                title: `What date does the ${this.serviceCategoryName} service need to be completed by?`,
                 url: 'completion-deadline',
               },
               {

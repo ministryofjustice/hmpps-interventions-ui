@@ -11,7 +11,7 @@ describe('ReferralFormPresenter', () => {
           .serviceCategorySelected(serviceCategory.id)
           .completionDeadlineSet()
           .build()
-        const presenter = new ReferralFormPresenter(referral)
+        const presenter = new ReferralFormPresenter(referral, 'social inclusion')
 
         const expected = [
           {
@@ -50,15 +50,15 @@ describe('ReferralFormPresenter', () => {
             number: '4',
             taskListSections: [
               {
-                title: 'Accommodation referral',
+                title: 'Social inclusion referral',
                 number: '4.1',
                 status: ReferralFormStatus.NotStarted,
                 tasks: [
-                  { title: 'Select the relevant sentence for the accommodation referral', url: null },
+                  { title: 'Select the relevant sentence for the social inclusion referral', url: null },
                   { title: 'Select desired outcomes', url: 'desired-outcomes' },
                   { title: 'Select required complexity level', url: 'complexity-level' },
                   {
-                    title: 'What date does the accommodation service need to be completed by?',
+                    title: 'What date does the social inclusion service need to be completed by?',
                     url: 'completion-deadline',
                   },
                   { title: 'Enter RAR days used', url: 'rar-days' },
@@ -108,7 +108,7 @@ describe('ReferralFormPresenter', () => {
           usingRarDays: false,
           maximumRarDays: null,
         })
-        const presenter = new ReferralFormPresenter(referral)
+        const presenter = new ReferralFormPresenter(referral, 'accommodation')
 
         const expected = [
           {

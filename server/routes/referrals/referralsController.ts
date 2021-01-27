@@ -130,7 +130,16 @@ export default class ReferralsController {
   async viewReferralForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
 
-    const presenter = new ReferralFormPresenter(referral)
+    if (referral.serviceCategoryId === null) {
+      throw new Error('No service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const presenter = new ReferralFormPresenter(referral, serviceCategory.name)
     const view = new ReferralFormView(presenter)
 
     res.render(...view.renderArgs)
