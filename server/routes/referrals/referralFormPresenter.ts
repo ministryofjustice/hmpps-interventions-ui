@@ -66,7 +66,7 @@ export default class ReferralFormPresenter {
           {
             title: 'Accommodation referral',
             number: '4.1',
-            status: ReferralFormStatus.InProgress,
+            status: this.determineInterventionDetailsSectionStatus(),
             tasks: [
               {
                 title: 'Select the relevant sentence for the accommodation referral',
@@ -121,6 +121,17 @@ export default class ReferralFormPresenter {
         ],
       },
     ]
+  }
+
+  private determineInterventionDetailsSectionStatus(): ReferralFormStatus {
+    const hasCompletedSection = [
+      this.referral.desiredOutcomesIds,
+      this.referral.complexityLevelId,
+      this.referral.completionDeadline,
+      this.referral.usingRarDays,
+    ].every(field => field !== null)
+
+    return hasCompletedSection ? ReferralFormStatus.Completed : ReferralFormStatus.NotStarted
   }
 }
 
