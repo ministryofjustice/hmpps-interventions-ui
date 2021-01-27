@@ -1,144 +1,35 @@
 Cypress.Commands.add('stubGetDraftReferral', (id, responseJson) => {
-  cy.task('stubFor', {
-    request: {
-      method: 'GET',
-      urlPattern: `/interventions/draft-referral/${id}`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubGetDraftReferral', { id, responseJson })
 })
 
 Cypress.Commands.add('stubCreateDraftReferral', responseJson => {
-  cy.task('stubFor', {
-    request: {
-      method: 'POST',
-      urlPattern: '/interventions/draft-referral',
-    },
-    response: {
-      status: 201,
-      headers: {
-        'Content-Type': 'application/json',
-        Location: `http://localhost:8092/interventions/draft-referral/${responseJson.id}`,
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubCreateDraftReferral', { responseJson })
 })
 
 Cypress.Commands.add('stubPatchDraftReferral', (id, responseJson) => {
-  cy.task('stubFor', {
-    request: {
-      method: 'PATCH',
-      urlPattern: `/interventions/draft-referral/${id}`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubPatchDraftReferral', { id, responseJson })
 })
 
 Cypress.Commands.add('stubGetServiceCategory', (id, responseJson) => {
-  cy.task('stubFor', {
-    request: {
-      method: 'GET',
-      urlPattern: `/interventions/service-category/${id}`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubGetServiceCategory', { id, responseJson })
 })
 
 Cypress.Commands.add('stubGetDraftReferralsForUser', responseJson => {
-  cy.task('stubFor', {
-    request: {
-      method: 'GET',
-      urlPath: '/interventions/draft-referrals',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubGetDraftReferralsForUser', { responseJson })
 })
 
 Cypress.Commands.add('stubGetServiceProvider', (id, responseJson) => {
-  cy.task('stubFor', {
-    request: {
-      method: 'GET',
-      urlPattern: `/interventions/service-provider/${id}`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubGetServiceProvider', { id, responseJson })
 })
 
 Cypress.Commands.add('stubSendDraftReferral', (id, responseJson) => {
-  cy.task('stubFor', {
-    request: {
-      method: 'POST',
-      urlPattern: `/interventions/draft-referral/${id}/send`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubSendDraftReferral', { id, responseJson })
 })
 
 Cypress.Commands.add('stubGetSentReferral', (id, responseJson) => {
-  cy.task('stubFor', {
-    request: {
-      method: 'GET',
-      urlPattern: `/interventions/sent-referral/${id}`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubGetSentReferral', { id, responseJson })
 })
 
 Cypress.Commands.add('stubGetSentReferrals', responseJson => {
-  cy.task('stubFor', {
-    request: {
-      method: 'GET',
-      urlPattern: `/interventions/sent-referrals`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: responseJson,
-    },
-  })
+  cy.task('stubGetSentReferrals', { responseJson })
 })

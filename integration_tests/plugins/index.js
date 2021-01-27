@@ -1,11 +1,20 @@
-const { stubFor, resetStubs } = require('../mockApis/wiremock')
+import Wiremock from '../mockApis/wiremock'
+import AuthServiceMocks from '../mockApis/auth'
+import TokenVerificationMocks from '../mockApis/tokenVerification'
+import CommunityApiMocks from '../mockApis/communityApi'
+import InterventionsServiceMocks from '../mockApis/interventionsService'
 
-const auth = require('../mockApis/auth')
-const tokenVerification = require('../mockApis/tokenVerification')
+const wiremock = new Wiremock('http://localhost:9091/__admin')
+const auth = new AuthServiceMocks(wiremock)
+const tokenVerification = new TokenVerificationMocks(wiremock)
+const communityApi = new CommunityApiMocks(wiremock)
+const interventionsService = new InterventionsServiceMocks(wiremock)
 
 module.exports = on => {
   on('task', {
-    reset: resetStubs,
+    reset: () => {
+      return wiremock.resetStubs()
+    },
 
     getLoginUrl: auth.getLoginUrl,
     stubLogin: auth.stubLogin,
@@ -18,6 +27,44 @@ module.exports = on => {
 
     stubTokenVerificationPing: tokenVerification.stubPing,
 
-    stubFor,
+    stubGetServiceUserByCRN: arg => {
+      return communityApi.stubGetServiceUserByCRN(arg.crn, arg.responseJson)
+    },
+
+    stubGetDraftReferral: arg => {
+      return interventionsService.stubGetDraftReferral(arg.id, arg.responseJson)
+    },
+
+    stubCreateDraftReferral: arg => {
+      return interventionsService.stubCreateDraftReferral(arg.responseJson)
+    },
+
+    stubPatchDraftReferral: arg => {
+      return interventionsService.stubPatchDraftReferral(arg.id, arg.responseJson)
+    },
+
+    stubGetServiceCategory: arg => {
+      return interventionsService.stubGetServiceCategory(arg.id, arg.responseJson)
+    },
+
+    stubGetDraftReferralsForUser: arg => {
+      return interventionsService.stubGetDraftReferralsForUser(arg.responseJson)
+    },
+
+    stubGetServiceProvider: arg => {
+      return interventionsService.stubGetServiceProvider(arg.id, arg.responseJson)
+    },
+
+    stubSendDraftReferral: arg => {
+      return interventionsService.stubSendDraftReferral(arg.id, arg.responseJson)
+    },
+
+    stubGetSentReferral: arg => {
+      return interventionsService.stubGetSentReferral(arg.id, arg.responseJson)
+    },
+
+    stubGetSentReferrals: arg => {
+      return interventionsService.stubGetSentReferrals(arg.responseJson)
+    },
   })
 }
