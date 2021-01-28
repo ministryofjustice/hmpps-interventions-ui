@@ -357,11 +357,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns the updated referral when selecting the complexity level', async () => {
       await provider.addInteraction({
-        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        state:
+          'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected',
         uponReceiving: 'a PATCH request to update the complexity level ID',
         withRequest: {
           method: 'PATCH',
-          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -372,7 +373,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         willRespondWith: {
           status: 200,
           body: {
-            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
             complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
           },
           headers: {
@@ -381,10 +382,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
         complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       })
-      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
       expect(referral.complexityLevelId).toBe('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
     })
 
@@ -423,25 +424,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns the updated referral when selecting desired outcomes', async () => {
       await provider.addInteraction({
-        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        state:
+          'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected',
         uponReceiving: 'a PATCH request to update desired outcomes IDs',
         withRequest: {
           method: 'PATCH',
-          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: {
-            desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
           },
         },
         willRespondWith: {
           status: 200,
           body: {
-            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
-            desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+            id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
           },
           headers: {
             'Content-Type': 'application/json',
@@ -449,13 +451,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
+        desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
       })
-      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
       expect(referral.desiredOutcomesIds).toEqual([
-        '3415a6f2-38ef-4613-bb95-33355deff17e',
-        '5352cfb6-c9ee-468c-b539-434a3e9b506e',
+        '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        '65924ac6-9724-455b-ad30-906936291421',
       ])
     })
 
@@ -677,11 +679,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns the updated referral when setting the service category ID', async () => {
       await provider.addInteraction({
-        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        state:
+          'a draft referral with ID 745011c1-1ae5-45e4-99cb-6e1f2f8ccab9 exists and it does not have a service category set',
         uponReceiving: 'a PATCH request to update the service category ID',
         withRequest: {
           method: 'PATCH',
-          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          path: '/draft-referral/745011c1-1ae5-45e4-99cb-6e1f2f8ccab9',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -692,7 +695,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         willRespondWith: {
           status: 200,
           body: {
-            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            id: '745011c1-1ae5-45e4-99cb-6e1f2f8ccab9',
             createdAt: '2020-12-07T20:45:21.986389Z',
             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
           },
@@ -702,10 +705,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+      const referral = await interventionsService.patchDraftReferral(token, '745011c1-1ae5-45e4-99cb-6e1f2f8ccab9', {
         serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       })
-      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.id).toBe('745011c1-1ae5-45e4-99cb-6e1f2f8ccab9')
       expect(referral.serviceCategoryId).toBe('428ee70f-3001-4399-95a6-ad25eaaede16')
     })
 
@@ -900,7 +903,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             {
               id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
               createdAt: '2020-12-07T20:45:21.986389Z',
-              createdByUserId: '8751622134',
             },
           ],
           headers: {
@@ -1002,7 +1004,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       furtherInformation: 'Some information about the service user',
-      desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+      desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
       accessibilityNeeds: 'She uses a wheelchair',
       needsInterpreter: true,
@@ -1019,11 +1021,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('sendDraftReferral', () => {
     beforeEach(async () => {
       await provider.addInteraction({
-        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists and is ready to be sent',
-        uponReceiving: 'a POST request to send the draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        state: 'a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent',
+        uponReceiving: 'a POST request to send the draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
         withRequest: {
           method: 'POST',
-          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed/send',
+          path: '/draft-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6/send',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -1031,16 +1033,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: Matchers.like(sentReferral),
           headers: {
             'Content-Type': 'application/json',
-            Location: Matchers.like(
-              'https://hmpps-interventions-service.com/referral/81d754aa-d868-4347-9c0f-50690773014e'
-            ),
+            Location: 'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
           },
         },
       })
     })
 
     it('returns a sent referral', async () => {
-      expect(await interventionsService.sendDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed')).toEqual(
+      expect(await interventionsService.sendDraftReferral(token, '2a67075a-9c77-4103-9de0-63c4cfe3e8d6')).toEqual(
         sentReferral
       )
     })
