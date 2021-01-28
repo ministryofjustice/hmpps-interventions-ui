@@ -48,7 +48,7 @@ data class Referral(
     uniqueConstraints = [UniqueConstraint(columnNames = arrayOf("referral_id", "desired_outcome_id"))]
   )
   @Column(name = "desired_outcome_id")
-  var desiredOutcomeIDs: List<UUID>? = null,
+  var desiredOutcomesIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
 
   @NotNull val serviceUserCRN: String,
