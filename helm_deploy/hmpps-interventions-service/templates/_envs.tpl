@@ -16,6 +16,9 @@ env:
   - name: HMPPSAUTH_BASEURL
     value: "{{ .Values.env.HMPPSAUTH_BASEURL }}"
 
+  - name: INTERVENTIONSUI_BASEURL
+    value: "{{ .Values.env.INTERVENTIONSUI_BASEURL }}"
+
   - name: POSTGRES_URI
     valueFrom:
       secretKeyRef:

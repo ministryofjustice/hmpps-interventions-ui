@@ -1,3 +1,9 @@
+notify:
+  enabled: false
+
+interventions-ui:
+  baseurl: http://localhost:3000
+
 hmppsauth:
   baseurl: http://hmpps-auth:8090/auth
 

@@ -4,6 +4,11 @@ plugins {
   id("org.jetbrains.kotlin.plugin.jpa") version "1.4.20"
 }
 
+repositories {
+  jcenter()
+  mavenCentral()
+}
+
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
 }
@@ -30,6 +35,8 @@ tasks {
 }
 
 dependencies {
+  implementation("uk.gov.service.notify:notifications-java-client:3.17.0-RELEASE")
+
   // security
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")

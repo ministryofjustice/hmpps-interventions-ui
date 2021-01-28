@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.service
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
