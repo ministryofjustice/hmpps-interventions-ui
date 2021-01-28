@@ -1,0 +1,21 @@
+version: '2.1'
+
+services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    network_mode: bridge
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    environment:
+      - LOCALSTACK_SERVICES=${LOCALSTACK_SERVICES-sns}
+      - LOCALSTACK_DEFAULT_REGION=${LOCALSTACK_DEFAULT_REGION-eu-west-2}
+      - LOCALSTACK_DEBUG=${LOCALSTACK_DEBUG- }
+      - LOCALSTACK_DATA_DIR=${LOCALSTACK_DATA_DIR- }
+      - LOCALSTACK_START_WEB=${LOCALSTACK_START_WEB-0}
+      - LOCALSTACK_DOCKER_HOST=unix:///var/run/docker.sock
+      - LOCALSTACK_HOST_TMP_FOLDER=${TMPDIR}
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"

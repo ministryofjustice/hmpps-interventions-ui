@@ -28,6 +28,15 @@ docker-compose up -d
 SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
+### Running with AWS LocalStack for SNS (Simple Notification Service)
+
+- Install the AWS CLI with Homebrew: `brew install awscli`
+- Configure the CLI for localstack: `aws configure --profile localstack` and set `AWS Access Key ID = test`, `AWS Secret Access Key = test`, `Default region name = eu-west-2`, `Default output format = json`
+- Run localstack with docker-compose: `docker-compose -f docker-compose-localstack.yml up`
+- Create an SNS topic: `aws --profile localstack --endpoint-url=http://localhost:4566 sns create-topic --name intervention-events-local`
+- Validate the topic ARN matches: `arn:aws:sns:eu-west-2:000000000000:intervention-events-local`, if not modify the ARN in `application-local.yml`
+- Run the application with the following environment var `AWS_SNS_ENABLED=true`
+
 ## Architecture
 
 To see where this service fits in the broader interventions (and probation) architecture, you can browse the HMPPS C4 models [here](https://structurizr.com/share/56937/diagrams#interventions-container).

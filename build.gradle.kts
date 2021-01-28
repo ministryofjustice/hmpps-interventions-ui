@@ -36,6 +36,7 @@ tasks {
 
 dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:3.17.0-RELEASE")
+  implementation("software.amazon.awssdk:sns:2.15.71")
 
   // security
   implementation("org.springframework.boot:spring-boot-starter-webflux")
