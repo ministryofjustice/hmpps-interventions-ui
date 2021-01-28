@@ -12,6 +12,14 @@ export default class Wiremock {
   }
 
   async resetStubs(): Promise<unknown> {
-    return Promise.all([superagent.delete(`${this.adminUrl}/mappings`), superagent.delete(`${this.adminUrl}/requests`)])
+    const mappingsResponse = await superagent.get(`${this.adminUrl}/mappings`)
+    const body = mappingsResponse.body as { mappings: { id: string; response?: { proxyBaseUrl?: string } }[] }
+
+    const nonProxyMappings = body.mappings.filter(mapping => !mapping?.response?.proxyBaseUrl)
+
+    return Promise.all([
+      Promise.all(nonProxyMappings.map(mapping => superagent.delete(`${this.adminUrl}/mappings/${mapping.id}`))),
+      superagent.delete(`${this.adminUrl}/requests`),
+    ])
   }
 }
