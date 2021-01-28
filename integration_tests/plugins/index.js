@@ -8,7 +8,7 @@ const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
 const tokenVerification = new TokenVerificationMocks(wiremock)
 const communityApi = new CommunityApiMocks(wiremock)
-const interventionsService = new InterventionsServiceMocks(wiremock)
+const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
 
 module.exports = on => {
   on('task', {
