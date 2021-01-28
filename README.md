@@ -1,12 +1,12 @@
 # HMPPS Interventions Service
 
-This is the HMPPS Interventions Service
+Business/domain API to **find, arrange and monitor an intervention** for service users (offenders).
 
 ## Quickstart
 
 ### Requirements
 
-- Docker 
+- Docker
 - Java
 
 Build and test:
@@ -20,7 +20,7 @@ First, add the following line to your `/etc/hosts` file to allow hmpps-auth inte
 
 ```127.0.0.1 hmpps-auth```
 
-Then run: 
+Then run:
 
 ```
 docker-compose pull
@@ -31,6 +31,9 @@ SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ## Architecture
 
 To see where this service fits in the broader interventions (and probation) architecture, you can browse the HMPPS C4 models [here](https://structurizr.com/share/56937/diagrams#interventions-container).
+
+- [Decisions specific to this application](doc/adr)
+- [Decisions relevant to the "interventions" domain](https://github.com/ministryofjustice/hmpps-interventions-docs)
 
 ## Code Style
 
