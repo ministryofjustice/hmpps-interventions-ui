@@ -1,8 +1,8 @@
-import Wiremock from '../mockApis/wiremock'
-import AuthServiceMocks from '../mockApis/auth'
-import TokenVerificationMocks from '../mockApis/tokenVerification'
-import CommunityApiMocks from '../mockApis/communityApi'
-import InterventionsServiceMocks from '../mockApis/interventionsService'
+import Wiremock from '../../mockApis/wiremock'
+import AuthServiceMocks from '../../mockApis/auth'
+import TokenVerificationMocks from '../../mockApis/tokenVerification'
+import CommunityApiMocks from '../../mockApis/communityApi'
+import InterventionsServiceMocks from '../../mockApis/interventionsService'
 
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)

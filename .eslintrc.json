@@ -97,7 +97,7 @@
     ],
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "testutils/factories/*.ts"] }
+      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "testutils/factories/*.ts", "mockApis/**/*.ts"] }
     ],
     "prettier/prettier": [
       "error",

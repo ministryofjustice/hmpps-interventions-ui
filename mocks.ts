@@ -1,5 +1,5 @@
-import Wiremock from './integration_tests/mockApis/wiremock'
-import InterventionsServiceMocks from './integration_tests/mockApis/interventionsService'
+import Wiremock from './mockApis/wiremock'
+import InterventionsServiceMocks from './mockApis/interventionsService'
 import sentReferralFactory from './testutils/factories/sentReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 
