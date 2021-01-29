@@ -4,6 +4,15 @@ notify:
 interventions-ui:
   baseurl: http://localhost:3000
 
+aws:
+  sns:
+    enabled: false
+    provider: localstack
+    access-key-id: test
+    secret-access-key: test
+    endpoint.uri: http://localhost:4566
+    topic.arn: arn:aws:sns:eu-west-2:000000000000:intervention-events-local
+
 hmppsauth:
   baseurl: http://hmpps-auth:8090/auth
 

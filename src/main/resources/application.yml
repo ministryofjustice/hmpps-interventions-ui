@@ -67,3 +67,9 @@ notify:
 interventions-ui:
   locations:
     sent-referral: "/referrals/{id}/confirmation"
+
+aws:
+  sns:
+    enabled: true
+    provider: aws
+    region: eu-west-2
