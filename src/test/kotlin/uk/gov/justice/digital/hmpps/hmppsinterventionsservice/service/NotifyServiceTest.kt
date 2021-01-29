@@ -3,39 +3,64 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientException
-import java.net.URI
+import java.util.UUID
 
 class NotifyServiceTest {
   private val notificationClient = mock<NotificationClient>()
 
+  private val referralSentEvent = ReferralEvent(
+    "source",
+    ReferralEventType.SENT,
+    Referral(
+      id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
+      referenceNumber = "HAS71263",
+      serviceUserCRN = "X123456",
+    ),
+  )
+
+  private fun notifyService(enabled: Boolean): NotifyService {
+    return NotifyService(
+      enabled,
+      "templateID",
+      "http://example.com",
+      "/referral/{id}",
+      notificationClient,
+    )
+  }
+
   @Test
-  fun `test referralSent does nothing when notify is disabled in config`() {
-    val notifyService = NotifyService(false, "templateID", notificationClient)
-    notifyService.referralSent("", URI.create("http://example.com"), "tom@tom.tom")
+  fun `referral sent event does not send email when service is disabled`() {
+    notifyService(false).onApplicationEvent(referralSentEvent)
     verifyZeroInteractions(notificationClient)
   }
 
   @Test
-  fun `test referralSent sends an email`() {
-    val notifyService = NotifyService(true, "templateID", notificationClient)
-    notifyService.referralSent("", URI.create("http://example.com"), "tom@tom.tom")
-    verify(notificationClient).sendEmail(eq("templateID"), eq("tom@tom.tom"), any(), isNull())
+  fun `referral sent event generates valid url and sends an email`() {
+    notifyService(true).onApplicationEvent(referralSentEvent)
+    val personalisationCaptor = argumentCaptor<Map<String, String>>()
+    verify(notificationClient).sendEmail(eq("templateID"), eq("tom.myers@digital.justice.gov.uk"), personalisationCaptor.capture(), isNull())
+    assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
+    assertThat(personalisationCaptor.firstValue["referralUrl"]).isEqualTo("http://example.com/referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080")
   }
 
   @Test
-  fun `test referralSent logs error on notify errors`() {
+  fun `client errors are swallowed`() {
     whenever(notificationClient.sendEmail(any(), any(), any(), anyOrNull())).thenThrow(NotificationClientException::class.java)
-    val notifyService = NotifyService(true, "templateID", notificationClient)
-    assertDoesNotThrow { notifyService.referralSent("", URI.create("http://example.com"), "tom@tom.tom") }
+    assertDoesNotThrow { notifyService(true).onApplicationEvent(referralSentEvent) }
   }
 }
