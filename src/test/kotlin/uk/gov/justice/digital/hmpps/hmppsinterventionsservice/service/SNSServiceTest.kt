@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.util.UUID
 
 internal class SNSServiceTest {
@@ -24,10 +24,11 @@ internal class SNSServiceTest {
   private val referralSentEvent = ReferralEvent(
     "source",
     ReferralEventType.SENT,
-    Referral(
+    SampleData.sampleReferral(
+      "X123456",
+      "Harmony Living",
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
-      serviceUserCRN = "X123456",
     ),
   )
 

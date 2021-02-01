@@ -1,10 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.1.1"
   kotlin("plugin.spring") version "1.4.10"
   id("org.jetbrains.kotlin.plugin.jpa") version "1.4.20"
-    kotlin("jvm") version "1.4.30"
 }
 
 repositories {
@@ -55,13 +52,4 @@ dependencies {
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.1.14")
   testImplementation("com.h2database:h2:1.4.200")
-    implementation(kotlin("stdlib-jdk8"))
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
 }

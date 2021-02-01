@@ -48,7 +48,7 @@ data class DraftReferralDTO(
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
         serviceCategoryId = contract.serviceCategory.id,
-        )
+      )
     }
   }
 }
