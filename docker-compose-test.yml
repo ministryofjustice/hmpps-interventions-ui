@@ -1,16 +1,16 @@
 version: '3.1'
 services:
 
-  redis:
+  test-redis:
     image: 'bitnami/redis:6.0'
     networks:
       - hmpps_int
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - '6379:6379'
+      - '6380:6379'
 
-  wiremock:
+  test-wiremock:
     image: rodolpheche/wiremock
     networks:
     - hmpps_int

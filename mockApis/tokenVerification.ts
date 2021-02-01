@@ -1,8 +1,10 @@
-const { stubFor } = require('./wiremock')
+import Wiremock from './wiremock'
 
-module.exports = {
-  stubPing: () => {
-    return stubFor({
+export default class TokenVerificationMocks {
+  constructor(private readonly wiremock: Wiremock) {}
+
+  stubPing = async (): Promise<unknown> => {
+    return this.wiremock.stubFor({
       request: {
         method: 'GET',
         urlPattern: '/verification/health/ping',
@@ -13,9 +15,10 @@ module.exports = {
         jsonBody: { status: 'UP' },
       },
     })
-  },
-  stubVerifyToken: () => {
-    return stubFor({
+  }
+
+  stubVerifyToken = async (): Promise<unknown> => {
+    return this.wiremock.stubFor({
       request: {
         method: 'POST',
         urlPattern: '/verification/token/verify',
@@ -26,5 +29,5 @@ module.exports = {
         jsonBody: { active: 'true' },
       },
     })
-  },
+  }
 }
