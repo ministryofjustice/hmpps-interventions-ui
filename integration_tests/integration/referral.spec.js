@@ -60,7 +60,24 @@ describe('Referral form', () => {
       },
     })
 
-    const sentReferral = sentReferralFactory.fromFields(draftReferral).build()
+    const completedDraftReferral = {
+      ...draftReferral,
+      completionDeadline: '2021-04-01',
+      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      furtherInformation: 'Some information about the service user',
+      desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+      additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      accessibilityNeeds: 'She uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'She works Mondays 9am - midday',
+      additionalRiskInformation: 'A danger to the elderly',
+      usingRarDays: true,
+      maximumRarDays: 10,
+    }
+
+    const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
 
     cy.stubGetServiceUserByCRN('X320741', deliusServiceUser)
     cy.stubCreateDraftReferral(draftReferral)
@@ -155,6 +172,9 @@ describe('Referral form', () => {
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
     cy.get('h1').contains('Do you have further information for the accommodation service provider? (optional)')
     cy.get('textarea').type('Some information about Geoffrey')
+
+    // stub completed draft referral to mark section as completed
+    cy.stubGetDraftReferral(draftReferral.id, completedDraftReferral)
 
     cy.contains('Save and continue').click()
 

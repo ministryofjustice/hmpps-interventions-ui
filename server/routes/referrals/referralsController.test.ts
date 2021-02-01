@@ -147,8 +147,11 @@ describe('POST /referrals/start', () => {
 
 describe('GET /referrals/:id/form', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory.justCreated().build({ id: '1' })
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({ id: '1' })
+
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
   it('fetches the referral from the interventions service and renders a page with information about the referral', async () => {
@@ -173,6 +176,22 @@ describe('GET /referrals/:id/form', () => {
         .expect(500)
         .expect(res => {
           expect(res.text).toContain('Failed to get intervention')
+        })
+    })
+  })
+
+  describe('if a service category has not been selected', () => {
+    beforeEach(() => {
+      const referral = draftReferralFactory.build({ id: '1' })
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+    })
+
+    it('displays an error page', async () => {
+      await request(app)
+        .get('/referrals/1/form')
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('No service category selected')
         })
     })
   })
