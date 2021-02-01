@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 
 @RestController
 class ReferralController(
@@ -60,7 +61,16 @@ class ReferralController(
   fun createDraftReferral(@RequestBody createReferralRequestDTO: CreateReferralRequestDTO, authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
     val user = parseAuthUserToken(authentication)
 
-    val referral = referralService.createDraftReferral(user, createReferralRequestDTO.serviceUserCrn)
+    val referral = try {
+      referralService.createDraftReferral(
+        user,
+        createReferralRequestDTO.serviceUserCrn,
+        createReferralRequestDTO.interventionId,
+      )
+    } catch(e: EntityNotFoundException) {
+      throw ServerWebInputException("invalid intervention id [id=${createReferralRequestDTO.interventionId}]")
+    }
+
     val location = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")

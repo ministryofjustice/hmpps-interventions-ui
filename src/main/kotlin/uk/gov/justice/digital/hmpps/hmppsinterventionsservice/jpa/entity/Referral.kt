@@ -38,7 +38,6 @@ data class Referral(
   var hasAdditionalResponsibilities: Boolean? = null,
   var whenUnavailable: String? = null,
   var complexityLevelID: UUID? = null,
-  var serviceCategoryID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
   @NotNull @ManyToOne(fetch = FetchType.LAZY) var createdBy: AuthUser? = null,

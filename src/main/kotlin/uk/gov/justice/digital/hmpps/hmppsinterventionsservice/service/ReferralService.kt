@@ -39,8 +39,7 @@ class ReferralService(
     return sentReferral
   }
 
-  fun createDraftReferral(user: AuthUser, crn: String): Referral {
-    val interventionId = UUID.fromString("98a42c61-c30f-4beb-8062-04033c376e2d")
+  fun createDraftReferral(user: AuthUser, crn: String, interventionId: UUID): Referral {
     return referralRepository.save(
       Referral(
         serviceUserCRN = crn,
@@ -57,12 +56,6 @@ class ReferralService(
   private fun validateDraftReferralUpdate(referral: Referral, update: DraftReferralDTO) {
     val errors = mutableListOf<FieldError>()
 
-    update.serviceCategoryId?.let {
-      if (referral.serviceCategoryID != null && it != referral.serviceCategoryID) {
-        errors.add(FieldError(field = "serviceCategoryId", error = Code.FIELD_CANNOT_BE_CHANGED))
-      }
-    }
-
     update.completionDeadline?.let {
       if (it.isBefore(LocalDate.now())) {
         errors.add(FieldError(field = "completionDeadline", error = Code.DATE_MUST_BE_IN_THE_FUTURE))
@@ -72,10 +65,6 @@ class ReferralService(
     }
 
     update.complexityLevelId?.let {
-      if (referral.serviceCategoryID == null && update.serviceCategoryId == null) {
-        errors.add(FieldError(field = "complexityLevelId", error = Code.SERVICE_CATEGORY_MUST_BE_SET))
-      }
-
       // fixme: error if complexity level not valid for service category
     }
 
@@ -101,9 +90,6 @@ class ReferralService(
       if (it.isEmpty()) {
         errors.add(FieldError(field = "desiredOutcomesIds", error = Code.CANNOT_BE_EMPTY))
       }
-      if (referral.serviceCategoryID == null && update.serviceCategoryId == null) {
-        errors.add(FieldError(field = "desiredOutcomesIds", error = Code.SERVICE_CATEGORY_MUST_BE_SET))
-      }
 
       // fixme: error if desiredOutcomesIds not valid for service category
     }
@@ -121,10 +107,6 @@ class ReferralService(
 
   fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
     validateDraftReferralUpdate(referral, update)
-
-    update.serviceCategoryId?.let {
-      referral.serviceCategoryID = it
-    }
 
     update.completionDeadline?.let {
       referral.completionDeadline = it
