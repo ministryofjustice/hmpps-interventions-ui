@@ -67,19 +67,26 @@ describe('GET /referrals/start', () => {
 })
 
 describe('POST /referrals/start', () => {
-  describe('when searching for a CRN found in Delius', () => {
+  describe('when searching for a CRN found in Delius and an intervention has been selected', () => {
     beforeEach(() => {
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     })
 
     it('creates a referral on the interventions service and redirects to the referral form', async () => {
+      const currentlyHardcodedInterventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+      const serviceUserCRN = 'X123456'
+
       await request(app)
         .post('/referrals/start')
-        .send({ 'service-user-crn': 'X123456' })
+        .send({ 'service-user-crn': serviceUserCRN })
         .expect(303)
         .expect('Location', '/referrals/1/form')
 
-      expect(interventionsService.createDraftReferral).toHaveBeenCalledTimes(1)
+      expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
+        'token',
+        serviceUserCRN,
+        currentlyHardcodedInterventionId
+      )
     })
 
     it('updates the newly-created referral on the interventions service with the found service user', async () => {
