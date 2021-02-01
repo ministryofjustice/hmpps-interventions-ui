@@ -23,6 +23,7 @@ data class DraftReferralDTO(
   val maximumRarDays: Int? = null,
   val desiredOutcomesIds: List<UUID>? = null,
   val serviceUser: ServiceUserDTO? = null,
+  val serviceProvider: ServiceProviderDTO? = null,
 ) {
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
@@ -44,6 +45,7 @@ data class DraftReferralDTO(
         maximumRarDays = referral.maximumRarDays,
         desiredOutcomesIds = referral.desiredOutcomesIDs,
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
+        serviceProvider = ServiceProviderDTO.from(referral.intervention.dynamicFrameworkContract.serviceProvider)
       )
     }
   }

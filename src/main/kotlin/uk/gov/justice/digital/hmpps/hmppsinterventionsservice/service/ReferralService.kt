@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -17,12 +18,13 @@ import java.util.UUID
 
 @Service
 class ReferralService(
-  val repository: ReferralRepository,
+  val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
+  val interventionRepository: InterventionRepository,
   val eventPublisher: ReferralEventPublisher
 ) {
   fun getSentReferral(id: UUID): Referral? {
-    return repository.findByIdAndSentAtIsNotNull(id)
+    return referralRepository.findByIdAndSentAtIsNotNull(id)
   }
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
@@ -32,17 +34,24 @@ class ReferralService(
     // fixme: hardcoded for now
     referral.referenceNumber = "HDJ2123F"
 
-    val sentReferral = repository.save(referral)
+    val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)
     return sentReferral
   }
 
   fun createDraftReferral(user: AuthUser, crn: String): Referral {
-    return repository.save(Referral(serviceUserCRN = crn, createdBy = authUserRepository.save(user)))
+    val interventionId = UUID.fromString("98a42c61-c30f-4beb-8062-04033c376e2d")
+    return referralRepository.save(
+      Referral(
+        serviceUserCRN = crn,
+        createdBy = authUserRepository.save(user),
+        intervention = interventionRepository.getOne(interventionId)
+      )
+    )
   }
 
   fun getDraftReferral(id: UUID): Referral? {
-    return repository.findByIdAndSentAtIsNull(id)
+    return referralRepository.findByIdAndSentAtIsNull(id)
   }
 
   private fun validateDraftReferralUpdate(referral: Referral, update: DraftReferralDTO) {
@@ -175,10 +184,10 @@ class ReferralService(
       )
     }
 
-    return repository.save(referral)
+    return referralRepository.save(referral)
   }
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
-    return repository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
+    return referralRepository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
   }
 }

@@ -51,6 +51,7 @@ data class Referral(
   var desiredOutcomesIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
 
+  @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
   @NotNull val serviceUserCRN: String,
   @CreationTimestamp var createdAt: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,
