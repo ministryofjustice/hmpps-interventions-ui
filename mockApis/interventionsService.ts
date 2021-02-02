@@ -84,22 +84,6 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubGetServiceProvider = async (id: string, responseJson: unknown): Promise<unknown> => {
-    return this.wiremock.stubFor({
-      request: {
-        method: 'GET',
-        urlPattern: `${this.mockPrefix}/service-provider/${id}`,
-      },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        jsonBody: responseJson,
-      },
-    })
-  }
-
   stubSendDraftReferral = async (id: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {

@@ -202,15 +202,6 @@ export default class InterventionsService {
     })) as DraftReferral[]
   }
 
-  async getServiceProvider(token: string, id: string): Promise<ServiceProvider> {
-    const restClient = this.createRestClient(token)
-
-    return (await restClient.get({
-      path: `/service-provider/${id}`,
-      headers: { Accept: 'application/json' },
-    })) as ServiceProvider
-  }
-
   async sendDraftReferral(token: string, id: string): Promise<SentReferral> {
     const restClient = this.createRestClient(token)
 
