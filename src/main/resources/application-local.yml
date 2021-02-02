@@ -4,6 +4,16 @@ notify:
 interventions-ui:
   baseurl: http://localhost:3000
 
+community-api:
+  baseUrl: http://localhost:8081
+#  Temporarily stored in config until it is decided where these values will come from. TeamCode may come from the community api
+#  in the future. The rest may be hard coded as generic values.
+  temporaryReferralRequest:
+    probationAreaCode: A00
+    referralType: C385
+    staffCode: ASPUATU
+    teamCode: ASPUAT
+
 aws:
   sns:
     enabled: false
@@ -31,3 +41,10 @@ logging:
 spring:
   flyway:
     locations: classpath:db/migration,classpath:db/local
+  security:
+    oauth2:
+      client:
+        registration:
+          community-api:
+            client-id: interventions
+            client-secret: clientsecret
