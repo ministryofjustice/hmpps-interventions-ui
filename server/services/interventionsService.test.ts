@@ -192,22 +192,27 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('createDraftReferral', () => {
     it('returns a newly created draft referral', async () => {
+      const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+      const serviceUserCrn = 'X862134'
+
       await provider.addInteraction({
-        // We're not sure what is an appropriate state here
-        state: 'a draft referral can be created',
+        state: 'an intervention has been selected and a draft referral can be created',
         uponReceiving: 'a POST request to create a draft referral',
         withRequest: {
           method: 'POST',
           path: '/draft-referral',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-          body: { serviceUserCrn: 'X862134' },
+          body: {
+            serviceUserCrn,
+            interventionId,
+          },
         },
         willRespondWith: {
           status: 201,
           body: Matchers.like({
             id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
             createdAt: '2020-12-07T20:45:21.986389Z',
-            serviceUser: { crn: 'X862134' },
+            serviceUser: { crn: serviceUserCrn },
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -218,9 +223,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.createDraftReferral(token, 'X862134')
+      const referral = await interventionsService.createDraftReferral(token, serviceUserCrn, interventionId)
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-      expect(referral.serviceUser.crn).toBe('X862134')
+      expect(referral.serviceUser.crn).toBe(serviceUserCrn)
     })
   })
 

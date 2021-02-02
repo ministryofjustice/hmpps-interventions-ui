@@ -59,6 +59,7 @@ export default class ReferralsController {
     let serviceUser: DeliusServiceUser | null = null
 
     const crn = req.body['service-user-crn']
+    const hardcodedInterventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
 
     if (form.isValid) {
       try {
@@ -92,7 +93,11 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      const referral = await this.interventionsService.createDraftReferral(res.locals.user.token, crn)
+      const referral = await this.interventionsService.createDraftReferral(
+        res.locals.user.token,
+        crn,
+        hardcodedInterventionId
+      )
       // fixme: this sets some static data for the new referral which will need to be
       //  changed to allow these fields to be set properly
       await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {

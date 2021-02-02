@@ -152,14 +152,14 @@ export default class InterventionsService {
     }
   }
 
-  async createDraftReferral(token: string, crn: string): Promise<DraftReferral> {
+  async createDraftReferral(token: string, crn: string, interventionId: string): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
     try {
       return (await restClient.post({
         path: `/draft-referral`,
         headers: { Accept: 'application/json' },
-        data: { serviceUserCrn: crn },
+        data: { serviceUserCrn: crn, interventionId },
       })) as DraftReferral
     } catch (e) {
       throw this.createServiceError(e)
