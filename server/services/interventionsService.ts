@@ -17,7 +17,7 @@ type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 export interface ReferralFields {
   createdAt: string
   completionDeadline: string
-  serviceProviderId: string
+  serviceProvider: ServiceProvider
   serviceCategoryId: string
   complexityLevelId: string
   furtherInformation: string
@@ -79,7 +79,6 @@ export interface ServiceUser {
 }
 
 export interface ServiceProvider {
-  id: string
   name: string
 }
 

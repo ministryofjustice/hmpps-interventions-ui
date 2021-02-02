@@ -89,7 +89,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             status: 200,
             body: Matchers.like({
               id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-              serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+              serviceProvider: {
+                name: 'Harmony Living',
+              },
             }),
             headers: { 'Content-Type': 'application/json' },
           },
@@ -100,7 +102,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-        expect(referral.serviceProviderId).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
+        expect(referral.serviceProvider!.name).toEqual('Harmony Living')
       })
     })
 
@@ -968,7 +970,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         willRespondWith: {
           status: 200,
           body: Matchers.like({
-            id: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
             name: 'Harmony Living',
           }),
           headers: {
@@ -984,7 +985,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '674b47a0-39bf-4514-82ae-61885b9c0cb4'
       )
 
-      expect(serviceProvider.id).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
       expect(serviceProvider.name).toEqual('Harmony Living')
     })
   })
@@ -1009,7 +1009,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
       completionDeadline: '2021-04-01',
-      serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+      serviceProvider: {
+        name: 'Harmony Living',
+      },
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       furtherInformation: 'Some information about the service user',

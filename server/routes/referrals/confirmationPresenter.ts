@@ -1,12 +1,12 @@
-import { SentReferral, ServiceProvider } from '../../services/interventionsService'
+import { SentReferral } from '../../services/interventionsService'
 
 export default class ConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly serviceProvider: ServiceProvider) {}
+  constructor(private readonly referral: SentReferral) {}
 
   readonly text = {
-    title: `We’ve sent your referral to ${this.serviceProvider.name}`,
+    title: `We’ve sent your referral to ${this.referral.referral.serviceProvider.name}`,
     referenceNumberIntro: `Your reference number`,
     referenceNumber: this.referral.referenceNumber,
-    whatHappensNext: `${this.serviceProvider.name} will be in contact within 10 days to schedule the assessment.`,
+    whatHappensNext: `${this.referral.referral.serviceProvider.name} will be in contact within 10 days to schedule the assessment.`,
   }
 }
