@@ -29,6 +29,14 @@ export default async function setUpMocks(): Promise<void> {
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       },
     }),
+    sentReferralFactory.build({
+      sentAt: '2021-02-10:00:00.000000Z',
+      referenceNumber: 'ABCABCA3',
+      referral: {
+        serviceCategoryId: socialInclusionServiceCategory.id,
+        serviceUser: { firstName: 'Jenny', lastName: 'Yates' },
+      },
+    }),
   ]
 
   await Promise.all([
