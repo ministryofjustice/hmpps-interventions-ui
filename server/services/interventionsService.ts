@@ -45,6 +45,7 @@ export interface SentReferral {
   sentAt: string
   referenceNumber: string
   referral: ReferralFields
+  sentBy: AuthUser
 }
 
 export interface ServiceCategory {
@@ -80,6 +81,11 @@ export interface ServiceUser {
 
 export interface ServiceProvider {
   name: string
+}
+
+export interface AuthUser {
+  username: string
+  authSource: string
 }
 
 export default class InterventionsService {

@@ -52,6 +52,10 @@ class SentReferralFactory extends Factory<SentReferral> {
 export default SentReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   sentAt: new Date().toISOString(),
+  sentBy: {
+    username: 'BERNARD.BEAKS',
+    authSource: 'delius',
+  },
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
   referral: exampleReferralFields(),
 }))
