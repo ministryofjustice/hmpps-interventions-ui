@@ -25,7 +25,7 @@ export default class DashboardPresenter {
           sortValue: sentAtDay.iso8601,
           href: null,
         },
-        { text: referral.referenceNumber, sortValue: null, href: null },
+        { text: referral.referenceNumber, sortValue: null, href: `/service-provider/referrals/${referral.id}` },
         {
           text: ReferralDataPresenterUtils.fullName(serviceUser),
           sortValue: ReferralDataPresenterUtils.fullNameSortValue(serviceUser),

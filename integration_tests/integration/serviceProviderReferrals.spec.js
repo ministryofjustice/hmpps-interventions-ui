@@ -1,5 +1,6 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
+import deliusUserFactory from '../../testutils/factories/deliusUser'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -9,7 +10,7 @@ describe('Service provider referrals dashboard', () => {
     cy.task('stubServiceProviderAuthUser')
   })
 
-  it('User views a list of sent referrals', () => {
+  it('User views a list of sent referrals and the referral details page', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
 
@@ -32,10 +33,17 @@ describe('Service provider referrals dashboard', () => {
       }),
     ]
 
+    const deliusUser = deliusUserFactory.build({
+      firstName: 'Bernard',
+      surname: 'Beaks',
+      email: 'bernard.beaks@justice.gov.uk',
+    })
+
     cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
     cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
     cy.stubGetSentReferrals(sentReferrals)
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
 
     cy.login()
 
@@ -57,5 +65,11 @@ describe('Service provider referrals dashboard', () => {
           'Service user': 'Jenny Jones',
         },
       ])
+
+    cy.contains('ABCABCA2').click()
+    cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferrals[1].id}`)
+    cy.get('h1').contains('Social inclusion referral for Jenny Jones')
+    cy.contains('Bernard Beaks')
+    cy.contains('bernard.beaks@justice.gov.uk')
   })
 })

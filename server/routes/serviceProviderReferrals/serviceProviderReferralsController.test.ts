@@ -5,18 +5,23 @@ import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import deliusUserFactory from '../../../testutils/factories/deliusUser'
+import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
+import CommunityApiService from '../../services/communityApiService'
 
 jest.mock('../../services/interventionsService')
+jest.mock('../../services/communityApiService')
 
 const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
   InterventionsService
 >
+const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService },
+    overrides: { interventionsService, communityApiService },
     userType: AppSetupUserType.serviceProvider,
   })
 })
@@ -59,6 +64,33 @@ describe('GET /service-provider/dashboard', () => {
         expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Jenny Jones')
         expect(res.text).toContain('Social inclusion')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id', () => {
+  it('displays information about the referral', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const sentReferral = sentReferralFactory.build({
+      referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
+    })
+    const deliusUser = deliusUserFactory.build({
+      firstName: 'Bernard',
+      surname: 'Beaks',
+      email: 'bernard.beaks@justice.gov.uk',
+    })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Accommodation referral for Jenny Jones')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('bernard.beaks@justice.gov.uk')
       })
   })
 })

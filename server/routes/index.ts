@@ -29,8 +29,11 @@ export default function routes(router: Router, services: Services): Router {
   )
 
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
-  const serviceProviderReferralsController = new ServiceProviderReferralsController(services.interventionsService)
   const staticContentController = new StaticContentController()
+  const serviceProviderReferralsController = new ServiceProviderReferralsController(
+    services.interventionsService,
+    services.communityApiService
+  )
 
   get('/', (req, res, next) => {
     const { authSource } = res.locals.user
@@ -42,6 +45,7 @@ export default function routes(router: Router, services: Services): Router {
   })
 
   get('/service-provider/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
+  get('/service-provider/referrals/:id', (req, res) => serviceProviderReferralsController.showReferral(req, res))
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {
