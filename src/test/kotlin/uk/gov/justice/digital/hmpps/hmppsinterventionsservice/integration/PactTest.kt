@@ -48,7 +48,7 @@ class PactTest {
   fun `use referral d496e4a7 from the seed, since it also has a service provider`() {}
 
   @State("There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had desired outcomes selected")
-  fun `not implemented yet`() {}
+  fun `use referral 037cc90b from the seed, since it also has desired outcomes`() {}
 
   @State("There is an existing draft referral with ID of 1219a064-709b-4b6c-a11e-10b8cb3966f6, and it has had a service user selected")
   fun `use referral 1219a064 from the seed`() {}
@@ -58,4 +58,13 @@ class PactTest {
 
   @State("a referral does not exist for user with ID 123344556")
   fun `no referral required for this state`() {}
+
+  @State("There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e")
+  fun `use referral 81d754aa from the seed`() {}
+
+  @State("a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists and is ready to be sent")
+  fun `not implemented yet - additional fields`() {}
+
+  @State("a service provider with ID 674b47a0-39bf-4514-82ae-61885b9c0cb4 exists")
+  fun `not implement yet - service provider`() {}
 }
