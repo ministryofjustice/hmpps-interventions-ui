@@ -2,6 +2,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -19,6 +20,11 @@
       {% endif %}
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      {# TODO IC-806 remove this placeholder text #}
+      {{ govukInsetText({
+        text: "The following is hardcoded placeholder data, subject to change."
+      }) }}
 
       {{ govukSummaryList(summaryListArgs) }}
 
