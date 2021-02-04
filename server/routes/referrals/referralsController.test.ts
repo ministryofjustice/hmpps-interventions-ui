@@ -23,6 +23,10 @@ const serviceUser = {
   title: 'Mr',
   firstName: 'Alex',
   lastName: 'River',
+  contactDetails: {
+    email: 'alex.river@example.com',
+    mobile: '07123456789',
+  },
   dateOfBirth: '1980-01-01',
   gender: 'Male',
   preferredLanguage: 'English',

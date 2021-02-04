@@ -161,6 +161,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 title: 'Mr',
                 firstName: 'Alex',
                 lastName: 'River',
+                contactDetails: {
+                  email: 'alex.river@example.com',
+                  mobile: '07123456789',
+                },
                 dateOfBirth: '1980-01-01',
                 gender: 'Male',
                 preferredLanguage: 'English',
@@ -182,6 +186,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(referral.serviceUser.title).toEqual('Mr')
         expect(referral.serviceUser.firstName).toEqual('Alex')
         expect(referral.serviceUser.lastName).toEqual('River')
+        expect(referral.serviceUser.contactDetails.email).toEqual('alex.river@example.com')
+        expect(referral.serviceUser.contactDetails.mobile).toEqual('07123456789')
         expect(referral.serviceUser.dateOfBirth).toEqual('1980-01-01')
         expect(referral.serviceUser.gender).toEqual('Male')
         expect(referral.serviceUser.ethnicity).toEqual('British')
@@ -286,6 +292,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         title: 'Mr',
         firstName: 'Alex',
         lastName: 'River',
+        contactDetails: {
+          email: 'alex.river@example.com',
+          mobile: '07123456789',
+        },
         dateOfBirth: '1980-01-01',
         gender: 'Male',
         ethnicity: 'British',
@@ -1114,6 +1124,15 @@ describe('serializeDeliusServiceUser', () => {
       title: 'Mr',
       firstName: 'Alex',
       surname: 'River',
+      contactDetails: {
+        emailAddresses: ['alex.river@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
       dateOfBirth: '1980-01-01',
       gender: 'Male',
     } as DeliusServiceUser
@@ -1124,6 +1143,8 @@ describe('serializeDeliusServiceUser', () => {
     expect(serviceUser.title).toEqual('Mr')
     expect(serviceUser.firstName).toEqual('Alex')
     expect(serviceUser.lastName).toEqual('River')
+    expect(serviceUser.contactDetails.email).toEqual('alex.river@example.com')
+    expect(serviceUser.contactDetails.mobile).toEqual('07123456789')
     expect(serviceUser.dateOfBirth).toEqual('1980-01-01')
     expect(serviceUser.gender).toEqual('Male')
     expect(serviceUser.ethnicity).toEqual('British')
@@ -1142,6 +1163,7 @@ describe('serializeDeliusServiceUser', () => {
       otherIds: {
         crn: 'X320741',
       },
+      contactDetails: {},
       offenderProfile: {
         offenderLanguages: {},
       },
@@ -1154,6 +1176,8 @@ describe('serializeDeliusServiceUser', () => {
       expect(serviceUser.title).toEqual(null)
       expect(serviceUser.firstName).toEqual('Aadland')
       expect(serviceUser.lastName).toEqual('Bertrand')
+      expect(serviceUser.contactDetails.email).toEqual(null)
+      expect(serviceUser.contactDetails.mobile).toEqual(null)
       expect(serviceUser.dateOfBirth).toEqual('2065-07-19')
       expect(serviceUser.gender).toEqual('Male')
       expect(serviceUser.ethnicity).toEqual(null)

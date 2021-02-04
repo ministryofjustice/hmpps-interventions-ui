@@ -70,6 +70,7 @@ export interface ServiceUser {
   title: string | null
   firstName: string | null
   lastName: string | null
+  contactDetails: ContactDetails
   dateOfBirth: string | null
   gender: string | null
   ethnicity: string | null
@@ -80,6 +81,11 @@ export interface ServiceUser {
 
 export interface ServiceProvider {
   name: string
+}
+
+interface ContactDetails {
+  mobile: string | null
+  email: string | null
 }
 
 export default class InterventionsService {
@@ -122,11 +128,23 @@ export default class InterventionsService {
       ? CalendarDay.parseIso8601(deliusServiceUser.dateOfBirth)?.iso8601 || null
       : null
 
+    const mobile = deliusServiceUser.contactDetails.phoneNumbers
+      ? deliusServiceUser.contactDetails.phoneNumbers.find(phoneNumber => phoneNumber.type === 'MOBILE')?.number || null
+      : null
+
+    const email = deliusServiceUser.contactDetails.emailAddresses
+      ? deliusServiceUser.contactDetails.emailAddresses[0] || null
+      : null
+
     return {
       crn: deliusServiceUser.otherIds.crn,
       title: deliusServiceUser.title || null,
       firstName: deliusServiceUser.firstName || null,
       lastName: deliusServiceUser.surname || null,
+      contactDetails: {
+        email,
+        mobile,
+      },
       dateOfBirth: iso8601DateOfBirth || null,
       gender: deliusServiceUser.gender || null,
       ethnicity: deliusServiceUser.offenderProfile?.ethnicity || null,

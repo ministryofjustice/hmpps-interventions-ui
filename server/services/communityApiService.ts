@@ -22,10 +22,21 @@ export interface DeliusServiceUser {
   surname: string | null
   dateOfBirth: string | null
   gender: string | null
+  contactDetails: ContactDetails
 }
 
 interface DeliusRole {
   name: string
+}
+
+interface ContactDetails {
+  emailAddresses?: string[] | null
+  phoneNumbers?: PhoneNumber[] | null
+}
+
+interface PhoneNumber {
+  number: string | null
+  type: string | null
 }
 
 interface Disability {

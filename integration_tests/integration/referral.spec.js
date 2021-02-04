@@ -50,6 +50,10 @@ describe('Referral form', () => {
         title: 'Mr',
         firstName: 'Geoffrey',
         lastName: 'River',
+        contactDetails: {
+          email: 'geoffrey.river@example.com',
+          mobile: '0123456789',
+        },
         dateOfBirth: '1980-01-01',
         gender: 'Male',
         preferredLanguage: 'English',

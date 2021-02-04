@@ -27,6 +27,10 @@ class DraftReferralFactory extends Factory<DraftReferral> {
         title: 'Mr',
         firstName: 'Alex',
         lastName: 'River',
+        contactDetails: {
+          email: 'alex.river@example.com',
+          mobile: '0123456789',
+        },
         dateOfBirth: '1980-01-01',
         gender: 'Male',
         ethnicity: 'British',
@@ -46,6 +50,10 @@ export default DraftReferralFactory.define(({ sequence }) => ({
     title: null,
     firstName: null,
     lastName: null,
+    contactDetails: {
+      email: null,
+      mobile: null,
+    },
     dateOfBirth: null,
     gender: null,
     ethnicity: null,
