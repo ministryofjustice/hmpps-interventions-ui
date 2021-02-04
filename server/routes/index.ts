@@ -7,6 +7,7 @@ import OffenderAssessmentsApiService from '../services/offenderAssessmentsApiSer
 import IntegrationSamplesRoutes from './integrationSamples'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import ReferralsController from './referrals/referralsController'
+import StaticContentController from './staticContent/staticContentController'
 
 interface RouteProvider {
   [key: string]: RequestHandler
@@ -29,6 +30,7 @@ export default function routes(router: Router, services: Services): Router {
 
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
   const serviceProviderReferralsController = new ServiceProviderReferralsController(services.interventionsService)
+  const staticContentController = new StaticContentController()
 
   get('/', (req, res, next) => {
     const { authSource } = res.locals.user
@@ -40,6 +42,18 @@ export default function routes(router: Router, services: Services): Router {
   })
 
   get('/service-provider/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
+
+  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+    get('/static-pages', (req, res) => {
+      staticContentController.index(req, res)
+    })
+
+    StaticContentController.allPaths.forEach(path => {
+      get(path, (req, res) => {
+        staticContentController.renderStaticPage(req, res)
+      })
+    })
+  }
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)
