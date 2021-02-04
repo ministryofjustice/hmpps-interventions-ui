@@ -87,7 +87,9 @@ describe('ReferralFormPresenter', () => {
         const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({
           createdAt: '2021-01-11T10:32:12.382884Z',
           completionDeadline: '2021-04-01',
-          serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
           complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
           furtherInformation: 'Some information about the service user',

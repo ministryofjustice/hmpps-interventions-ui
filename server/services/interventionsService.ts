@@ -17,7 +17,7 @@ type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 export interface ReferralFields {
   createdAt: string
   completionDeadline: string
-  serviceProviderId: string
+  serviceProvider: ServiceProvider
   serviceCategoryId: string
   complexityLevelId: string
   furtherInformation: string
@@ -79,7 +79,6 @@ export interface ServiceUser {
 }
 
 export interface ServiceProvider {
-  id: string
   name: string
 }
 
@@ -201,15 +200,6 @@ export default class InterventionsService {
       query: `userID=${userId}`,
       headers: { Accept: 'application/json' },
     })) as DraftReferral[]
-  }
-
-  async getServiceProvider(token: string, id: string): Promise<ServiceProvider> {
-    const restClient = this.createRestClient(token)
-
-    return (await restClient.get({
-      path: `/service-provider/${id}`,
-      headers: { Accept: 'application/json' },
-    })) as ServiceProvider
   }
 
   async sendDraftReferral(token: string, id: string): Promise<SentReferral> {

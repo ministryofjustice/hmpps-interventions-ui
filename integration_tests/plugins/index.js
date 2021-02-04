@@ -51,10 +51,6 @@ module.exports = on => {
       return interventionsService.stubGetDraftReferralsForUser(arg.responseJson)
     },
 
-    stubGetServiceProvider: arg => {
-      return interventionsService.stubGetServiceProvider(arg.id, arg.responseJson)
-    },
-
     stubSendDraftReferral: arg => {
       return interventionsService.stubSendDraftReferral(arg.id, arg.responseJson)
     },

@@ -519,12 +519,8 @@ export default class ReferralsController {
 
   async viewConfirmation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
-    const serviceProvider = await this.interventionsService.getServiceProvider(
-      res.locals.user.token,
-      referral.referral.serviceProviderId
-    )
 
-    const presenter = new ConfirmationPresenter(referral, serviceProvider)
+    const presenter = new ConfirmationPresenter(referral)
     const view = new ConfirmationView(presenter)
 
     res.render(...view.renderArgs)

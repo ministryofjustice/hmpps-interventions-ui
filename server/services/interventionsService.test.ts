@@ -89,7 +89,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             status: 200,
             body: Matchers.like({
               id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-              serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+              serviceProvider: {
+                name: 'Harmony Living',
+              },
             }),
             headers: { 'Content-Type': 'application/json' },
           },
@@ -100,7 +102,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-        expect(referral.serviceProviderId).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
+        expect(referral.serviceProvider!.name).toEqual('Harmony Living')
       })
     })
 
@@ -952,43 +954,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getServiceProvider', () => {
-    beforeEach(async () => {
-      await provider.addInteraction({
-        state: 'a service provider with ID 674b47a0-39bf-4514-82ae-61885b9c0cb4 exists',
-        uponReceiving: 'a GET request to fetch the service provider',
-        withRequest: {
-          method: 'GET',
-          path: '/service-provider/674b47a0-39bf-4514-82ae-61885b9c0cb4',
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like({
-            id: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
-            name: 'Harmony Living',
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      })
-    })
-
-    it('returns a service provider', async () => {
-      const serviceProvider = await interventionsService.getServiceProvider(
-        token,
-        '674b47a0-39bf-4514-82ae-61885b9c0cb4'
-      )
-
-      expect(serviceProvider.id).toEqual('674b47a0-39bf-4514-82ae-61885b9c0cb4')
-      expect(serviceProvider.name).toEqual('Harmony Living')
-    })
-  })
-
   const serviceUser = {
     crn: 'X862134',
     title: 'Mr',
@@ -1009,7 +974,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
       completionDeadline: '2021-04-01',
-      serviceProviderId: '674b47a0-39bf-4514-82ae-61885b9c0cb4',
+      serviceProvider: {
+        name: 'Harmony Living',
+      },
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       furtherInformation: 'Some information about the service user',

@@ -1,13 +1,14 @@
 import { Factory } from 'fishery'
 import { ReferralFields, SentReferral } from '../../server/services/interventionsService'
-import serviceProviderFactory from './serviceProvider'
 import serviceCategoryFactory from './serviceCategory'
 
 const exampleReferralFields = () => {
   return {
     createdAt: '2020-12-07T20:45:21.986389Z',
     completionDeadline: '2021-04-01',
-    serviceProviderId: serviceProviderFactory.build().id,
+    serviceProvider: {
+      name: 'Harmony Living',
+    },
     serviceCategoryId: serviceCategoryFactory.build().id,
     complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
     furtherInformation: 'Some information about the service user',

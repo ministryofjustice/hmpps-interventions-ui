@@ -1,7 +1,6 @@
 import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
-import serviceProviderFactory from '../../testutils/factories/serviceProvider'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 
 describe('Referral form', () => {
@@ -41,11 +40,11 @@ describe('Referral form', () => {
       ],
     })
 
-    const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
-
     const draftReferral = draftReferralFactory.build({
       serviceCategoryId: serviceCategory.id,
-      serviceProviderId: serviceProvider.id,
+      serviceProvider: {
+        name: 'Harmony Living',
+      },
       serviceUser: {
         crn: 'X320741',
         title: 'Mr',
@@ -82,7 +81,6 @@ describe('Referral form', () => {
     cy.stubGetServiceUserByCRN('X320741', deliusServiceUser)
     cy.stubCreateDraftReferral(draftReferral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
-    cy.stubGetServiceProvider(serviceProvider.id, serviceProvider)
     cy.stubGetDraftReferralsForUser([])
     cy.stubGetDraftReferral(draftReferral.id, draftReferral)
     cy.stubPatchDraftReferral(draftReferral.id, draftReferral)

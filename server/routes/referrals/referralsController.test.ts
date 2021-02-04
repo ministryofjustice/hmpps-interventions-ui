@@ -6,7 +6,6 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import apiConfig from '../../config'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
@@ -994,9 +993,6 @@ describe('GET /referrals/:id/confirmation', () => {
   it('displays a submission confirmation page', async () => {
     const referral = sentReferralFactory.build()
     interventionsService.getSentReferral.mockResolvedValue(referral)
-
-    const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
-    interventionsService.getServiceProvider.mockResolvedValue(serviceProvider)
 
     await request(app)
       .get('/referrals/1/confirmation')

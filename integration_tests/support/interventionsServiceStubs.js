@@ -18,10 +18,6 @@ Cypress.Commands.add('stubGetDraftReferralsForUser', responseJson => {
   cy.task('stubGetDraftReferralsForUser', { responseJson })
 })
 
-Cypress.Commands.add('stubGetServiceProvider', (id, responseJson) => {
-  cy.task('stubGetServiceProvider', { id, responseJson })
-})
-
 Cypress.Commands.add('stubSendDraftReferral', (id, responseJson) => {
   cy.task('stubSendDraftReferral', { id, responseJson })
 })
