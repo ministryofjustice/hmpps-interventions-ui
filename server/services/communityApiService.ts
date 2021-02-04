@@ -17,7 +17,7 @@ export interface DeliusServiceUser {
   // TODO IC-620 validate this data properly
   otherIds: OtherIds
   offenderProfile: OffenderProfile
-  title: string | null
+  title?: string | null
   firstName: string | null
   surname: string | null
   dateOfBirth: string | null
@@ -53,13 +53,13 @@ interface OtherIds {
 
 interface OffenderProfile {
   offenderLanguages: OffenderLanguages
-  ethnicity: string
-  religion: string
-  disabilities: Disability[] | null
+  ethnicity?: string | null
+  religion?: string | null
+  disabilities?: Disability[] | null
 }
 
 interface OffenderLanguages {
-  primaryLanguage: string
+  primaryLanguage?: string
 }
 
 export default class CommunityApiService {

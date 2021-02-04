@@ -35,6 +35,7 @@ import logger from '../../../log'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import ServiceUserDetailsView from './serviceUserDetailsView'
 import ReferralStartForm from './referralStartForm'
+import DeliusServiceUserSerializer from './deliusServiceUserSerializer'
 
 export default class ReferralsController {
   constructor(
@@ -92,17 +93,18 @@ export default class ReferralsController {
       error = form.error
     }
 
-    if (error === null) {
+    if (error === null && serviceUser !== null) {
       const referral = await this.interventionsService.createDraftReferral(
         res.locals.user.token,
         crn,
         hardcodedInterventionId
       )
+
       // fixme: this sets some static data for the new referral which will need to be
       //  changed to allow these fields to be set properly
       await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
         serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-        serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
+        serviceUser: new DeliusServiceUserSerializer(serviceUser).call(),
       })
 
       res.redirect(303, `/referrals/${referral.id}/form`)

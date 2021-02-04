@@ -46,7 +46,6 @@ beforeEach(() => {
   const referral = draftReferralFactory.justCreated().build({ id: '1' })
   interventionsService.createDraftReferral.mockResolvedValue(referral)
   interventionsService.getDraftReferralsForUser.mockResolvedValue([])
-  interventionsService.serializeDeliusServiceUser.mockReturnValue(serviceUser)
 })
 
 afterEach(() => {
