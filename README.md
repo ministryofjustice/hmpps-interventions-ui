@@ -59,7 +59,11 @@ The integration tests require a different docker-compose stack and a different a
 `npm run start:test`
 
 `npm run int-test(-ui)`
- 
+
+### Building a static page (designers)
+
+To view the existing static pages, and for more instructions about how to edit them, go to `http://localhost:3000/static-pages`. If you get asked to log in when you try to go to this page, then you might need to re-enter this URL after logging in.
+
 ## Dependencies
 
 - hmpps-auth - for authentication

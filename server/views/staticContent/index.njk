@@ -1,0 +1,28 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-width">
+      <h1 class="govuk-heading-xl">Static pages</h1>
+
+      <p class="govuk-body">These are the static pages which are either:</p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>ready for designers to build</li>
+        <li>already built by designers</li>
+      </ul>
+
+      <p class="govuk-body">To change the application’s styling, change the SASS file <code>assets/sass/local.sass</code>.</p>
+
+      {{ govukTable(tableArgs) }}
+    </div>
+  </div>
+{% endblock %}
