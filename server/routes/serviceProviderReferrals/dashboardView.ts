@@ -1,4 +1,5 @@
 import DashboardPresenter from './dashboardPresenter'
+import ViewUtils from '../../utils/viewUtils'
 
 export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
@@ -15,10 +16,18 @@ export default class DashboardView {
       }),
       rows: this.presenter.tableRows.map(row => {
         return row.map(cell => {
-          const result = { text: cell.text, attributes: {} }
+          const result: Record<string, unknown> = {}
+
           if (cell.sortValue !== null) {
             result.attributes = { 'data-sort-value': cell.sortValue }
           }
+
+          if (cell.href === null) {
+            result.text = cell.text
+          } else {
+            result.html = `<a href="${cell.href}" class="govuk-link">${ViewUtils.escape(cell.text)}</a>`
+          }
+
           return result
         })
       }),

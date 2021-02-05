@@ -12,6 +12,11 @@ export default async function setUpMocks(): Promise<void> {
   const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
   const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
 
+  const sentBy = {
+    username: 'BERNARD.BEAKS',
+    authSource: 'delius',
+  }
+
   const sentReferrals = [
     sentReferralFactory.build({
       sentAt: '2021-01-26T13:00:00.000000Z',
@@ -20,6 +25,7 @@ export default async function setUpMocks(): Promise<void> {
         serviceCategoryId: accommodationServiceCategory.id,
         serviceUser: { firstName: 'George', lastName: 'Michael' },
       },
+      sentBy,
     }),
     sentReferralFactory.build({
       sentAt: '2020-09-13T13:00:00.000000Z',
@@ -28,6 +34,16 @@ export default async function setUpMocks(): Promise<void> {
         serviceCategoryId: socialInclusionServiceCategory.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       },
+      sentBy,
+    }),
+    sentReferralFactory.build({
+      sentAt: '2021-02-10:00:00.000000Z',
+      referenceNumber: 'ABCABCA3',
+      referral: {
+        serviceCategoryId: socialInclusionServiceCategory.id,
+        serviceUser: { firstName: 'Jenny', lastName: 'Yates' },
+      },
+      sentBy,
     }),
   ]
 

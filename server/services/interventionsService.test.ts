@@ -970,6 +970,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   const sentReferral: SentReferral = {
     id: '81d754aa-d868-4347-9c0f-50690773014e',
     sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      authSource: 'delius',
+    },
     referenceNumber: 'HDJ2123F',
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
