@@ -27,4 +27,13 @@ export default Factory.define<DeliusServiceUser>(() => ({
   surname: 'River',
   dateOfBirth: '1980-01-01',
   gender: 'Male',
+  contactDetails: {
+    emailAddresses: ['alex.river@example.com'],
+    phoneNumbers: [
+      {
+        number: '0123456789',
+        type: 'MOBILE',
+      },
+    ],
+  },
 }))

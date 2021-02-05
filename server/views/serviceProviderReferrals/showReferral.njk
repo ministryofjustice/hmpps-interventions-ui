@@ -1,4 +1,5 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -9,6 +10,7 @@
 {% endblock %}
 
 {% block content %}
+  {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>

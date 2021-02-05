@@ -23,7 +23,7 @@ export default async function setUpMocks(): Promise<void> {
       referenceNumber: 'ABCABCA1',
       referral: {
         serviceCategoryId: accommodationServiceCategory.id,
-        serviceUser: { firstName: 'George', lastName: 'Michael' },
+        serviceUser: { firstName: 'Aadland', lastName: 'Bertrand', crn: 'X320741' },
       },
       sentBy,
     }),
@@ -32,7 +32,7 @@ export default async function setUpMocks(): Promise<void> {
       referenceNumber: 'ABCABCA2',
       referral: {
         serviceCategoryId: socialInclusionServiceCategory.id,
-        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        serviceUser: { firstName: 'George', lastName: 'Michael', crn: 'X320741' },
       },
       sentBy,
     }),
@@ -41,7 +41,7 @@ export default async function setUpMocks(): Promise<void> {
       referenceNumber: 'ABCABCA3',
       referral: {
         serviceCategoryId: socialInclusionServiceCategory.id,
-        serviceUser: { firstName: 'Jenny', lastName: 'Yates' },
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X320741' },
       },
       sentBy,
     }),

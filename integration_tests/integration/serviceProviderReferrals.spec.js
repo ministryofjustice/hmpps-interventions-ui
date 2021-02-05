@@ -1,6 +1,7 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
+import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -28,7 +29,7 @@ describe('Service provider referrals dashboard', () => {
         referenceNumber: 'ABCABCA2',
         referral: {
           serviceCategoryId: socialInclusionServiceCategory.id,
-          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
         },
       }),
     ]
@@ -39,11 +40,29 @@ describe('Service provider referrals dashboard', () => {
       email: 'bernard.beaks@justice.gov.uk',
     })
 
+    const deliusServiceUser = deliusServiceUserFactory.build({
+      firstName: 'Jenny',
+      surname: 'Jones',
+      dateOfBirth: '1980-01-01',
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
+
+    const referralToSelect = sentReferrals[1]
+
     cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
     cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
     cy.stubGetSentReferrals(sentReferrals)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
 
     cy.login()
 
@@ -67,8 +86,9 @@ describe('Service provider referrals dashboard', () => {
       ])
 
     cy.contains('ABCABCA2').click()
-    cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferrals[1].id}`)
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}`)
     cy.get('h1').contains('Social inclusion referral for Jenny Jones')
+    cy.contains('07123456789 | jenny.jones@example.com')
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
   })
