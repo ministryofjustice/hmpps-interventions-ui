@@ -88,6 +88,28 @@ export interface AuthUser {
   authSource: string
 }
 
+export interface Intervention {
+  id: string
+  title: string
+  description: string
+  pccRegions: PCCRegion[]
+  serviceCategory: ServiceCategory
+  serviceProvider: ServiceProvider
+  eligibility: Eligibility
+}
+
+export interface PCCRegion {
+  id: string
+  name: string
+}
+
+export interface Eligibility {
+  minimumAge: number
+  maximumAge: number | null
+  allowsFemale: boolean
+  allowsMale: boolean
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -233,5 +255,14 @@ export default class InterventionsService {
       path: `/sent-referrals`,
       headers: { Accept: 'application/json' },
     })) as SentReferral[]
+  }
+
+  async getInterventions(token: string): Promise<Intervention[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: '/interventions',
+      headers: { Accept: 'application/json' },
+    })) as Intervention[]
   }
 }

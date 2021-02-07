@@ -66,5 +66,9 @@ module.exports = on => {
     stubGetSentReferrals: arg => {
       return interventionsService.stubGetSentReferrals(arg.responseJson)
     },
+
+    stubGetInterventions: arg => {
+      return interventionsService.stubGetInterventions(arg.responseJson)
+    },
   })
 }

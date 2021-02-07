@@ -5,6 +5,9 @@ import { term } from '@pact-foundation/pact/dsl/matchers'
 import InterventionsService, { SentReferral, ServiceUser } from './interventionsService'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
+import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
+import serviceProviderFactory from '../../testutils/factories/serviceProvider'
+import eligibilityFactory from '../../testutils/factories/eligibility'
 import { DeliusServiceUser } from './communityApiService'
 
 jest.mock('../data/hmppsAuthClient')
@@ -1067,6 +1070,43 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       expect(await interventionsService.getSentReferrals(token)).toEqual([sentReferral, sentReferral])
+    })
+  })
+
+  describe('getInterventions', () => {
+    it('returns a list of all interventions', async () => {
+      const intervention = {
+        id: '15237ae5-a017-4de6-a033-abf350f14d99',
+        title: 'Better solutions (anger management)',
+        description:
+          'To provide service users with key tools and strategies to address issues of anger management and temper control and explore the link between thoughts, emotions and behaviour. It provides the opportunity for service users to practice these strategies in a safe and closed environment.',
+        pccRegions: [
+          { id: 'cheshire', name: 'Cheshire' },
+          { id: 'cumbria', name: 'Cumbria' },
+          { id: 'lancashire', name: 'Lancashire' },
+          { id: 'merseyside', name: 'Merseyside' },
+        ],
+        serviceCategory: serviceCategoryFactory.build(),
+        serviceProvider: serviceProviderFactory.build(),
+        eligibility: eligibilityFactory.allAdults().build(),
+      }
+
+      await provider.addInteraction({
+        state: 'There are some interventions',
+        uponReceiving: 'a request for all interventions',
+        withRequest: {
+          method: 'GET',
+          path: '/interventions',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([intervention, intervention]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getInterventions(token)).toEqual([intervention, intervention])
     })
   })
 })
