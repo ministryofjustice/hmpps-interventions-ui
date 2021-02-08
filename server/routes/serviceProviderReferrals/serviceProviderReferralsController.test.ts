@@ -8,6 +8,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
+import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -69,7 +70,7 @@ describe('GET /service-provider/dashboard', () => {
 })
 
 describe('GET /service-provider/referrals/:id', () => {
-  it('displays information about the referral', async () => {
+  it('displays information about the referral and service user', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const sentReferral = sentReferralFactory.build({
       referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
@@ -79,10 +80,24 @@ describe('GET /service-provider/referrals/:id', () => {
       surname: 'Beaks',
       email: 'bernard.beaks@justice.gov.uk',
     })
+    const serviceUser = deliusServiceUser.build({
+      firstName: 'Alex',
+      surname: 'River',
+      contactDetails: {
+        emailAddresses: ['alex.river@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}`)
@@ -91,6 +106,9 @@ describe('GET /service-provider/referrals/:id', () => {
         expect(res.text).toContain('Accommodation referral for Jenny Jones')
         expect(res.text).toContain('Bernard Beaks')
         expect(res.text).toContain('bernard.beaks@justice.gov.uk')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('07123456789')
+        expect(res.text).toContain('Alex River')
       })
   })
 })

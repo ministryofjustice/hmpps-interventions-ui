@@ -14,6 +14,7 @@ export default class ShowReferralView {
       {
         presenter: this.presenter,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
+        serviceUserNotificationBannerArgs: this.presenter.serviceUserNotificationBannerArgs,
       },
     ]
   }
