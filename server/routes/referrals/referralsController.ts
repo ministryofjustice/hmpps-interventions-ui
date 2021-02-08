@@ -98,10 +98,8 @@ export default class ReferralsController {
         crn,
         hardcodedInterventionId
       )
-      // fixme: this sets some static data for the new referral which will need to be
-      //  changed to allow these fields to be set properly
+
       await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
-        serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 

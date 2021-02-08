@@ -92,7 +92,6 @@ describe('POST /referrals/start', () => {
       await request(app).post('/referrals/start').send({ 'service-user-crn': 'X123456' })
 
       expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
-        serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
         serviceUser,
       })
     })
