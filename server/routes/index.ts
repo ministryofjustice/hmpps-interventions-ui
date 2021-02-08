@@ -62,6 +62,8 @@ export default function routes(router: Router, services: Services): Router {
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)
 
+  get('/spike/option-select', (req, res) => res.render('optionSelect/optionSelect'))
+
   get('/referrals/start', (req, res) => referralsController.startReferral(req, res))
   post('/referrals/start', (req, res) => referralsController.createReferral(req, res))
   get('/referrals/:id/form', (req, res) => referralsController.viewReferralForm(req, res))

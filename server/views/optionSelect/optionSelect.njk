@@ -1,0 +1,37 @@
+{% extends "partials/layout.njk" %}
+{% from "../components/option-select/macro.njk" import dmOptionSelect %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}{{ pageTitle }}
+  - GOV.UK{% endblock %}
+
+{% block content %}
+  <script src="/assets/optionSelect.js"></script>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-width" id="option-select">
+      {{ dmOptionSelect({
+          name: 'with_checked_value_set',
+          title: 'List of options',
+          optionsContainerId: 'list_of_vegetables',
+          items: [
+            {
+              value: "potatoes",
+              text: "Potatoes",
+              checked: true
+            },
+            {
+              value: "carrots",
+              text: "Carrots",
+              id: "carrots"
+            },
+            {
+              value: "mash",
+              text: "Mash",
+              id: "mash"
+            }
+          ]
+      }) }}
+    </div>
+  </div>
+{% endblock %}

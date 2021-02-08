@@ -69,6 +69,11 @@ export default class StaticContentController {
       template: 'serviceProviderReferrals/sessions/amend',
       description: 'IC-1087 (session details: amend)',
     },
+    {
+      path: '/service-provider/option-select',
+      template: 'serviceProviderReferrals/sessions/optionSelect',
+      description: 'IC-1066 (option select)',
+    },
   ]
 
   static get allPaths(): string[] {
