@@ -18,7 +18,11 @@ class InterventionController(
   fun getInterventionByID(@PathVariable id: UUID): InterventionDTO {
 
     return interventionService.getIntervention(id)
-      ?.let { InterventionDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "intervention not found [id=$id]")
+  }
+
+  @GetMapping("/interventions")
+  fun getAllInterventions(): List<InterventionDTO> {
+    return interventionService.getAllInterventions()
   }
 }
