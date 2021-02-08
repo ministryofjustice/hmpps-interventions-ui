@@ -302,4 +302,39 @@ class ReferralServiceTest @Autowired constructor(
     }
     assertThat(referralService.getDraftReferralsCreatedByUserID("multi_user_id")).hasSize(3)
   }
+
+  @Test
+  fun `get all sent referrals returns referrals for multiple service providers`() {
+    listOf("PROVIDER1", "PROVIDER2").forEach {
+      SampleData.persistReferral(
+        entityManager,
+        SampleData.sampleReferral(
+          "X123456",
+          it,
+          sentAt = OffsetDateTime.now(),
+          referenceNumber = "REF123"
+        )
+      )
+    }
+
+    assertThat(referralService.getAllSentReferrals().size).isEqualTo(2)
+  }
+
+  @Test
+  fun `get sent referrals by provider id returns filtered referrals`() {
+    listOf("PROVIDER1", "PROVIDER2").forEach {
+      SampleData.persistReferral(
+        entityManager,
+        SampleData.sampleReferral(
+          "X123456",
+          it,
+          sentAt = OffsetDateTime.now(),
+          referenceNumber = "REF123"
+        )
+      )
+    }
+
+    assertThat(referralService.getSentReferralsForServiceProviderID("PROVIDER2").size).isEqualTo(1)
+    assertThat(referralService.getSentReferralsForServiceProviderID("PROVIDER3").size).isEqualTo(0)
+  }
 }

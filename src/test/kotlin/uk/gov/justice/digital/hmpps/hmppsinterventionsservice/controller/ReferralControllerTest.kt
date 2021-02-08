@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,5 +25,14 @@ internal class ReferralControllerTest {
     assertThrows<ServerWebInputException> {
       referralController.createDraftReferral(CreateReferralRequestDTO("CRN20", UUID.randomUUID()), createJwtAuthenticationToken())
     }
+  }
+
+  @Test
+  fun `getSentReferrals takes an optional query param to filter by service provider ID`() {
+    referralController.getSentReferrals(null)
+    verify(referralService).getAllSentReferrals()
+
+    referralController.getSentReferrals("HARMONY_LIVING")
+    verify(referralService).getSentReferralsForServiceProviderID("HARMONY_LIVING")
   }
 }

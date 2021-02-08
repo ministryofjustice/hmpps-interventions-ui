@@ -67,4 +67,7 @@ class PactTest {
 
   @State("a service provider with ID 674b47a0-39bf-4514-82ae-61885b9c0cb4 exists")
   fun `not implement yet - service provider`() {}
+
+  @State("there are some existing sent referrals")
+  fun `use referrals from seed data`() {}
 }
