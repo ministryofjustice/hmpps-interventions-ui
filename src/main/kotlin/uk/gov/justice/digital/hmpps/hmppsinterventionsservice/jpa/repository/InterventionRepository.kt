@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository
 
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import java.util.UUID
 
-interface InterventionRepository : CrudRepository<Intervention, UUID> {
+interface InterventionRepository : JpaRepository<Intervention, UUID> {
   fun findByDynamicFrameworkContractServiceProviderId(id: String): List<Intervention>
 }

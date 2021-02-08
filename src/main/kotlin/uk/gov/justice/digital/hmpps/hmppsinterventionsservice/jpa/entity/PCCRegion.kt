@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
@@ -12,6 +13,6 @@ import javax.validation.constraints.NotNull
 data class PCCRegion(
   @NotNull @Id val id: String,
   @NotNull val name: String,
-  @NotNull @ManyToOne @JoinColumn(name = "nps_region_id")
+  @NotNull @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "nps_region_id")
   val region: NPSRegion
 )

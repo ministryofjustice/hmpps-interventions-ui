@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientException
 import java.util.UUID
@@ -26,10 +26,11 @@ class NotifyServiceTest {
   private val referralSentEvent = ReferralEvent(
     "source",
     ReferralEventType.SENT,
-    Referral(
+    SampleData.sampleReferral(
+      "X123456",
+      "Harmony Living",
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
-      serviceUserCRN = "X123456",
     ),
   )
 

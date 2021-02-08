@@ -38,7 +38,6 @@ data class Referral(
   var hasAdditionalResponsibilities: Boolean? = null,
   var whenUnavailable: String? = null,
   var complexityLevelID: UUID? = null,
-  var serviceCategoryID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
   @NotNull @ManyToOne(fetch = FetchType.LAZY) var createdBy: AuthUser? = null,
@@ -51,6 +50,7 @@ data class Referral(
   var desiredOutcomesIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
 
+  @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
   @NotNull val serviceUserCRN: String,
   @CreationTimestamp var createdAt: OffsetDateTime? = null,
   @Id @GeneratedValue var id: UUID? = null,
