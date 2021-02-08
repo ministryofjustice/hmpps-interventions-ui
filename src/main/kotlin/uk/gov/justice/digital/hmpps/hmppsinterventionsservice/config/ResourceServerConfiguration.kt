@@ -24,7 +24,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
       .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and().csrf().disable()
       .authorizeRequests {
-        it.antMatchers("/health/**", "/info", "/test/**").permitAll()
+        it.antMatchers("/health/**", "/info", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
         it.anyRequest().authenticated()
       }
       .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())

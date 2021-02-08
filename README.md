@@ -1,5 +1,7 @@
 # HMPPS Interventions Service
 
+[![API docs](https://img.shields.io/badge/API_docs-view-85EA2D.svg?logo=swagger)](https://hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk/swagger-ui.html)
+
 Business/domain API to **find, arrange and monitor an intervention** for service users (offenders).
 
 ## Quickstart
@@ -49,3 +51,7 @@ To see where this service fits in the broader interventions (and probation) arch
 [ktlint](https://github.com/pinterest/ktlint) is the authority on style and is enforced on build.
 
 Run `./gradlew ktlintFormat` to fix formatting errors in your code before commit.
+
+### OpenAPI
+
+OpenAPI documentation is auto-generated. To view it start the application and visit /swagger-ui.html in your browser.

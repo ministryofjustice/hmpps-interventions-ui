@@ -35,6 +35,10 @@ tasks {
 }
 
 dependencies {
+  // openapi
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.3")
+
+  // notifications
   implementation("uk.gov.service.notify:notifications-java-client:3.17.0-RELEASE")
   implementation("software.amazon.awssdk:sns:2.15.71")
 
