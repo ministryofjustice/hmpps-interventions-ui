@@ -869,7 +869,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             id: '428ee70f-3001-4399-95a6-ad25eaaede16',
             name: term({
               generate: 'accommodation',
-              matcher: '[^A-Z]',
+              matcher: '[^A-Z]+',
             }),
             complexityLevels,
             desiredOutcomes,
