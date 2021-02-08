@@ -25,6 +25,16 @@ class SampleData {
 
     fun persistReferral(em: TestEntityManager, referral: Referral): Referral {
       persistIntervention(em, referral.intervention)
+      referral.createdBy?.let {
+        if (em.find(AuthUser::class.java, it.id) == null) {
+          em.persist(it)
+        }
+      }
+      referral.sentBy?.let {
+        if (em.find(AuthUser::class.java, it.id) == null) {
+          em.persist(it)
+        }
+      }
       return em.persistAndFlush(referral)
     }
 
@@ -35,6 +45,7 @@ class SampleData {
       referenceNumber: String? = null,
       completionDeadline: LocalDate? = null,
       sentAt: OffsetDateTime? = null,
+      sentBy: AuthUser? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -42,6 +53,7 @@ class SampleData {
         completionDeadline = completionDeadline,
         referenceNumber = referenceNumber,
         sentAt = sentAt,
+        sentBy = sentBy,
         intervention = sampleIntervention(
           dynamicFrameworkContract = sampleContract(
             serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),

@@ -8,4 +8,5 @@ import javax.validation.constraints.NotNull
 data class AuthUser(
   @Id @NotNull val id: String,
   @NotNull val authSource: String,
+  @NotNull val userName: String,
 )
