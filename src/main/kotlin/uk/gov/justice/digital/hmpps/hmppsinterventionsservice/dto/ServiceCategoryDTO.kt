@@ -22,17 +22,3 @@ data class ServiceCategoryDTO(
     }
   }
 }
-
-data class ServiceCategorySummaryDTO(
-  val id: UUID,
-  val name: String,
-) {
-  companion object {
-    fun from(serviceCategory: ServiceCategory): ServiceCategorySummaryDTO {
-      return ServiceCategorySummaryDTO(
-        id = serviceCategory.id,
-        name = serviceCategory.name,
-      )
-    }
-  }
-}

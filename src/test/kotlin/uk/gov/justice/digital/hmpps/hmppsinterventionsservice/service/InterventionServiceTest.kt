@@ -5,8 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.persistIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleNPSRegion
@@ -29,29 +28,27 @@ class InterventionServiceTest @Autowired constructor(
 
   @Test
   fun `get an Intervention with NPS Region`() {
-    val accommodationServiceCategory = sampleServiceCategory()
-    val harmonyLivingServiceProvider = sampleServiceProvider()
-    entityManager.persist(accommodationServiceCategory)
-    entityManager.persist(harmonyLivingServiceProvider)
-    entityManager.flush()
-
     val npsRegion = sampleNPSRegion()
-    entityManager.persistAndFlush(npsRegion)
 
-    val pccRegionAvon = samplePCCRegion(npsRegion = npsRegion)
-    val pccRegionDevon = samplePCCRegion(id = "devon-and-cornwall", name = "Devon & Cornwall", npsRegion = npsRegion)
-    entityManager.persistAndFlush(pccRegionAvon)
-    entityManager.persistAndFlush(pccRegionDevon)
-
-    val harmonyLivingContract = sampleContract(
-      serviceCategory = accommodationServiceCategory,
-      serviceProvider = harmonyLivingServiceProvider,
-      npsRegion = npsRegion,
+    val intervention = persistIntervention(
+      entityManager,
+      sampleIntervention(
+        dynamicFrameworkContract = sampleContract(
+          npsRegion = npsRegion,
+          serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
+          serviceProvider = sampleServiceProvider(id = "HARMONY_LIVING", name = "Harmony Living")
+        )
+      )
     )
-    entityManager.persistAndFlush(harmonyLivingContract)
 
-    val intervention: Intervention = sampleIntervention(dynamicFrameworkContract = harmonyLivingContract)
-    entityManager.persistAndFlush(intervention)
+    entityManager.persistAndFlush(samplePCCRegion(npsRegion = npsRegion))
+    entityManager.persistAndFlush(
+      samplePCCRegion(
+        id = "devon-and-cornwall",
+        name = "Devon & Cornwall",
+        npsRegion = npsRegion
+      )
+    )
 
     val interventionDTO = interventionService.getIntervention(intervention.id!!)
     assertThat(interventionDTO!!.title).isEqualTo(intervention.title)
@@ -61,27 +58,16 @@ class InterventionServiceTest @Autowired constructor(
 
   @Test
   fun `get an Intervention with PCC Region`() {
-    val accommodationServiceCategory = sampleServiceCategory()
-    val harmonyLivingServiceProvider = sampleServiceProvider()
-    entityManager.persist(accommodationServiceCategory)
-    entityManager.persist(harmonyLivingServiceProvider)
-    entityManager.flush()
-
-    val npsRegion = sampleNPSRegion()
-    entityManager.persistAndFlush(npsRegion)
-
-    val pccRegionAvon = samplePCCRegion(npsRegion = npsRegion)
-    entityManager.persistAndFlush(pccRegionAvon)
-
-    val harmonyLivingContract = sampleContract(
-      serviceCategory = accommodationServiceCategory,
-      serviceProvider = harmonyLivingServiceProvider,
-      pccRegion = pccRegionAvon,
+    val intervention = persistIntervention(
+      entityManager,
+      sampleIntervention(
+        dynamicFrameworkContract = sampleContract(
+          pccRegion = samplePCCRegion(npsRegion = sampleNPSRegion()),
+          serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
+          serviceProvider = sampleServiceProvider(id = "HARMONY_LIVING", name = "Harmony Living")
+        )
+      )
     )
-    entityManager.persistAndFlush(harmonyLivingContract)
-
-    val intervention: Intervention = sampleIntervention(dynamicFrameworkContract = harmonyLivingContract)
-    entityManager.persistAndFlush(intervention)
 
     val interventionDTO = interventionService.getIntervention(intervention.id!!)
     assertThat(interventionDTO!!.title).isEqualTo(intervention.title)
@@ -101,40 +87,6 @@ class InterventionServiceTest @Autowired constructor(
     assertThat(liveWellInterventions.size).isEqualTo(0)
     val notExistInterventions = interventionService.getInterventionsForServiceProvider("DOES_NOT_EXIST")
     assertThat(notExistInterventions.size).isEqualTo(0)
-  }
-
-  @Test
-  fun `create and persist interventions against same contract`() {
-    val accommodationServiceCategory = sampleServiceCategory()
-    val harmonyLivingServiceProvider = sampleServiceProvider()
-    entityManager.persist(accommodationServiceCategory)
-    entityManager.persist(harmonyLivingServiceProvider)
-    entityManager.flush()
-
-    val npsRegion = sampleNPSRegion()
-    entityManager.persistAndFlush(npsRegion)
-
-    val harmonyLivingContract = sampleContract(
-      serviceCategory = accommodationServiceCategory,
-      serviceProvider = harmonyLivingServiceProvider,
-      npsRegion = npsRegion,
-    )
-    entityManager.persistAndFlush(harmonyLivingContract)
-
-    val intervention: Intervention = sampleIntervention(dynamicFrameworkContract = harmonyLivingContract)
-    entityManager.persist(intervention)
-    val intervention2: Intervention = sampleIntervention(dynamicFrameworkContract = harmonyLivingContract)
-    entityManager.persist(intervention2)
-    entityManager.flush()
-
-    val interventions = interventionService.getInterventionsForServiceProvider("HARMONY_LIVING")
-    assertThat(interventions.size).isEqualTo(2)
-    assertThat(interventions[0].dynamicFrameworkContract.id).isEqualTo(interventions[0].dynamicFrameworkContract.id)
-
-    val contractId = interventions[0].dynamicFrameworkContract.id
-    entityManager.remove(intervention)
-    entityManager.remove(intervention2)
-    assertThat(entityManager.find(DynamicFrameworkContract::class.java, contractId)).isNotNull
   }
 
   @Test
