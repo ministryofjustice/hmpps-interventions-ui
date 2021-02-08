@@ -94,12 +94,12 @@ class SampleData {
     fun samplePCCRegion(
       id: String = "avon-and-somerset",
       name: String = "Avon & Somerset",
-      region: NPSRegion
+      npsRegion: NPSRegion = sampleNPSRegion(),
     ): PCCRegion {
       return PCCRegion(
         id = id,
         name = name,
-        region = region
+        npsRegion = npsRegion
       )
     }
 
@@ -130,6 +130,11 @@ class SampleData {
 
     fun sampleDesiredOutcome(id: UUID = UUID.randomUUID(), description: String = "Outcome 1"): DesiredOutcome {
       return DesiredOutcome(id, description)
+    }
+
+    fun persistPCCRegion(em: TestEntityManager, pccRegion: PCCRegion): PCCRegion {
+      em.persist(pccRegion.npsRegion)
+      return em.persistAndFlush(pccRegion)
     }
   }
 }
