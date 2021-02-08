@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
@@ -55,6 +56,13 @@ class ReferralController(
     return referralService.getSentReferral(uuid)
       ?.let { SentReferralDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$uuid]")
+  }
+
+  @GetMapping("/sent-referrals")
+  fun getSentReferrals(@RequestParam(required = false) serviceProviderID: AuthGroupID?): List<SentReferralDTO> {
+    return serviceProviderID?.let {
+      referralService.getSentReferralsForServiceProviderID(it)
+    } ?: referralService.getAllSentReferrals()
   }
 
   @PostMapping("/draft-referral")

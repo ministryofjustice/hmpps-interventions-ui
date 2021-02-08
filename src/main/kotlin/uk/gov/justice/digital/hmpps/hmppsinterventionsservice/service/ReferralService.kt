@@ -5,7 +5,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
@@ -25,6 +27,15 @@ class ReferralService(
 ) {
   fun getSentReferral(id: UUID): Referral? {
     return referralRepository.findByIdAndSentAtIsNotNull(id)
+  }
+
+  fun getAllSentReferrals(): List<SentReferralDTO> {
+    return referralRepository.findBySentAtIsNotNull().map { SentReferralDTO.from(it) }
+  }
+
+  fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<SentReferralDTO> {
+    return referralRepository.findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(serviceProviderID)
+      .map { SentReferralDTO.from(it) }
   }
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {

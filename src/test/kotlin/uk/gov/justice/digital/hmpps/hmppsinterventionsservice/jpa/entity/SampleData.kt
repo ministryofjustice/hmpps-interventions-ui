@@ -33,13 +33,15 @@ class SampleData {
       serviceProviderName: String,
       id: UUID? = null,
       referenceNumber: String? = null,
-      completionDeadline: LocalDate? = null
+      completionDeadline: LocalDate? = null,
+      sentAt: OffsetDateTime? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
         id = id,
         completionDeadline = completionDeadline,
         referenceNumber = referenceNumber,
+        sentAt = sentAt,
         intervention = sampleIntervention(
           dynamicFrameworkContract = sampleContract(
             serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
