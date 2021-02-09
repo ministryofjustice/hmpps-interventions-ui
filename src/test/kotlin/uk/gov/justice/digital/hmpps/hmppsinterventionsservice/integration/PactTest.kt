@@ -68,12 +68,13 @@ class PactTest {
   @State("a service provider with ID 674b47a0-39bf-4514-82ae-61885b9c0cb4 exists")
   fun `not implement yet - service provider`() {}
 
+
   @State("there are some existing sent referrals")
   fun `use referrals from seed data`() {}
 
   @State("There is an existing intervention with ID of 98a42c61-c30f-4beb-8062-04033c376e2d")
   fun `use intervention 98a42c61 from the seed`() {}
 
-  @State("Multiple interventions exist")
+  @State("There are some interventions")
   fun `not implement yet - multiple interventions`() {}
 }

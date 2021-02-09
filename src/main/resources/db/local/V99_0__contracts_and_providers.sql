@@ -10,8 +10,8 @@ values ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', '428ee70f-3001-4399-95a6-ad25eaa
 insert into contract_eligibility (dynamic_framework_contract_id, allows_female, allows_male, minimum_age, maximum_age)
 values ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', true, true, 18, 25),
        ('f9d24b4a-390d-4cc1-a7ee-3e6f022e1599', true, false, 18, 25),
-       ('24f7a423-15a6-438d-9d28-063e92b25a9b', true, true, 25, 99),
-       ('c7d39f92-6f43-49a4-bb62-e0f42c864765', false, true, 18, 99);
+       ('24f7a423-15a6-438d-9d28-063e92b25a9b', true, true, 25, null),
+       ('c7d39f92-6f43-49a4-bb62-e0f42c864765', false, true, 18, null);
 
 insert into intervention (id, dynamic_framework_contract_id, created_at, title, description)
 values ('98a42c61-c30f-4beb-8062-04033c376e2d', '1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', TO_DATE('2020-10-15', 'YYYY-MM-DD'), 'Accommodation Service', 'The service aims are to support in securing settled accommodation.'),
