@@ -48,8 +48,23 @@ export default async function setUpMocks(): Promise<void> {
     }),
   ]
 
-  const intervention = interventionFactory.build()
-  const interventions = [intervention, intervention, intervention]
+  const interventions = [
+    { title: 'Better solutions (anger management)', categoryName: 'thinking and behaviour' },
+    {
+      title: 'HELP (domestic violence for males)',
+      categoryName: 'relationships',
+      description:
+        'HELP - the Healthy Relationships programme, is a new, preventative approach to domestic abuse.' +
+        'The course aims to help create successful relationships. Those who complete the group will have' +
+        'skills and strategies to manage situations differently and avoid problems escalating into violence.',
+    },
+  ].map(params => {
+    return interventionFactory.build({
+      title: params.title,
+      serviceCategory: { name: params.categoryName },
+      description: params.description,
+    })
+  })
 
   await Promise.all([
     interventionsMocks.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory),

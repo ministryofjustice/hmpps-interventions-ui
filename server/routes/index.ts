@@ -8,6 +8,7 @@ import IntegrationSamplesRoutes from './integrationSamples'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import ReferralsController from './referrals/referralsController'
 import StaticContentController from './staticContent/staticContentController'
+import FindInterventionsController from './findInterventions/findInterventionsController'
 
 interface RouteProvider {
   [key: string]: RequestHandler
@@ -34,6 +35,7 @@ export default function routes(router: Router, services: Services): Router {
     services.interventionsService,
     services.communityApiService
   )
+  const findInterventionsController = new FindInterventionsController(services.interventionsService)
 
   get('/', (req, res, next) => {
     const { authSource } = res.locals.user
@@ -84,6 +86,8 @@ export default function routes(router: Router, services: Services): Router {
   get('/referrals/:id/check-answers', (req, res) => referralsController.checkAnswers(req, res))
   post('/referrals/:id/send', (req, res) => referralsController.sendDraftReferral(req, res))
   get('/referrals/:id/confirmation', (req, res) => referralsController.viewConfirmation(req, res))
+
+  get('/find-interventions', (req, res) => findInterventionsController.search(req, res))
 
   return router
 }
