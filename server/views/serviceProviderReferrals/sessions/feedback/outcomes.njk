@@ -1,12 +1,111 @@
 {% extends "../../../partials/layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-width">
-      {# TODO IC-1054 Add content here #}
-    </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Page 3 of 7</span>
+      <h1 class="govuk-heading-l">
+       Session 2: meeting outcomes
+      </h1>
+      <h2 class="govuk-heading-m">
+       Has Matt met any of their outcomes since you saw them last?
+      </h2>
+    <form action="#" method="#">
+    {{ govukRadios({
+      idPrefix: "outcome-one",
+      name: "outcome-one",
+      fieldset: {
+        legend: {
+          text: "Desired outcome 1",
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--s"
+        }
+      },
+      hint: {
+        text: "Service user develops resilience and perseverance to cope with challenges and barriers on return to the community.",
+        classes: "govuk-!-padding-bottom-3"
+      },
+      items: [
+        {
+          value: "Met fully",
+          text: "Met fully"
+        },
+        {
+          value: "Met partially",
+          text: "Met partially"
+        },
+        {
+          value: "Not met so far",
+          text: "Not met so far"
+        }
+      ]
+    }) }}
+    {{ govukTextarea({
+      name: "more-detail",
+      id: "more-detail",
+      label: {
+        text: "Add any additional information about the service user meeting their outcomes:",
+        classes: "govuk-label--s govuk-!-padding-bottom-3"
+      }
+    }) }}
+    {{ govukRadios({
+      idPrefix: "outcome-two",
+      name: "outcome-twos",
+      fieldset: {
+        legend: {
+          text: "Desired outcome 2",
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--s"
+        },
+        legend: {
+          text: "Desired outcome 2",
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--s"
+        }
+      },
+      hint: {
+        text: "Service user secures early post-release engagement with community based services.",
+        classes: "govuk-!-padding-bottom-3"
+      },
+      items: [
+        {
+          value: "Met fully",
+          text: "Met fully"
+        },
+        {
+          value: "Met partially",
+          text: "Met partially"
+        },
+        {
+          value: "Not met so far",
+          text: "Not met so far"
+        }
+      ]
+    }) }}
+    {{ govukTextarea({
+      name: "more-detail",
+      id: "more-detail",
+      label: {
+        text: "Add any additional information about the service user meeting their outcomes:",
+        classes: "govuk-label--s govuk-!-padding-bottom-3"
+      }
+    }) }}
+    {{ govukButton({
+      text: "Save and continue"
+    }) }}
+    </form>
   </div>
+
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">One-third column</h2>
+    <p class="govuk-body">one-third wide column</p>
+  </div>
+</div>
+
 {% endblock %}
