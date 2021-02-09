@@ -1,6 +1,7 @@
 {% extends "../../../partials/layout.njk" %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
@@ -45,6 +46,9 @@
         text: "Add additional information about Matt's attendance (optional):",
         classes: "govuk-label--s govuk-!-padding-bottom-3"
       }
+    }) }}
+    {{ govukButton({
+      text: "Save and continue"
     }) }}
     </form>
   </div>
