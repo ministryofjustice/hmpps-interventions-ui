@@ -7,6 +7,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.boot.test.json.JacksonTester
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -14,7 +15,7 @@ import java.util.UUID
 @JsonTest
 class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferralDTO>) {
   @Test
-  fun `sent referral requires id, reference number, and created and sent timestamps`() {
+  fun `sent referral requires id, reference number, and created and sent timestamps, sentBy`() {
     val referral = SampleData.sampleReferral("X123456", "Provider")
     val id = UUID.randomUUID()
     val timestamp = OffsetDateTime.now()
@@ -39,6 +40,11 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     }
 
     referral.referenceNumber = "something"
+    assertThrows<RuntimeException> {
+      SentReferralDTO.from(referral)
+    }
+
+    referral.sentBy = AuthUser("id", "source", "username")
     assertDoesNotThrow { SentReferralDTO.from(referral) }
   }
 
@@ -47,6 +53,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     val id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C")
     val createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
     val sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
+    val sentBy = AuthUser("id", "source", "username")
 
     val referral = SampleData.sampleReferral("X123456", "Provider")
     referral.id = id
@@ -55,12 +62,17 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.needsInterpreter = true
     referral.interpreterLanguage = "french"
     referral.sentAt = sentAt
+    referral.sentBy = sentBy
 
     val out = json.write(SentReferralDTO.from(referral))
     Assertions.assertThat(out).isEqualToJson(
       """
       {
         "sentAt": "2021-01-13T21:57:13Z",
+        "sentBy": {
+          "username": "username",
+          "authSource": "source"
+        },
         "referenceNumber": "something",
         "referral": {
           "id": "3b9ed289-8412-41a9-8291-45e33e60276c",

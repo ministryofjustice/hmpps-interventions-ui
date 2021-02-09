@@ -121,7 +121,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `create and persist draft referral`() {
-    val authUser = AuthUser("user_id", "auth_source")
+    val authUser = AuthUser("user_id", "auth_source", "user_name")
     val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleIntervention.id!!)
     entityManager.flush()
 
@@ -145,8 +145,8 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `find by userID returns list of draft referrals`() {
-    val user1 = AuthUser("123", "delius")
-    val user2 = AuthUser("456", "delius")
+    val user1 = AuthUser("123", "delius", "bernie.b")
+    val user2 = AuthUser("456", "delius", "sheila.h")
     referralService.createDraftReferral(user1, "X123456", sampleIntervention.id!!)
     referralService.createDraftReferral(user1, "X123456", sampleIntervention.id!!)
     referralService.createDraftReferral(user2, "X123456", sampleIntervention.id!!)
@@ -275,7 +275,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `once a draft referral is sent it's id is no longer is a valid draft referral`() {
-    val user = AuthUser("user_id", "auth_source")
+    val user = AuthUser("user_id", "auth_source", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id!!)
 
     assertThat(referralService.getDraftReferral(draftReferral.id!!)).isNotNull()
@@ -288,7 +288,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `sending a draft referral triggers an event`() {
-    val user = AuthUser("user_id", "auth_source")
+    val user = AuthUser("user_id", "auth_source", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id!!)
     referralService.sendDraftReferral(draftReferral, user)
     verify(referralEventPublisher).referralSentEvent(draftReferral)
@@ -297,7 +297,7 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `multiple draft referrals can be started by the same user`() {
     for (i in 1..3) {
-      val user = AuthUser("multi_user_id", "auth_source")
+      val user = AuthUser("multi_user_id", "auth_source", "user_name")
       assertDoesNotThrow { referralService.createDraftReferral(user, "X123456", sampleIntervention.id!!) }
     }
     assertThat(referralService.getDraftReferralsCreatedByUserID("multi_user_id")).hasSize(3)
@@ -312,6 +312,7 @@ class ReferralServiceTest @Autowired constructor(
           "X123456",
           it,
           sentAt = OffsetDateTime.now(),
+          sentBy = AuthUser("123456", "user_id", "user_name"),
           referenceNumber = "REF123"
         )
       )
@@ -329,6 +330,7 @@ class ReferralServiceTest @Autowired constructor(
           "X123456",
           it,
           sentAt = OffsetDateTime.now(),
+          sentBy = AuthUser("123456", "user_id", "user_name"),
           referenceNumber = "REF123"
         )
       )
