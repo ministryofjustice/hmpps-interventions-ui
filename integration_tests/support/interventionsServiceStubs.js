@@ -33,3 +33,7 @@ Cypress.Commands.add('stubGetSentReferrals', responseJson => {
 Cypress.Commands.add('stubGetInterventions', responseJson => {
   cy.task('stubGetInterventions', { responseJson })
 })
+
+Cypress.Commands.add('stubGetIntervention', (id, responseJson) => {
+  cy.task('stubGetIntervention', { id, responseJson })
+})

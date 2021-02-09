@@ -265,4 +265,13 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as Intervention[]
   }
+
+  async getIntervention(token: string, id: string): Promise<Intervention> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/intervention/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as Intervention
+  }
 }
