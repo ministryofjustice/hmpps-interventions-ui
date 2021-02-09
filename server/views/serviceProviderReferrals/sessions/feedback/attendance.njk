@@ -1,12 +1,58 @@
 {% extends "../../../partials/layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-width">
-      {# TODO IC-1094 Add content here #}
-    </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Page 1 of 7</span>
+      <h1 class="govuk-heading-l">
+       Session 2: attendance
+      </h1>
+    <form action="#" method="#">
+    {{ govukRadios({
+      idPrefix: "attendance",
+      name: "attendance",
+      fieldset: {
+        legend: {
+          text: "Did Matt attend session 2?",
+          isPageHeading: true,
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "Yes, they were on time",
+          text: "Yes, they were on time"
+        },
+        {
+          value: "They were late",
+          text: "They were late"
+        },
+        {
+          value: "No",
+          text: "No"
+        }
+      ]
+    }) }}
+    {{ govukTextarea({
+      name: "more-detail",
+      id: "more-detail",
+      label: {
+        text: "Add additional information about Matt's attendance (optional):",
+        classes: "govuk-label--s govuk-!-padding-bottom-3"
+      }
+    }) }}
+    </form>
   </div>
+
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">One-third column</h2>
+    <p class="govuk-body">one-third wide column</p>
+  </div>
+</div>
+
 {% endblock %}
