@@ -19,6 +19,10 @@ class SampleData {
       intervention.dynamicFrameworkContract.pccRegion?.let { pccRegion ->
         em.persist(pccRegion)
       }
+      intervention.dynamicFrameworkContract.pccRegion?.npsRegion?.let { npsRegion ->
+        em.persist(npsRegion)
+      }
+
       em.persist(intervention.dynamicFrameworkContract)
       return em.persistAndFlush(intervention)
     }

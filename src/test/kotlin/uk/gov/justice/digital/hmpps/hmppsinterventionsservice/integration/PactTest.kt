@@ -74,6 +74,6 @@ class PactTest {
   @State("There is an existing intervention with ID of 98a42c61-c30f-4beb-8062-04033c376e2d")
   fun `use intervention 98a42c61 from the seed`() {}
 
-  @State("Multiple interventions exist")
+  @State("There are some interventions")
   fun `not implement yet - multiple interventions`() {}
 }
