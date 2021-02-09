@@ -1,8 +1,7 @@
-a.govuk-link {
-  font-weight: 400;
-}
-
 .govuk-table {
+  a.govuk-link {
+    font-weight: normal;
+  }
   .govuk-tag.govuk-tag--red {
   width: min-content;
   }
