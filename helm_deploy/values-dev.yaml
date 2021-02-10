@@ -18,3 +18,8 @@ env:
   JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
   INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk"
+  COMMUNITYAPI_BASEURL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_PROBATIONAREACODE: "A00"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_REFERRALTYPE: "C385"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_STAFFCODE: "ASPUATU"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_TEAMCODE: "ASPUAT"
