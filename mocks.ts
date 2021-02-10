@@ -72,5 +72,6 @@ export default async function setUpMocks(): Promise<void> {
     Promise.all(sentReferrals.map(referral => interventionsMocks.stubGetSentReferral(referral.id, referral))),
     interventionsMocks.stubGetSentReferrals(sentReferrals),
     interventionsMocks.stubGetInterventions(interventions),
+    interventionsMocks.stubGetIntervention(interventions[0].id, interventions[0]),
   ])
 }

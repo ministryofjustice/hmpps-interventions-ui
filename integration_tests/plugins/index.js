@@ -70,5 +70,9 @@ module.exports = on => {
     stubGetInterventions: arg => {
       return interventionsService.stubGetInterventions(arg.responseJson)
     },
+
+    stubGetIntervention: arg => {
+      return interventionsService.stubGetIntervention(arg.id, arg.responseJson)
+    },
   })
 }

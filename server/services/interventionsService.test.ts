@@ -1109,6 +1109,44 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.getInterventions(token)).toEqual([intervention, intervention])
     })
   })
+
+  describe('getIntervention', () => {
+    it('returns a single intervention', async () => {
+      const interventionId = '15237ae5-a017-4de6-a033-abf350f14d99'
+      const intervention = {
+        id: interventionId,
+        title: 'Better solutions (anger management)',
+        description:
+          'To provide service users with key tools and strategies to address issues of anger management and temper control and explore the link between thoughts, emotions and behaviour. It provides the opportunity for service users to practice these strategies in a safe and closed environment.',
+        pccRegions: [
+          { id: 'cheshire', name: 'Cheshire' },
+          { id: 'cumbria', name: 'Cumbria' },
+          { id: 'lancashire', name: 'Lancashire' },
+          { id: 'merseyside', name: 'Merseyside' },
+        ],
+        serviceCategory: serviceCategoryFactory.build(),
+        serviceProvider: serviceProviderFactory.build(),
+        eligibility: eligibilityFactory.allAdults().build(),
+      }
+
+      await provider.addInteraction({
+        state: 'There is an existing intervention with ID 15237ae5-a017-4de6-a033-abf350f14d99',
+        uponReceiving: 'a request for that intervention',
+        withRequest: {
+          method: 'GET',
+          path: `/intervention/${interventionId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(intervention),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getIntervention(token, interventionId)).toEqual(intervention)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
