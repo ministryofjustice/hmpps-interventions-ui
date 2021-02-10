@@ -13,6 +13,15 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
   security:
     oauth2:
+      client:
+        provider:
+          hmppsauth:
+            token-uri: ${hmppsauth.baseurl}/oauth/token
+        registration:
+          community-api:
+            provider: hmppsauth
+            authorization-grant-type: client_credentials
+            scope: read
       resourceserver:
         jwt:
           issuer-uri: ${hmppsauth.baseurl}/issuer
@@ -67,6 +76,10 @@ notify:
 interventions-ui:
   locations:
     sent-referral: "/referrals/{id}/confirmation"
+
+community-api:
+  locations:
+    sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
 
 aws:
   sns:

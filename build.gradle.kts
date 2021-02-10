@@ -10,7 +10,10 @@ repositories {
 }
 
 configurations {
-  testImplementation { exclude(group = "org.junit.vintage") }
+  testImplementation {
+    exclude(group = "org.junit.vintage")
+    exclude("ch.qos.logback")
+  }
 }
 
 tasks {
@@ -45,6 +48,7 @@ dependencies {
   // security
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+  implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
   // database
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -56,4 +60,5 @@ dependencies {
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.1.14")
   testImplementation("com.h2database:h2:1.4.200")
+  testImplementation("uk.org.lidalia:slf4j-test:1.0.1")
 }
