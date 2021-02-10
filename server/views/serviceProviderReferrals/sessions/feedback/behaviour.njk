@@ -1,12 +1,58 @@
 {% extends "../../../partials/layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-width">
-      {# TODO IC-1055 Add content here #}
-    </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Page 5 of 7</span>
+      <h1 class="govuk-heading-l">
+       Session 2: their behaviour
+      </h1>
+    <form action="#" method="#">
+    {{ govukRadios({
+      idPrefix: "behaviour",
+      name: "behaviour",
+      fieldset: {
+        legend: {
+          text: "What was Matt’s behaviour like in this session? For example, consider how well engaged they were and what their body language was like.",
+          isPageHeading: true,
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "Acceptable",
+          text: "Acceptable"
+        },
+        {
+          value: "Concerning",
+          text: "Concerning"
+        }
+      ]
+    }) }}
+    {{ govukTextarea({
+      name: "more-detail",
+      id: "more-detail",
+      label: {
+        text: "Add information about their engagement in this session:",
+        classes: "govuk-label--s govuk-!-padding-bottom-3"
+      }
+    }) }}
+    {{ govukButton({
+      text: "Save and continue"
+    }) }}
+    </form>
   </div>
+
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">One-third column</h2>
+    <p class="govuk-body">one-third wide column</p>
+  </div>
+</div>
+
 {% endblock %}
