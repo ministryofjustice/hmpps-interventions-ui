@@ -8,7 +8,7 @@ community-api:
   baseUrl: http://localhost:8081
 #  Temporarily stored in config until it is decided where these values will come from. TeamCode may come from the community api
 #  in the future. The rest may be hard coded as generic values.
-  temporaryReferralRequest:
+  contactNotificationContext:
     probationAreaCode: A00
     referralType: C385
     staffCode: ASPUATU
