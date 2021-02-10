@@ -49,4 +49,23 @@ describe(FindInterventionsController, () => {
         })
     })
   })
+
+  describe('GET /find-interventions/intervention/:id', () => {
+    it('responds with a 200', async () => {
+      const intervention = interventionFactory.build({
+        title: 'Better solutions (anger management)',
+        serviceCategory: { name: 'thinking and behaviour' },
+      })
+
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+
+      await request(app)
+        .get(`/find-interventions/intervention/${intervention.id}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Better solutions (anger management)')
+          expect(res.text).toContain('Thinking and behaviour')
+        })
+    })
+  })
 })
