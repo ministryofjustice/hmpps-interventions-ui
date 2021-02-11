@@ -146,8 +146,12 @@ class SampleData {
       )
     }
 
-    fun sampleDesiredOutcome(id: UUID = UUID.randomUUID(), description: String = "Outcome 1"): DesiredOutcome {
-      return DesiredOutcome(id, description)
+    fun sampleDesiredOutcome(
+      id: UUID = UUID.randomUUID(),
+      description: String = "Outcome 1",
+      serviceCategoryId: UUID = UUID.randomUUID()
+    ): DesiredOutcome {
+      return DesiredOutcome(id, description, serviceCategoryId)
     }
 
     fun persistPCCRegion(em: TestEntityManager, pccRegion: PCCRegion): PCCRegion {
