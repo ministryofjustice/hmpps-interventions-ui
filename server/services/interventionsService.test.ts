@@ -1148,6 +1148,30 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         ).toEqual([intervention, intervention])
       })
     })
+
+    describe('maximumAge filter', () => {
+      it('accepts a positive integer', async () => {
+        const interventions = interventionFactory.buildList(2)
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by maximumAge`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { maximumAge: '25' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventions),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(token, { maximumAge: 25 })).toEqual(interventions)
+      })
+    })
   })
 
   describe('getIntervention', () => {

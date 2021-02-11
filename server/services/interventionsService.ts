@@ -114,6 +114,7 @@ export interface InterventionsFilterParams {
   allowsMale?: boolean
   allowsFemale?: boolean
   pccRegionIds?: string[]
+  maximumAge?: number
 }
 
 export default class InterventionsService {
