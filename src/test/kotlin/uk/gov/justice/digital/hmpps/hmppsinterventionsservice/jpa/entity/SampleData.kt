@@ -19,6 +19,10 @@ class SampleData {
       intervention.dynamicFrameworkContract.pccRegion?.let { pccRegion ->
         em.persist(pccRegion)
       }
+      intervention.dynamicFrameworkContract.pccRegion?.npsRegion?.let { npsRegion ->
+        em.persist(npsRegion)
+      }
+
       em.persist(intervention.dynamicFrameworkContract)
       return em.persistAndFlush(intervention)
     }
@@ -126,11 +130,11 @@ class SampleData {
     }
 
     fun sampleServiceCategory(
-      desiredOutcomes: List<DesiredOutcome>,
+      desiredOutcomes: List<DesiredOutcome> = emptyList(),
       name: String = "Accommodation",
       id: UUID = UUID.randomUUID(),
       created: OffsetDateTime = OffsetDateTime.now(),
-      complexityLevels: List<ComplexityLevel> = emptyList()
+      complexityLevels: List<ComplexityLevel> = emptyList(),
     ): ServiceCategory {
 
       return ServiceCategory(

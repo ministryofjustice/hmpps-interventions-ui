@@ -43,7 +43,7 @@ data class DynamicFrameworkContract(
 data class ContractEligibility(
   @NotNull val minimumAge: Int,
   @Column(table = "contract_eligibility")
-  @NotNull val maximumAge: Int,
+  val maximumAge: Int?,
   @Column(table = "contract_eligibility")
   @NotNull val allowsFemale: Boolean,
   @Column(table = "contract_eligibility")
