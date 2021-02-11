@@ -1,4 +1,6 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -25,7 +27,14 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
-      <p class="govuk-body">Filters to go here</p>
+      <form method="get">
+        {{ govukCheckboxes(genderCheckboxArgs) }}
+        {{ govukCheckboxes(ageCheckboxArgs) }}
+        {{ govukCheckboxes(pccRegionCheckboxArgs) }}
+
+        {{ govukButton({ text: "Filter results" }) }}
+      </form>
+
     </div>
 
     <div class="govuk-grid-column-two-thirds">

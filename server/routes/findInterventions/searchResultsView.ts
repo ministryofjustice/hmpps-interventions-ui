@@ -5,6 +5,48 @@ import { SummaryListArgs, SummaryListItem } from '../../utils/summaryList'
 export default class SearchResultsView {
   constructor(private readonly presenter: SearchResultsPresenter) {}
 
+  private checkboxArgs({
+    name,
+    legend,
+    checkboxes,
+  }: {
+    name: string
+    legend: string
+    checkboxes: {
+      value: string
+      text: string
+      checked: boolean
+    }[]
+  }): Record<string, unknown> {
+    return {
+      idPrefix: name,
+      name: `${name}[]`,
+      fieldset: {
+        legend: {
+          text: legend,
+          classes: 'govuk-fieldset__legend--s',
+        },
+      },
+      items: checkboxes.map(checkbox => ({
+        value: checkbox.value,
+        text: checkbox.text,
+        checked: checkbox.checked,
+      })),
+    }
+  }
+
+  private get pccRegionCheckboxArgs(): Record<string, unknown> {
+    return this.checkboxArgs({ name: 'pcc-region-ids', legend: 'Regions', checkboxes: this.presenter.pccRegionFilters })
+  }
+
+  private get genderCheckboxArgs(): Record<string, unknown> {
+    return this.checkboxArgs({ name: 'gender', legend: 'Gender', checkboxes: this.presenter.genderFilters })
+  }
+
+  private get ageCheckboxArgs(): Record<string, unknown> {
+    return this.checkboxArgs({ name: 'age', legend: 'Age restrictions', checkboxes: this.presenter.ageFilters })
+  }
+
   static summaryListArgs(items: SummaryListItem[]): SummaryListArgs & { classes: string } {
     return { ...ViewUtils.summaryListArgs(items), classes: 'govuk-summary-list--no-border' }
   }
@@ -12,7 +54,13 @@ export default class SearchResultsView {
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'findInterventions/searchResults',
-      { presenter: this.presenter, summaryListArgs: SearchResultsView.summaryListArgs },
+      {
+        presenter: this.presenter,
+        pccRegionCheckboxArgs: this.pccRegionCheckboxArgs,
+        genderCheckboxArgs: this.genderCheckboxArgs,
+        ageCheckboxArgs: this.ageCheckboxArgs,
+        summaryListArgs: SearchResultsView.summaryListArgs,
+      },
     ]
   }
 }
