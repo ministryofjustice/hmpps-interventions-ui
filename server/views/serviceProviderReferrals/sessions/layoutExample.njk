@@ -1,0 +1,289 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% extends "../partials/layoutAllComponents.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+
+{% block primaryTitle %}
+    <h1 class="govuk-heading-l">This is a primary title example</h2>
+{% endblock %}
+
+
+{% block pageHeading %}
+  <h2 class="govuk-heading-l">Track progress of each intervention</h2>
+{% endblock %}
+
+{% block mainContent %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {%  set completedTagHtml %}
+        {{govukTag({
+          text: "COMPLETED"
+        })}}
+        {% endset -%}
+        {%  set draftTagHtml %}
+        {{govukTag({
+          text: "IN DRAFT",
+          classes: "govuk-tag--yellow"
+        })}}
+        {% endset -%}
+        {%  set awaitingfeedbackTagHtml %}
+        {{govukTag({
+          text: "AWAITING FEEDBACK",
+          classes: "govuk-tag--red"
+        })}}
+        {% endset -%}
+        {%  set noshowTagHtml %}
+        {{govukTag({
+          text: "NO SHOW",
+          classes: "govuk-tag--purple"
+        })}}
+        {% endset -%}
+        {%  set inactiveTagHtml %}
+        {{govukTag({
+          text: "NOT SCHEDULED",
+          classes: "govuk-tag--grey"
+        })}}
+        {% endset -%}
+        {%  set scheduledTagHtml %}
+        {{govukTag({
+          text: "SCHEDULED",
+          classes: "govuk-tag--blue"
+        })}}
+        {% endset -%}
+        {%  set activeTagHtml %}
+        {{govukTag({
+          text: "TODAY",
+          classes: "govuk-tag--green"
+        })}}
+        {% endset -%}
+
+            {{ govukTable({
+              firstCellIsHeader: true,
+              head: [
+                {
+                  text: "Session"
+                },
+                {
+                  text: "Date"
+                },
+                {
+                  text: "Time"
+                },
+                {
+                  text: "Facilitator"
+                },
+                {
+                  text: "Status"
+                },
+                {
+                  text: "Action"
+                }
+              ],
+              rows: [
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 1</a>'
+                  },
+                  {
+                    text: "14 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: completedTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">View feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 2</a>'
+                  },
+                  {
+                    text: "15 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: draftTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">Continue feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 3</a>'
+                  },
+                  {
+                    text: "16 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: draftTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">Continue feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 4</a>'
+                  },
+                  {
+                    text: "17 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: awaitingfeedbackTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">Give feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 5</a>'
+                  },
+                  {
+                    text: "18 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: awaitingfeedbackTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">Give feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 6</a>'
+                  },
+                  {
+                    text: "19 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: noshowTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">View feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 7</a>'
+                  },
+                  {
+                    text: "20 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: activeTagHtml
+                  },
+                  {
+                    text: ""
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 8</a>'
+                  },
+                  {
+                    text: "14 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: scheduledTagHtml
+                  },
+                  {
+                    text: ""
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 9</a>'
+                  },
+                  {
+                    text: "14 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: inactiveTagHtml
+                  },
+                  {
+                    text: ""
+                  }
+                ],
+                [
+                  {
+                    html: '<a class="govuk-link" href="#">Session 10</a>'
+                  },
+                  {
+                    text: "14 Dec 2021"
+                  },
+                  {
+                    text: "5pm to 6pm"
+                  },
+                  {
+                    text: "Jenny Thompson"
+                  },
+                  {
+                    html: inactiveTagHtml
+                  },
+                  {
+                    text:""
+                  }
+                ]
+              ]
+            }) }}
+      </div>
+{% endblock %}

@@ -69,6 +69,11 @@ export default class StaticContentController {
       template: 'serviceProviderReferrals/sessions/amend',
       description: 'IC-1087 (session details: amend)',
     },
+    {
+      path: '/service-provider/session/layout-example',
+      template: 'serviceProviderReferrals/sessions/layoutExample',
+      description: 'IC-1129 layout example with all components',
+    },
   ]
 
   static get allPaths(): string[] {
