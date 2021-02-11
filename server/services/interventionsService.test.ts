@@ -8,6 +8,7 @@ import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../testutils/factories/serviceProvider'
 import eligibilityFactory from '../../testutils/factories/eligibility'
+import interventionFactory from '../../testutils/factories/intervention'
 import { DeliusServiceUser } from './communityApiService'
 
 jest.mock('../data/hmppsAuthClient')
@@ -1071,7 +1072,55 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getInterventions(token)).toEqual([intervention, intervention])
+      expect(await interventionsService.getInterventions(token, {})).toEqual([intervention, intervention])
+    })
+
+    describe('allowsMale filter', () => {
+      it.each([[true], [false]])('accepts a value of %s', async value => {
+        const interventions = interventionFactory.buildList(2)
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by allowsMale == ${value}`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { allowsMale: value ? 'true' : 'false' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventions),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(token, { allowsMale: value })).toEqual(interventions)
+      })
+    })
+
+    describe('allowsFemale filter', () => {
+      it.each([[true], [false]])('accepts a value of %s', async value => {
+        const interventions = interventionFactory.buildList(2)
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by allowsFemale == ${value}`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { allowsFemale: value ? 'true' : 'false' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventions),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(token, { allowsFemale: value })).toEqual(interventions)
+      })
     })
   })
 

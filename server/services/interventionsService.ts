@@ -110,6 +110,11 @@ export interface Eligibility {
   allowsMale: boolean
 }
 
+export interface InterventionsFilterParams {
+  allowsMale?: boolean
+  allowsFemale?: boolean
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -257,12 +262,13 @@ export default class InterventionsService {
     })) as SentReferral[]
   }
 
-  async getInterventions(token: string): Promise<Intervention[]> {
+  async getInterventions(token: string, filter: InterventionsFilterParams): Promise<Intervention[]> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: '/interventions',
       headers: { Accept: 'application/json' },
+      query: filter as Record<string, unknown>,
     })) as Intervention[]
   }
 
