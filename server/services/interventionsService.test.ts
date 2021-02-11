@@ -688,41 +688,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.additionalRiskInformation).toEqual('A danger to the elderly')
     })
 
-    it('returns the updated referral when setting the service category ID', async () => {
-      await provider.addInteraction({
-        state:
-          'a draft referral with ID 745011c1-1ae5-45e4-99cb-6e1f2f8ccab9 exists and it does not have a service category set',
-        uponReceiving: 'a PATCH request to update the service category ID',
-        withRequest: {
-          method: 'PATCH',
-          path: '/draft-referral/745011c1-1ae5-45e4-99cb-6e1f2f8ccab9',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: { serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16' },
-        },
-        willRespondWith: {
-          status: 200,
-          body: {
-            id: '745011c1-1ae5-45e4-99cb-6e1f2f8ccab9',
-            createdAt: '2020-12-07T20:45:21.986389Z',
-            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-          },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      })
-
-      const referral = await interventionsService.patchDraftReferral(token, '745011c1-1ae5-45e4-99cb-6e1f2f8ccab9', {
-        serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-      })
-      expect(referral.id).toBe('745011c1-1ae5-45e4-99cb-6e1f2f8ccab9')
-      expect(referral.serviceCategoryId).toBe('428ee70f-3001-4399-95a6-ad25eaaede16')
-    })
-
     it('returns the updated referral when setting usingRarDays to true', async () => {
       await provider.addInteraction({
         state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
@@ -872,7 +837,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             id: '428ee70f-3001-4399-95a6-ad25eaaede16',
             name: term({
               generate: 'accommodation',
-              matcher: '[^A-Z]',
+              matcher: '[^A-Z]+',
             }),
             complexityLevels,
             desiredOutcomes,
