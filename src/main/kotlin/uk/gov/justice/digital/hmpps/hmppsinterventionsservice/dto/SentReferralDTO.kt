@@ -14,7 +14,7 @@ class SentReferralDTO(
   companion object {
     fun from(referral: Referral): SentReferralDTO {
       return SentReferralDTO(
-        id = referral.id!!,
+        id = referral.id,
         sentAt = referral.sentAt!!,
         sentBy = AuthUserDTO.from(referral.sentBy!!),
         referenceNumber = referral.referenceNumber!!,

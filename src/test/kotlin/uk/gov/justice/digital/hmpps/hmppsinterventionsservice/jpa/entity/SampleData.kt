@@ -45,15 +45,19 @@ class SampleData {
     fun sampleReferral(
       crn: String,
       serviceProviderName: String,
-      id: UUID? = null,
+      id: UUID = UUID.randomUUID(),
       referenceNumber: String? = null,
       completionDeadline: LocalDate? = null,
+      createdAt: OffsetDateTime = OffsetDateTime.now(),
+      createdBy: AuthUser = AuthUser("123456", "delius", "bernard.beaks"),
       sentAt: OffsetDateTime? = null,
       sentBy: AuthUser? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
         id = id,
+        createdAt = createdAt,
+        createdBy = createdBy,
         completionDeadline = completionDeadline,
         referenceNumber = referenceNumber,
         sentAt = sentAt,
@@ -70,12 +74,16 @@ class SampleData {
     fun sampleIntervention(
       title: String = "Accommodation Service",
       description: String = "Help find sheltered housing",
-      dynamicFrameworkContract: DynamicFrameworkContract
+      dynamicFrameworkContract: DynamicFrameworkContract,
+      id: UUID? = null,
+      createdAt: OffsetDateTime? = null,
     ): Intervention {
       return Intervention(
+        id = id ?: UUID.randomUUID(),
+        createdAt = createdAt ?: OffsetDateTime.now(),
         title = title,
         description = description,
-        dynamicFrameworkContract = dynamicFrameworkContract
+        dynamicFrameworkContract = dynamicFrameworkContract,
       )
     }
 
