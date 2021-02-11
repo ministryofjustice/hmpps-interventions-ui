@@ -1122,6 +1122,32 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(await interventionsService.getInterventions(token, { allowsFemale: value })).toEqual(interventions)
       })
     })
+
+    describe('pccRegionIds filter', () => {
+      it('accepts a list of PCC region IDs', async () => {
+        const intervention = interventionFactory.build()
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by a non-empty list of pccRegions`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { pccRegionIds: 'cheshire,cumbria,merseyside' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([intervention, intervention]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(
+          await interventionsService.getInterventions(token, { pccRegionIds: ['cheshire', 'cumbria', 'merseyside'] })
+        ).toEqual([intervention, intervention])
+      })
+    })
   })
 
   describe('getIntervention', () => {
