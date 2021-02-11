@@ -1211,6 +1211,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.getIntervention(token, interventionId)).toEqual(intervention)
     })
   })
+
+  describe('getPccRegions', () => {
+    it('returns a list of PCC regions', async () => {
+      const pccRegions = [
+        { id: 'cheshire', name: 'Cheshire' },
+        { id: 'cumbria', name: 'Cumbria' },
+        { id: 'lancashire', name: 'Lancashire' },
+        { id: 'merseyside', name: 'Merseyside' },
+      ]
+
+      await provider.addInteraction({
+        state: 'There are some PCC regions',
+        uponReceiving: 'a request for all the PCC regions',
+        withRequest: {
+          method: 'GET',
+          path: `/pcc-regions`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(pccRegions),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getPccRegions(token)).toEqual(pccRegions)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {

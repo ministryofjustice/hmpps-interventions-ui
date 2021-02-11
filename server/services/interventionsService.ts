@@ -288,4 +288,13 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as Intervention
   }
+
+  async getPccRegions(token: string): Promise<PCCRegion[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/pcc-regions`,
+      headers: { Accept: 'application/json' },
+    })) as PCCRegion[]
+  }
 }
