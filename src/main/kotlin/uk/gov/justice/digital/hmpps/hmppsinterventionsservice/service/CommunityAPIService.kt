@@ -14,10 +14,10 @@ import java.time.LocalDate
 
 @Service
 class CommunityAPIService(
-  @Value("\${community-api.contactNotificationContext.probationAreaCode}") private val probationAreaCode: String,
-  @Value("\${community-api.contactNotificationContext.referralType}") private val referralType: String,
-  @Value("\${community-api.contactNotificationContext.staffCode}") private val staffCode: String,
-  @Value("\${community-api.contactNotificationContext.teamCode}") private val teamCode: String,
+  @Value("\${community-api.contact-notification-context.probation-area-code}") private val probationAreaCode: String,
+  @Value("\${community-api.contact-notification-context.referral-type}") private val referralType: String,
+  @Value("\${community-api.contact-notification-context.staff-code}") private val staffCode: String,
+  @Value("\${community-api.contact-notification-context.team-code}") private val teamCode: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
