@@ -1,12 +1,203 @@
 {% extends "../../../partials/layout.njk" %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-width">
-      {# TODO IC-1057 Add content here #}
-    </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Page 7 of 7</span>
+      <h1 class="govuk-heading-l">
+       Confirm the next session details (time and date mandatory)
+      </h1>
+      <h2 class="govuk-heading-m">
+       If applicable, enter details of the next session as discussed with Matt.
+      </h2>
+    <form action="#" method="#">
+      {{ govukDateInput({
+        id: "date",
+        namePrefix: "date",
+        fieldset: {
+          legend: {
+            text: "Date",
+            isPageHeading:true,
+            classes: "govuk-fieldset__legend--s"
+          }
+        }
+      }) }}
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="time-detail">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Time
+          </h1></legend>
+          <div class="govuk-date-input" id="time-detail">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="time-detail">
+                  Hours
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="passport-issued-day" name="time-detail" type="number" pattern="[0-9]*" inputmode="numeric"></div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="time-detail">
+                  Minutes
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="time-detail" name="time-detail" type="number" pattern="[0-9]*" inputmode="numeric"></div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+               {{ govukSelect({
+                  id: "sort",
+                  name: "sort",
+                  label: {
+                    text: ""
+                  },
+                  items: [
+                    {
+                      value: "AM",
+                      text: "AM",
+                      selected: true
+                    },
+                    {
+                      value: "PM",
+                      text: "PM"
+                    }
+                  ]
+                }) }}
+                </div>
+            </div>
+          </div>
+
+        </fieldset>
+      </div>
+
+      {{ govukRadios({
+        idPrefix: "type-of-session",
+        name: "type-of-session",
+        fieldset: {
+          legend: {
+            text: "Type of session",
+            isPageHeading:true,
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          text: "Select one option."
+        },
+        items: [
+          {
+            value: "1:1",
+            text: "1:1"
+          },
+          {
+            value: "Group session",
+            text: "Group session"
+          }
+        ]
+      }) }}
+
+
+      {% set addressHtml %}
+      {{ govukFieldset({
+        legend: {
+          text: "Address",
+          classes: "govuk-fieldset__legend--s",
+          isPageHeading: true
+        }
+      }) }}
+      {{ govukInput({
+        label: {
+          html: 'Building and street <span class="govuk-visually-hidden">line 1 of 2</span>'
+        },
+        id: "address-line-1",
+        name: "address-line-1"
+      }) }}
+
+      {{ govukInput({
+        label: {
+          html: '<span class="govuk-visually-hidden">Building and street line 2 of 2</span>'
+        },
+        id: "address-line-2",
+        name: "address-line-2"
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Town or city"
+        },
+        classes: "govuk-!-width-two-thirds",
+        id: "address-town",
+        name: "address-town"
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "County"
+        },
+        classes: "govuk-!-width-two-thirds",
+        id: "address-county",
+        name: "address-county"
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Postcode"
+        },
+        classes: "govuk-input--width-10",
+        id: "address-postcode",
+        name: "address-postcode"
+      }) }}
+      {% endset -%}
+
+      {{ govukRadios({
+        idPrefix: "method",
+        name: "method",
+        fieldset: {
+          legend: {
+            text: "Method",
+            isPageHeading:true,
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          text: "Select one option."
+        },
+        items: [
+          {
+            value: "Phone call",
+            text: "Phone call"
+          },
+          {
+            value: "Video call",
+            text: "Video call"
+          },
+          {
+            value: "In-person meeting",
+            text: "In-person meeting",
+            conditional: {
+              html: addressHtml
+            }
+          }
+        ]
+      }) }}
+      {{ govukButton({
+        text: "Save and continue"
+      }) }}
+    </form>
   </div>
+
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">One-third column</h2>
+    <p class="govuk-body">one-third wide column</p>
+  </div>
+</div>
+
 {% endblock %}
