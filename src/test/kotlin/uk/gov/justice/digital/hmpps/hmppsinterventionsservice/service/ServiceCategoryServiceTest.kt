@@ -2,16 +2,14 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
 import java.util.UUID
 
-@DataJpaTest
-@ActiveProfiles("jpa-test")
+@RepositoryTest
 class ServiceCategoryServiceTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val serviceCategoryRepository: ServiceCategoryRepository

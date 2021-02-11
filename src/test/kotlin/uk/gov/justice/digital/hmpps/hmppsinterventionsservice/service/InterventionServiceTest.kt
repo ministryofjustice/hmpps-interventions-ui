@@ -2,9 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.persistIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
@@ -15,10 +13,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
 import java.time.LocalDate
 
-@DataJpaTest
-@ActiveProfiles("jpa-test")
+@RepositoryTest
 class InterventionServiceTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val pccRegionRepository: PCCRegionRepository,
