@@ -28,8 +28,8 @@ class InterventionService(
     }
   }
 
-  fun getAllFilteredInterventions(parameters: MutableMap<String, Array<String>>): List<InterventionDTO> {
-    return interventionRepository.findByCriteria(listOf("avon-and-somerset", "devon-and-cornwall")).map {
+  fun getInterventions(locations: List<String>): List<InterventionDTO> {
+    return interventionRepository.findByCriteria(locations).map {
       InterventionDTO.from(it, getPCCRegions(it))
     }
   }

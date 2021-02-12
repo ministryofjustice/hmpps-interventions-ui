@@ -15,7 +15,7 @@ import java.time.LocalDate
 class InterventionFilterRepositoryImplTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val interventionFilterRepositoryImpl: InterventionFilterRepository
-){
+) {
 
   @Test
   fun `get interventions with no filters`() {
@@ -37,7 +37,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
 
 //  @Test
 //  fun `get interventions filtering by location where only pcc region interventions are available`() {
-////    saveMultipleInterventions()
+// //    saveMultipleInterventions()
 //    //Correct data needs to be set up
 //    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("devon-and-cornwall"))
 //
@@ -49,7 +49,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
 //
 //  @Test
 //  fun `get interventions filtering by location where both pcc region and nps region interventions are available`() {
-////    saveMultipleInterventions()
+// //    saveMultipleInterventions()
 //    //Correct data needs to be set up.
 //    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("devon-and-cornwall"))
 //
@@ -59,7 +59,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
 //    }
 //  }
 
-  //Currently duplicated. To be replaced/update upon test changes being merged in a different pr.
+  // Currently duplicated. To be replaced/update upon test changes being merged in a different pr.
   private fun saveMultipleInterventions() {
     val accommodationSC = SampleData.sampleServiceCategory()
     entityManager.persist(accommodationSC)

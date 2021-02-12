@@ -18,14 +18,14 @@ class InterventionFilterRepositoryImpl(
   @PersistenceContext
   private lateinit var entityManager: EntityManager
 
-  override fun findByCriteria(locations: List<String>): List<Intervention>{
+  override fun findByCriteria(locations: List<String>): List<Intervention> {
 
     val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder
     val criteriaQuery: CriteriaQuery<Intervention> = criteriaBuilder.createQuery(Intervention::class.java)
     val root: Root<Intervention> = criteriaQuery.from(Intervention::class.java)
     val predicateList: MutableList<Predicate> = mutableListOf()
 
-    if(locations.isNotEmpty()) {
+    if (locations.isNotEmpty()) {
       val predicateForLocation: Predicate = getLocationPredicate(criteriaBuilder, root, locations)
       predicateList.add(predicateForLocation)
     }
@@ -37,8 +37,7 @@ class InterventionFilterRepositoryImpl(
 
   private fun getLocationPredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, locations: List<String>): Predicate {
 
-     val npsRegionList: MutableList<Char> = pccRegionRepository.findAllByIdIn(locations)
-        .map { it.npsRegion.id }.distinct().toMutableList()
+    val npsRegionList: MutableList<Char> = pccRegionRepository.findAllByIdIn(locations).map { it.npsRegion.id }.distinct().toMutableList()
 
     val exp1: Expression<String> = root.get<Any>("dynamicFrameworkContract").get<PCCRegion>("pccRegion").get<String>("id")
     val pccRegionPredicate: Predicate = exp1.`in`(locations)
