@@ -17,6 +17,16 @@ export default class InterventionDetailsPresenter {
     return this.intervention.description
   }
 
+  get tabs(): { id: string; title: string; items: SummaryListItem[] }[] {
+    return [
+      {
+        id: 'service-provider-tab',
+        title: 'Service Provider',
+        items: this.serviceProviderSummary,
+      },
+    ]
+  }
+
   get summary(): SummaryListItem[] {
     return [
       {
@@ -71,5 +81,15 @@ export default class InterventionDetailsPresenter {
     }
 
     return ''
+  }
+
+  private get serviceProviderSummary(): SummaryListItem[] {
+    return [
+      {
+        key: 'Name',
+        lines: [this.intervention.serviceProvider.name],
+        isList: false,
+      },
+    ]
   }
 }

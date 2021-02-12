@@ -30,6 +30,7 @@ context('Find an intervention', () => {
         title: params.title,
         serviceCategory: { name: params.categoryName },
         id: params.id,
+        serviceProvider: { name: 'Harmony Living' },
       })
     })
 
@@ -56,5 +57,7 @@ context('Find an intervention', () => {
 
     cy.get('h1').contains('Better solutions (anger management)')
     cy.contains('Thinking and behaviour')
+
+    cy.get('#service-provider-tab').contains('Harmony Living')
   })
 })
