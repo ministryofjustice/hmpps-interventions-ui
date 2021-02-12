@@ -8,8 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGro
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
-import java.util.*
-
+import java.util.UUID
 
 @Service
 class InterventionService(
@@ -30,7 +29,7 @@ class InterventionService(
   }
 
   fun getAllFilteredInterventions(parameters: MutableMap<String, Array<String>>): List<InterventionDTO> {
-    return interventionRepository.findByCriteria(parameters).map {
+    return interventionRepository.findByCriteria(listOf("avon-and-somerset", "devon-and-cornwall")).map {
       InterventionDTO.from(it, getPCCRegions(it))
     }
   }
