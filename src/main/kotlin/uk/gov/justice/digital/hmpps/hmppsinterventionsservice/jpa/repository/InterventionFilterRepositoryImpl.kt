@@ -6,8 +6,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegi
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Expression
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -19,32 +17,65 @@ class InterventionFilterRepositoryImpl(
   private lateinit var entityManager: EntityManager
 
   override fun findByCriteria(locations: List<String>): List<Intervention> {
+    return findByCriteria(locations, null, null)
+  }
 
-    val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder
-    val criteriaQuery: CriteriaQuery<Intervention> = criteriaBuilder.createQuery(Intervention::class.java)
-    val root: Root<Intervention> = criteriaQuery.from(Intervention::class.java)
-    val predicateList: MutableList<Predicate> = mutableListOf()
+  private fun findByCriteria(locations: List<String>, gender: String?, ageCategory: String?): List<Intervention> {
 
-    if (locations.isNotEmpty()) {
-      val predicateForLocation: Predicate = getLocationPredicate(criteriaBuilder, root, locations)
-      predicateList.add(predicateForLocation)
-    }
+    val criteriaBuilder = entityManager.criteriaBuilder
+    val criteriaQuery = criteriaBuilder.createQuery(Intervention::class.java)
+    val root = criteriaQuery.from(Intervention::class.java)
 
-    val finalPredicate: Predicate = criteriaBuilder.and(*predicateList.toTypedArray())
+    val locationPredicate: Predicate? = getRegionPredicate(criteriaBuilder, root, locations)
+    val genderPredicate: Predicate? = getGenderPredicate(criteriaBuilder, root, gender)
+    val ageCategoryPredicate: Predicate? = getAgeCategoryPredicate(criteriaBuilder, root, ageCategory)
+
+    val predicates = listOfNotNull(locationPredicate, genderPredicate, ageCategoryPredicate)
+    val finalPredicate: Predicate = criteriaBuilder.and(*predicates.toTypedArray())
+
     criteriaQuery.where(finalPredicate)
     return entityManager.createQuery(criteriaQuery).resultList
   }
 
-  private fun getLocationPredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, locations: List<String>): Predicate {
+  private fun getRegionPredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, locations: List<String>): Predicate? {
 
-    val npsRegionList: MutableList<Char> = pccRegionRepository.findAllByIdIn(locations).map { it.npsRegion.id }.distinct().toMutableList()
+    if (locations.isNullOrEmpty()) {
+      return null
+    }
 
-    val exp1: Expression<String> = root.get<Any>("dynamicFrameworkContract").get<PCCRegion>("pccRegion").get<String>("id")
-    val pccRegionPredicate: Predicate = exp1.`in`(locations)
-
-    val exp2: Expression<Char> = root.get<Any>("dynamicFrameworkContract").get<NPSRegion>("npsRegion").get<Char>("id")
-    val npsRegionPredicate: Predicate = exp2.`in`(npsRegionList)
-
+    val pccRegionPredicate = getPccRegionPredicate(root, locations)
+    val npsRegionPredicate = getNpsRegionPredicate(root, locations)
     return criteriaBuilder.or(pccRegionPredicate, npsRegionPredicate)
+  }
+
+  private fun getPccRegionPredicate(root: Root<Intervention>, locations: List<String>): Predicate {
+
+    val expression = root.get<Any>("dynamicFrameworkContract").get<PCCRegion>("pccRegion").get<String>("id")
+    return expression.`in`(locations)
+  }
+
+  private fun getNpsRegionPredicate(root: Root<Intervention>, locations: List<String>): Predicate {
+
+    val expression = root.get<Any>("dynamicFrameworkContract").get<NPSRegion>("npsRegion").get<Char>("id")
+    val npsRegions = pccRegionRepository.findAllByIdIn(locations).map { it.npsRegion.id }.distinct()
+    return expression.`in`(npsRegions)
+  }
+
+  private fun getGenderPredicate(criteriaBuilder: CriteriaBuilder?, root: Root<Intervention>?, gender: String?): Predicate? {
+
+    if (gender.isNullOrEmpty()) {
+      return null
+    }
+
+    TODO("Not yet implemented")
+  }
+
+  private fun getAgeCategoryPredicate(criteriaBuilder: CriteriaBuilder?, root: Root<Intervention>?, ageCategory: String?): Predicate? {
+
+    if (ageCategory.isNullOrEmpty()) {
+      return null
+    }
+
+    TODO("Not yet implemented")
   }
 }
