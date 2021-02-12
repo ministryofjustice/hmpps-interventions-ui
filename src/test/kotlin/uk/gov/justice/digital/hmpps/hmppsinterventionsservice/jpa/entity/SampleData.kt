@@ -94,14 +94,16 @@ class SampleData {
       serviceProvider: ServiceProvider,
       npsRegion: NPSRegion? = null,
       pccRegion: PCCRegion? = null,
-      contractEligibility: ContractEligibility = ContractEligibility(allowsFemale = true, allowsMale = true, minimumAge = 18, maximumAge = 25)
     ): DynamicFrameworkContract {
       return DynamicFrameworkContract(
         serviceCategory = serviceCategory,
         serviceProvider = serviceProvider,
         startDate = startDate,
         endDate = endDate,
-        contractEligibility = contractEligibility,
+        minimumAge = 18,
+        maximumAge = null,
+        allowsMale = true,
+        allowsFemale = true,
         npsRegion = npsRegion,
         pccRegion = pccRegion
       )
