@@ -23,9 +23,9 @@ class SNSService(
       ReferralEventType.SENT -> {
         // fixme: what data needs to go in here
         val message = mapOf(
-          "type" to "referral-sent",
+          "eventType" to "intervention.referral.sent",
           "description" to "A referral has been sent to a Service Provider",
-          "id" to event.referral.id,
+          "referral_id" to event.referral.id,
         )
         publish(objectMapper.writeValueAsString(message))
       }

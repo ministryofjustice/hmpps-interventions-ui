@@ -44,7 +44,7 @@ internal class SNSServiceTest {
     verify(snsClient).publish(requestCaptor.capture())
     assertThat(requestCaptor.firstValue.message()).isEqualTo(
       """
-      {"type":"referral-sent","description":"A referral has been sent to a Service Provider","id":"68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"}
+      {"eventType":"intervention.referral.sent","description":"A referral has been sent to a Service Provider","referral_id":"68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"}
       """.trimIndent()
     )
   }
