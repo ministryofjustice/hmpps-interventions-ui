@@ -315,7 +315,7 @@ class ReferralServiceTest @Autowired constructor(
         )
       )
     }
-    
+
     assertThat(referralService.getAllSentReferrals().size).isEqualTo(2)
   }
 
