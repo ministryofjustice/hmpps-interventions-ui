@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.InterventionDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegionID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.InterventionService
 import java.util.UUID
 
@@ -23,7 +24,7 @@ class InterventionController(
 
   @GetMapping("/interventions")
   fun getInterventions(
-    @RequestParam(name = "pccRegionIds", required = false) pccRegionIds: List<String>?,
+    @RequestParam(name = "pccRegionIds", required = false) pccRegionIds: List<PCCRegionID>?,
     @RequestParam(name = "allowsFemale", required = false) allowsFemale: Boolean?,
     @RequestParam(name = "allowsMale", required = false) allowsMale: Boolean?,
     @RequestParam(name = "minimumAge", required = false) minimumAge: Int?,
