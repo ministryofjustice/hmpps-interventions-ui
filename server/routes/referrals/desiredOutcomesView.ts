@@ -7,7 +7,7 @@ export default class DesiredOutcomesView {
   get checkboxArgs(): Record<string, unknown> {
     return {
       idPrefix: 'desired-outcomes-ids',
-      name: 'desired-outcomes-ids',
+      name: 'desired-outcomes-ids[]',
       fieldset: {
         legend: {
           text: this.presenter.title,

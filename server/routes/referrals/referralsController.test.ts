@@ -573,7 +573,7 @@ describe('POST /referrals/:id/desired-outcomes', () => {
     await request(app)
       .post('/referrals/1/desired-outcomes')
       .type('form')
-      .send({ 'desired-outcomes-ids': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+      .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
       .expect(302)
       .expect('Location', '/referrals/1/complexity-level')
 
@@ -592,7 +592,7 @@ describe('POST /referrals/:id/desired-outcomes', () => {
     await request(app)
       .post('/referrals/1/desired-outcomes')
       .type('form')
-      .send({ 'desired-outcomes-ids': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+      .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
       .expect(500)
       .expect(res => {
         expect(res.text).toContain('Some backend error message')
