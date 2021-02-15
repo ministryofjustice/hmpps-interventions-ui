@@ -6,6 +6,7 @@ import CalendarDay from '../../utils/calendarDay'
 export default class ReferralStartPresenter {
   constructor(
     private readonly draftReferrals: DraftReferral[],
+    private readonly interventionId: string,
     private readonly error: FormValidationError | null = null
   ) {}
 
@@ -25,6 +26,8 @@ export default class ReferralStartPresenter {
     noDraftReferrals: 'You do not have any draft referrals at this moment.',
     errorMessage: ReferralDataPresenterUtils.errorMessage(this.error, 'service-user-crn'),
   }
+
+  readonly hrefStartReferral = `/intervention/${this.interventionId}/refer`
 }
 
 interface DraftReferralSummaryPresenter {

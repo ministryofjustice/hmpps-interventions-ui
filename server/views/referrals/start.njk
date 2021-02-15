@@ -18,7 +18,7 @@
 
       <p class="govuk-body-m">You can make a new referral here:</p>
 
-      <form action="/referrals/start" method="POST">
+      <form action="{{presenter.hrefStartReferral}}" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
         {{govukInput(crnInputArgs)}}
