@@ -1,0 +1,19 @@
+.govuk-review__list {
+  .right {
+    @include govuk-media-query($until: tablet) {
+      float: right;
+    }
+    float: left;
+  }
+  .govuk-grid-column-three-quarters, .govuk-grid-column-two-thirds, .govuk-grid-column-full, .govuk-grid-column-two-thirds {
+    padding: 0px;
+  }
+  .govuk-summary-list__key {
+    width: 100%;
+  }
+  strong {
+    font-weight: bold;
+    display: block;
+  }
+}
+

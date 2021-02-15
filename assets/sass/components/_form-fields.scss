@@ -1,8 +1,28 @@
 .govuk-form-group {
   label.govuk-label.govuk-label--s {
     font-weight: normal;
-    &.strong {
-      font-weight: bold;
-    }
   }
 }
+.govuk-review__list {
+  .change__right {
+    @include govuk-media-query($from: tablet) {
+      float: right;
+    }
+    @include govuk-media-query($from: mobile) {
+      @include govuk-responsive-margin(6, "bottom");
+      display: block;
+    }
+  }
+  .govuk-grid-column-three-quarters, .govuk-grid-column-two-thirds, .govuk-grid-column-full, 
+  .govuk-grid-column-two-third, .govuk-grid-column-one-third {
+    padding: 0px;
+  }
+  .govuk-summary-list__key {
+    width: 100%;
+  }
+  strong  {
+    font-weight: bold;
+    display: block;
+  }
+}
+
