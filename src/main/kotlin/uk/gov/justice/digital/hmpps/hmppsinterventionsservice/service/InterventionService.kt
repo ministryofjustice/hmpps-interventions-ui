@@ -28,8 +28,8 @@ class InterventionService(
     }
   }
 
-  fun getInterventions(locations: List<String>): List<InterventionDTO> {
-    return interventionRepository.findByCriteria(locations).map {
+  fun getInterventions(pccRegionIds: List<String>): List<InterventionDTO> {
+    return interventionRepository.findByCriteria(pccRegionIds).map {
       InterventionDTO.from(it, getPCCRegions(it))
     }
   }
