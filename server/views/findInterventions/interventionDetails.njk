@@ -19,7 +19,7 @@
 
       {{ govukSummaryList(summaryListArgs(presenter.summary)) }}
 
-      <form method="#">
+      <form action="{{ presenter.hrefReferralStart }}" method="GET">
         {{ govukButton({ text: "Make a referral" }) }}
       </form>
 
