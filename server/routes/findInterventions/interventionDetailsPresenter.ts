@@ -9,7 +9,7 @@ export default class InterventionDetailsPresenter {
     return this.intervention.title
   }
 
-  get href(): string {
+  get hrefInterventionDetails(): string {
     return `/find-interventions/intervention/${this.intervention.id}`
   }
 
