@@ -1,0 +1,29 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-!-margin-bottom-7">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
+
+      <p class="govuk-body">{{ presenter.body }}</p>
+
+      {{ govukSummaryList(summaryListArgs(presenter.summary)) }}
+
+      <form method="#">
+        {{ govukButton({ text: "Make a referral" }) }}
+      </form>
+
+      {{ govukTabs(tabsArgs(govukSummaryList)) }}
+    </div>
+  </div>
+{% endblock %}

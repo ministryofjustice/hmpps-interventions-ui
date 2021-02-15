@@ -88,6 +88,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/referrals/:id/confirmation', (req, res) => referralsController.viewConfirmation(req, res))
 
   get('/find-interventions', (req, res) => findInterventionsController.search(req, res))
+  get('/find-interventions/intervention/:id', (req, res) =>
+    findInterventionsController.viewInterventionDetails(req, res)
+  )
 
   return router
 }

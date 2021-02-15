@@ -49,8 +49,13 @@ export default async function setUpMocks(): Promise<void> {
   ]
 
   const interventions = [
-    { title: 'Better solutions (anger management)', categoryName: 'thinking and behaviour' },
     {
+      id: '1032df06-812a-42b9-b271-5ab3168f7989',
+      title: 'Better solutions (anger management)',
+      categoryName: 'thinking and behaviour',
+    },
+    {
+      id: 'd57a2c90-e8cd-489a-b62d-e8f01474f7b0',
       title: 'HELP (domestic violence for males)',
       categoryName: 'relationships',
       description:
@@ -60,6 +65,7 @@ export default async function setUpMocks(): Promise<void> {
     },
   ].map(params => {
     return interventionFactory.build({
+      id: params.id,
       title: params.title,
       serviceCategory: { name: params.categoryName },
       description: params.description,
