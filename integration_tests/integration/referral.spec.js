@@ -89,6 +89,10 @@ describe('Referral form', () => {
 
     cy.login()
 
+    const randomInterventionId = '99ee16d3-130a-4d8f-97c5-f1a42119a382'
+
+    cy.visit(`/intervention/${randomInterventionId}/refer`)
+
     cy.contains('Service User CRN').type('X320741')
 
     cy.contains('Start now').click()

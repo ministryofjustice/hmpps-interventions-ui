@@ -20,7 +20,7 @@ context('Login', () => {
     })
 
     it('the user is redirected to the referral start page', () => {
-      cy.location('pathname').should('equal', '/referrals/start')
+      cy.location('pathname').should('equal', '/probation-practitioner/dashboard')
     })
 
     it('the user name is visible in the header', () => {

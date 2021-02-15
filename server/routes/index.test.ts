@@ -9,7 +9,7 @@ describe('GET /', () => {
   describe('when logged in as a probation practitioner', () => {
     it('redirects to the referral start page', () => {
       const app = appWithAllRoutes({ userType: AppSetupUserType.probationPractitioner })
-      return request(app).get('/').expect(302).expect('Location', '/referrals/start')
+      return request(app).get('/').expect(302).expect('Location', '/probation-practitioner/dashboard')
     })
   })
 
