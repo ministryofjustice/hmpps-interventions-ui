@@ -73,19 +73,19 @@ env:
   - name: AWS_SNS_ACCESSKEYID
     valueFrom:
       secretKeyRef:
-        name: intervention-events-topic
+        name: hmpps-domain-events-topic
         key: access_key_id
 
   - name: AWS_SNS_SECRETACCESSKEY
     valueFrom:
       secretKeyRef:
-        name: intervention-events-topic
+        name: hmpps-domain-events-topic
         key: secret_access_key
 
   - name: AWS_SNS_TOPIC_ARN
     valueFrom:
       secretKeyRef:
-        name: intervention-events-topic
+        name: hmpps-domain-events-topic
         key: topic_arn
 
 {{- end -}}
