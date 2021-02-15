@@ -55,8 +55,8 @@ export default class InterventionDetailsPresenter {
         isList: false,
       },
       {
-        key: 'Sex',
-        lines: [InterventionDetailsPresenter.sexDescription(this.intervention.eligibility)],
+        key: 'Gender',
+        lines: [InterventionDetailsPresenter.genderDescription(this.intervention.eligibility)],
         isList: false,
       },
     ]
@@ -69,7 +69,7 @@ export default class InterventionDetailsPresenter {
     return `${eligibility.minimumAge}–${eligibility.maximumAge}`
   }
 
-  static sexDescription(eligibility: Eligibility): string {
+  static genderDescription(eligibility: Eligibility): string {
     if (eligibility.allowsMale && eligibility.allowsFemale) {
       return 'Male and female'
     }

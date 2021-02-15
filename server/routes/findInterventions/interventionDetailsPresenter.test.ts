@@ -134,11 +134,11 @@ describe(InterventionDetailsPresenter, () => {
       })
     })
 
-    describe('Sex', () => {
+    describe('Gender', () => {
       describe('with an intervention that’s for any adult male', () => {
         it('is “Male”', () => {
           expect(
-            linesForKey('Sex', {
+            linesForKey('Gender', {
               eligibility: eligibilityFactory.anyAdultMale().build(),
             })
           ).toEqual(['Male'])
@@ -148,7 +148,7 @@ describe(InterventionDetailsPresenter, () => {
       describe('with an intervention that’s for any adult female', () => {
         it('is “Female”', () => {
           expect(
-            linesForKey('Sex', {
+            linesForKey('Gender', {
               eligibility: eligibilityFactory.anyAdultFemale().build(),
             })
           ).toEqual(['Female'])
@@ -158,7 +158,7 @@ describe(InterventionDetailsPresenter, () => {
       describe('with an intervention that’s for all adults', () => {
         it('is “Male and female”', () => {
           expect(
-            linesForKey('Sex', {
+            linesForKey('Gender', {
               eligibility: eligibilityFactory.allAdults().build(),
             })
           ).toEqual(['Male and female'])
