@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 import java.time.LocalDate
 import java.util.UUID
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
@@ -11,7 +10,7 @@ import javax.validation.constraints.NotNull
 
 @Entity
 data class DynamicFrameworkContract(
-  @NotNull @Id @GeneratedValue val id: UUID? = null,
+  @Id val id: UUID,
 
   @NotNull @ManyToOne @JoinColumn(name = "service_category_id")
   val serviceCategory: ServiceCategory,
