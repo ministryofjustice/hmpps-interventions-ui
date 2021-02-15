@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.InterventionDTO
@@ -22,7 +23,8 @@ class InterventionController(
   }
 
   @GetMapping("/interventions")
-  fun getAllInterventions(): List<InterventionDTO> {
-    return interventionService.getAllInterventions()
+  fun getInterventions(@RequestParam(name = "pccRegionIds", required = false) pccRegionIds: List<String>?): List<InterventionDTO> {
+
+    return interventionService.getInterventions(pccRegionIds.orEmpty())
   }
 }

@@ -54,7 +54,7 @@ class InterventionServiceTest @Autowired constructor(
       )
     )
 
-    val interventionDTO = interventionService.getIntervention(intervention.id!!)
+    val interventionDTO = interventionService.getIntervention(intervention.id)
     assertThat(interventionDTO!!.title).isEqualTo(intervention.title)
     assertThat(interventionDTO.description).isEqualTo(intervention.description)
     // when only the nps region is set, the pcc regions are auto populated 
@@ -74,7 +74,7 @@ class InterventionServiceTest @Autowired constructor(
       )
     )
 
-    val interventionDTO = interventionService.getIntervention(intervention.id!!)
+    val interventionDTO = interventionService.getIntervention(intervention.id)
     assertThat(interventionDTO!!.title).isEqualTo(intervention.title)
     assertThat(interventionDTO.description).isEqualTo(intervention.description)
     assertThat(interventionDTO.pccRegions.size).isEqualTo(1)
