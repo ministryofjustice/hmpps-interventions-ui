@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegion
 import java.util.UUID
 
 data class InterventionDTO(
@@ -13,13 +14,13 @@ data class InterventionDTO(
   val eligibility: ContractEligibilityDTO,
 ) {
   companion object {
-    fun from(intervention: Intervention, pccRegions: List<PCCRegionDTO>): InterventionDTO {
+    fun from(intervention: Intervention, pccRegions: List<PCCRegion>): InterventionDTO {
       val contract = intervention.dynamicFrameworkContract
       return InterventionDTO(
         id = intervention.id!!,
         title = intervention.title,
         description = intervention.description,
-        pccRegions = pccRegions,
+        pccRegions = pccRegions.map { PCCRegionDTO.from(it) },
         serviceCategory = ServiceCategoryDTO.from(contract.serviceCategory),
         serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
         eligibility = ContractEligibilityDTO(
