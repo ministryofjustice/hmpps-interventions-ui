@@ -21,7 +21,6 @@ class InterventionServiceUnitTest {
 
   private val interventionRepository = mock<InterventionRepository>()
   private val pccRegionRepository = mock<PCCRegionRepository>()
-
   private val interventionService = InterventionService(pccRegionRepository, interventionRepository)
 
   @Test

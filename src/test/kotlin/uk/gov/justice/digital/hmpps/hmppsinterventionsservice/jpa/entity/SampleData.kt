@@ -149,6 +149,28 @@ class SampleData {
       )
     }
 
+    fun sampleNPSRegion(
+      id: Char = 'G',
+      name: String = "South West"
+    ): NPSRegion {
+      return NPSRegion(
+        id = id,
+        name = name
+      )
+    }
+
+    fun samplePCCRegion(
+      id: String = "avon-and-somerset",
+      name: String = "Avon & Somerset",
+      npsRegion: NPSRegion = sampleNPSRegion(),
+    ): PCCRegion {
+      return PCCRegion(
+        id = id,
+        name = name,
+        npsRegion = npsRegion
+      )
+    }
+
     fun sampleDesiredOutcome(
       id: UUID = UUID.randomUUID(),
       description: String = "Outcome 1",
