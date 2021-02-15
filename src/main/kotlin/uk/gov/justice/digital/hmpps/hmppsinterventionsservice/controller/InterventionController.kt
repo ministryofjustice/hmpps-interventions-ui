@@ -23,8 +23,12 @@ class InterventionController(
   }
 
   @GetMapping("/interventions")
-  fun getInterventions(@RequestParam(name = "pccRegionIds", required = false) pccRegionIds: List<String>?): List<InterventionDTO> {
+  fun getInterventions(
+    @RequestParam(name = "pccRegionIds", required = false) pccRegionIds: List<String>?,
+    @RequestParam(name = "allowsFemale", required = false) allowsFemale: Boolean?,
+    @RequestParam(name = "allowsMale", required = false) allowsMale: Boolean?,
+  ): List<InterventionDTO> {
 
-    return interventionService.getInterventions(pccRegionIds.orEmpty())
+    return interventionService.getInterventions(pccRegionIds.orEmpty(), allowsFemale, allowsMale)
   }
 }

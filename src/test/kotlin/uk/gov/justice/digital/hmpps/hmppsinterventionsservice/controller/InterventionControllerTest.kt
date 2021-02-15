@@ -16,11 +16,11 @@ internal class InterventionControllerTest {
   fun `getInterventions returns interventions based on filtering`() {
     val locations = emptyList<String>()
     val interventionDTOs = emptyList<InterventionDTO>()
-    whenever(interventionService.getInterventions(locations)).thenReturn(interventionDTOs)
+    whenever(interventionService.getInterventions(locations, allowsFemale = true, allowsMale = true)).thenReturn(interventionDTOs)
 
-    val responseDTOs = interventionController.getInterventions(locations)
+    val responseDTOs = interventionController.getInterventions(locations, allowsFemale = true, allowsMale = true)
 
-    verify(interventionService).getInterventions(locations)
+    verify(interventionService).getInterventions(locations, allowsFemale = true, allowsMale = true)
     assertSame(interventionDTOs, responseDTOs)
   }
 
@@ -28,11 +28,11 @@ internal class InterventionControllerTest {
   fun `getInterventions returns interventions unfiltered when no parameters supplied`() {
     val locations: List<String>? = null
     val interventionDTOs = emptyList<InterventionDTO>()
-    whenever(interventionService.getInterventions(emptyList())).thenReturn(interventionDTOs)
+    whenever(interventionService.getInterventions(emptyList(), null, null)).thenReturn(interventionDTOs)
 
-    val responseDTOs = interventionController.getInterventions(locations)
+    val responseDTOs = interventionController.getInterventions(locations, null, null)
 
-    verify(interventionService).getInterventions(emptyList())
+    verify(interventionService).getInterventions(emptyList(), null, null)
     assertSame(interventionDTOs, responseDTOs)
   }
 }
