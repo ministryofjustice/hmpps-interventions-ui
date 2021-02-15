@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
-import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -10,7 +9,6 @@ import javax.persistence.Column
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.ManyToOne
@@ -40,7 +38,6 @@ data class Referral(
   var complexityLevelID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
-  @NotNull @ManyToOne(fetch = FetchType.LAZY) var createdBy: AuthUser? = null,
   @ElementCollection
   @CollectionTable(
     name = "referral_desired_outcome",
@@ -50,8 +47,10 @@ data class Referral(
   var desiredOutcomesIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
 
+  // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
   @NotNull val serviceUserCRN: String,
-  @CreationTimestamp var createdAt: OffsetDateTime? = null,
-  @Id @GeneratedValue var id: UUID? = null,
+  @NotNull @ManyToOne(fetch = FetchType.LAZY) val createdBy: AuthUser,
+  @NotNull val createdAt: OffsetDateTime,
+  @Id val id: UUID,
 )

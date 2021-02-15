@@ -30,8 +30,8 @@ data class DraftReferralDTO(
       val contract = referral.intervention.dynamicFrameworkContract
 
       return DraftReferralDTO(
-        id = referral.id!!,
-        createdAt = referral.createdAt!!,
+        id = referral.id,
+        createdAt = referral.createdAt,
         completionDeadline = referral.completionDeadline,
         complexityLevelId = referral.complexityLevelID,
         furtherInformation = referral.furtherInformation,

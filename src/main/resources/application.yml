@@ -32,9 +32,9 @@ spring:
     password: ${postgres.password}
   jpa:
     hibernate:
-      dialect: PostgreSQLDialect
-      show-sql: false
       ddl-auto: validate
+      dialect: PostgreSQLDialect
+    show-sql: false
 
 server:
   port: 8080

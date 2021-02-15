@@ -3,48 +3,31 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
 
-@DataJpaTest
-@ActiveProfiles("jpa-test")
+@RepositoryTest
 class ReferralRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
 ) {
-
-  @Test
-  fun `when findByIdOrNull then return referral`() {
-    val referrals = listOf(
-      SampleData.sampleReferral("X123456", "Harmony Living"),
-      SampleData.sampleReferral("X123456", "Feel Good")
-    )
-    referrals.forEach { SampleData.persistReferral(entityManager, it) }
-
-    val found = referralRepository.findByIdOrNull(referrals[0].id!!)
-    Assertions.assertThat(found).isEqualTo(referrals[0])
-  }
+  private val authUserFactory = AuthUserFactory(entityManager)
 
   @Test
   fun `removing a referral does not remove associated auth_user`() {
-    val user = AuthUser("user_id", "auth_source", "user_name")
-    entityManager.persist(user)
-    val referral = SampleData.sampleReferral("X123456", "Harmony Living")
-    referral.createdBy = user
+    val user = authUserFactory.create(id = "referral_repository_test_user_id")
+    val referral = SampleData.sampleReferral("X123456", "Harmony Living", createdBy = user)
     SampleData.persistReferral(entityManager, referral)
-    entityManager.flush()
 
     // check that when the referral is deleted, the user is not
     entityManager.remove(referral)
-    Assertions.assertThat(referralRepository.findAll() as List<Referral>).isEmpty()
-    val usersAfterDelete = authUserRepository.findAll() as List<AuthUser>
-    Assertions.assertThat(usersAfterDelete.size).isEqualTo(1)
-    Assertions.assertThat(usersAfterDelete[0]).isEqualTo(user)
+    Assertions.assertThat(referralRepository.findByIdOrNull(referral.id)).isNull()
+    val userAfterDelete = authUserRepository.findByIdOrNull(user.id)
+    Assertions.assertThat(userAfterDelete).isNotNull
+    Assertions.assertThat(userAfterDelete).isEqualTo(user)
   }
 }

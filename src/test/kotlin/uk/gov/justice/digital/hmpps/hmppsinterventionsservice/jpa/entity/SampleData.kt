@@ -1,43 +1,56 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
+// this class contains sample data, as well as methods to persist the
 class SampleData {
   companion object {
     // there are tonnes of related tables that need to exist to successfully persist an intervention,
     // this is a helper method that persists them all
     fun persistIntervention(em: TestEntityManager, intervention: Intervention): Intervention {
-      em.persist(intervention.dynamicFrameworkContract.serviceCategory)
-      em.persist(intervention.dynamicFrameworkContract.serviceProvider)
-//      em.persist(intervention.dynamicFrameworkContract.contractEligibility)
-      intervention.dynamicFrameworkContract.npsRegion?.let { npsRegion ->
-        em.persist(npsRegion)
-      }
-      intervention.dynamicFrameworkContract.pccRegion?.let { pccRegion ->
-        em.persist(pccRegion)
-      }
-      intervention.dynamicFrameworkContract.pccRegion?.npsRegion?.let { npsRegion ->
-        em.persist(npsRegion)
+      intervention.dynamicFrameworkContract.serviceCategory.let {
+        ServiceCategoryFactory(em).create(
+          id = it.id,
+          name = it.name,
+          complexityLevels = it.complexityLevels,
+          desiredOutcomes = it.desiredOutcomes,
+          created = it.created,
+        )
       }
 
+      intervention.dynamicFrameworkContract.serviceProvider.let {
+        ServiceProviderFactory(em).create(
+          id = it.id,
+          name = it.name,
+          incomingReferralDistributionEmail = it.incomingReferralDistributionEmail,
+        )
+      }
+
+//      em.persist(intervention.dynamicFrameworkContract.contractEligibility)
       em.persist(intervention.dynamicFrameworkContract)
       return em.persistAndFlush(intervention)
     }
 
     fun persistReferral(em: TestEntityManager, referral: Referral): Referral {
       persistIntervention(em, referral.intervention)
-      referral.createdBy?.let {
-        if (em.find(AuthUser::class.java, it.id) == null) {
-          em.persist(it)
-        }
-      }
+
+      // we need to ensure any users associated with the referral have been created.
+      // we can use the new-style factory class to do this; it looks a bit strange, but
+      // the rest of this code will soon be refactored to make use of these factories
+      // so it will all become neater and look more sensible.
+      AuthUserFactory(em).create(
+        referral.createdBy.id,
+        referral.createdBy.authSource,
+        referral.createdBy.userName
+      )
       referral.sentBy?.let {
-        if (em.find(AuthUser::class.java, it.id) == null) {
-          em.persist(it)
-        }
+        AuthUserFactory(em).create(it.id, it.authSource, it.userName)
       }
       return em.persistAndFlush(referral)
     }
@@ -45,15 +58,19 @@ class SampleData {
     fun sampleReferral(
       crn: String,
       serviceProviderName: String,
-      id: UUID? = null,
+      id: UUID = UUID.randomUUID(),
       referenceNumber: String? = null,
       completionDeadline: LocalDate? = null,
+      createdAt: OffsetDateTime = OffsetDateTime.now(),
+      createdBy: AuthUser = AuthUser("123456", "delius", "bernard.beaks"),
       sentAt: OffsetDateTime? = null,
       sentBy: AuthUser? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
         id = id,
+        createdAt = createdAt,
+        createdBy = createdBy,
         completionDeadline = completionDeadline,
         referenceNumber = referenceNumber,
         sentAt = sentAt,
@@ -70,12 +87,16 @@ class SampleData {
     fun sampleIntervention(
       title: String = "Accommodation Service",
       description: String = "Help find sheltered housing",
-      dynamicFrameworkContract: DynamicFrameworkContract
+      dynamicFrameworkContract: DynamicFrameworkContract,
+      id: UUID? = null,
+      createdAt: OffsetDateTime? = null,
     ): Intervention {
       return Intervention(
+        id = id ?: UUID.randomUUID(),
+        createdAt = createdAt ?: OffsetDateTime.now(),
         title = title,
         description = description,
-        dynamicFrameworkContract = dynamicFrameworkContract
+        dynamicFrameworkContract = dynamicFrameworkContract,
       )
     }
 
@@ -86,38 +107,18 @@ class SampleData {
       serviceProvider: ServiceProvider,
       npsRegion: NPSRegion? = null,
       pccRegion: PCCRegion? = null,
-      contractEligibility: ContractEligibility = ContractEligibility(allowsFemale = true, allowsMale = true, minimumAge = 18, maximumAge = 25)
     ): DynamicFrameworkContract {
       return DynamicFrameworkContract(
         serviceCategory = serviceCategory,
         serviceProvider = serviceProvider,
         startDate = startDate,
         endDate = endDate,
-        contractEligibility = contractEligibility,
+        minimumAge = 18,
+        maximumAge = null,
+        allowsMale = true,
+        allowsFemale = true,
         npsRegion = npsRegion,
         pccRegion = pccRegion
-      )
-    }
-
-    fun sampleNPSRegion(
-      id: Char = 'G',
-      name: String = "South West"
-    ): NPSRegion {
-      return NPSRegion(
-        id = id,
-        name = name
-      )
-    }
-
-    fun samplePCCRegion(
-      id: String = "avon-and-somerset",
-      name: String = "Avon & Somerset",
-      npsRegion: NPSRegion = sampleNPSRegion(),
-    ): PCCRegion {
-      return PCCRegion(
-        id = id,
-        name = name,
-        npsRegion = npsRegion
       )
     }
 
@@ -146,8 +147,12 @@ class SampleData {
       )
     }
 
-    fun sampleDesiredOutcome(id: UUID = UUID.randomUUID(), description: String = "Outcome 1"): DesiredOutcome {
-      return DesiredOutcome(id, description)
+    fun sampleDesiredOutcome(
+      id: UUID = UUID.randomUUID(),
+      description: String = "Outcome 1",
+      serviceCategoryId: UUID = UUID.randomUUID()
+    ): DesiredOutcome {
+      return DesiredOutcome(id, description, serviceCategoryId)
     }
 
     fun persistPCCRegion(em: TestEntityManager, pccRegion: PCCRegion): PCCRegion {

@@ -15,21 +15,10 @@ import java.util.UUID
 @JsonTest
 class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferralDTO>) {
   @Test
-  fun `sent referral requires id, reference number, and created and sent timestamps, sentBy`() {
+  fun `sent referral requires reference number, sent timestamp, sentBy`() {
     val referral = SampleData.sampleReferral("X123456", "Provider")
-    val id = UUID.randomUUID()
     val timestamp = OffsetDateTime.now()
 
-    assertThrows<RuntimeException> {
-      SentReferralDTO.from(referral)
-    }
-
-    referral.id = id
-    assertThrows<RuntimeException> {
-      SentReferralDTO.from(referral)
-    }
-
-    referral.createdAt = timestamp
     assertThrows<RuntimeException> {
       SentReferralDTO.from(referral)
     }
@@ -55,9 +44,13 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     val sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
     val sentBy = AuthUser("id", "source", "username")
 
-    val referral = SampleData.sampleReferral("X123456", "Provider")
-    referral.id = id
-    referral.createdAt = createdAt
+    val referral = SampleData.sampleReferral(
+      "X123456",
+      "Provider",
+      id = id,
+      createdAt = createdAt,
+    )
+
     referral.referenceNumber = "something"
     referral.needsInterpreter = true
     referral.interpreterLanguage = "french"
