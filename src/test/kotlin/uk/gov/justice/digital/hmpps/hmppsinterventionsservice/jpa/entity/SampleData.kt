@@ -101,6 +101,7 @@ class SampleData {
     }
 
     fun sampleContract(
+      id: UUID? = null,
       startDate: LocalDate = LocalDate.of(2020, 12, 1),
       endDate: LocalDate = LocalDate.of(2021, 12, 1),
       serviceCategory: ServiceCategory,
@@ -109,6 +110,7 @@ class SampleData {
       pccRegion: PCCRegion? = null,
     ): DynamicFrameworkContract {
       return DynamicFrameworkContract(
+        id = id ?: UUID.randomUUID(),
         serviceCategory = serviceCategory,
         serviceProvider = serviceProvider,
         startDate = startDate,
