@@ -8,6 +8,7 @@ import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../testutils/factories/serviceProvider'
 import eligibilityFactory from '../../testutils/factories/eligibility'
+import interventionFactory from '../../testutils/factories/intervention'
 import { DeliusServiceUser } from './communityApiService'
 
 jest.mock('../data/hmppsAuthClient')
@@ -1071,7 +1072,105 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getInterventions(token)).toEqual([intervention, intervention])
+      expect(await interventionsService.getInterventions(token, {})).toEqual([intervention, intervention])
+    })
+
+    describe('allowsMale filter', () => {
+      it.each([[true], [false]])('accepts a value of %s', async value => {
+        const interventions = interventionFactory.buildList(2)
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by allowsMale == ${value}`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { allowsMale: value ? 'true' : 'false' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventions),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(token, { allowsMale: value })).toEqual(interventions)
+      })
+    })
+
+    describe('allowsFemale filter', () => {
+      it.each([[true], [false]])('accepts a value of %s', async value => {
+        const interventions = interventionFactory.buildList(2)
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by allowsFemale == ${value}`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { allowsFemale: value ? 'true' : 'false' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventions),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(token, { allowsFemale: value })).toEqual(interventions)
+      })
+    })
+
+    describe('pccRegionIds filter', () => {
+      it('accepts a list of PCC region IDs', async () => {
+        const intervention = interventionFactory.build()
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by a non-empty list of pccRegions`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { pccRegionIds: 'cheshire,cumbria,merseyside' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([intervention, intervention]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(
+          await interventionsService.getInterventions(token, { pccRegionIds: ['cheshire', 'cumbria', 'merseyside'] })
+        ).toEqual([intervention, intervention])
+      })
+    })
+
+    describe('maximumAge filter', () => {
+      it('accepts a positive integer', async () => {
+        const interventions = interventionFactory.buildList(2)
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by maximumAge`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { maximumAge: '25' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventions),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(token, { maximumAge: 25 })).toEqual(interventions)
+      })
     })
   })
 
@@ -1110,6 +1209,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       expect(await interventionsService.getIntervention(token, interventionId)).toEqual(intervention)
+    })
+  })
+
+  describe('getPccRegions', () => {
+    it('returns a list of PCC regions', async () => {
+      const pccRegions = [
+        { id: 'cheshire', name: 'Cheshire' },
+        { id: 'cumbria', name: 'Cumbria' },
+        { id: 'lancashire', name: 'Lancashire' },
+        { id: 'merseyside', name: 'Merseyside' },
+      ]
+
+      await provider.addInteraction({
+        state: 'There are some PCC regions',
+        uponReceiving: 'a request for all the PCC regions',
+        withRequest: {
+          method: 'GET',
+          path: `/pcc-regions`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(pccRegions),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getPccRegions(token)).toEqual(pccRegions)
     })
   })
 })

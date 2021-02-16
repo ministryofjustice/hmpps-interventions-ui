@@ -110,6 +110,13 @@ export interface Eligibility {
   allowsMale: boolean
 }
 
+export interface InterventionsFilterParams {
+  allowsMale?: boolean
+  allowsFemale?: boolean
+  pccRegionIds?: string[]
+  maximumAge?: number
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -257,12 +264,19 @@ export default class InterventionsService {
     })) as SentReferral[]
   }
 
-  async getInterventions(token: string): Promise<Intervention[]> {
+  async getInterventions(token: string, filter: InterventionsFilterParams): Promise<Intervention[]> {
     const restClient = this.createRestClient(token)
+
+    const filterQuery: Record<string, unknown> = { ...filter }
+
+    if (filter.pccRegionIds !== undefined) {
+      filterQuery.pccRegionIds = filter.pccRegionIds.join(',')
+    }
 
     return (await restClient.get({
       path: '/interventions',
       headers: { Accept: 'application/json' },
+      query: filterQuery,
     })) as Intervention[]
   }
 
@@ -273,5 +287,14 @@ export default class InterventionsService {
       path: `/intervention/${id}`,
       headers: { Accept: 'application/json' },
     })) as Intervention
+  }
+
+  async getPccRegions(token: string): Promise<PCCRegion[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/pcc-regions`,
+      headers: { Accept: 'application/json' },
+    })) as PCCRegion[]
   }
 }
