@@ -43,11 +43,9 @@ export default class ReferralsController {
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
-    const { token, userId } = res.locals.user
     const { interventionId } = req.params
 
-    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-    const presenter = new ReferralStartPresenter(existingDraftReferrals, interventionId)
+    const presenter = new ReferralStartPresenter(interventionId)
     const view = new ReferralStartView(presenter)
 
     res.render(...view.renderArgs)
@@ -103,9 +101,7 @@ export default class ReferralsController {
 
       res.redirect(303, `/referrals/${referral.id}/form`)
     } else {
-      const { token, userId } = res.locals.user
-      const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-      const presenter = new ReferralStartPresenter(existingDraftReferrals, interventionId, error)
+      const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
 
       res.status(400)
