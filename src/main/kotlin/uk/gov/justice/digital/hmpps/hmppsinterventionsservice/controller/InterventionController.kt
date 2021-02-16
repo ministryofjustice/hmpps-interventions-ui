@@ -27,8 +27,10 @@ class InterventionController(
     @RequestParam(name = "pccRegionIds", required = false) pccRegionIds: List<String>?,
     @RequestParam(name = "allowsFemale", required = false) allowsFemale: Boolean?,
     @RequestParam(name = "allowsMale", required = false) allowsMale: Boolean?,
+    @RequestParam(name = "minimumAge", required = false) minimumAge: Int?,
+    @RequestParam(name = "maximumAge", required = false) maximumAge: Int?
   ): List<InterventionDTO> {
 
-    return interventionService.getInterventions(pccRegionIds.orEmpty(), allowsFemale, allowsMale)
+    return interventionService.getInterventions(pccRegionIds.orEmpty(), allowsFemale, allowsMale, minimumAge, maximumAge)
   }
 }

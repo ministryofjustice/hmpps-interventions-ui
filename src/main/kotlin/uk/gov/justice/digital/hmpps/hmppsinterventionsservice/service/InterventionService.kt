@@ -28,8 +28,8 @@ class InterventionService(
     }
   }
 
-  fun getInterventions(pccRegionIds: List<String>, allowsFemale: Boolean?, allowsMale: Boolean?): List<InterventionDTO> {
-    return interventionRepository.findByCriteria(pccRegionIds, allowsFemale, allowsMale).map {
+  fun getInterventions(pccRegionIds: List<String>, allowsFemale: Boolean?, allowsMale: Boolean?, minimumAge: Int?, maximumAge: Int?): List<InterventionDTO> {
+    return interventionRepository.findByCriteria(pccRegionIds, allowsFemale, allowsMale, minimumAge, maximumAge).map {
       InterventionDTO.from(it, getPCCRegions(it))
     }
   }

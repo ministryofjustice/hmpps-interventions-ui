@@ -17,11 +17,7 @@ class InterventionFilterRepositoryImpl(
   @PersistenceContext
   private lateinit var entityManager: EntityManager
 
-  override fun findByCriteria(pccRegionIds: List<String>, allowsFemale: Boolean?, allowsMale: Boolean?): List<Intervention> {
-    return findByCriteria(pccRegionIds, allowsFemale, allowsMale, null)
-  }
-
-  private fun findByCriteria(pccRegionIds: List<String>, allowsFemale: Boolean?, allowsMale: Boolean?, ageCategory: String?): List<Intervention> {
+  override fun findByCriteria(pccRegionIds: List<String>, allowsFemale: Boolean?, allowsMale: Boolean?, minimumAge: Int?, maximumAge: Int?): List<Intervention> {
 
     val criteriaBuilder = entityManager.criteriaBuilder
     val criteriaQuery = criteriaBuilder.createQuery(Intervention::class.java)
@@ -30,9 +26,10 @@ class InterventionFilterRepositoryImpl(
     val regionPredicate: Predicate? = getRegionPredicate(criteriaBuilder, root, pccRegionIds)
     val allowsFemalePredicate: Predicate? = getAllowsFemalePredicate(criteriaBuilder, root, allowsFemale)
     val allowsMalePredicate: Predicate? = getAllowsMalePredicate(criteriaBuilder, root, allowsMale)
-    val ageCategoryPredicate: Predicate? = getAgeCategoryPredicate(criteriaBuilder, root, ageCategory)
+    val minimumAgePredicate: Predicate? = getMinimumAgePredicate(criteriaBuilder, root, minimumAge)
+    val maximumAgePredicate: Predicate? = getMaximumAgePredicate(criteriaBuilder, root, maximumAge)
 
-    val predicates = listOfNotNull(regionPredicate, allowsFemalePredicate, allowsMalePredicate, ageCategoryPredicate)
+    val predicates = listOfNotNull(regionPredicate, allowsFemalePredicate, allowsMalePredicate, minimumAgePredicate, maximumAgePredicate)
     val finalPredicate: Predicate = criteriaBuilder.and(*predicates.toTypedArray())
 
     criteriaQuery.where(finalPredicate)
@@ -77,12 +74,19 @@ class InterventionFilterRepositoryImpl(
     return criteriaBuilder.equal(root.get<DynamicFrameworkContract>("dynamicFrameworkContract")?.get<Boolean>("allowsMale"), allowsMale)
   }
 
-  private fun getAgeCategoryPredicate(criteriaBuilder: CriteriaBuilder?, root: Root<Intervention>?, ageCategory: String?): Predicate? {
+  private fun getMinimumAgePredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, minimumAge: Int?): Predicate? {
 
-    if (ageCategory.isNullOrEmpty()) {
-      return null
+    return minimumAge?.let {
+      val expression = root.get<DynamicFrameworkContract>("dynamicFrameworkContract").get<Int>("minimumAge")
+      criteriaBuilder.equal(expression, minimumAge)
     }
+  }
 
-    TODO("Not yet implemented")
+  private fun getMaximumAgePredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, maximumAge: Int?): Predicate? {
+
+    return maximumAge?.let {
+      val expression = root.get<DynamicFrameworkContract>("dynamicFrameworkContract").get<Int>("maximumAge")
+      criteriaBuilder.equal(expression, maximumAge)
+    }
   }
 }
