@@ -35,7 +35,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()), title = "test Title")
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(npsRegion = npsRegionFactory.create()))
-    val found = interventionFilterRepositoryImpl.findByCriteria(listOf())
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), null, null)
     assertThat(found.size).isEqualTo(3)
   }
 
@@ -44,7 +44,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(npsRegion = npsRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(npsRegion = npsRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(npsRegion = npsRegionFactory.create(id = 'H', name = "name")))
-    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("devon-and-cornwall"))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("devon-and-cornwall"), null, null)
 
     assertThat(found.size).isEqualTo(2)
     found.forEach {
@@ -57,7 +57,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create(id = "testID", name = "testName")))
-    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("avon-and-somerset"))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("avon-and-somerset"), null, null)
 
     assertThat(found.size).isEqualTo(2)
     found.forEach {
@@ -70,11 +70,89 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(npsRegion = npsRegionFactory.create()))
     interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create(id = "testID", name = "testName")))
-    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("avon-and-somerset"))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("avon-and-somerset"), null, null)
 
     assertThat(found.size).isEqualTo(2)
     found.forEach {
       assert(it.dynamicFrameworkContract.pccRegion?.id.equals("avon-and-somerset") || it.dynamicFrameworkContract.npsRegion?.id?.equals('G')!!)
     }
+  }
+
+  @Test
+  fun `get interventions filtering by allowsFemale is true`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsFemale = false))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), true, null)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsFemale).isTrue
+  }
+
+  @Test
+  fun `get interventions filtering by allowsFemale is false`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsFemale = false))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), false, null)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsFemale).isFalse
+  }
+
+  @Test
+  fun `get interventions filtering by allowsMale is true`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsMale = false))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), null, true)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsMale).isTrue
+  }
+
+  @Test
+  fun `get interventions filtering by allowsMale is false`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsMale = false))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), null, false)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsMale).isFalse
+  }
+
+  @Test
+  fun `get interventions filtering by both allowsMale is true and allowsFemale is true`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsFemale = false))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsMale = false))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), allowsFemale = true, allowsMale = true)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsFemale).isTrue
+    assertThat(found[0].dynamicFrameworkContract.allowsMale).isTrue
+  }
+
+  @Test
+  fun `get interventions filtering by both allowsMale is false and allowsFemale is true`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsFemale = false))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsMale = false))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf(), allowsFemale = true, allowsMale = false)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsFemale).isTrue
+    assertThat(found[0].dynamicFrameworkContract.allowsMale).isFalse
+  }
+
+  @Test
+  fun `get interventions filtering by location, allowsMale and allowsFemale`() {
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(npsRegion = npsRegionFactory.create()))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(pccRegion = pccRegionFactory.create(id = "testID", name = "testName")))
+    interventionFactory.create(contract = dynamicFrameworkContractFactory.create(allowsMale = false, pccRegion = pccRegionFactory.create()))
+    val found = interventionFilterRepositoryImpl.findByCriteria(listOf("avon-and-somerset"), allowsFemale = true, allowsMale = false)
+
+    assertThat(found.size).isEqualTo(1)
+    assertThat(found[0].dynamicFrameworkContract.allowsFemale).isTrue
+    assertThat(found[0].dynamicFrameworkContract.allowsMale).isFalse
+    assertThat(found[0].dynamicFrameworkContract.pccRegion?.id).isEqualTo("avon-and-somerset")
   }
 }
