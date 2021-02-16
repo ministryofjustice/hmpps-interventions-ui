@@ -76,7 +76,7 @@ module.exports = on => {
     },
 
     stubGetPccRegions: arg => {
-      return interventionsService.stubGetPccRegions(arg.id, arg.responseJson)
+      return interventionsService.stubGetPccRegions(arg.responseJson)
     },
   })
 }

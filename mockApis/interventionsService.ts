@@ -164,7 +164,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubGetPccRegions = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubGetPccRegions = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
