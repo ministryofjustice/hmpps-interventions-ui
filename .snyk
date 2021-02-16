@@ -1,0 +1,9 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-LODASH-1040724:
+     - '*':
+         reason: Lodash vuln introduced by express-validator@6.8.0 with no upgrade path; will reassess in 1 month
+         expiry: 2021-03-16:00:00.000Z
