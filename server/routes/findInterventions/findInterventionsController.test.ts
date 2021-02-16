@@ -5,6 +5,7 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import interventionFactory from '../../../testutils/factories/intervention'
+import pccRegionFactory from '../../../testutils/factories/pccRegion'
 
 jest.mock('../../services/interventionsService')
 const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
@@ -35,6 +36,8 @@ describe(FindInterventionsController, () => {
       })
       interventionsService.getInterventions.mockResolvedValue(interventions)
 
+      interventionsService.getPccRegions.mockResolvedValue([])
+
       await request(app)
         .get('/find-interventions')
         .expect(200)
@@ -47,6 +50,24 @@ describe(FindInterventionsController, () => {
           expect(res.text).toContain('HELP (domestic violence for males)')
           expect(res.text).toContain('Relationships')
         })
+    })
+
+    it('accepts filter params and makes a filtered request to the API', async () => {
+      interventionsService.getInterventions.mockResolvedValue([])
+      const pccRegions = [pccRegionFactory.build({ name: 'Cheshire' }), pccRegionFactory.build({ name: 'Cumbria' })]
+      interventionsService.getPccRegions.mockResolvedValue(pccRegions)
+
+      await request(app)
+        .get(
+          `/find-interventions?pcc-region-ids[]=${pccRegions[0].id}&pcc-region-ids[]=${pccRegions[1].id}&age[]=18-to-25-only&gender[]=male`
+        )
+        .expect(200)
+
+      expect(interventionsService.getInterventions.mock.calls[0][1]).toEqual({
+        allowsMale: true,
+        maximumAge: 25,
+        pccRegionIds: ['1', '2'],
+      })
     })
   })
 

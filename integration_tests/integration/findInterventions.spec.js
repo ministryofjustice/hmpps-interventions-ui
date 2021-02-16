@@ -1,4 +1,5 @@
 import interventionFactory from '../../testutils/factories/intervention'
+import pccRegionFactory from '../../testutils/factories/pccRegion'
 
 context('Find an intervention', () => {
   beforeEach(() => {
@@ -36,6 +37,9 @@ context('Find an intervention', () => {
 
     cy.stubGetInterventions(interventions)
 
+    const pccRegions = [pccRegionFactory.build({ name: 'Cheshire' }), pccRegionFactory.build({ name: 'Lancashire' })]
+    cy.stubGetPccRegions(pccRegions)
+
     cy.visit('/find-interventions')
 
     cy.get('h1').contains('Find interventions')
@@ -45,6 +49,12 @@ context('Find an intervention', () => {
     cy.contains('Thinking and behaviour')
     cy.get('h2').contains('HELP (domestic violence for males)')
     cy.contains('Relationships')
+
+    cy.get('label[for*="gender"]').contains('Male').click()
+    cy.get('label[for*="age"]').contains('Only for ages 18 to 25').click()
+    cy.get('label[for*="pcc-region-ids"]').contains('Cheshire').click()
+
+    cy.contains('Filter results').click()
 
     const selectedIntervention = interventions.find(
       intervention => intervention.id === thinkingAndBehaviourInterventionId

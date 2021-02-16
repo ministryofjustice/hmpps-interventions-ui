@@ -136,7 +136,8 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${this.mockPrefix}/interventions`,
+        // We don’t care about the query (filter)
+        urlPath: `${this.mockPrefix}/interventions`,
       },
       response: {
         status: 200,
@@ -164,7 +165,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubGetPccRegions = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubGetPccRegions = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',

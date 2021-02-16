@@ -4,6 +4,7 @@ import eligibilityFactory from '../../../testutils/factories/eligibility'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import { Intervention } from '../../services/interventionsService'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
+import TestUtils from '../../../testutils/testUtils'
 
 describe(InterventionDetailsPresenter, () => {
   describe('title', () => {
@@ -77,13 +78,11 @@ describe(InterventionDetailsPresenter, () => {
   })
 
   describe('summary', () => {
-    function linesForKey(key: string, params: DeepPartial<Intervention>): string[] {
-      const presenter = new InterventionDetailsPresenter(interventionFactory.build(params))
-      const item = presenter.summary.find(anItem => anItem.key === key)
-      if (item === undefined) {
-        fail(`Didn't find item for key ${key}`)
-      }
-      return item.lines
+    function linesForKey(key: string, params: DeepPartial<Intervention>): string[] | null {
+      return TestUtils.linesForKey(
+        key,
+        () => new InterventionDetailsPresenter(interventionFactory.build(params)).summary
+      )
     }
 
     describe('Type', () => {
