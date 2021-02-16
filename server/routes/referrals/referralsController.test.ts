@@ -60,7 +60,7 @@ describe('GET /intervention/:id/refer', () => {
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('You can make a new referral here')
+        expect(res.text).toContain("Enter the service user's case identifier")
       })
   })
 })

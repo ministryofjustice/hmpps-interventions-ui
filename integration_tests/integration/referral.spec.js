@@ -95,7 +95,7 @@ describe('Referral form', () => {
 
     cy.contains('Service User CRN').type('X320741')
 
-    cy.contains('Start now').click()
+    cy.contains('Continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
