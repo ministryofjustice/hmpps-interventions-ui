@@ -13,33 +13,25 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
-        Make a referral
+        Enter the service user's case identifier
       </h1>
 
-      <p class="govuk-body-m">You can make a new referral here:</p>
+      <p class="govuk-body-l">Retrieve service user's record</p>
 
-      <form action="/referrals/start" method="POST">
+      <form action="{{presenter.hrefStartReferral}}" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
         {{govukInput(crnInputArgs)}}
 
+        <p>The service user's details will be imported</p>
+
         <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
-          Start now
+          Continue
           <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewbox="0 0 33 40" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
           </svg>
         </button>
       </form>
-
-      <h2 class="govuk-heading-l">
-        Draft referrals
-      </h2>
-      {% if presenter.orderedReferrals | length %}
-        {{ govukTable(tableArgs) }}
-      {% else %}
-        <p class="govuk-body-m">{{ presenter.text.noDraftReferrals }}</p>
-      {% endif %}
-    </div>
   </div>
 
 {% endblock %}

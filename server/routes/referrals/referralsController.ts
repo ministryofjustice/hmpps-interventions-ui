@@ -43,9 +43,9 @@ export default class ReferralsController {
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
-    const { token, userId } = res.locals.user
-    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-    const presenter = new ReferralStartPresenter(existingDraftReferrals)
+    const { interventionId } = req.params
+
+    const presenter = new ReferralStartPresenter(interventionId)
     const view = new ReferralStartView(presenter)
 
     res.render(...view.renderArgs)
@@ -59,7 +59,7 @@ export default class ReferralsController {
     let serviceUser: DeliusServiceUser | null = null
 
     const crn = req.body['service-user-crn']
-    const hardcodedInterventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+    const { interventionId } = req.params
 
     if (form.isValid) {
       try {
@@ -93,11 +93,7 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      const referral = await this.interventionsService.createDraftReferral(
-        res.locals.user.token,
-        crn,
-        hardcodedInterventionId
-      )
+      const referral = await this.interventionsService.createDraftReferral(res.locals.user.token, crn, interventionId)
 
       await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
@@ -105,9 +101,7 @@ export default class ReferralsController {
 
       res.redirect(303, `/referrals/${referral.id}/form`)
     } else {
-      const { token, userId } = res.locals.user
-      const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
-      const presenter = new ReferralStartPresenter(existingDraftReferrals, error)
+      const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
 
       res.status(400)

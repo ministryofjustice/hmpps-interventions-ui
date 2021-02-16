@@ -49,47 +49,45 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /referrals/start', () => {
+describe('GET /intervention/:id/refer', () => {
   beforeEach(() => {
     interventionsService.getDraftReferralsForUser.mockResolvedValue([])
   })
 
-  it('renders a start page', () => {
+  it('renders the page to start a referral', () => {
     return request(app)
-      .get('/referrals/start')
+      .get('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('You can make a new referral here')
+        expect(res.text).toContain("Enter the service user's case identifier")
       })
   })
 })
 
-describe('POST /referrals/start', () => {
+describe('POST /intervention/:id/refer', () => {
   describe('when searching for a CRN found in Delius and an intervention has been selected', () => {
     beforeEach(() => {
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     })
 
     it('creates a referral on the interventions service and redirects to the referral form', async () => {
-      const currentlyHardcodedInterventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+      const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
       const serviceUserCRN = 'X123456'
 
       await request(app)
-        .post('/referrals/start')
+        .post(`/intervention/${interventionId}/refer`)
         .send({ 'service-user-crn': serviceUserCRN })
         .expect(303)
         .expect('Location', '/referrals/1/form')
 
-      expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
-        'token',
-        serviceUserCRN,
-        currentlyHardcodedInterventionId
-      )
+      expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
 
     it('updates the newly-created referral on the interventions service with the found service user', async () => {
-      await request(app).post('/referrals/start').send({ 'service-user-crn': 'X123456' })
+      await request(app)
+        .post('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
+        .send({ 'service-user-crn': 'X123456' })
 
       expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
         serviceUser,
@@ -104,7 +102,7 @@ describe('POST /referrals/start', () => {
 
     it('displays an error page', async () => {
       await request(app)
-        .post('/referrals/start')
+        .post('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
         .send({ 'service-user-crn': 'X123456' })
         .expect(500)
         .expect(res => {
@@ -118,7 +116,7 @@ describe('POST /referrals/start', () => {
   describe('when a crn is not entered', () => {
     it('renders a validation error', async () => {
       await request(app)
-        .post('/referrals/start')
+        .post('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
         .type('form')
         .send({ 'service-user-crn': '' })
         .expect(400)
@@ -137,7 +135,7 @@ describe('POST /referrals/start', () => {
 
     it('renders a validation error', async () => {
       await request(app)
-        .post('/referrals/start')
+        .post('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
         .type('form')
         .send({ 'service-user-crn': 'X123456' })
         .expect(400)
@@ -152,19 +150,19 @@ describe('POST /referrals/start', () => {
 
 describe('GET /referrals/:id/form', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({ id: '1' })
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
-  it('fetches the referral from the interventions service and renders a page with information about the referral', async () => {
+  it('fetches the referral from the interventions service displays its service category in the form', async () => {
     await request(app)
       .get('/referrals/1/form')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Viewing referral with ID 1')
+        expect(res.text).toContain('Add accommodation referral details')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])

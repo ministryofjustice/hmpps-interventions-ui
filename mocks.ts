@@ -50,7 +50,7 @@ export default async function setUpMocks(): Promise<void> {
 
   const interventions = [
     {
-      id: '1032df06-812a-42b9-b271-5ab3168f7989',
+      id: '98a42c61-c30f-4beb-8062-04033c376e2d',
       title: 'Better solutions (anger management)',
       categoryName: 'thinking and behaviour',
     },

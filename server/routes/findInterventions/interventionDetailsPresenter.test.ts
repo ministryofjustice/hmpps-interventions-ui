@@ -17,14 +17,27 @@ describe(InterventionDetailsPresenter, () => {
     })
   })
 
-  describe('href', () => {
+  describe('hrefReferralStart', () => {
+    const presenter = new InterventionDetailsPresenter(
+      interventionFactory.build({
+        id: '65b5cc27-0b87-4f44-8a35-bb08fc64e90e',
+      })
+    )
+    it('returns the link to make a referral', () => {
+      expect(presenter.hrefReferralStart).toEqual('/intervention/65b5cc27-0b87-4f44-8a35-bb08fc64e90e/refer')
+    })
+  })
+
+  describe('hrefInterventionDetails', () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         id: '65b5cc27-0b87-4f44-8a35-bb08fc64e90e',
       })
     )
     it('returns the link to the intervention', () => {
-      expect(presenter.href).toEqual('/find-interventions/intervention/65b5cc27-0b87-4f44-8a35-bb08fc64e90e')
+      expect(presenter.hrefInterventionDetails).toEqual(
+        '/find-interventions/intervention/65b5cc27-0b87-4f44-8a35-bb08fc64e90e'
+      )
     })
   })
 
