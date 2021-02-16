@@ -20,6 +20,16 @@
        If applicable, enter details of the next session as discussed with Matt.
       </h2>
     <form action="#" method="#">
+
+      {{ govukInput({
+        label: {
+          text: "Session objective",
+          classes: "govuk-label--s",
+          isPageHeading: true
+        },
+        id: "event-name",
+        name: "event-name"
+      }) }}
       {{ govukDateInput({
         id: "date",
         namePrefix: "date",
@@ -75,7 +85,29 @@
                 </div>
             </div>
           </div>
-
+        </fieldset>
+      </div>
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="time-detail">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          <h1 class="govuk-fieldset__heading">
+            Duration
+          </h1></legend>
+          <div class="govuk-date-input" id="time-detail">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="time-detail">
+                  Hours
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="passport-issued-day" name="time-detail" type="number" pattern="[0-9]*" inputmode="numeric"></div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label" for="time-detail">
+                  Minutes
+                </label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="time-detail" name="time-detail" type="number" pattern="[0-9]*" inputmode="numeric"></div>
+            </div>
         </fieldset>
       </div>
 

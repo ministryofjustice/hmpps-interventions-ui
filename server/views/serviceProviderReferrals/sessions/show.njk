@@ -1,12 +1,81 @@
 {% extends "../../partials/layout.njk" %}
-
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-width">
-      {# TODO IC-1087 Add content here (amend session) #}
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Session 1 details</h1>
+      <p class="govuk-body">Add details or amend session details. </p>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Session"
+            },
+            value: {
+              text: "1"
+            },
+            actions: {
+              items: [
+                {
+                  href: "http://localhost:3000/service-provider/session/amend",
+                  text: "Change",
+                  visuallyHiddenText: "name"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Title"
+            },
+            value: {
+              text: "Mentoring session"
+            }
+          },
+          {
+            key: {
+              text: "Date"
+            },
+            value: {
+              text: "20 December 2020"
+            }
+          },
+          {
+            key: {
+              text: "Time"
+            },
+            value: {
+              text: "2:00pm"
+            }
+          },
+          {
+            key: {
+              text: "Method"
+            },
+            value: {
+              text: "In-person meeting"
+            }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              html: '96 Ilford Road<br>
+                     Romans, worcestershire <br>
+                     RX3 9IG<br>
+                     United Kingdom'
+            }
+          }
+        ]
+      }) }}
     </div>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">One-third column</h2>
+      <p class="govuk-body">one-third wide column</p>
   </div>
-{% endblock %}
+  </div>
+{% endblock %} 

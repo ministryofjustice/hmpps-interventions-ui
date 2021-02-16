@@ -1,8 +1,4 @@
-.govuk-form-group {
-  label.govuk-label.govuk-label--s {
-    font-weight: normal;
-  }
-}
+
 .govuk-review__list {
   .change__right {
     @include govuk-media-query($from: tablet) {
