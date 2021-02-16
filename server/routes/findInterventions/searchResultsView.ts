@@ -51,6 +51,8 @@ export default class SearchResultsView {
     return { ...ViewUtils.summaryListArgs(items), classes: 'govuk-summary-list--no-border' }
   }
 
+  private searchSummarySummaryListArgs = ViewUtils.summaryListArgs(this.presenter.summary.summary)
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'findInterventions/searchResults',
@@ -60,6 +62,7 @@ export default class SearchResultsView {
         genderCheckboxArgs: this.genderCheckboxArgs,
         ageCheckboxArgs: this.ageCheckboxArgs,
         summaryListArgs: SearchResultsView.summaryListArgs,
+        searchSummarySummaryListArgs: this.searchSummarySummaryListArgs,
       },
     ]
   }

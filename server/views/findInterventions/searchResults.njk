@@ -40,6 +40,8 @@
     <div class="govuk-grid-column-two-thirds">
       <p class="govuk-body"><span class="govuk-!-font-size-36 govuk-!-margin-right-1"><strong>{{presenter.text.results.count}}</strong></span> {{ presenter.text.results.countSuffix }}</p>
 
+      {{ govukSummaryList(searchSummarySummaryListArgs) }}
+
       {% for result in presenter.results %}
         <h2 class="govuk-heading-l">
           <a class="govuk-link" href="{{ result.href }}">{{ result.title }}</a>

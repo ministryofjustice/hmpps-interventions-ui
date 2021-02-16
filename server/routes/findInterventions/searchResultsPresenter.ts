@@ -1,6 +1,7 @@
 import { Intervention, PCCRegion } from '../../services/interventionsService'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import InterventionsFilter from './interventionsFilter'
+import SearchSummaryPresenter from './searchSummaryPresenter'
 
 export default class SearchResultsPresenter {
   constructor(
@@ -47,6 +48,8 @@ export default class SearchResultsPresenter {
       checked: this.filter.age?.includes('18-to-25-only') ?? false,
     },
   ]
+
+  readonly summary: SearchSummaryPresenter = new SearchSummaryPresenter(this.filter, this.pccRegions)
 
   readonly results: InterventionDetailsPresenter[] = this.interventions.map(
     intervention => new InterventionDetailsPresenter(intervention)
