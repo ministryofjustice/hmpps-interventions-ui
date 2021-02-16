@@ -19,6 +19,15 @@
           </svg>
         </button>
       </form>
+
+      <h2 class="govuk-heading-l">
+        Draft referrals
+      </h2>
+      {% if presenter.orderedReferrals | length %}
+        {{ govukTable(tableArgs) }}
+      {% else %}
+        <p class="govuk-body-m">{{ presenter.text.noDraftReferrals }}</p>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

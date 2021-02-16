@@ -30,7 +30,9 @@ export default function routes(router: Router, services: Services): Router {
     services.offenderAssessmentsApiService
   )
 
-  const probationPractitionerReferralsController = new ProbationPractitionerReferralsController()
+  const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
+    services.interventionsService
+  )
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
   const staticContentController = new StaticContentController()
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
