@@ -69,6 +69,16 @@ export default class StaticContentController {
       template: 'serviceProviderReferrals/sessions/amend',
       description: 'IC-1087 (session details: amend)',
     },
+    {
+      path: '/service-provider/sessions/feedback/confirmation-all-sessions-completed',
+      template: 'serviceProviderReferrals/sessions/feedback/confirmationAllSessionsCompleted',
+      description: 'IC-1177 (session feedback: confirmation - all sessions completed)',
+    },
+    {
+      path: '/service-provider/session-progress-all-sessions-completed',
+      template: 'serviceProviderReferrals/sessionProgressAllSessionsCompleted',
+      description: 'IC-1078 (session progress - all sessions completed, with notification banner)',
+    },
   ]
 
   static get allPaths(): string[] {
