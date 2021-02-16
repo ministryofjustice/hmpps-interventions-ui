@@ -31,7 +31,7 @@ describe('User service', () => {
           groupName: 'NPS West Yorks Staff',
         },
         {
-          groupCode: 'INT_SP_HARMONY',
+          groupCode: 'INT_SP_HARMONY_LIVING',
           groupName: 'Harmony Living',
         },
       ])
@@ -45,7 +45,7 @@ describe('User service', () => {
     it('filters auth user groups', async () => {
       hmppsAuthClient.getUser.mockResolvedValue(authUser)
       const result = await userService.getUser(token)
-      expect(result.organizations).toEqual([{ code: 'INT_SP_HARMONY', name: 'Harmony Living' }])
+      expect(result.organizations).toEqual([{ code: 'HARMONY_LIVING', name: 'Harmony Living' }])
     })
     it('does not include auth user groups for delius users', async () => {
       hmppsAuthClient.getUser.mockResolvedValue(deliusUser)

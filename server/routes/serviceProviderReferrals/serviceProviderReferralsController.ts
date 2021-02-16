@@ -13,7 +13,10 @@ export default class ServiceProviderReferralsController {
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
-    const referrals = await this.interventionsService.getSentReferrals(res.locals.user.token)
+    const referrals = await this.interventionsService.getSentReferrals(
+      res.locals.user.token,
+      res.locals.user.organizations[0].code
+    )
 
     const dedupedServiceCategoryIds = Array.from(
       new Set(referrals.map(referral => referral.referral.serviceCategoryId))

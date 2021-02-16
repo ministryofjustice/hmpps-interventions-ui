@@ -10,6 +10,7 @@ export const user = {
   token: 'token',
   authSource: 'nomis',
   userId: '123',
+  organizations: [{ code: 'HARMONY_LIVING', name: 'Harmony Living' }],
 }
 
 export class MockUserService extends UserService {

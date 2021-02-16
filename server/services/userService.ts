@@ -25,7 +25,10 @@ export default class UserService {
     if (user.authSource === 'auth') {
       userDetails.organizations = (await this.hmppsAuthClient.getAuthUserGroups(token, user.username))
         .filter(group => group.groupCode.startsWith(this.serviceProviderGroupPrefix))
-        .map(group => ({ code: group.groupCode, name: group.groupName }))
+        .map(group => ({
+          code: group.groupCode.substring(this.serviceProviderGroupPrefix.length),
+          name: group.groupName,
+        }))
     }
 
     return userDetails

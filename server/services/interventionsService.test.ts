@@ -1021,7 +1021,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('getSentReferrals', () => {
     it('returns a list of all sent referrals', async () => {
       await provider.addInteraction({
-        state: 'There are some existing sent referrals',
+        state: 'There are some existing sent referrals for service provider HARMONY_LIVING',
         uponReceiving: 'a request for all sent referrals',
         withRequest: {
           method: 'GET',
@@ -1035,7 +1035,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getSentReferrals(token)).toEqual([sentReferral, sentReferral])
+      expect(await interventionsService.getSentReferrals(token, 'HARMONY_LIVING')).toEqual([sentReferral, sentReferral])
     })
   })
 
