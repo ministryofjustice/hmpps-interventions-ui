@@ -150,19 +150,19 @@ describe('POST /intervention/:id/refer', () => {
 
 describe('GET /referrals/:id/form', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({ id: '1' })
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
-  it('fetches the referral from the interventions service and renders a page with information about the referral', async () => {
+  it('fetches the referral from the interventions service displays its service category in the form', async () => {
     await request(app)
       .get('/referrals/1/form')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Viewing referral with ID 1')
+        expect(res.text).toContain('Add accommodation referral details')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])

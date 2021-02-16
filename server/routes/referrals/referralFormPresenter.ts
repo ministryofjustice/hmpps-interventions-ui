@@ -3,11 +3,6 @@ import { DraftReferral } from '../../services/interventionsService'
 export default class ReferralFormPresenter {
   constructor(private readonly referral: DraftReferral, private readonly serviceCategoryName: string) {}
 
-  // This is just temporary, will remove it once we get rid of the referral ID output in the template
-  get referralID(): string {
-    return this.referral.id
-  }
-
   get sections(): ReferralFormSectionPresenter[] {
     return [
       {

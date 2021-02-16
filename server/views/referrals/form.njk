@@ -13,8 +13,6 @@
         Make a referral
       </h1>
 
-      <p class="govuk-body-m">Viewing referral with ID {{ presenter.referralID }}</p>
-
       <ol class="moj-task-list">
         {% for section in presenter.sections %}
           {% if section.type === 'multi' %}
