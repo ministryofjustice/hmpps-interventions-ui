@@ -6,7 +6,7 @@ parameters:
     default: false
   pact_consumer_tags:
     type: string
-    default: main,last-implemented
+    default: main
 
 orbs:
   hmpps: ministryofjustice/hmpps@2.1.0
