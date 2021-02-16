@@ -136,7 +136,8 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${this.mockPrefix}/interventions`,
+        // We don’t care about the query (filter)
+        urlPath: `${this.mockPrefix}/interventions`,
       },
       response: {
         status: 200,
