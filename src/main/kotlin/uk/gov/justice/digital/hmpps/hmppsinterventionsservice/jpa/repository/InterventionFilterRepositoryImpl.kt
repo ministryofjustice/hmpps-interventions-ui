@@ -77,16 +77,16 @@ class InterventionFilterRepositoryImpl(
   private fun getMinimumAgePredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, minimumAge: Int?): Predicate? {
 
     return minimumAge?.let {
-      val expression = root.get<Any>("dynamicFrameworkContract").get<Int>("minimumAge")
-      criteriaBuilder.`equal`(expression, minimumAge)
+      val expression = root.get<DynamicFrameworkContract>("dynamicFrameworkContract").get<Int>("minimumAge")
+      criteriaBuilder.equal(expression, minimumAge)
     }
   }
 
   private fun getMaximumAgePredicate(criteriaBuilder: CriteriaBuilder, root: Root<Intervention>, maximumAge: Int?): Predicate? {
 
     return maximumAge?.let {
-      val expression = root.get<Any>("dynamicFrameworkContract").get<Int>("maximumAge")
-      criteriaBuilder.`equal`(expression, maximumAge)
+      val expression = root.get<DynamicFrameworkContract>("dynamicFrameworkContract").get<Int>("maximumAge")
+      criteriaBuilder.equal(expression, maximumAge)
     }
   }
 }
