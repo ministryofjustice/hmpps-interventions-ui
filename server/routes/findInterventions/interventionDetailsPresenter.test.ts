@@ -91,6 +91,16 @@ describe(InterventionDetailsPresenter, () => {
       })
     })
 
+    describe('Region', () => {
+      it('is the NPS region name', () => {
+        expect(
+          linesForKey('Region', {
+            npsRegion: { id: 'A', name: 'North East' },
+          })
+        ).toEqual(['North East'])
+      })
+    })
+
     describe('Location', () => {
       it('is a comma-separated list of PCC regions', () => {
         expect(
