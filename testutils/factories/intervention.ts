@@ -9,6 +9,7 @@ export default Factory.define<Intervention>(sequence => ({
   title: 'Better solutions (anger management)',
   description:
     'To provide service users with key tools and strategies to address issues of anger management and temper control and explore the link between thoughts, emotions and behaviour. It provides the opportunity for service users to practice these strategies in a safe and closed environment.',
+  npsRegion: { id: 'B', name: 'North West' },
   pccRegions: [
     { id: 'cheshire', name: 'Cheshire' },
     { id: 'cumbria', name: 'Cumbria' },
