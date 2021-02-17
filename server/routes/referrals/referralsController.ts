@@ -119,9 +119,7 @@ export default class ReferralsController {
   }
 
   async confirmServiceUserDetails(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
-
-    res.redirect(303, `/referrals/${referral.id}/form`)
+    res.redirect(`/referrals/${req.params.id}/risk-information`)
   }
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {

@@ -16,30 +16,11 @@ describe('ReferralFormPresenter', () => {
         const expected = [
           {
             type: 'single',
-            title: 'Retrieve service user record',
+            title: 'Review service user’s information',
             number: '1',
             status: ReferralFormStatus.Completed,
             tasks: [
-              { title: 'Enter service user case identifier', url: null },
-              { title: 'Confirm service user details', url: 'service-user-details' },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Find and select service user interventions',
-            number: '2',
-            status: ReferralFormStatus.Completed,
-            tasks: [
-              { title: 'Find and select service user interventions', url: null },
-              { title: 'Confirm interventions', url: null },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Review service user’s information',
-            number: '3',
-            status: ReferralFormStatus.Completed,
-            tasks: [
+              { title: 'Confirm service user’s personal details', url: 'service-user-details' },
               { title: 'Service user’s risk information', url: 'risk-information' },
               { title: 'Service user’s needs and requirements', url: 'needs-and-requirements' },
             ],
@@ -47,7 +28,7 @@ describe('ReferralFormPresenter', () => {
           {
             type: 'single',
             title: `Add social inclusion referral details`,
-            number: '4',
+            number: '2',
             status: ReferralFormStatus.NotStarted,
             tasks: [
               { title: 'Select the relevant sentence for the social inclusion referral', url: null },
@@ -64,14 +45,14 @@ describe('ReferralFormPresenter', () => {
           {
             type: 'single',
             title: 'Review responsible officer’s information',
-            number: '5',
+            number: '3',
             status: ReferralFormStatus.NotStarted,
             tasks: [{ title: 'Responsible officer information', url: null }],
           },
           {
             type: 'single',
             title: 'Check your answers',
-            number: '6',
+            number: '4',
             status: ReferralFormStatus.CannotStartYet,
             tasks: [{ title: 'Check your answers', url: null }],
           },
@@ -109,30 +90,11 @@ describe('ReferralFormPresenter', () => {
         const expected = [
           {
             type: 'single',
-            title: 'Retrieve service user record',
+            title: 'Review service user’s information',
             number: '1',
             status: ReferralFormStatus.Completed,
             tasks: [
-              { title: 'Enter service user case identifier', url: null },
-              { title: 'Confirm service user details', url: 'service-user-details' },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Find and select service user interventions',
-            number: '2',
-            status: ReferralFormStatus.Completed,
-            tasks: [
-              { title: 'Find and select service user interventions', url: null },
-              { title: 'Confirm interventions', url: null },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Review service user’s information',
-            number: '3',
-            status: ReferralFormStatus.Completed,
-            tasks: [
+              { title: 'Confirm service user’s personal details', url: 'service-user-details' },
               { title: 'Service user’s risk information', url: 'risk-information' },
               { title: 'Service user’s needs and requirements', url: 'needs-and-requirements' },
             ],
@@ -140,7 +102,7 @@ describe('ReferralFormPresenter', () => {
           {
             type: 'single',
             title: 'Add accommodation referral details',
-            number: '4',
+            number: '2',
             status: ReferralFormStatus.Completed,
             tasks: [
               { title: 'Select the relevant sentence for the accommodation referral', url: null },
@@ -157,14 +119,14 @@ describe('ReferralFormPresenter', () => {
           {
             type: 'single',
             title: 'Review responsible officer’s information',
-            number: '5',
+            number: '3',
             status: ReferralFormStatus.NotStarted,
             tasks: [{ title: 'Responsible officer information', url: null }],
           },
           {
             type: 'single',
             title: 'Check your answers',
-            number: '6',
+            number: '4',
             status: ReferralFormStatus.NotStarted,
             tasks: [{ title: 'Check your answers', url: 'check-answers' }],
           },

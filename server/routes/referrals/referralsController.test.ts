@@ -220,20 +220,211 @@ describe('GET /referrals/:id/service-user-details', () => {
 })
 
 describe('POST /referrals/:id/confirm-service-user-details', () => {
-  beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
-  })
-
-  it('redirects to the form page', async () => {
+  it('redirects to the next question', async () => {
     await request(app)
       .post('/referrals/1/service-user-details')
       .type('form')
-      .expect(303)
+      .expect(302)
+      .expect('Location', '/referrals/1/risk-information')
+  })
+})
+
+describe('GET /referrals/:id/risk-information', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Geoffrey’s risk information')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/risk-information', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the referral on the backend and redirects to the next question', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      additionalRiskInformation: 'High risk to the elderly',
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/risk-information')
+      .type('form')
+      .send({
+        'additional-risk-information': 'High risk to the elderly',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/needs-and-requirements')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        additionalRiskInformation: 'High risk to the elderly',
+      },
+    ])
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+
+    await request(app)
+      .post('/referrals/1/risk-information')
+      .type('form')
+      .send({
+        'additional-risk-information': 'High risk to the elderly',
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+  })
+})
+
+describe('GET /referrals/:id/needs-and-requirements', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/needs-and-requirements')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Geoffrey’s needs and requirements')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/needs-and-requirements')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/needs-and-requirements', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the referral on the backend and redirects to the referral form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
+      accessibilityNeeds: 'He uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'He works on Fridays 7am - midday',
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/needs-and-requirements')
+      .type('form')
+      .send({
+        'additional-needs-information': 'Alex is currently sleeping on his aunt’s sofa',
+        'accessibility-needs': 'He uses a wheelchair',
+        'needs-interpreter': 'yes',
+        'interpreter-language': 'Spanish',
+        'has-additional-responsibilities': 'yes',
+        'when-unavailable': 'He works on Fridays 7am - midday',
+      })
+      .expect(302)
       .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
+        accessibilityNeeds: 'He uses a wheelchair',
+        needsInterpreter: true,
+        interpreterLanguage: 'Spanish',
+        hasAdditionalResponsibilities: true,
+        whenUnavailable: 'He works on Fridays 7am - midday',
+      },
+    ])
+  })
+
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/needs-and-requirements')
+        .type('form')
+        .send({
+          'needs-interpreter': 'yes',
+          'interpreter-language': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter the language for which Geoffrey needs an interpreter')
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+
+    await request(app)
+      .post('/referrals/1/needs-and-requirements')
+      .type('form')
+      .send({
+        'additional-needs-information': 'Alex is currently sleeping on his aunt’s sofa',
+        'accessibility-needs': 'He uses a wheelchair',
+        'needs-interpreter': 'yes',
+        'interpreter-language': 'Spanish',
+        'has-additional-responsibilities': 'yes',
+        'when-unavailable': 'He works on Fridays 7am - midday',
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
   })
 })
 
@@ -601,205 +792,6 @@ describe('POST /referrals/:id/desired-outcomes', () => {
       '1',
       { desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id] },
     ])
-  })
-})
-
-describe('GET /referrals/:id/needs-and-requirements', () => {
-  beforeEach(() => {
-    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-  })
-
-  it('renders a form page', async () => {
-    await request(app)
-      .get('/referrals/1/needs-and-requirements')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Geoffrey’s needs and requirements')
-      })
-
-    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
-  })
-
-  it('renders an error when the get referral call fails', async () => {
-    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
-
-    await request(app)
-      .get('/referrals/1/needs-and-requirements')
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Failed to get draft referral')
-      })
-  })
-})
-
-describe('POST /referrals/:id/needs-and-requirements', () => {
-  beforeEach(() => {
-    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-  })
-
-  it('updates the referral on the backend and redirects to the referral form', async () => {
-    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
-      serviceUser: { firstName: 'Geoffrey' },
-      additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
-      accessibilityNeeds: 'He uses a wheelchair',
-      needsInterpreter: true,
-      interpreterLanguage: 'Spanish',
-      hasAdditionalResponsibilities: true,
-      whenUnavailable: 'He works on Fridays 7am - midday',
-    })
-
-    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
-
-    await request(app)
-      .post('/referrals/1/needs-and-requirements')
-      .type('form')
-      .send({
-        'additional-needs-information': 'Alex is currently sleeping on his aunt’s sofa',
-        'accessibility-needs': 'He uses a wheelchair',
-        'needs-interpreter': 'yes',
-        'interpreter-language': 'Spanish',
-        'has-additional-responsibilities': 'yes',
-        'when-unavailable': 'He works on Fridays 7am - midday',
-      })
-      .expect(302)
-      .expect('Location', '/referrals/1/form')
-
-    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-      'token',
-      '1',
-      {
-        additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
-        accessibilityNeeds: 'He uses a wheelchair',
-        needsInterpreter: true,
-        interpreterLanguage: 'Spanish',
-        hasAdditionalResponsibilities: true,
-        whenUnavailable: 'He works on Fridays 7am - midday',
-      },
-    ])
-  })
-
-  describe('when the user enters invalid data', () => {
-    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
-      await request(app)
-        .post('/referrals/1/needs-and-requirements')
-        .type('form')
-        .send({
-          'needs-interpreter': 'yes',
-          'interpreter-language': '',
-        })
-        .expect(400)
-        .expect(res => {
-          expect(res.text).toContain('Enter the language for which Geoffrey needs an interpreter')
-        })
-
-      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
-    })
-  })
-
-  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue({
-      message: 'Some backend error message',
-    })
-
-    await request(app)
-      .post('/referrals/1/needs-and-requirements')
-      .type('form')
-      .send({
-        'additional-needs-information': 'Alex is currently sleeping on his aunt’s sofa',
-        'accessibility-needs': 'He uses a wheelchair',
-        'needs-interpreter': 'yes',
-        'interpreter-language': 'Spanish',
-        'has-additional-responsibilities': 'yes',
-        'when-unavailable': 'He works on Fridays 7am - midday',
-      })
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Some backend error message')
-      })
-  })
-})
-
-describe('GET /referrals/:id/risk-information', () => {
-  beforeEach(() => {
-    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-  })
-
-  it('renders a form page', async () => {
-    await request(app)
-      .get('/referrals/1/risk-information')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Geoffrey’s risk information')
-      })
-
-    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
-  })
-
-  it('renders an error when the get referral call fails', async () => {
-    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
-
-    await request(app)
-      .get('/referrals/1/risk-information')
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Failed to get draft referral')
-      })
-  })
-})
-
-describe('POST /referrals/:id/risk-information', () => {
-  beforeEach(() => {
-    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-  })
-
-  it('updates the referral on the backend and redirects to the next question', async () => {
-    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
-      additionalRiskInformation: 'High risk to the elderly',
-    })
-
-    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
-
-    await request(app)
-      .post('/referrals/1/risk-information')
-      .type('form')
-      .send({
-        'additional-risk-information': 'High risk to the elderly',
-      })
-      .expect(302)
-      .expect('Location', '/referrals/1/needs-and-requirements')
-
-    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-      'token',
-      '1',
-      {
-        additionalRiskInformation: 'High risk to the elderly',
-      },
-    ])
-  })
-
-  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue({
-      message: 'Some backend error message',
-    })
-
-    await request(app)
-      .post('/referrals/1/risk-information')
-      .type('form')
-      .send({
-        'additional-risk-information': 'High risk to the elderly',
-      })
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Some backend error message')
-      })
   })
 })
 

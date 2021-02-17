@@ -7,42 +7,14 @@ export default class ReferralFormPresenter {
     return [
       {
         type: 'single',
-        title: 'Retrieve service user record',
+        title: 'Review service user’s information',
         number: '1',
         status: ReferralFormStatus.Completed,
         tasks: [
           {
-            title: 'Enter service user case identifier',
-            url: null,
-          },
-          {
-            title: 'Confirm service user details',
+            title: 'Confirm service user’s personal details',
             url: 'service-user-details',
           },
-        ],
-      },
-      {
-        type: 'single',
-        title: 'Find and select service user interventions',
-        number: '2',
-        status: ReferralFormStatus.Completed,
-        tasks: [
-          {
-            title: 'Find and select service user interventions',
-            url: null,
-          },
-          {
-            title: 'Confirm interventions',
-            url: null,
-          },
-        ],
-      },
-      {
-        type: 'single',
-        title: 'Review service user’s information',
-        number: '3',
-        status: ReferralFormStatus.Completed,
-        tasks: [
           {
             title: 'Service user’s risk information',
             url: 'risk-information',
@@ -56,7 +28,7 @@ export default class ReferralFormPresenter {
       {
         type: 'single',
         title: `Add ${this.serviceCategoryName} referral details`,
-        number: '4',
+        number: '2',
         status: this.determineInterventionDetailsSectionStatus(),
         tasks: [
           {
@@ -88,7 +60,7 @@ export default class ReferralFormPresenter {
       {
         type: 'single',
         title: 'Review responsible officer’s information',
-        number: '5',
+        number: '3',
         status: ReferralFormStatus.NotStarted,
         tasks: [
           {
@@ -100,7 +72,7 @@ export default class ReferralFormPresenter {
       {
         type: 'single',
         title: 'Check your answers',
-        number: '6',
+        number: '4',
         status: this.canSubmitReferral ? ReferralFormStatus.NotStarted : ReferralFormStatus.CannotStartYet,
         tasks: [
           {

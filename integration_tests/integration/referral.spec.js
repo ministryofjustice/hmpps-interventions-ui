@@ -99,7 +99,7 @@ describe('Referral form', () => {
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
-    cy.contains('Confirm service user details').click()
+    cy.contains('Confirm service user’s personal details').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
     cy.get('h1').contains("Geoffrey's information")
@@ -115,7 +115,8 @@ describe('Referral form', () => {
 
     cy.contains('Save and continue').click()
 
-    cy.contains('Service user’s needs and requirements').click()
+    cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
+    cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
     cy.get('h1').contains('Geoffrey’s needs and requirements')
