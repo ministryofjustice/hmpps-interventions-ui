@@ -17,6 +17,7 @@ export default class ShowReferralPresenter {
     title: `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
       this.referralFields.serviceUser
     )}`,
+    interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [
@@ -24,23 +25,59 @@ export default class ShowReferralPresenter {
     { key: 'Email address', lines: [this.sentBy.email ?? ''], isList: false },
   ]
 
+  get interventionDetails(): SummaryListItem[] {
+    const selectedDesiredOutcomes = this.serviceCategory.desiredOutcomes
+      .filter(desiredOutcome => this.referralFields.desiredOutcomesIds.includes(desiredOutcome.id))
+      .map(desiredOutcome => desiredOutcome.description)
+
+    const selectedComplexityLevel = this.serviceCategory.complexityLevels.find(
+      complexityLevel => complexityLevel.id === this.referralFields.complexityLevelId
+    )
+
+    const complexityLevelText = {
+      level: selectedComplexityLevel?.title || 'Level not found',
+      text: selectedComplexityLevel?.description || 'Description not found',
+    }
+
+    return [
+      { key: 'Sentence information', lines: ['Not currently set'], isList: false },
+      { key: 'Desired outcomes', lines: selectedDesiredOutcomes, isList: true },
+      { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text], isList: false },
+      {
+        key: 'Date to be completed by',
+        lines: [ShowReferralPresenter.govukFormattedDateFromStringOrNull(this.referralFields.completionDeadline)],
+        isList: false,
+      },
+      {
+        key: 'Maximum number of enforceable days',
+        lines: [this.referralFields.usingRarDays ? String(this.referralFields.maximumRarDays) : 'N/A'],
+        isList: false,
+      },
+      {
+        key: 'Further information for the provider',
+        lines: [this.referralFields.furtherInformation || 'N/A'],
+        isList: false,
+      },
+    ]
+  }
+
   readonly serviceUserNotificationBannerArgs = {
     titleText: 'Service user details',
     html:
       `<p class="govuk-notification-banner__heading">${this.serviceUser.firstName} ${this.serviceUser.surname}<p>` +
-      `<p>Date of birth: ${this.serviceUserDateOfBirth}</p>` +
+      `<p>Date of birth: ${ShowReferralPresenter.govukFormattedDateFromStringOrNull(
+        this.serviceUser.dateOfBirth
+      )}</p>` +
       `<p class="govuk-body">${this.serviceUserMobile} | ${this.serviceUserEmail}</p>`,
   }
 
-  private get serviceUserDateOfBirth(): string {
-    const { dateOfBirth } = this.serviceUser
-
+  static govukFormattedDateFromStringOrNull(date: string | null): string {
     const notFoundMessage = 'Not found'
 
-    if (dateOfBirth) {
-      const iso8601DateOfBirth = CalendarDay.parseIso8601(dateOfBirth)
+    if (date) {
+      const iso8601date = CalendarDay.parseIso8601(date)
 
-      return iso8601DateOfBirth ? ReferralDataPresenterUtils.govukFormattedDate(iso8601DateOfBirth) : notFoundMessage
+      return iso8601date ? ReferralDataPresenterUtils.govukFormattedDate(iso8601date) : notFoundMessage
     }
 
     return notFoundMessage

@@ -22,6 +22,8 @@ describe('Service provider referrals dashboard', () => {
         referral: {
           serviceCategoryId: accommodationServiceCategory.id,
           serviceUser: { firstName: 'George', lastName: 'Michael' },
+          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
         },
       }),
       sentReferralFactory.build({
@@ -30,6 +32,8 @@ describe('Service provider referrals dashboard', () => {
         referral: {
           serviceCategoryId: socialInclusionServiceCategory.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
         },
       }),
     ]
@@ -89,6 +93,14 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}`)
     cy.get('h1').contains('Social inclusion referral for Jenny Jones')
     cy.contains('07123456789 | jenny.jones@example.com')
+    cy.contains('Social inclusion intervention details')
+    cy.contains('Service User makes progress in obtaining accommodation')
+    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
+    cy.contains('Medium complexity')
+    cy.contains(
+      'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.'
+    )
+    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
   })
