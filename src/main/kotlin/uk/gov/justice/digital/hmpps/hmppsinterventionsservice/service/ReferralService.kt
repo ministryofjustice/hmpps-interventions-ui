@@ -23,7 +23,8 @@ class ReferralService(
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
   val interventionRepository: InterventionRepository,
-  val eventPublisher: ReferralEventPublisher
+  val eventPublisher: ReferralEventPublisher,
+  val referenceGenerator: ReferralReferenceGenerator,
 ) {
   fun getSentReferral(id: UUID): Referral? {
     return referralRepository.findByIdAndSentAtIsNotNull(id)
@@ -41,9 +42,7 @@ class ReferralService(
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
     referral.sentBy = authUserRepository.save(user)
-
-    // fixme: hardcoded for now
-    referral.referenceNumber = "HDJ2123F"
+    referral.referenceNumber = referenceGenerator.generate()
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)

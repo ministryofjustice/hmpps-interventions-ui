@@ -35,11 +35,13 @@ class ReferralServiceTest @Autowired constructor(
 ) {
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
+  private val referenceGenerator: ReferralReferenceGenerator = ReferralReferenceGenerator()
   private val referralService = ReferralService(
     referralRepository,
     authUserRepository,
     interventionRepository,
-    referralEventPublisher
+    referralEventPublisher,
+    referenceGenerator,
   )
 
   // reset before each test
