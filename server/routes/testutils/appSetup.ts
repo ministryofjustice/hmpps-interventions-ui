@@ -13,6 +13,7 @@ import { user, MockUserService } from './mocks/mockUserService'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
 import MockOffenderAssessmentsApiService from './mocks/mockOffenderAssessmentsApiService'
+import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -60,6 +61,7 @@ export default function appWithAllRoutes({
       communityApiService: new MockCommunityApiService(),
       offenderAssessmentsApiService: new MockOffenderAssessmentsApiService(),
       interventionsService: {} as InterventionsService,
+      hmppsAuthClient: new MockedHmppsAuthClient(),
       ...overrides,
     }),
     production,

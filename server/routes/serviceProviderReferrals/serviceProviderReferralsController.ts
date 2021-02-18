@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService from '../../services/interventionsService'
+import HmppsAuthClient from '../../data/hmppsAuthClient'
 import DashboardPresenter from './dashboardPresenter'
 import DashboardView from './dashboardView'
 import ShowReferralPresenter from './showReferralPresenter'
@@ -9,7 +10,8 @@ import ShowReferralView from './showReferralView'
 export default class ServiceProviderReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService
+    private readonly communityApiService: CommunityApiService,
+    private readonly hmppsAuthClient: HmppsAuthClient
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
