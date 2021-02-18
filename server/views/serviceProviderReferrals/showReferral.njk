@@ -17,8 +17,10 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
-      {{ govukInput(emailInputArgs) }}
-      {{ govukButton({ text: "Save and continue" }) }}
+      <form method="post" action={{ presenter.assignmentFormAction }}>
+        {{ govukInput(emailInputArgs) }}
+        {{ govukButton({ text: "Save and continue" }) }}
+      </form>
 
       <h2 class="govuk-heading-m">{{ presenter.text.interventionDetailsSummaryHeading }}</h2>
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}

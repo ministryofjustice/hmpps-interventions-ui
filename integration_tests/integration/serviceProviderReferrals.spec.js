@@ -2,6 +2,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -124,12 +125,14 @@ describe('Service provider referrals dashboard', () => {
     const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
 
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetSentReferrals([referral])
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetUserByEmailAddress(hmppsAuthUser)
 
     cy.login()
 
@@ -139,5 +142,11 @@ describe('Service provider referrals dashboard', () => {
 
     cy.get('#email').type('john@harmonyliving.org.uk')
     cy.contains('Save and continue').click()
+
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/check-assignment`)
+    cy.get('h1').contains('Confirm the accommodation referral assignment')
+    cy.contains('John Smith')
+
+    cy.contains('Confirm assignment').click()
   })
 })

@@ -14,6 +14,8 @@ export default class ShowReferralPresenter {
     private readonly serviceUser: DeliusServiceUser
   ) {}
 
+  readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
+
   readonly text = {
     title:
       this.sentReferral.assignedTo === null

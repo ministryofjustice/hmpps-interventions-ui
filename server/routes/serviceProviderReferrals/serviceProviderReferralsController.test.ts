@@ -9,20 +9,26 @@ import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
+import HmppsAuthClient from '../../data/hmppsAuthClient'
+import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
+import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
+jest.mock('../../data/hmppsAuthClient')
 
 const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
   InterventionsService
 >
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
+const hmppsAuthClient = new MockedHmppsAuthClient() as jest.Mocked<HmppsAuthClient>
+
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, communityApiService, hmppsAuthClient },
     userType: AppSetupUserType.serviceProvider,
   })
 })
@@ -109,6 +115,28 @@ describe('GET /service-provider/referrals/:id', () => {
         expect(res.text).toContain('alex.river@example.com')
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/assignment/check', () => {
+  it('displays the name of the selected caseworker', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    hmppsAuthClient.getUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/assignment/check`)
+      .query({ email: 'john@harmonyliving.org.uk' })
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm the accommodation referral assignment')
+        expect(res.text).toContain('John Smith')
+        expect(res.text).toContain('john@harmonyliving.org.uk')
       })
   })
 })

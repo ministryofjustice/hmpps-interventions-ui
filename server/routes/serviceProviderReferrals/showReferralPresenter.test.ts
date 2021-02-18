@@ -72,6 +72,15 @@ describe(ShowReferralPresenter, () => {
     },
   })
 
+  describe('assignmentFormAction', () => {
+    it('returns the relative URL for the check assignment page', () => {
+      const referral = sentReferralFactory.build(referralParams)
+      const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser)
+
+      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
+    })
+  })
+
   describe('text', () => {
     describe('title', () => {
       describe('when the referral doesn’t have an assigned caseworker', () => {

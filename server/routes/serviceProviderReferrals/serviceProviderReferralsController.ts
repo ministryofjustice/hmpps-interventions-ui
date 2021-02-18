@@ -2,6 +2,8 @@ import { Request, Response } from 'express'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService from '../../services/interventionsService'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
+import CheckAssignmentPresenter from './checkAssignmentPresenter'
+import CheckAssignmentView from './checkAssignmentView'
 import DashboardPresenter from './dashboardPresenter'
 import DashboardView from './dashboardView'
 import ShowReferralPresenter from './showReferralPresenter'
@@ -40,6 +42,23 @@ export default class ServiceProviderReferralsController {
 
     const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser)
     const view = new ShowReferralView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async checkAssignment(req: Request, res: Response): Promise<void> {
+    // TODO IC-1180 - Validation: presence, and that it exists in HMPPS Auth
+    const email = req.query.email as string
+    const assigneePromise = this.hmppsAuthClient.getUserByEmailAddress(res.locals.user.token, email)
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+
+    const [assignee, serviceCategory] = await Promise.all([
+      assigneePromise,
+      this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
+    ])
+
+    const presenter = new CheckAssignmentPresenter(assignee, email, serviceCategory)
+    const view = new CheckAssignmentView(presenter)
 
     res.render(...view.renderArgs)
   }
