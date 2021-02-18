@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -25,6 +26,11 @@ class CommunityAPIServiceTest {
 
   private val exchangeFunction = mock<ExchangeFunction>()
   private lateinit var communityAPIService: CommunityAPIService
+
+  @AfterEach
+  fun teardown() {
+    TestLoggerFactory.clear()
+  }
 
   @Test
   fun `got service successfully`() {
@@ -78,7 +84,7 @@ class CommunityAPIServiceTest {
 
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException::class.java)
     communityAPIService.onApplicationEvent(referralSentEvent)
-    assertThat(logger.loggingEvents.size == 1)
+    assertThat(logger.loggingEvents.size).isEqualTo(1)
     assertThat(logger.loggingEvents[0].level.name).isEqualTo("ERROR")
     assertThat(logger.loggingEvents[0].message).isEqualTo("Call to community api to update contact log failed:")
   }
