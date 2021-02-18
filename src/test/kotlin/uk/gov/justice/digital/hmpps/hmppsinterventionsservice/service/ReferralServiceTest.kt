@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -36,7 +37,7 @@ class ReferralServiceTest @Autowired constructor(
 ) {
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
-  private val referenceGenerator: ReferralReferenceGenerator = mock()
+  private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
   private val referralService = ReferralService(
     referralRepository,
     authUserRepository,
@@ -288,16 +289,30 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
-  fun `sending a draft referral generates a human-readable reference for it`() {
+  fun `sending a draft referral generates a referral reference number`() {
     val user = AuthUser("user_id", "auth_source", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
-    val category = draftReferral.intervention.dynamicFrameworkContract.serviceCategory.name
-    Mockito.`when`(referenceGenerator.generate(category)).thenReturn("AA1234ZZ")
     assertThat(draftReferral.referenceNumber).isNull()
 
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
-    assertThat(sentReferral.referenceNumber).isEqualTo("AA1234ZZ")
+    assertThat(sentReferral.referenceNumber).isNotNull()
+  }
+
+  @Test
+  fun `sending a draft referral generates a unique reference, even if the previous reference already exists`() {
+    val user = AuthUser("user_id", "auth_source", "user_name")
+    val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+    val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+
+    Mockito.`when`(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.serviceCategory.name))
+      .thenReturn("AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "BB0000ZZ")
+
+    val sent1 = referralService.sendDraftReferral(draft1, user)
+    assertThat(sent1.referenceNumber).isEqualTo("AA0000ZZ")
+
+    val sent2 = referralService.sendDraftReferral(draft2, user)
+    assertThat(sent2.referenceNumber).isNotEqualTo("AA0000ZZ").isEqualTo("BB0000ZZ")
   }
 
   @Test

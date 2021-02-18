@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
@@ -42,9 +43,7 @@ class ReferralService(
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
     referral.sentBy = authUserRepository.save(user)
-
-    val categoryName = referral.intervention.dynamicFrameworkContract.serviceCategory.name
-    referral.referenceNumber = referenceGenerator.generate(categoryName)
+    referral.referenceNumber = generateReferenceNumber(referral.intervention.dynamicFrameworkContract.serviceCategory)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)
@@ -191,5 +190,10 @@ class ReferralService(
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
     return referralRepository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
+  }
+
+  private fun generateReferenceNumber(category: ServiceCategory): String? {
+    return generateSequence { referenceGenerator.generate(category.name) }
+      .find { candidate -> !referralRepository.existsByReferenceNumber(candidate) }
   }
 }
