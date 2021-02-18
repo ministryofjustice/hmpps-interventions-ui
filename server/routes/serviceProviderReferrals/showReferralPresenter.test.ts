@@ -7,9 +7,9 @@ import { DeliusServiceUser } from '../../services/communityApiService'
 
 describe(ShowReferralPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-  const referral = sentReferralFactory.build({
+  const referralFields = sentReferralFactory.build({
     referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
-  })
+  }).referral
   const deliusUser = deliusUserFactory.build({
     firstName: 'Bernard',
     surname: 'Beaks',
@@ -32,7 +32,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser)
+      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.text).toEqual({ title: 'Accommodation referral for Jenny Jones' })
     })
@@ -40,7 +40,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('probationPractitionerDetails', () => {
     it('returns a summary list of probation practitioner details', () => {
-      const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser)
+      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.probationPractitionerDetails).toEqual([
         { isList: false, key: 'Name', lines: ['Bernard Beaks'] },
@@ -52,7 +52,7 @@ describe(ShowReferralPresenter, () => {
   describe('serviceUserNotificationBannerArgs', () => {
     describe('when all contact details are present on the Delius Service User', () => {
       it('returns a notification banner with service user details', () => {
-        const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser)
+        const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
 
         expect(presenter.serviceUserNotificationBannerArgs).toEqual({
           titleText: 'Service user details',
@@ -74,7 +74,7 @@ describe(ShowReferralPresenter, () => {
         } as DeliusServiceUser
 
         const presenter = new ShowReferralPresenter(
-          referral,
+          referralFields,
           serviceCategory,
           deliusUser,
           serviceUserWithoutContactDetails

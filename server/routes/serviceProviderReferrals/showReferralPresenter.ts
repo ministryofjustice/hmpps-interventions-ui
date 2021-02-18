@@ -1,5 +1,5 @@
 import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { ReferralFields, ServiceCategory } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
@@ -7,7 +7,7 @@ import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
 
 export default class ShowReferralPresenter {
   constructor(
-    private readonly referral: SentReferral,
+    private readonly referralFields: ReferralFields,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
     private readonly serviceUser: DeliusServiceUser
@@ -15,7 +15,7 @@ export default class ShowReferralPresenter {
 
   readonly text = {
     title: `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
-      this.referral.referral.serviceUser
+      this.referralFields.serviceUser
     )}`,
   }
 

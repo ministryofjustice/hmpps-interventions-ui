@@ -29,14 +29,14 @@ export default class ServiceProviderReferralsController {
   }
 
   async showReferral(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
     const [serviceCategory, sentBy, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
-      this.communityApiService.getUserByUsername(referral.sentBy.username),
-      this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
+      this.interventionsService.getServiceCategory(res.locals.user.token, sentReferral.referral.serviceCategoryId),
+      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ShowReferralPresenter(referral, serviceCategory, sentBy, serviceUser)
+    const presenter = new ShowReferralPresenter(sentReferral.referral, serviceCategory, sentBy, serviceUser)
     const view = new ShowReferralView(presenter)
 
     res.render(...view.renderArgs)
