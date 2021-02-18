@@ -1069,6 +1069,41 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('assignSentReferral', () => {
+    it('returns the sent referral, with the assignedTo property populated', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+        uponReceiving:
+          'a request to assign the sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf to a caseworker',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/assign',
+          body: {
+            assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(
+        await interventionsService.assignSentReferral(token, '400be4c6-1aa4-4f52-ae86-cbd5d23309bf', {
+          username: 'UserABC',
+          userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+          authSource: 'auth',
+        })
+      ).toMatchObject({
+        assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+      })
+    })
+  })
+
   describe('getInterventions', () => {
     it('returns a list of all interventions', async () => {
       const intervention = {
