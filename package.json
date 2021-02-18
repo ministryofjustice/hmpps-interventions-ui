@@ -82,6 +82,9 @@
       "prettier --write",
       "eslint --fix --max-warnings 0"
     ],
+    "**/*.scss": [
+      "stylelint --fix"
+    ],
     "*.{json}": [
       "prettier --write"
     ]
