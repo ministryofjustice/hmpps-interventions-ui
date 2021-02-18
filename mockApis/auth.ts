@@ -164,6 +164,23 @@ export default class AuthServiceMocks {
     })
   }
 
+  stubGetUserByEmailAddress = async (responseJson: Record<string, unknown>): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        // We don’t care about the query (email address)
+        urlPath: '/auth/api/authuser',
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   private stubToken = async (authSource: string): Promise<unknown> => {
     return Promise.all([this.token(authSource), this.tokenVerification.stubVerifyToken()])
   }

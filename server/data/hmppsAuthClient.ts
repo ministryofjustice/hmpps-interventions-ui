@@ -71,6 +71,11 @@ export default class HmppsAuthClient {
     return this.restClient(token).get({ path: '/api/user/me' }) as Promise<User>
   }
 
+  getUserByEmailAddress(token: string, emailAddress: string): Promise<User> {
+    logger.info(`Getting user detail by email address: calling HMPPS Auth`)
+    return this.restClient(token).get({ path: `/api/authuser`, query: { email: emailAddress } }) as Promise<User>
+  }
+
   getUserRoles(token: string): Promise<string[]> {
     return this.restClient(token)
       .get({ path: '/api/user/me/roles' })

@@ -3,6 +3,10 @@ Cypress.Commands.add('login', () => {
   cy.task('getLoginUrl').then(cy.visit)
 })
 
+Cypress.Commands.add('stubGetUserByEmailAddress', responseJson => {
+  cy.task('stubGetUserByEmailAddress', { responseJson })
+})
+
 Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {
   cy.contains(text).parent('fieldset').within(action)
 })
