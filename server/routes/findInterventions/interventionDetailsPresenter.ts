@@ -39,6 +39,11 @@ export default class InterventionDetailsPresenter {
         isList: false,
       },
       {
+        key: 'Region',
+        lines: [utils.convertToTitleCase(this.intervention.npsRegion.name)],
+        isList: false,
+      },
+      {
         key: 'Location',
         lines: [this.intervention.pccRegions.map(region => region.name).join(', ')],
         isList: false,
