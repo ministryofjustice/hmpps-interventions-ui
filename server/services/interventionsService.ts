@@ -265,6 +265,16 @@ export default class InterventionsService {
     })) as SentReferral[]
   }
 
+  async assignSentReferral(token: string, id: string, assignee: AuthUser): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/sent-referral/${id}/assign`,
+      data: { assignedTo: assignee },
+      headers: { Accept: 'application/json' },
+    })) as SentReferral
+  }
+
   async getInterventions(token: string, filter: InterventionsFilterParams): Promise<Intervention[]> {
     const restClient = this.createRestClient(token)
 

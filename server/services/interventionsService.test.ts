@@ -1064,6 +1064,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('assignSentReferral', () => {
+    it('returns the sent referral, with the assignedTo property populated', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+        uponReceiving:
+          'a request to assign the sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf to a caseworker',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/assign',
+          body: { assignedTo: { username: 'BERNARD.BEAKS', authSource: 'delius' } },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({ assignedTo: { username: 'BERNARD.BEAKS', authSource: 'delius' } }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(
+        await interventionsService.assignSentReferral(token, '400be4c6-1aa4-4f52-ae86-cbd5d23309bf', {
+          username: 'BERNARD.BEAKS',
+          authSource: 'delius',
+        })
+      ).toMatchObject({ assignedTo: { username: 'BERNARD.BEAKS', authSource: 'delius' } })
+    })
+  })
+
   describe('getInterventions', () => {
     it('returns a list of all interventions', async () => {
       const intervention = {
