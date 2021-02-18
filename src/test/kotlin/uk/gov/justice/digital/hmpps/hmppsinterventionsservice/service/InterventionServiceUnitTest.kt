@@ -48,22 +48,6 @@ class InterventionServiceUnitTest {
   }
 
   @Test
-  fun `looks up regions for intervention containing contract without pcc region using nps region`() {
-    val locations = emptyList<String>()
-    val npsRegion = sampleNPSRegion()
-    val pccRegion = samplePCCRegion()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), serviceProvider = sampleServiceProvider(), npsRegion = npsRegion)
-    val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
-    val interventions = listOf(intervention)
-    whenever(interventionRepository.findByCriteria(locations, null, null, null, null)).thenReturn(interventions)
-    whenever(pccRegionRepository.findAllByNpsRegionId(npsRegion.id)).thenReturn(listOf(pccRegion))
-
-    interventionService.getInterventions(locations, null, null, null, null)
-
-    verify(pccRegionRepository).findAllByNpsRegionId(npsRegion.id)
-  }
-
-  @Test
   fun `should return an intervention`() {
     val locations = emptyList<String>()
     val npsRegion = sampleNPSRegion()
