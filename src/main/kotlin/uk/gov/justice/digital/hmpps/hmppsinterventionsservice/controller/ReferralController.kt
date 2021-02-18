@@ -16,6 +16,7 @@ import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -31,6 +32,26 @@ class ReferralController(
   private val serviceCategoryService: ServiceCategoryService,
   private val hmppsAuthService: HMPPSAuthService,
 ) {
+  @PostMapping("/sent-referral/{id}/assign")
+  fun assignSentReferral(
+    @PathVariable id: UUID,
+    @RequestBody referralAssignment: ReferralAssignmentDTO,
+    authentication: JwtAuthenticationToken,
+  ): SentReferralDTO {
+    val sentReferral = referralService.getSentReferral(id)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
+
+    val assignedBy = parseAuthUserToken(authentication)
+    val assignedTo = AuthUser(
+      id = referralAssignment.assignedTo.userId,
+      authSource = referralAssignment.assignedTo.authSource,
+      userName = referralAssignment.assignedTo.username,
+    )
+    return SentReferralDTO.from(
+      referralService.assignSentReferral(sentReferral, assignedBy, assignedTo)
+    )
+  }
+
   @PostMapping("/draft-referral/{id}/send")
   fun sendDraftReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
     val draftReferral = referralService.getDraftReferral(id)

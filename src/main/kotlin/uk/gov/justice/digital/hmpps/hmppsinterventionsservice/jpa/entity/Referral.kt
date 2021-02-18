@@ -21,6 +21,12 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_id")))
 data class Referral(
+  // assigned referral fields
+  var assignedAt: OffsetDateTime? = null,
+  @ManyToOne(fetch = FetchType.LAZY) var assignedBy: AuthUser? = null,
+  @ManyToOne(fetch = FetchType.LAZY) var assignedTo: AuthUser? = null,
+
+  // sent referral fields
   var sentAt: OffsetDateTime? = null,
   @ManyToOne(fetch = FetchType.LAZY) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
