@@ -194,15 +194,20 @@ class ReferralService(
   }
 
   private fun generateReferenceNumber(category: ServiceCategory): String? {
-    return generateSequence { referenceGenerator.generate(category.name) }
-      .find { candidate ->
-        referralRepository.existsByReferenceNumber(candidate)
-          .also { exists -> if (exists) log.warn("Clash found for referral number: $candidate") }
-          .not()
-      }
+    for (i in 1..maxReferenceNumberTries) {
+      val candidate = referenceGenerator.generate(category.name)
+      if (!referralRepository.existsByReferenceNumber(candidate))
+        return candidate
+      else
+        log.warn("Clash found for referral number: $candidate")
+    }
+
+    log.warn("Unable to generate a referral number in $maxReferenceNumberTries tries")
+    return null
   }
 
   companion object {
+    private const val maxReferenceNumberTries = 10
     private val log = LoggerFactory.getLogger(ReferralService::class.java)
   }
 }
