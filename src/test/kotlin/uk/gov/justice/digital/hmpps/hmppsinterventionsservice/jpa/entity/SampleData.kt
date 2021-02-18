@@ -124,6 +124,41 @@ class SampleData {
       )
     }
 
+    fun sampleActionPlan(
+      id: UUID? = null,
+      referral: Referral,
+      numberOfSessions: Int? = null,
+      desiredOutcome: DesiredOutcome,
+      createdBy: AuthUser,
+      submittedBy: AuthUser? = null,
+      approvedBy: AuthUser? = null
+    ): ActionPlan {
+      return ActionPlan(
+        id = id ?: UUID.randomUUID(),
+        referral = referral,
+        numberOfSessions = numberOfSessions ?: 1,
+        createdBy = createdBy,
+        createdAt = OffsetDateTime.now(),
+        submittedBy = submittedBy ?: createdBy,
+        submittedAt = OffsetDateTime.now(),
+        approvedBy = approvedBy ?: createdBy,
+        approvedAt = OffsetDateTime.now(),
+        activities = listOf(sampleActionPlanActivity(desiredOutcome = desiredOutcome))
+      )
+    }
+
+    fun sampleActionPlanActivity(
+      id: UUID? = null,
+      desiredOutcome: DesiredOutcome
+    ): ActionPlanActivity {
+      return ActionPlanActivity(
+        id = id ?: UUID.randomUUID(),
+        description = "Some text to describe activity",
+        createdAt = OffsetDateTime.now(),
+        desiredOutcome = desiredOutcome
+      )
+    }
+
     fun sampleServiceProvider(
       id: AuthGroupID = "HARMONY_LIVING",
       name: String = "Harmony Living",
