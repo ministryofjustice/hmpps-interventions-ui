@@ -42,7 +42,9 @@ class ReferralService(
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
     referral.sentBy = authUserRepository.save(user)
-    referral.referenceNumber = referenceGenerator.generate()
+
+    val categoryName = referral.intervention.dynamicFrameworkContract.serviceCategory.name
+    referral.referenceNumber = referenceGenerator.generate(categoryName)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)

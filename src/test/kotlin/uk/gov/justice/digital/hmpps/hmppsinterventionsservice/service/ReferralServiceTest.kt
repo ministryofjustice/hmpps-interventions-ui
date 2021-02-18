@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
@@ -35,7 +36,7 @@ class ReferralServiceTest @Autowired constructor(
 ) {
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
-  private val referenceGenerator: ReferralReferenceGenerator = ReferralReferenceGenerator()
+  private val referenceGenerator: ReferralReferenceGenerator = mock()
   private val referralService = ReferralService(
     referralRepository,
     authUserRepository,
@@ -284,6 +285,19 @@ class ReferralServiceTest @Autowired constructor(
 
     assertThat(referralService.getDraftReferral(draftReferral.id)).isNull()
     assertThat(referralService.getSentReferral(sentReferral.id)).isNotNull()
+  }
+
+  @Test
+  fun `sending a draft referral generates a human-readable reference for it`() {
+    val user = AuthUser("user_id", "auth_source", "user_name")
+    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+
+    val category = draftReferral.intervention.dynamicFrameworkContract.serviceCategory.name
+    Mockito.`when`(referenceGenerator.generate(category)).thenReturn("AA1234ZZ")
+    assertThat(draftReferral.referenceNumber).isNull()
+
+    val sentReferral = referralService.sendDraftReferral(draftReferral, user)
+    assertThat(sentReferral.referenceNumber).isEqualTo("AA1234ZZ")
   }
 
   @Test
