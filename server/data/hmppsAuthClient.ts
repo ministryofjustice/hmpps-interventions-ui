@@ -44,7 +44,7 @@ function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.R
     .timeout(timeoutSpec)
 }
 
-interface User {
+export interface User {
   name: string
   userId: string
   username: string
