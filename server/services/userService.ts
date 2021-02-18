@@ -19,7 +19,7 @@ export default class UserService {
   private readonly serviceProviderGroupPrefix = 'INT_SP_'
 
   async getUser(token: string): Promise<UserDetails> {
-    const user = await this.hmppsAuthClient.getUser(token)
+    const user = await this.hmppsAuthClient.getCurrentUser(token)
     const userDetails: UserDetails = { ...user, displayName: utils.convertToTitleCase(user.name as string) }
 
     if (user.authSource === 'auth') {

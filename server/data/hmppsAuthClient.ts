@@ -66,8 +66,8 @@ export default class HmppsAuthClient {
     return new RestClient('HMPPS Auth Client', config.apis.hmppsAuth, token)
   }
 
-  getUser(token: string): Promise<User> {
-    logger.info(`Getting user details: calling HMPPS Auth`)
+  getCurrentUser(token: string): Promise<User> {
+    logger.info(`Getting current user details: calling HMPPS Auth`)
     return this.restClient(token).get({ path: '/api/user/me' }) as Promise<User>
   }
 
