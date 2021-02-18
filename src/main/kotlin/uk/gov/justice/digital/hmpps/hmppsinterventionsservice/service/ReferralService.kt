@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -194,6 +195,14 @@ class ReferralService(
 
   private fun generateReferenceNumber(category: ServiceCategory): String? {
     return generateSequence { referenceGenerator.generate(category.name) }
-      .find { candidate -> !referralRepository.existsByReferenceNumber(candidate) }
+      .find { candidate ->
+        referralRepository.existsByReferenceNumber(candidate)
+          .also { exists -> if (exists) log.warn("Clash found for referral number: $candidate") }
+          .not()
+      }
+  }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(ReferralService::class.java)
   }
 }
