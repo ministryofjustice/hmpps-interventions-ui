@@ -118,4 +118,26 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
   })
+
+  it('User assigns a referral to a caseworker', () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
+    const deliusUser = deliusUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+
+    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetSentReferrals([referral])
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+
+    cy.login()
+
+    cy.visit(`/service-provider/referrals/${referral.id}`)
+
+    cy.get('h1').contains('Who do you want to assign this accommodation referral to?')
+
+    cy.get('#email').type('john@harmonyliving.org.uk')
+    cy.contains('Save and continue').click()
+  })
 })
