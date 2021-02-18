@@ -22,7 +22,7 @@
     "int-test-ui": "cypress open",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "lint": "eslint . --cache --max-warnings 0",
+    "lint": "eslint . --cache --max-warnings 0 && stylelint **/*.scss",
     "clean": "rm -rf dist build node_modules stylesheets"
   },
   "engines": {
