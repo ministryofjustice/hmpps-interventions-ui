@@ -29,6 +29,16 @@ class SNSService(
         )
         publish(objectMapper.writeValueAsString(message))
       }
+      ReferralEventType.ASSIGNED -> {
+        val message = mapOf(
+          "eventType" to "intervention.referral.assigned",
+          "description" to "A referral has been assigned to a service user",
+//          "assigned_to" to event.referral.assignedTo,
+//          "assigned_at" to event.referral.assignedAt,
+          "referral_id" to event.referral.id,
+        )
+        publish(objectMapper.writeValueAsString(message))
+      }
     }
   }
 

@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import java.time.LocalDateTime
 import java.util.UUID
 
 internal class SNSServiceTest {
@@ -29,6 +30,19 @@ internal class SNSServiceTest {
       "Harmony Living",
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
+    ),
+  )
+
+  private val referralAssignedEvent = ReferralEvent(
+    "source",
+    ReferralEventType.ASSIGNED,
+    SampleData.sampleReferral(
+      "X123456",
+      "Harmony Living",
+      id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
+      referenceNumber = "HAS71263",
+//      assignedTo = "abc123",
+//      assignedAt = LocalDateTime.of(2021,12,1,1,1,1),
     ),
   )
 
@@ -60,4 +74,25 @@ internal class SNSServiceTest {
     whenever(snsClient.publish(any<PublishRequest>())).thenThrow(SdkClientException::class.java)
     assertDoesNotThrow { snsService(true).onApplicationEvent(referralSentEvent) }
   }
+
+  @Test
+  fun `referral assigned event publishes message with valid json`() {
+    snsService(true).onApplicationEvent(referralAssignedEvent)
+
+    val requestCaptor = argumentCaptor<PublishRequest>()
+    verify(snsClient).publish(requestCaptor.capture())
+    assertThat(requestCaptor.firstValue.message()).isEqualTo(
+      """
+      {"eventType":"intervention.referral.assigned","description":"A referral has been assigned to a service user",
+      "referral_id":"68df9f6c-3fcb-4ec6-8fcf-96551cd9b080", "assigned_to": "abc123', "assigned_at": "2021-12-01T01:01:01"}
+      """.trimIndent()
+    )
+  }
+
+  @Test
+  fun `referral assigned event does not publish when service is disabled`() {
+    snsService(false).onApplicationEvent(referralAssignedEvent)
+    verifyZeroInteractions(snsClient)
+  }
+
 }
