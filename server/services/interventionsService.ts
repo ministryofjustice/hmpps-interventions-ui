@@ -46,6 +46,7 @@ export interface SentReferral {
   referenceNumber: string
   referral: ReferralFields
   sentBy: AuthUser
+  assignedTo: AuthUser | null
 }
 
 export interface ServiceCategory {
