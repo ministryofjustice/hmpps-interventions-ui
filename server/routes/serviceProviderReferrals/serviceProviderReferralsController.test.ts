@@ -103,7 +103,7 @@ describe('GET /service-provider/referrals/:id', () => {
       .get(`/service-provider/referrals/${sentReferral.id}`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Accommodation referral for Jenny Jones')
+        expect(res.text).toContain('Who do you want to assign this accommodation referral to?')
         expect(res.text).toContain('Bernard Beaks')
         expect(res.text).toContain('bernard.beaks@justice.gov.uk')
         expect(res.text).toContain('alex.river@example.com')

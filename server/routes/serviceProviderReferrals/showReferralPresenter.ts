@@ -15,9 +15,12 @@ export default class ShowReferralPresenter {
   ) {}
 
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
-      this.sentReferral.referral.serviceUser
-    )}`,
+    title:
+      this.sentReferral.assignedTo === null
+        ? `Who do you want to assign this ${this.serviceCategory.name} referral to?`
+        : `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
+            this.sentReferral.referral.serviceUser
+          )}`,
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
   }
 

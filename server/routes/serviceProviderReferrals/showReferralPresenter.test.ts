@@ -49,9 +49,9 @@ describe(ShowReferralPresenter, () => {
     ],
   })
 
-  const sentReferral = sentReferralFactory.build({
+  const referralParams = {
     referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
-  })
+  }
   const deliusUser = deliusUserFactory.build({
     firstName: 'Bernard',
     surname: 'Beaks',
@@ -73,18 +73,39 @@ describe(ShowReferralPresenter, () => {
   })
 
   describe('text', () => {
-    it('returns text to be displayed', () => {
-      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
+    describe('title', () => {
+      describe('when the referral doesn’t have an assigned caseworker', () => {
+        it('returns a title to be displayed', () => {
+          const sentReferral = sentReferralFactory.build(referralParams)
+          const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
-      expect(presenter.text).toEqual({
-        title: 'Accommodation referral for Jenny Jones',
-        interventionDetailsSummaryHeading: 'Accommodation intervention details',
+          expect(presenter.text.title).toEqual('Who do you want to assign this accommodation referral to?')
+        })
+      })
+
+      describe('when the referral has an assigned caseworker', () => {
+        it('returns a title to be displayed', () => {
+          const sentReferral = sentReferralFactory.assigned().build(referralParams)
+          const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
+
+          expect(presenter.text.title).toEqual('Accommodation referral for Jenny Jones')
+        })
+      })
+    })
+
+    describe('interventionDetailsSummaryHeading', () => {
+      it('returns text to be displayed including service category name', () => {
+        const sentReferral = sentReferralFactory.assigned().build(referralParams)
+        const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
+
+        expect(presenter.text.interventionDetailsSummaryHeading).toEqual('Accommodation intervention details')
       })
     })
   })
 
   describe('probationPractitionerDetails', () => {
     it('returns a summary list of probation practitioner details', () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
       const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.probationPractitionerDetails).toEqual([
@@ -252,6 +273,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('serviceUserPersonalDetails', () => {
     it("returns a summary list of the service user's personal details", () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
       const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.serviceUserDetails).toEqual([
@@ -271,6 +293,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('serviceUserRisks', () => {
     it("returns a summary list of the service user's risk information", () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
       const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -442,7 +465,8 @@ describe(ShowReferralPresenter, () => {
   describe('serviceUserNotificationBannerArgs', () => {
     describe('when all contact details are present on the Delius Service User', () => {
       it('returns a notification banner with service user details', () => {
-        const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
+        const referral = sentReferralFactory.build(referralParams)
+        const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser)
 
         expect(presenter.serviceUserNotificationBannerArgs).toEqual({
           titleText: 'Service user details',
@@ -456,6 +480,7 @@ describe(ShowReferralPresenter, () => {
 
     describe('if contact details are missing on the Delius Service User', () => {
       it('displays a useful message to the user in the banner', () => {
+        const sentReferral = sentReferralFactory.build(referralParams)
         const serviceUserWithoutContactDetails = {
           firstName: 'Alex',
           surname: 'River',

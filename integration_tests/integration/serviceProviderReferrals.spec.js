@@ -91,7 +91,7 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('ABCABCA2').click()
     cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}`)
-    cy.get('h1').contains('Social inclusion referral for Jenny Jones')
+    cy.get('h1').contains('Who do you want to assign this social inclusion referral to?')
     cy.contains('07123456789 | jenny.jones@example.com')
     cy.contains('Social inclusion intervention details')
     cy.contains('Service User makes progress in obtaining accommodation')
