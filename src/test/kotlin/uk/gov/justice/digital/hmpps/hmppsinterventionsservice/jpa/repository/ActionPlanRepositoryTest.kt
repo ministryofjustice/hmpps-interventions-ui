@@ -37,11 +37,16 @@ class ActionPlanRepositoryTest @Autowired constructor(
     val referral = SampleData.sampleReferral("X123456", "Harmony Living", createdBy = user)
     SampleData.persistReferral(entityManager, referral)
 
-    val desiredOutcome = SampleData.sampleDesiredOutcome(description = "Removing Barriers")
+    val serviceCategory = SampleData.sampleServiceCategory()
+    entityManager.persist(serviceCategory)
+
+    val desiredOutcome = SampleData.sampleDesiredOutcome(description = "Removing Barriers", serviceCategoryId = serviceCategory.id)
     entityManager.persist(desiredOutcome)
 
     val actionPlan = SampleData.sampleActionPlan(referral = referral, desiredOutcome = desiredOutcome, createdBy = user)
     actionPlanRepository.save(actionPlan)
+    entityManager.flush()
+
     return actionPlan
   }
 }

@@ -21,16 +21,14 @@ data class ActionPlan(
 
   // Activities
   @ElementCollection
-  @CollectionTable(name = "action_plan_activity", joinColumns = [JoinColumn(name = "action_plan_id")])
-  @NotNull var activities: List<ActionPlanActivity>,
+  @CollectionTable(name = "action_plan_activity", joinColumns = [JoinColumn(name = "id")])
+  @NotNull val activities: List<ActionPlanActivity> = emptyList(),
 
   // Status
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
   @ManyToOne(fetch = FetchType.LAZY) val submittedBy: AuthUser?,
   val submittedAt: OffsetDateTime?,
-  @ManyToOne(fetch = FetchType.LAZY) val approvedBy: AuthUser?,
-  val approvedAt: OffsetDateTime?,
 
   // Required
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val referral: Referral,

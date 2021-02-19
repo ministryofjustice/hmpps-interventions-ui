@@ -131,7 +131,6 @@ class SampleData {
       desiredOutcome: DesiredOutcome,
       createdBy: AuthUser,
       submittedBy: AuthUser? = null,
-      approvedBy: AuthUser? = null
     ): ActionPlan {
       return ActionPlan(
         id = id ?: UUID.randomUUID(),
@@ -141,18 +140,14 @@ class SampleData {
         createdAt = OffsetDateTime.now(),
         submittedBy = submittedBy ?: createdBy,
         submittedAt = OffsetDateTime.now(),
-        approvedBy = approvedBy ?: createdBy,
-        approvedAt = OffsetDateTime.now(),
         activities = listOf(sampleActionPlanActivity(desiredOutcome = desiredOutcome))
       )
     }
 
     fun sampleActionPlanActivity(
-      id: UUID? = null,
       desiredOutcome: DesiredOutcome
     ): ActionPlanActivity {
       return ActionPlanActivity(
-        id = id ?: UUID.randomUUID(),
         description = "Some text to describe activity",
         createdAt = OffsetDateTime.now(),
         desiredOutcome = desiredOutcome
