@@ -17,7 +17,7 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
-      <form method="post" action={{ presenter.assignmentFormAction }}>
+      <form method="get" action={{ presenter.assignmentFormAction }}>
         {{ govukInput(emailInputArgs) }}
         {{ govukButton({ text: "Save and continue" }) }}
       </form>

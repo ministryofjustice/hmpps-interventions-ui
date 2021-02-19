@@ -1,0 +1,24 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel(panelArgs) }}
+
+      <h2 class="govuk-heading-m">Referral details</h2>
+
+      {{ govukSummaryList(summaryListArgs) }}
+
+      <a href="{{ presenter.dashboardHref }}" class="govuk-button">Return to dashboard</a>
+    </div>
+  </div>
+{% endblock %}

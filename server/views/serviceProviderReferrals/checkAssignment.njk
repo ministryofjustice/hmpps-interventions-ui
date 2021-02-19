@@ -21,7 +21,13 @@
       <h2 class="govuk-heading-m">Caseworker</h2>
 
       {{ govukSummaryList(summaryListArgs) }}
-      {{ govukButton({ text: "Confirm assignment" }) }}
+      <form method="post" action={{ presenter.formAction }}>
+        {% for name, value in presenter.hiddenFields %}
+          <input type="hidden" name={{ name }} value={{ value }}>
+        {% endfor %}
+
+        {{ govukButton({ text: "Confirm assignment" }) }}
+      </form>
     </div>
   </div>
 {% endblock %}

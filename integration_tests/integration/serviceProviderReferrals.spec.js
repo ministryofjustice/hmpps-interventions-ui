@@ -122,7 +122,8 @@ describe('Service provider referrals dashboard', () => {
 
   it('User assigns a referral to a caseworker', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
+    const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
+    const referral = sentReferralFactory.build(referralParams)
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
@@ -133,6 +134,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetUserByEmailAddress(hmppsAuthUser)
+    cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubAssignSentReferral(referral.id, referral)
 
     cy.login()
@@ -144,10 +146,23 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#email').type('john@harmonyliving.org.uk')
     cy.contains('Save and continue').click()
 
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/check-assignment`)
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
     cy.get('h1').contains('Confirm the accommodation referral assignment')
     cy.contains('John Smith')
 
+    const assignedReferral = sentReferralFactory
+      .assigned()
+      .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
+    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+    cy.stubGetSentReferrals([assignedReferral])
+
     cy.contains('Confirm assignment').click()
+
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+    cy.get('h1').contains('Caseworker assigned')
+
+    cy.contains('Return to dashboard').click()
+
+    cy.location('pathname').should('equal', `/service-provider/dashboard`)
   })
 })

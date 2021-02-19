@@ -58,6 +58,12 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/referrals/:id/assignment/check', (req, res) =>
     serviceProviderReferralsController.checkAssignment(req, res)
   )
+  post('/service-provider/referrals/:id/assignment', (req, res) =>
+    serviceProviderReferralsController.assignReferral(req, res)
+  )
+  get('/service-provider/referrals/:id/assignment/confirmation', (req, res) =>
+    serviceProviderReferralsController.confirmAssignment(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

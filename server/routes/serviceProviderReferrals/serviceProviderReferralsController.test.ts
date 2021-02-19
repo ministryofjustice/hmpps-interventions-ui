@@ -140,3 +140,59 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
       })
   })
 })
+
+describe('POST /service-provider/referrals/:id/assignment', () => {
+  it('assigns the referral to the selected caseworker', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.build({
+      referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
+    })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith', username: 'john.smith' })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    hmppsAuthClient.getUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+    interventionsService.assignSentReferral.mockResolvedValue(referral)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/assignment`)
+      .type('form')
+      .send({ email: 'john@harmonyliving.org.uk' })
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+
+    expect(interventionsService.assignSentReferral.mock.calls[0][2]).toEqual({
+      username: 'john.smith',
+      userId: hmppsAuthUser.userId,
+      authSource: 'auth',
+    })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
+  it('displays details of the assigned caseworker and the referral', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+      assignedTo: { username: 'john.smith' },
+    })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith', username: 'john.smith' })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    hmppsAuthClient.getUserByUsername.mockResolvedValue(hmppsAuthUser)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/assignment/confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain(referral.referenceNumber)
+        expect(res.text).toContain('Accommodation')
+        expect(res.text).toContain('John Smith')
+      })
+  })
+})

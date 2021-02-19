@@ -8,6 +8,8 @@ import DashboardPresenter from './dashboardPresenter'
 import DashboardView from './dashboardView'
 import ShowReferralPresenter from './showReferralPresenter'
 import ShowReferralView from './showReferralView'
+import AssignmentConfirmationView from './assignmentConfirmationView'
+import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -57,8 +59,40 @@ export default class ServiceProviderReferralsController {
       this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
     ])
 
-    const presenter = new CheckAssignmentPresenter(assignee, email, serviceCategory)
+    const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, serviceCategory)
     const view = new CheckAssignmentView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async assignReferral(req: Request, res: Response): Promise<void> {
+    // TODO IC-1180 - Validation: presence
+    const { email } = req.body
+    const assignee = await this.hmppsAuthClient.getUserByEmailAddress(res.locals.user.token, email)
+
+    this.interventionsService.assignSentReferral(res.locals.user.token, req.params.id, {
+      username: assignee.username,
+      userId: assignee.userId,
+      authSource: 'auth',
+    })
+
+    res.redirect(`/service-provider/referrals/${req.params.id}/assignment/confirmation`)
+  }
+
+  async confirmAssignment(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+
+    if (referral.assignedTo === null) {
+      throw new Error('Can’t view confirmation of assignment, as referral isn’t assigned.')
+    }
+
+    const [assignee, serviceCategory] = await Promise.all([
+      this.hmppsAuthClient.getUserByUsername(res.locals.user.token, referral.assignedTo.username),
+      this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
+    ])
+
+    const presenter = new AssignmentConfirmationPresenter(referral, serviceCategory, assignee)
+    const view = new AssignmentConfirmationView(presenter)
 
     res.render(...view.renderArgs)
   }
