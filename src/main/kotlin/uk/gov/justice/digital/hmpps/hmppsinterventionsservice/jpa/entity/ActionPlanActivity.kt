@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull
 data class ActionPlanActivity(
 
   // Attributes
-  val description: String,
+  @NotNull val description: String,
 
   // For ordering
   @NotNull val createdAt: OffsetDateTime,

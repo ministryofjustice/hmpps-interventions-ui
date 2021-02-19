@@ -9,6 +9,7 @@ import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
@@ -27,10 +28,10 @@ data class ActionPlan(
   // Status
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
-  @ManyToOne(fetch = FetchType.LAZY) val submittedBy: AuthUser?,
-  val submittedAt: OffsetDateTime?,
+  @ManyToOne(fetch = FetchType.LAZY) val submittedBy: AuthUser? = null,
+  val submittedAt: OffsetDateTime? = null,
 
   // Required
-  @NotNull @ManyToOne(fetch = FetchType.LAZY) val referral: Referral,
+  @NotNull @OneToOne(fetch = FetchType.LAZY) val referral: Referral,
   @Id val id: UUID,
 )

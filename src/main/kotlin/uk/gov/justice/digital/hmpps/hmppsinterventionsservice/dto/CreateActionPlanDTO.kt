@@ -10,7 +10,7 @@ data class CreateActionPlanDTO(
 )
 
 data class CreateActionPlanActivityDTO(
-  val desiredOutcomeDTO: DesiredOutcomeDTO,
+  val desiredOutcome: DesiredOutcomeDTO,
   val description: String,
   val createdAt: OffsetDateTime
 )

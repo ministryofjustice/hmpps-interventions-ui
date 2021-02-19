@@ -5,15 +5,31 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtToAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import java.util.UUID
 
 @RestController
-class ActionPlanController() {
+class ActionPlanController(
+  val actionPlanMapper: ActionPlanMapper,
+  val jwtToAuthUserMapper: JwtToAuthUserMapper,
+  val actionPlanService: ActionPlanService
+) {
 
   @PostMapping("/draft-action-plan")
-  fun createDraftActionPlan(@RequestBody createActionPlan: CreateActionPlanDTO, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
+  fun createDraftActionPlan(@RequestBody createActionPlanDTO: CreateActionPlanDTO, authentication: JwtAuthenticationToken): ResponseEntity<UUID> {
 
-    throw UnsupportedOperationException()
+    val createdByUser = jwtToAuthUserMapper.parseAuthUserToken(authentication)
+
+    val createActionPlan = actionPlanMapper.map(createActionPlanDTO, createdByUser)
+
+    val draftActionPlan = actionPlanService.createDraftReferral(createActionPlan)
+
+    val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(draftActionPlan.id).toUri()
+
+    return ResponseEntity.created(location).body(draftActionPlan.id)
   }
 }
