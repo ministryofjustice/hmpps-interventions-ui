@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.server.ResponseStatusException
 
 enum class Code {
@@ -38,6 +39,12 @@ class ErrorConfiguration {
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
     log.info("access denied exception: {}", e.message)
     return errorResponse(HttpStatus.FORBIDDEN, "access denied", e.message)
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+  fun handleInvalidParamException(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
+    log.info("invalid parameter passed to controller method: {}", e.message)
+    return errorResponse(HttpStatus.BAD_REQUEST, "invalid parameter", e.message)
   }
 
   @ExceptionHandler(ValidationError::class)

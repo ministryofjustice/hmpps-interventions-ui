@@ -12,10 +12,10 @@ import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.parseID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import java.util.UUID
 
 @RestController
 class ActionPlanController(
@@ -47,11 +47,9 @@ class ActionPlanController(
   }
 
   @GetMapping("/draft-action-plan/{id}")
-  fun getDraftActionPlan(@PathVariable id: String): DraftActionPlanDTO {
-
-    val uuid = parseID(id)
-    return actionPlanService.getDraftActionPlan(uuid)
+  fun getDraftActionPlan(@PathVariable id: UUID): DraftActionPlanDTO {
+    return actionPlanService.getDraftActionPlan(id)
       ?.let { DraftActionPlanDTO.from(it) }
-      ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$uuid]")
+      ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$id]")
   }
 }

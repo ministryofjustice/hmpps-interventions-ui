@@ -32,11 +32,9 @@ class ReferralController(
   private val hmppsAuthService: HMPPSAuthService,
 ) {
   @PostMapping("/draft-referral/{id}/send")
-  fun sendDraftReferral(@PathVariable id: String, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
-    val uuid = parseID(id)
-
-    val draftReferral = referralService.getDraftReferral(uuid)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$uuid]")
+  fun sendDraftReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
+    val draftReferral = referralService.getDraftReferral(id)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
 
     val user = parseAuthUserToken(authentication)
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
@@ -53,11 +51,10 @@ class ReferralController(
   }
 
   @GetMapping("/sent-referral/{id}")
-  fun getSentReferral(@PathVariable id: String): SentReferralDTO {
-    val uuid = parseID(id)
-    return referralService.getSentReferral(uuid)
+  fun getSentReferral(@PathVariable id: UUID): SentReferralDTO {
+    return referralService.getSentReferral(id)
       ?.let { SentReferralDTO.from(it) }
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$uuid]")
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
   }
 
   @GetMapping("/sent-referrals")
@@ -95,20 +92,16 @@ class ReferralController(
   }
 
   @GetMapping("/draft-referral/{id}")
-  fun getDraftReferralByID(@PathVariable id: String): DraftReferralDTO {
-    val uuid = parseID(id)
-
-    return referralService.getDraftReferral(uuid)
+  fun getDraftReferralByID(@PathVariable id: UUID): DraftReferralDTO {
+    return referralService.getDraftReferral(id)
       ?.let { DraftReferralDTO.from(it) }
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$uuid]")
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
   }
 
   @PatchMapping("/draft-referral/{id}")
-  fun patchDraftReferralByID(@PathVariable id: String, @RequestBody partialUpdate: DraftReferralDTO): DraftReferralDTO {
-    val uuid = parseID(id)
-
-    val referralToUpdate = referralService.getDraftReferral(uuid)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$uuid]")
+  fun patchDraftReferralByID(@PathVariable id: UUID, @RequestBody partialUpdate: DraftReferralDTO): DraftReferralDTO {
+    val referralToUpdate = referralService.getDraftReferral(id)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
 
     val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
     return DraftReferralDTO.from(updatedReferral)
@@ -120,20 +113,10 @@ class ReferralController(
   }
 
   @GetMapping("/service-category/{id}")
-  fun getServiceCategoryByID(@PathVariable id: String): ServiceCategoryDTO {
-    val uuid = parseID(id)
-
-    return serviceCategoryService.getServiceCategoryByID(uuid)
+  fun getServiceCategoryByID(@PathVariable id: UUID): ServiceCategoryDTO {
+    return serviceCategoryService.getServiceCategoryByID(id)
       ?.let { ServiceCategoryDTO.from(it) }
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$uuid]")
-  }
-
-  private fun parseID(id: String): UUID {
-    return try {
-      UUID.fromString(id)
-    } catch (e: IllegalArgumentException) {
-      throw ServerWebInputException("could not parse id [id=$id]")
-    }
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$id]")
   }
 
   private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {

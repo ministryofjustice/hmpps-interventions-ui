@@ -62,7 +62,7 @@ internal class ActionPlanControllerTest {
 
     whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(actionPlan)
 
-    val draftActionPlanResponse = actionPlanController.getDraftActionPlan(actionPlanId.toString())
+    val draftActionPlanResponse = actionPlanController.getDraftActionPlan(actionPlanId)
 
     assertThat(draftActionPlanResponse).isEqualTo(draftActionPlanDTO)
   }
@@ -74,7 +74,7 @@ internal class ActionPlanControllerTest {
     whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(null)
 
     val exception = assertThrows(ResponseStatusException::class.java) {
-      actionPlanController.getDraftActionPlan(actionPlanId.toString())
+      actionPlanController.getDraftActionPlan(actionPlanId)
     }
 
     assertThat(exception.status).isEqualTo(NOT_FOUND)
