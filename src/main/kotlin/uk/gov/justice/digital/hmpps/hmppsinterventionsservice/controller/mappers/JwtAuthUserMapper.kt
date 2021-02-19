@@ -6,9 +6,9 @@ import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
 @Component
-class JwtToAuthUserMapper {
+class JwtAuthUserMapper {
 
-  fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
+  fun map(authentication: JwtAuthenticationToken): AuthUser {
     // note: this does not allow tokens for client_credentials grant types use this API
 
     val userID = authentication.token.getClaimAsString("user_id")

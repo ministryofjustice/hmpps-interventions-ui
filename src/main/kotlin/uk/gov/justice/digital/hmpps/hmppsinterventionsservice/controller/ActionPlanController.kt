@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtToAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.parseID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlan
 @RestController
 class ActionPlanController(
   val actionPlanMapper: ActionPlanMapper,
-  val jwtToAuthUserMapper: JwtToAuthUserMapper,
+  val jwtAuthUserMapper: JwtAuthUserMapper,
   val actionPlanService: ActionPlanService
 ) {
 
@@ -30,7 +30,7 @@ class ActionPlanController(
     authentication: JwtAuthenticationToken
   ): ResponseEntity<DraftActionPlanDTO> {
 
-    val createdByUser = jwtToAuthUserMapper.parseAuthUserToken(authentication)
+    val createdByUser = jwtAuthUserMapper.map(authentication)
     val createActionPlan = actionPlanMapper.map(createActionPlanDTO, createdByUser)
     val draftActionPlan = actionPlanService.createDraftReferral(createActionPlan)
     val draftActionPlanDTO = actionPlanMapper.map(draftActionPlan)
