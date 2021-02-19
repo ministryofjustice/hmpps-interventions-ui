@@ -9,8 +9,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtToAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
-import java.util.UUID
 
 @RestController
 class ActionPlanController(
@@ -20,16 +20,16 @@ class ActionPlanController(
 ) {
 
   @PostMapping("/draft-action-plan")
-  fun createDraftActionPlan(@RequestBody createActionPlanDTO: CreateActionPlanDTO, authentication: JwtAuthenticationToken): ResponseEntity<UUID> {
+  fun createDraftActionPlan(
+    @RequestBody createActionPlanDTO: CreateActionPlanDTO,
+    authentication: JwtAuthenticationToken
+  ): ResponseEntity<DraftActionPlanDTO> {
 
     val createdByUser = jwtToAuthUserMapper.parseAuthUserToken(authentication)
-
     val createActionPlan = actionPlanMapper.map(createActionPlanDTO, createdByUser)
-
     val draftActionPlan = actionPlanService.createDraftReferral(createActionPlan)
-
+    val draftActionPlanDTO = actionPlanMapper.map(draftActionPlan)
     val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(draftActionPlan.id).toUri()
-
-    return ResponseEntity.created(location).body(draftActionPlan.id)
+    return ResponseEntity.created(location).body(draftActionPlanDTO)
   }
 }
