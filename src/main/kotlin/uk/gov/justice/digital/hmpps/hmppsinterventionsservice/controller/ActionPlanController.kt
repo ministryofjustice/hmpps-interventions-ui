@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtToAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.parseID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
-import java.util.UUID
 
 @RestController
 class ActionPlanController(
@@ -46,13 +45,5 @@ class ActionPlanController(
     return actionPlanService.getDraftReferral(uuid)
       ?.let { actionPlanMapper.map(it) }
       ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$uuid]")
-  }
-
-  private fun parseID(id: String): UUID {
-    return try {
-      UUID.fromString(id)
-    } catch (e: IllegalArgumentException) {
-      throw ServerWebInputException("could not parse id [id=$id]")
-    }
   }
 }
