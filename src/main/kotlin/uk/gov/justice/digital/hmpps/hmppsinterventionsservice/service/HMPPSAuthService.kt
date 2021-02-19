@@ -2,12 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
-import reactor.core.publisher.Flux
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
@@ -24,6 +21,10 @@ class HMPPSAuthService(
   private val hmppsAuthApiWebClient: WebClient,
 ) {
   fun getServiceProviderOrganizationForUser(user: AuthUser): AuthGroupID? {
+    if (user.authSource != "auth") {
+      return null
+    }
+
     val url = UriComponentsBuilder.fromPath(userGroupsLocation)
       .buildAndExpand(user.userName)
       .toString()
@@ -31,18 +32,6 @@ class HMPPSAuthService(
     val groups = hmppsAuthApiWebClient.get().uri(url)
       .retrieve()
       .bodyToFlux(AuthGroup::class.java)
-      .onErrorResume { e ->
-        when (e) {
-          is WebClientResponseException -> {
-            // we expect 404s for non-auth users
-            if (!e.statusCode.equals(HttpStatus.NOT_FOUND)) {
-              log.error("could not get groups for user", e)
-            }
-          }
-          else -> log.error("could not get groups for user", e)
-        }
-        Flux.empty()
-      }
       .collectList().block()
 
     val serviceProviderOrgs = groups
