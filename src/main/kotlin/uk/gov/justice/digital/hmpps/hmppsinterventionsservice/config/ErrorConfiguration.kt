@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.server.ResponseStatusException
@@ -33,6 +34,12 @@ data class ErrorResponse(
 
 @RestControllerAdvice
 class ErrorConfiguration {
+  @ExceptionHandler(AccessDeniedException::class)
+  fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
+    log.info("access denied exception: {}", e.message)
+    return errorResponse(HttpStatus.FORBIDDEN, "access denied", e.message)
+  }
+
   @ExceptionHandler(ValidationError::class)
   fun handleValidationException(e: ValidationError): ResponseEntity<ErrorResponse> {
     log.info("validation exception: {}", e.message)

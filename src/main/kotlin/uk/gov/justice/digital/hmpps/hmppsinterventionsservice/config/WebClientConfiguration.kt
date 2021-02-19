@@ -15,24 +15,17 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class WebClientConfiguration(
   @Value("\${community-api.baseurl}") private val communityApiBaseUrl: String,
+  @Value("\${hmppsauth.baseurl}") private val hmppsAuthBaseUrl: String,
   private val webClientBuilder: WebClient.Builder
 ) {
   @Bean
   fun communityApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
-    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
-    oauth2Client.setDefaultClientRegistrationId("community-api")
-    return webClientBuilder
-      .baseUrl(communityApiBaseUrl)
-      .apply(oauth2Client.oauth2Configuration())
-      .exchangeStrategies(
-        ExchangeStrategies.builder()
-          .codecs { configurer ->
-            configurer.defaultCodecs()
-              .maxInMemorySize(-1)
-          }
-          .build()
-      )
-      .build()
+    return createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl)
+  }
+
+  @Bean
+  fun hmppsAuthApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
+    return createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl)
   }
 
   @Bean
@@ -49,5 +42,22 @@ class WebClientConfiguration(
     )
     authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
     return authorizedClientManager
+  }
+
+  private fun createAuthorizedWebClient(clientManager: OAuth2AuthorizedClientManager, baseUrl: String): WebClient {
+    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(clientManager)
+    oauth2Client.setDefaultClientRegistrationId("interventions-client")
+    return webClientBuilder
+      .baseUrl(baseUrl)
+      .apply(oauth2Client.oauth2Configuration())
+      .exchangeStrategies(
+        ExchangeStrategies.builder()
+          .codecs { configurer ->
+            configurer.defaultCodecs()
+              .maxInMemorySize(-1)
+          }
+          .build()
+      )
+      .build()
   }
 }

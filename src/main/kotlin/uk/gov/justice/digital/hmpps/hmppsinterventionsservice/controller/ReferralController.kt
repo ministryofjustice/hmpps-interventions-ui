@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -17,8 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
@@ -27,7 +28,8 @@ import javax.persistence.EntityNotFoundException
 @RestController
 class ReferralController(
   private val referralService: ReferralService,
-  private val serviceCategoryService: ServiceCategoryService
+  private val serviceCategoryService: ServiceCategoryService,
+  private val hmppsAuthService: HMPPSAuthService,
 ) {
   @PostMapping("/draft-referral/{id}/send")
   fun sendDraftReferral(@PathVariable id: String, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
@@ -59,10 +61,12 @@ class ReferralController(
   }
 
   @GetMapping("/sent-referrals")
-  fun getSentReferrals(@RequestParam(required = false) serviceProviderID: AuthGroupID?): List<SentReferralDTO> {
-    return serviceProviderID?.let {
-      referralService.getSentReferralsForServiceProviderID(it)
-    } ?: referralService.getAllSentReferrals()
+  fun getSentReferrals(authentication: JwtAuthenticationToken): List<SentReferralDTO> {
+    val user = parseAuthUserToken(authentication)
+    val organization = hmppsAuthService.getServiceProviderOrganizationForUser(user)
+    return organization?.let {
+      referralService.getSentReferralsForServiceProviderID(organization)
+    } ?: throw AccessDeniedException("user is not associated with a service provider organization")
   }
 
   @PostMapping("/draft-referral")

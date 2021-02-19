@@ -16,16 +16,16 @@ spring:
       client:
         provider:
           hmppsauth:
-            token-uri: ${hmppsauth.baseurl}/oauth/token
+            token-uri: ${hmppsauth.baseurl}/auth/oauth/token
         registration:
-          community-api:
+          interventions-client:
             provider: hmppsauth
             authorization-grant-type: client_credentials
             scope: read
       resourceserver:
         jwt:
-          issuer-uri: ${hmppsauth.baseurl}/issuer
-          jwk-set-uri: ${hmppsauth.baseurl}/.well-known/jwks.json
+          issuer-uri: ${hmppsauth.baseurl}/auth/issuer
+          jwk-set-uri: ${hmppsauth.baseurl}/auth/.well-known/jwks.json
   datasource:
     url: jdbc:postgresql://${postgres.uri}/${postgres.db}
     username: ${postgres.username}
@@ -80,6 +80,11 @@ interventions-ui:
 community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
+
+hmppsauth:
+  api:
+    locations:
+      user-groups: "/api/authuser/{username}/groups"
 
 aws:
   sns:

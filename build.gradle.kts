@@ -60,5 +60,7 @@ dependencies {
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.1.14")
   testImplementation("com.h2database:h2:1.4.200")
+  testImplementation("com.squareup.okhttp3:okhttp:4.9.0")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
   testImplementation("uk.org.lidalia:slf4j-test:1.0.1")
 }

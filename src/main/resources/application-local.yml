@@ -24,7 +24,7 @@ aws:
     topic.arn: arn:aws:sns:eu-west-2:000000000000:intervention-events-local
 
 hmppsauth:
-  baseurl: http://hmpps-auth:8090/auth
+  baseurl: http://hmpps-auth:8090
 
 postgres:
   uri: localhost:5432
@@ -45,6 +45,6 @@ spring:
     oauth2:
       client:
         registration:
-          community-api:
+          interventions-client:
             client-id: interventions
             client-secret: clientsecret
