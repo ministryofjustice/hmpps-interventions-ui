@@ -27,10 +27,10 @@ data class ActionPlan(
   // Status
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
-  @ManyToOne(fetch = FetchType.LAZY) val submittedBy: AuthUser,
-  val submittedAt: OffsetDateTime,
-  @ManyToOne(fetch = FetchType.LAZY) val approvedBy: AuthUser,
-  val approvedAt: OffsetDateTime,
+  @ManyToOne(fetch = FetchType.LAZY) val submittedBy: AuthUser?,
+  val submittedAt: OffsetDateTime?,
+  @ManyToOne(fetch = FetchType.LAZY) val approvedBy: AuthUser?,
+  val approvedAt: OffsetDateTime?,
 
   // Required
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val referral: Referral,

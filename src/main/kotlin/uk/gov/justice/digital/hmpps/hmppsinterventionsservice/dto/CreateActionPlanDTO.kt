@@ -4,7 +4,7 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 data class CreateActionPlanDTO(
-  val InterventionId: UUID,
+  val referralId: UUID,
   val numberOfSessions: Int?,
   val activities: List<CreateActionPlanActivityDTO>?
 )

@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDT
 @RestController
 class ActionPlanController() {
 
-  @PostMapping("/draft-actionPlan/{id}/create")
+  @PostMapping("/draft-actionPlan/create")
   fun createDraftActionPlan(@RequestBody createActionPlan: CreateActionPlanDTO, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
 
     throw UnsupportedOperationException()
