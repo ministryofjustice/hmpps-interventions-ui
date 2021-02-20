@@ -31,8 +31,15 @@ class ActionPlanController(
   ): ResponseEntity<DraftActionPlanDTO> {
 
     val createdByUser = jwtAuthUserMapper.map(authentication)
-    val createActionPlan = actionPlanMapper.map(createActionPlanDTO, createdByUser)
-    val draftActionPlan = actionPlanService.createDraftReferral(createActionPlan)
+    val createActionPlanActivities = actionPlanMapper.map(createActionPlanDTO.activities)
+
+    val draftActionPlan = actionPlanService.createDraftReferral(
+      createActionPlanDTO.referralId,
+      createActionPlanDTO.numberOfSessions,
+      createActionPlanActivities,
+      createdByUser
+    )
+
     val draftActionPlanDTO = actionPlanMapper.map(draftActionPlan)
     val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(draftActionPlan.id).toUri()
     return ResponseEntity.created(location).body(draftActionPlanDTO)
