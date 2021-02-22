@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import java.time.LocalDate
 import java.util.UUID
 
-class DynamicFrameworkContractFactory(em: TestEntityManager) : EntityFactory(em) {
+class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val serviceCategoryFactory = ServiceCategoryFactory(em)
   private val serviceProviderFactory = ServiceProviderFactory(em)
 
