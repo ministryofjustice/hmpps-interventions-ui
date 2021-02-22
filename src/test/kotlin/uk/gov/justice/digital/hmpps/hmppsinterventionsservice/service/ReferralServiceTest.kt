@@ -3,12 +3,12 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
@@ -305,7 +305,7 @@ class ReferralServiceTest @Autowired constructor(
     val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
     val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
-    Mockito.`when`(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.serviceCategory.name))
+    whenever(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.serviceCategory.name))
       .thenReturn("AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "BB0000ZZ")
 
     val sent1 = referralService.sendDraftReferral(draft1, user)
