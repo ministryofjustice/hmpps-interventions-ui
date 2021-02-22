@@ -100,6 +100,11 @@ describe('Service provider referrals dashboard', () => {
     cy.contains(
       'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.'
     )
+    cy.contains("Service user's personal details")
+    cy.contains('English')
+    cy.contains('Agnostic')
+    cy.contains('Autism spectrum condition')
+    cy.contains('sciatica')
     cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')

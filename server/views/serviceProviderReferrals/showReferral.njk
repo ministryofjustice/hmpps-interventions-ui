@@ -15,9 +15,10 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
-
       <h2 class="govuk-heading-m">{{ presenter.text.interventionDetailsSummaryHeading }}</h2>
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}
+      <h2 class="govuk-heading-m">Service user's personal details</h2>
+      {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
       <h2 class="govuk-heading-m">Referring probation practitioner details</h2>
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
     </div>

@@ -236,6 +236,25 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('serviceUserPersonalDetails', () => {
+    it("returns a summary list of the service user's personal details", () => {
+      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+
+      expect(presenter.serviceUserDetails).toEqual([
+        { key: 'CRN', lines: [referralFields.serviceUser.crn], isList: false },
+        { key: 'Title', lines: [referralFields.serviceUser.title], isList: false },
+        { key: 'First name', lines: [referralFields.serviceUser.firstName], isList: false },
+        { key: 'Last name', lines: [referralFields.serviceUser.lastName], isList: false },
+        { key: 'Date of birth', lines: [referralFields.serviceUser.dateOfBirth], isList: false },
+        { key: 'Gender', lines: [referralFields.serviceUser.gender], isList: false },
+        { key: 'Ethnicity', lines: [referralFields.serviceUser.ethnicity], isList: false },
+        { key: 'Preferred language', lines: [referralFields.serviceUser.preferredLanguage], isList: false },
+        { key: 'Religion or belief', lines: [referralFields.serviceUser.religionOrBelief], isList: false },
+        { key: 'Disabilities', lines: referralFields.serviceUser.disabilities || [], isList: true },
+      ])
+    })
+  })
+
   describe('serviceUserNotificationBannerArgs', () => {
     describe('when all contact details are present on the Delius Service User', () => {
       it('returns a notification banner with service user details', () => {

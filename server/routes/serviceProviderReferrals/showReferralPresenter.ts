@@ -4,6 +4,7 @@ import CalendarDay from '../../utils/calendarDay'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
 
 export default class ShowReferralPresenter {
   constructor(
@@ -59,6 +60,10 @@ export default class ShowReferralPresenter {
         isList: false,
       },
     ]
+  }
+
+  get serviceUserDetails(): SummaryListItem[] {
+    return new ServiceUserDetailsPresenter(this.referralFields.serviceUser).summary
   }
 
   readonly serviceUserNotificationBannerArgs = {
