@@ -70,6 +70,10 @@ module.exports = on => {
       return interventionsService.stubGetSentReferrals(arg.responseJson)
     },
 
+    stubAssignSentReferral: arg => {
+      return interventionsService.stubAssignSentReferral(arg.id, arg.responseJson)
+    },
+
     stubGetInterventions: arg => {
       return interventionsService.stubGetInterventions(arg.responseJson)
     },

@@ -133,6 +133,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetUserByEmailAddress(hmppsAuthUser)
+    cy.stubAssignSentReferral(referral.id, referral)
 
     cy.login()
 
