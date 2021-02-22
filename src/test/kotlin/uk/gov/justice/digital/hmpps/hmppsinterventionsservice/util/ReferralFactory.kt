@@ -12,30 +12,80 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
   private val interventionFactory = InterventionFactory(em)
 
-  fun create(
-    id: UUID? = null,
-    createdAt: OffsetDateTime? = null,
-    createdBy: AuthUser? = null,
+  fun createDraft(
+    id: UUID = UUID.randomUUID(),
+    createdAt: OffsetDateTime = OffsetDateTime.now(),
+    createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
-    intervention: Intervention? = null,
+    intervention: Intervention = interventionFactory.create(),
+
+    completionDeadline: LocalDate? = null,
+  ): Referral {
+    return create(
+      id = id,
+      createdAt = createdAt,
+      createdBy = createdBy,
+      serviceUserCRN = serviceUserCRN,
+      intervention = intervention,
+      completionDeadline = completionDeadline,
+    )
+  }
+
+  fun createSent(
+    id: UUID = UUID.randomUUID(),
+    createdAt: OffsetDateTime = OffsetDateTime.now(),
+    createdBy: AuthUser = authUserFactory.create(),
+    serviceUserCRN: String = "X123456",
+    intervention: Intervention = interventionFactory.create(),
+
+    sentAt: OffsetDateTime = OffsetDateTime.now(),
+    sentBy: AuthUser = authUserFactory.create(),
+    referenceNumber: String? = "JS18726AC",
+  ): Referral {
+    return create(
+      id = id,
+      createdAt = createdAt,
+      createdBy = createdBy,
+      serviceUserCRN = serviceUserCRN,
+      intervention = intervention,
+
+      sentAt = sentAt,
+      sentBy = sentBy,
+      referenceNumber = referenceNumber,
+    )
+  }
+
+  private fun create(
+    id: UUID,
+    createdAt: OffsetDateTime,
+    createdBy: AuthUser,
+    serviceUserCRN: String,
+    intervention: Intervention,
 
     completionDeadline: LocalDate? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
     referenceNumber: String? = null,
+
+    assignedAt: OffsetDateTime? = null,
+    assignedBy: AuthUser? = null,
+    assignedTo: AuthUser? = null,
   ): Referral {
     return save(
       Referral(
-        id = id ?: UUID.randomUUID(),
-        createdAt = createdAt ?: OffsetDateTime.now(),
-        createdBy = createdBy ?: authUserFactory.create(),
+        id = id,
+        createdAt = createdAt,
+        createdBy = createdBy,
         serviceUserCRN = serviceUserCRN,
-        intervention = intervention ?: interventionFactory.create(),
+        intervention = intervention,
         completionDeadline = completionDeadline,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,
+        assignedAt = assignedAt,
+        assignedBy = assignedBy,
+        assignedTo = assignedTo,
       )
     )
   }
