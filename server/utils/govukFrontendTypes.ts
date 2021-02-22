@@ -19,3 +19,7 @@ export interface InputArgs {
     html?: string
   }
 }
+
+export interface PanelArgs {
+  titleText: string
+}
