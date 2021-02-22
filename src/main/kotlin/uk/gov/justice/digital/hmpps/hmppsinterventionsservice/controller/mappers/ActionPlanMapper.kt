@@ -33,7 +33,7 @@ class ActionPlanMapper(
       id = actionPlan.id,
       referralId = actionPlan.referral.id,
       numberOfSessions = actionPlan.numberOfSessions,
-      createdBy = AuthUserDTO(createdByAuthUser.id, createdByAuthUser.authSource),
+      createdBy = AuthUserDTO.from(actionPlan.createdBy),
       createdAt = actionPlan.createdAt,
       activities = actionPlan.activities.map {
         DraftActionPlanActivityDTO(
