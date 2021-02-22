@@ -16,7 +16,7 @@ spring:
       client:
         provider:
           hmppsauth:
-            token-uri: ${hmppsauth.baseurl}/auth/oauth/token
+            token-uri: ${hmppsauth.baseurl}/oauth/token
         registration:
           interventions-client:
             provider: hmppsauth
@@ -24,8 +24,8 @@ spring:
             scope: read
       resourceserver:
         jwt:
-          issuer-uri: ${hmppsauth.baseurl}/auth/issuer
-          jwk-set-uri: ${hmppsauth.baseurl}/auth/.well-known/jwks.json
+          issuer-uri: ${hmppsauth.baseurl}/issuer
+          jwk-set-uri: ${hmppsauth.baseurl}/.well-known/jwks.json
   datasource:
     url: jdbc:postgresql://${postgres.uri}/${postgres.db}
     username: ${postgres.username}

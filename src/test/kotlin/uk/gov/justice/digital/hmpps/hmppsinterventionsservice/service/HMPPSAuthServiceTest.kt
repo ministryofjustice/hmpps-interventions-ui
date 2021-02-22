@@ -5,7 +5,9 @@ import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.org.lidalia.slf4jtest.TestLoggerFactory
 
@@ -37,7 +39,7 @@ class HMPPSAuthServiceTest {
           """.trimIndent()
         )
     )
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "source", "username"))
+    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
     assertThat(org).isEqualTo("HARMONY_LIVING")
   }
 
@@ -53,7 +55,7 @@ class HMPPSAuthServiceTest {
           """.trimIndent()
         )
     )
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "source", "username"))
+    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
     assertThat(org).isNull()
   }
 
@@ -64,32 +66,27 @@ class HMPPSAuthServiceTest {
         .setHeader("content-type", "application/json")
         .setBody("[]")
     )
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "source", "username"))
+    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
     assertThat(org).isNull()
   }
 
   @Test
-  fun `getServiceProviderOrganizationForUser returns null and logs error on http error`() {
-    TestLoggerFactory.clear()
-    val logger = TestLoggerFactory.getTestLogger(HMPPSAuthService::class.java)
-
-    mockWebServer.enqueue(MockResponse().setResponseCode(500))
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "source", "username"))
+  fun `getServiceProviderOrganizationForUser returns null if the user is a delius user`() {
+    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "delius", "username"))
     assertThat(org).isNull()
-
-    assertThat(logger.allLoggingEvents.size).isEqualTo(1)
-    assertThat(logger.allLoggingEvents[0].level.name).isEqualTo("ERROR")
   }
 
   @Test
-  fun `getServiceProviderOrganizationForUser returns null on 404 from auth`() {
-    TestLoggerFactory.clear()
-    val logger = TestLoggerFactory.getTestLogger(HMPPSAuthService::class.java)
+  fun `getServiceProviderOrganizationForUser returns null if the user is a nomis user`() {
+    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "nomis", "username"))
+    assertThat(org).isNull()
+  }
 
+  @Test
+  fun `getServiceProviderOrganizationForUser propagates http errors`() {
     mockWebServer.enqueue(MockResponse().setResponseCode(404))
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "source", "username"))
-    assertThat(org).isNull()
-
-    assertThat(logger.allLoggingEvents.size).isEqualTo(0)
+    assertThrows<WebClientResponseException> {
+      val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
+    }
   }
 }
