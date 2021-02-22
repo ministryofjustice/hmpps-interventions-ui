@@ -50,7 +50,7 @@ class ActionPlanController(
   fun getDraftActionPlan(@PathVariable id: String): DraftActionPlanDTO {
 
     val uuid = parseID(id)
-    return actionPlanService.getDraftReferral(uuid)
+    return actionPlanService.getDraftActionPlan(uuid)
       ?.let { actionPlanMapper.map(it) }
       ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$uuid]")
   }

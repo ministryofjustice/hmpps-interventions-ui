@@ -17,11 +17,11 @@ import java.util.UUID
 
 internal class ActionPlanServiceTest {
 
-  val authUserRepository: AuthUserRepository = mock()
-  val referralRepository: ReferralRepository = mock()
-  val actionPlanRepository: ActionPlanRepository = mock()
+  private val authUserRepository: AuthUserRepository = mock()
+  private val referralRepository: ReferralRepository = mock()
+  private val actionPlanRepository: ActionPlanRepository = mock()
 
-  val actionPlanService = ActionPlanService(authUserRepository, referralRepository, actionPlanRepository)
+  private val actionPlanService = ActionPlanService(authUserRepository, referralRepository, actionPlanRepository)
 
   @Test
   fun `builds and saves an action plan for a referral`() {
@@ -62,5 +62,16 @@ internal class ActionPlanServiceTest {
     val draftActionPlan = actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)
 
     assertThat(draftActionPlan).isNotNull
+  }
+
+  @Test
+  fun `gets action plan using action plan id`() {
+    val actionPlanId = UUID.randomUUID()
+    val draftActionPlan = SampleData.sampleActionPlan(id = actionPlanId)
+    whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(actionPlanId)).thenReturn(draftActionPlan)
+
+    val draftActionPlanResponse = actionPlanService.getDraftActionPlan(actionPlanId)
+
+    assertThat(draftActionPlanResponse).isSameAs(draftActionPlan)
   }
 }

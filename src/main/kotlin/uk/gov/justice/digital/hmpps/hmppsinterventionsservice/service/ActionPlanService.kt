@@ -37,7 +37,7 @@ class ActionPlanService(
     return actionPlanRepository.save(draftActionPlan)
   }
 
-  fun getDraftReferral(id: UUID): ActionPlan? {
+  fun getDraftActionPlan(id: UUID): ActionPlan? {
     return actionPlanRepository.findByIdAndSubmittedAtIsNull(id)
   }
 }
