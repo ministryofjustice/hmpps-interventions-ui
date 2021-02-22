@@ -22,7 +22,7 @@
     "int-test-ui": "cypress open",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "lint": "eslint . --cache --max-warnings 0",
+    "lint": "eslint . --cache --max-warnings 0 && stylelint **/*.scss",
     "clean": "rm -rf dist build node_modules stylesheets"
   },
   "engines": {
@@ -81,6 +81,9 @@
     "*.{ts,js,css}": [
       "prettier --write",
       "eslint --fix --max-warnings 0"
+    ],
+    "**/*.scss": [
+      "stylelint --fix"
     ],
     "*.{json}": [
       "prettier --write"
@@ -165,6 +168,8 @@
     "nodemon": "^2.0.5",
     "prettier": "^2.1.2",
     "sass": "^1.27.0",
+    "stylelint": "^13.10.0",
+    "stylelint-config-sass-guidelines": "^8.0.0",
     "supertest": "^4.0.2",
     "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"

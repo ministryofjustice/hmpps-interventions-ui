@@ -1,10 +1,12 @@
 .govuk-table {
-  a.govuk-link {
+  .govuk-link {
     font-weight: normal;
   }
+
   .govuk-tag.govuk-tag--red {
-  width: min-content;
+    width: min-content;
   }
+
   .govuk-tag--grey {
     white-space: nowrap;
   }
