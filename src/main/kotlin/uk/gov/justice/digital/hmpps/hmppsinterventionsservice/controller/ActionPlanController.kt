@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.parseID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
@@ -21,7 +21,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlan
 class ActionPlanController(
   val actionPlanMapper: ActionPlanMapper,
   val jwtAuthUserMapper: JwtAuthUserMapper,
-  val actionPlanService: ActionPlanService
+  val actionPlanService: ActionPlanService,
+  val locationMapper: LocationMapper
 ) {
 
   @PostMapping("/draft-action-plan")
@@ -41,7 +42,7 @@ class ActionPlanController(
     )
 
     val draftActionPlanDTO = actionPlanMapper.map(draftActionPlan)
-    val location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(draftActionPlan.id).toUri()
+    val location = locationMapper.map("/{id}", draftActionPlanDTO.id)
     return ResponseEntity.created(location).body(draftActionPlanDTO)
   }
 
