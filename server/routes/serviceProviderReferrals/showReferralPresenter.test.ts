@@ -269,6 +269,158 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('serviceUserNeeds', () => {
+    describe('when all conditional text answers are present', () => {
+      it("returns a summary list of the service user's needs with those fields filled in", () => {
+        const referralFieldsAllConditional = {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          serviceCategoryId: serviceCategory.id,
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          furtherInformation: 'Some information about the service user',
+          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+          additionalNeedsInformation: "Alex is currently sleeping on her aunt's sofa",
+          accessibilityNeeds: 'She uses a wheelchair',
+          needsInterpreter: true,
+          interpreterLanguage: 'Spanish',
+          hasAdditionalResponsibilities: true,
+          whenUnavailable: 'She works Mondays 9am - midday',
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Ms',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'Spanish',
+            preferredLanguage: 'Catalan',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          additionalRiskInformation: 'A danger to the elderly',
+          usingRarDays: true,
+          maximumRarDays: 10,
+        }
+
+        const presenter = new ShowReferralPresenter(
+          referralFieldsAllConditional,
+          serviceCategory,
+          deliusUser,
+          serviceUser
+        )
+
+        expect(presenter.serviceUserNeeds).toEqual([
+          { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
+          {
+            key: 'Identify needs',
+            lines: ["Alex is currently sleeping on her aunt's sofa"],
+            isList: false,
+          },
+          {
+            key: 'Other mobility, disability or accessibility needs',
+            lines: ['She uses a wheelchair'],
+            isList: false,
+          },
+          { key: 'Interpreter required', lines: ['Yes'], isList: false },
+          { key: 'Interpreter language', lines: ['Spanish'], isList: false },
+          {
+            key: 'Primary language',
+            lines: ['Catalan'],
+            isList: false,
+          },
+          {
+            key: 'Caring or employment responsibilities',
+            lines: ['Yes'],
+            isList: false,
+          },
+          {
+            key: `Provide details of when Alex will not be able to attend sessions`,
+            lines: ['She works Mondays 9am - midday'],
+            isList: false,
+          },
+        ])
+      })
+    })
+
+    describe('when no conditional/optional text answers are present', () => {
+      it("returns a summary list of the service user's needs with N/A for those fields", () => {
+        const referralFieldsNoConditionals = {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          serviceCategoryId: serviceCategory.id,
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          furtherInformation: '',
+          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+          additionalNeedsInformation: '',
+          accessibilityNeeds: '',
+          needsInterpreter: false,
+          interpreterLanguage: null,
+          hasAdditionalResponsibilities: false,
+          whenUnavailable: null,
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Mr',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'British',
+            preferredLanguage: 'English',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          additionalRiskInformation: '',
+          usingRarDays: false,
+          maximumRarDays: null,
+        }
+
+        const presenter = new ShowReferralPresenter(
+          referralFieldsNoConditionals,
+          serviceCategory,
+          deliusUser,
+          serviceUser
+        )
+
+        expect(presenter.serviceUserNeeds).toEqual([
+          { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
+          {
+            key: 'Identify needs',
+            lines: ['N/A'],
+            isList: false,
+          },
+          {
+            key: 'Other mobility, disability or accessibility needs',
+            lines: ['N/A'],
+            isList: false,
+          },
+          { key: 'Interpreter required', lines: ['No'], isList: false },
+          { key: 'Interpreter language', lines: ['N/A'], isList: false },
+          {
+            key: 'Primary language',
+            lines: ['English'],
+            isList: false,
+          },
+          {
+            key: 'Caring or employment responsibilities',
+            lines: ['No'],
+            isList: false,
+          },
+          {
+            key: `Provide details of when Alex will not be able to attend sessions`,
+            lines: ['N/A'],
+            isList: false,
+          },
+        ])
+      })
+    })
+  })
+
   describe('serviceUserNotificationBannerArgs', () => {
     describe('when all contact details are present on the Delius Service User', () => {
       it('returns a notification banner with service user details', () => {

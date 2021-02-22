@@ -14,6 +14,8 @@ export default class ShowReferralView {
 
   private readonly serviceUserRisksSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.serviceUserRisks)
 
+  private readonly serviceUserNeedsSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.serviceUserNeeds)
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/showReferral',
@@ -24,6 +26,7 @@ export default class ShowReferralView {
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
+        serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
       },
     ]
   }

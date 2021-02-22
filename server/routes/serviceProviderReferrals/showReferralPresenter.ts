@@ -76,6 +76,39 @@ export default class ShowReferralPresenter {
     ]
   }
 
+  get serviceUserNeeds(): SummaryListItem[] {
+    return [
+      { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
+      {
+        key: 'Identify needs',
+        lines: [this.referralFields.additionalNeedsInformation || 'N/A'],
+        isList: false,
+      },
+      {
+        key: 'Other mobility, disability or accessibility needs',
+        lines: [this.referralFields.accessibilityNeeds || 'N/A'],
+        isList: false,
+      },
+      { key: 'Interpreter required', lines: [this.referralFields.needsInterpreter ? 'Yes' : 'No'], isList: false },
+      { key: 'Interpreter language', lines: [this.referralFields.interpreterLanguage || 'N/A'], isList: false },
+      {
+        key: 'Primary language',
+        lines: [this.referralFields.serviceUser.preferredLanguage || 'N/A'],
+        isList: false,
+      },
+      {
+        key: 'Caring or employment responsibilities',
+        lines: [this.referralFields.hasAdditionalResponsibilities ? 'Yes' : 'No'],
+        isList: false,
+      },
+      {
+        key: `Provide details of when ${this.referralFields.serviceUser.firstName} will not be able to attend sessions`,
+        lines: [this.referralFields.whenUnavailable || 'N/A'],
+        isList: false,
+      },
+    ]
+  }
+
   readonly serviceUserNotificationBannerArgs = {
     titleText: 'Service user details',
     html:
