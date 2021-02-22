@@ -128,28 +128,32 @@ class SampleData {
       id: UUID? = null,
       referral: Referral = sampleReferral("CRN123", "Service Provider"),
       numberOfSessions: Int? = null,
-      desiredOutcome: DesiredOutcome = sampleDesiredOutcome(),
       createdBy: AuthUser = AuthUser("CRN123", "auth", "user"),
+      createdAt: OffsetDateTime = OffsetDateTime.now(),
       submittedBy: AuthUser? = null,
+      submittedAt: OffsetDateTime? = null,
+      desiredOutcome: DesiredOutcome = sampleDesiredOutcome(),
+      activityCreatedAt: OffsetDateTime = OffsetDateTime.now(),
     ): ActionPlan {
       return ActionPlan(
         id = id ?: UUID.randomUUID(),
         referral = referral,
         numberOfSessions = numberOfSessions ?: 1,
         createdBy = createdBy,
-        createdAt = OffsetDateTime.now(),
-        submittedBy = submittedBy ?: createdBy,
-        submittedAt = OffsetDateTime.now(),
-        activities = listOf(sampleActionPlanActivity(desiredOutcome = desiredOutcome))
+        createdAt = createdAt,
+        submittedBy = submittedBy,
+        submittedAt = submittedAt,
+        activities = listOf(sampleActionPlanActivity(desiredOutcome, activityCreatedAt))
       )
     }
 
     fun sampleActionPlanActivity(
-      desiredOutcome: DesiredOutcome
+      desiredOutcome: DesiredOutcome,
+      createdAt: OffsetDateTime = OffsetDateTime.now()
     ): ActionPlanActivity {
       return ActionPlanActivity(
         description = "Some text to describe activity",
-        createdAt = OffsetDateTime.now(),
+        createdAt = createdAt,
         desiredOutcome = desiredOutcome
       )
     }

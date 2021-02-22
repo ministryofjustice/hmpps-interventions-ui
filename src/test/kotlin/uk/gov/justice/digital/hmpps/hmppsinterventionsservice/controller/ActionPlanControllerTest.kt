@@ -11,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
@@ -20,7 +19,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.net.URI
-import java.time.OffsetDateTime
 import java.util.UUID
 
 internal class ActionPlanControllerTest {
@@ -42,20 +40,17 @@ internal class ActionPlanControllerTest {
     val authUser = AuthUser("CRN123", "auth", "user")
     val actionPlan = SampleData.sampleActionPlan()
     val activities = emptyList<ActionPlanActivity>()
-    val authUserDTO = AuthUserDTO("CRN123", "user")
-    val actionPlanId = UUID.randomUUID()
-    val draftActionPlanDTO = DraftActionPlanDTO(actionPlanId, referralId, 5, emptyList(), authUserDTO, OffsetDateTime.now())
+    val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
     val uri = URI.create("/1234")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(actionPlanMapper.map(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
-    whenever(actionPlanMapper.map(actionPlan)).thenReturn(draftActionPlanDTO)
     whenever(locationMapper.map("/{id}", draftActionPlanDTO.id)).thenReturn(uri)
 
     val draftActionPlanResponse = actionPlanController.createDraftActionPlan(createActionPlanDTO, jwtAuthenticationToken)
 
-    assertThat(draftActionPlanResponse.let { it.body }).isSameAs(draftActionPlanDTO)
+    assertThat(draftActionPlanResponse.let { it.body }).isEqualTo(draftActionPlanDTO)
     assertThat(draftActionPlanResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
   }
 
@@ -63,15 +58,13 @@ internal class ActionPlanControllerTest {
   fun `gets draft action plan using id`() {
     val actionPlanId = UUID.randomUUID()
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
-    val authUserDTO = AuthUserDTO("CRN123", "user")
-    val draftActionPlanDTO = DraftActionPlanDTO(actionPlanId, UUID.randomUUID(), 5, emptyList(), authUserDTO, OffsetDateTime.now())
+    val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
 
     whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(actionPlan)
-    whenever(actionPlanMapper.map(actionPlan)).thenReturn(draftActionPlanDTO)
 
     val draftActionPlanResponse = actionPlanController.getDraftActionPlan(actionPlanId.toString())
 
-    assertThat(draftActionPlanResponse).isSameAs(draftActionPlanDTO)
+    assertThat(draftActionPlanResponse).isEqualTo(draftActionPlanDTO)
   }
 
   @Test

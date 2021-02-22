@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
-class AuthUserDTO(
+data class AuthUserDTO(
   val username: String,
   val authSource: String,
 ) {

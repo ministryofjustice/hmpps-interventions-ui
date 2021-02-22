@@ -41,7 +41,7 @@ class ActionPlanController(
       createdByUser
     )
 
-    val draftActionPlanDTO = actionPlanMapper.map(draftActionPlan)
+    val draftActionPlanDTO = DraftActionPlanDTO.from(draftActionPlan)
     val location = locationMapper.map("/{id}", draftActionPlanDTO.id)
     return ResponseEntity.created(location).body(draftActionPlanDTO)
   }
@@ -51,7 +51,7 @@ class ActionPlanController(
 
     val uuid = parseID(id)
     return actionPlanService.getDraftActionPlan(uuid)
-      ?.let { actionPlanMapper.map(it) }
+      ?.let { DraftActionPlanDTO.from(it) }
       ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$uuid]")
   }
 }
