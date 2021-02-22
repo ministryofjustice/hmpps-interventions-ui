@@ -12,7 +12,8 @@
         <h2 class="govuk-heading-l"> Track progress of each intervention</h2>
         {%  set completedTagHtml %}
         {{govukTag({
-          text: "COMPLETED"
+          text: "COMPLETED",
+          classes: "govuk-tag--green"
         })}}
         {% endset -%}
         {%  set draftTagHtml %}
@@ -47,8 +48,7 @@
         {% endset -%}
         {%  set activeTagHtml %}
         {{govukTag({
-          text: "TODAY",
-          classes: "govuk-tag--green"
+          text: "TODAY"
         })}}
         {% endset -%}
 
@@ -59,13 +59,7 @@
                   text: "Session details"
                 },
                 {
-                  text: "Date"
-                },
-                {
-                  text: "Time"
-                },
-                {
-                  text: "Facilitator"
+                  text: "Date and time"
                 },
                 {
                   text: "Status"
@@ -77,16 +71,11 @@
               rows: [
                 [
                   {
-                    html: '<a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Session 1</a>'
+                    html: '<span>Introduction to independent living and healthcare</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "14 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 <br> 5:00pm to 6:00pm'
                   },
                   {
                     html: completedTagHtml
@@ -97,16 +86,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 2</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "15 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 <br> 5:00pm to 6:00pm'
                   },
                   {
                     html: draftTagHtml
@@ -117,36 +101,26 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 3</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "16 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: draftTagHtml
                   },
                   {
-                    html: '<a class="govuk-link" href="#">Continue feedback</a>'
+                    html: '<a class="govuk-link" href="#">Continue feedback</a>' 
                   }
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 4</a>'
+                    html: '<span>Childcare and personal development</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "17 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: awaitingfeedbackTagHtml
@@ -157,16 +131,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 5</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "18 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: awaitingfeedbackTagHtml
@@ -177,16 +146,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 6</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "19 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: noshowTagHtml
@@ -197,16 +161,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 7</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "20 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: activeTagHtml
@@ -217,16 +176,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 8</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "14 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: scheduledTagHtml
@@ -237,16 +191,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 9</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "14 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: inactiveTagHtml
@@ -257,16 +206,11 @@
                 ],
                 [
                   {
-                    html: '<a class="govuk-link" href="#">Session 10</a>'
+                    html: '<span>Session</span>
+                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
                   },
                   {
-                    text: "14 Dec 2021"
-                  },
-                  {
-                    text: "5pm to 6pm"
-                  },
-                  {
-                    text: "Jenny Thompson"
+                    html: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: inactiveTagHtml
@@ -280,7 +224,7 @@
       </div>
       <div class="govuk-grid-column-one-third">
         <h3 class="govuk-heading-m"> sidebar</h3>
-        <p class="govuk-body">This is a paragraph inside a one-third wide column</p>
+        <p class="govuk-body">This is a paragraph inside a one-third wide column</span>
       </div>
 
 {% endblock %}
