@@ -17,10 +17,14 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
-      <form method="get" action={{ presenter.assignmentFormAction }}>
-        {{ govukInput(emailInputArgs) }}
-        {{ govukButton({ text: "Save and continue" }) }}
-      </form>
+      {% if presenter.text.assignedTo == null %}
+        <form method="get" action={{ presenter.assignmentFormAction }}>
+          {{ govukInput(emailInputArgs) }}
+          {{ govukButton({ text: "Save and continue" }) }}
+        </form>
+      {% else %}
+        <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
+      {% endif %}
 
       <h2 class="govuk-heading-m">{{ presenter.text.interventionDetailsSummaryHeading }}</h2>
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}

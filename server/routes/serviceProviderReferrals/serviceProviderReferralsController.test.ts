@@ -78,7 +78,7 @@ describe('GET /service-provider/dashboard', () => {
 describe('GET /service-provider/referrals/:id', () => {
   it('displays information about the referral and service user', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const sentReferral = sentReferralFactory.build({
+    const sentReferral = sentReferralFactory.unassigned().build({
       referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
     })
     const deliusUser = deliusUserFactory.build({
@@ -116,6 +116,30 @@ describe('GET /service-provider/referrals/:id', () => {
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')
       })
+  })
+
+  describe('when the referral has been assigned to a caseworker', () => {
+    it('mentions the assigned caseworker', async () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const sentReferral = sentReferralFactory.assigned().build()
+      const deliusUser = deliusUserFactory.build()
+      const serviceUser = deliusServiceUser.build()
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
+
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      hmppsAuthClient.getUserByUsername.mockResolvedValue(hmppsAuthUser)
+
+      await request(app)
+        .get(`/service-provider/referrals/${sentReferral.id}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('This intervention is assigned to')
+          expect(res.text).toContain('John Smith')
+        })
+    })
   })
 })
 

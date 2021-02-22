@@ -42,7 +42,12 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser)
+    const assignee =
+      sentReferral.assignedTo === null
+        ? null
+        : await this.hmppsAuthClient.getUserByUsername(res.locals.user.token, sentReferral.assignedTo.username)
+
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee)
     const view = new ShowReferralView(presenter)
 
     res.render(...view.renderArgs)

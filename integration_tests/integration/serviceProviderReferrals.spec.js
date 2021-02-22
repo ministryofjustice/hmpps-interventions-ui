@@ -161,8 +161,16 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
     cy.get('h1').contains('Caseworker assigned')
 
+    const assignedReferral = sentReferralFactory
+      .assigned()
+      .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
+    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+
     cy.contains('Return to dashboard').click()
 
     cy.location('pathname').should('equal', `/service-provider/dashboard`)
+
+    cy.visit(`/service-provider/referrals/${referral.id}`)
+    cy.contains('This intervention is assigned to John Smith.')
   })
 })
