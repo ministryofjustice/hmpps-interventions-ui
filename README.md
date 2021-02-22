@@ -6,7 +6,7 @@
 
 - nvm (optional)
 - Node.js >= 14
-- npm >= 6
+- npm >= 7.5
 - Docker
 
 ### Initial setup

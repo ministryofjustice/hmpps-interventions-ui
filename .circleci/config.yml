@@ -26,7 +26,8 @@ jobs:
       tag: 14-stretch-browsers
     steps:
       - checkout
-      - node/install-npm
+      - node/install-npm:
+        version: 7.5.4
       - node/install-packages
       - run: npm run test
       - store_artifacts:
@@ -45,7 +46,8 @@ jobs:
     executor: integration
     steps:
       - checkout
-      - node/install-npm
+      - node/install-npm:
+        version: 7.5.4
       - node/install-packages
       - run: npm run build
       - run: # Run linter after build because the integration test code depends on compiled typescript...
