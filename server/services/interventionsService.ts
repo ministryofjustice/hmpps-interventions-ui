@@ -85,6 +85,7 @@ export interface ServiceProvider {
 
 export interface AuthUser {
   username: string
+  userId: string
   authSource: string
 }
 

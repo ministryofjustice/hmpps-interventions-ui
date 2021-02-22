@@ -941,6 +941,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     sentAt: '2021-01-14T15:56:45.382884Z',
     sentBy: {
       username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
       authSource: 'delius',
     },
     referenceNumber: 'HDJ2123F',

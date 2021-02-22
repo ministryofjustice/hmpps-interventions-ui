@@ -54,6 +54,7 @@ export default SentReferralFactory.define(({ sequence }) => ({
   sentAt: new Date().toISOString(),
   sentBy: {
     username: 'BERNARD.BEAKS',
+    userId: sequence.toString(),
     authSource: 'delius',
   },
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
