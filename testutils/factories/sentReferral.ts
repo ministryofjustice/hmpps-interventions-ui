@@ -47,6 +47,22 @@ class SentReferralFactory extends Factory<SentReferral> {
     })
     return this.params({ referral: referralParams })
   }
+
+  unassigned() {
+    return this.params({
+      assignedTo: null,
+    })
+  }
+
+  assigned() {
+    return this.params({
+      assignedTo: {
+        username: 'UserABC',
+        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+        authSource: 'auth',
+      },
+    })
+  }
 }
 
 export default SentReferralFactory.define(({ sequence }) => ({
@@ -54,8 +70,10 @@ export default SentReferralFactory.define(({ sequence }) => ({
   sentAt: new Date().toISOString(),
   sentBy: {
     username: 'BERNARD.BEAKS',
+    userId: sequence.toString(),
     authSource: 'delius',
   },
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
   referral: exampleReferralFields(),
+  assignedTo: null,
 }))

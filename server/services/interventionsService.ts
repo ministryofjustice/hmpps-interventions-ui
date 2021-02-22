@@ -46,6 +46,7 @@ export interface SentReferral {
   referenceNumber: string
   referral: ReferralFields
   sentBy: AuthUser
+  assignedTo: AuthUser | null
 }
 
 export interface ServiceCategory {
@@ -85,6 +86,7 @@ export interface ServiceProvider {
 
 export interface AuthUser {
   username: string
+  userId: string
   authSource: string
 }
 
@@ -268,6 +270,16 @@ export default class InterventionsService {
       path: `/sent-referrals`,
       headers: { Accept: 'application/json' },
     })) as SentReferral[]
+  }
+
+  async assignSentReferral(token: string, id: string, assignee: AuthUser): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/sent-referral/${id}/assign`,
+      data: { assignedTo: assignee },
+      headers: { Accept: 'application/json' },
+    })) as SentReferral
   }
 
   async getInterventions(token: string, filter: InterventionsFilterParams): Promise<Intervention[]> {
