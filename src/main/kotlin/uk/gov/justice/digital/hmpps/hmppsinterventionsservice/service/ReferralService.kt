@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
@@ -44,7 +43,7 @@ class ReferralService(
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
     referral.sentBy = authUserRepository.save(user)
-    referral.referenceNumber = generateReferenceNumber(referral.intervention.dynamicFrameworkContract.serviceCategory)
+    referral.referenceNumber = generateReferenceNumber(referral)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)
@@ -193,16 +192,18 @@ class ReferralService(
     return referralRepository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
   }
 
-  private fun generateReferenceNumber(category: ServiceCategory): String? {
+  private fun generateReferenceNumber(referral: Referral): String? {
+    val category = referral.intervention.dynamicFrameworkContract.serviceCategory.name
+
     for (i in 1..maxReferenceNumberTries) {
-      val candidate = referenceGenerator.generate(category.name)
+      val candidate = referenceGenerator.generate(category)
       if (!referralRepository.existsByReferenceNumber(candidate))
         return candidate
       else
         log.warn("Clash found for referral number: $candidate")
     }
 
-    log.warn("Unable to generate a referral number in $maxReferenceNumberTries tries")
+    log.error("Unable to generate a referral number in $maxReferenceNumberTries tries for referral ${referral.id}")
     return null
   }
 
