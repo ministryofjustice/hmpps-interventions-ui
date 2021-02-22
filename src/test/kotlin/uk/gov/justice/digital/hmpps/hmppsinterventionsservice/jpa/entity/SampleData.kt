@@ -126,10 +126,10 @@ class SampleData {
 
     fun sampleActionPlan(
       id: UUID? = null,
-      referral: Referral,
+      referral: Referral = sampleReferral("CRN123", "Service Provider"),
       numberOfSessions: Int? = null,
-      desiredOutcome: DesiredOutcome,
-      createdBy: AuthUser,
+      desiredOutcome: DesiredOutcome = sampleDesiredOutcome(),
+      createdBy: AuthUser = AuthUser("CRN123", "auth", "user"),
       submittedBy: AuthUser? = null,
     ): ActionPlan {
       return ActionPlan(

@@ -33,7 +33,7 @@ class ActionPlanController(
     val createdByUser = jwtAuthUserMapper.map(authentication)
     val createActionPlanActivities = actionPlanMapper.map(createActionPlanDTO.activities)
 
-    val draftActionPlan = actionPlanService.createDraftReferral(
+    val draftActionPlan = actionPlanService.createDraftActionPlan(
       createActionPlanDTO.referralId,
       createActionPlanDTO.numberOfSessions,
       createActionPlanActivities,

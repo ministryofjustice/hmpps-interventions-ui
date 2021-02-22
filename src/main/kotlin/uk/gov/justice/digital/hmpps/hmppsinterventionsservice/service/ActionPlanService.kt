@@ -18,7 +18,7 @@ class ActionPlanService(
   val actionPlanRepository: ActionPlanRepository
 ) {
 
-  fun createDraftReferral(
+  fun createDraftActionPlan(
     referralId: UUID,
     numberOfSessions: Int?,
     activities: List<ActionPlanActivity>,
