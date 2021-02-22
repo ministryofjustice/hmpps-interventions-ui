@@ -7,7 +7,13 @@ describe(DashboardPresenter, () => {
     it('returns the table’s headings', () => {
       const presenter = new DashboardPresenter([], [])
 
-      expect(presenter.tableHeadings).toEqual(['Date received', 'Referral', 'Service user', 'Intervention type'])
+      expect(presenter.tableHeadings).toEqual([
+        'Date received',
+        'Referral',
+        'Service user',
+        'Intervention type',
+        'Caseworker',
+      ])
     })
   })
 
@@ -45,14 +51,31 @@ describe(DashboardPresenter, () => {
           { text: 'ABCABCA1', sortValue: null, href: `/service-provider/referrals/${sentReferrals[0].id}` },
           { text: 'George Michael', sortValue: 'michael, george', href: null },
           { text: 'Accommodation', sortValue: null, href: null },
+          { text: '', sortValue: null, href: null },
         ],
         [
           { text: '13 Sep 2020', sortValue: '2020-09-13', href: null },
           { text: 'ABCABCA2', sortValue: null, href: `/service-provider/referrals/${sentReferrals[1].id}` },
           { text: 'Jenny Jones', sortValue: 'jones, jenny', href: null },
           { text: 'Social inclusion', sortValue: null, href: null },
+          { text: '', sortValue: null, href: null },
         ],
       ])
+    })
+
+    describe('when a referral has been assigned to a caseworker', () => {
+      it('includes the caseworker’s username', () => {
+        const serviceCategory = serviceCategoryFactory.build()
+        const sentReferrals = [
+          sentReferralFactory
+            .assigned()
+            .build({ assignedTo: { username: 'john.smith' }, referral: { serviceCategoryId: serviceCategory.id } }),
+        ]
+
+        const presenter = new DashboardPresenter(sentReferrals, [serviceCategory])
+
+        expect(presenter.tableRows[0][4]).toEqual({ text: 'john.smith', sortValue: null, href: null })
+      })
     })
   })
 })

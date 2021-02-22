@@ -81,12 +81,14 @@ describe('Service provider referrals dashboard', () => {
           'Intervention type': 'Accommodation',
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
+          Caseworker: '',
         },
         {
           'Date received': '13 Sep 2020',
           'Intervention type': 'Social inclusion',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
+          Caseworker: '',
         },
       ])
 
@@ -126,7 +128,7 @@ describe('Service provider referrals dashboard', () => {
     const referral = sentReferralFactory.build(referralParams)
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith', username: 'john.smith' })
 
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferral(referral.id, referral)
@@ -161,14 +163,10 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
     cy.get('h1').contains('Caseworker assigned')
 
-    const assignedReferral = sentReferralFactory
-      .assigned()
-      .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
-    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
-
     cy.contains('Return to dashboard').click()
 
     cy.location('pathname').should('equal', `/service-provider/dashboard`)
+    cy.contains('john.smith')
 
     cy.visit(`/service-provider/referrals/${referral.id}`)
     cy.contains('This intervention is assigned to John Smith.')
