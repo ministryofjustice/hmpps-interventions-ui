@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ReferralReferenceGenerator(
-  private val prefixChars: List<Char> = ('A'..'Z').toList(),
+  private val prefixChars: List<Char> = ('A'..'Z').toList().filterNot { it in listOf('I', 'O') },
   private val numbers: List<Char> = ('0'..'9').toList(),
 ) {
   private val ambiguousPairs = listOf(
