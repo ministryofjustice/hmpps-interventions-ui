@@ -7,6 +7,10 @@ Cypress.Commands.add('stubGetUserByEmailAddress', responseJson => {
   cy.task('stubGetUserByEmailAddress', { responseJson })
 })
 
+Cypress.Commands.add('stubGetAuthUserByUsername', (username, responseJson) => {
+  cy.task('stubGetAuthUserByUsername', { username, responseJson })
+})
+
 Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {
   cy.contains(text).parent('fieldset').within(action)
 })

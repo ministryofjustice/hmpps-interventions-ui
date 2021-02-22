@@ -23,6 +23,9 @@ module.exports = on => {
     stubGetUserByEmailAddress: arg => {
       return auth.stubGetUserByEmailAddress(arg.responseJson)
     },
+    stubGetAuthUserByUsername: arg => {
+      return auth.stubGetAuthUserByUsername(arg.username, arg.responseJson)
+    },
 
     stubServiceProviderAuthUser: auth.stubServiceProviderUser,
     stubProbationPractitionerAuthUser: auth.stubProbationPractitionerUser,
