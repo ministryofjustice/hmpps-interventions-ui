@@ -255,6 +255,20 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('serviceUserRisks', () => {
+    it("returns a summary list of the service user's risk information", () => {
+      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+
+      expect(presenter.serviceUserRisks).toEqual([
+        { key: 'Risk to known adult', lines: ['Medium'], isList: false },
+        { key: 'Risk to public', lines: ['Low'], isList: false },
+        { key: 'Risk to children', lines: ['Low'], isList: false },
+        { key: 'Risk to staff', lines: ['Low'], isList: false },
+        { key: 'Additional risk information', lines: [referralFields.additionalRiskInformation], isList: false },
+      ])
+    })
+  })
+
   describe('serviceUserNotificationBannerArgs', () => {
     describe('when all contact details are present on the Delius Service User', () => {
       it('returns a notification banner with service user details', () => {

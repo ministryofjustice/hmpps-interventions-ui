@@ -66,6 +66,16 @@ export default class ShowReferralPresenter {
     return new ServiceUserDetailsPresenter(this.referralFields.serviceUser).summary
   }
 
+  get serviceUserRisks(): SummaryListItem[] {
+    return [
+      { key: 'Risk to known adult', lines: ['Medium'], isList: false },
+      { key: 'Risk to public', lines: ['Low'], isList: false },
+      { key: 'Risk to children', lines: ['Low'], isList: false },
+      { key: 'Risk to staff', lines: ['Low'], isList: false },
+      { key: 'Additional risk information', lines: [this.referralFields.additionalRiskInformation], isList: false },
+    ]
+  }
+
   readonly serviceUserNotificationBannerArgs = {
     titleText: 'Service user details',
     html:
