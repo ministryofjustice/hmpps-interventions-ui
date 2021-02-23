@@ -79,6 +79,16 @@ export default class StaticContentController {
       template: 'serviceProviderReferrals/sessionProgressAllSessionsCompleted',
       description: 'IC-1078 (session progress - all sessions completed, with notification banner)',
     },
+    {
+      path: '/service-provider/layout-all-components',
+      template: 'pages/layoutAllComponents',
+      description: 'IC-1159 (layout template for all components)',
+    },
+    {
+      path: '/service-provider/su-banner-state',
+      template: 'pages/suBannerState',
+      description: 'IC-1235 (Multi-version of the SU banner states)',
+    },
   ]
 
   static get allPaths(): string[] {
