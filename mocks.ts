@@ -25,6 +25,7 @@ export default async function setUpMocks(): Promise<void> {
       referral: {
         serviceCategoryId: accommodationServiceCategory.id,
         serviceUser: { firstName: 'Aadland', lastName: 'Bertrand', crn: 'X320741' },
+        desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
       },
       sentBy,
     }),
@@ -34,6 +35,7 @@ export default async function setUpMocks(): Promise<void> {
       referral: {
         serviceCategoryId: socialInclusionServiceCategory.id,
         serviceUser: { firstName: 'George', lastName: 'Michael', crn: 'X320741' },
+        desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
       },
       sentBy,
     }),
@@ -43,6 +45,7 @@ export default async function setUpMocks(): Promise<void> {
       referral: {
         serviceCategoryId: socialInclusionServiceCategory.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X320741' },
+        desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
       },
       sentBy,
     }),
