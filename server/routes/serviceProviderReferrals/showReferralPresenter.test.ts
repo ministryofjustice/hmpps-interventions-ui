@@ -49,9 +49,9 @@ describe(ShowReferralPresenter, () => {
     ],
   })
 
-  const referralFields = sentReferralFactory.build({
+  const sentReferral = sentReferralFactory.build({
     referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
-  }).referral
+  })
   const deliusUser = deliusUserFactory.build({
     firstName: 'Bernard',
     surname: 'Beaks',
@@ -74,7 +74,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.text).toEqual({
         title: 'Accommodation referral for Jenny Jones',
@@ -85,7 +85,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('probationPractitionerDetails', () => {
     it('returns a summary list of probation practitioner details', () => {
-      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.probationPractitionerDetails).toEqual([
         { isList: false, key: 'Name', lines: ['Bernard Beaks'] },
@@ -96,41 +96,48 @@ describe(ShowReferralPresenter, () => {
 
   describe('interventionDetails', () => {
     describe('when all possibly optional fields have been set on the referral, including RAR days', () => {
-      const referralFieldsAllOptional = {
-        createdAt: '2020-12-07T20:45:21.986389Z',
-        completionDeadline: '2021-04-01',
-        serviceProvider: {
-          name: 'Harmony Living',
+      const referralWithAllOptionalFields = sentReferralFactory.build({
+        referral: {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          serviceCategoryId: serviceCategory.id,
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          furtherInformation: 'Some information about the service user',
+          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+          additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+          accessibilityNeeds: 'She uses a wheelchair',
+          needsInterpreter: true,
+          interpreterLanguage: 'Spanish',
+          hasAdditionalResponsibilities: true,
+          whenUnavailable: 'She works Mondays 9am - midday',
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Mr',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'British',
+            preferredLanguage: 'English',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          additionalRiskInformation: 'A danger to the elderly',
+          usingRarDays: true,
+          maximumRarDays: 10,
         },
-        serviceCategoryId: serviceCategory.id,
-        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-        furtherInformation: 'Some information about the service user',
-        desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
-        additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
-        accessibilityNeeds: 'She uses a wheelchair',
-        needsInterpreter: true,
-        interpreterLanguage: 'Spanish',
-        hasAdditionalResponsibilities: true,
-        whenUnavailable: 'She works Mondays 9am - midday',
-        serviceUser: {
-          crn: 'X123456',
-          title: 'Mr',
-          firstName: 'Alex',
-          lastName: 'River',
-          dateOfBirth: '1980-01-01',
-          gender: 'Male',
-          ethnicity: 'British',
-          preferredLanguage: 'English',
-          religionOrBelief: 'Agnostic',
-          disabilities: ['Autism spectrum condition', 'sciatica'],
-        },
-        additionalRiskInformation: 'A danger to the elderly',
-        usingRarDays: true,
-        maximumRarDays: 10,
-      }
+      })
 
       it('returns a summary list of intervention details', () => {
-        const presenter = new ShowReferralPresenter(referralFieldsAllOptional, serviceCategory, deliusUser, serviceUser)
+        const presenter = new ShowReferralPresenter(
+          referralWithAllOptionalFields,
+          serviceCategory,
+          deliusUser,
+          serviceUser
+        )
 
         expect(presenter.interventionDetails).toEqual([
           { key: 'Sentence information', lines: ['Not currently set'], isList: false },
@@ -166,41 +173,48 @@ describe(ShowReferralPresenter, () => {
     })
 
     describe('when no optional fields have been set on the referral and no RAR days are selected', () => {
-      const referralFieldsNoOptional = {
-        createdAt: '2020-12-07T20:45:21.986389Z',
-        completionDeadline: '2021-04-01',
-        serviceProvider: {
-          name: 'Harmony Living',
+      const referralWithNoOptionalFields = sentReferralFactory.build({
+        referral: {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          serviceCategoryId: serviceCategory.id,
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          furtherInformation: '',
+          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+          additionalNeedsInformation: '',
+          accessibilityNeeds: '',
+          needsInterpreter: false,
+          interpreterLanguage: null,
+          hasAdditionalResponsibilities: false,
+          whenUnavailable: null,
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Mr',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'British',
+            preferredLanguage: 'English',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          additionalRiskInformation: '',
+          usingRarDays: false,
+          maximumRarDays: null,
         },
-        serviceCategoryId: serviceCategory.id,
-        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-        furtherInformation: '',
-        desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
-        additionalNeedsInformation: '',
-        accessibilityNeeds: '',
-        needsInterpreter: false,
-        interpreterLanguage: null,
-        hasAdditionalResponsibilities: false,
-        whenUnavailable: null,
-        serviceUser: {
-          crn: 'X123456',
-          title: 'Mr',
-          firstName: 'Alex',
-          lastName: 'River',
-          dateOfBirth: '1980-01-01',
-          gender: 'Male',
-          ethnicity: 'British',
-          preferredLanguage: 'English',
-          religionOrBelief: 'Agnostic',
-          disabilities: ['Autism spectrum condition', 'sciatica'],
-        },
-        additionalRiskInformation: '',
-        usingRarDays: false,
-        maximumRarDays: null,
-      }
+      })
 
       it("returns a summary list of intervention details with a message for fields that haven't been set", () => {
-        const presenter = new ShowReferralPresenter(referralFieldsNoOptional, serviceCategory, deliusUser, serviceUser)
+        const presenter = new ShowReferralPresenter(
+          referralWithNoOptionalFields,
+          serviceCategory,
+          deliusUser,
+          serviceUser
+        )
 
         expect(presenter.interventionDetails).toEqual([
           { key: 'Sentence information', lines: ['Not currently set'], isList: false },
@@ -238,33 +252,33 @@ describe(ShowReferralPresenter, () => {
 
   describe('serviceUserPersonalDetails', () => {
     it("returns a summary list of the service user's personal details", () => {
-      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.serviceUserDetails).toEqual([
-        { key: 'CRN', lines: [referralFields.serviceUser.crn], isList: false },
-        { key: 'Title', lines: [referralFields.serviceUser.title], isList: false },
-        { key: 'First name', lines: [referralFields.serviceUser.firstName], isList: false },
-        { key: 'Last name', lines: [referralFields.serviceUser.lastName], isList: false },
-        { key: 'Date of birth', lines: [referralFields.serviceUser.dateOfBirth], isList: false },
-        { key: 'Gender', lines: [referralFields.serviceUser.gender], isList: false },
-        { key: 'Ethnicity', lines: [referralFields.serviceUser.ethnicity], isList: false },
-        { key: 'Preferred language', lines: [referralFields.serviceUser.preferredLanguage], isList: false },
-        { key: 'Religion or belief', lines: [referralFields.serviceUser.religionOrBelief], isList: false },
-        { key: 'Disabilities', lines: referralFields.serviceUser.disabilities || [], isList: true },
+        { key: 'CRN', lines: [sentReferral.referral.serviceUser.crn], isList: false },
+        { key: 'Title', lines: [sentReferral.referral.serviceUser.title], isList: false },
+        { key: 'First name', lines: [sentReferral.referral.serviceUser.firstName], isList: false },
+        { key: 'Last name', lines: [sentReferral.referral.serviceUser.lastName], isList: false },
+        { key: 'Date of birth', lines: [sentReferral.referral.serviceUser.dateOfBirth], isList: false },
+        { key: 'Gender', lines: [sentReferral.referral.serviceUser.gender], isList: false },
+        { key: 'Ethnicity', lines: [sentReferral.referral.serviceUser.ethnicity], isList: false },
+        { key: 'Preferred language', lines: [sentReferral.referral.serviceUser.preferredLanguage], isList: false },
+        { key: 'Religion or belief', lines: [sentReferral.referral.serviceUser.religionOrBelief], isList: false },
+        { key: 'Disabilities', lines: sentReferral.referral.serviceUser.disabilities || [], isList: true },
       ])
     })
   })
 
   describe('serviceUserRisks', () => {
     it("returns a summary list of the service user's risk information", () => {
-      const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
       expect(presenter.serviceUserRisks).toEqual([
         { key: 'Risk to known adult', lines: ['Medium'], isList: false },
         { key: 'Risk to public', lines: ['Low'], isList: false },
         { key: 'Risk to children', lines: ['Low'], isList: false },
         { key: 'Risk to staff', lines: ['Low'], isList: false },
-        { key: 'Additional risk information', lines: [referralFields.additionalRiskInformation], isList: false },
+        { key: 'Additional risk information', lines: [sentReferral.referral.additionalRiskInformation], isList: false },
       ])
     })
   })
@@ -272,41 +286,43 @@ describe(ShowReferralPresenter, () => {
   describe('serviceUserNeeds', () => {
     describe('when all conditional text answers are present', () => {
       it("returns a summary list of the service user's needs with those fields filled in", () => {
-        const referralFieldsAllConditional = {
-          createdAt: '2020-12-07T20:45:21.986389Z',
-          completionDeadline: '2021-04-01',
-          serviceProvider: {
-            name: 'Harmony Living',
+        const referralWithAllConditionalFields = sentReferralFactory.build({
+          referral: {
+            createdAt: '2020-12-07T20:45:21.986389Z',
+            completionDeadline: '2021-04-01',
+            serviceProvider: {
+              name: 'Harmony Living',
+            },
+            serviceCategoryId: serviceCategory.id,
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+            furtherInformation: 'Some information about the service user',
+            desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            additionalNeedsInformation: "Alex is currently sleeping on her aunt's sofa",
+            accessibilityNeeds: 'She uses a wheelchair',
+            needsInterpreter: true,
+            interpreterLanguage: 'Spanish',
+            hasAdditionalResponsibilities: true,
+            whenUnavailable: 'She works Mondays 9am - midday',
+            serviceUser: {
+              crn: 'X123456',
+              title: 'Ms',
+              firstName: 'Alex',
+              lastName: 'River',
+              dateOfBirth: '1980-01-01',
+              gender: 'Male',
+              ethnicity: 'Spanish',
+              preferredLanguage: 'Catalan',
+              religionOrBelief: 'Agnostic',
+              disabilities: ['Autism spectrum condition', 'sciatica'],
+            },
+            additionalRiskInformation: 'A danger to the elderly',
+            usingRarDays: true,
+            maximumRarDays: 10,
           },
-          serviceCategoryId: serviceCategory.id,
-          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-          furtherInformation: 'Some information about the service user',
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
-          additionalNeedsInformation: "Alex is currently sleeping on her aunt's sofa",
-          accessibilityNeeds: 'She uses a wheelchair',
-          needsInterpreter: true,
-          interpreterLanguage: 'Spanish',
-          hasAdditionalResponsibilities: true,
-          whenUnavailable: 'She works Mondays 9am - midday',
-          serviceUser: {
-            crn: 'X123456',
-            title: 'Ms',
-            firstName: 'Alex',
-            lastName: 'River',
-            dateOfBirth: '1980-01-01',
-            gender: 'Male',
-            ethnicity: 'Spanish',
-            preferredLanguage: 'Catalan',
-            religionOrBelief: 'Agnostic',
-            disabilities: ['Autism spectrum condition', 'sciatica'],
-          },
-          additionalRiskInformation: 'A danger to the elderly',
-          usingRarDays: true,
-          maximumRarDays: 10,
-        }
+        })
 
         const presenter = new ShowReferralPresenter(
-          referralFieldsAllConditional,
+          referralWithAllConditionalFields,
           serviceCategory,
           deliusUser,
           serviceUser
@@ -347,41 +363,43 @@ describe(ShowReferralPresenter, () => {
 
     describe('when no conditional/optional text answers are present', () => {
       it("returns a summary list of the service user's needs with N/A for those fields", () => {
-        const referralFieldsNoConditionals = {
-          createdAt: '2020-12-07T20:45:21.986389Z',
-          completionDeadline: '2021-04-01',
-          serviceProvider: {
-            name: 'Harmony Living',
+        const referralWithNoConditionalFields = sentReferralFactory.build({
+          referral: {
+            createdAt: '2020-12-07T20:45:21.986389Z',
+            completionDeadline: '2021-04-01',
+            serviceProvider: {
+              name: 'Harmony Living',
+            },
+            serviceCategoryId: serviceCategory.id,
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+            furtherInformation: '',
+            desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            additionalNeedsInformation: '',
+            accessibilityNeeds: '',
+            needsInterpreter: false,
+            interpreterLanguage: null,
+            hasAdditionalResponsibilities: false,
+            whenUnavailable: null,
+            serviceUser: {
+              crn: 'X123456',
+              title: 'Mr',
+              firstName: 'Alex',
+              lastName: 'River',
+              dateOfBirth: '1980-01-01',
+              gender: 'Male',
+              ethnicity: 'British',
+              preferredLanguage: 'English',
+              religionOrBelief: 'Agnostic',
+              disabilities: ['Autism spectrum condition', 'sciatica'],
+            },
+            additionalRiskInformation: '',
+            usingRarDays: false,
+            maximumRarDays: null,
           },
-          serviceCategoryId: serviceCategory.id,
-          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-          furtherInformation: '',
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
-          additionalNeedsInformation: '',
-          accessibilityNeeds: '',
-          needsInterpreter: false,
-          interpreterLanguage: null,
-          hasAdditionalResponsibilities: false,
-          whenUnavailable: null,
-          serviceUser: {
-            crn: 'X123456',
-            title: 'Mr',
-            firstName: 'Alex',
-            lastName: 'River',
-            dateOfBirth: '1980-01-01',
-            gender: 'Male',
-            ethnicity: 'British',
-            preferredLanguage: 'English',
-            religionOrBelief: 'Agnostic',
-            disabilities: ['Autism spectrum condition', 'sciatica'],
-          },
-          additionalRiskInformation: '',
-          usingRarDays: false,
-          maximumRarDays: null,
-        }
+        })
 
         const presenter = new ShowReferralPresenter(
-          referralFieldsNoConditionals,
+          referralWithNoConditionalFields,
           serviceCategory,
           deliusUser,
           serviceUser
@@ -424,7 +442,7 @@ describe(ShowReferralPresenter, () => {
   describe('serviceUserNotificationBannerArgs', () => {
     describe('when all contact details are present on the Delius Service User', () => {
       it('returns a notification banner with service user details', () => {
-        const presenter = new ShowReferralPresenter(referralFields, serviceCategory, deliusUser, serviceUser)
+        const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser)
 
         expect(presenter.serviceUserNotificationBannerArgs).toEqual({
           titleText: 'Service user details',
@@ -446,7 +464,7 @@ describe(ShowReferralPresenter, () => {
         } as DeliusServiceUser
 
         const presenter = new ShowReferralPresenter(
-          referralFields,
+          sentReferral,
           serviceCategory,
           deliusUser,
           serviceUserWithoutContactDetails

@@ -36,7 +36,7 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ShowReferralPresenter(sentReferral.referral, serviceCategory, sentBy, serviceUser)
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser)
     const view = new ShowReferralView(presenter)
 
     res.render(...view.renderArgs)

@@ -1,5 +1,5 @@
 import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
-import { ReferralFields, ServiceCategory } from '../../services/interventionsService'
+import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
@@ -8,7 +8,7 @@ import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresente
 
 export default class ShowReferralPresenter {
   constructor(
-    private readonly referralFields: ReferralFields,
+    private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
     private readonly serviceUser: DeliusServiceUser
@@ -16,7 +16,7 @@ export default class ShowReferralPresenter {
 
   readonly text = {
     title: `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
-      this.referralFields.serviceUser
+      this.sentReferral.referral.serviceUser
     )}`,
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
   }
@@ -28,11 +28,11 @@ export default class ShowReferralPresenter {
 
   get interventionDetails(): SummaryListItem[] {
     const selectedDesiredOutcomes = this.serviceCategory.desiredOutcomes
-      .filter(desiredOutcome => this.referralFields.desiredOutcomesIds.includes(desiredOutcome.id))
+      .filter(desiredOutcome => this.sentReferral.referral.desiredOutcomesIds.includes(desiredOutcome.id))
       .map(desiredOutcome => desiredOutcome.description)
 
     const selectedComplexityLevel = this.serviceCategory.complexityLevels.find(
-      complexityLevel => complexityLevel.id === this.referralFields.complexityLevelId
+      complexityLevel => complexityLevel.id === this.sentReferral.referral.complexityLevelId
     )
 
     const complexityLevelText = {
@@ -46,24 +46,26 @@ export default class ShowReferralPresenter {
       { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text], isList: false },
       {
         key: 'Date to be completed by',
-        lines: [ShowReferralPresenter.govukFormattedDateFromStringOrNull(this.referralFields.completionDeadline)],
+        lines: [
+          ShowReferralPresenter.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline),
+        ],
         isList: false,
       },
       {
         key: 'Maximum number of enforceable days',
-        lines: [this.referralFields.usingRarDays ? String(this.referralFields.maximumRarDays) : 'N/A'],
+        lines: [this.sentReferral.referral.usingRarDays ? String(this.sentReferral.referral.maximumRarDays) : 'N/A'],
         isList: false,
       },
       {
         key: 'Further information for the provider',
-        lines: [this.referralFields.furtherInformation || 'N/A'],
+        lines: [this.sentReferral.referral.furtherInformation || 'N/A'],
         isList: false,
       },
     ]
   }
 
   get serviceUserDetails(): SummaryListItem[] {
-    return new ServiceUserDetailsPresenter(this.referralFields.serviceUser).summary
+    return new ServiceUserDetailsPresenter(this.sentReferral.referral.serviceUser).summary
   }
 
   get serviceUserRisks(): SummaryListItem[] {
@@ -72,7 +74,11 @@ export default class ShowReferralPresenter {
       { key: 'Risk to public', lines: ['Low'], isList: false },
       { key: 'Risk to children', lines: ['Low'], isList: false },
       { key: 'Risk to staff', lines: ['Low'], isList: false },
-      { key: 'Additional risk information', lines: [this.referralFields.additionalRiskInformation], isList: false },
+      {
+        key: 'Additional risk information',
+        lines: [this.sentReferral.referral.additionalRiskInformation],
+        isList: false,
+      },
     ]
   }
 
@@ -81,29 +87,33 @@ export default class ShowReferralPresenter {
       { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
       {
         key: 'Identify needs',
-        lines: [this.referralFields.additionalNeedsInformation || 'N/A'],
+        lines: [this.sentReferral.referral.additionalNeedsInformation || 'N/A'],
         isList: false,
       },
       {
         key: 'Other mobility, disability or accessibility needs',
-        lines: [this.referralFields.accessibilityNeeds || 'N/A'],
+        lines: [this.sentReferral.referral.accessibilityNeeds || 'N/A'],
         isList: false,
       },
-      { key: 'Interpreter required', lines: [this.referralFields.needsInterpreter ? 'Yes' : 'No'], isList: false },
-      { key: 'Interpreter language', lines: [this.referralFields.interpreterLanguage || 'N/A'], isList: false },
+      {
+        key: 'Interpreter required',
+        lines: [this.sentReferral.referral.needsInterpreter ? 'Yes' : 'No'],
+        isList: false,
+      },
+      { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'], isList: false },
       {
         key: 'Primary language',
-        lines: [this.referralFields.serviceUser.preferredLanguage || 'N/A'],
+        lines: [this.sentReferral.referral.serviceUser.preferredLanguage || 'N/A'],
         isList: false,
       },
       {
         key: 'Caring or employment responsibilities',
-        lines: [this.referralFields.hasAdditionalResponsibilities ? 'Yes' : 'No'],
+        lines: [this.sentReferral.referral.hasAdditionalResponsibilities ? 'Yes' : 'No'],
         isList: false,
       },
       {
-        key: `Provide details of when ${this.referralFields.serviceUser.firstName} will not be able to attend sessions`,
-        lines: [this.referralFields.whenUnavailable || 'N/A'],
+        key: `Provide details of when ${this.sentReferral.referral.serviceUser.firstName} will not be able to attend sessions`,
+        lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
         isList: false,
       },
     ]
