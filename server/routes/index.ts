@@ -4,6 +4,7 @@ import asyncMiddleware from '../middleware/asyncMiddleware'
 import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
 import OffenderAssessmentsApiService from '../services/offenderAssessmentsApiService'
+import HmppsAuthClient from '../data/hmppsAuthClient'
 import IntegrationSamplesRoutes from './integrationSamples'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import ReferralsController from './referrals/referralsController'
@@ -19,6 +20,7 @@ export interface Services {
   communityApiService: CommunityApiService
   offenderAssessmentsApiService: OffenderAssessmentsApiService
   interventionsService: InterventionsService
+  hmppsAuthClient: HmppsAuthClient
 }
 
 export default function routes(router: Router, services: Services): Router {
@@ -37,7 +39,8 @@ export default function routes(router: Router, services: Services): Router {
   const staticContentController = new StaticContentController()
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
-    services.communityApiService
+    services.communityApiService,
+    services.hmppsAuthClient
   )
   const findInterventionsController = new FindInterventionsController(services.interventionsService)
 
@@ -52,6 +55,15 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/service-provider/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
   get('/service-provider/referrals/:id', (req, res) => serviceProviderReferralsController.showReferral(req, res))
+  get('/service-provider/referrals/:id/assignment/check', (req, res) =>
+    serviceProviderReferralsController.checkAssignment(req, res)
+  )
+  post('/service-provider/referrals/:id/assignment', (req, res) =>
+    serviceProviderReferralsController.assignReferral(req, res)
+  )
+  get('/service-provider/referrals/:id/assignment/confirmation', (req, res) =>
+    serviceProviderReferralsController.confirmAssignment(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

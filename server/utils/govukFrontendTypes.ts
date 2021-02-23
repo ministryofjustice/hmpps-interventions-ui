@@ -10,3 +10,16 @@ interface TabItem {
     html?: string
   }
 }
+
+export interface InputArgs {
+  id: string
+  name: string
+  label: {
+    text?: string
+    html?: string
+  }
+}
+
+export interface PanelArgs {
+  titleText: string
+}

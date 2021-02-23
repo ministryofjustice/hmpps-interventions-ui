@@ -38,22 +38,22 @@ describe('User service', () => {
       userService = new UserService(hmppsAuthClient)
     })
     it('Retrieves and formats user name', async () => {
-      hmppsAuthClient.getUser.mockResolvedValue(deliusUser)
+      hmppsAuthClient.getCurrentUser.mockResolvedValue(deliusUser)
       const result = await userService.getUser(token)
       expect(result.displayName).toEqual('John Smith')
     })
     it('filters auth user groups', async () => {
-      hmppsAuthClient.getUser.mockResolvedValue(authUser)
+      hmppsAuthClient.getCurrentUser.mockResolvedValue(authUser)
       const result = await userService.getUser(token)
       expect(result.organizations).toEqual([{ code: 'INT_SP_HARMONY', name: 'Harmony Living' }])
     })
     it('does not include auth user groups for delius users', async () => {
-      hmppsAuthClient.getUser.mockResolvedValue(deliusUser)
+      hmppsAuthClient.getCurrentUser.mockResolvedValue(deliusUser)
       const result = await userService.getUser(token)
       expect(result.organizations).toBeUndefined()
     })
     it('Propagates error', async () => {
-      hmppsAuthClient.getUser.mockRejectedValue(new Error('some error'))
+      hmppsAuthClient.getCurrentUser.mockRejectedValue(new Error('some error'))
 
       await expect(userService.getUser(token)).rejects.toEqual(new Error('some error'))
     })

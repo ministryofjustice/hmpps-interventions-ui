@@ -12,6 +12,12 @@ const communityApiService = new CommunityApiService(hmppsAuthClient)
 const offenderAssessmentsApiService = new OffenderAssessmentsApiService(hmppsAuthClient)
 const interventionsService = new InterventionsService(config.apis.interventionsService)
 
-const app = createApp(userService, communityApiService, offenderAssessmentsApiService, interventionsService)
+const app = createApp(
+  userService,
+  communityApiService,
+  offenderAssessmentsApiService,
+  interventionsService,
+  hmppsAuthClient
+)
 
 export default app

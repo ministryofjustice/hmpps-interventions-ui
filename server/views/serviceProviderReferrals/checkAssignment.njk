@@ -1,0 +1,33 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}
+  {{ pageTitle }}
+  - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      <p class="govuk-body">
+      Make sure you’ve familiarised yourself with the referral details before assigning it to a caseworker.
+      </p>
+
+      <h2 class="govuk-heading-m">Caseworker</h2>
+
+      {{ govukSummaryList(summaryListArgs) }}
+      <form method="post" action={{ presenter.formAction }}>
+        {% for name, value in presenter.hiddenFields %}
+          <input type="hidden" name={{ name }} value={{ value }}>
+        {% endfor %}
+
+        {{ govukButton({ text: "Confirm assignment" }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

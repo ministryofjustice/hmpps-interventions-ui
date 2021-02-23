@@ -6,7 +6,7 @@ import utils from '../../utils/utils'
 export default class DashboardPresenter {
   constructor(private readonly referrals: SentReferral[], private readonly serviceCategories: ServiceCategory[]) {}
 
-  readonly tableHeadings = ['Date received', 'Referral', 'Service user', 'Intervention type']
+  readonly tableHeadings = ['Date received', 'Referral', 'Service user', 'Intervention type', 'Caseworker']
 
   readonly tableRows: { text: string; sortValue: string | null; href: string | null }[][] = this.referrals.map(
     referral => {
@@ -32,6 +32,7 @@ export default class DashboardPresenter {
           href: null,
         },
         { text: utils.convertToProperCase(serviceCategory.name), sortValue: null, href: null },
+        { text: referral.assignedTo?.username ?? '', sortValue: null, href: null },
       ]
     }
   )

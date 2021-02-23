@@ -1,3 +1,4 @@
+import { User } from '../../data/hmppsAuthClient'
 import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
@@ -11,14 +12,21 @@ export default class ShowReferralPresenter {
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
-    private readonly serviceUser: DeliusServiceUser
+    private readonly serviceUser: DeliusServiceUser,
+    private readonly assignee: User | null
   ) {}
 
+  readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
+
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
-      this.sentReferral.referral.serviceUser
-    )}`,
+    title:
+      this.sentReferral.assignedTo === null
+        ? `Who do you want to assign this ${this.serviceCategory.name} referral to?`
+        : `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
+            this.sentReferral.referral.serviceUser
+          )}`,
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
+    assignedTo: this.assignee?.name ?? null,
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [

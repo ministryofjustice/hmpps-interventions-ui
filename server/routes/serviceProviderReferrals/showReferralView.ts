@@ -1,5 +1,6 @@
 import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
+import { InputArgs } from '../../utils/govukFrontendTypes'
 
 export default class ShowReferralView {
   constructor(private readonly presenter: ShowReferralPresenter) {}
@@ -16,6 +17,16 @@ export default class ShowReferralView {
 
   private readonly serviceUserNeedsSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.serviceUserNeeds)
 
+  private get emailInputArgs(): InputArgs {
+    return {
+      id: 'email',
+      name: 'email',
+      label: {
+        text: 'Please enter the email address of the caseworker',
+      },
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/showReferral',
@@ -27,6 +38,7 @@ export default class ShowReferralView {
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
         serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
+        emailInputArgs: this.emailInputArgs,
       },
     ]
   }

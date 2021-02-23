@@ -44,7 +44,7 @@ function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.R
     .timeout(timeoutSpec)
 }
 
-interface User {
+export interface User {
   name: string
   userId: string
   username: string
@@ -66,9 +66,19 @@ export default class HmppsAuthClient {
     return new RestClient('HMPPS Auth Client', config.apis.hmppsAuth, token)
   }
 
-  getUser(token: string): Promise<User> {
-    logger.info(`Getting user details: calling HMPPS Auth`)
+  getCurrentUser(token: string): Promise<User> {
+    logger.info(`Getting current user details: calling HMPPS Auth`)
     return this.restClient(token).get({ path: '/api/user/me' }) as Promise<User>
+  }
+
+  getUserByEmailAddress(token: string, emailAddress: string): Promise<User> {
+    logger.info(`Getting user detail by email address: calling HMPPS Auth`)
+    return this.restClient(token).get({ path: `/api/authuser`, query: { email: emailAddress } }) as Promise<User>
+  }
+
+  getUserByUsername(token: string, username: string): Promise<User> {
+    logger.info(`Getting user detail by username: calling HMPPS Auth`)
+    return this.restClient(token).get({ path: `/api/authuser/${username}` }) as Promise<User>
   }
 
   getUserRoles(token: string): Promise<string[]> {

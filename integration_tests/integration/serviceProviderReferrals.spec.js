@@ -2,6 +2,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -80,18 +81,20 @@ describe('Service provider referrals dashboard', () => {
           'Intervention type': 'Accommodation',
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
+          Caseworker: '',
         },
         {
           'Date received': '13 Sep 2020',
           'Intervention type': 'Social inclusion',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
+          Caseworker: '',
         },
       ])
 
     cy.contains('ABCABCA2').click()
     cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}`)
-    cy.get('h1').contains('Social inclusion referral for Jenny Jones')
+    cy.get('h1').contains('Who do you want to assign this social inclusion referral to?')
     cy.contains('07123456789 | jenny.jones@example.com')
     cy.contains('Social inclusion intervention details')
     cy.contains('Service User makes progress in obtaining accommodation')
@@ -117,5 +120,55 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('She works Mondays 9am - midday')
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
+  })
+
+  it('User assigns a referral to a caseworker', () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
+    const referral = sentReferralFactory.build(referralParams)
+    const deliusUser = deliusUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith', username: 'john.smith' })
+
+    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetSentReferrals([referral])
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetUserByEmailAddress(hmppsAuthUser)
+    cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+    cy.stubAssignSentReferral(referral.id, referral)
+
+    cy.login()
+
+    cy.visit(`/service-provider/referrals/${referral.id}`)
+
+    cy.get('h1').contains('Who do you want to assign this accommodation referral to?')
+
+    cy.get('#email').type('john@harmonyliving.org.uk')
+    cy.contains('Save and continue').click()
+
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
+    cy.get('h1').contains('Confirm the accommodation referral assignment')
+    cy.contains('John Smith')
+
+    const assignedReferral = sentReferralFactory
+      .assigned()
+      .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
+    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+    cy.stubGetSentReferrals([assignedReferral])
+
+    cy.contains('Confirm assignment').click()
+
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+    cy.get('h1').contains('Caseworker assigned')
+
+    cy.contains('Return to dashboard').click()
+
+    cy.location('pathname').should('equal', `/service-provider/dashboard`)
+    cy.contains('john.smith')
+
+    cy.visit(`/service-provider/referrals/${referral.id}`)
+    cy.contains('This intervention is assigned to John Smith.')
   })
 })

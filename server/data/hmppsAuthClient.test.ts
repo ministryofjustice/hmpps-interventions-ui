@@ -39,7 +39,7 @@ describe('hmppsAuthClient', () => {
     nock.cleanAll()
   })
 
-  describe('getUser', () => {
+  describe('getCurrentUser', () => {
     it('should return data from api', async () => {
       const response = { data: 'data' }
 
@@ -48,7 +48,48 @@ describe('hmppsAuthClient', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
-      const output = await hmppsAuthClient.getUser(token.access_token)
+      const output = await hmppsAuthClient.getCurrentUser(token.access_token)
+      expect(output).toEqual(response)
+    })
+  })
+
+  describe('getUserByEmailAddress', () => {
+    it('should return data from api', async () => {
+      const response = {
+        username: 'AUTH_ADM',
+        active: true,
+        name: 'Auth Adm',
+        authSource: 'auth',
+        userId: '5105a589-75b3-4ca0-9433-b96228c1c8f3',
+      }
+
+      fakeHmppsAuthApi
+        .get('/api/authuser')
+        .query({ email: 'user@example.com' })
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(200, response)
+
+      const output = await hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')
+      expect(output).toEqual(response)
+    })
+  })
+
+  describe('getUserByUsername', () => {
+    it('should return data from api', async () => {
+      const response = {
+        username: 'AUTH_ADM',
+        active: true,
+        name: 'Auth Adm',
+        authSource: 'auth',
+        userId: '5105a589-75b3-4ca0-9433-b96228c1c8f3',
+      }
+
+      fakeHmppsAuthApi
+        .get('/api/authuser/AUTH_ADM')
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(200, response)
+
+      const output = await hmppsAuthClient.getUserByUsername(token.access_token, 'AUTH_ADM')
       expect(output).toEqual(response)
     })
   })

@@ -20,6 +20,12 @@ module.exports = on => {
     stubLogin: auth.stubLogin,
     stubServiceProviderToken: auth.stubServiceProviderToken,
     stubProbationPractitionerToken: auth.stubProbationPractitionerToken,
+    stubGetUserByEmailAddress: arg => {
+      return auth.stubGetUserByEmailAddress(arg.responseJson)
+    },
+    stubGetAuthUserByUsername: arg => {
+      return auth.stubGetAuthUserByUsername(arg.username, arg.responseJson)
+    },
 
     stubServiceProviderAuthUser: auth.stubServiceProviderUser,
     stubProbationPractitionerAuthUser: auth.stubProbationPractitionerUser,
@@ -65,6 +71,10 @@ module.exports = on => {
 
     stubGetSentReferrals: arg => {
       return interventionsService.stubGetSentReferrals(arg.responseJson)
+    },
+
+    stubAssignSentReferral: arg => {
+      return interventionsService.stubAssignSentReferral(arg.id, arg.responseJson)
     },
 
     stubGetInterventions: arg => {

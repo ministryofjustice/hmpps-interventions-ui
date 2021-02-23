@@ -26,6 +26,7 @@ import type UserService from './services/userService'
 import CommunityApiService from './services/communityApiService'
 import InterventionsService from './services/interventionsService'
 import OffenderAssessmentsApiService from './services/offenderAssessmentsApiService'
+import HmppsAuthClient from './data/hmppsAuthClient'
 
 const RedisStore = connectRedis(session)
 
@@ -33,7 +34,8 @@ export default function createApp(
   userService: UserService,
   communityApiService: CommunityApiService,
   offenderAssessmentsApiService: OffenderAssessmentsApiService,
-  interventionsService: InterventionsService
+  interventionsService: InterventionsService,
+  hmppsAuthClient: HmppsAuthClient
 ): express.Application {
   const app = express()
 
@@ -200,6 +202,7 @@ export default function createApp(
       communityApiService,
       offenderAssessmentsApiService,
       interventionsService,
+      hmppsAuthClient,
     })
   )
   app.use((req, res, next) => next(createError(404, 'Not found')))
