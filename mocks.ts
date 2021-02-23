@@ -62,6 +62,7 @@ export default async function setUpMocks(): Promise<void> {
         'HELP - the Healthy Relationships programme, is a new, preventative approach to domestic abuse.' +
         'The course aims to help create successful relationships. Those who complete the group will have' +
         'skills and strategies to manage situations differently and avoid problems escalating into violence.',
+      npsRegion: null,
     },
   ].map(params => {
     return interventionFactory.build({
@@ -69,6 +70,7 @@ export default async function setUpMocks(): Promise<void> {
       title: params.title,
       serviceCategory: { name: params.categoryName },
       description: params.description,
+      npsRegion: params.npsRegion,
     })
   })
 

@@ -92,12 +92,24 @@ describe(InterventionDetailsPresenter, () => {
     })
 
     describe('Region', () => {
-      it('is the NPS region name', () => {
-        expect(
-          linesForKey('Region', {
-            npsRegion: { id: 'A', name: 'North East' },
-          })
-        ).toEqual(['North East'])
+      describe('when NPS Region is present on the intervention', () => {
+        it('is the NPS region name', () => {
+          expect(
+            linesForKey('Region', {
+              npsRegion: { id: 'A', name: 'North East' },
+            })
+          ).toEqual(['North East'])
+        })
+      })
+
+      describe('when NPS Region is not present on the intervention', () => {
+        it('is not present in the summary', () => {
+          expect(
+            linesForKey('Random', {
+              npsRegion: null,
+            })
+          ).toEqual(null)
+        })
       })
     })
 
