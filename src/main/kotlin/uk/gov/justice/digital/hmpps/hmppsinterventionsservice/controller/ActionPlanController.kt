@@ -1,7 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -48,5 +52,19 @@ class ActionPlanController(
     return actionPlanService.getDraftActionPlan(id)
       ?.let { DraftActionPlanDTO.from(it) }
       ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$id]")
+  }
+
+  @PatchMapping("draft-action-plan/{id}")
+  fun update(
+    @PathVariable id: String,
+    @RequestBody updateActionPlan: DraftActionPlanDTO,
+  ): DraftActionPlanDTO {
+    val uuid = parseID(id)
+    val draftActionPlan = actionPlanService.getDraftActionPlan(uuid)
+      ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$uuid]")
+
+    val updatedActionPlan = actionPlanService.updateActionPlan(draftActionPlan, updateActionPlan)
+
+    return DraftActionPlanDTO.from(updatedActionPlan)
   }
 }

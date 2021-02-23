@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -79,5 +81,38 @@ internal class ActionPlanControllerTest {
 
     assertThat(exception.status).isEqualTo(NOT_FOUND)
     assertThat(exception.reason).isEqualTo("draft action plan not found [id=$actionPlanId]")
+  }
+
+  @Test
+  fun `successfully update a draft action plan`() {
+    val draftActionPlanId = UUID.randomUUID()
+    val actionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
+    val draftActionPlanDTO = DraftActionPlanDTO.from(SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = 5))
+
+    val updatedActionPlan = SampleData.sampleActionPlan(numberOfSessions = 5)
+
+    whenever(actionPlanService.getDraftActionPlan(any())).thenReturn(actionPlan)
+    whenever(actionPlanService.updateActionPlan(actionPlan, draftActionPlanDTO)).thenReturn(updatedActionPlan)
+
+    val draftActionPlanResponse = actionPlanController.update(UUID.randomUUID().toString(), draftActionPlanDTO)
+
+    verify(actionPlanService).getDraftActionPlan(any())
+    verify(actionPlanService).updateActionPlan(actionPlan, draftActionPlanDTO)
+    assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
+  }
+
+  @Test
+  fun `no draft action plan found when attempting to update`() {
+    val draftActionPlanId = UUID.randomUUID()
+    val actionPlan = SampleData.sampleActionPlan()
+    val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
+    whenever(actionPlanService.getDraftActionPlan(any())).thenReturn(null)
+
+    val exception = assertThrows(ResponseStatusException::class.java) {
+      actionPlanController.update(draftActionPlanId.toString(), draftActionPlanDTO)
+    }
+
+    assertThat(exception.status).isEqualTo(NOT_FOUND)
+    assertThat(exception.reason).isEqualTo("draft action plan not found [id=$draftActionPlanId]")
   }
 }
