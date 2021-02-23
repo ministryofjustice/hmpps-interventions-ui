@@ -10,6 +10,7 @@ interface ReferralRepository : CrudRepository<Referral, UUID> {
   fun findByIdAndSentAtIsNotNull(id: UUID): Referral?
   fun findBySentAtIsNotNull(): List<Referral>
   fun findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(id: AuthGroupID): List<Referral>
+  fun existsByReferenceNumber(reference: String): Boolean
 
   // queries for draft referrals
   fun findByIdAndSentAtIsNull(id: UUID): Referral?

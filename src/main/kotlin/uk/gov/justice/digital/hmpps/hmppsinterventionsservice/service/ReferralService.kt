@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -23,7 +24,8 @@ class ReferralService(
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
   val interventionRepository: InterventionRepository,
-  val eventPublisher: ReferralEventPublisher
+  val eventPublisher: ReferralEventPublisher,
+  val referenceGenerator: ReferralReferenceGenerator,
 ) {
   fun getSentReferral(id: UUID): Referral? {
     return referralRepository.findByIdAndSentAtIsNotNull(id)
@@ -41,9 +43,7 @@ class ReferralService(
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
     referral.sentBy = authUserRepository.save(user)
-
-    // fixme: hardcoded for now
-    referral.referenceNumber = "HDJ2123F"
+    referral.referenceNumber = generateReferenceNumber(referral)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)
@@ -190,5 +190,25 @@ class ReferralService(
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
     return referralRepository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
+  }
+
+  private fun generateReferenceNumber(referral: Referral): String? {
+    val category = referral.intervention.dynamicFrameworkContract.serviceCategory.name
+
+    for (i in 1..maxReferenceNumberTries) {
+      val candidate = referenceGenerator.generate(category)
+      if (!referralRepository.existsByReferenceNumber(candidate))
+        return candidate
+      else
+        log.warn("Clash found for referral number: $candidate")
+    }
+
+    log.error("Unable to generate a referral number in $maxReferenceNumberTries tries for referral ${referral.id}")
+    return null
+  }
+
+  companion object {
+    private const val maxReferenceNumberTries = 10
+    private val log = LoggerFactory.getLogger(ReferralService::class.java)
   }
 }
