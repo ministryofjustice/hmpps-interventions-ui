@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -23,12 +25,12 @@ import javax.validation.constraints.NotNull
 data class Referral(
   // assigned referral fields
   var assignedAt: OffsetDateTime? = null,
-  @ManyToOne(fetch = FetchType.LAZY) var assignedBy: AuthUser? = null,
-  @ManyToOne(fetch = FetchType.LAZY) var assignedTo: AuthUser? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var assignedBy: AuthUser? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var assignedTo: AuthUser? = null,
 
   // sent referral fields
   var sentAt: OffsetDateTime? = null,
-  @ManyToOne(fetch = FetchType.LAZY) var sentBy: AuthUser? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
 
   // draft referral fields
@@ -56,7 +58,7 @@ data class Referral(
   // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
   @NotNull val serviceUserCRN: String,
-  @NotNull @ManyToOne(fetch = FetchType.LAZY) val createdBy: AuthUser,
+  @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
   @Id val id: UUID,
 )
