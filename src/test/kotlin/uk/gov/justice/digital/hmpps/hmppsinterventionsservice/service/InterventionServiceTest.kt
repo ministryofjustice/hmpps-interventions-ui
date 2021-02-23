@@ -131,7 +131,6 @@ class InterventionServiceTest @Autowired constructor(
 
     val npsRegion = npsRegionFactory.create()
     val pccRegionAvon = pccRegionFactory.create("avon-and-somerset", "Avon & Somerset")
-    val pccRegionDevon = pccRegionFactory.create("devon-and-cornwall", "Devon & Cornwall")
 
     // build map of contracts
     val contracts = mapOf(
