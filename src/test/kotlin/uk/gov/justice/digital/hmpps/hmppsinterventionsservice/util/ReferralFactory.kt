@@ -41,6 +41,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
     referenceNumber: String? = "JS18726AC",
+
+    assignedBy: AuthUser? = null,
+    assignedTo: AuthUser? = null,
+    assignedAt: OffsetDateTime? = null,
   ): Referral {
     return create(
       id = id,
@@ -52,6 +56,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       sentAt = sentAt,
       sentBy = sentBy,
       referenceNumber = referenceNumber,
+
+      assignedBy = assignedBy,
+      assignedTo = assignedTo,
+      assignedAt = assignedAt,
     )
   }
 

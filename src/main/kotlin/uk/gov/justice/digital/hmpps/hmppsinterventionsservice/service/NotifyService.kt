@@ -15,9 +15,11 @@ import java.util.UUID
 class NotifyService(
   @Value("\${notify.enabled}") private val enabled: Boolean,
   @Value("\${notify.templates.referral-sent}") private val referralSentTemplateID: String,
+  @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
   private val client: NotificationClient,
+  private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ReferralEvent> {
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
@@ -29,6 +31,25 @@ class NotifyService(
           serviceProvider.incomingReferralDistributionEmail,
           mapOf(
             "organisationName" to serviceProvider.name,
+            "referenceNumber" to event.referral.referenceNumber!!,
+            "referralUrl" to location.toString(),
+          )
+        )
+      }
+      ReferralEventType.ASSIGNED -> {
+        val assignee = try {
+          hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
+        } catch (e: Exception) {
+          log.error("could not get account details for assigned service provider user", e)
+          return
+        }
+
+        val location = generateReferralUrl(interventionsUISentReferralLocation, event.referral.id)
+        sendEmail(
+          referralAssignedTemplateID,
+          assignee.email,
+          mapOf(
+            "spFirstName" to assignee.firstName,
             "referenceNumber" to event.referral.referenceNumber!!,
             "referralUrl" to location.toString(),
           )
