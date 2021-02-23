@@ -32,15 +32,10 @@ export default class InterventionDetailsPresenter {
   }
 
   get summary(): SummaryListItem[] {
-    return [
+    const summary = [
       {
         key: 'Type',
         lines: ['Dynamic Framework'],
-        isList: false,
-      },
-      {
-        key: 'Region',
-        lines: [utils.convertToTitleCase(this.intervention.npsRegion.name)],
         isList: false,
       },
       {
@@ -69,6 +64,16 @@ export default class InterventionDetailsPresenter {
         isList: false,
       },
     ]
+
+    if (this.intervention.npsRegion !== null) {
+      summary.splice(1, 0, {
+        key: 'Region',
+        lines: [utils.convertToTitleCase(this.intervention.npsRegion.name)],
+        isList: false,
+      })
+    }
+
+    return summary
   }
 
   static ageGroupDescription(eligibility: Eligibility): string {

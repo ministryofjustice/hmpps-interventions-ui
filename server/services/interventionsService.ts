@@ -94,7 +94,7 @@ export interface Intervention {
   id: string
   title: string
   description: string
-  npsRegion: NPSRegion
+  npsRegion: NPSRegion | null
   pccRegions: PCCRegion[]
   serviceCategory: ServiceCategory
   serviceProvider: ServiceProvider
