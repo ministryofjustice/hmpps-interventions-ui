@@ -8,7 +8,7 @@ import java.util.UUID
 @Component
 class LocationMapper {
 
-  fun map(path: String, id: UUID): URI {
+  fun mapToCurrentRequestBasePath(path: String, id: UUID): URI {
     return ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id).toUri()
   }
 }

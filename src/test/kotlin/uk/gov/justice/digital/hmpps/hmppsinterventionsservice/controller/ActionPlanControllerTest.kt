@@ -46,7 +46,7 @@ internal class ActionPlanControllerTest {
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(actionPlanMapper.map(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
-    whenever(locationMapper.map("/{id}", draftActionPlanDTO.id)).thenReturn(uri)
+    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)).thenReturn(uri)
 
     val draftActionPlanResponse = actionPlanController.createDraftActionPlan(createActionPlanDTO, jwtAuthenticationToken)
 

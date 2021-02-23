@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import java.time.OffsetDateTime
+import java.util.Optional
 import java.util.UUID
 
 internal class ActionPlanMapperTest {
@@ -23,7 +24,7 @@ internal class ActionPlanMapperTest {
     val createdAt = OffsetDateTime.now()
     val createActionPlanActivityDTO = CreateActionPlanActivityDTO(desiredOutcomeDTO, "description", createdAt)
     val desiredOutcome = DesiredOutcome(desiredOutcomeDTO.id, "desire", UUID.randomUUID())
-    whenever(desiredOutcomeRepository.getOne(desiredOutcomeDTO.id)).thenReturn(desiredOutcome)
+    whenever(desiredOutcomeRepository.findById(desiredOutcomeDTO.id)).thenReturn(Optional.of(desiredOutcome))
 
     val activities = actionPlanMapper.map(listOf(createActionPlanActivityDTO))
 

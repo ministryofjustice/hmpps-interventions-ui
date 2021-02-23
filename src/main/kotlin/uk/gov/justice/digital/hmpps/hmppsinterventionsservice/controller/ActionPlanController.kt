@@ -42,7 +42,7 @@ class ActionPlanController(
     )
 
     val draftActionPlanDTO = DraftActionPlanDTO.from(draftActionPlan)
-    val location = locationMapper.map("/{id}", draftActionPlanDTO.id)
+    val location = locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)
     return ResponseEntity.created(location).body(draftActionPlanDTO)
   }
 
