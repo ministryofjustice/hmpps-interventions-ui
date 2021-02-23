@@ -15,22 +15,21 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientException
 import java.util.UUID
 
 class NotifyServiceTest {
   private val notificationClient = mock<NotificationClient>()
-
+  private val referralFactory = ReferralFactory()
+  
   private val referralSentEvent = ReferralEvent(
     "source",
     ReferralEventType.SENT,
-    SampleData.sampleReferral(
-      "X123456",
-      "Harmony Living",
+    referralFactory.createSent(
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
-      referenceNumber = "HAS71263",
+      referenceNumber = "JS8762AC",
     ),
     "http://localhost:8080/sent-referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
   )
@@ -55,8 +54,9 @@ class NotifyServiceTest {
   fun `referral sent event generates valid url and sends an email`() {
     notifyService(true).onApplicationEvent(referralSentEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
-    verify(notificationClient).sendEmail(eq("templateID"), eq("tom.myers@digital.justice.gov.uk"), personalisationCaptor.capture(), isNull())
-    assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
+    verify(notificationClient).sendEmail(eq("referralSentTemplateID"), eq("harmony@example.com"), personalisationCaptor.capture(), isNull())
+    assertThat(personalisationCaptor.firstValue["organisationName"]).isEqualTo("Harmony Living")
+    assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS8762AC")
     assertThat(personalisationCaptor.firstValue["referralUrl"]).isEqualTo("http://example.com/referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080")
   }
 
