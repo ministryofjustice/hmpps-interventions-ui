@@ -4,7 +4,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.NPSRegion
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegion
 
-class PCCRegionFactory(em: TestEntityManager) : EntityFactory(em) {
+class PCCRegionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val npsRegionFactory = NPSRegionFactory(em)
 
   fun create(

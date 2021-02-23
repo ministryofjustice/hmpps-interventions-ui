@@ -2,18 +2,28 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -23,6 +33,8 @@ internal class ReferralControllerTest {
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val referralController = ReferralController(referralService, serviceCategoryService, hmppsAuthService)
   private val tokenFactory = JwtTokenFactory()
+  private val referralFactory = ReferralFactory()
+  private val userFactory = AuthUserFactory()
 
   @Test
   fun `createDraftReferral handles EntityNotFound exceptions from InterventionsService`() {
@@ -45,5 +57,37 @@ internal class ReferralControllerTest {
     assertThrows<AccessDeniedException> {
       referralController.getSentReferrals(tokenFactory.create())
     }
+  }
+
+  @Test
+  fun `assignSentReferral returns 404 if referral does not exist`() {
+    whenever(referralService.getSentReferral(any())).thenReturn(null)
+    val e = assertThrows<ResponseStatusException> {
+      referralController.assignSentReferral(
+        UUID.randomUUID(),
+        ReferralAssignmentDTO(AuthUserDTO("username", "authSource", "userId")),
+        tokenFactory.create()
+      )
+    }
+    assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
+  }
+
+  @Test
+  fun `assignSentReferral uses incoming jwt for 'assignedBy' argument, and request body for 'assignedTo'`() {
+    val referral = referralFactory.createSent()
+    val assignedToUser = userFactory.create(id = "to")
+    whenever(referralService.getSentReferral(any())).thenReturn(referral)
+    whenever(referralService.assignSentReferral(any(), any(), any())).thenReturn(referral)
+    referralController.assignSentReferral(
+      UUID.randomUUID(),
+      ReferralAssignmentDTO(AuthUserDTO.from(assignedToUser)),
+      tokenFactory.create(userID = "by")
+    )
+
+    val toCaptor = argumentCaptor<AuthUser>()
+    val byCaptor = argumentCaptor<AuthUser>()
+    verify(referralService).assignSentReferral(eq(referral), byCaptor.capture(), toCaptor.capture())
+    assertThat(toCaptor.firstValue.id).isEqualTo("to")
+    assertThat(byCaptor.firstValue.id).isEqualTo("by")
   }
 }

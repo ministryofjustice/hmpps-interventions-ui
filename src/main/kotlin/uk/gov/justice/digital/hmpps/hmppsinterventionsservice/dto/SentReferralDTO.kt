@@ -9,6 +9,7 @@ class SentReferralDTO(
   val sentAt: OffsetDateTime,
   val sentBy: AuthUserDTO,
   val referenceNumber: String,
+  val assignedTo: AuthUserDTO?,
   val referral: DraftReferralDTO,
 ) {
   companion object {
@@ -18,6 +19,7 @@ class SentReferralDTO(
         sentAt = referral.sentAt!!,
         sentBy = AuthUserDTO.from(referral.sentBy!!),
         referenceNumber = referral.referenceNumber!!,
+        assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),
       )
     }

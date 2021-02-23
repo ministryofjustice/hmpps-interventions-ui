@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class ActionPlanFactory(em: TestEntityManager) : EntityFactory(em) {
+class ActionPlanFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
   private val referralFactory = ReferralFactory(em)
 
@@ -25,7 +25,7 @@ class ActionPlanFactory(em: TestEntityManager) : EntityFactory(em) {
     return save(
       ActionPlan(
         id = id ?: UUID.randomUUID(),
-        referral = referral ?: referralFactory.create(),
+        referral = referral ?: referralFactory.createSent(),
         numberOfSessions = numberOfSessions,
         createdAt = createdAt ?: OffsetDateTime.now(),
         createdBy = createdBy ?: authUserFactory.create(),

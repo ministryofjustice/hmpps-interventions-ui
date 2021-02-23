@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class ServiceCategoryFactory(em: TestEntityManager) : EntityFactory(em) {
+class ServiceCategoryFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   fun create(
     id: UUID? = null,
     name: String = "accommodation",

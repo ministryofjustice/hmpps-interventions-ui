@@ -36,6 +36,7 @@ class PactTest {
   // be able to completely decouple from the seed data.
   private val accommodationInterventionID = UUID.fromString("98a42c61-c30f-4beb-8062-04033c376e2d")
   private val deliusUser = AuthUser("8751622134", "delius", "BERNARD.BEAKS")
+  private val authUser = AuthUser("555224b3-865c-4b56-97dd-c3e817592ba3", "auth", "UserABC")
 
   @BeforeEach
   fun setup() {
@@ -48,6 +49,38 @@ class PactTest {
   @ExtendWith(PactVerificationSpringProvider::class)
   fun pactVerificationTestTemplate(context: PactVerificationContext) {
     context.verifyInteraction()
+  }
+
+  @State("There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned")
+  fun `create the assigned referral`() {
+    val referral = referralService.createDraftReferral(
+      user = deliusUser,
+      crn = "X123456",
+      interventionId = accommodationInterventionID,
+      UUID.fromString("2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e"),
+    )
+    val timestamp = OffsetDateTime.now()
+    referral.referenceNumber = "XS1234AC"
+    referral.sentBy = deliusUser
+    referral.sentAt = timestamp
+    referral.assignedAt = timestamp
+    referral.assignedBy = authUser
+    referral.assignedTo = authUser
+    referralRepository.save(referral)
+  }
+
+  @State("There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf")
+  fun `create the sent referral`() {
+    val referral = referralService.createDraftReferral(
+      user = deliusUser,
+      crn = "X123456",
+      interventionId = accommodationInterventionID,
+      UUID.fromString("400be4c6-1aa4-4f52-ae86-cbd5d23309bf"),
+    )
+    referral.referenceNumber = "XS1234AC"
+    referral.sentBy = deliusUser
+    referral.sentAt = OffsetDateTime.now()
+    referralRepository.save(referral)
   }
 
   @State("an intervention has been selected and a draft referral can be created")

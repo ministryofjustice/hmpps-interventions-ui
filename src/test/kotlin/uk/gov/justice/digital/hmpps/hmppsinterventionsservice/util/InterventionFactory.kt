@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Interve
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class InterventionFactory(em: TestEntityManager) : EntityFactory(em) {
+class InterventionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory(em)
 
   fun create(
