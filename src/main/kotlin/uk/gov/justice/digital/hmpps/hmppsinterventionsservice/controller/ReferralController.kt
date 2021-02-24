@@ -142,7 +142,6 @@ class ReferralController(
 
   private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
     // note: this does not allow tokens for client_credentials grant types use this API
-
     val userID = authentication.token.getClaimAsString("user_id")
       ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
 

@@ -31,7 +31,9 @@ class ReferralService(
     referral.assignedAt = OffsetDateTime.now()
     referral.assignedBy = authUserRepository.save(assignedBy)
     referral.assignedTo = authUserRepository.save(assignedTo)
-    return referralRepository.save(referral)
+    val assignedReferral = referralRepository.save(referral)
+    eventPublisher.referralAssignedEvent(assignedReferral)
+    return assignedReferral
   }
 
   fun getSentReferral(id: UUID): Referral? {

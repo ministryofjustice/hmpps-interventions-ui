@@ -65,6 +65,8 @@ class SampleData {
       createdBy: AuthUser = AuthUser("123456", "delius", "bernard.beaks"),
       sentAt: OffsetDateTime? = null,
       sentBy: AuthUser? = null,
+      assignedTo: AuthUser? = null,
+      assignedAt: OffsetDateTime = OffsetDateTime.now()
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -75,6 +77,8 @@ class SampleData {
         referenceNumber = referenceNumber,
         sentAt = sentAt,
         sentBy = sentBy,
+        assignedTo = assignedTo,
+        assignedAt = assignedAt,
         intervention = sampleIntervention(
           dynamicFrameworkContract = sampleContract(
             serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
