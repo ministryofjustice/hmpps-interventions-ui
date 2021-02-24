@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 @Service
 class CommunityAPIService(
-  @Value("\${community-api.contact-notification-context.probation-area-code}") private val probationAreaCode: String,
+  @Value("\${community-api.contact-notification-context.provider-code}") private val providerCode: String,
   @Value("\${community-api.contact-notification-context.referral-type}") private val referralType: String,
   @Value("\${community-api.contact-notification-context.staff-code}") private val staffCode: String,
   @Value("\${community-api.contact-notification-context.team-code}") private val teamCode: String,
@@ -33,7 +33,7 @@ class CommunityAPIService(
           .toString()
 
         val body = ReferRequest(
-          probationAreaCode,
+          providerCode,
           referralType,
           staffCode,
           teamCode,
@@ -64,7 +64,7 @@ class CommunityAPIService(
 }
 
 data class ReferRequest(
-  val probationAreaCode: String? = null,
+  val providerCode: String? = null,
   val referralType: String? = null,
   val staffCode: String? = null,
   val teamCode: String? = null,
