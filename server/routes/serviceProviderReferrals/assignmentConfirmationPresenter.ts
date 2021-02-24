@@ -31,7 +31,7 @@ export default class AssignmentConfirmationPresenter {
     },
     {
       key: 'Assigned to',
-      lines: [`${this.assignee.firstName} ${this.assignee.lastName}`],
+      lines: [ReferralDataPresenterUtils.fullName(this.assignee)],
       isList: false,
     },
   ]

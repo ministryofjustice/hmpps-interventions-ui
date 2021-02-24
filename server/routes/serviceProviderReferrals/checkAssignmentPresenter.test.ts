@@ -14,15 +14,56 @@ describe(CheckAssignmentPresenter, () => {
   })
 
   describe('summary', () => {
-    it('returns a summary of the selected caseworker', () => {
-      const user = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
-      const serviceCategory = serviceCategoryFactory.build()
-      const presenter = new CheckAssignmentPresenter('', user, 'john@harmonyliving.org.uk', serviceCategory)
+    describe('when the selected caseworker has a first and last name', () => {
+      it('returns a summary of the selected caseworker with both names', () => {
+        const user = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+        const serviceCategory = serviceCategoryFactory.build()
+        const presenter = new CheckAssignmentPresenter('', user, 'john@harmonyliving.org.uk', serviceCategory)
 
-      expect(presenter.summary).toEqual([
-        { key: 'Name', lines: ['John Smith'], isList: false },
-        { key: 'Email address', lines: ['john@harmonyliving.org.uk'], isList: false },
-      ])
+        expect(presenter.summary).toEqual([
+          { key: 'Name', lines: ['John Smith'], isList: false },
+          { key: 'Email address', lines: ['john@harmonyliving.org.uk'], isList: false },
+        ])
+      })
+    })
+
+    describe('when the selected caseworker has only a first name', () => {
+      it('returns a summary of the selected caseworker with just the first name', () => {
+        const user = hmppsAuthUserFactory.build({ firstName: 'John', lastName: '' })
+        const serviceCategory = serviceCategoryFactory.build()
+        const presenter = new CheckAssignmentPresenter('', user, 'john@harmonyliving.org.uk', serviceCategory)
+
+        expect(presenter.summary).toEqual([
+          { key: 'Name', lines: ['John '], isList: false },
+          { key: 'Email address', lines: ['john@harmonyliving.org.uk'], isList: false },
+        ])
+      })
+    })
+
+    describe('when the selected caseworker has only a last name', () => {
+      it('returns a summary of the selected caseworker with just the last name', () => {
+        const user = hmppsAuthUserFactory.build({ firstName: '', lastName: 'smith' })
+        const serviceCategory = serviceCategoryFactory.build()
+        const presenter = new CheckAssignmentPresenter('', user, 'smith@harmonyliving.org.uk', serviceCategory)
+
+        expect(presenter.summary).toEqual([
+          { key: 'Name', lines: [' Smith'], isList: false },
+          { key: 'Email address', lines: ['smith@harmonyliving.org.uk'], isList: false },
+        ])
+      })
+    })
+
+    describe('when the selected caseworker has neither a first or last name', () => {
+      it('returns a summary with an empty string for the caseworker name', () => {
+        const user = hmppsAuthUserFactory.build({ firstName: '', lastName: '' })
+        const serviceCategory = serviceCategoryFactory.build()
+        const presenter = new CheckAssignmentPresenter('', user, 'unknown@harmonyliving.org.uk', serviceCategory)
+
+        expect(presenter.summary).toEqual([
+          { key: 'Name', lines: [''], isList: false },
+          { key: 'Email address', lines: ['unknown@harmonyliving.org.uk'], isList: false },
+        ])
+      })
     })
   })
 

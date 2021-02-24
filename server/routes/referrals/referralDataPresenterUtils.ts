@@ -1,3 +1,4 @@
+import { AuthUser } from '../../data/hmppsAuthClient'
 import { DraftReferral, ServiceUser } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import utils from '../../utils/utils'
@@ -112,8 +113,8 @@ export default class ReferralDataPresenterUtils {
     return format.format(date)
   }
 
-  static fullName(serviceUser: ServiceUser): string {
-    return utils.convertToTitleCase(`${serviceUser.firstName ?? ''} ${serviceUser.lastName ?? ''}`)
+  static fullName(user: ServiceUser | AuthUser): string {
+    return utils.convertToTitleCase(`${user.firstName ?? ''} ${user.lastName ?? ''}`)
   }
 
   static fullNameSortValue(serviceUser: ServiceUser): string {

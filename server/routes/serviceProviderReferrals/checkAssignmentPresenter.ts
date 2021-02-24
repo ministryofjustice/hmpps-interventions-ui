@@ -1,6 +1,7 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
 import { ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
+import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
 
 export default class CheckAssignmentPresenter {
   constructor(
@@ -15,7 +16,7 @@ export default class CheckAssignmentPresenter {
   }
 
   readonly summary: SummaryListItem[] = [
-    { key: 'Name', lines: [`${this.assignee.firstName} ${this.assignee.lastName}`], isList: false },
+    { key: 'Name', lines: [ReferralDataPresenterUtils.fullName(this.assignee)], isList: false },
     { key: 'Email address', lines: [this.email], isList: false },
   ]
 
