@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SNSService
 
 @Component
 class SNSPublisher(
@@ -18,7 +17,9 @@ class SNSPublisher(
 ) {
   fun publish(event: EventDTO) {
     if (enabled) {
-      return buildRequestAndPublish(event)
+      buildRequestAndPublish(event)
+    } else {
+      log.debug("Event notification was not published due to sns being disabled.")
     }
   }
 
@@ -41,6 +42,6 @@ class SNSPublisher(
   }
 
   companion object {
-    private val log = LoggerFactory.getLogger(SNSService::class.java)
+    private val log = LoggerFactory.getLogger(SNSPublisher::class.java)
   }
 }

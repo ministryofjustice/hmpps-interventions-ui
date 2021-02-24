@@ -32,6 +32,7 @@ class NotifyServiceTest {
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
     ),
+    "http://localhost:8080/sent-referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
   )
 
   private fun notifyService(enabled: Boolean): NotifyService {

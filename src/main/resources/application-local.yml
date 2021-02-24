@@ -4,11 +4,6 @@ notify:
 interventions-ui:
   baseurl: http://localhost:3000
 
-interventions-service:
-  baseurl: http://localhost:8080
-  locations:
-    sent-referral: "/sent-referral/{id}"
-
 community-api:
   baseurl: http://localhost:8081
 #  Temporarily stored in config until it is decided where these values will come from. TeamCode may come from the community api

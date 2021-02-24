@@ -37,6 +37,8 @@ SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 - Run localstack with docker-compose: `docker-compose -f docker-compose-localstack.yml up`
 - Create an SNS topic: `aws --profile localstack --endpoint-url=http://localhost:4566 sns create-topic --name intervention-events-local`
 - Validate the topic ARN matches: `arn:aws:sns:eu-west-2:000000000000:intervention-events-local`, if not modify the ARN in `application-local.yml`
+- Subscribe to topic: `aws --profile localstack --endpoint-url=http://localhost:4566 sns subscribe --topic-arn arn:aws:sns:eu-west-2:000000000000:intervention-events-local --protocol http --notification-endpoint http://host.docker.internal:5000`
+- Output notifications: `npx http-echo-server 5000`
 - Run the application with the following environment var `AWS_SNS_ENABLED=true`
 
 ## Architecture

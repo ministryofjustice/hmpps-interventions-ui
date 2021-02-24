@@ -99,5 +99,6 @@ class CommunityAPIServiceTest {
       serviceProviderName = "Harmony Living",
       sentAt = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 0, ZoneOffset.of("+00:00"))
     ),
+    "http://localhost:8080/sent-referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
   )
 }

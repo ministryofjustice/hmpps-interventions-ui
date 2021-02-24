@@ -25,6 +25,7 @@ internal class SNSServiceTest {
       referenceNumber = "HAS71263",
       sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     ),
+    "http://localhost:8080/sent-referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
   )
 
   private val referralAssignedEvent = ReferralEvent(
@@ -38,11 +39,8 @@ internal class SNSServiceTest {
       assignedTo = AuthUser("abc123", "auth", "abc123"),
       assignedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     ),
+    "http://localhost/sent-referral/{id}"
   )
-
-  private fun snsService(): SNSService {
-    return SNSService(snsPublisher, "http://localhost:8080", "/sent-referral/{id}")
-  }
 
   @Test
   fun `referral sent event publishes message`() {
@@ -52,7 +50,6 @@ internal class SNSServiceTest {
       "A referral has been sent to a Service Provider",
       "http://localhost:8080" + "/sent-referral/${referralSentEvent.referral.id}",
       referralSentEvent.referral.sentAt!!,
-      1,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"))
     )
     verify(snsPublisher).publish(snsEvent)
@@ -63,11 +60,14 @@ internal class SNSServiceTest {
     snsService().onApplicationEvent(referralAssignedEvent)
     val snsEvent = EventDTO(
       "intervention.referral.assigned",
-      "A referral has been assigned to a service user",
+      "A referral has been assigned to a caseworker / service provider",
       "http://localhost:8080" + "/sent-referral/${referralSentEvent.referral.id}",
       referralSentEvent.referral.sentAt!!,
-      1,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"), "assignedTo" to "abc123")
     )
+  }
+
+  private fun snsService(): SNSService {
+    return SNSService(snsPublisher)
   }
 }

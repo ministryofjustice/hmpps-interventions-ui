@@ -7,6 +7,7 @@ data class EventDTO(
   val description: String,
   val detailUrl: String,
   val occurredAt: OffsetDateTime,
-  val version: Int,
   val additionalInformation: Map<String, Any>
-)
+) {
+  val version: Int = 1
+}
