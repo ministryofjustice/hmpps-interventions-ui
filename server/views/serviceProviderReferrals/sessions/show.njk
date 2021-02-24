@@ -6,7 +6,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">Session 1 details</h1>
+      <h1 class="govuk-heading-l">Session details</h1>
       <p class="govuk-body">Add details or amend session details. </p>
       {{ govukSummaryList({
         rows: [
@@ -15,7 +15,7 @@
               text: "Session"
             },
             value: {
-              text: "1"
+              text: "introduction to social support {output objective} "
             },
             actions: {
               items: [
@@ -25,14 +25,6 @@
                   visuallyHiddenText: "name"
                 }
               ]
-            }
-          },
-          {
-            key: {
-              text: "Title"
-            },
-            value: {
-              text: "Mentoring session"
             }
           },
           {
