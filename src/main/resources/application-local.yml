@@ -9,7 +9,7 @@ community-api:
 #  Temporarily stored in config until it is decided where these values will come from. TeamCode may come from the community api
 #  in the future. The rest may be hard coded as generic values.
   contact-notification-context:
-    probation-area-code: A00
+    provider-code: A00
     referral-type: C385
     staff-code: ASPUATU
     team-code: ASPUAT
