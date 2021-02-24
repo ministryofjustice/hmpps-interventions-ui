@@ -62,17 +62,17 @@ export default class StaticContentController {
     {
       path: '/service-provider/session-feedback/show',
       template: 'serviceProviderReferrals/sessions/feedback/show',
-      description: 'IC-1083 (session feedback: show)',
+      description: 'IC-1083 (view submitted feedback)',
     },
     {
       path: '/service-provider/session/show',
       template: 'serviceProviderReferrals/sessions/show',
-      description: 'IC-1087 (session details: show)',
+      description: 'IC-1087 (session details: edit details)',
     },
     {
       path: '/service-provider/session/amend',
       template: 'serviceProviderReferrals/sessions/amend',
-      description: 'IC-1087 (session details: amend)',
+      description: 'IC-1087 (session details: edit details amend)',
     },
     {
       path: '/service-provider/sessions/feedback/confirmation-all-sessions-completed',

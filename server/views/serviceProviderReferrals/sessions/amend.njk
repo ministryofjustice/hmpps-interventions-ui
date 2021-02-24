@@ -13,10 +13,10 @@
   <div class="govuk-grid-row">
      <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">
-       Amend session 5 details
+       Session details
       </h1>
-      <p class="govuk-body">
-       The fields on this form are optional. If you are aware of the details, please add the information for the probation practitioner.
+      <h2 class="govuk-heading-m">
+       Enter details of the session as discussed with Matt.
       </h2>
     <form action="#" method="#">
       {{ govukInput({
@@ -25,8 +25,11 @@
           classes: "govuk-label--s  strong",
           isPageHeading: true
         },
-        id: "event-name",
-        name: "event-name"
+        hint: {
+          text: "Describe what this session will cover (aim to keep under 50 characters)"
+        },
+        id: "session-objective",
+        name: "session-objective"
       }) }}
       {{ govukDateInput({
         id: "date",
@@ -91,7 +94,7 @@
         <fieldset class="govuk-fieldset" role="group" aria-describedby="time-detail">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
           <h1 class="govuk-fieldset__heading">
-            Duration
+            Duration of the session
           </h1></legend>
           <div class="govuk-date-input" id="time-detail">
             <div class="govuk-date-input__item">

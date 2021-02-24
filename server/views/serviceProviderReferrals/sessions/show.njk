@@ -8,7 +8,9 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">Session details</h1>
       <p class="govuk-body">Add details or amend session details. </p>
+      <hr>
       {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
         rows: [
           {
             key: {
@@ -64,6 +66,7 @@
           }
         ]
       }) }}
+      <hr>
     </div>
     <div class="govuk-grid-column-one-third">
       <h2 class="govuk-heading-m">One-third column</h2>
