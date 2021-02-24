@@ -56,14 +56,11 @@ class ActionPlanController(
 
   @PatchMapping("draft-action-plan/{id}")
   fun update(
-    @PathVariable id: String,
-    @RequestBody updateActionPlan: DraftActionPlanDTO,
+    @PathVariable id: UUID,
+    @RequestBody update: DraftActionPlanDTO,
   ): DraftActionPlanDTO {
-    val uuid = parseID(id)
-    val draftActionPlan = actionPlanService.getDraftActionPlan(uuid)
-      ?: throw ResponseStatusException(NOT_FOUND, "draft action plan not found [id=$uuid]")
-
-    val updatedActionPlan = actionPlanService.updateActionPlan(draftActionPlan, updateActionPlan)
+    val actionPlanUpdate = actionPlanMapper.map(update)
+    val updatedActionPlan = actionPlanService.updateActionPlan(actionPlanUpdate)
 
     return DraftActionPlanDTO.from(updatedActionPlan)
   }

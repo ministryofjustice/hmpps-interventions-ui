@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -91,28 +90,13 @@ internal class ActionPlanControllerTest {
 
     val updatedActionPlan = SampleData.sampleActionPlan(numberOfSessions = 5)
 
-    whenever(actionPlanService.getDraftActionPlan(any())).thenReturn(actionPlan)
-    whenever(actionPlanService.updateActionPlan(actionPlan, draftActionPlanDTO)).thenReturn(updatedActionPlan)
+    whenever(actionPlanMapper.map(draftActionPlanDTO)).thenReturn(actionPlan)
+    whenever(actionPlanService.updateActionPlan(actionPlan)).thenReturn(updatedActionPlan)
 
-    val draftActionPlanResponse = actionPlanController.update(UUID.randomUUID().toString(), draftActionPlanDTO)
+    val draftActionPlanResponse = actionPlanController.update(UUID.randomUUID(), draftActionPlanDTO)
 
-    verify(actionPlanService).getDraftActionPlan(any())
-    verify(actionPlanService).updateActionPlan(actionPlan, draftActionPlanDTO)
+    verify(actionPlanMapper).map(draftActionPlanDTO)
+    verify(actionPlanService).updateActionPlan(actionPlan)
     assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
-  }
-
-  @Test
-  fun `no draft action plan found when attempting to update`() {
-    val draftActionPlanId = UUID.randomUUID()
-    val actionPlan = SampleData.sampleActionPlan()
-    val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
-    whenever(actionPlanService.getDraftActionPlan(any())).thenReturn(null)
-
-    val exception = assertThrows(ResponseStatusException::class.java) {
-      actionPlanController.update(draftActionPlanId.toString(), draftActionPlanDTO)
-    }
-
-    assertThat(exception.status).isEqualTo(NOT_FOUND)
-    assertThat(exception.reason).isEqualTo("draft action plan not found [id=$draftActionPlanId]")
   }
 }
