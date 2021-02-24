@@ -1,25 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import software.amazon.awssdk.core.exception.SdkClientException
-import software.amazon.awssdk.services.sns.SnsClient
-import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -46,8 +35,8 @@ internal class SNSServiceTest {
       "Harmony Living",
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
-//      assignedTo = "abc123",
-//      assignedAt = LocalDateTime.of(2021,12,1,1,1,1),
+      assignedTo = AuthUser("abc123", "auth", "abc123"),
+      assignedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     ),
   )
 
@@ -75,7 +64,7 @@ internal class SNSServiceTest {
     val snsEvent = EventDTO(
       "intervention.referral.assigned",
       "A referral has been assigned to a service user",
-      "http://localhost:5001" + "/sent-referral/${referralSentEvent.referral.id}",
+      "http://localhost:8080" + "/sent-referral/${referralSentEvent.referral.id}",
       referralSentEvent.referral.sentAt!!,
       1,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"), "assignedTo" to "abc123")

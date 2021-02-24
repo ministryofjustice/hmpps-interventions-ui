@@ -17,12 +17,12 @@ class SNSPublisher(
   @Value("\${aws.sns.topic.arn}") private val arn: String,
 ) {
   fun publish(event: EventDTO) {
-    if(enabled) {
+    if (enabled) {
       return buildRequestAndPublish(event)
     }
   }
 
-  private fun buildRequestAndPublish(event: EventDTO){
+  private fun buildRequestAndPublish(event: EventDTO) {
     val message = objectMapper.writeValueAsString(event)
     val request = PublishRequest.builder()
       .message(message)
@@ -31,7 +31,7 @@ class SNSPublisher(
     publishRequest(request)
   }
 
-  private fun publishRequest(request: PublishRequest){
+  private fun publishRequest(request: PublishRequest) {
     try {
       val result = client.publish(request)
       log.debug("message sent; messageId: ${result.messageId()}, status: ${result.sdkHttpResponse().statusCode()}")

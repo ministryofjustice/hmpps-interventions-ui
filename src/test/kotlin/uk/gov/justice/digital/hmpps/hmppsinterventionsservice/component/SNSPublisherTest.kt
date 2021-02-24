@@ -19,8 +19,14 @@ class SNSPublisherTest {
   private val snsClient = mock<SnsClient>()
   private val objectMapper = mock<ObjectMapper>()
 
-  val event = EventDTO("intervention.referral.sent", "A referral has been sent to a Service Provider",
-    "http:test/abc", OffsetDateTime.parse("2020-12-04T10:42:43+00:00"), 1, mapOf())
+  val event = EventDTO(
+    "intervention.referral.sent",
+    "A referral has been sent to a Service Provider",
+    "http:test/abc",
+    OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+    1,
+    mapOf()
+  )
 
   private fun snsPublisher(enabled: Boolean): SNSPublisher {
     return SNSPublisher(snsClient, objectMapper, enabled, "arn")

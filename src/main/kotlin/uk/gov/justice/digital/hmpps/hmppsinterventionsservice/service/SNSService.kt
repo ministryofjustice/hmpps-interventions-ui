@@ -29,16 +29,17 @@ class SNSService(
         )
         snsPublisher.publish(snsEvent)
       }
-//      ReferralEventType.ASSIGNED -> {
-//        val snsEvent = EventDTO(
-//          "intervention.referral.assigned",
-//          "A referral has been assigned to a service user",
-//          "http://localhost:5001" + "/sent-referral/${event.referral.id}",
-//          event.referral.assignedAt!!,
-//          1,
-//          mapOf("referral_id" to event.referral.id, "assignedTo" to event.referral.assignedTo))
-//        snsPublisher.publish(snsEvent)
-//      }
+      ReferralEventType.ASSIGNED -> {
+        val snsEvent = EventDTO(
+          "intervention.referral.assigned",
+          "A referral has been assigned to a service user",
+          createDetailUrl(event),
+          event.referral.assignedAt!!,
+          1,
+          mapOf("referral_id" to event.referral.id, "assignedTo" to (event.referral.assignedTo?.userName!!))
+        )
+        snsPublisher.publish(snsEvent)
+      }
     }
   }
 
