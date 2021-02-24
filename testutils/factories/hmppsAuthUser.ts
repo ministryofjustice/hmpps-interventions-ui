@@ -1,10 +1,14 @@
 import { Factory } from 'fishery'
-import { User } from '../../server/data/hmppsAuthClient'
+import { AuthUser } from '../../server/data/hmppsAuthClient'
 
-export default Factory.define<User>(({ sequence }) => ({
-  username: `AUTH_ADM_${sequence}`,
-  active: true,
-  name: `Auth Adm ${sequence}`,
-  authSource: 'auth',
+export default Factory.define<AuthUser>(({ sequence }) => ({
   userId: sequence.toString(),
+  username: `AUTH_ADM_${sequence}`,
+  email: 'auth.user@someagency.justice.gov.uk',
+  firstName: 'Auth',
+  lastName: `Adm ${sequence}`,
+  locked: false,
+  enabled: true,
+  verified: true,
+  lastLoggedIn: '01/01/2001',
 }))

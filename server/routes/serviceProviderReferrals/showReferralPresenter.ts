@@ -1,4 +1,4 @@
-import { User } from '../../data/hmppsAuthClient'
+import { AuthUser } from '../../data/hmppsAuthClient'
 import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
@@ -13,7 +13,7 @@ export default class ShowReferralPresenter {
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly assignee: User | null
+    private readonly assignee: AuthUser | null
   ) {}
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
@@ -26,7 +26,7 @@ export default class ShowReferralPresenter {
             this.sentReferral.referral.serviceUser
           )}`,
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
-    assignedTo: this.assignee?.name ?? null,
+    assignedTo: this.assigneeFullNameOrUnassigned,
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [
@@ -170,5 +170,13 @@ export default class ShowReferralPresenter {
     }
 
     return notFoundMessage
+  }
+
+  private get assigneeFullNameOrUnassigned(): string | null {
+    if (!this.assignee) {
+      return null
+    }
+
+    return `${this.assignee.firstName} ${this.assignee.lastName}`
   }
 }

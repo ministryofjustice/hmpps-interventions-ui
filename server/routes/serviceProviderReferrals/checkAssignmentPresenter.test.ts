@@ -15,7 +15,7 @@ describe(CheckAssignmentPresenter, () => {
 
   describe('summary', () => {
     it('returns a summary of the selected caseworker', () => {
-      const user = hmppsAuthUserFactory.build({ name: 'John Smith' })
+      const user = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
       const serviceCategory = serviceCategoryFactory.build()
       const presenter = new CheckAssignmentPresenter('', user, 'john@harmonyliving.org.uk', serviceCategory)
 

@@ -124,7 +124,7 @@ describe('GET /service-provider/referrals/:id', () => {
       const sentReferral = sentReferralFactory.assigned().build()
       const deliusUser = deliusUserFactory.build()
       const serviceUser = deliusServiceUser.build()
-      const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
@@ -147,7 +147,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
   it('displays the name of the selected caseworker', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
@@ -171,7 +171,7 @@ describe('POST /service-provider/referrals/:id/assignment', () => {
     const referral = sentReferralFactory.build({
       referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
     })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith', username: 'john.smith' })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
@@ -203,7 +203,7 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
       },
       assignedTo: { username: 'john.smith' },
     })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith', username: 'john.smith' })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)

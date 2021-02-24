@@ -22,7 +22,7 @@ describe(AssignmentConfirmationPresenter, () => {
         referral: { serviceUser: { firstName: 'Johnny', lastName: 'Davis' } },
       })
       const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-      const assignee = hmppsAuthUserFactory.build({ name: 'Bernard Beaks' })
+      const assignee = hmppsAuthUserFactory.build({ firstName: 'Bernard', lastName: 'Beaks' })
       const presenter = new AssignmentConfirmationPresenter(sentReferral, serviceCategory, assignee)
 
       expect(presenter.summary).toEqual([
