@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
@@ -13,14 +14,17 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import software.amazon.awssdk.core.exception.SdkClientException
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 internal class SNSServiceTest {
-  private val snsClient = mock<SnsClient>()
+  private val snsPublisher = mock<SNSPublisher>()
 
   private val referralSentEvent = ReferralEvent(
     "source",
@@ -30,6 +34,7 @@ internal class SNSServiceTest {
       "Harmony Living",
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
+      sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     ),
   )
 
@@ -46,53 +51,34 @@ internal class SNSServiceTest {
     ),
   )
 
-  private fun snsService(enabled: Boolean): SNSService {
-    return SNSService(snsClient, ObjectMapper(), enabled, "arn")
+  private fun snsService(): SNSService {
+    return SNSService(snsPublisher, "http://localhost:8080", "/sent-referral/{id}")
   }
 
   @Test
-  fun `referral sent event publishes message with valid json`() {
-    snsService(true).onApplicationEvent(referralSentEvent)
-
-    val requestCaptor = argumentCaptor<PublishRequest>()
-    verify(snsClient).publish(requestCaptor.capture())
-    assertThat(requestCaptor.firstValue.message()).isEqualTo(
-      """
-      {"eventType":"intervention.referral.sent","description":"A referral has been sent to a Service Provider","referral_id":"68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"}
-      """.trimIndent()
+  fun `referral sent event publishes message`() {
+    snsService().onApplicationEvent(referralSentEvent)
+    val snsEvent = EventDTO(
+      "intervention.referral.sent",
+      "A referral has been sent to a Service Provider",
+      "http://localhost:8080" + "/sent-referral/${referralSentEvent.referral.id}",
+      referralSentEvent.referral.sentAt!!,
+      1,
+      mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"))
     )
-  }
-
-  @Test
-  fun `referral sent event does not publish when service is disabled`() {
-    snsService(false).onApplicationEvent(referralSentEvent)
-    verifyZeroInteractions(snsClient)
-  }
-
-  @Test
-  fun `test client errors are swallowed`() {
-    whenever(snsClient.publish(any<PublishRequest>())).thenThrow(SdkClientException::class.java)
-    assertDoesNotThrow { snsService(true).onApplicationEvent(referralSentEvent) }
+    verify(snsPublisher).publish(snsEvent)
   }
 
   @Test
   fun `referral assigned event publishes message with valid json`() {
-    snsService(true).onApplicationEvent(referralAssignedEvent)
-
-    val requestCaptor = argumentCaptor<PublishRequest>()
-    verify(snsClient).publish(requestCaptor.capture())
-    assertThat(requestCaptor.firstValue.message()).isEqualTo(
-      """
-      {"eventType":"intervention.referral.assigned","description":"A referral has been assigned to a service user",
-      "referral_id":"68df9f6c-3fcb-4ec6-8fcf-96551cd9b080", "assigned_to": "abc123', "assigned_at": "2021-12-01T01:01:01"}
-      """.trimIndent()
+    snsService().onApplicationEvent(referralAssignedEvent)
+    val snsEvent = EventDTO(
+      "intervention.referral.assigned",
+      "A referral has been assigned to a service user",
+      "http://localhost:5001" + "/sent-referral/${referralSentEvent.referral.id}",
+      referralSentEvent.referral.sentAt!!,
+      1,
+      mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"), "assignedTo" to "abc123")
     )
   }
-
-  @Test
-  fun `referral assigned event does not publish when service is disabled`() {
-    snsService(false).onApplicationEvent(referralAssignedEvent)
-    verifyZeroInteractions(snsClient)
-  }
-
 }
