@@ -30,7 +30,7 @@
         {% endset -%}
         {%  set noshowTagHtml %}
         {{govukTag({
-          text: "NO SHOW",
+          text: "Failure to attend",
           classes: "govuk-tag--purple"
         })}}
         {% endset -%}
@@ -71,11 +71,10 @@
               rows: [
                 [
                   {
-                    html: '<span>Introduction to independent living and healthcare</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Introduction to independent living and healthcare'
                   },
                   {
-                    html: '20 Dec 2021 <br> 5:00pm to 6:00pm'
+                    text: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: completedTagHtml
@@ -86,11 +85,10 @@
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
-                    html: '20 Dec 2021 <br> 5:00pm to 6:00pm'
+                    text: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: draftTagHtml
@@ -101,8 +99,7 @@
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
                     html: '20 Dec 2021 5:00pm to 6:00pm'
@@ -116,26 +113,10 @@
                 ],
                 [
                   {
-                    html: '<span>Childcare and personal development</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Childcare and personal development'
                   },
                   {
-                    html: '20 Dec 2021 5:00pm to 6:00pm'
-                  },
-                  {
-                    html: awaitingfeedbackTagHtml
-                  },
-                  {
-                    html: '<a class="govuk-link" href="#">Give feedback</a>'
-                  }
-                ],
-                [
-                  {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
-                  },
-                  {
-                    html: '20 Dec 2021 5:00pm to 6:00pm'
+                    text: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: awaitingfeedbackTagHtml
@@ -146,38 +127,49 @@
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
-                    html: '20 Dec 2021 5:00pm to 6:00pm'
+                    text: '20 Dec 2021 5:00pm to 6:00pm'
+                  },
+                  {
+                    html: awaitingfeedbackTagHtml
+                  },
+                  {
+                    html: '<a class="govuk-link" href="#">Give feedback</a>'
+                  }
+                ],
+                [
+                  {
+                    text: 'Session'
+                  },
+                  {
+                    text: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: noshowTagHtml
                   },
                   {
-                    html: '<a class="govuk-link" href="#">View feedback</a>'
+                    html: '<a class="govuk-link" href="#">Reschedule session</a>'
                   }
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
-                    html: '20 Dec 2021 5:00pm to 6:00pm'
+                    text: '20 Dec 2021 5:00pm to 6:00pm'
                   },
                   {
                     html: activeTagHtml
                   },
                   {
-                    text: ""
+                    html: '<a class="govuk-link" href="#">Edit session details</a>'
                   }
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
                     html: '20 Dec 2021 5:00pm to 6:00pm'
@@ -186,13 +178,12 @@
                     html: scheduledTagHtml
                   },
                   {
-                    text: ""
+                    html: '<a class="govuk-link" href="#">Edit session details</a>'
                   }
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
                     html: '20 Dec 2021 5:00pm to 6:00pm'
@@ -201,13 +192,12 @@
                     html: inactiveTagHtml
                   },
                   {
-                    text: ""
+                    html: '<a class="govuk-link" href="#">Edit session details</a>'
                   }
                 ],
                 [
                   {
-                    html: '<span>Session</span>
-                    <span><br><a class="govuk-link" href="http://localhost:3000/service-provider/session/show">Edit details</a></span>'
+                    text: 'Session'
                   },
                   {
                     html: '20 Dec 2021 5:00pm to 6:00pm'
@@ -216,7 +206,7 @@
                     html: inactiveTagHtml
                   },
                   {
-                    text:""
+                    html: '<a class="govuk-link" href="#">Edit session details</a>'
                   }
                 ]
               ]
