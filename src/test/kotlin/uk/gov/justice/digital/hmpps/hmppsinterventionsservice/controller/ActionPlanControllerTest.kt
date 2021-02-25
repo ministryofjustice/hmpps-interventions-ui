@@ -4,11 +4,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
-import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.LocationMapper
@@ -69,20 +66,6 @@ internal class ActionPlanControllerTest {
   }
 
   @Test
-  fun `throws exception id action plan does not exist`() {
-    val actionPlanId = UUID.randomUUID()
-
-    whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(null)
-
-    val exception = assertThrows(ResponseStatusException::class.java) {
-      actionPlanController.getDraftActionPlan(actionPlanId)
-    }
-
-    assertThat(exception.status).isEqualTo(NOT_FOUND)
-    assertThat(exception.reason).isEqualTo("draft action plan not found [id=$actionPlanId]")
-  }
-
-  @Test
   fun `successfully update a draft action plan`() {
     val draftActionPlanId = UUID.randomUUID()
     val actionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
@@ -90,12 +73,12 @@ internal class ActionPlanControllerTest {
 
     val updatedActionPlan = SampleData.sampleActionPlan(numberOfSessions = 5)
 
-    whenever(actionPlanMapper.map(draftActionPlanDTO)).thenReturn(actionPlan)
+    whenever(actionPlanMapper.map(draftActionPlanId, draftActionPlanDTO)).thenReturn(actionPlan)
     whenever(actionPlanService.updateActionPlan(actionPlan)).thenReturn(updatedActionPlan)
 
-    val draftActionPlanResponse = actionPlanController.update(UUID.randomUUID(), draftActionPlanDTO)
+    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, draftActionPlanDTO)
 
-    verify(actionPlanMapper).map(draftActionPlanDTO)
+    verify(actionPlanMapper).map(draftActionPlanId, draftActionPlanDTO)
     verify(actionPlanService).updateActionPlan(actionPlan)
     assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
   }

@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import java.util.UUID
 
 @Component
 class ActionPlanMapper(
@@ -30,9 +31,9 @@ class ActionPlanMapper(
     }
   }
 
-  fun map(updateActionPlan: DraftActionPlanDTO): ActionPlan {
+  fun map(actionPlanId: UUID, updateActionPlan: DraftActionPlanDTO): ActionPlan {
     return ActionPlan(
-      id = updateActionPlan.id,
+      id = actionPlanId,
       numberOfSessions = updateActionPlan.numberOfSessions,
       createdBy = AuthUser(
         id = updateActionPlan.createdBy.userId,

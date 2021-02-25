@@ -53,7 +53,7 @@ internal class ActionPlanMapperTest {
     whenever(desiredOutcomeRepository.findById(any())).thenReturn(Optional.of(desiredOutcome))
     whenever(referralRepository.findById(any())).thenReturn(Optional.of(referral))
 
-    val mappedActionPlan = actionPlanMapper.map(actionPlanDto)
+    val mappedActionPlan = actionPlanMapper.map(draftActionPlanId, actionPlanDto)
 
     assertThat(mappedActionPlan.referral).isEqualTo(referral)
     assertThat(mappedActionPlan.id).isEqualTo(actionPlanDto.id)
