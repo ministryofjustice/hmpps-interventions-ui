@@ -1,0 +1,78 @@
+{% extends "../../../partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Complete session feedback</h1>
+      {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Session objective"
+            },
+            value: {
+              text: "introduction to social support"
+            }
+          },
+          {
+            key: {
+              text: "Date"
+            },
+            value: {
+              text: "20 December 2020"
+            }
+          },
+          {
+            key: {
+              text: "Time"
+            },
+            value: {
+              text: "2:00pm"
+            }
+          },
+          {
+            key: {
+              text: "Method"
+            },
+            value: {
+              text: "In-person meeting"
+            }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              html: '96 Ilford Road<br>
+                     Romans, worcestershire <br>
+                     RX3 9IG<br>
+                     United Kingdom'
+            }
+          }
+        ]
+      }) }}
+         <p class="govuk-body">Session feedback form is awaiting to be completed before it can be submitted to the probation practitioner.  </p>
+         <p class="govuk-body">Continue and complete session feedback form </p>
+          <form class="" action="#" method="#">
+            {{ govukButton({
+              text: "Edit draft",
+              href: "#",
+              classes: "govuk-!-margin-top-2 govuk-!-margin-bottom-8",
+              isStartButton: true
+            }) }}
+          </form>
+    </div>
+    {# ---- #}
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">One-third column</h2>
+      <p class="govuk-body">This is a paragraph inside a one-third wide column</p>
+    </div>
+  </div>
+
+{% endblock %}
