@@ -10,6 +10,11 @@ export default class StaticContentController {
       description: 'IC-1052 (session progress)',
     },
     {
+      path: '/service-provider/session-progress-all-sessions-completed',
+      template: 'serviceProviderReferrals/sessionProgressAllSessionsCompleted',
+      description: 'IC-1078 (session progress - all sessions completed, with notification banner)',
+    },
+    {
       path: '/service-provider/session-feedback/attendance',
       template: 'serviceProviderReferrals/sessions/feedback/attendance',
       description: 'IC-1094 (session feedback: attendance)',
@@ -73,11 +78,6 @@ export default class StaticContentController {
       path: '/service-provider/sessions/feedback/confirmation-all-sessions-completed',
       template: 'serviceProviderReferrals/sessions/feedback/confirmationAllSessionsCompleted',
       description: 'IC-1177 (session feedback: confirmation - all sessions completed)',
-    },
-    {
-      path: '/service-provider/session-progress-all-sessions-completed',
-      template: 'serviceProviderReferrals/sessionProgressAllSessionsCompleted',
-      description: 'IC-1078 (session progress - all sessions completed, with notification banner)',
     },
     {
       path: '/service-provider/layout-all-components',
