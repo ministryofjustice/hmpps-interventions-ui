@@ -2,8 +2,10 @@
   .govuk-link {
     font-weight: normal;
   }
+}
 
-  .govuk-tag--grey {
-    white-space: nowrap;
-  }
+hr {
+  background-color: govuk-colour('mid-grey');
+  border: 0;
+  height: 1px;
 }
