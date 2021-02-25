@@ -1,19 +1,22 @@
 .govuk-review__list {
-  .right {
-    float: left;
-
-    @include govuk-media-query($until: tablet) {
-      float: right;
-    }
-  }
-
-  .govuk-grid-column-three-quarters,
-  .govuk-grid-column-two-thirds,
-  .govuk-grid-column-full,
-  .govuk-grid-column-two-thirds {
+  &.govuk-grid-column-full {
     padding: 0;
   }
+  .change__right {
+    @include govuk-media-query($from: tablet) {
+      float: right;
+    }
 
+    @include govuk-media-query($from: mobile) {
+      @include govuk-responsive-margin(6, 'bottom');
+      display: block;
+    }
+  }
+  .govuk-grid-column-two-thirds,
+  .govuk-grid-column-full,
+  .govuk-grid-column-one-third, {
+    padding: 0;
+  }
   .govuk-summary-list__key {
     width: 100%;
   }
