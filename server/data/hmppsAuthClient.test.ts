@@ -54,34 +54,61 @@ describe('hmppsAuthClient', () => {
   })
 
   describe('getUserByEmailAddress', () => {
-    it('should return data from api', async () => {
-      const response = {
-        username: 'AUTH_ADM',
-        active: true,
-        name: 'Auth Adm',
-        authSource: 'auth',
-        userId: '5105a589-75b3-4ca0-9433-b96228c1c8f3',
-      }
+    describe('when a matching user is found with the requested email address', () => {
+      it('should return the first matching user from the API response', async () => {
+        const response = [
+          {
+            userId: '91229A16-B5F4-4784-942E-A484A97AC865',
+            username: 'authuser',
+            email: 'user@example.com',
+            firstName: 'Auth',
+            lastName: 'User',
+            locked: true,
+            enabled: false,
+            verified: false,
+            lastLoggedIn: '01/01/2001',
+          },
+        ]
 
-      fakeHmppsAuthApi
-        .get('/api/authuser')
-        .query({ email: 'user@example.com' })
-        .matchHeader('authorization', `Bearer ${token.access_token}`)
-        .reply(200, response)
+        fakeHmppsAuthApi
+          .get('/api/authuser')
+          .query({ email: 'user@example.com' })
+          .matchHeader('authorization', `Bearer ${token.access_token}`)
+          .reply(200, response)
 
-      const output = await hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')
-      expect(output).toEqual(response)
+        const output = await hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')
+        expect(output).toEqual(response[0])
+      })
+    })
+
+    describe('when no user is found with the requested email address', () => {
+      it('should raise an error', async () => {
+        const noUserResponse = {}
+        fakeHmppsAuthApi
+          .get('/api/authuser')
+          .query({ email: 'user@example.com' })
+          .matchHeader('authorization', `Bearer ${token.access_token}`)
+          .reply(204, noUserResponse)
+
+        expect(hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
+          'Email not found'
+        )
+      })
     })
   })
 
   describe('getUserByUsername', () => {
-    it('should return data from api', async () => {
+    it('should return the matching user from the API response', async () => {
       const response = {
-        username: 'AUTH_ADM',
-        active: true,
-        name: 'Auth Adm',
-        authSource: 'auth',
-        userId: '5105a589-75b3-4ca0-9433-b96228c1c8f3',
+        userId: '91229A16-B5F4-4784-942E-A484A97AC865',
+        username: 'authuser',
+        email: 'user@example.com',
+        firstName: 'Auth',
+        lastName: 'User',
+        locked: true,
+        enabled: false,
+        verified: false,
+        lastLoggedIn: '01/01/2001',
       }
 
       fakeHmppsAuthApi

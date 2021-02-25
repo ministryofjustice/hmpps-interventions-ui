@@ -1,4 +1,4 @@
-import superagent from 'superagent'
+import superagent, { Response } from 'superagent'
 import querystring from 'querystring'
 import redis from 'redis'
 import { promisify } from 'util'
@@ -44,12 +44,24 @@ function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.R
     .timeout(timeoutSpec)
 }
 
-export interface User {
+interface User {
   name: string
   userId: string
   username: string
   authSource: string
   active: boolean
+}
+
+export interface AuthUser {
+  userId: string
+  username: string
+  email: string
+  firstName: string
+  lastName: string
+  locked: boolean
+  enabled: boolean
+  verified: boolean
+  lastLoggedIn: string
 }
 
 interface UserRole {
@@ -71,14 +83,27 @@ export default class HmppsAuthClient {
     return this.restClient(token).get({ path: '/api/user/me' }) as Promise<User>
   }
 
-  getUserByEmailAddress(token: string, emailAddress: string): Promise<User> {
-    logger.info(`Getting user detail by email address: calling HMPPS Auth`)
-    return this.restClient(token).get({ path: `/api/authuser`, query: { email: emailAddress } }) as Promise<User>
+  async getUserByEmailAddress(token: string, emailAddress: string): Promise<AuthUser> {
+    logger.info(`Getting auth user detail by email address: calling HMPPS Auth`)
+    const res: Response = (await this.restClient(token).get({
+      path: `/api/authuser`,
+      query: { email: emailAddress },
+      raw: true,
+    })) as Response
+
+    if (res.status === 204) {
+      return Promise.reject(new Error('Email not found'))
+    }
+
+    const authUsers = res.body as AuthUser[]
+    return Promise.resolve(authUsers[0])
   }
 
-  getUserByUsername(token: string, username: string): Promise<User> {
+  getUserByUsername(token: string, username: string): Promise<AuthUser> {
     logger.info(`Getting user detail by username: calling HMPPS Auth`)
-    return this.restClient(token).get({ path: `/api/authuser/${username}` }) as Promise<User>
+    return this.restClient(token).get({
+      path: `/api/authuser/${username}`,
+    }) as Promise<AuthUser>
   }
 
   getUserRoles(token: string): Promise<string[]> {

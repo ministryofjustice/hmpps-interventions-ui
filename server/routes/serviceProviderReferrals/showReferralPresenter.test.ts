@@ -72,7 +72,7 @@ describe(ShowReferralPresenter, () => {
       ],
     },
   })
-  const hmppsAuthUser = hmppsAuthUserFactory.build({ name: 'John Smith' })
+  const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the check assignment page', () => {
