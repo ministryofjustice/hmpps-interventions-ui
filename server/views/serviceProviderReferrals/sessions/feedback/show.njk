@@ -7,9 +7,59 @@
 
 {% block content %}
   <div class="govuk-grid-row ">
-    <div class="govuk-grid-column-two-thirds govuk-review__list">
-      <h1 class="govuk-heading-l">Session 2: Feedback</h1>
-        <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Session feedback</h1>
+      {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Session objective"
+            },
+            value: {
+              text: "introduction to social support"
+            }
+          },
+          {
+            key: {
+              text: "Date"
+            },
+            value: {
+              text: "20 December 2020"
+            }
+          },
+          {
+            key: {
+              text: "Time"
+            },
+            value: {
+              text: "2:00pm"
+            }
+          },
+          {
+            key: {
+              text: "Method"
+            },
+            value: {
+              text: "In-person meeting"
+            }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              html: '96 Ilford Road<br>
+                     Romans, worcestershire <br>
+                     RX3 9IG<br>
+                     United Kingdom'
+            }
+          }
+        ]
+      }) }}
+      <div class="govuk-grid-column-full govuk-review__list">
+        <hr>
+        <div class="govuk-grid-column-full govuk-!-padding-top-6">
           <div class="govuk-grid-column-two-thirds">
             <h2 class="govuk-heading-m">Did the Matt attend session 2?
             </h2>
@@ -89,6 +139,7 @@
             </p>
           </div>
       </div>
+    </div>
       {# ---- #}
     </div>
     {# ---- #}
