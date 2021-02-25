@@ -163,6 +163,20 @@ workflows:
             - vulnerability_scan_and_monitor
           context:
             - moj-slack-notifications
+      - approve_preprod:
+          type: approval
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
+          retrieve_secrets: "none"
+          slack_notification: true
+          slack_channel_name: "interventions-dev-notifications"
+          requires:
+            - approve_preprod
+          context:
+            - moj-slack-notifications
 
   nightly:
     triggers:

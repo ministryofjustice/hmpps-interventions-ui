@@ -17,3 +17,9 @@ ingress:
 env:
   JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
+  INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk"
+  COMMUNITYAPI_BASEURL: "https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_PROVIDERCODE: "CRS"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_REFERRALTYPE: "CRS01"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_STAFFCODE: "CRSUATU"
+  COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_TEAMCODE: "CRSUAT"
