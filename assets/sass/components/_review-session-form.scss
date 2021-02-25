@@ -2,6 +2,7 @@
   &.govuk-grid-column-full {
     padding: 0;
   }
+  
   .change__right {
     @include govuk-media-query($from: tablet) {
       float: right;
@@ -12,11 +13,13 @@
       display: block;
     }
   }
+
   .govuk-grid-column-two-thirds,
   .govuk-grid-column-full,
   .govuk-grid-column-one-third, {
     padding: 0;
   }
+
   .govuk-summary-list__key {
     width: 100%;
   }

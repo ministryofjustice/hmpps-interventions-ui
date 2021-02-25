@@ -3,8 +3,9 @@
     font-weight: normal;
   }
 }
+
 hr {
-  height: 1px;
   background-color: govuk-colour('mid-grey');
-  border: none;
+  border: 0;
+  height: 1px;
 }
