@@ -3,6 +3,7 @@ import InterventionsServiceMocks from './mockApis/interventionsService'
 import sentReferralFactory from './testutils/factories/sentReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 import interventionFactory from './testutils/factories/intervention'
+import deliusUserFactory from './testutils/factories/deliusUser'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -77,12 +78,27 @@ export default async function setUpMocks(): Promise<void> {
     })
   })
 
+  const deliusUser = deliusUserFactory.build({
+    username: 'AUTH_ADM',
+    email: 'auth_test@digital.justice.gov.uk',
+    userId: '10ea6b98-88ab-45c5-8917-f5ca1814b787',
+  })
+
+  const assignedSentReferrals = sentReferrals.map(referral => {
+    return { ...referral, assignedTo: deliusUser }
+  })
+
   await Promise.all([
     interventionsMocks.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory),
     interventionsMocks.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory),
     Promise.all(sentReferrals.map(referral => interventionsMocks.stubGetSentReferral(referral.id, referral))),
-    interventionsMocks.stubGetSentReferrals(sentReferrals),
+    interventionsMocks.stubGetSentReferrals(assignedSentReferrals),
     interventionsMocks.stubGetInterventions(interventions),
-    interventionsMocks.stubGetIntervention(interventions[0].id, interventions[0]),
+    // Adding mocks for assigning locally is a bit tricky - it's very hard to mock a real assignment here due to the state transition.
+    // I've opted to just mark these as assigned to unblock the next story for now.
+    assignedSentReferrals.forEach(referral => {
+      interventionsMocks.stubAssignSentReferral(referral.id, referral)
+      interventionsMocks.stubGetSentReferral(referral.id, referral)
+    }),
   ])
 }
