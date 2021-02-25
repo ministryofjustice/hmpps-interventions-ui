@@ -83,7 +83,7 @@ export default class HmppsAuthClient {
     return this.restClient(token).get({ path: '/api/user/me' }) as Promise<User>
   }
 
-  async getUserByEmailAddress(token: string, emailAddress: string): Promise<AuthUser> {
+  async getSPUserByEmailAddress(token: string, emailAddress: string): Promise<AuthUser> {
     logger.info(`Getting auth user detail by email address: calling HMPPS Auth`)
     const res: Response = (await this.restClient(token).get({
       path: `/api/authuser`,
@@ -99,7 +99,7 @@ export default class HmppsAuthClient {
     return Promise.resolve(authUsers[0])
   }
 
-  getUserByUsername(token: string, username: string): Promise<AuthUser> {
+  getSPUserByUsername(token: string, username: string): Promise<AuthUser> {
     logger.info(`Getting user detail by username: calling HMPPS Auth`)
     return this.restClient(token).get({
       path: `/api/authuser/${username}`,

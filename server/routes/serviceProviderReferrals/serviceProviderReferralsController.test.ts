@@ -130,7 +130,7 @@ describe('GET /service-provider/referrals/:id', () => {
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
       communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
-      hmppsAuthClient.getUserByUsername.mockResolvedValue(hmppsAuthUser)
+      hmppsAuthClient.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}`)
@@ -151,7 +151,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthClient.getUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthClient.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${referral.id}/assignment/check`)
@@ -189,7 +189,7 @@ describe('POST /service-provider/referrals/:id/assignment', () => {
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthClient.getUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthClient.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
     interventionsService.assignSentReferral.mockResolvedValue(referral)
 
     await request(app)
@@ -224,7 +224,7 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthClient.getUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthClient.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${referral.id}/assignment/confirmation`)

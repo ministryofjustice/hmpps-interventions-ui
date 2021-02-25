@@ -53,7 +53,7 @@ describe('hmppsAuthClient', () => {
     })
   })
 
-  describe('getUserByEmailAddress', () => {
+  describe('getSPUserByEmailAddress', () => {
     describe('when a matching user is found with the requested email address', () => {
       it('should return the first matching user from the API response', async () => {
         const response = [
@@ -76,7 +76,7 @@ describe('hmppsAuthClient', () => {
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(200, response)
 
-        const output = await hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')
+        const output = await hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')
         expect(output).toEqual(response[0])
       })
     })
@@ -90,14 +90,14 @@ describe('hmppsAuthClient', () => {
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(204, noUserResponse)
 
-        await expect(hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
+        await expect(hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
           'Email not found'
         )
       })
     })
   })
 
-  describe('getUserByUsername', () => {
+  describe('getSPUserByUsername', () => {
     it('should return the matching user from the API response', async () => {
       const response = {
         userId: '91229A16-B5F4-4784-942E-A484A97AC865',
@@ -116,7 +116,7 @@ describe('hmppsAuthClient', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
-      const output = await hmppsAuthClient.getUserByUsername(token.access_token, 'AUTH_ADM')
+      const output = await hmppsAuthClient.getSPUserByUsername(token.access_token, 'AUTH_ADM')
       expect(output).toEqual(response)
     })
   })

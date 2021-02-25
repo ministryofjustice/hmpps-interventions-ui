@@ -48,7 +48,7 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthClient.getUserByUsername(res.locals.user.token, sentReferral.assignedTo.username)
+        : await this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token, sentReferral.assignedTo.username)
 
     let formError: FormValidationError | null = null
     if (assignee === null) {
@@ -87,7 +87,7 @@ export default class ServiceProviderReferralsController {
     const token = await this.hmppsAuthClient.getApiClientToken()
 
     try {
-      assignee = await this.hmppsAuthClient.getUserByEmailAddress(token, email)
+      assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(token, email)
     } catch (e) {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}?${querystring.stringify({
@@ -115,7 +115,7 @@ export default class ServiceProviderReferralsController {
       return
     }
 
-    const assignee = await this.hmppsAuthClient.getUserByEmailAddress(res.locals.user.token, email)
+    const assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(res.locals.user.token, email)
 
     await this.interventionsService.assignSentReferral(res.locals.user.token, req.params.id, {
       username: assignee.username,
@@ -134,7 +134,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const [assignee, serviceCategory] = await Promise.all([
-      this.hmppsAuthClient.getUserByUsername(res.locals.user.token, referral.assignedTo.username),
+      this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token, referral.assignedTo.username),
       this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
     ])
 

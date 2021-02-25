@@ -164,7 +164,7 @@ export default class AuthServiceMocks {
     })
   }
 
-  stubGetUserByEmailAddress = async (responseJson: Record<string, unknown>): Promise<unknown> => {
+  stubGetSPUserByEmailAddress = async (responseJson: Record<string, unknown>): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
@@ -181,7 +181,7 @@ export default class AuthServiceMocks {
     })
   }
 
-  stubGetAuthUserByUsername = async (username: string, responseJson: Record<string, unknown>): Promise<unknown> => {
+  stubGetSPUserByUsername = async (username: string, responseJson: Record<string, unknown>): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
