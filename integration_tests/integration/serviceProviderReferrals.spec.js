@@ -82,6 +82,7 @@ describe('Service provider referrals dashboard', () => {
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
           Caseworker: '',
+          Action: 'View',
         },
         {
           'Date received': '13 Sep 2020',
@@ -89,10 +90,13 @@ describe('Service provider referrals dashboard', () => {
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
           Caseworker: '',
+          Action: 'View',
         },
       ])
 
-    cy.contains('ABCABCA2').click()
+    cy.contains('.govuk-table__row', 'Jenny Jones').within(() => {
+      cy.contains('View').click()
+    })
     cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}`)
     cy.get('h1').contains('Who do you want to assign this social inclusion referral to?')
     cy.contains('07123456789 | jenny.jones@example.com')
