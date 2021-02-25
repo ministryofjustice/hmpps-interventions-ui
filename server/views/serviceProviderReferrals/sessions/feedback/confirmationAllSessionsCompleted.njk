@@ -1,4 +1,9 @@
 {% extends "../../../partials/layout.njk" %}
+{% set mainClasses = "govuk-main-wrapper--l" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
@@ -6,7 +11,54 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    {# TO DO #}
+    {{ govukPanel({
+        classes: 'govuk-!-margin-bottom-8',
+        titleText: "Session feedback form has been submitted"
+      }) }}
+      <h1 class="govuk-heading-l">Service user details</h1>
+      {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: "Alex River"
+            }
+          },
+          {
+            key: {
+              text: "Referral number"
+            },
+            value: {
+              text: "NR0001"
+            }
+          },
+          {
+            key: {
+              text: "Type of referral"
+            },
+            value: {
+              text: "Social inclusion"
+            }
+          }
+        ]
+      }) }}
+
+      <h1 class="govuk-heading-l">What happens next</h1>
+
+      <p class="govuk-body">
+        Session feedback form has been saved and submitted to Josie Bart, probation practitioner.
+        All approved intervention sessions have been completed.
+      </p>
+      <p class="govuk-body">
+        Please complete end of service report within the next 5 days.
+      <form>
+      {{ govukButton({
+        text: "Return to service progress"
+      }) }}
+    </form>
   </div>
 
   <div class="govuk-grid-column-one-third">
