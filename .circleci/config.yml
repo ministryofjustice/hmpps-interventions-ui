@@ -1,14 +1,14 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@2.1.0
+  hmpps: ministryofjustice/hmpps@2.3.2
   snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
 
 executors:
   integration:
     docker:
-      - image: circleci/node:14-stretch-browsers
+      - image: cimg/node:14.16.0-browsers
       - image: rodolpheche/wiremock:2.27.2-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.0
@@ -23,7 +23,7 @@ jobs:
       PACT_BROKER_USERNAME: "interventions"
     executor:
       name: hmpps/node
-      tag: 14-stretch-browsers
+      tag: 14.16.0-browsers
     steps:
       - checkout
       - node/install-npm:
@@ -64,7 +64,7 @@ jobs:
   vulnerability_scan:
     executor:
       name: hmpps/node
-      tag: 14-stretch-browsers
+      tag: 14.16.0-browsers
     parameters:
       monitor:
         type: boolean
