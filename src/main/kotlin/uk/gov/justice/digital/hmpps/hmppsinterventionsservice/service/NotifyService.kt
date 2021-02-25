@@ -8,30 +8,61 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.service.notify.NotificationClient
+import java.net.URI
+import java.util.UUID
 
 @Service
 class NotifyService(
   @Value("\${notify.enabled}") private val enabled: Boolean,
   @Value("\${notify.templates.referral-sent}") private val referralSentTemplateID: String,
+  @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
   private val client: NotificationClient,
+  private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ReferralEvent> {
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {
-        val location = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUISentReferralLocation)
-          .buildAndExpand(event.referral.id)
-          .toUri()
-
+        val location = generateReferralUrl(interventionsUISentReferralLocation, event.referral.id)
+        val serviceProvider = event.referral.intervention.dynamicFrameworkContract.serviceProvider
         sendEmail(
           referralSentTemplateID,
-          "tom.myers@digital.justice.gov.uk", // fixme: this email address will eventually come from the provider associated with the referral
-          mapOf("referenceNumber" to event.referral.referenceNumber!!, "referralUrl" to location.toString())
+          serviceProvider.incomingReferralDistributionEmail,
+          mapOf(
+            "organisationName" to serviceProvider.name,
+            "referenceNumber" to event.referral.referenceNumber!!,
+            "referralUrl" to location.toString(),
+          )
+        )
+      }
+      ReferralEventType.ASSIGNED -> {
+        val assignee = try {
+          hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
+        } catch (e: Exception) {
+          log.error("could not get account details for assigned service provider user", e)
+          return
+        }
+
+        val location = generateReferralUrl(interventionsUISentReferralLocation, event.referral.id)
+        sendEmail(
+          referralAssignedTemplateID,
+          assignee.email,
+          mapOf(
+            "spFirstName" to assignee.firstName,
+            "referenceNumber" to event.referral.referenceNumber!!,
+            "referralUrl" to location.toString(),
+          )
         )
       }
     }
+  }
+
+  private fun generateReferralUrl(path: String, id: UUID): URI {
+    return UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+      .path(path)
+      .buildAndExpand(id)
+      .toUri()
   }
 
   private fun sendEmail(templateID: String, emailAddress: String, personalisation: Map<String, String>) {

@@ -72,6 +72,7 @@ notify:
   enabled: true
   templates:
     referral-sent: "336f2158-d130-4c63-a59b-da12df15a5a3"
+    referral-assigned: "f0fe2fce-df0f-46c0-839a-822037d39c28"
 
 interventions-ui:
   locations:
@@ -84,7 +85,10 @@ community-api:
 hmppsauth:
   api:
     locations:
-      user-groups: "/api/authuser/{username}/groups"
+      auth-user-groups: "/api/authuser/{username}/groups"
+      auth-user-detail: "/api/authuser/{username}"
+      user-email: "/api/user/{username}/email"
+      user-detail: "/api/user/{username}"
 
 aws:
   sns:

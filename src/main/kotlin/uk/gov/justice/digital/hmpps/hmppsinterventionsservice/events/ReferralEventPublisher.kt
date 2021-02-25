@@ -18,14 +18,15 @@ class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Refe
 @Component
 class ReferralEventPublisher(private val applicationEventPublisher: ApplicationEventPublisher) {
   fun referralSentEvent(referral: Referral) {
-    applicationEventPublisher.publishEvent(ReferralEvent(this, ReferralEventType.SENT, referral, createDetailUrl(referral)))
+    applicationEventPublisher.publishEvent(ReferralEvent(this, ReferralEventType.SENT, referral, getSentReferralURL(referral)))
   }
 
   fun referralAssignedEvent(referral: Referral) {
-    applicationEventPublisher.publishEvent(ReferralEvent(this, ReferralEventType.ASSIGNED, referral, createDetailUrl(referral)))
+    applicationEventPublisher.publishEvent(ReferralEvent(this, ReferralEventType.ASSIGNED, referral, getSentReferralURL(referral)))
   }
 
-  private fun createDetailUrl(referral: Referral): String {
+  private fun getSentReferralURL(referral: Referral): String {
+    // get the URL by introspecting the relevant controller method
     val method = ReferralController::getSentReferral as KFunction<*>
     val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
 

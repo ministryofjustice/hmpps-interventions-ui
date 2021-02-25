@@ -55,6 +55,7 @@ class CommunityAPIService(
           }
           .subscribe()
       }
+      else -> {}
     }
   }
 
