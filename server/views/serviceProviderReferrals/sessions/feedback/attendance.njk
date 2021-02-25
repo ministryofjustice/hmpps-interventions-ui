@@ -2,6 +2,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
@@ -13,16 +14,68 @@
       <h1 class="govuk-heading-l">
        Session 2: attendance
       </h1>
-    <form action="#" method="#">
+    {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Session objective"
+            },
+            value: {
+              text: "introduction to social support"
+            }
+          },
+          {
+            key: {
+              text: "Date"
+            },
+            value: {
+              text: "20 December 2020"
+            }
+          },
+          {
+            key: {
+              text: "Time"
+            },
+            value: {
+              text: "2:00pm"
+            }
+          },
+          {
+            key: {
+              text: "Method"
+            },
+            value: {
+              text: "In-person meeting"
+            }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              html: '96 Ilford Road<br>
+                     Romans, worcestershire <br>
+                     RX3 9IG<br>
+                     United Kingdom'
+            }
+          }
+        ]
+      }) }}
+      <hr>
+    <form action="#" method="#" class="govuk-!-padding-top-6">
     {{ govukRadios({
       idPrefix: "attendance",
       name: "attendance",
       fieldset: {
         legend: {
-          text: "Did Matt attend session 2?",
+          text: "Did Matt attend the session?",
           isPageHeading: true,
           classes: "govuk-fieldset__legend--m"
         }
+      },
+      hint: {
+        text: "Select one option"
       },
       items: [
         {
