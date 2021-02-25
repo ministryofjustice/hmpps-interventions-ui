@@ -55,11 +55,6 @@ export default class StaticContentController {
       description: 'IC-1058 (session feedback: review)',
     },
     {
-      path: '/service-provider/session-feedback/confirmation',
-      template: 'serviceProviderReferrals/sessions/feedback/confirmation',
-      description: 'IC-1085 (session feedback: confirmation)',
-    },
-    {
       path: '/service-provider/session-feedback/show',
       template: 'serviceProviderReferrals/sessions/feedback/show',
       description: 'IC-1083 (view submitted feedback)',
@@ -75,9 +70,19 @@ export default class StaticContentController {
       description: 'IC-1087 (session details: edit details amend)',
     },
     {
+      path: '/service-provider/session-feedback/confirmation',
+      template: 'serviceProviderReferrals/sessions/feedback/confirmation',
+      description: 'IC-1085 (session feedback: confirmation)',
+    },
+    {
       path: '/service-provider/sessions/feedback/confirmation-all-sessions-completed',
       template: 'serviceProviderReferrals/sessions/feedback/confirmationAllSessionsCompleted',
       description: 'IC-1177 (session feedback: confirmation - all sessions completed)',
+    },
+    {
+      path: '/service-provider/sessions/feedback/confirmation-failure-attend',
+      template: 'serviceProviderReferrals/sessions/feedback/confirmationFailureAttend',
+      description: 'IC-1177 (session feedback: confirmation - failure to attend)',
     },
     {
       path: '/service-provider/layout-all-components',
