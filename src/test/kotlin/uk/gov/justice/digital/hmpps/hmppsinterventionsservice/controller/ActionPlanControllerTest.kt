@@ -1,13 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
-import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.LocationMapper
@@ -44,7 +42,7 @@ internal class ActionPlanControllerTest {
     val uri = URI.create("/1234")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(actionPlanMapper.map(activitiesDTO)).thenReturn(activities)
+    whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
     whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)).thenReturn(uri)
 
@@ -68,16 +66,20 @@ internal class ActionPlanControllerTest {
   }
 
   @Test
-  fun `throws exception id action plan does not exist`() {
-    val actionPlanId = UUID.randomUUID()
+  fun `successfully update a draft action plan`() {
+    val draftActionPlanId = UUID.randomUUID()
+    val actionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
+    val draftActionPlanDTO = DraftActionPlanDTO.from(SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = 5))
 
-    whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(null)
+    val updatedActionPlan = SampleData.sampleActionPlan(numberOfSessions = 5)
 
-    val exception = assertThrows(ResponseStatusException::class.java) {
-      actionPlanController.getDraftActionPlan(actionPlanId)
-    }
+    whenever(actionPlanMapper.mapActionPlanDtoToActionPlan(draftActionPlanId, draftActionPlanDTO)).thenReturn(actionPlan)
+    whenever(actionPlanService.updateActionPlan(actionPlan)).thenReturn(updatedActionPlan)
 
-    assertThat(exception.status).isEqualTo(NOT_FOUND)
-    assertThat(exception.reason).isEqualTo("draft action plan not found [id=$actionPlanId]")
+    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, draftActionPlanDTO)
+
+    verify(actionPlanMapper).mapActionPlanDtoToActionPlan(draftActionPlanId, draftActionPlanDTO)
+    verify(actionPlanService).updateActionPlan(actionPlan)
+    assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
   }
 }

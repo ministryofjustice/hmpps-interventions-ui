@@ -131,23 +131,24 @@ class SampleData {
     fun sampleActionPlan(
       id: UUID? = null,
       referral: Referral = sampleReferral("CRN123", "Service Provider"),
-      numberOfSessions: Int? = null,
+      numberOfSessions: Int? = 1,
       createdBy: AuthUser = AuthUser("CRN123", "auth", "user"),
       createdAt: OffsetDateTime = OffsetDateTime.now(),
       submittedBy: AuthUser? = null,
       submittedAt: OffsetDateTime? = null,
       desiredOutcome: DesiredOutcome = sampleDesiredOutcome(),
       activityCreatedAt: OffsetDateTime = OffsetDateTime.now(),
+      activities: List<ActionPlanActivity> = listOf(sampleActionPlanActivity(desiredOutcome, activityCreatedAt)),
     ): ActionPlan {
       return ActionPlan(
         id = id ?: UUID.randomUUID(),
         referral = referral,
-        numberOfSessions = numberOfSessions ?: 1,
+        numberOfSessions = numberOfSessions,
         createdBy = createdBy,
         createdAt = createdAt,
         submittedBy = submittedBy,
         submittedAt = submittedAt,
-        activities = listOf(sampleActionPlanActivity(desiredOutcome, activityCreatedAt))
+        activities = activities
       )
     }
 

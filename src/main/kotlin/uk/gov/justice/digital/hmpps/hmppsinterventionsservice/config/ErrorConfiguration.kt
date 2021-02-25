@@ -9,13 +9,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.server.ResponseStatusException
+import javax.persistence.EntityNotFoundException
 
 enum class Code {
   FIELD_CANNOT_BE_CHANGED,
   DATE_MUST_BE_IN_THE_FUTURE,
   SERVICE_CATEGORY_MUST_BE_SET,
   CONDITIONAL_FIELD_MUST_BE_SET,
-  CANNOT_BE_EMPTY
+  CANNOT_BE_EMPTY,
+  CANNOT_BE_NEGATIVE_OR_ZERO
 }
 
 data class FieldError(
@@ -63,6 +65,12 @@ class ErrorConfiguration {
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse> {
     log.error("unexpected exception: {}", e)
     return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "unexpected error", e.message)
+  }
+
+  @ExceptionHandler(EntityNotFoundException::class)
+  fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
+    log.info("entity not found exception: {}", e.message)
+    return errorResponse(HttpStatus.NOT_FOUND, "entity not found", e.message)
   }
 
   private fun errorResponse(status: HttpStatus, summary: String, description: String?, validationErrors: List<FieldError>? = null): ResponseEntity<ErrorResponse> {
