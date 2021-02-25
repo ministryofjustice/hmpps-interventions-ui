@@ -31,7 +31,7 @@ class ActionPlanController(
   ): ResponseEntity<DraftActionPlanDTO> {
 
     val createdByUser = jwtAuthUserMapper.map(authentication)
-    val createActionPlanActivities = actionPlanMapper.map(createActionPlanDTO.activities)
+    val createActionPlanActivities = actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(createActionPlanDTO.activities)
 
     val draftActionPlan = actionPlanService.createDraftActionPlan(
       createActionPlanDTO.referralId,
@@ -56,7 +56,7 @@ class ActionPlanController(
     @PathVariable id: UUID,
     @RequestBody update: DraftActionPlanDTO,
   ): DraftActionPlanDTO {
-    val actionPlanUpdate = actionPlanMapper.map(id, update)
+    val actionPlanUpdate = actionPlanMapper.mapActionPlanDtoToActionPlan(id, update)
     val updatedActionPlan = actionPlanService.updateActionPlan(actionPlanUpdate)
 
     return DraftActionPlanDTO.from(updatedActionPlan)

@@ -31,7 +31,7 @@ internal class ActionPlanMapperTest {
     val desiredOutcome = DesiredOutcome(desiredOutcomeDTO.id, "desire", UUID.randomUUID())
     whenever(desiredOutcomeRepository.findById(desiredOutcomeDTO.id)).thenReturn(Optional.of(desiredOutcome))
 
-    val activities = actionPlanMapper.map(listOf(createActionPlanActivityDTO))
+    val activities = actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(listOf(createActionPlanActivityDTO))
 
     assertThat(activities.size).isEqualTo(1)
     assertThat(activities.first().desiredOutcome).isEqualTo(desiredOutcome)
@@ -53,7 +53,7 @@ internal class ActionPlanMapperTest {
     whenever(desiredOutcomeRepository.findById(any())).thenReturn(Optional.of(desiredOutcome))
     whenever(referralRepository.findById(any())).thenReturn(Optional.of(referral))
 
-    val mappedActionPlan = actionPlanMapper.map(draftActionPlanId, actionPlanDto)
+    val mappedActionPlan = actionPlanMapper.mapActionPlanDtoToActionPlan(draftActionPlanId, actionPlanDto)
 
     assertThat(mappedActionPlan.referral).isEqualTo(referral)
     assertThat(mappedActionPlan.id).isEqualTo(actionPlanDto.id)

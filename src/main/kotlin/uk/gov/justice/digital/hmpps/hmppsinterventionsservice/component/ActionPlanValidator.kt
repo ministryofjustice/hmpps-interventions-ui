@@ -15,7 +15,7 @@ class ActionPlanValidator {
       if (it <= 0) {
         errors.add(FieldError(field = "numberOfSessions", error = Code.CANNOT_BE_NEGATIVE_OR_ZERO))
       }
-    } ?: errors.add(FieldError(field = "numberOfSessions", error = Code.CONDITIONAL_FIELD_MUST_BE_SET))
+    } ?: errors.add(FieldError(field = "numberOfSessions", error = Code.CANNOT_BE_EMPTY))
 
     if (errors.isNotEmpty()) {
       throw ValidationError("draft action plan update invalid", errors)

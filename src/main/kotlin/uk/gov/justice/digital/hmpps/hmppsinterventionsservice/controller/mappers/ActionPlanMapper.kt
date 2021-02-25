@@ -18,7 +18,7 @@ class ActionPlanMapper(
   val referralRepository: ReferralRepository,
 ) {
 
-  fun map(activities: List<CreateActionPlanActivityDTO>): List<ActionPlanActivity> {
+  fun mapActionPlanActivityDtoToActionPlanActivity(activities: List<CreateActionPlanActivityDTO>): List<ActionPlanActivity> {
     return activities.map {
       val desiredOutcomeId = it.desiredOutcome.id
       ActionPlanActivity(
@@ -31,7 +31,7 @@ class ActionPlanMapper(
     }
   }
 
-  fun map(actionPlanId: UUID, updateActionPlan: DraftActionPlanDTO): ActionPlan {
+  fun mapActionPlanDtoToActionPlan(actionPlanId: UUID, updateActionPlan: DraftActionPlanDTO): ActionPlan {
     return ActionPlan(
       id = actionPlanId,
       numberOfSessions = updateActionPlan.numberOfSessions,

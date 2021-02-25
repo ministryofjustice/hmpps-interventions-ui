@@ -19,7 +19,6 @@ class ActionPlanValidatorTest {
     val exception = Assertions.assertThrows(ValidationError::class.java) {
       actionPlanValidator.validateDraftActionPlanUpdate(actionPlanUpdate)
     }
-    assertThat(exception.message).isEqualTo("draft action plan update invalid")
     assertThat(exception.errors.size).isEqualTo(1)
     assertThat(exception.errors[0].field).isEqualTo("numberOfSessions")
     assertThat(exception.errors[0].error).isEqualTo(Code.CANNOT_BE_NEGATIVE_OR_ZERO)
@@ -50,6 +49,6 @@ class ActionPlanValidatorTest {
     assertThat(exception.message).isEqualTo("draft action plan update invalid")
     assertThat(exception.errors.size).isEqualTo(1)
     assertThat(exception.errors[0].field).isEqualTo("numberOfSessions")
-    assertThat(exception.errors[0].error).isEqualTo(Code.CONDITIONAL_FIELD_MUST_BE_SET)
+    assertThat(exception.errors[0].error).isEqualTo(Code.CANNOT_BE_EMPTY)
   }
 }

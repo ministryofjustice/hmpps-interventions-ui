@@ -42,7 +42,7 @@ internal class ActionPlanControllerTest {
     val uri = URI.create("/1234")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(actionPlanMapper.map(activitiesDTO)).thenReturn(activities)
+    whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
     whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)).thenReturn(uri)
 
@@ -73,12 +73,12 @@ internal class ActionPlanControllerTest {
 
     val updatedActionPlan = SampleData.sampleActionPlan(numberOfSessions = 5)
 
-    whenever(actionPlanMapper.map(draftActionPlanId, draftActionPlanDTO)).thenReturn(actionPlan)
+    whenever(actionPlanMapper.mapActionPlanDtoToActionPlan(draftActionPlanId, draftActionPlanDTO)).thenReturn(actionPlan)
     whenever(actionPlanService.updateActionPlan(actionPlan)).thenReturn(updatedActionPlan)
 
     val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, draftActionPlanDTO)
 
-    verify(actionPlanMapper).map(draftActionPlanId, draftActionPlanDTO)
+    verify(actionPlanMapper).mapActionPlanDtoToActionPlan(draftActionPlanId, draftActionPlanDTO)
     verify(actionPlanService).updateActionPlan(actionPlan)
     assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
   }

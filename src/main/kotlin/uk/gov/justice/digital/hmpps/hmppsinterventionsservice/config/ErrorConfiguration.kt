@@ -70,7 +70,7 @@ class ErrorConfiguration {
   @ExceptionHandler(EntityNotFoundException::class)
   fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
     log.info("entity not found exception: {}", e.message)
-    return errorResponse(HttpStatus.NOT_FOUND, "not found error", e.message)
+    return errorResponse(HttpStatus.NOT_FOUND, "entity not found", e.message)
   }
 
   private fun errorResponse(status: HttpStatus, summary: String, description: String?, validationErrors: List<FieldError>? = null): ResponseEntity<ErrorResponse> {
