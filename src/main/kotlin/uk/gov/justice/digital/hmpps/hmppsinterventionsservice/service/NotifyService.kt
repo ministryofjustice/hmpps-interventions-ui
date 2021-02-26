@@ -44,7 +44,7 @@ class NotifyActionPlanService(
 
       ActionPlanEventType.SUBMITTED -> {
         getUserDetails(event.actionPlan.submittedBy!!, hmppsAuthService, log)?.let {
-          val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
+          val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
           emailSender.sendEmail(
             actionPlanSubmittedTemplateID,
             it.email,
