@@ -15,6 +15,11 @@ export default class StaticContentController {
       description: 'IC-1078 (session progress - all sessions completed, with notification banner)',
     },
     {
+      path: '/service-provider/session-progress-sessions-updated',
+      template: 'serviceProviderReferrals/sessionProgressSessionsUpdated',
+      description: 'IC-1251 (session progress - session updated notification banner)',
+    },
+    {
       path: '/service-provider/session-feedback/attendance',
       template: 'serviceProviderReferrals/sessions/feedback/attendance',
       description: 'IC-1094 (session feedback: attendance)',
