@@ -82,4 +82,29 @@ internal class ActionPlanControllerTest {
     verify(actionPlanService).updateActionPlan(actionPlan)
     assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
   }
+
+  @Test
+  fun `submits a draft action plan`() {
+    val actionPlanId = UUID.randomUUID()
+    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
+    val authUser = AuthUser("CRN123", "auth", "user")
+    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+
+    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
+    whenever(actionPlanService.submitDraftActionPlan(actionPlanId, authUser)).thenReturn(actionPlan)
+
+    val submittedDraftActionPlan = actionPlanController.submitDraftActionPlan(actionPlanId, jwtAuthenticationToken)
+
+    assertThat(submittedDraftActionPlan).isNotNull
+  }
+
+  @Test
+  fun `gets action plan`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    whenever(actionPlanService.getActionPlan(actionPlan.id)).thenReturn(actionPlan)
+
+    val retrievedActionPlan = actionPlanController.getActionPlan(actionPlan.id)
+
+    assertThat(retrievedActionPlan).isNotNull
+  }
 }

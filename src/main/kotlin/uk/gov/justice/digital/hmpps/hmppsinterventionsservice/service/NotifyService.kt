@@ -16,6 +16,7 @@ import java.net.URI
 import java.util.UUID
 
 interface NotifyService {
+
   fun generateResourceUrl(baseURL: String, path: String, id: UUID): URI {
     return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(id).toUri()
   }
@@ -46,7 +47,7 @@ class NotifyActionPlanService(
           val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
           emailSender.sendEmail(
             actionPlanSubmittedTemplateID,
-            "rajiv.mahal@digital.justice.gov.uk",
+            it.email,
             mapOf(
               "submitterFirstName" to it.firstName,
               "referenceNumber" to event.actionPlan.referral.referenceNumber!!,

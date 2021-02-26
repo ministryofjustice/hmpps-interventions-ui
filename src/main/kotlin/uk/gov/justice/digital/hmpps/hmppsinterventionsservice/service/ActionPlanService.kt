@@ -78,9 +78,8 @@ class ActionPlanService(
   }
 
   private fun getDraftActionPlanAndThrowExceptionIfNotFound(id: UUID): ActionPlan {
-    val draftActionPlan = actionPlanRepository.findByIdAndSubmittedAtIsNull(id)
+    return actionPlanRepository.findByIdAndSubmittedAtIsNull(id)
       ?: throw EntityNotFoundException("draft action plan not found [id=$id]")
-    return draftActionPlan
   }
 
   private fun submitActionPlan(draftActionPlan: ActionPlan, submittedByUser: AuthUser) {
