@@ -46,7 +46,7 @@ data class ActionPlanActivityDTO(
   companion object {
     fun from(actionPlanActivity: ActionPlanActivity): ActionPlanActivityDTO {
       return ActionPlanActivityDTO(
-        desiredOutcome = DesiredOutcomeDTO(actionPlanActivity.desiredOutcome.id, actionPlanActivity.desiredOutcome.description),
+        desiredOutcome = DesiredOutcomeDTO.from(actionPlanActivity.desiredOutcome),
         description = actionPlanActivity.description,
         createdAt = actionPlanActivity.createdAt,
       )
