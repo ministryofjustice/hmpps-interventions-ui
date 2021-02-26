@@ -1290,6 +1290,43 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.getPccRegions(token)).toEqual(pccRegions)
     })
   })
+
+  describe('createDraftActionPlan', () => {
+    it('returns a newly created draft action plan', async () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      await provider.addInteraction({
+        state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
+        uponReceiving: 'a POST request to create a draft action plan',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: {
+            referralId,
+          },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like({
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: null,
+            activities: [],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
+            ),
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.createDraftActionPlan(token, referralId)
+      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {

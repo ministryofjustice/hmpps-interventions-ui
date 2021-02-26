@@ -125,6 +125,20 @@ export interface InterventionsFilterParams {
   maximumAge?: number
 }
 
+export interface DraftActionPlan {
+  id: string
+  referralId: string
+  activities: Activity[] | null
+  numberOfSessions: number | null
+}
+
+interface Activity {
+  id: string
+  desiredOutcomeId: string
+  description: string
+  createdAt: string
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -314,5 +328,19 @@ export default class InterventionsService {
       path: `/pcc-regions`,
       headers: { Accept: 'application/json' },
     })) as PCCRegion[]
+  }
+
+  async createDraftActionPlan(token: string, referralId: string): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.post({
+        path: '/draft-action-plan',
+        headers: { Accept: 'application/json' },
+        data: { referralId },
+      })) as DraftActionPlan
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
   }
 }
