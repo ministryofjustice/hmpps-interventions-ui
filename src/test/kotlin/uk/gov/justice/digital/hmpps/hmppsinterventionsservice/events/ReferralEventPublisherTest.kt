@@ -19,7 +19,7 @@ class ReferralEventPublisherTest {
   fun `builds an referral sent event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val detailUrl = "//localhost/referral/" + referral.id
-    whenever(locationMapper.mapToCurrentRequestBasePathAsString("/sent-referral/{id}", referral.id)).thenReturn(detailUrl)
+    whenever(locationMapper.mapToCurrentContextPathAsString("/sent-referral/{id}", referral.id)).thenReturn(detailUrl)
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
     publisher.referralSentEvent(referral)
@@ -38,7 +38,7 @@ class ReferralEventPublisherTest {
   fun `builds an referral assign event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val detailUrl = "//localhost/referral/" + referral.id
-    whenever(locationMapper.mapToCurrentRequestBasePathAsString("/sent-referral/{id}", referral.id)).thenReturn(detailUrl)
+    whenever(locationMapper.mapToCurrentContextPathAsString("/sent-referral/{id}", referral.id)).thenReturn(detailUrl)
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
     publisher.referralAssignedEvent(referral)

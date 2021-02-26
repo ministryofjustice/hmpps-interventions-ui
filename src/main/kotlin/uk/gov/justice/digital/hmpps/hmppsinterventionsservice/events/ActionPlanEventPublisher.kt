@@ -29,6 +29,6 @@ class ActionPlanEventPublisher(
     val method = ActionPlanController::getActionPlan as KFunction<*>
     val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
 
-    return locationMapper.mapToCurrentRequestBasePathAsString(path, actionPlan.id)
+    return locationMapper.mapToCurrentContextPathAsString(path, actionPlan.id)
   }
 }

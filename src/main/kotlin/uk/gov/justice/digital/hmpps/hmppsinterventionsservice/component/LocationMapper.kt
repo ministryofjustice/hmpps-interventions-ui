@@ -9,13 +9,10 @@ import java.util.UUID
 class LocationMapper {
 
   fun mapToCurrentRequestBasePath(path: String, id: UUID): URI {
-    return mapToCurrentRequestBaseAsUriComponents(path, id).toUri()
+    return ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id).toUri()
   }
 
-  fun mapToCurrentRequestBasePathAsString(path: String, id: UUID): String {
-    return mapToCurrentRequestBaseAsUriComponents(path, id).toUriString()
+  fun mapToCurrentContextPathAsString(path: String, id: UUID): String {
+    return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(id).toUriString()
   }
-
-  private fun mapToCurrentRequestBaseAsUriComponents(path: String, id: UUID) =
-    ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id)
 }
