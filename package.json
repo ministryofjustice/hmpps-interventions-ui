@@ -116,7 +116,7 @@
     "jquery": "^3.5.1",
     "jwt-decode": "^2.2.0",
     "nocache": "^2.1.0",
-    "nunjucks": "^3.2.2",
+    "nunjucks": "^3.2.3",
     "passport": "^0.4.1",
     "passport-oauth2": "^1.5.0",
     "redis": "^3.0.2",
