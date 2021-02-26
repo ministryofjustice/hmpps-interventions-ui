@@ -20,6 +20,11 @@ export default class StaticContentController {
       description: 'IC-1094 (session feedback: attendance)',
     },
     {
+      path: '/service-provider/session-feedback/attendance-no',
+      template: 'serviceProviderReferrals/sessions/feedback/attendanceNo',
+      description: 'IC-1094 (session feedback: attendance NO)',
+    },
+    {
       path: '/service-provider/session-feedback/safeguarding',
       template: 'serviceProviderReferrals/sessions/feedback/safeguarding',
       description: 'IC-1095 (session feedback: safeguarding)',
@@ -53,6 +58,11 @@ export default class StaticContentController {
       path: '/service-provider/session-feedback/review',
       template: 'serviceProviderReferrals/sessions/feedback/review',
       description: 'IC-1058 (session feedback: review)',
+    },
+    {
+      path: '/service-provider/session-feedback/review-no',
+      template: 'serviceProviderReferrals/sessions/feedback/reviewNo',
+      description: 'IC-1058 (session feedback: review NO)',
     },
     {
       path: '/service-provider/session-feedback/show',
