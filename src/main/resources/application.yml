@@ -78,7 +78,7 @@ notify:
 interventions-ui:
   locations:
     sent-referral: "/service-provider/referrals/{id}"
-    submit-action-plan: "/action-plan/{id}"
+    submit-action-plan: "/action-plan/{id}/toBeSpecified"
 
 community-api:
   locations:
