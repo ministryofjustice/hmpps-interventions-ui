@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import java.time.OffsetDateTime
 import java.util.UUID
 
-internal class SNSServiceTest {
+internal class SNSReferralServiceTest {
   private val snsPublisher = mock<SNSPublisher>()
 
   private val referralSentEvent = ReferralEvent(
@@ -44,7 +44,7 @@ internal class SNSServiceTest {
 
   @Test
   fun `referral sent event publishes message`() {
-    snsService().onApplicationEvent(referralSentEvent)
+    snsReferralService().onApplicationEvent(referralSentEvent)
     val snsEvent = EventDTO(
       "intervention.referral.sent",
       "A referral has been sent to a Service Provider",
@@ -57,7 +57,7 @@ internal class SNSServiceTest {
 
   @Test
   fun `referral assigned event publishes message with valid json`() {
-    snsService().onApplicationEvent(referralAssignedEvent)
+    snsReferralService().onApplicationEvent(referralAssignedEvent)
     val snsEvent = EventDTO(
       "intervention.referral.assigned",
       "A referral has been assigned to a caseworker / service provider",
@@ -68,7 +68,7 @@ internal class SNSServiceTest {
     verify(snsPublisher).publish(snsEvent)
   }
 
-  private fun snsService(): SNSService {
-    return SNSService(snsPublisher)
+  private fun snsReferralService(): SNSReferralService {
+    return SNSReferralService(snsPublisher)
   }
 }

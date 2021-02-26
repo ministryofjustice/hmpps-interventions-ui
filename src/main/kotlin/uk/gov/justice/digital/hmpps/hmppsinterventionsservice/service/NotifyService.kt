@@ -1,32 +1,85 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.service.notify.NotificationClient
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.net.URI
 import java.util.UUID
 
+interface NotifyService {
+  fun generateResourceUrl(baseURL: String, path: String, id: UUID): URI {
+    return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(id).toUri()
+  }
+
+  fun getUserDetails(user: AuthUser, hmppsAuthService: HMPPSAuthService, log: Logger) =
+    try {
+      hmppsAuthService.getUserDetail(user)
+    } catch (e: Exception) {
+      log.error("could not get account details for assigned service provider user", e)
+      null
+    }
+}
+
 @Service
-class NotifyService(
-  @Value("\${notify.enabled}") private val enabled: Boolean,
+class NotifyActionPlanService(
+  @Value("\${notify.templates.action-plan-submitted}") private val actionPlanSubmittedTemplateID: String,
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmitActionPlanLocation: String,
+  private val emailSender: EmailSender,
+  private val hmppsAuthService: HMPPSAuthService,
+) : ApplicationListener<ActionPlanEvent>, NotifyService {
+
+  override fun onApplicationEvent(event: ActionPlanEvent) {
+    when (event.type) {
+
+      ActionPlanEventType.SUBMITTED -> {
+        getUserDetails(event.actionPlan.submittedBy!!, hmppsAuthService, log)?.let {
+          val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
+          emailSender.sendEmail(
+            actionPlanSubmittedTemplateID,
+            "rajiv.mahal@digital.justice.gov.uk",
+            mapOf(
+              "submitterFirstName" to it.firstName,
+              "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
+              "actionPlanUrl" to location.toString(),
+            )
+          )
+        }
+      }
+    }
+  }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(NotifyActionPlanService::class.java)
+  }
+}
+
+@Service
+class NotifyReferralService(
   @Value("\${notify.templates.referral-sent}") private val referralSentTemplateID: String,
   @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
-  private val client: NotificationClient,
+  private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
-) : ApplicationListener<ReferralEvent> {
+) : ApplicationListener<ReferralEvent>, NotifyService {
+
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
+
       ReferralEventType.SENT -> {
-        val location = generateReferralUrl(interventionsUISentReferralLocation, event.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
         val serviceProvider = event.referral.intervention.dynamicFrameworkContract.serviceProvider
-        sendEmail(
+        emailSender.sendEmail(
           referralSentTemplateID,
           serviceProvider.incomingReferralDistributionEmail,
           mapOf(
@@ -36,54 +89,25 @@ class NotifyService(
           )
         )
       }
-      ReferralEventType.ASSIGNED -> {
-        val assignee = try {
-          hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
-        } catch (e: Exception) {
-          log.error("could not get account details for assigned service provider user", e)
-          return
-        }
 
-        val location = generateReferralUrl(interventionsUISentReferralLocation, event.referral.id)
-        sendEmail(
-          referralAssignedTemplateID,
-          assignee.email,
-          mapOf(
-            "spFirstName" to assignee.firstName,
-            "referenceNumber" to event.referral.referenceNumber!!,
-            "referralUrl" to location.toString(),
+      ReferralEventType.ASSIGNED -> {
+        getUserDetails(event.referral.assignedTo!!, hmppsAuthService, log)?.let {
+          val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
+          emailSender.sendEmail(
+            referralAssignedTemplateID,
+            it.email,
+            mapOf(
+              "spFirstName" to it.firstName,
+              "referenceNumber" to event.referral.referenceNumber!!,
+              "referralUrl" to location.toString(),
+            )
           )
-        )
+        }
       }
     }
   }
 
-  private fun generateReferralUrl(path: String, id: UUID): URI {
-    return UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-      .path(path)
-      .buildAndExpand(id)
-      .toUri()
-  }
-
-  private fun sendEmail(templateID: String, emailAddress: String, personalisation: Map<String, String>) {
-    if (!enabled) {
-      return
-    }
-
-    try {
-      client.sendEmail(
-        templateID,
-        emailAddress,
-        personalisation,
-        null,
-      )
-    } catch (e: Exception) {
-      // fixme: this failure is super important and we need a better way to reason about async errors of this nature
-      log.error("email notification failed", e)
-    }
-  }
-
   companion object {
-    private val log = LoggerFactory.getLogger(NotifyService::class.java)
+    private val log = LoggerFactory.getLogger(NotifyReferralService::class.java)
   }
 }

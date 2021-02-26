@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.LocationMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
@@ -45,6 +46,16 @@ class ActionPlanController(
     return ResponseEntity.created(location).body(draftActionPlanDTO)
   }
 
+  @PostMapping("/draft-action-plan/{id}/submit")
+  fun submitDraftActionPlan(
+    @PathVariable id: UUID,
+    authentication: JwtAuthenticationToken,
+  ): ActionPlanDTO {
+    val submittedByUser = jwtAuthUserMapper.map(authentication)
+    val submittedActionPlan = actionPlanService.submitDraftActionPlan(id, submittedByUser)
+    return ActionPlanDTO.from(submittedActionPlan)
+  }
+
   @GetMapping("/draft-action-plan/{id}")
   fun getDraftActionPlan(@PathVariable id: UUID): DraftActionPlanDTO {
     val draftActionPlan = actionPlanService.getDraftActionPlan(id)
@@ -60,5 +71,11 @@ class ActionPlanController(
     val updatedActionPlan = actionPlanService.updateActionPlan(actionPlanUpdate)
 
     return DraftActionPlanDTO.from(updatedActionPlan)
+  }
+
+  @GetMapping("/action-plan/{id}")
+  fun getActionPlan(@PathVariable id: UUID): ActionPlanDTO {
+    val actionPlan = actionPlanService.getActionPlan(id)
+    return ActionPlanDTO.from(actionPlan)
   }
 }

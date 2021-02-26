@@ -73,10 +73,12 @@ notify:
   templates:
     referral-sent: "336f2158-d130-4c63-a59b-da12df15a5a3"
     referral-assigned: "f0fe2fce-df0f-46c0-839a-822037d39c28"
+    action-plan-submitted: "83743b43-9abb-4ffb-913d-dc583ab22dbf"
 
 interventions-ui:
   locations:
     sent-referral: "/service-provider/referrals/{id}"
+    submit-action-plan: "/action-plan/{id}"
 
 community-api:
   locations:

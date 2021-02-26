@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
@@ -25,8 +26,9 @@ internal class ActionPlanServiceTest {
   private val referralRepository: ReferralRepository = mock()
   private val actionPlanRepository: ActionPlanRepository = mock()
   private val actionPlanValidator: ActionPlanValidator = mock()
+  private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
 
-  private val actionPlanService = ActionPlanService(authUserRepository, referralRepository, actionPlanRepository, actionPlanValidator)
+  private val actionPlanService = ActionPlanService(authUserRepository, referralRepository, actionPlanRepository, actionPlanValidator, actionPlanEventPublisher)
 
   @Test
   fun `builds and saves an action plan for a referral`() {
