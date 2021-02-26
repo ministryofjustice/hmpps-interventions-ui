@@ -17,6 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
+import java.util.Optional.empty
+import java.util.Optional.of
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -108,5 +110,76 @@ internal class ActionPlanServiceTest {
     val updatedDraftActionPlanResponse = actionPlanService.updateActionPlan(draftActionPlanUpdate)
 
     assertThat(updatedDraftActionPlanResponse).isSameAs(updatedActionPlan)
+  }
+
+  @Test
+  fun `get action plan using id`() {
+    val actionPlanId = UUID.randomUUID()
+    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
+    whenever(actionPlanRepository.findById(actionPlanId)).thenReturn(of(actionPlan))
+
+    assertThat(actionPlanService.getActionPlan(actionPlanId)).isSameAs(actionPlan)
+  }
+
+  @Test
+  fun `get action plan throws exception when not found`() {
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanRepository.findById(actionPlanId)).thenReturn(empty())
+
+    val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
+      actionPlanService.getActionPlan(actionPlanId)
+    }
+    assertThat(exception.message).isEqualTo("action plan not found [id=$actionPlanId]")
+  }
+
+  @Test
+  fun `submit action plan`() {
+    val timeBeforeSubmit = OffsetDateTime.now()
+    val actionPlanId = UUID.randomUUID()
+    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
+    val authUser = AuthUser("CRN123", "auth", "user")
+    whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(actionPlanId)).thenReturn(actionPlan)
+    whenever(
+      actionPlanRepository.save(
+        ArgumentMatchers.argThat { (
+          numberOfSessionsArg,
+          activitiesArg,
+          createdByArg,
+          createdAtArg,
+          submittedByArg,
+          submittedAtArg,
+          referralArg,
+          idArg,
+        ) ->
+          (
+            numberOfSessionsArg == actionPlan.numberOfSessions &&
+              activitiesArg.size == actionPlan.activities.size &&
+              activitiesArg.first() == actionPlan.activities.first() &&
+              createdByArg == actionPlan.createdBy &&
+              createdAtArg == actionPlan.createdAt &&
+              submittedAtArg!!.isAfter(timeBeforeSubmit) &&
+              submittedByArg!! == authUser &&
+              referralArg == actionPlan.referral &&
+              idArg == actionPlanId
+            )
+        }
+      )
+    ).thenReturn(SampleData.sampleActionPlan())
+
+    val submittedActionPlan = actionPlanService.submitDraftActionPlan(actionPlanId, authUser)
+
+    assertThat(submittedActionPlan).isNotNull
+  }
+
+  @Test
+  fun `submit action plan throws exception if draft plan is not used`() {
+    val actionPlanId = UUID.randomUUID()
+    val authUser = AuthUser("CRN123", "auth", "user")
+    whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(actionPlanId)).thenReturn(null)
+
+    val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
+      actionPlanService.submitDraftActionPlan(actionPlanId, authUser)
+    }
+    assertThat(exception.message).isEqualTo("draft action plan not found [id=$actionPlanId]")
   }
 }
