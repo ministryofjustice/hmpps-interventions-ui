@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.ActionPlanController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import kotlin.reflect.KFunction
@@ -16,20 +16,19 @@ enum class ActionPlanEventType {
 class ActionPlanEvent(source: Any, val type: ActionPlanEventType, val actionPlan: ActionPlan, val detailUrl: String) : ApplicationEvent(source)
 
 @Component
-class ActionPlanEventPublisher(private val applicationEventPublisher: ApplicationEventPublisher) {
+class ActionPlanEventPublisher(
+  private val applicationEventPublisher: ApplicationEventPublisher,
+  private val locationMapper: LocationMapper
+) {
 
   fun actionPlanSubmitEvent(actionPlan: ActionPlan) {
     applicationEventPublisher.publishEvent(ActionPlanEvent(this, ActionPlanEventType.SUBMITTED, actionPlan, createDetailUrl(actionPlan)))
   }
 
-  private fun createDetailUrl(ActionPlan: ActionPlan): String {
+  private fun createDetailUrl(actionPlan: ActionPlan): String {
     val method = ActionPlanController::getActionPlan as KFunction<*>
     val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
 
-    return ServletUriComponentsBuilder
-      .fromCurrentContextPath()
-      .path(path)
-      .buildAndExpand(ActionPlan.id)
-      .toUriString()
+    return locationMapper.mapToCurrentRequestBasePathAsString(path, actionPlan.id)
   }
 }
