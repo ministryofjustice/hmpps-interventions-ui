@@ -128,7 +128,7 @@ export interface InterventionsFilterParams {
 export interface DraftActionPlan {
   id: string
   referralId: string
-  activities: Activity[] | null
+  activities: Activity[]
   numberOfSessions: number | null
 }
 
@@ -342,5 +342,14 @@ export default class InterventionsService {
     } catch (e) {
       throw this.createServiceError(e)
     }
+  }
+
+  async getDraftActionPlan(token: string, actionPlanId: string): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/draft-action-plan/${actionPlanId}`,
+      headers: { Accept: 'application/json' },
+    })) as DraftActionPlan
   }
 }
