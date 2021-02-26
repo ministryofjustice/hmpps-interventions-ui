@@ -95,6 +95,11 @@ export default class StaticContentController {
       description: 'IC-1177 (session feedback: confirmation - failure to attend)',
     },
     {
+      path: '/service-provider/sessions/reschedule-session-details',
+      template: 'serviceProviderReferrals/sessions/rescheduleSessionDetails',
+      description: 'IC-1177 (session feedback: Reschedule session details)',
+    },
+    {
       path: '/service-provider/layout-all-components',
       template: 'pages/layoutAllComponents',
       description: 'IC-1159 (layout template for all components)',
