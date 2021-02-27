@@ -105,6 +105,11 @@ export default class StaticContentController {
       description: 'IC-1177 (session feedback: Reschedule session details)',
     },
     {
+      path: '/service-provider/sessions/feedback/reschedule-in-draft',
+      template: 'serviceProviderReferrals/sessions/feedback/inDraft',
+      description: 'IC-1177 (session feedback: In draft)',
+    },
+    {
       path: '/service-provider/layout-all-components',
       template: 'pages/layoutAllComponents',
       description: 'IC-1159 (layout template for all components)',
