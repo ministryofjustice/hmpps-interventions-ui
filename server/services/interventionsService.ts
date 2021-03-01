@@ -125,8 +125,11 @@ export interface InterventionsFilterParams {
   maximumAge?: number
 }
 
-export interface DraftActionPlan {
+export interface DraftActionPlan extends ActionPlanFields {
   id: string
+}
+
+interface ActionPlanFields {
   referralId: string
   activities: Activity[]
   numberOfSessions: number | null
