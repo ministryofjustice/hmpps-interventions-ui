@@ -4,7 +4,6 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
-
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
@@ -13,21 +12,21 @@
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-l">Page 3 of 7</span>
       <h1 class="govuk-heading-l">
-       Meeting outcomes 1
+       Meeting outcomes 2
       </h1>
-      <h2 class="govuk-heading-m">
-       Desired outcome 1
-      </h2>
+    <h2 class="govuk-heading-m">
+     Desired outcome 2
+    </h2>
     {{ govukInsetText({
       text: "Service user secures early post-release engagement with community based services."
     }) }}
     <form action="#" method="#" class="govuk-!-padding-top-3">
     {{ govukRadios({
-      idPrefix: "outcome-one",
-      name: "outcome-one",
+      idPrefix: "outcome-two",
+      name: "outcome-twos",
       fieldset: {
         legend: {
-          text: "Has Matt met their desired outcome 1",
+          text: "Has Matt met their desired outcome 2?",
           isPageHeading: false,
           classes: "govuk-fieldset__legend--m"
         }

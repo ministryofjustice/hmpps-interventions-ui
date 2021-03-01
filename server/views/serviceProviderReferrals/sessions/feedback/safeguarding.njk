@@ -10,9 +10,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-l">Page 2 of 7</span>
-      <h1 class="govuk-heading-l">
-       Safeguarding issues
-      </h1>
     <form action="#" method="#">
     {{ govukRadios({
       idPrefix: "safeguarding",
@@ -21,8 +18,11 @@
         legend: {
           text: "Have you identified any safeguarding issues?",
           isPageHeading: false,
-          classes: "govuk-fieldset__legend--m"
+          classes: "govuk-fieldset__legend--l"
         }
+      },
+      hint: {
+        text: "Select one option"
       },
       items: [
         {
@@ -40,7 +40,7 @@
       id: "more-detail",
       label: {
         text: "Add information about any safeguarding issues identified in this session:",
-        classes: "govuk-label--s govuk-!-padding-bottom-3"
+        classes: "govuk-!-padding-bottom-3"
       }
     }) }}
     {{ govukButton({
