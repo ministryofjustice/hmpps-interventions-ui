@@ -75,7 +75,7 @@ export default class ServiceProviderReferralsController {
     const { email } = req.body
     const assignee = await this.hmppsAuthClient.getUserByEmailAddress(res.locals.user.token, email)
 
-    this.interventionsService.assignSentReferral(res.locals.user.token, req.params.id, {
+    await this.interventionsService.assignSentReferral(res.locals.user.token, req.params.id, {
       username: assignee.username,
       userId: assignee.userId,
       authSource: 'auth',
