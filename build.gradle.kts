@@ -18,8 +18,8 @@ configurations {
 
 tasks {
   test {
-    useJUnitPlatform() {
-      excludeTags("pact")
+    useJUnitPlatform {
+      exclude("**/*PactTest*")
     }
   }
 
@@ -31,8 +31,8 @@ tasks {
     systemProperty("pact.provider.version", System.getenv("PACT_PROVIDER_VERSION"))
     systemProperty("pact.verifier.publishResults", System.getenv("PACT_PUBLISH_RESULTS") ?: "false")
 
-    useJUnitPlatform() {
-      includeTags("pact")
+    useJUnitPlatform {
+      include("**/*PactTest*")
     }
   }
 }
