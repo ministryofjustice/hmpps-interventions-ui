@@ -13,7 +13,11 @@ enum class ReferralEventType {
   SENT, ASSIGNED,
 }
 
-class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Referral, val detailUrl: String) : ApplicationEvent(source)
+class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Referral, val detailUrl: String) : ApplicationEvent(source) {
+  override fun toString(): String {
+    return "ReferralEvent(type=$type, referral=${referral.id}, detailUrl='$detailUrl', source=$source)"
+  }
+}
 
 @Component
 class ReferralEventPublisher(

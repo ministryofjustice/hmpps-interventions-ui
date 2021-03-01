@@ -10,7 +10,7 @@ import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
@@ -53,14 +53,16 @@ class NotifyActionPlanServiceTest {
   @Test
   fun `action plan submitted event does not send email when user details are not available`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
-    notifyService().onApplicationEvent(actionPlanSubmittedEvent)
+    assertThrows<RuntimeException> {
+      notifyService().onApplicationEvent(actionPlanSubmittedEvent)
+    }
     verifyZeroInteractions(emailSender)
   }
 
   @Test
-  fun `referral assigned event swallows hmpps auth errors`() {
+  fun `referral assigned event does not swallow hmpps auth errors`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenThrow(UnverifiedEmailException::class.java)
-    assertDoesNotThrow { notifyService().onApplicationEvent(actionPlanSubmittedEvent) }
+    assertThrows<UnverifiedEmailException> { notifyService().onApplicationEvent(actionPlanSubmittedEvent) }
   }
 
   @Test

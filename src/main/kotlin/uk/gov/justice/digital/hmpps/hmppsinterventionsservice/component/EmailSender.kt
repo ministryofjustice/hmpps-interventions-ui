@@ -14,18 +14,7 @@ class EmailSender(
     if (!enabled) {
       return
     }
-
-    try {
-      client.sendEmail(
-        templateID,
-        emailAddress,
-        personalisation,
-        null,
-      )
-    } catch (e: Exception) {
-      // fixme: this failure is super important and we need a better way to reason about async errors of this nature
-      log.error("email notification failed", e)
-    }
+    client.sendEmail(templateID, emailAddress, personalisation, null)
   }
 
   companion object {

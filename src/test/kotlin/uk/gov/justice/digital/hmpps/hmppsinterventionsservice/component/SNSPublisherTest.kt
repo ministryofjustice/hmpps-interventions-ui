@@ -8,8 +8,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
@@ -43,13 +43,13 @@ class SNSPublisherTest {
   }
 
   @Test
-  fun `successful event published throws exception`() {
+  fun `thrown exception is not swallowed`() {
     whenever(snsClient.publish(any<PublishRequest>())).thenThrow(RuntimeException::class.java)
-    assertDoesNotThrow { snsPublisher(true).publish(event) }
+    assertThrows<RuntimeException> { snsPublisher(true).publish(event) }
   }
 
   @Test
-  fun ` event does not publish when service is disabled`() {
+  fun `event does not publish when service is disabled`() {
     snsPublisher(false).publish(event)
     verifyZeroInteractions(snsClient)
   }

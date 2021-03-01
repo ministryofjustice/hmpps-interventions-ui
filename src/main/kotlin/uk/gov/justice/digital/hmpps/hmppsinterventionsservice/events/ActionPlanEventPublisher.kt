@@ -13,7 +13,11 @@ enum class ActionPlanEventType {
   SUBMITTED,
 }
 
-class ActionPlanEvent(source: Any, val type: ActionPlanEventType, val actionPlan: ActionPlan, val detailUrl: String) : ApplicationEvent(source)
+class ActionPlanEvent(source: Any, val type: ActionPlanEventType, val actionPlan: ActionPlan, val detailUrl: String) : ApplicationEvent(source) {
+  override fun toString(): String {
+    return "ReferralEvent(type=$type, actionPlanId=${actionPlan.id}, detailUrl='$detailUrl', source=$source)"
+  }
+}
 
 @Component
 class ActionPlanEventPublisher(

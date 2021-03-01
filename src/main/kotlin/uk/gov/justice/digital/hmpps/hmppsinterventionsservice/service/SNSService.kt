@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 
 interface SNSService
 
@@ -16,6 +17,7 @@ class SNSActionPlanService(
   private val snsPublisher: SNSPublisher,
 ) : ApplicationListener<ActionPlanEvent>, SNSService {
 
+  @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
@@ -37,6 +39,7 @@ class SNSReferralService(
   private val snsPublisher: SNSPublisher,
 ) : ApplicationListener<ReferralEvent>, SNSService {
 
+  @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {

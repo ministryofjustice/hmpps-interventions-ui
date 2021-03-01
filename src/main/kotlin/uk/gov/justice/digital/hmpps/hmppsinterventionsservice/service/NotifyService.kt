@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
@@ -11,23 +10,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import java.net.URI
 import java.util.UUID
 
 interface NotifyService {
-
   fun generateResourceUrl(baseURL: String, path: String, id: UUID): URI {
     return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(id).toUri()
   }
-
-  fun getUserDetails(user: AuthUser, hmppsAuthService: HMPPSAuthService, log: Logger) =
-    try {
-      hmppsAuthService.getUserDetail(user)
-    } catch (e: Exception) {
-      log.error("could not get account details for assigned service provider user", e)
-      null
-    }
 }
 
 @Service
@@ -39,22 +29,22 @@ class NotifyActionPlanService(
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ActionPlanEvent>, NotifyService {
 
+  @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
 
       ActionPlanEventType.SUBMITTED -> {
-        getUserDetails(event.actionPlan.submittedBy!!, hmppsAuthService, log)?.let {
-          val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
-          emailSender.sendEmail(
-            actionPlanSubmittedTemplateID,
-            it.email,
-            mapOf(
-              "submitterFirstName" to it.firstName,
-              "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
-              "actionPlanUrl" to location.toString(),
-            )
+        val userDetail = hmppsAuthService.getUserDetail(event.actionPlan.submittedBy!!)
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
+        emailSender.sendEmail(
+          actionPlanSubmittedTemplateID,
+          userDetail.email,
+          mapOf(
+            "submitterFirstName" to userDetail.firstName,
+            "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
+            "actionPlanUrl" to location.toString(),
           )
-        }
+        )
       }
     }
   }
@@ -74,6 +64,7 @@ class NotifyReferralService(
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ReferralEvent>, NotifyService {
 
+  @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
 
@@ -92,18 +83,17 @@ class NotifyReferralService(
       }
 
       ReferralEventType.ASSIGNED -> {
-        getUserDetails(event.referral.assignedTo!!, hmppsAuthService, log)?.let {
-          val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
-          emailSender.sendEmail(
-            referralAssignedTemplateID,
-            it.email,
-            mapOf(
-              "spFirstName" to it.firstName,
-              "referenceNumber" to event.referral.referenceNumber!!,
-              "referralUrl" to location.toString(),
-            )
+        val userDetails = hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
+        emailSender.sendEmail(
+          referralAssignedTemplateID,
+          userDetails.email,
+          mapOf(
+            "spFirstName" to userDetails.firstName,
+            "referenceNumber" to event.referral.referenceNumber!!,
+            "referralUrl" to location.toString(),
           )
-        }
+        )
       }
     }
   }
