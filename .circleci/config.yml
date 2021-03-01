@@ -162,7 +162,7 @@ workflows:
             - helm_lint
             - vulnerability_scan_and_monitor
           context:
-            - moj-slack-notifications
+            - hmpps-common-vars
       - approve_preprod:
           type: approval
           requires:
@@ -176,7 +176,8 @@ workflows:
           requires:
             - approve_preprod
           context:
-            - moj-slack-notifications
+            - hmpps-common-vars
+            - hmpps-interventions-service-preprod
 
   nightly:
     triggers:
