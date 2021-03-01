@@ -88,4 +88,10 @@ env:
         name: hmpps-domain-events-topic
         key: topic_arn
 
+  - name: NOTIFY_APIKEY
+    valueFrom:
+      secretKeyRef:
+        name: notify
+        key: api_key
+
 {{- end -}}
