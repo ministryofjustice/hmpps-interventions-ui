@@ -134,9 +134,19 @@ export interface DraftActionPlan {
 
 interface Activity {
   id: string
-  desiredOutcomeId: string
+  desiredOutcome: DesiredOutcome
   description: string
   createdAt: string
+}
+
+interface UpdateActivityParams {
+  description: string
+  desiredOutcomeId: string
+}
+
+interface UpdateDraftActionPlanParams {
+  activity?: UpdateActivityParams
+  numberOfSessions?: number
 }
 
 export default class InterventionsService {
@@ -351,5 +361,23 @@ export default class InterventionsService {
       path: `/draft-action-plan/${actionPlanId}`,
       headers: { Accept: 'application/json' },
     })) as DraftActionPlan
+  }
+
+  async updateDraftActionPlan(
+    token: string,
+    id: string,
+    patch: Partial<UpdateDraftActionPlanParams>
+  ): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.patch({
+        path: `/draft-action-plan/${id}`,
+        headers: { Accept: 'application/json' },
+        data: patch,
+      })) as DraftActionPlan
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
   }
 }
