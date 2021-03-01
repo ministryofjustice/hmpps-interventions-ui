@@ -163,6 +163,20 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
         expect(res.text).toContain('john@harmonyliving.org.uk')
       })
   })
+  it('redirects to referral details page with an error if the assignee email address is missing from the URL', async () => {
+    await request(app)
+      .get(`/service-provider/referrals/123456/assignment/check`)
+      .expect(302)
+      .expect('Location', '/service-provider/referrals/123456?error=An%20email%20address%20is%20required')
+  })
+  it('redirects to referral details page with an error if the assignee email address is not found in hmpps auth', async () => {
+    hmppsAuthClient.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
+
+    await request(app)
+      .get(`/service-provider/referrals/123456/assignment/check?email=tom@tom.com`)
+      .expect(302)
+      .expect('Location', '/service-provider/referrals/123456?error=Email%20address%20not%20found')
+  })
 })
 
 describe('POST /service-provider/referrals/:id/assignment', () => {
@@ -190,6 +204,9 @@ describe('POST /service-provider/referrals/:id/assignment', () => {
       userId: hmppsAuthUser.userId,
       authSource: 'auth',
     })
+  })
+  it('fails if the assignee email address is missing', async () => {
+    await request(app).post(`/service-provider/referrals/123456/assignment`).type('form').send({}).expect(400)
   })
 })
 

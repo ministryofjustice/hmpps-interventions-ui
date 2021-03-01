@@ -42,4 +42,9 @@ export default {
     notWholeNumber: (name: string) =>
       `The maximum number of RAR days for the ${name} service must be a whole number, like 5`,
   },
+  assignReferral: {
+    emailEmpty: 'An email address is required',
+    emailNotFound: 'Email address not found',
+    unknownError: 'Could not find email address due to service interruption; please try again later',
+  },
 }

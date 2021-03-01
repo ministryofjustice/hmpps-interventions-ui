@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
+import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService from '../../services/interventionsService'
-import HmppsAuthClient from '../../data/hmppsAuthClient'
+import HmppsAuthClient, { AuthUser } from '../../data/hmppsAuthClient'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
 import DashboardPresenter from './dashboardPresenter'
@@ -10,6 +11,8 @@ import ShowReferralPresenter from './showReferralPresenter'
 import ShowReferralView from './showReferralView'
 import AssignmentConfirmationView from './assignmentConfirmationView'
 import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
+import { FormValidationError } from '../../utils/formValidationError'
+import errorMessages from '../../utils/errorMessages'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -47,32 +50,71 @@ export default class ServiceProviderReferralsController {
         ? null
         : await this.hmppsAuthClient.getUserByUsername(res.locals.user.token, sentReferral.assignedTo.username)
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee)
+    let formError: FormValidationError | null = null
+    if (assignee === null) {
+      const error = req.query.error as string
+      if (error !== undefined || error !== '') {
+        formError = {
+          errors: [
+            {
+              formFields: ['email'],
+              errorSummaryLinkedField: 'email',
+              message: error,
+            },
+          ],
+        }
+      }
+    }
+
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee, formError)
     const view = new ShowReferralView(presenter)
 
     res.render(...view.renderArgs)
   }
 
   async checkAssignment(req: Request, res: Response): Promise<void> {
-    // TODO IC-1180 - Validation: presence, and that it exists in HMPPS Auth
     const email = req.query.email as string
-    const assigneePromise = this.hmppsAuthClient.getUserByEmailAddress(res.locals.user.token, email)
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
 
-    const [assignee, serviceCategory] = await Promise.all([
-      assigneePromise,
-      this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
-    ])
+    if (email === undefined || email === '') {
+      return res.redirect(
+        `/service-provider/referrals/${req.params.id}?${querystring.stringify({
+          error: errorMessages.assignReferral.emailEmpty,
+        })}`
+      )
+    }
+
+    let assignee: AuthUser
+    const token = await this.hmppsAuthClient.getApiClientToken()
+
+    try {
+      assignee = await this.hmppsAuthClient.getUserByEmailAddress(token, email)
+    } catch (e) {
+      return res.redirect(
+        `/service-provider/referrals/${req.params.id}?${querystring.stringify({
+          error: errorMessages.assignReferral.emailNotFound,
+        })}`
+      )
+    }
+
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.referral.serviceCategoryId
+    )
 
     const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, serviceCategory)
     const view = new CheckAssignmentView(presenter)
 
-    res.render(...view.renderArgs)
+    return res.render(...view.renderArgs)
   }
 
   async assignReferral(req: Request, res: Response): Promise<void> {
-    // TODO IC-1180 - Validation: presence
     const { email } = req.body
+    if (email === undefined || email === null || email === '') {
+      res.sendStatus(400)
+      return
+    }
+
     const assignee = await this.hmppsAuthClient.getUserByEmailAddress(res.locals.user.token, email)
 
     await this.interventionsService.assignSentReferral(res.locals.user.token, req.params.id, {
