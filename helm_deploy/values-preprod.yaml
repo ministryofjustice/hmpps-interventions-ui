@@ -1,0 +1,24 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: quay.io/hmpps/hmpps-interventions-ui
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 3000
+
+ingress:
+  enabled: true
+  host: hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
+  path: /
+
+env:
+  HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
+  COMMUNITY_API_URL: https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io
+  OFFENDER_ASSESSMENTS_API_URL: https://offender-prprod.aks-live-1.studio-hosting.service.justice.gov.uk
+  INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
+  TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
+  TOKEN_VERIFICATION_ENABLED: true
+  REDIS_TLS_ENABLED: true
