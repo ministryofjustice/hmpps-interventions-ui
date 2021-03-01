@@ -57,7 +57,7 @@ class ActionPlanService(
 
   fun submitDraftActionPlan(id: UUID, submittedByUser: AuthUser): ActionPlan {
 
-    val draftActionPlan = getDraftActionPlanAndThrowExceptionIfNotFound(id)
+    val draftActionPlan = getDraftActionPlanOrElseThrowException(id)
     updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
     val savedDraftActionPlan = actionPlanRepository.save(draftActionPlan)
     actionPlanEventPublisher.actionPlanSubmitEvent(savedDraftActionPlan)
@@ -77,7 +77,7 @@ class ActionPlanService(
     }
   }
 
-  private fun getDraftActionPlanAndThrowExceptionIfNotFound(id: UUID): ActionPlan {
+  private fun getDraftActionPlanOrElseThrowException(id: UUID): ActionPlan {
     return actionPlanRepository.findByIdAndSubmittedAtIsNull(id)
       ?: throw EntityNotFoundException("draft action plan not found [id=$id]")
   }
