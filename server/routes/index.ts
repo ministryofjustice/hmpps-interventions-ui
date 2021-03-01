@@ -67,12 +67,12 @@ export default function routes(router: Router, services: Services): Router {
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {
-      staticContentController.index(req, res)
+      return staticContentController.index(req, res)
     })
 
     StaticContentController.allPaths.forEach(path => {
       get(path, (req, res) => {
-        staticContentController.renderStaticPage(req, res)
+        return staticContentController.renderStaticPage(req, res)
       })
     })
   }
