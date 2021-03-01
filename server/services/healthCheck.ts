@@ -62,6 +62,7 @@ const apiChecks = [
 ]
 
 export default function healthCheck(callback: HealthCheckCallback, checks = apiChecks): void {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   Promise.all(checks.map(fn => fn())).then(checkResults => {
     const allOk = checkResults.every(item => item.status === 'ok')
 

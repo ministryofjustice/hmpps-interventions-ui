@@ -90,7 +90,7 @@ describe('hmppsAuthClient', () => {
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(204, noUserResponse)
 
-        expect(hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
+        await expect(hmppsAuthClient.getUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
           'Email not found'
         )
       })
