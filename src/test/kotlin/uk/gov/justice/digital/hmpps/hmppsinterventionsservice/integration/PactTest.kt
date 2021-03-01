@@ -6,7 +6,6 @@ import au.com.dius.pact.provider.junitsupport.State
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +22,6 @@ import java.util.UUID
 
 @PactBroker
 @Provider("Interventions Service")
-@Tag("pact")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test", "local", "seed")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

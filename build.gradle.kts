@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.1.1"
-  kotlin("plugin.spring") version "1.4.10"
-  id("org.jetbrains.kotlin.plugin.jpa") version "1.4.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.1"
+  kotlin("plugin.spring") version "1.4.31"
+  id("org.jetbrains.kotlin.plugin.jpa") version "1.4.31"
 }
 
 repositories {
@@ -18,8 +18,8 @@ configurations {
 
 tasks {
   test {
-    useJUnitPlatform() {
-      excludeTags("pact")
+    useJUnitPlatform {
+      exclude("**/*PactTest*")
     }
   }
 
@@ -31,19 +31,19 @@ tasks {
     systemProperty("pact.provider.version", System.getenv("PACT_PROVIDER_VERSION"))
     systemProperty("pact.verifier.publishResults", System.getenv("PACT_PUBLISH_RESULTS") ?: "false")
 
-    useJUnitPlatform() {
-      includeTags("pact")
+    useJUnitPlatform {
+      include("**/*PactTest*")
     }
   }
 }
 
 dependencies {
   // openapi
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.3")
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.5")
 
   // notifications
   implementation("uk.gov.service.notify:notifications-java-client:3.17.0-RELEASE")
-  implementation("software.amazon.awssdk:sns:2.15.71")
+  implementation("software.amazon.awssdk:sns:2.16.9")
 
   // security
   implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -53,14 +53,14 @@ dependencies {
   // database
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-validation")
-  implementation("org.hibernate:hibernate-core:5.4.24.Final")
-  implementation("com.vladmihalcea:hibernate-types-52:2.10.2")
+  implementation("org.hibernate:hibernate-core:5.4.28.Final")
+  implementation("com.vladmihalcea:hibernate-types-52:2.10.3")
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql")
 
-  testImplementation("au.com.dius.pact.provider:junit5spring:4.1.14")
+  testImplementation("au.com.dius.pact.provider:junit5spring:4.2.0")
   testImplementation("com.h2database:h2:1.4.200")
-  testImplementation("com.squareup.okhttp3:okhttp:4.9.0")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.0")
-  testImplementation("uk.org.lidalia:slf4j-test:1.0.1")
+  testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
+  testImplementation("uk.org.lidalia:slf4j-test:1.2.0")
 }
