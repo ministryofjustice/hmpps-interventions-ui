@@ -152,6 +152,13 @@ interface UpdateDraftActionPlanParams {
   numberOfSessions?: number
 }
 
+export interface SubmittedActionPlan {
+  id: string
+  submittedBy: AuthUser
+  submittedAt: string
+  actionPlanFields: ActionPlanFields
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -382,5 +389,14 @@ export default class InterventionsService {
     } catch (e) {
       throw this.createServiceError(e)
     }
+  }
+
+  async submitActionPlan(token: string, id: string): Promise<SubmittedActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/draft-action-plan/${id}/submit`,
+      headers: { Accept: 'application/json' },
+    })) as SubmittedActionPlan
   }
 }
