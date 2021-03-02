@@ -95,7 +95,12 @@ export default class HmppsAuthClient {
       return Promise.reject(new Error('Email not found'))
     }
 
-    const authUsers = res.body as AuthUser[]
+    const authUsers = (res.body as AuthUser[]).filter(user => user.verified && user.enabled)
+
+    if (authUsers.length === 0) {
+      return Promise.reject(new Error('No verified and active accounts found for this email address'))
+    }
+
     return Promise.resolve(authUsers[0])
   }
 

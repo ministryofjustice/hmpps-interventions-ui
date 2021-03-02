@@ -55,17 +55,28 @@ describe('hmppsAuthClient', () => {
 
   describe('getSPUserByEmailAddress', () => {
     describe('when a matching user is found with the requested email address', () => {
-      it('should return the first matching user from the API response', async () => {
+      it('should return the first active and verified user from the API response', async () => {
         const response = [
+          {
+            userId: 'D89C09A9-1FAC-476D-91F8-E0EDCA10ECAF',
+            username: 'disable user account',
+            email: 'user@example.com',
+            firstName: 'Auth',
+            lastName: 'User',
+            locked: false,
+            enabled: false,
+            verified: true,
+            lastLoggedIn: '01/01/2001',
+          },
           {
             userId: '91229A16-B5F4-4784-942E-A484A97AC865',
             username: 'authuser',
             email: 'user@example.com',
             firstName: 'Auth',
             lastName: 'User',
-            locked: true,
-            enabled: false,
-            verified: false,
+            locked: false,
+            enabled: true,
+            verified: true,
             lastLoggedIn: '01/01/2001',
           },
         ]
@@ -77,7 +88,7 @@ describe('hmppsAuthClient', () => {
           .reply(200, response)
 
         const output = await hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')
-        expect(output).toEqual(response[0])
+        expect(output).toEqual(response[1])
       })
     })
 
@@ -92,6 +103,55 @@ describe('hmppsAuthClient', () => {
 
         await expect(hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
           'Email not found'
+        )
+      })
+    })
+
+    describe('when no active or verified users are found with the requested email address', () => {
+      it('should raise an error', async () => {
+        const invalidUserResponse = [
+          {
+            userId: '91229A16-B5F4-4784-942E-A484A97AC865',
+            username: 'verified_not_enabled',
+            email: 'user@example.com',
+            firstName: 'Auth',
+            lastName: 'User',
+            locked: true,
+            enabled: false,
+            verified: true,
+            lastLoggedIn: '01/01/2001',
+          },
+          {
+            userId: '4020F3FD-75F5-4962-BFB3-7C17E5F3D053',
+            username: 'enabled_not_verified',
+            email: 'user@example.com',
+            firstName: 'Auth',
+            lastName: 'User',
+            locked: true,
+            enabled: true,
+            verified: false,
+            lastLoggedIn: '01/01/2001',
+          },
+          {
+            userId: '5C15EB69-DE44-4D78-9F87-EA577020BF2D',
+            username: 'neither_verified_nor_enabled',
+            email: 'user@example.com',
+            firstName: 'Auth',
+            lastName: 'User',
+            locked: true,
+            enabled: false,
+            verified: false,
+            lastLoggedIn: '01/01/2001',
+          },
+        ]
+        fakeHmppsAuthApi
+          .get('/api/authuser')
+          .query({ email: 'user@example.com' })
+          .matchHeader('authorization', `Bearer ${token.access_token}`)
+          .reply(200, invalidUserResponse)
+
+        await expect(hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
+          'No verified and active accounts found for this email address'
         )
       })
     })
