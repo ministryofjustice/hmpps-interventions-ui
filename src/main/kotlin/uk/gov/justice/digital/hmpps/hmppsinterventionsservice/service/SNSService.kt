@@ -30,7 +30,7 @@ class SNSService(
           "A referral has been assigned to a caseworker / service provider",
           event.detailUrl,
           event.referral.assignedAt!!,
-          mapOf("referral_id" to event.referral.id, "assignedTo" to (event.referral.assignedTo?.userName!!))
+          mapOf("referralId" to event.referral.id, "assignedTo" to (event.referral.assignedTo?.userName!!))
         )
         snsPublisher.publish(snsEvent)
       }
