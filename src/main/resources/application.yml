@@ -76,7 +76,7 @@ notify:
 
 interventions-ui:
   locations:
-    sent-referral: "/referrals/{id}/confirmation"
+    sent-referral: "/service-provider/referrals/{id}"
 
 community-api:
   locations:
