@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.isNotNull
+import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import uk.gov.service.notify.NotificationClient
 
 class EmailSenderTest {
@@ -26,8 +29,10 @@ class EmailSenderTest {
   }
 
   @Test
-  fun `Swallows exceptions thrown by notification client`() {
-    whenever(notificationClient.sendEmail(any(), any(), any(), any())).thenThrow(RuntimeException::class.java)
-    EmailSender(true, notificationClient).sendEmail("template", "address", mapOf())
+  fun `Does not swallow exception thrown by notification client`() {
+    whenever(notificationClient.sendEmail(any(), any(), any(), isNull())).thenThrow(RuntimeException::class.java)
+    assertThrows<RuntimeException> {
+      EmailSender(true, notificationClient).sendEmail("template", "address", mapOf())
+    }
   }
 }
