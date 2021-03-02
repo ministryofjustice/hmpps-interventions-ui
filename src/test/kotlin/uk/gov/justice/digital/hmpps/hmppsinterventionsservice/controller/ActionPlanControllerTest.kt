@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -13,11 +13,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.net.URI
+import java.time.OffsetDateTime
 import java.util.UUID
 
 internal class ActionPlanControllerTest {
@@ -67,20 +70,35 @@ internal class ActionPlanControllerTest {
   }
 
   @Test
-  fun `successfully update a draft action plan`() {
+  fun `successfully update a draft action plan containing an activity`() {
     val draftActionPlanId = UUID.randomUUID()
-    val actionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
-    val draftActionPlanDTO = DraftActionPlanDTO.from(SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = 5))
+    val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "Des Out", UUID.randomUUID())
+    val activityDTO = CreateActionPlanActivityDTO(desiredOutcome.id, "Description")
+    val activityUpdate = ActionPlanActivity("Description", OffsetDateTime.now(), desiredOutcome)
+    whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activityDTO)).thenReturn(activityUpdate)
 
-    val updatedActionPlan = SampleData.sampleActionPlan(numberOfSessions = 5)
+    val updatedActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
+    whenever(actionPlanService.updateActionPlan(draftActionPlanId, 1, activityUpdate)).thenReturn(updatedActionPlan)
 
-    whenever(actionPlanMapper.mapActionPlanDtoToActionPlan(draftActionPlanId, draftActionPlanDTO)).thenReturn(actionPlan)
-    whenever(actionPlanService.updateActionPlan(actionPlan)).thenReturn(updatedActionPlan)
+    val updateActionPlanDTO = UpdateActionPlanDTO(1, activityDTO)
 
-    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, draftActionPlanDTO)
+    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, updateActionPlanDTO)
 
-    verify(actionPlanMapper).mapActionPlanDtoToActionPlan(draftActionPlanId, draftActionPlanDTO)
-    verify(actionPlanService).updateActionPlan(actionPlan)
+    assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
+  }
+
+  @Test
+  fun `successfully update a draft action plan without an activity`() {
+    val draftActionPlanId = UUID.randomUUID()
+
+    val updatedActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
+    whenever(actionPlanService.updateActionPlan(draftActionPlanId, 1, null)).thenReturn(updatedActionPlan)
+
+    val updateActionPlanDTO = UpdateActionPlanDTO(1, null)
+
+    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, updateActionPlanDTO)
+
+    verifyZeroInteractions(actionPlanMapper)
     assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
   }
 
