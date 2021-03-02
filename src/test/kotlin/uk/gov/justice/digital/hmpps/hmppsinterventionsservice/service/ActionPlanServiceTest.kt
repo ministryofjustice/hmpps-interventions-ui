@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -96,20 +95,60 @@ internal class ActionPlanServiceTest {
   }
 
   @Test
-  fun `successful update action plan`() {
+  fun `successful update action plan with number of sessions`() {
     val draftActionPlanId = UUID.randomUUID()
-    val draftActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
-    val draftActionPlanUpdate = SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = 5)
-
-    val updatedActionPlan = draftActionPlan.copy()
-    updatedActionPlan.numberOfSessions = 5
-
+    val draftActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = 9)
     whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(draftActionPlanId)).thenReturn(draftActionPlan)
-    whenever(actionPlanRepository.save(any())).thenReturn(updatedActionPlan)
 
-    val updatedDraftActionPlanResponse = actionPlanService.updateActionPlan(draftActionPlanUpdate)
+    val updatedDraftActionPlan = draftActionPlan.copy(numberOfSessions = 5)
+    whenever(
+      actionPlanRepository.save(
+        ArgumentMatchers.argThat {
+          (
+            numberOfSessionsArg, activitiesArg, _, _, _, _, _, _
+          ) ->
+          (
+            numberOfSessionsArg == 5 && activitiesArg.size == draftActionPlan.activities.size
+            )
+        }
+      )
+    ).thenReturn(updatedDraftActionPlan)
 
-    assertThat(updatedDraftActionPlanResponse).isSameAs(updatedActionPlan)
+    val updatedDraftActionPlanResponse = actionPlanService.updateActionPlan(draftActionPlanId, 5, null)
+
+    assertThat(updatedDraftActionPlanResponse).isSameAs(updatedDraftActionPlan)
+    assertThat(updatedDraftActionPlanResponse.numberOfSessions).isEqualTo(5)
+  }
+
+  @Test
+  fun `successful update action plan with new activity`() {
+    val draftActionPlanId = UUID.randomUUID()
+    val draftActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = 9, activities = listOf())
+    whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(draftActionPlanId)).thenReturn(draftActionPlan)
+
+    val updatedDraftActionPlan = draftActionPlan.copy()
+
+    whenever(
+      actionPlanRepository.save(
+        ArgumentMatchers.argThat {
+          (
+            numberOfSessionsArg, activitiesArg, _, _, _, _, _, _
+          ) ->
+          (
+            numberOfSessionsArg == 9 && activitiesArg.size == 1
+            )
+        }
+      )
+    ).thenReturn(updatedDraftActionPlan)
+
+    val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "Des Out", UUID.randomUUID())
+    val newActivity = ActionPlanActivity("Description", OffsetDateTime.now(), desiredOutcome)
+
+    val updatedDraftActionPlanResponse = actionPlanService.updateActionPlan(draftActionPlanId, null, newActivity)
+
+    assertThat(updatedDraftActionPlanResponse).isSameAs(updatedDraftActionPlan)
+    assertThat(updatedDraftActionPlanResponse.numberOfSessions).isEqualTo(9)
+    assertThat(updatedDraftActionPlanResponse.activities).contains(newActivity)
   }
 
   @Test

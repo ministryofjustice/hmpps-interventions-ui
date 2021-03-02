@@ -29,7 +29,7 @@ class ActionPlanFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         numberOfSessions = numberOfSessions,
         createdAt = createdAt ?: OffsetDateTime.now(),
         createdBy = createdBy ?: authUserFactory.create(),
-        activities = listOf(
+        activities = mutableListOf(
           ActionPlanActivity(
             description = singleActivityDescription,
             createdAt = OffsetDateTime.now(),

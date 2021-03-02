@@ -36,7 +36,7 @@ class ActionPlanService(
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
       referral = referralRepository.getOne(referralId),
-      activities = activities
+      activities = activities.toMutableList()
     )
 
     return actionPlanRepository.save(draftActionPlan)
@@ -47,10 +47,14 @@ class ActionPlanService(
       ?: throw EntityNotFoundException("draft action plan not found [id=$id]")
   }
 
-  fun updateActionPlan(update: ActionPlan): ActionPlan {
-    val draftActionPlan = getDraftActionPlan(update.id)
-    actionPlanValidator.validateDraftActionPlanUpdate(update)
-    updateDraftActivityPlan(draftActionPlan, update)
+  fun updateActionPlan(
+    actionPlanId: UUID,
+    numberOfSessions: Int?,
+    activityUpdate: ActionPlanActivity?,
+  ): ActionPlan {
+    val draftActionPlan = getDraftActionPlan(actionPlanId)
+    updateDraftActivityPlan(draftActionPlan, numberOfSessions, activityUpdate)
+    actionPlanValidator.validateDraftActionPlanUpdate(draftActionPlan)
 
     return actionPlanRepository.save(draftActionPlan)
   }
@@ -71,9 +75,17 @@ class ActionPlanService(
     }
   }
 
-  private fun updateDraftActivityPlan(draftActionPlan: ActionPlan, update: ActionPlan) {
-    update.numberOfSessions?.let {
+  private fun updateDraftActivityPlan(
+    draftActionPlan: ActionPlan,
+    numberOfSessions: Int?,
+    activityUpdate: ActionPlanActivity?
+  ) {
+    numberOfSessions?.let {
       draftActionPlan.numberOfSessions = it
+    }
+
+    activityUpdate?.let {
+      draftActionPlan.activities.add(it)
     }
   }
 

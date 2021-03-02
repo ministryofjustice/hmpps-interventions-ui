@@ -138,7 +138,8 @@ class SampleData {
       submittedAt: OffsetDateTime? = null,
       desiredOutcome: DesiredOutcome = sampleDesiredOutcome(),
       activityCreatedAt: OffsetDateTime = OffsetDateTime.now(),
-      activities: List<ActionPlanActivity> = listOf(sampleActionPlanActivity(desiredOutcome, activityCreatedAt)),
+      activityId: UUID = UUID.randomUUID(),
+      activities: List<ActionPlanActivity> = listOf(sampleActionPlanActivity(activityId, desiredOutcome, activityCreatedAt)),
     ): ActionPlan {
       return ActionPlan(
         id = id ?: UUID.randomUUID(),
@@ -148,15 +149,17 @@ class SampleData {
         createdAt = createdAt,
         submittedBy = submittedBy,
         submittedAt = submittedAt,
-        activities = activities
+        activities = activities.toMutableList()
       )
     }
 
     fun sampleActionPlanActivity(
+      id: UUID = UUID.randomUUID(),
       desiredOutcome: DesiredOutcome,
       createdAt: OffsetDateTime = OffsetDateTime.now()
     ): ActionPlanActivity {
       return ActionPlanActivity(
+        id = id,
         description = "Some text to describe activity",
         createdAt = createdAt,
         desiredOutcome = desiredOutcome

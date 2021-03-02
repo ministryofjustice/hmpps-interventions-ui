@@ -22,6 +22,7 @@ class DraftActionPlanDTOTest(@Autowired private val json: JacksonTester<DraftAct
       referral = SampleData.sampleReferral(id = UUID.fromString("222ED289-8412-41A9-8291-45E33E60276C"), crn = "CRN123", serviceProviderName = "SP"),
       createdAt = planCreatedAt,
       desiredOutcome = SampleData.sampleDesiredOutcome(id = UUID.fromString("333ED289-8412-41A9-8291-45E33E60276C")),
+      activityId = UUID.fromString("444ED289-8412-41A9-8291-45E33E60276C"),
       activityCreatedAt = activityCreatedAt
     )
 
@@ -34,6 +35,7 @@ class DraftActionPlanDTOTest(@Autowired private val json: JacksonTester<DraftAct
         "numberOfSessions": 1,
         "activities": [
           {
+            "id": "444ed289-8412-41a9-8291-45e33e60276c",
             "desiredOutcome": {
               "id": "333ed289-8412-41a9-8291-45e33e60276c",
               "description": "Outcome 1"

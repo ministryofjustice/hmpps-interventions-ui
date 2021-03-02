@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
-import java.time.OffsetDateTime
 import java.util.UUID
 
 data class CreateActionPlanDTO(
@@ -10,7 +9,6 @@ data class CreateActionPlanDTO(
 )
 
 data class CreateActionPlanActivityDTO(
-  val desiredOutcome: DesiredOutcomeDTO,
-  val description: String,
-  val createdAt: OffsetDateTime
+  val desiredOutcomeId: UUID,
+  val description: String
 )
