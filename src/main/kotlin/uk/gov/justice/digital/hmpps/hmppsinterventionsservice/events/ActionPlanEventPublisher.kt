@@ -15,7 +15,7 @@ enum class ActionPlanEventType {
 
 class ActionPlanEvent(source: Any, val type: ActionPlanEventType, val actionPlan: ActionPlan, val detailUrl: String) : ApplicationEvent(source) {
   override fun toString(): String {
-    return "ReferralEvent(type=$type, actionPlanId=${actionPlan.id}, detailUrl='$detailUrl', source=$source)"
+    return "ActionPlanEvent(type=$type, actionPlanId=${actionPlan.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 
@@ -33,6 +33,6 @@ class ActionPlanEventPublisher(
     val method = ActionPlanController::getActionPlan as KFunction<*>
     val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
 
-    return locationMapper.mapToCurrentContextPathAsString(path, actionPlan.id)
+    return locationMapper.mapToCurrentContextPathAsString(path, actionPlan.id).toUriString()
   }
 }

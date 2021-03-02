@@ -7,8 +7,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import java.net.URI
 
 class ReferralEventPublisherTest {
 
@@ -18,8 +20,8 @@ class ReferralEventPublisherTest {
   @Test
   fun `builds an referral sent event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
-    val detailUrl = "//localhost/referral/" + referral.id
-    whenever(locationMapper.mapToCurrentContextPathAsString("/sent-referral/{id}", referral.id)).thenReturn(detailUrl)
+    val uriComponents = UriComponentsBuilder.fromUri(URI.create("//localhost/sent-referral/" + referral.id)).build()
+    whenever(locationMapper.mapToCurrentContextPathAsString("/sent-referral/{id}", referral.id)).thenReturn(uriComponents)
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
     publisher.referralSentEvent(referral)
@@ -31,14 +33,14 @@ class ReferralEventPublisherTest {
     assertThat(event.source).isSameAs(publisher)
     assertThat(event.type).isSameAs(ReferralEventType.SENT)
     assertThat(event.referral).isSameAs(referral)
-    assertThat(event.detailUrl).isSameAs(detailUrl)
+    assertThat(event.detailUrl).isEqualTo(uriComponents.toUriString())
   }
 
   @Test
   fun `builds an referral assign event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
-    val detailUrl = "//localhost/referral/" + referral.id
-    whenever(locationMapper.mapToCurrentContextPathAsString("/sent-referral/{id}", referral.id)).thenReturn(detailUrl)
+    val uriComponents = UriComponentsBuilder.fromUri(URI.create("//localhost/sent-referral/" + referral.id)).build()
+    whenever(locationMapper.mapToCurrentContextPathAsString("/sent-referral/{id}", referral.id)).thenReturn(uriComponents)
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
     publisher.referralAssignedEvent(referral)
@@ -50,6 +52,6 @@ class ReferralEventPublisherTest {
     assertThat(event.source).isSameAs(publisher)
     assertThat(event.type).isSameAs(ReferralEventType.ASSIGNED)
     assertThat(event.referral).isSameAs(referral)
-    assertThat(event.detailUrl).isSameAs(detailUrl)
+    assertThat(event.detailUrl).isEqualTo(uriComponents.toUriString())
   }
 }

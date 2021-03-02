@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
@@ -39,12 +40,12 @@ internal class ActionPlanControllerTest {
     val actionPlan = SampleData.sampleActionPlan()
     val activities = emptyList<ActionPlanActivity>()
     val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
-    val uri = URI.create("/1234")
+    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
-    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)).thenReturn(uri)
+    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)).thenReturn(uriComponents)
 
     val draftActionPlanResponse = actionPlanController.createDraftActionPlan(createActionPlanDTO, jwtAuthenticationToken)
 

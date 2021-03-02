@@ -43,7 +43,7 @@ class ActionPlanController(
 
     val draftActionPlanDTO = DraftActionPlanDTO.from(draftActionPlan)
     val location = locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)
-    return ResponseEntity.created(location).body(draftActionPlanDTO)
+    return ResponseEntity.created(location.toUri()).body(draftActionPlanDTO)
   }
 
   @PostMapping("/draft-action-plan/{id}/submit")

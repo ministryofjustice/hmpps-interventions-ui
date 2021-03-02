@@ -7,9 +7,11 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import java.net.URI
 
 class ActionPlanEventPublisherTest {
 
@@ -19,8 +21,8 @@ class ActionPlanEventPublisherTest {
   @Test
   fun `builds an action plan submit event and publishes it`() {
     val actionPlan = SampleData.sampleActionPlan()
-    val detailUrl = "//localhost/actionPlan/" + actionPlan.id
-    whenever(locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlan.id)).thenReturn(detailUrl)
+    val uriComponents = UriComponentsBuilder.fromUri(URI.create("//localhost/action-plan/" + actionPlan.id)).build()
+    whenever(locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlan.id)).thenReturn(uriComponents)
     val publisher = ActionPlanEventPublisher(eventPublisher, locationMapper)
 
     publisher.actionPlanSubmitEvent(actionPlan)
@@ -32,6 +34,6 @@ class ActionPlanEventPublisherTest {
     assertThat(event.source).isSameAs(publisher)
     assertThat(event.type).isSameAs(SUBMITTED)
     assertThat(event.actionPlan).isSameAs(actionPlan)
-    assertThat(event.detailUrl).isSameAs(detailUrl)
+    assertThat(event.detailUrl).isEqualTo(uriComponents.toUriString())
   }
 }
