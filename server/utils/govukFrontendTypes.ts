@@ -17,7 +17,12 @@ export interface InputArgs {
   label: {
     text?: string
     html?: string
+    classes?: string
   }
+  autocomplete?: string
+  errorMessage?: {
+    text: string
+  } | null
 }
 
 export interface PanelArgs {

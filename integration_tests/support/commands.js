@@ -3,8 +3,8 @@ Cypress.Commands.add('login', () => {
   cy.task('getLoginUrl').then(cy.visit)
 })
 
-Cypress.Commands.add('stubGetUserByEmailAddress', responseJson => {
-  cy.task('stubGetUserByEmailAddress', { responseJson })
+Cypress.Commands.add('stubGetAuthUserByEmailAddress', responseJson => {
+  cy.task('stubGetAuthUserByEmailAddress', { responseJson })
 })
 
 Cypress.Commands.add('stubGetAuthUserByUsername', (username, responseJson) => {

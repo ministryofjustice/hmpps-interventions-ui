@@ -24,6 +24,7 @@ export default class ShowReferralView {
       label: {
         text: 'Please enter the email address of the caseworker',
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.errorMessage),
     }
   }
 

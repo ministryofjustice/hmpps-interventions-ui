@@ -6,6 +6,7 @@ import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
+import { FormValidationError } from '../../utils/formValidationError'
 
 export default class ShowReferralPresenter {
   constructor(
@@ -13,7 +14,8 @@ export default class ShowReferralPresenter {
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly assignee: AuthUser | null
+    private readonly assignee: AuthUser | null,
+    private readonly assignEmailError: FormValidationError | null
   ) {}
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
@@ -27,6 +29,7 @@ export default class ShowReferralPresenter {
           )}`,
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
     assignedTo: this.assigneeFullNameOrUnassigned,
+    errorMessage: ReferralDataPresenterUtils.errorMessage(this.assignEmailError, 'email'),
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [

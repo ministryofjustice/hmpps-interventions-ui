@@ -20,11 +20,11 @@ module.exports = on => {
     stubLogin: auth.stubLogin,
     stubServiceProviderToken: auth.stubServiceProviderToken,
     stubProbationPractitionerToken: auth.stubProbationPractitionerToken,
-    stubGetUserByEmailAddress: arg => {
-      return auth.stubGetUserByEmailAddress(arg.responseJson)
+    stubGetAuthUserByEmailAddress: arg => {
+      return auth.stubGetSPUserByEmailAddress(arg.responseJson)
     },
     stubGetAuthUserByUsername: arg => {
-      return auth.stubGetAuthUserByUsername(arg.username, arg.responseJson)
+      return auth.stubGetSPUserByUsername(arg.username, arg.responseJson)
     },
 
     stubServiceProviderAuthUser: auth.stubServiceProviderUser,
