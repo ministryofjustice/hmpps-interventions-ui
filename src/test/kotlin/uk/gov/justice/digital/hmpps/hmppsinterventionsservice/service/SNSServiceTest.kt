@@ -39,7 +39,7 @@ internal class SNSServiceTest {
       assignedTo = AuthUser("abc123", "auth", "abc123"),
       assignedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     ),
-    "http://localhost/sent-referral/{id}"
+    "http://localhost:8080/sent-referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
   )
 
   @Test
@@ -65,6 +65,7 @@ internal class SNSServiceTest {
       referralSentEvent.referral.sentAt!!,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"), "assignedTo" to "abc123")
     )
+    verify(snsPublisher).publish(snsEvent)
   }
 
   private fun snsService(): SNSService {
