@@ -24,19 +24,4 @@ data class ActionPlanActivity(
   // this uuid can be though of as a unique handle to each entry for future use
   @NotNull val id: UUID = randomUUID()
 
-) {
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as ActionPlanActivity
-
-    if (createdAt != other.createdAt) return false
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    return createdAt.hashCode()
-  }
-}
+)
