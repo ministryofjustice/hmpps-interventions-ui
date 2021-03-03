@@ -78,13 +78,13 @@ class ActionPlanService(
   private fun updateDraftActivityPlan(
     draftActionPlan: ActionPlan,
     numberOfSessions: Int?,
-    activityUpdate: ActionPlanActivity?
+    newActivity: ActionPlanActivity?
   ) {
     numberOfSessions?.let {
       draftActionPlan.numberOfSessions = it
     }
 
-    activityUpdate?.let {
+    newActivity?.let {
       draftActionPlan.activities.add(it)
     }
   }
