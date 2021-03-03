@@ -50,10 +50,10 @@ class ActionPlanService(
   fun updateActionPlan(
     actionPlanId: UUID,
     numberOfSessions: Int?,
-    activityUpdate: ActionPlanActivity?,
+    newActivity: ActionPlanActivity?,
   ): ActionPlan {
     val draftActionPlan = getDraftActionPlan(actionPlanId)
-    updateDraftActivityPlan(draftActionPlan, numberOfSessions, activityUpdate)
+    updateDraftActivityPlan(draftActionPlan, numberOfSessions, newActivity)
     actionPlanValidator.validateDraftActionPlanUpdate(draftActionPlan)
 
     return actionPlanRepository.save(draftActionPlan)

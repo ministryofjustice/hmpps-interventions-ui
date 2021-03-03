@@ -71,8 +71,8 @@ class ActionPlanController(
     @PathVariable id: UUID,
     @RequestBody update: UpdateActionPlanDTO,
   ): DraftActionPlanDTO {
-    val activityUpdate = update.activity?.let { actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(it) }
-    val updatedActionPlan = actionPlanService.updateActionPlan(id, update.numberOfSessions, activityUpdate)
+    val newActivity = update.activity?.let { actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(it) }
+    val updatedActionPlan = actionPlanService.updateActionPlan(id, update.numberOfSessions, newActivity)
 
     return DraftActionPlanDTO.from(updatedActionPlan)
   }
