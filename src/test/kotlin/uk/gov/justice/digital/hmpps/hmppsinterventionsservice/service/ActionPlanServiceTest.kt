@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
@@ -118,6 +120,7 @@ internal class ActionPlanServiceTest {
 
     assertThat(updatedDraftActionPlanResponse).isSameAs(updatedDraftActionPlan)
     assertThat(updatedDraftActionPlanResponse.numberOfSessions).isEqualTo(5)
+    verify(actionPlanValidator).validateDraftActionPlanUpdate(any())
   }
 
   @Test
@@ -208,6 +211,7 @@ internal class ActionPlanServiceTest {
     val submittedActionPlan = actionPlanService.submitDraftActionPlan(actionPlanId, authUser)
 
     assertThat(submittedActionPlan).isNotNull
+    verify(actionPlanValidator).validateSubmittedActionPlan(any())
   }
 
   @Test

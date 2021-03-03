@@ -63,6 +63,8 @@ class ActionPlanService(
 
     val draftActionPlan = getDraftActionPlanOrElseThrowException(id)
     updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
+    actionPlanValidator.validateSubmittedActionPlan(draftActionPlan)
+
     val savedDraftActionPlan = actionPlanRepository.save(draftActionPlan)
     actionPlanEventPublisher.actionPlanSubmitEvent(savedDraftActionPlan)
 
