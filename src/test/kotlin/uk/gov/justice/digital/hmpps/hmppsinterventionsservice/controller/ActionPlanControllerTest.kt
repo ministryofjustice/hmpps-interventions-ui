@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
@@ -10,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
@@ -112,9 +114,14 @@ internal class ActionPlanControllerTest {
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
     whenever(actionPlanService.submitDraftActionPlan(actionPlanId, authUser)).thenReturn(actionPlan)
 
-    val submittedDraftActionPlan = actionPlanController.submitDraftActionPlan(actionPlanId, jwtAuthenticationToken)
+    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+    whenever(locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlan.id)).thenReturn(uriComponents)
 
-    assertThat(submittedDraftActionPlan).isNotNull
+    val responseEntity = actionPlanController.submitDraftActionPlan(actionPlanId, jwtAuthenticationToken)
+
+    assertThat(responseEntity.statusCode.value()).isEqualTo(HttpStatus.SC_CREATED)
+    assertThat(responseEntity.headers["location"]).isEqualTo(listOf("/1234"))
+    assertThat(responseEntity.body).isEqualTo(ActionPlanDTO.from(actionPlan))
   }
 
   @Test

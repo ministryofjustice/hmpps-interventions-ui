@@ -12,13 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.EntityManager
 
 @PactBroker
 @Provider("Interventions Service")
@@ -27,7 +33,10 @@ import java.util.UUID
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class PactTest {
   @Autowired private lateinit var referralRepository: ReferralRepository
+  @Autowired private lateinit var actionPlanRepository: ActionPlanRepository
   @Autowired private lateinit var referralService: ReferralService
+  @Autowired private lateinit var actionPlanService: ActionPlanService
+  @Autowired private lateinit var entityManager: EntityManager
 
   // rely on interventions and users from the seed data for now
   // once we have working factory methods for creating these we should
@@ -40,6 +49,7 @@ class PactTest {
   fun setup() {
     // start with a clean slate for referrals. this can be removed once we
     // no longer have dependency on the seed migrations (see setup method)
+    actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
   }
 
@@ -166,6 +176,60 @@ class PactTest {
 
   @State("a referral does not exist for user with ID 123344556")
   fun `no setup required`() {}
+
+  @State("a caseworker has been assigned to a sent referral and an action plan can be created")
+  fun `no set up required for creating a draft plan`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("81d754aa-d868-4347-9c0f-50690773014e"),
+    )
+    referralRepository.save(referral)
+  }
+
+  @State("an action plan exists with id dfb64747-f658-40e0-a827-87b4b0bdcfed")
+  fun `create a an empty draft plan`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("81d754aa-d868-4347-9c0f-50690773014e"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("dfb64747-f658-40e0-a827-87b4b0bdcfed"),
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf()
+    )
+    actionPlanRepository.save(draftActionPlan)
+  }
+
+  @State("a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted")
+  fun `create a an draft plan with activities`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("81d754aa-d868-4347-9c0f-50690773014e"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("6e8dfb5c-127f-46ea-9846-f82b5fd60d27"),
+      numberOfSessions = 4,
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf(
+        ActionPlanActivity(
+          "Attend training course",
+          createdAt = OffsetDateTime.parse("2020-12-07T20:45:21.986389Z"),
+          DesiredOutcome(UUID.fromString("301ead30-30a4-4c7c-8296-2768abfb59b5"), "Desc 1", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
+          UUID.fromString("91e7ceab-74fd-45d8-97c8-ec58844618dd")
+        ),
+        ActionPlanActivity(
+          "Attend session",
+          createdAt = OffsetDateTime.parse("2020-12-07T20:45:22.986389Z"),
+          DesiredOutcome(UUID.fromString("65924ac6-9724-455b-ad30-906936291421"), "Desc 2", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
+          UUID.fromString("e5755c27-2c85-448b-9f6d-e3959ec9c2d0")
+        ),
+      )
+    )
+    actionPlanRepository.save(draftActionPlan)
+  }
 
 //  @State("there are some existing sent referrals")
 //  fun `create the sent referrals with the required fields`() {}

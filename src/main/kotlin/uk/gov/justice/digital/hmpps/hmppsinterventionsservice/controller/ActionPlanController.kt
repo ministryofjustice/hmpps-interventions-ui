@@ -51,10 +51,13 @@ class ActionPlanController(
   fun submitDraftActionPlan(
     @PathVariable id: UUID,
     authentication: JwtAuthenticationToken,
-  ): ActionPlanDTO {
+  ): ResponseEntity<ActionPlanDTO> {
     val submittedByUser = jwtAuthUserMapper.map(authentication)
     val submittedActionPlan = actionPlanService.submitDraftActionPlan(id, submittedByUser)
-    return ActionPlanDTO.from(submittedActionPlan)
+
+    val actionPlanDTO = ActionPlanDTO.from(submittedActionPlan)
+    val location = locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlanDTO.id)
+    return ResponseEntity.created(location.toUri()).body(actionPlanDTO)
   }
 
   @GetMapping("/draft-action-plan/{id}")
