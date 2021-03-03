@@ -125,6 +125,40 @@ export interface InterventionsFilterParams {
   maximumAge?: number
 }
 
+export interface DraftActionPlan extends ActionPlanFields {
+  id: string
+}
+
+interface ActionPlanFields {
+  referralId: string
+  activities: Activity[]
+  numberOfSessions: number | null
+}
+
+interface Activity {
+  id: string
+  desiredOutcome: DesiredOutcome
+  description: string
+  createdAt: string
+}
+
+interface UpdateActivityParams {
+  description: string
+  desiredOutcomeId: string
+}
+
+interface UpdateDraftActionPlanParams {
+  activity?: UpdateActivityParams
+  numberOfSessions?: number
+}
+
+export interface SubmittedActionPlan {
+  id: string
+  submittedBy: AuthUser
+  submittedAt: string
+  actionPlanFields: ActionPlanFields
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -314,5 +348,55 @@ export default class InterventionsService {
       path: `/pcc-regions`,
       headers: { Accept: 'application/json' },
     })) as PCCRegion[]
+  }
+
+  async createDraftActionPlan(token: string, referralId: string): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.post({
+        path: '/draft-action-plan',
+        headers: { Accept: 'application/json' },
+        data: { referralId },
+      })) as DraftActionPlan
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
+  }
+
+  async getDraftActionPlan(token: string, actionPlanId: string): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/draft-action-plan/${actionPlanId}`,
+      headers: { Accept: 'application/json' },
+    })) as DraftActionPlan
+  }
+
+  async updateDraftActionPlan(
+    token: string,
+    id: string,
+    patch: Partial<UpdateDraftActionPlanParams>
+  ): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.patch({
+        path: `/draft-action-plan/${id}`,
+        headers: { Accept: 'application/json' },
+        data: patch,
+      })) as DraftActionPlan
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
+  }
+
+  async submitActionPlan(token: string, id: string): Promise<SubmittedActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/draft-action-plan/${id}/submit`,
+      headers: { Accept: 'application/json' },
+    })) as SubmittedActionPlan
   }
 }

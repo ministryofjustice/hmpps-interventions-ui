@@ -1290,6 +1290,263 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.getPccRegions(token)).toEqual(pccRegions)
     })
   })
+
+  describe('createDraftActionPlan', () => {
+    it('returns a newly created draft action plan', async () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      await provider.addInteraction({
+        state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
+        uponReceiving: 'a POST request to create a draft action plan',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: {
+            referralId,
+          },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like({
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: null,
+            activities: [],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
+            ),
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.createDraftActionPlan(token, referralId)
+      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+    })
+  })
+
+  describe('getDraftActionPlan', () => {
+    it('returns an existing action plan', async () => {
+      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with id ${draftActionPlanId}`,
+        uponReceiving: 'a GET request to view the draft action plan',
+        withRequest: {
+          method: 'GET',
+          path: `/draft-action-plan/${draftActionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: draftActionPlanId,
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: null,
+            activities: [],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.getDraftActionPlan(token, draftActionPlanId)
+      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(null)
+      expect(draftActionPlan.activities.length).toBe(0)
+    })
+  })
+
+  describe('updateDraftActionPlan', () => {
+    it('updates and returns the newly-updated draft action plan when adding an activity', async () => {
+      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with id ${draftActionPlanId}`,
+        uponReceiving: 'a PATCH request to set the activities on the action plan',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-action-plan/${draftActionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: {
+            activity: {
+              description: 'Attend training course',
+              desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            },
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: draftActionPlanId,
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: null,
+            activities: [
+              {
+                id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+                description: 'Attend training course',
+                desiredOutcome: {
+                  id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+                  description:
+                    'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+                },
+                createdAt: '2020-12-07T20:45:21.986389Z',
+              },
+            ],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
+        activity: {
+          description: 'Attend training course',
+          desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        },
+      })
+
+      expect(draftActionPlan.id).toBe(draftActionPlanId)
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(null)
+      expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
+      expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
+      expect(draftActionPlan.activities[0].desiredOutcome.id).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+      expect(draftActionPlan.activities[0].desiredOutcome.description).toEqual(
+        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed'
+      )
+      expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
+    })
+
+    it('updates and returns the newly-updated draft action plan when setting number of sessions', async () => {
+      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with id ${draftActionPlanId}`,
+        uponReceiving: 'a PATCH request to set the number of sessions on the action plan',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-action-plan/${draftActionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: {
+            numberOfSessions: 4,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: draftActionPlanId,
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: 4,
+            activities: [
+              {
+                id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+                description: 'Attend training course',
+                desiredOutcome: {
+                  id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+                  description:
+                    'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+                },
+                createdAt: '2020-12-07T20:45:21.986389Z',
+              },
+            ],
+            createdBy: {
+              username: 'BERNARD.BEAKS',
+              userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+              authSource: 'delius',
+            },
+            createdAt: '2020-12-07T20:45:21.986389Z',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
+        numberOfSessions: 4,
+      })
+      expect(draftActionPlan.id).toBe(draftActionPlanId)
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(4)
+      expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
+      expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
+      expect(draftActionPlan.activities[0].desiredOutcome.id).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+      expect(draftActionPlan.activities[0].desiredOutcome.description).toEqual(
+        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed'
+      )
+      expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
+    })
+  })
+
+  describe('submitDraftActionPlan', () => {
+    const submittedActionPlan = {
+      id: '486ba46a-0b57-46ab-82c0-d8c5c43710c6',
+      referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+      numberOfSessions: 4,
+      activities: [
+        {
+          id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+          description: 'Attend training course',
+          desiredOutcome: {
+            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            description:
+              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          },
+          createdAt: '2020-12-07T20:45:21.986389Z',
+        },
+        {
+          id: 'e5755c27-2c85-448b-9f6d-e3959ec9c2d0',
+          description: 'Attend session',
+          desiredOutcome: {
+            id: '65924ac6-9724-455b-ad30-906936291421',
+            description: 'Service User makes progress in obtaining accommodation.',
+          },
+          createdAt: '2020-12-07T20:47:21.986389Z',
+        },
+      ],
+      submittedBy: {
+        username: 'BERNARD.BEAKS',
+        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+        authSource: 'delius',
+      },
+      submittedAt: '2020-12-08T20:47:21.986389Z',
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted',
+        uponReceiving: 'a POST request to send the draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27/submit',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(submittedActionPlan),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27'
+            ),
+          },
+        },
+      })
+    })
+
+    it('returns a sent referral', async () => {
+      expect(await interventionsService.submitActionPlan(token, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')).toMatchObject(
+        submittedActionPlan
+      )
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
