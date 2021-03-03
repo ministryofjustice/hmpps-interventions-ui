@@ -33,12 +33,7 @@ class SNSPublisher(
   }
 
   private fun publishRequest(request: PublishRequest) {
-    try {
-      val result = client.publish(request)
-      log.debug("message sent; messageId: ${result.messageId()}, status: ${result.sdkHttpResponse().statusCode()}")
-    } catch (e: Exception) {
-      log.error("message send failure", e)
-    }
+    client.publish(request)
   }
 
   companion object {

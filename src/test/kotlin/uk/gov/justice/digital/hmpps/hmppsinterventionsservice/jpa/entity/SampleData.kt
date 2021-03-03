@@ -218,6 +218,14 @@ class SampleData {
       return DesiredOutcome(id, description, serviceCategoryId)
     }
 
+    fun sampleAuthUser(
+      id: String = "CRN123",
+      authSource: String = "auth",
+      userName: String = "user"
+    ): AuthUser {
+      return AuthUser(id, authSource, userName)
+    }
+
     fun persistPCCRegion(em: TestEntityManager, pccRegion: PCCRegion): PCCRegion {
       em.persist(pccRegion.npsRegion)
       return em.persistAndFlush(pccRegion)

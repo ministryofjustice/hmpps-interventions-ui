@@ -1,11 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.CollectionTable
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
@@ -26,12 +27,12 @@ data class ActionPlan(
   @NotNull val activities: List<ActionPlanActivity> = emptyList(),
 
   // Status
-  @NotNull @ManyToOne(fetch = FetchType.LAZY) val createdBy: AuthUser,
+  @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
-  @ManyToOne(fetch = FetchType.LAZY) val submittedBy: AuthUser? = null,
-  val submittedAt: OffsetDateTime? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var submittedBy: AuthUser? = null,
+  var submittedAt: OffsetDateTime? = null,
 
   // Required
-  @NotNull @OneToOne(fetch = FetchType.LAZY) val referral: Referral,
+  @NotNull @OneToOne @Fetch(FetchMode.JOIN) val referral: Referral,
   @Id val id: UUID,
 )

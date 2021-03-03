@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -19,6 +20,7 @@ class ActionPlanService(
   val referralRepository: ReferralRepository,
   val actionPlanRepository: ActionPlanRepository,
   val actionPlanValidator: ActionPlanValidator,
+  val actionPlanEventPublisher: ActionPlanEventPublisher
 ) {
 
   fun createDraftActionPlan(
@@ -53,9 +55,35 @@ class ActionPlanService(
     return actionPlanRepository.save(draftActionPlan)
   }
 
+  fun submitDraftActionPlan(id: UUID, submittedByUser: AuthUser): ActionPlan {
+
+    val draftActionPlan = getDraftActionPlanOrElseThrowException(id)
+    updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
+    val savedDraftActionPlan = actionPlanRepository.save(draftActionPlan)
+    actionPlanEventPublisher.actionPlanSubmitEvent(savedDraftActionPlan)
+
+    return savedDraftActionPlan
+  }
+
+  fun getActionPlan(id: UUID): ActionPlan {
+    return actionPlanRepository.findById(id).orElseThrow {
+      throw EntityNotFoundException("action plan not found [id=$id]")
+    }
+  }
+
   private fun updateDraftActivityPlan(draftActionPlan: ActionPlan, update: ActionPlan) {
     update.numberOfSessions?.let {
       draftActionPlan.numberOfSessions = it
     }
+  }
+
+  private fun getDraftActionPlanOrElseThrowException(id: UUID): ActionPlan {
+    return actionPlanRepository.findByIdAndSubmittedAtIsNull(id)
+      ?: throw EntityNotFoundException("draft action plan not found [id=$id]")
+  }
+
+  private fun updateDraftActionPlanAsSubmitted(draftActionPlan: ActionPlan, submittedByUser: AuthUser) {
+    draftActionPlan.submittedAt = OffsetDateTime.now()
+    draftActionPlan.submittedBy = submittedByUser
   }
 }

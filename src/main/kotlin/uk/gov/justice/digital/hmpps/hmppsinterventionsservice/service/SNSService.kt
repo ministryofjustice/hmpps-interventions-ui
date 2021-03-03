@@ -4,14 +4,42 @@ import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
+
+interface SNSService
 
 @Service
-class SNSService(
+class SNSActionPlanService(
   private val snsPublisher: SNSPublisher,
-) : ApplicationListener<ReferralEvent> {
+) : ApplicationListener<ActionPlanEvent>, SNSService {
 
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: ActionPlanEvent) {
+    when (event.type) {
+      ActionPlanEventType.SUBMITTED -> {
+        val snsEvent = EventDTO(
+          "intervention.action-plan.submitted",
+          "A draft action plan has been submitted",
+          event.detailUrl,
+          event.actionPlan.submittedAt!!,
+          mapOf("actionPlanId" to event.actionPlan.id, "submittedBy" to (event.actionPlan.submittedBy?.userName!!))
+        )
+        snsPublisher.publish(snsEvent)
+      }
+    }
+  }
+}
+
+@Service
+class SNSReferralService(
+  private val snsPublisher: SNSPublisher,
+) : ApplicationListener<ReferralEvent>, SNSService {
+
+  @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {

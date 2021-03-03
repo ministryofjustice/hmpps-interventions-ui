@@ -1,12 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import java.util.UUID
 
 data class DesiredOutcomeDTO(
   val id: UUID,
-  val description: String,
-)
+  val description: String
+) {
+  companion object {
+    fun from(desiredOutcome: DesiredOutcome): DesiredOutcomeDTO {
+      return DesiredOutcomeDTO(desiredOutcome.id, desiredOutcome.description)
+    }
+  }
+}
 
 data class ComplexityLevelDTO(
   val id: UUID,
