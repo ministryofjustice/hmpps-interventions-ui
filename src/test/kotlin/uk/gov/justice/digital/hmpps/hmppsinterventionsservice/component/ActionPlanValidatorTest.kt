@@ -37,7 +37,7 @@ class ActionPlanValidatorTest {
     assertThat(exception.errors[0].field).isEqualTo("numberOfSessions")
     assertThat(exception.errors[0].error).isEqualTo(Code.CANNOT_BE_NEGATIVE_OR_ZERO)
   }
-  
+
   @Test
   fun `submit action plan fails validation - number of sessions is empty`() {
     val draftActionPlanId = UUID.randomUUID()
