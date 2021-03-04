@@ -32,15 +32,7 @@ postgres:
   username: postgres
   password: password
 
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
-
 spring:
-  jpa:
-    show-sql: true
   security:
     oauth2:
       client:

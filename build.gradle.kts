@@ -38,6 +38,10 @@ tasks {
 }
 
 dependencies {
+  // logging
+  implementation("net.logstash.logback:logstash-logback-encoder:6.6")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+
   // openapi
   implementation("org.springdoc:springdoc-openapi-ui:1.5.5")
 
