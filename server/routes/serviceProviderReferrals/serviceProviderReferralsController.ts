@@ -15,7 +15,9 @@ import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
 import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
 import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
+import ActionPlanFormPresenter from './actionPlan/actionPlanFormPresenter'
 import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
+import ActionPlanFormView from './actionPlan/actionPlanFormView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -167,5 +169,16 @@ export default class ServiceProviderReferralsController {
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async createActionPlanSessions(req: Request, res: Response): Promise<void> {
+    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const serviceUserBannerPresenter = new ServiceUserBannerPresenter(serviceUser)
+    const presenter = new ActionPlanFormPresenter(serviceUser)
+    const view = new ActionPlanFormView(presenter, serviceUserBannerPresenter)
+    res.render(...view.numSessionRenderArgs)
   }
 }
