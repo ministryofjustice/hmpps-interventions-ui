@@ -1,8 +1,12 @@
 import bunyan from 'bunyan'
-import bunyanFormat from 'bunyan-format'
+import config from './server/config'
 
-const formatOut = bunyanFormat({ outputMode: 'short', color: true })
-
-const log = bunyan.createLogger({ name: 'interventions', stream: formatOut, level: 'debug' })
+const level = config.production ? 'warn' : 'debug'
+const log = bunyan.createLogger({
+  name: 'interventions',
+  level,
+  stream: process.stdout,
+  serializers: bunyan.stdSerializers,
+})
 
 export default log
