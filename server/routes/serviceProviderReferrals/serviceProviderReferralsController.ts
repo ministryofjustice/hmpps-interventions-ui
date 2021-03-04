@@ -15,6 +15,7 @@ import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
 import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
 import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
+import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -68,8 +69,9 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee, formError)
-    const view = new ShowReferralView(presenter)
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, assignee, formError)
+    const serviceUserBannerPresenter = new ServiceUserBannerPresenter(serviceUser)
+    const view = new ShowReferralView(presenter, serviceUserBannerPresenter)
 
     res.render(...view.renderArgs)
   }

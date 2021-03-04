@@ -1,19 +1,18 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
+import { DeliusUser } from '../../services/communityApiService'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
-import CalendarDay from '../../utils/calendarDay'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
+import ViewUtils from '../../utils/viewUtils'
 
 export default class ShowReferralPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
-    private readonly serviceUser: DeliusServiceUser,
     private readonly assignee: AuthUser | null,
     private readonly assignEmailError: FormValidationError | null
   ) {}
@@ -59,9 +58,7 @@ export default class ShowReferralPresenter {
       { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text], isList: false },
       {
         key: 'Date to be completed by',
-        lines: [
-          ShowReferralPresenter.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline),
-        ],
+        lines: [ViewUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],
         isList: false,
       },
       {
@@ -130,51 +127,6 @@ export default class ShowReferralPresenter {
         isList: false,
       },
     ]
-  }
-
-  readonly serviceUserNotificationBannerArgs = {
-    titleText: 'Service user details',
-    html:
-      `<p class="govuk-notification-banner__heading">${this.serviceUser.firstName} ${this.serviceUser.surname}<p>` +
-      `<p>Date of birth: ${ShowReferralPresenter.govukFormattedDateFromStringOrNull(
-        this.serviceUser.dateOfBirth
-      )}</p>` +
-      `<p class="govuk-body">${this.serviceUserMobile} | ${this.serviceUserEmail}</p>`,
-  }
-
-  static govukFormattedDateFromStringOrNull(date: string | null): string {
-    const notFoundMessage = 'Not found'
-
-    if (date) {
-      const iso8601date = CalendarDay.parseIso8601(date)
-
-      return iso8601date ? ReferralDataPresenterUtils.govukFormattedDate(iso8601date) : notFoundMessage
-    }
-
-    return notFoundMessage
-  }
-
-  private get serviceUserEmail(): string {
-    const { emailAddresses } = this.serviceUser.contactDetails
-
-    if (emailAddresses && emailAddresses.length > 0) {
-      return emailAddresses[0]
-    }
-
-    return 'Email address not found'
-  }
-
-  private get serviceUserMobile(): string {
-    const { phoneNumbers } = this.serviceUser.contactDetails
-    const notFoundMessage = 'Mobile number not found'
-
-    if (phoneNumbers) {
-      const mobileNumber = phoneNumbers.find(phoneNumber => phoneNumber.type === 'MOBILE')
-
-      return mobileNumber && mobileNumber.number ? mobileNumber.number : notFoundMessage
-    }
-
-    return notFoundMessage
   }
 
   private get assigneeFullNameOrUnassigned(): string | null {

@@ -1,5 +1,7 @@
 import * as nunjucks from 'nunjucks'
 import { SummaryListArgs, SummaryListItem } from './summaryList'
+import CalendarDay from './calendarDay'
+import ReferralDataPresenterUtils from '../routes/referrals/referralDataPresenterUtils'
 
 export default class ViewUtils {
   static escape(val: string): string {
@@ -52,5 +54,17 @@ export default class ViewUtils {
         }
       }),
     }
+  }
+
+  static govukFormattedDateFromStringOrNull(date: string | null): string {
+    const notFoundMessage = 'Not found'
+
+    if (date) {
+      const iso8601date = CalendarDay.parseIso8601(date)
+
+      return iso8601date ? ReferralDataPresenterUtils.govukFormattedDate(iso8601date) : notFoundMessage
+    }
+
+    return notFoundMessage
   }
 }
