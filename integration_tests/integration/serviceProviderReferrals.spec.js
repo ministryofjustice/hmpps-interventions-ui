@@ -181,6 +181,7 @@ describe('Service provider referrals dashboard', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
     const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusUser = deliusUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const assignedReferral = sentReferralFactory
       .assigned()
@@ -190,13 +191,19 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferrals([assignedReferral])
 
     cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlan)
+    cy.stubCreateDraftActionPlan(draftActionPlan)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
     cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
 
     cy.login()
 
-    cy.visit(`/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    cy.visit(`/service-provider/referrals/${assignedReferral.id}`)
+    cy.contains('Create action plan').click()
+
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
 
     cy.contains('Accommodation - create action plan')
     cy.contains('Add suggested activities to Alex’s action plan')

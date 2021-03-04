@@ -146,6 +146,12 @@ export default class ServiceProviderReferralsController {
     res.render(...view.renderArgs)
   }
 
+  async createDraftActionPlan(req: Request, res: Response): Promise<void> {
+    const draftActionPlan = await this.interventionsService.createDraftActionPlan(res.locals.user.token, req.params.id)
+
+    res.redirect(303, `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+  }
+
   async addActivitiesToActionPlan(req: Request, res: Response): Promise<void> {
     const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)

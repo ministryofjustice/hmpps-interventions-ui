@@ -83,6 +83,15 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('createActionPlanFormAction', () => {
+    it('returns the relative URL for creating a draft action plan', () => {
+      const referral = sentReferralFactory.build(referralParams)
+      const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser, null, null)
+
+      expect(presenter.createActionPlanFormAction).toEqual(`/service-provider/referrals/${referral.id}/action-plan`)
+    })
+  })
+
   describe('text', () => {
     describe('title', () => {
       describe('when the referral doesn’t have an assigned caseworker', () => {
