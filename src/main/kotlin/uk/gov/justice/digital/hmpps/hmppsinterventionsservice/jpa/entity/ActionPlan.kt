@@ -23,8 +23,8 @@ data class ActionPlan(
 
   // Activities
   @ElementCollection
-  @CollectionTable(name = "action_plan_activity", joinColumns = [JoinColumn(name = "id")])
-  @NotNull val activities: List<ActionPlanActivity> = emptyList(),
+  @CollectionTable(name = "action_plan_activity", joinColumns = [JoinColumn(name = "action_plan_id")])
+  @NotNull val activities: MutableList<ActionPlanActivity> = mutableListOf(),
 
   // Status
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,

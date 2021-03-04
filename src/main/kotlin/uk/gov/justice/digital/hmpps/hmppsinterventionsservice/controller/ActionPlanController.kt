@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.util.UUID
 
@@ -50,10 +51,13 @@ class ActionPlanController(
   fun submitDraftActionPlan(
     @PathVariable id: UUID,
     authentication: JwtAuthenticationToken,
-  ): ActionPlanDTO {
+  ): ResponseEntity<ActionPlanDTO> {
     val submittedByUser = jwtAuthUserMapper.map(authentication)
     val submittedActionPlan = actionPlanService.submitDraftActionPlan(id, submittedByUser)
-    return ActionPlanDTO.from(submittedActionPlan)
+
+    val actionPlanDTO = ActionPlanDTO.from(submittedActionPlan)
+    val location = locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlanDTO.id)
+    return ResponseEntity.created(location.toUri()).body(actionPlanDTO)
   }
 
   @GetMapping("/draft-action-plan/{id}")
@@ -62,13 +66,13 @@ class ActionPlanController(
     return DraftActionPlanDTO.from(draftActionPlan)
   }
 
-  @PatchMapping("draft-action-plan/{id}")
+  @PatchMapping("/draft-action-plan/{id}")
   fun updateDraftActionPlan(
     @PathVariable id: UUID,
-    @RequestBody update: DraftActionPlanDTO,
+    @RequestBody update: UpdateActionPlanDTO,
   ): DraftActionPlanDTO {
-    val actionPlanUpdate = actionPlanMapper.mapActionPlanDtoToActionPlan(id, update)
-    val updatedActionPlan = actionPlanService.updateActionPlan(actionPlanUpdate)
+    val newActivity = update.newActivity?.let { actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(it) }
+    val updatedActionPlan = actionPlanService.updateActionPlan(id, update.numberOfSessions, newActivity)
 
     return DraftActionPlanDTO.from(updatedActionPlan)
   }

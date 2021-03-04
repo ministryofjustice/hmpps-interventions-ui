@@ -39,14 +39,13 @@ class ActionPlanValidatorTest {
   }
 
   @Test
-  fun `update action plan fails validation - number of sessions is missing`() {
+  fun `submit action plan fails validation - number of sessions is empty`() {
     val draftActionPlanId = UUID.randomUUID()
     val actionPlanUpdate = SampleData.sampleActionPlan(id = draftActionPlanId, numberOfSessions = null)
 
     val exception = Assertions.assertThrows(ValidationError::class.java) {
-      actionPlanValidator.validateDraftActionPlanUpdate(actionPlanUpdate)
+      actionPlanValidator.validateSubmittedActionPlan(actionPlanUpdate)
     }
-    assertThat(exception.message).isEqualTo("draft action plan update invalid")
     assertThat(exception.errors.size).isEqualTo(1)
     assertThat(exception.errors[0].field).isEqualTo("numberOfSessions")
     assertThat(exception.errors[0].error).isEqualTo(Code.CANNOT_BE_EMPTY)
