@@ -148,7 +148,7 @@ interface UpdateActivityParams {
 }
 
 interface UpdateDraftActionPlanParams {
-  activity?: UpdateActivityParams
+  newActivity?: UpdateActivityParams
   numberOfSessions?: number
 }
 
