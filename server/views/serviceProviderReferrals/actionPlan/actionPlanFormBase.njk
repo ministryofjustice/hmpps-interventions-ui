@@ -1,0 +1,16 @@
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% extends "../../partials/layout.njk" %}
+
+{% block pageTitle %}HMPPS Interventions - GOV.UK{% endblock %}
+
+{% block content %}
+  {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l">{{ presenter.text.title }}</h2>
+      <p class="govuk-body"><strong>Action plan status: </strong> <strong class="govuk-tag govuk-tag--grey"> {{ presenter.actionPlanStatus }} </strong>
+      {% block formPart %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}

@@ -13,6 +13,9 @@ import AssignmentConfirmationView from './assignmentConfirmationView'
 import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
+import ActionPlanFormPresenter from './actionPlan/actionPlanFormPresenter'
+import ServiceUserBannnerPresenter from './serviceUserBannerPresenter'
+import ActionPlanFormView from './actionPlan/actionPlanFormView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -66,8 +69,9 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee, formError)
-    const view = new ShowReferralView(presenter)
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, assignee, formError)
+    const serviceUserBannerPresenter = new ServiceUserBannnerPresenter(serviceUser)
+    const view = new ShowReferralView(presenter, serviceUserBannerPresenter)
 
     res.render(...view.renderArgs)
   }
@@ -142,5 +146,15 @@ export default class ServiceProviderReferralsController {
     const view = new AssignmentConfirmationView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async createActionPlanSessions(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const serviceUserBannerPresenter = new ServiceUserBannnerPresenter(serviceUser)
+    const presenter = new ActionPlanFormPresenter()
+    const view = new ActionPlanFormView(presenter, serviceUserBannerPresenter)
+    res.render(...view.numSessionRenderArgs)
   }
 }

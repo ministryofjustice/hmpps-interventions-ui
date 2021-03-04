@@ -1,9 +1,13 @@
 import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { InputArgs } from '../../utils/govukFrontendTypes'
+import ServiceUserBannnerPresenter from './serviceUserBannerPresenter'
 
 export default class ShowReferralView {
-  constructor(private readonly presenter: ShowReferralPresenter) {}
+  constructor(
+    private readonly presenter: ShowReferralPresenter,
+    private readonly serviceUserBannerPresenter: ServiceUserBannnerPresenter
+  ) {}
 
   private readonly probationPractitionerSummaryListArgs = ViewUtils.summaryListArgs(
     this.presenter.probationPractitionerDetails
@@ -34,7 +38,7 @@ export default class ShowReferralView {
       {
         presenter: this.presenter,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserNotificationBannerArgs,
+        serviceUserNotificationBannerArgs: this.serviceUserBannerPresenter.serviceUserNotificationBannerArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
