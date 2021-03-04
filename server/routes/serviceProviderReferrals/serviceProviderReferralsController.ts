@@ -13,6 +13,8 @@ import AssignmentConfirmationView from './assignmentConfirmationView'
 import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
+import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
+import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -140,6 +142,21 @@ export default class ServiceProviderReferralsController {
 
     const presenter = new AssignmentConfirmationPresenter(referral, serviceCategory, assignee)
     const view = new AssignmentConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async addActivitiesToActionPlan(req: Request, res: Response): Promise<void> {
+    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory)
+    const view = new AddActionPlanActivitiesView(presenter)
 
     res.render(...view.renderArgs)
   }

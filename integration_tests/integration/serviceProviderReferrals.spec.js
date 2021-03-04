@@ -3,6 +3,7 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
+import draftActionPlanFactory from '../../testutils/factories/draftActionPlan'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -174,5 +175,30 @@ describe('Service provider referrals dashboard', () => {
 
     cy.visit(`/service-provider/referrals/${referral.id}`)
     cy.contains('This intervention is assigned to John Smith.')
+  })
+
+  it('User adds desired outcomes to an action plan', () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+    const assignedReferral = sentReferralFactory
+      .assigned()
+      .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username } })
+    const draftActionPlan = draftActionPlanFactory.justCreated(assignedReferral.id).build()
+
+    cy.stubGetSentReferrals([assignedReferral])
+
+    cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlan)
+    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+    cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+
+    cy.login()
+
+    cy.visit(`/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+
+    cy.contains('Accommodation - create action plan')
+    cy.contains('Add suggested activities to Alex’s action plan')
   })
 })

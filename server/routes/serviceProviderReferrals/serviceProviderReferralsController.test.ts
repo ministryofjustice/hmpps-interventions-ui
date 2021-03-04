@@ -12,6 +12,7 @@ import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
+import draftActionPlanFactory from '../../../testutils/factories/draftActionPlan'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -234,6 +235,31 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
         expect(res.text).toContain(referral.referenceNumber)
         expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('John Smith')
+      })
+  })
+})
+
+describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () => {
+  it('displays a page to add activities to an action plan', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build()
+
+    interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Accommodation - create action plan')
+        expect(res.text).toContain('Add suggested activities to Alex’s action plan')
       })
   })
 })
