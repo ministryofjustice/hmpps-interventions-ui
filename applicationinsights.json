@@ -1,0 +1,14 @@
+{
+  "role": {
+    "name": "interventions-service"
+  },
+  "instrumentation": {
+    "logging": {
+      "level": "OFF"
+    }
+  },
+  "selfDiagnostics": {
+    "destination": "console",
+    "level": "DEBUG",
+  }
+}

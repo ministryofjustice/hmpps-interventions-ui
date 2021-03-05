@@ -34,11 +34,11 @@ env:
   - name: COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_TEAMCODE
     value: "{{ .Values.env.COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_TEAMCODE }}"
 
-  - name: APPLICATION_INSIGHTS_IKEY
+  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     valueFrom:
       secretKeyRef:
-        name: application-insights-key
-        key: APPINSIGHTS_INSTRUMENTATIONKEY
+        name: application-insights
+        key: connection_string
 
   - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_INTERVENTIONSCLIENT_CLIENTID
     valueFrom:

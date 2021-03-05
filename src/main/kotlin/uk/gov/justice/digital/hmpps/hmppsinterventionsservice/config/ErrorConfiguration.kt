@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -36,7 +37,7 @@ data class ErrorResponse(
 )
 
 @RestControllerAdvice
-class ErrorConfiguration {
+class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
   @ExceptionHandler(AccessDeniedException::class)
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
     log.info("access denied exception: {}", e.message)
@@ -64,6 +65,7 @@ class ErrorConfiguration {
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse> {
     log.error("unexpected exception: {}", e)
+    telemetryClient.trackException(e)
     return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "unexpected error", e.message)
   }
 
