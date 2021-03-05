@@ -66,7 +66,8 @@ class SampleData {
       sentAt: OffsetDateTime? = null,
       sentBy: AuthUser? = null,
       assignedTo: AuthUser? = null,
-      assignedAt: OffsetDateTime = OffsetDateTime.now()
+      assignedAt: OffsetDateTime = OffsetDateTime.now(),
+      actionPlan: ActionPlan? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -84,7 +85,8 @@ class SampleData {
             serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
             serviceProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
           )
-        )
+        ),
+        actionPlan = actionPlan,
       )
     }
 

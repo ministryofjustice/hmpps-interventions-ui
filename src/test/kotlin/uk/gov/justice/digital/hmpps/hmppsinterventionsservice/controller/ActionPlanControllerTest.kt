@@ -133,4 +133,15 @@ internal class ActionPlanControllerTest {
 
     assertThat(retrievedActionPlan).isNotNull
   }
+
+  @Test
+  fun `gets action plan by referral id`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val referralId = actionPlan.referral.id
+    whenever(actionPlanService.getActionPlanByReferral(referralId)).thenReturn(actionPlan)
+
+    val retrievedActionPlan = actionPlanController.getActionPlanByReferral(referralId)
+
+    assertThat(retrievedActionPlan).isNotNull
+  }
 }

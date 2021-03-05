@@ -35,4 +35,9 @@ data class ActionPlan(
   // Required
   @NotNull @OneToOne @Fetch(FetchMode.JOIN) val referral: Referral,
   @Id val id: UUID,
-)
+) {
+  // This is to avoid stack overflow issues with the bi-directional association with referral
+  override fun toString(): String {
+    return "ActionPlan(referralId=${referral.id}, numberOfSessions=$numberOfSessions, activities=$activities, createdBy=$createdBy, createdAt=$createdAt, submittedBy=$submittedBy, submittedAt=$submittedAt, id=$id)"
+  }
+}

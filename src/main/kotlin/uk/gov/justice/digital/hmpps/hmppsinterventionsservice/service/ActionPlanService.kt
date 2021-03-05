@@ -77,6 +77,11 @@ class ActionPlanService(
     }
   }
 
+  fun getActionPlanByReferral(referralId: UUID): ActionPlan {
+    return actionPlanRepository.findByReferralId(referralId)
+      ?: throw EntityNotFoundException("action plan not found [referralId=$referralId]")
+  }
+
   private fun updateDraftActivityPlan(
     draftActionPlan: ActionPlan,
     numberOfSessions: Int?,

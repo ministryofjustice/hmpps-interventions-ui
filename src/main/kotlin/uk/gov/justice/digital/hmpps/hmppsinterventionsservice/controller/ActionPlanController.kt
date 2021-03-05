@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
@@ -80,6 +81,14 @@ class ActionPlanController(
   @GetMapping("/action-plan/{id}")
   fun getActionPlan(@PathVariable id: UUID): ActionPlanDTO {
     val actionPlan = actionPlanService.getActionPlan(id)
+    return ActionPlanDTO.from(actionPlan)
+  }
+
+  @GetMapping("/action-plan")
+  fun getActionPlanByReferral(
+    @RequestParam(name = "referralId", required = true) referralId: UUID
+  ): ActionPlanDTO {
+    val actionPlan = actionPlanService.getActionPlanByReferral(referralId)
     return ActionPlanDTO.from(actionPlan)
   }
 }
