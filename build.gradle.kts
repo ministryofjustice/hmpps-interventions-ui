@@ -63,7 +63,6 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql")
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.2.0")
-  testImplementation("com.h2database:h2:1.4.200")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
   testImplementation("uk.org.lidalia:slf4j-test:1.2.0")
