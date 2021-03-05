@@ -352,7 +352,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `get sent referrals by provider id returns filtered referrals`() {
-    listOf("PROVIDER1", "PROVIDER2").forEach {
+    val referrals = listOf("PROVIDER1", "PROVIDER2").map {
       SampleData.persistReferral(
         entityManager,
         SampleData.sampleReferral(
@@ -365,7 +365,9 @@ class ReferralServiceTest @Autowired constructor(
       )
     }
 
-    assertThat(referralService.getSentReferralsForServiceProviderID("PROVIDER2").size).isEqualTo(1)
+    val sentReferrals = referralService.getSentReferralsForServiceProviderID("PROVIDER2")
+    assertThat(sentReferrals.first().actionPlanId).isEqualTo(referrals.last().actionPlan?.id)
+    assertThat(sentReferrals.size).isEqualTo(1)
     assertThat(referralService.getSentReferralsForServiceProviderID("PROVIDER3").size).isEqualTo(0)
   }
 }

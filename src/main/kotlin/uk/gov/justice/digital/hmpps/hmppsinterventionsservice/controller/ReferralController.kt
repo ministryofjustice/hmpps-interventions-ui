@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralWithActionPlanIdDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
@@ -79,7 +80,7 @@ class ReferralController(
   }
 
   @GetMapping("/sent-referrals")
-  fun getSentReferrals(authentication: JwtAuthenticationToken): List<SentReferralDTO> {
+  fun getSentReferrals(authentication: JwtAuthenticationToken): List<SentReferralWithActionPlanIdDTO> {
     val user = parseAuthUserToken(authentication)
     val organization = hmppsAuthService.getServiceProviderOrganizationForUser(user)
     return organization?.let {

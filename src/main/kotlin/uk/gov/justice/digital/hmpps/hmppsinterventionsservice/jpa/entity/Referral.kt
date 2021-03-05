@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
+import org.hibernate.annotations.FetchMode.JOIN
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -54,6 +55,10 @@ data class Referral(
   @Column(name = "desired_outcome_id")
   var desiredOutcomesIDs: List<UUID>? = null,
   var completionDeadline: LocalDate? = null,
+
+  // This can't be set directly and hence it's a 'val'. Once an action plan has been persisted on retrieval
+  // of the associated referral this field will be automatically set by hibernate.
+  @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) val actionPlan: ActionPlan? = null,
 
   // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
