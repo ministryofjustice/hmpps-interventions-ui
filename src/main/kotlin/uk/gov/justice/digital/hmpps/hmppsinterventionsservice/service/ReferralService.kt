@@ -7,7 +7,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralWithActionPlanIdDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -46,9 +45,9 @@ class ReferralService(
     return referralRepository.findBySentAtIsNotNull().map { SentReferralDTO.from(it) }
   }
 
-  fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<SentReferralWithActionPlanIdDTO> {
+  fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<SentReferralDTO> {
     return referralRepository.findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(serviceProviderID)
-      .map { SentReferralWithActionPlanIdDTO.from(it) }
+      .map { SentReferralDTO.from(it) }
   }
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
