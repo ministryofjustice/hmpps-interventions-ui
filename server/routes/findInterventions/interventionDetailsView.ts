@@ -1,8 +1,7 @@
 import ViewUtils from '../../utils/viewUtils'
 import { SummaryListItem } from '../../utils/summaryList'
-import { SummaryListArgs } from '../../utils/govukFrontendTypes'
+import { SummaryListArgs, TabsArgs } from '../../utils/govukFrontendTypes'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
-import { TabsArgs } from '../../utils/govukFrontendTypes'
 
 export default class InterventionDetailsView {
   constructor(private readonly presenter: InterventionDetailsPresenter) {}
