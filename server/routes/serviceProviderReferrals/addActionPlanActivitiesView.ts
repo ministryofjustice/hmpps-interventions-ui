@@ -10,9 +10,12 @@ export default class AddActionPlanActivitiesView {
       {
         presenter: this.presenter,
         addActivityTextareaArgs: this.addActivityTextareaArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
       },
     ]
   }
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private addActivityTextareaArgs = (index: number) => {
     const desiredOutcome = this.presenter.desiredOutcomes[index]!
@@ -28,6 +31,7 @@ export default class AddActionPlanActivitiesView {
       hint: {
         text: 'What activity will you deliver to achieve this outcome?',
       },
+      errorMessage: ViewUtils.govukErrorMessage(desiredOutcome.errorMessage),
     }
   }
 }

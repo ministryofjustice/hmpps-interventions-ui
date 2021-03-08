@@ -288,3 +288,70 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
       })
   })
 })
+
+describe('POST /service-provider/action-plan/:id/add-activity', () => {
+  it('updates the action plan with the specified activity and renders the add activity form again', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build()
+
+    interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity`)
+      .type('form')
+      .send({
+        description: 'Attend training course',
+        'desired-outcome-id': '8eb52caf-b462-4100-a0e9-7022d2551c92',
+      })
+      .expect(302)
+      .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+
+    expect(interventionsService.updateDraftActionPlan).toHaveBeenCalledWith('token', draftActionPlan.id, {
+      newActivity: {
+        description: 'Attend training course',
+        desiredOutcomeId: '8eb52caf-b462-4100-a0e9-7022d2551c92',
+      },
+    })
+  })
+
+  describe('when the user enters no description', () => {
+    it('does not update the action plan on the backend and returns a 400 with an error message', async () => {
+      const desiredOutcome = { id: '8eb52caf-b462-4100-a0e9-7022d2551c92', description: 'Achieve a thing' }
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
+      const referral = sentReferralFactory.assigned().build({
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceUser: { firstName: 'Alex', lastName: 'River' },
+          desiredOutcomesIds: [desiredOutcome.id],
+        },
+      })
+      const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build()
+
+      interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+      await request(app)
+        .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity`)
+        .type('form')
+        .send({
+          description: '',
+          'desired-outcome-id': '8eb52caf-b462-4100-a0e9-7022d2551c92',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter an activity')
+        })
+
+      expect(interventionsService.updateDraftActionPlan).not.toHaveBeenCalled()
+    })
+  })
+})

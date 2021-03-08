@@ -148,7 +148,7 @@ interface UpdateActivityParams {
   desiredOutcomeId: string
 }
 
-interface UpdateDraftActionPlanParams {
+export interface UpdateDraftActionPlanParams {
   newActivity?: UpdateActivityParams
   numberOfSessions?: number
 }
