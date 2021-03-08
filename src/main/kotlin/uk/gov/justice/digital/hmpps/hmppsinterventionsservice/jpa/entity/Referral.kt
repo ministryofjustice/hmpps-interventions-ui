@@ -34,7 +34,7 @@ data class Referral(
   @ManyToOne @Fetch(FetchMode.JOIN) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
 
-  //cancelled referral fields
+  // cancelled referral fields
   var cancelledAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var cancelledBy: AuthUser? = null,
 

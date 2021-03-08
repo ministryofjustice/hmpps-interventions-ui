@@ -11,17 +11,17 @@ class CancelledReferralDTO(
   val referenceNumber: String,
   val assignedTo: AuthUserDTO?,
   val referral: DraftReferralDTO,
-  ) {
-    companion object {
-      fun from(referral: Referral): CancelledReferralDTO {
-        return CancelledReferralDTO(
-          id = referral.id,
-          cancelledAt = referral.cancelledAt!!,
-          cancelledBy = AuthUserDTO.from(referral.cancelledBy!!),
-          referenceNumber = referral.referenceNumber!!,
-          assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
-          referral = DraftReferralDTO.from(referral),
-        )
-      }
+) {
+  companion object {
+    fun from(referral: Referral): CancelledReferralDTO {
+      return CancelledReferralDTO(
+        id = referral.id,
+        cancelledAt = referral.cancelledAt!!,
+        cancelledBy = AuthUserDTO.from(referral.cancelledBy!!),
+        referenceNumber = referral.referenceNumber!!,
+        assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
+        referral = DraftReferralDTO.from(referral),
+      )
     }
   }
+}

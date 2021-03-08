@@ -53,8 +53,7 @@ class ReferralService(
   fun cancelSentReferral(referral: Referral, user: AuthUser): Referral {
     referral.cancelledAt = OffsetDateTime.now()
     referral.cancelledBy = authUserRepository.save(user)
-    val cancelledReferral = referralRepository.save(referral)
-    return cancelledReferral
+    return referralRepository.save(referral)
   }
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {

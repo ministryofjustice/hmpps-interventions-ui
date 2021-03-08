@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancelledReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
@@ -32,6 +33,7 @@ class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService,
   private val hmppsAuthService: HMPPSAuthService,
+  val jwtAuthUserMapper: JwtAuthUserMapper,
 ) {
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
@@ -91,14 +93,13 @@ class ReferralController(
   @PostMapping("/sent-referral/{id}/cancel")
   fun cancelSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): CancelledReferralDTO {
     val sentReferral = referralService.getSentReferral(id)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
-    val user = parseAuthUserToken(authentication)
+    val user = jwtAuthUserMapper.map(authentication)
     val cancelledReferral = referralService.cancelSentReferral(sentReferral, user)
 
     return CancelledReferralDTO.from(cancelledReferral)
   }
-
 
   @PostMapping("/draft-referral")
   fun createDraftReferral(@RequestBody createReferralRequestDTO: CreateReferralRequestDTO, authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
@@ -154,17 +155,16 @@ class ReferralController(
   }
 
   private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
-    // note: this does not allow tokens for client_credentials grant types use this API
-//    val userID = authentication.token.getClaimAsString("user_id")
-//      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
-//
-//    val userName = authentication.token.getClaimAsString("user_name")
-//      ?: throw ServerWebInputException("no 'user_name' claim in authentication token")
-//
-//    val authSource = authentication.token.getClaimAsString("auth_source")
-//      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
-//
-//    return AuthUser(id = userID, authSource = authSource, userName = userName)
-    return AuthUser("2500128586", "delius", "bernard.beaks")
+//     note: this does not allow tokens for client_credentials grant types use this API
+    val userID = authentication.token.getClaimAsString("user_id")
+      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
+
+    val userName = authentication.token.getClaimAsString("user_name")
+      ?: throw ServerWebInputException("no 'user_name' claim in authentication token")
+
+    val authSource = authentication.token.getClaimAsString("auth_source")
+      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
+
+    return AuthUser(id = userID, authSource = authSource, userName = userName)
   }
 }
