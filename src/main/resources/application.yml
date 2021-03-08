@@ -3,6 +3,8 @@ info.app:
   version: 1.0
 
 spring:
+  main:
+    banner-mode: off
   application:
     name: hmpps-interventions-service
   codec:

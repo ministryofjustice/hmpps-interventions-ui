@@ -66,3 +66,4 @@ dist
 ecr.repo
 /dps-gradle-spring-boot-suppressions.xml
 ddl_jpa_creation.sql
+applicationinsights-agent-*.jar

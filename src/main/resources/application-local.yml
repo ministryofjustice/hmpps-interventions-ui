@@ -33,6 +33,8 @@ postgres:
   password: password
 
 spring:
+  main:
+    banner-mode: console
   security:
     oauth2:
       client:
@@ -40,3 +42,5 @@ spring:
           interventions-client:
             client-id: interventions
             client-secret: clientsecret
+
+azure.application-insights.instrumentation-key: dummy
