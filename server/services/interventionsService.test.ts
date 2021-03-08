@@ -1374,7 +1374,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: `/draft-action-plan/${draftActionPlanId}`,
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           body: {
-            activity: {
+            newActivity: {
               description: 'Attend training course',
               desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
             },
@@ -1406,7 +1406,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
-        activity: {
+        newActivity: {
           description: 'Attend training course',
           desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         },
