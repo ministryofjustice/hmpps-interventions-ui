@@ -19,14 +19,17 @@
       id: "more-detail",
       label: {
         text: "Add relevant information about Matt and the session here:",
-        classes: "govuk-label--s govuk-!-padding-bottom-3"
+        classes: "govuk-!-padding-bottom-3"
       }
     }) }}
     {{ govukInput({
       label: {
         text: "Who facilitated the session?",
-        classes: "govuk-label--m strong",
-        isPageHeading: false
+        classes: "govuk-label--m",
+        isPageHeading: true
+      },
+      hint: {
+        text: "Add full name"
       },
       id: "delivered-name",
       name: "delivered-name"

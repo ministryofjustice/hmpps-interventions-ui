@@ -10,9 +10,9 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l">Page 1 of 1</span>
+    <span class="govuk-caption-l">Page 1</span>
       <h1 class="govuk-heading-l">
-       Attendance
+       Session details
       </h1>
     {{ govukSummaryList({
         classes: 'govuk-summary-list--no-border',
@@ -63,7 +63,10 @@
         ]
       }) }}
       <hr>
-    <form action="#" method="#" class="govuk-!-padding-top-6">
+      <h1 class="govuk-heading-l govuk-!-padding-top-6">
+       Attendance
+      </h1>
+    <form action="#" method="#" class="">
     {{ govukRadios({
       idPrefix: "attendance",
       name: "attendance",
@@ -97,7 +100,7 @@
       id: "more-detail",
       label: {
         text: "Add additional information about Matt's attendance:",
-        classes: "govuk-label--s govuk-!-padding-bottom-3"
+        classes: "govuk-!-padding-bottom-3"
       }
     }) }}
     {{ govukButton({

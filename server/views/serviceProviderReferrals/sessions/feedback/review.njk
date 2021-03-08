@@ -8,7 +8,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">Review your session feedback</h1>
+      <h1 class="govuk-heading-l">Session details</h1>
       {{ govukSummaryList({
         classes: 'govuk-summary-list--no-border',
         rows: [
@@ -59,50 +59,45 @@
       }) }}
       <div class="govuk-grid-column-full govuk-review__list">
        <hr>
+       <h1 class="govuk-heading-l govuk-!-padding-top-6">Review your session feedback</h1>
         <form class="" action="#" method="#">
-          <div class="govuk-grid-column-full govuk-!-padding-top-6">
+          <div class="govuk-grid-column-full">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Did Matt attend the session?
               </h2>
                <p class="govuk-body">Output radio button Answer</p>
                <p class="govuk-body">Output Textarea information</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+               <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">answer, did the Matt attend session?</span>
-              </a>
+              </a></p>
             </div>
           </div>
           {# ---- #}
-          <div class="govuk-grid-column-full">
+          <div class="govuk-grid-column-full govuk-!-padding-top-6">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Were any safeguarding issues identified?
               </h2>
               <p class="govuk-body">Output radio button Answer</p>
                 <p class="govuk-body">Output Textarea information</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+              <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">answer, were any safeguarding issues identified?</span>
-              </a>
+              </a></p>
             </div>
           </div>
           {# ---- #}
-          <div class="govuk-grid-column-full">
+          <div class="govuk-grid-column-full govuk-!-padding-top-6">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Have you identified any changes to the Matt’s circumstances, needs or risks?
               </h2>
               <p class="govuk-body">Output radio button Answer</p>
               <p class="govuk-body">Output Textarea information</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+              <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">answer, have you identified any changes to the Matt’s circumstances, needs or risks?</span>
-              </a>
+              </a></p>
             </div>
           </div>
           {# ---- #}
-          <div class="govuk-grid-column-full">
+          <div class="govuk-grid-column-full govuk-!-padding-top-6">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Has Matt met any of their outcomes since you saw them last?
               </h2>
@@ -110,44 +105,41 @@
               <p class="govuk-body">Output Textarea information</p>
               <p class="govuk-body"><strong class="govuk-body">Desired outcome 2</strong>Output radio button Answer</p>
               <p class="govuk-body">Output Textarea information</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+              <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">answer, has Matt met any of their outcomes since you saw them last?</span>
-              </a>
+              </a></p>
             </div>
           </div>
           {# ---- #}
-          <div class="govuk-grid-column-full">
+          <div class="govuk-grid-column-full govuk-!-padding-top-6">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">What was Matt’s behaviour like in this session?
               </h2>
               <p class="govuk-body">Output radio button Answer</p>
               <p class="govuk-body">Output Textarea information</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+              <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">answer, what was Matt’s behaviour like in this session?</span>
-              </a>
+              </a></p>
             </div>
           </div>
           {# ---- #}
-          <div class="govuk-grid-column-full">
+          <div class="govuk-grid-column-full govuk-!-padding-top-6">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Any relevant additional information about the service user?
               </h2>
               <p class="govuk-body">Output Textarea information</p>
               <p class="govuk-body"><strong class="govuk-body">Who delivered this session?</strong>
                     Output text input information</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+              <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">answer, any relevant additional information about the service user</span>
-              </a>
+              </a></p>
             </div>
           </div>
-          {# ---- #}
           <div class="govuk-grid-column-full">
+
+          </div>
+          {# ---- #}
+          <div class="govuk-grid-column-full govuk-!-padding-top-6">
             <div class="govuk-grid-column-two-thirds">
               <h2 class="govuk-heading-m">Next session details
               </h2>
@@ -168,15 +160,13 @@
                   Conditional radio output: In-person meeting<br>
                   Address: 22 Usual Avenue, E32 9QX, London
               </p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <a class="govuk-link change__right" href="#">
+              <p><a class="govuk-link" href="#">
                 Change<span class="govuk-visually-hidden">Next session details</span>
-              </a>
+              </a></p>
             </div>
         </div>
         {# ---- #}
-          <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-column-two-thirds govuk-!-padding-top-6">
             <button class="govuk-button" data-module="govuk-button">
               Submit feedback form
             </button>

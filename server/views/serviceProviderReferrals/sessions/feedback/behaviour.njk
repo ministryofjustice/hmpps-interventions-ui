@@ -10,19 +10,19 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-l">Page 5 of 7</span>
-      <h1 class="govuk-heading-l">
-       Their behaviour
-      </h1>
     <form action="#" method="#">
     {{ govukRadios({
       idPrefix: "behaviour",
       name: "behaviour",
       fieldset: {
         legend: {
-          text: "What was Matt’s behaviour like in this session? For example, consider how well engaged they were and what their body language was like.",
+          text: "What was Matt’s behaviour like in this session?",
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--m"
+          classes: "govuk-fieldset__legend--l"
         }
+      },
+      hint: {
+        html: "For example, consider how well engaged they were and what their body language was like.<br>Select one option"
       },
       items: [
         {
@@ -40,7 +40,7 @@
       id: "more-detail",
       label: {
         text: "Add information about their engagement in this session:",
-        classes: "govuk-label--s govuk-!-padding-bottom-3"
+        classes: "govuk-!-padding-bottom-3"
       }
     }) }}
     {{ govukButton({

@@ -42,7 +42,12 @@ export default class StaticContentController {
     {
       path: '/service-provider/session-feedback/outcomes',
       template: 'serviceProviderReferrals/sessions/feedback/outcomes',
-      description: 'IC-1054 (session feedback: outcomes)',
+      description: 'IC-1054 (session feedback: outcomes 1)',
+    },
+    {
+      path: '/service-provider/session-feedback/outcomes-two',
+      template: 'serviceProviderReferrals/sessions/feedback/outcomesTwo',
+      description: 'IC-1054 (session feedback: outcomes 2)',
     },
     {
       path: '/service-provider/session-feedback/behaviour',
