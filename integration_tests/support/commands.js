@@ -11,6 +11,14 @@ Cypress.Commands.add('stubGetAuthUserByUsername', (username, responseJson) => {
   cy.task('stubGetAuthUserByUsername', { username, responseJson })
 })
 
+Cypress.Commands.add('stubGetDraftActionPlan', (id, responseJson) => {
+  cy.task('stubGetDraftActionPlan', { id, responseJson })
+})
+
+Cypress.Commands.add('stubCreateDraftActionPlan', responseJson => {
+  cy.task('stubCreateDraftActionPlan', { responseJson })
+})
+
 Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {
   cy.contains(text).parent('fieldset').within(action)
 })

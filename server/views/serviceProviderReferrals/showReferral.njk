@@ -24,6 +24,10 @@
         </form>
       {% else %}
         <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
+
+        <form method="post" action="{{ presenter.createActionPlanFormAction }}">
+          {{ govukButton({ text: "Create action plan" }) }}
+        </form>
       {% endif %}
 
       <h2 class="govuk-heading-m">{{ presenter.text.interventionDetailsSummaryHeading }}</h2>
