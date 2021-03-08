@@ -37,3 +37,8 @@ interface SummaryListRow {
   key: { text: string }
   value: { html?: string; text?: string }
 }
+
+export interface TagArgs {
+  text: string
+  classes?: string
+}
