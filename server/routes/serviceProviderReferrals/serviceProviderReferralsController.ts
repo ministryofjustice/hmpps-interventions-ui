@@ -182,7 +182,7 @@ export default class ServiceProviderReferralsController {
       sentReferral.referral.serviceCategoryId
     )
 
-    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory)
+    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.render(...view.renderArgs)
