@@ -1,5 +1,6 @@
 import ViewUtils from '../../utils/viewUtils'
-import { SummaryListArgs, SummaryListItem } from '../../utils/summaryList'
+import { SummaryListItem } from '../../utils/summaryList'
+import { SummaryListArgs } from '../../utils/govukFrontendTypes'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import { TabsArgs } from '../../utils/govukFrontendTypes'
 

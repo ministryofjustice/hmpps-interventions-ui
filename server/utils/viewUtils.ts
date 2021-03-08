@@ -1,5 +1,6 @@
 import * as nunjucks from 'nunjucks'
-import { SummaryListArgs, SummaryListItem } from './summaryList'
+import { SummaryListItem } from './summaryList'
+import { SummaryListArgs } from './govukFrontendTypes'
 
 export default class ViewUtils {
   static escape(val: string): string {
