@@ -15,7 +15,7 @@ export default function populateCurrentUser(userService: UserService): RequestHa
       }
       next()
     } catch (error) {
-      logger.error(error, `Failed to retrieve user for: ${res.locals.user && res.locals.user.username}`)
+      logger.error({ err: error, username: res.locals.user && res.locals.username }, 'Failed to retrieve user')
       next(error)
     }
   }

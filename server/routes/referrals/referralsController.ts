@@ -76,7 +76,7 @@ export default class ReferralsController {
             ],
           }
         } else {
-          logger.error('crn lookup failed', e)
+          logger.error({ err: e }, 'crn lookup failed')
           error = {
             errors: [
               {

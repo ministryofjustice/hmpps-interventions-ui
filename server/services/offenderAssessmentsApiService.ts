@@ -84,7 +84,7 @@ export default class OffenderAssessmentsApiService {
   async getAssessmentByCRN(crn: string): Promise<OasysAssessment> {
     const token = await this.hmppsAuthClient.getApiClientToken()
 
-    logger.info(`getting user details for CRN ${crn}`)
+    logger.info({ crn }, 'getting user details')
     return (await this.restClient(token).get({
       path: `/offenders/crn/${crn}/assessments/latest`,
     })) as OasysAssessment

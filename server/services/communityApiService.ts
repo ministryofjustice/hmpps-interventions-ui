@@ -72,13 +72,13 @@ export default class CommunityApiService {
   async getUserByUsername(username: string): Promise<DeliusUser> {
     const token = await this.hmppsAuthClient.getApiClientToken()
 
-    logger.info(`getting user details for username ${username}`)
+    logger.info({ username }, 'getting user details')
     return (await this.restClient(token).get({ path: `/secure/users/${username}/details` })) as DeliusUser
   }
 
   async getServiceUserByCRN(crn: string): Promise<DeliusServiceUser> {
     const token = await this.hmppsAuthClient.getApiClientToken()
-    logger.info(`getting details for offender with crn ${crn}`)
+    logger.info({ crn }, 'getting details for offender')
     return (await this.restClient(token).get({ path: `/secure/offenders/crn/${crn}` })) as DeliusServiceUser
   }
 }
