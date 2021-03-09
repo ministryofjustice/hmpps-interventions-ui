@@ -76,4 +76,5 @@ export default SentReferralFactory.define(({ sequence }) => ({
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
   referral: exampleReferralFields(),
   assignedTo: null,
+  actionPlanId: null,
 }))

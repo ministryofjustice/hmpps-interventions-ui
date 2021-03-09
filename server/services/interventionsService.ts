@@ -47,6 +47,7 @@ export interface SentReferral {
   referral: ReferralFields
   sentBy: AuthUser
   assignedTo: AuthUser | null
+  actionPlanId: string | null
 }
 
 export interface ServiceCategory {

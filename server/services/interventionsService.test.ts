@@ -945,6 +945,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       authSource: 'delius',
     },
     assignedTo: null,
+    actionPlanId: null,
     referenceNumber: 'HDJ2123F',
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
@@ -1042,6 +1043,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(await interventionsService.getSentReferral(token, '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')).toMatchObject(
           {
             assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+          }
+        )
+      })
+    })
+
+    describe('for a referral that has an action plan', () => {
+      it('populates the actionPlanId property', async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan',
+          uponReceiving: 'a request for the sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getSentReferral(token, '8b423e17-9b60-4cc2-a927-8941ac76fdf9')).toMatchObject(
+          {
+            actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
           }
         )
       })
