@@ -1391,6 +1391,62 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('getActionPlan', () => {
+    it('returns an existing draft action plan', async () => {
+      const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has not been submitted`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            submittedAt: null,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      expect(actionPlan).toMatchObject({ id: actionPlanId, submittedAt: null })
+    })
+
+    it('returns an existing submitted action plan', async () => {
+      const actionPlanId = '7a165933-d851-48c1-9ab0-ff5b8da12695'
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has been submitted`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            submittedAt: '2021-03-09T15:08:38Z',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      expect(actionPlan).toMatchObject({ id: actionPlanId, submittedAt: '2021-03-09T15:08:38Z' })
+    })
+  })
+
   describe('updateDraftActionPlan', () => {
     it('updates and returns the newly-updated draft action plan when adding an activity', async () => {
       const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'

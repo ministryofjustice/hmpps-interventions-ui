@@ -15,6 +15,10 @@ Cypress.Commands.add('stubGetDraftActionPlan', (id, responseJson) => {
   cy.task('stubGetDraftActionPlan', { id, responseJson })
 })
 
+Cypress.Commands.add('stubGetActionPlan', (id, responseJson) => {
+  cy.task('stubGetActionPlan', { id, responseJson })
+})
+
 Cypress.Commands.add('stubCreateDraftActionPlan', responseJson => {
   cy.task('stubCreateDraftActionPlan', { responseJson })
 })
