@@ -214,7 +214,7 @@ export default class InterventionsService {
   }
 
   async getDraftReferral(token: string, id: string): Promise<DraftReferral> {
-    logger.info(`Getting draft referral with id ${id}`)
+    logger.info({ id }, 'Getting draft referral')
 
     const restClient = this.createRestClient(token)
 

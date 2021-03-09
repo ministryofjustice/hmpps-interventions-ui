@@ -1,6 +1,6 @@
 import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
-import logger from '../../log'
+import { loggerFactory } from '../../log'
 import { AgentConfig } from '../config'
 
 export type ServiceCheck = () => Promise<string>
@@ -18,6 +18,7 @@ export function serviceCheckFactory(
   serviceTimeout: ServiceTimeout = new ServiceTimeout()
 ): ServiceCheck {
   const keepaliveAgent = url.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
+  const logger = loggerFactory({ service: name })
 
   return () =>
     new Promise((resolve, reject) => {
@@ -25,13 +26,20 @@ export function serviceCheckFactory(
         .get(url)
         .agent(keepaliveAgent)
         .retry(2, (err, res) => {
-          if (err) logger.info(`Retry handler found API error with ${err.code} ${err.message} when calling ${name}`)
+          if (err)
+            logger.info(
+              {
+                code: err.code,
+                message: err.message,
+              },
+              'retry handler found API error'
+            )
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
         .timeout(serviceTimeout)
         .end((error, result) => {
           if (error) {
-            logger.error(error.stack, `Error calling ${name}`)
+            logger.error({ err: error }, 'error calling service')
             reject(error)
           } else if (result.status === 200) {
             resolve('OK')

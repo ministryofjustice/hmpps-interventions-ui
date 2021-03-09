@@ -19,7 +19,7 @@ const redisClient = redis.createClient({
 })
 
 redisClient.on('error', error => {
-  logger.error(error, `Redis error`)
+  logger.error({ err: error }, 'Redis error')
 })
 
 const getRedisAsync = promisify(redisClient.get).bind(redisClient)
@@ -33,7 +33,11 @@ function getApiClientTokenFromHmppsAuth(username?: string): Promise<superagent.R
     : querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
-    `HMPPS Auth request '${authRequest}' for client id '${config.apis.hmppsAuth.apiClientId}' and user '${username}'`
+    {
+      query: authRequest,
+      clientId: config.apis.hmppsAuth.apiClientId,
+    },
+    'making token request to hmpps auth'
   )
 
   return superagent
