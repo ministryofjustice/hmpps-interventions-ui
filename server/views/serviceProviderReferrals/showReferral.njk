@@ -26,6 +26,7 @@
         <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
 
         <form method="post" action="{{ presenter.createActionPlanFormAction }}">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
           {{ govukButton({ text: "Create action plan" }) }}
         </form>
       {% endif %}
