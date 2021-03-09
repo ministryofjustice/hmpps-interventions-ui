@@ -20,8 +20,6 @@ export default class ShowReferralPresenter {
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
 
-  readonly createActionPlanFormAction = `/service-provider/referrals/${this.sentReferral.id}/action-plan`
-
   readonly text = {
     title:
       this.sentReferral.assignedTo === null
