@@ -33,8 +33,16 @@ export default class DashboardPresenter {
         },
         { text: utils.convertToProperCase(serviceCategory.name), sortValue: null, href: null },
         { text: referral.assignedTo?.username ?? '', sortValue: null, href: null },
-        { text: 'View', sortValue: null, href: `/service-provider/referrals/${referral.id}` },
+        { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referral) },
       ]
     }
   )
+
+  private static hrefForViewing(referral: SentReferral): string {
+    if (referral.assignedTo === null) {
+      return `/service-provider/referrals/${referral.id}`
+    }
+
+    return `/service-provider/referrals/${referral.id}/progress`
+  }
 }

@@ -77,7 +77,24 @@ describe(DashboardPresenter, () => {
 
         const presenter = new DashboardPresenter(sentReferrals, [serviceCategory])
 
-        expect(presenter.tableRows[0][4]).toEqual({ text: 'john.smith', sortValue: null, href: null })
+        expect(presenter.tableRows[0][4]).toMatchObject({ text: 'john.smith' })
+      })
+    })
+
+    describe('the View link', () => {
+      describe('when a referral has been assigned to a caseworker', () => {
+        it('links to the intervention progress page', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+          const sentReferrals = [
+            sentReferralFactory.assigned().build({ referral: { serviceCategoryId: serviceCategory.id } }),
+          ]
+
+          const presenter = new DashboardPresenter(sentReferrals, [serviceCategory])
+
+          expect(presenter.tableRows[0][5]).toMatchObject({
+            href: `/service-provider/referrals/${sentReferrals[0].id}/progress`,
+          })
+        })
       })
     })
   })
