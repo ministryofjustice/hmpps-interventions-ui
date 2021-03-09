@@ -35,7 +35,8 @@ class ActionPlanFactory(em: TestEntityManager? = null) : EntityFactory(em) {
             createdAt = OffsetDateTime.now(),
             desiredOutcome = singleActivityDesiredOutcome
           )
-        )
+        ),
+        appointments = listOf()
       )
     )
   }

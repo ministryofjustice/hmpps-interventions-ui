@@ -142,6 +142,7 @@ class SampleData {
       activityCreatedAt: OffsetDateTime = OffsetDateTime.now(),
       activityId: UUID = UUID.randomUUID(),
       activities: List<ActionPlanActivity> = listOf(sampleActionPlanActivity(activityId, desiredOutcome, activityCreatedAt)),
+      appointments: List<ActionPlanAppointment> = listOf()
     ): ActionPlan {
       return ActionPlan(
         id = id ?: UUID.randomUUID(),
@@ -151,7 +152,8 @@ class SampleData {
         createdAt = createdAt,
         submittedBy = submittedBy,
         submittedAt = submittedAt,
-        activities = activities.toMutableList()
+        activities = activities.toMutableList(),
+        appointments = appointments
       )
     }
 
@@ -165,6 +167,26 @@ class SampleData {
         description = "Some text to describe activity",
         createdAt = createdAt,
         desiredOutcome = desiredOutcome
+      )
+    }
+
+    fun sampleActionPlanAppointment(
+      id: UUID = UUID.randomUUID(),
+      actionPlan: ActionPlan,
+      sessionNumber: Int = 1,
+      appointmentTime: OffsetDateTime? = null,
+      durationInMinutes: Int? = null,
+      createdAt: OffsetDateTime = OffsetDateTime.now(),
+      createdBy: AuthUser
+    ): ActionPlanAppointment {
+      return ActionPlanAppointment(
+        id = id,
+        actionPlan = actionPlan,
+        sessionNumber = sessionNumber,
+        appointmentTime = appointmentTime,
+        durationInMinutes = durationInMinutes,
+        createdAt = createdAt,
+        createdBy = createdBy
       )
     }
 

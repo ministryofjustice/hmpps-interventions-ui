@@ -36,7 +36,8 @@ class ActionPlanService(
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
       referral = referralRepository.getOne(referralId),
-      activities = activities.toMutableList()
+      activities = activities.toMutableList(),
+      appointments = listOf()
     )
 
     return actionPlanRepository.save(draftActionPlan)
