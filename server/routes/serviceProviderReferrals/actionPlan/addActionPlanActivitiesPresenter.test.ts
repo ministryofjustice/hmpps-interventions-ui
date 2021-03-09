@@ -1,6 +1,6 @@
 import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import sentReferralFactory from '../../../../testutils/factories/sentReferral'
+import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
 
 describe(AddActionPlanActivitiesPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })

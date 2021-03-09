@@ -1,0 +1,16 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% extends "./actionPlanFormTemplate.njk" %}
+
+{% block formSection %}
+    <h3 class="govuk-heading-m">Add number of sessions for {{ presenter.text.serviceUserFirstName | capitalize }}'s action plan</h3>
+
+    <p class="govuk-body">This will be shared with the service user's probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukInput(numberOfSessionsInputArgs) }}
+        {{ govukButton({ text: "Save and continue" }) }}
+      </form>
+{% endblock %}

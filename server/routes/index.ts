@@ -53,10 +53,6 @@ export default function routes(router: Router, services: Services): Router {
     }
   })
 
-  get('/service-provider/action-plan/:id/number-of-sessions', (req, res) =>
-    serviceProviderReferralsController.createActionPlanSessions(req, res)
-  )
-
   get('/service-provider/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
   get('/service-provider/referrals/:id', (req, res) => serviceProviderReferralsController.showReferral(req, res))
   get('/service-provider/referrals/:id/assignment/check', (req, res) =>
@@ -73,6 +69,12 @@ export default function routes(router: Router, services: Services): Router {
   })
   get('/service-provider/action-plan/:id/add-activities', (req, res) =>
     serviceProviderReferralsController.addActivitiesToActionPlan(req, res)
+  )
+  get('/service-provider/action-plan/:id/add-number-of-sessions', (req, res) =>
+    serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
+  )
+  post('/service-provider/action-plan/:id/add-number-of-sessions', (req, res) =>
+    serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {

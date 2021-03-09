@@ -1,5 +1,5 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
-import utils from '../../utils/utils'
+import { SentReferral, ServiceCategory } from '../../../services/interventionsService'
+import utils from '../../../utils/utils'
 
 export default class AddActionPlanActivitiesPresenter {
   constructor(private readonly sentReferral: SentReferral, private readonly serviceCategory: ServiceCategory) {}

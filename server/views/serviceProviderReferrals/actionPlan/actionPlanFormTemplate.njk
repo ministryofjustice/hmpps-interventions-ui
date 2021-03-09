@@ -5,9 +5,11 @@
 {% block pageTitle %}HMPPS Interventions - GOV.UK{% endblock %}
 
 {% block content %}
+  {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h2>
+      <h1 class="govuk-heading-xl">{{ presenter.text.serviceCategoryName }} - Create action plan</h1>
+      <p class="govuk-hint">Page {{ presenter.text.pageNumber }} of 3</p>
       {% block formSection %}{% endblock %}
     </div>
   </div>

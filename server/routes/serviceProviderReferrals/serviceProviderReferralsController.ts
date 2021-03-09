@@ -13,11 +13,12 @@ import AssignmentConfirmationView from './assignmentConfirmationView'
 import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
-import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
-import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
-import ActionPlanFormPresenter from './actionPlan/actionPlanFormPresenter'
+import AddActionPlanActivitiesPresenter from './actionPlan/addActionPlanActivitiesPresenter'
+import AddActionPlanActivitiesView from './actionPlan/addActionPlanActivitiesView'
 import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
-import ActionPlanFormView from './actionPlan/actionPlanFormView'
+import AddActionPlanNumberOfSessionsView from './actionPlan/addActionPlanNumberOfSessionsView'
+import AddActionPlanNumberOfSessionsPresenter from './actionPlan/addActionPlanNumberOfSessionsPresenter'
+import logger from '../../../log'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -171,14 +172,41 @@ export default class ServiceProviderReferralsController {
     res.render(...view.renderArgs)
   }
 
-  async createActionPlanSessions(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+  async addNumberOfSessionsToActionPlan(req: Request, res: Response): Promise<void> {
+    let formError: FormValidationError | null = null
+    const { user } = res.locals
+    const actionPlanId = req.params.id
+    const actionPlan = await this.interventionsService.getDraftActionPlan(user.token, actionPlanId)
+
+    if (req.method === 'POST') {
+      const { numberOfSessions } = req.body
+      if (numberOfSessions && numberOfSessions > 0) {
+        logger.info({ username: user.username }, 'updating draft action plan number of sessions')
+        await this.interventionsService.updateDraftActionPlan(user.token, actionPlanId, { numberOfSessions })
+        return res.redirect(`/service-provider/referrals/${actionPlan.referralId}`)
+      }
+
+      formError = {
+        errors: [
+          {
+            formFields: ['numberOfSessions'],
+            errorSummaryLinkedField: 'numberOfSessions',
+            message: 'Number of sessions must be greater than zero',
+          },
+        ],
+      }
+    }
+
+    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      user.token,
+      referral.referral.serviceCategoryId
+    )
 
     const serviceUserBannerPresenter = new ServiceUserBannerPresenter(serviceUser)
-    const presenter = new ActionPlanFormPresenter(serviceUser)
-    const view = new ActionPlanFormView(presenter, serviceUserBannerPresenter)
-    res.render(...view.numSessionRenderArgs)
+    const presenter = new AddActionPlanNumberOfSessionsPresenter(serviceUser, serviceCategory, formError)
+    const view = new AddActionPlanNumberOfSessionsView(serviceUserBannerPresenter, presenter)
+    return res.render(...view.renderArgs)
   }
 }
