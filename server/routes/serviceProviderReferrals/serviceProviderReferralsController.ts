@@ -78,12 +78,18 @@ export default class ServiceProviderReferralsController {
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const serviceCategoryPromise = this.interventionsService.getServiceCategory(
       res.locals.user.token,
       sentReferral.referral.serviceCategoryId
     )
+    const actionPlanPromise =
+      sentReferral.actionPlanId === null
+        ? Promise.resolve(null)
+        : this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
 
-    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory)
+    const [serviceCategory, actionPlan] = await Promise.all([serviceCategoryPromise, actionPlanPromise])
+
+    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new InterventionProgressView(presenter)
 
     res.render(...view.renderArgs)

@@ -4,6 +4,7 @@ import sentReferralFactory from './testutils/factories/sentReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 import interventionFactory from './testutils/factories/intervention'
 import deliusUserFactory from './testutils/factories/deliusUser'
+import actionPlanFactory from './testutils/factories/actionPlan'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -19,6 +20,8 @@ export default async function setUpMocks(): Promise<void> {
     authSource: 'delius',
   }
 
+  const actionPlan = actionPlanFactory.notSubmitted().build()
+
   const sentReferrals = [
     sentReferralFactory.build({
       sentAt: '2021-01-26T13:00:00.000000Z',
@@ -29,6 +32,7 @@ export default async function setUpMocks(): Promise<void> {
         desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
       },
       sentBy,
+      actionPlanId: actionPlan.id,
     }),
     sentReferralFactory.build({
       sentAt: '2020-09-13T13:00:00.000000Z',
@@ -100,5 +104,6 @@ export default async function setUpMocks(): Promise<void> {
       await interventionsMocks.stubAssignSentReferral(referral.id, referral)
       await interventionsMocks.stubGetSentReferral(referral.id, referral)
     }),
+    interventionsMocks.stubGetActionPlan(actionPlan.id, actionPlan),
   ])
 }
