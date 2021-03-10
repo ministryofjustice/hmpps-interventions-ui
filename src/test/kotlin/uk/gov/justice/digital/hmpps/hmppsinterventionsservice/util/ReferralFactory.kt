@@ -63,7 +63,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     )
   }
 
-  fun createCancelled(
+  fun createEnded(
     id: UUID = UUID.randomUUID(),
     createdAt: OffsetDateTime = OffsetDateTime.now(),
     createdBy: AuthUser = authUserFactory.create(),
@@ -77,8 +77,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
     assignedAt: OffsetDateTime? = null,
-    cancelledAt: OffsetDateTime? = OffsetDateTime.now(),
-    cancelledBy: AuthUser? = authUserFactory.create(),
+    endedAt: OffsetDateTime? = OffsetDateTime.now(),
+    endedBy: AuthUser? = authUserFactory.create(),
   ): Referral {
     return create(
       id = id,
@@ -95,8 +95,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       assignedTo = assignedTo,
       assignedAt = assignedAt,
 
-      cancelledAt = cancelledAt,
-      cancelledBy = cancelledBy,
+      endedAt = endedAt,
+      endedBy = endedBy,
     )
   }
 
@@ -116,8 +116,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedAt: OffsetDateTime? = null,
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
-    cancelledAt: OffsetDateTime? = null,
-    cancelledBy: AuthUser? = null,
+    endedAt: OffsetDateTime? = null,
+    endedBy: AuthUser? = null,
   ): Referral {
     return save(
       Referral(
@@ -133,8 +133,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         assignedAt = assignedAt,
         assignedBy = assignedBy,
         assignedTo = assignedTo,
-        cancelledAt = cancelledAt,
-        cancelledBy = cancelledBy,
+        endedAt = endedAt,
+        endedBy = endedBy,
       )
     )
   }

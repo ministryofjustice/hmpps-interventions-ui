@@ -4,20 +4,20 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class CancelledReferralDTO(
+class EndedReferralDTO(
   val id: UUID,
-  val cancelledAt: OffsetDateTime,
-  val cancelledBy: AuthUserDTO,
+  val endedAt: OffsetDateTime,
+  val endedBy: AuthUserDTO,
   val referenceNumber: String,
   val assignedTo: AuthUserDTO?,
   val referral: DraftReferralDTO,
 ) {
   companion object {
-    fun from(referral: Referral): CancelledReferralDTO {
-      return CancelledReferralDTO(
+    fun from(referral: Referral): EndedReferralDTO {
+      return EndedReferralDTO(
         id = referral.id,
-        cancelledAt = referral.cancelledAt!!,
-        cancelledBy = AuthUserDTO.from(referral.cancelledBy!!),
+        endedAt = referral.endedAt!!,
+        endedBy = AuthUserDTO.from(referral.endedBy!!),
         referenceNumber = referral.referenceNumber!!,
         assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),

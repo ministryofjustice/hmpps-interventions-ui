@@ -95,25 +95,25 @@ internal class ReferralControllerTest {
   }
 
   @Test
-  fun `successfully call cancel referral endpoint`() {
+  fun `successfully call end referral endpoint`() {
     val referral = referralFactory.createSent()
     whenever(referralService.getSentReferral(any())).thenReturn(referral)
 
     val authUser = AuthUser("CRN123", "auth", "user")
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(referralService.cancelSentReferral(any(), any())).thenReturn(referralFactory.createCancelled())
+    whenever(referralService.endSentReferral(any(), any())).thenReturn(referralFactory.createEnded())
 
-    referralController.cancelSentReferral(referral.id, jwtAuthenticationToken)
-    verify(referralService).cancelSentReferral(referral, authUser)
+    referralController.endSentReferral(referral.id, jwtAuthenticationToken)
+    verify(referralService).endSentReferral(referral, authUser)
   }
 
   @Test
-  fun `cancel referral endpoint does not find referral`() {
+  fun `end referral endpoint does not find referral`() {
     whenever(referralService.getSentReferral(any())).thenReturn(null)
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val e = assertThrows<ResponseStatusException> {
-      referralController.cancelSentReferral(UUID.randomUUID(), jwtAuthenticationToken)
+      referralController.endSentReferral(UUID.randomUUID(), jwtAuthenticationToken)
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
   }

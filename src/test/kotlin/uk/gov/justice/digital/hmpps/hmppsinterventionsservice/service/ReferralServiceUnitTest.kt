@@ -25,15 +25,15 @@ class ReferralServiceUnitTest {
   private val referralService = ReferralService(referralRepository, authUserRepository, interventionRepository, referralEventPublisher, referralReferenceGenerator)
 
   @Test
-  fun `set cancellation fields on a sent referral`() {
+  fun `set ended fields on a sent referral`() {
     val referral = referralFactory.createSent()
     val authUser = authUserFactory.create()
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
-    whenever(referralRepository.save(any())).thenReturn(referralFactory.createCancelled())
+    whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded())
 
-    val cancelledReferral = referralService.cancelSentReferral(referral, authUser)
-    assertThat(cancelledReferral.cancelledAt).isNotNull
-    assertThat(cancelledReferral.cancelledBy).isEqualTo(authUser)
+    val endedReferral = referralService.endSentReferral(referral, authUser)
+    assertThat(endedReferral.endedAt).isNotNull
+    assertThat(endedReferral.endedBy).isEqualTo(authUser)
   }
 }

@@ -15,9 +15,9 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancelledReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
@@ -90,15 +90,15 @@ class ReferralController(
     } ?: throw AccessDeniedException("user is not associated with a service provider organization")
   }
 
-  @PostMapping("/sent-referral/{id}/cancel")
-  fun cancelSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): CancelledReferralDTO {
+  @PostMapping("/sent-referral/{id}/end")
+  fun endSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): EndedReferralDTO {
     val sentReferral = referralService.getSentReferral(id)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
     val user = jwtAuthUserMapper.map(authentication)
-    val cancelledReferral = referralService.cancelSentReferral(sentReferral, user)
+    val endedReferral = referralService.endSentReferral(sentReferral, user)
 
-    return CancelledReferralDTO.from(cancelledReferral)
+    return EndedReferralDTO.from(endedReferral)
   }
 
   @PostMapping("/draft-referral")
