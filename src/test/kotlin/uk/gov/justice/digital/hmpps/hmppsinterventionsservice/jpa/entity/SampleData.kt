@@ -68,6 +68,7 @@ class SampleData {
       assignedTo: AuthUser? = null,
       assignedAt: OffsetDateTime = OffsetDateTime.now(),
       actionPlan: ActionPlan? = null,
+      endOfServiceReport: EndOfServiceReport? = null
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -87,6 +88,7 @@ class SampleData {
           )
         ),
         actionPlan = actionPlan,
+        endOfServiceReport = endOfServiceReport,
       )
     }
 
@@ -127,6 +129,39 @@ class SampleData {
         allowsFemale = true,
         npsRegion = npsRegion,
         pccRegion = pccRegion
+      )
+    }
+    fun sampleEndOfServiceReport(
+      id: UUID? = null,
+      createdAt: OffsetDateTime = OffsetDateTime.now(),
+      createdBy: AuthUser = AuthUser("CRN123", "auth", "user"),
+      submittedAt: OffsetDateTime? = null,
+      submittedBy: AuthUser? = null,
+      furtherInformation: String? = null,
+      outcomes: List<EndOfServiceReportOutcome> = listOf(sampleEndOfServiceReportOutcome())
+    ): EndOfServiceReport {
+      return EndOfServiceReport(
+        id = id ?: UUID.randomUUID(),
+        createdAt = createdAt,
+        createdBy = createdBy,
+        submittedAt = submittedAt,
+        submittedBy = submittedBy,
+        furtherInformation = furtherInformation,
+        outcomes = outcomes.toMutableList()
+      )
+    }
+
+    fun sampleEndOfServiceReportOutcome(
+      desiredOutcome: DesiredOutcome? = null,
+      achievementLevel: AchievementLevel = AchievementLevel.ACHIEVED,
+      progressionComments: String? = null,
+      additionalTaskComments: String? = null
+    ): EndOfServiceReportOutcome {
+      return EndOfServiceReportOutcome(
+        desiredOutcome = desiredOutcome ?: sampleDesiredOutcome(),
+        achievementLevel = achievementLevel,
+        progressionComments = progressionComments,
+        additionalTaskComments = additionalTaskComments,
       )
     }
 

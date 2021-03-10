@@ -70,4 +70,6 @@ data class Referral(
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
   @Id val id: UUID,
+
+  @OneToOne @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
 )
