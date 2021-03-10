@@ -421,11 +421,24 @@ export default class InterventionsService {
     })) as SubmittedActionPlan
   }
 
-  async getActionPlanAppointments(token: string, id: string): Promise<ActionPlanAppointment[]> {
+  async getActionPlanAppointments(token: string, actionPlanId: string): Promise<ActionPlanAppointment[]> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
-      path: `/action-plan/${id}/appointments`,
+      path: `/action-plan/${actionPlanId}/appointments`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment[]
+  }
+
+  async createActionPlanAppointment(
+    token: string,
+    actionPlanId: string,
+    appointment: ActionPlanAppointment
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/action-plan/${actionPlanId}/appointment`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointment },
+    })) as ActionPlanAppointment
   }
 }
