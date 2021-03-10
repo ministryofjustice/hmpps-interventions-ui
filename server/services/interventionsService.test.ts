@@ -1716,6 +1716,47 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ).toMatchObject(actionPlanAppointment)
     })
   })
+
+  describe('updateActionPlanAppointment', () => {
+    const actionPlanAppointment = {
+      sessionNumber: 2,
+      appointmentTime: '2021-05-13T12:30:000000Z',
+      durationInMinutes: 60,
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state:
+          'a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+        uponReceiving:
+          'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+        withRequest: {
+          method: 'PATCH',
+          path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
+          body: {
+            durationInMinutes: 60,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        // note - this is an exact match
+        willRespondWith: {
+          status: 200,
+          body: actionPlanAppointment,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns an updated action plan appointment', async () => {
+      expect(
+        await interventionsService.updateActionPlanAppointment(token, '345059d4-1697-467b-8914-fedec9957279', 2, {
+          durationInMinutes: 60,
+        })
+      ).toMatchObject(actionPlanAppointment)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
