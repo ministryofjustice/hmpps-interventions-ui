@@ -36,7 +36,7 @@ class ActionPlanFactory(em: TestEntityManager? = null) : EntityFactory(em) {
             desiredOutcome = singleActivityDesiredOutcome
           )
         ),
-        appointments = listOf()
+        appointments = setOf()
       )
     )
   }

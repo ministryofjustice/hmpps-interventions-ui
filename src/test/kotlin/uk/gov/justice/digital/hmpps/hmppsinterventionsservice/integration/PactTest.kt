@@ -197,7 +197,7 @@ class PactTest {
       createdAt = OffsetDateTime.now(),
       referral = referral,
       activities = mutableListOf(),
-      appointments = listOf()
+      appointments = setOf()
     )
     actionPlanRepository.save(draftActionPlan)
   }
@@ -228,7 +228,7 @@ class PactTest {
           UUID.fromString("e5755c27-2c85-448b-9f6d-e3959ec9c2d0")
         ),
       ),
-      appointments = listOf()
+      appointments = setOf()
     )
     actionPlanRepository.save(draftActionPlan)
   }

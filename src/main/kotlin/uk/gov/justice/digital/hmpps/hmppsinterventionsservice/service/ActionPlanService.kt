@@ -37,7 +37,7 @@ class ActionPlanService(
       createdAt = OffsetDateTime.now(),
       referral = referralRepository.getOne(referralId),
       activities = activities.toMutableList(),
-      appointments = listOf()
+      appointments = setOf()
     )
 
     return actionPlanRepository.save(draftActionPlan)
