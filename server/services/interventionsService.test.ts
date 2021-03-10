@@ -1632,6 +1632,51 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
     })
   })
+
+  describe('getActionPlanAppointments', () => {
+    const actionPlanAppointments = [
+      {
+        sessionNumber: 1,
+        appointmentTime: '2021-05-13T12:30:000000Z',
+        durationInMinutes: 120,
+      },
+      {
+        sessionNumber: 2,
+        appointmentTime: '2021-05-20T12:30:000000Z',
+        durationInMinutes: 120,
+      },
+      {
+        sessionNumber: 3,
+        appointmentTime: '2021-05-27T12:30:000000Z',
+        durationInMinutes: 120,
+      },
+    ]
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has some appointments',
+        uponReceiving: 'a GET request for the appointments on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        withRequest: {
+          method: 'GET',
+          path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(actionPlanAppointments),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns action plan appointments', async () => {
+      expect(
+        await interventionsService.getActionPlanAppointments(token, 'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d')
+      ).toMatchObject(actionPlanAppointments)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
