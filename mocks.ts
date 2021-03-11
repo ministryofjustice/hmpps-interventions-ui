@@ -1,17 +1,22 @@
 import Wiremock from './mockApis/wiremock'
+/*
 import InterventionsServiceMocks from './mockApis/interventionsService'
 import sentReferralFactory from './testutils/factories/sentReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 import interventionFactory from './testutils/factories/intervention'
 import deliusUserFactory from './testutils/factories/deliusUser'
 import actionPlanFactory from './testutils/factories/actionPlan'
+*/
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
+/*
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
+*/
 
 export default async function setUpMocks(): Promise<void> {
   await wiremock.resetStubs()
 
+  /*
   const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
   const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
 
@@ -106,4 +111,5 @@ export default async function setUpMocks(): Promise<void> {
     }),
     interventionsMocks.stubGetActionPlan(actionPlan.id, actionPlan),
   ])
+  */
 }
