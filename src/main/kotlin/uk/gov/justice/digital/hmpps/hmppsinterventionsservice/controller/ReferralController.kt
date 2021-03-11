@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
@@ -31,6 +33,7 @@ class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService,
   private val hmppsAuthService: HMPPSAuthService,
+  val jwtAuthUserMapper: JwtAuthUserMapper,
 ) {
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
@@ -87,6 +90,17 @@ class ReferralController(
     } ?: throw AccessDeniedException("user is not associated with a service provider organization")
   }
 
+  @PostMapping("/sent-referral/{id}/end")
+  fun endSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): EndedReferralDTO {
+    val sentReferral = referralService.getSentReferral(id)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
+
+    val user = jwtAuthUserMapper.map(authentication)
+    val endedReferral = referralService.endSentReferral(sentReferral, user)
+
+    return EndedReferralDTO.from(endedReferral)
+  }
+
   @PostMapping("/draft-referral")
   fun createDraftReferral(@RequestBody createReferralRequestDTO: CreateReferralRequestDTO, authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
     val user = parseAuthUserToken(authentication)
@@ -141,7 +155,7 @@ class ReferralController(
   }
 
   private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
-    // note: this does not allow tokens for client_credentials grant types use this API
+//     note: this does not allow tokens for client_credentials grant types use this API
     val userID = authentication.token.getClaimAsString("user_id")
       ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
 
