@@ -1637,17 +1637,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const actionPlanAppointments = [
       {
         sessionNumber: 1,
-        appointmentTime: '2021-05-13T12:30:000000Z',
+        appointmentTime: '2021-05-13T13:30:00+01:00',
         durationInMinutes: 120,
       },
       {
         sessionNumber: 2,
-        appointmentTime: '2021-05-20T12:30:000000Z',
+        appointmentTime: '2021-05-20T13:30:00+01:00',
         durationInMinutes: 120,
       },
       {
         sessionNumber: 3,
-        appointmentTime: '2021-05-27T12:30:000000Z',
+        appointmentTime: '2021-05-27T13:30:00+01:00',
         durationInMinutes: 120,
       },
     ]
@@ -1681,7 +1681,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('createActionPlanAppointment', () => {
     const actionPlanAppointment = {
       sessionNumber: 1,
-      appointmentTime: '2021-05-13T12:30:000000Z',
+      appointmentTime: '2021-05-13T13:30:00+01:00',
       durationInMinutes: 120,
     }
 
@@ -1720,7 +1720,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('updateActionPlanAppointment', () => {
     const actionPlanAppointment = {
       sessionNumber: 2,
-      appointmentTime: '2021-05-13T12:30:000000Z',
+      appointmentTime: '2021-05-13T13:30:00+01:00',
       durationInMinutes: 60,
     }
 
