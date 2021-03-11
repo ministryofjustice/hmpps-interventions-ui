@@ -24,5 +24,5 @@ create table end_of_service_report_outcome (
 
 
 alter table referral
-    add column end_of_service_report_id uuid,
+    add column end_of_service_report_id uuid unique,
     add constraint fk_end_of_service_report_id foreign key (end_of_service_report_id) references end_of_service_report;

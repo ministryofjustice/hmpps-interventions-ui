@@ -17,6 +17,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
   val interventionFilterRepositoryImpl: InterventionFilterRepository,
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
+  val actionPlanRepository: ActionPlanRepository,
 ) {
 
   private val interventionFactory = InterventionFactory(entityManager)
@@ -26,6 +27,7 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
 
   @BeforeEach
   fun setup() {
+    actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
   }
