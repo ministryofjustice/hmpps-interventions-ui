@@ -5,23 +5,16 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import java.time.OffsetDateTime
 import java.util.UUID
 
-abstract class BaseActionPlanDTO(
-  open val id: UUID,
-  open val referralId: UUID,
-  open val numberOfSessions: Int?,
-  open val activities: List<ActionPlanActivityDTO> = emptyList(),
-)
-
 data class ActionPlanDTO(
-  override val id: UUID,
-  override val referralId: UUID,
-  override val numberOfSessions: Int?,
-  override val activities: List<ActionPlanActivityDTO> = emptyList(),
+  val id: UUID,
+  val referralId: UUID,
+  val numberOfSessions: Int?,
+  val activities: List<ActionPlanActivityDTO> = emptyList(),
   val createdBy: AuthUserDTO,
   val createdAt: OffsetDateTime,
   val submittedBy: AuthUserDTO?,
   val submittedAt: OffsetDateTime?
-) : BaseActionPlanDTO(id, referralId, numberOfSessions, activities) {
+) {
   companion object {
     fun from(actionPlan: ActionPlan): ActionPlanDTO {
       return ActionPlanDTO(
@@ -31,7 +24,7 @@ data class ActionPlanDTO(
         activities = actionPlan.activities.map { ActionPlanActivityDTO.from(it) },
         createdBy = AuthUserDTO.from(actionPlan.createdBy),
         createdAt = actionPlan.createdAt,
-        submittedBy = actionPlan.submittedBy?.let { AuthUserDTO.from(actionPlan.submittedBy!!) },
+        submittedBy = actionPlan.submittedBy?.let { AuthUserDTO.from(it) },
         submittedAt = actionPlan.submittedAt,
       )
     }

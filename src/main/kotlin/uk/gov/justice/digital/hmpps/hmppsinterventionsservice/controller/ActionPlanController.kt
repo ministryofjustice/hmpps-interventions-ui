@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.util.UUID
@@ -31,7 +30,7 @@ class ActionPlanController(
   fun createDraftActionPlan(
     @RequestBody createActionPlanDTO: CreateActionPlanDTO,
     authentication: JwtAuthenticationToken
-  ): ResponseEntity<DraftActionPlanDTO> {
+  ): ResponseEntity<ActionPlanDTO> {
 
     val createdByUser = jwtAuthUserMapper.map(authentication)
     val createActionPlanActivities = actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(createActionPlanDTO.activities)
@@ -43,9 +42,9 @@ class ActionPlanController(
       createdByUser
     )
 
-    val draftActionPlanDTO = DraftActionPlanDTO.from(draftActionPlan)
-    val location = locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)
-    return ResponseEntity.created(location.toUri()).body(draftActionPlanDTO)
+    val actionPlanDTO = ActionPlanDTO.from(draftActionPlan)
+    val location = locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlan.id)
+    return ResponseEntity.created(location.toUri()).body(actionPlanDTO)
   }
 
   @PostMapping("/draft-action-plan/{id}/submit")
@@ -62,20 +61,20 @@ class ActionPlanController(
   }
 
   @GetMapping("/draft-action-plan/{id}")
-  fun getDraftActionPlan(@PathVariable id: UUID): DraftActionPlanDTO {
+  fun getDraftActionPlan(@PathVariable id: UUID): ActionPlanDTO {
     val draftActionPlan = actionPlanService.getDraftActionPlan(id)
-    return DraftActionPlanDTO.from(draftActionPlan)
+    return ActionPlanDTO.from(draftActionPlan)
   }
 
   @PatchMapping("/draft-action-plan/{id}")
   fun updateDraftActionPlan(
     @PathVariable id: UUID,
     @RequestBody update: UpdateActionPlanDTO,
-  ): DraftActionPlanDTO {
+  ): ActionPlanDTO {
     val newActivity = update.newActivity?.let { actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(it) }
     val updatedActionPlan = actionPlanService.updateActionPlan(id, update.numberOfSessions, newActivity)
 
-    return DraftActionPlanDTO.from(updatedActionPlan)
+    return ActionPlanDTO.from(updatedActionPlan)
   }
 
   @GetMapping("/action-plan/{id}")
