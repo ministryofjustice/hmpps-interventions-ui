@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -71,7 +72,8 @@ class ReferralService(
     crn: String,
     interventionId: UUID,
     overrideID: UUID? = null,
-    overrideCreatedAt: OffsetDateTime? = null
+    overrideCreatedAt: OffsetDateTime? = null,
+    endOfServiceReport: EndOfServiceReport? = null,
   ): Referral {
     return referralRepository.save(
       Referral(
@@ -79,7 +81,8 @@ class ReferralService(
         createdAt = overrideCreatedAt ?: OffsetDateTime.now(),
         createdBy = authUserRepository.save(user),
         serviceUserCRN = crn,
-        intervention = interventionRepository.getOne(interventionId)
+        intervention = interventionRepository.getOne(interventionId),
+        endOfServiceReport = endOfServiceReport
       )
     )
   }

@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.persistIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -23,6 +24,7 @@ class InterventionServiceTest @Autowired constructor(
   val pccRegionRepository: PCCRegionRepository,
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
+  val actionPlanRepository: ActionPlanRepository,
 ) {
   private val interventionService = InterventionService(pccRegionRepository, interventionRepository)
   private val serviceCategoryFactory = ServiceCategoryFactory(entityManager)
@@ -32,6 +34,7 @@ class InterventionServiceTest @Autowired constructor(
 
   @BeforeEach
   fun setup() {
+    actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
   }
