@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.server.ResponseStatusException
+import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 
 enum class Code {
@@ -73,6 +74,12 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
   fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
     log.info("entity not found exception: {}", e.message)
     return errorResponse(HttpStatus.NOT_FOUND, "entity not found", e.message)
+  }
+
+  @ExceptionHandler(EntityExistsException::class)
+  fun handleEntityExistsException(e: EntityExistsException): ResponseEntity<ErrorResponse> {
+    log.info("entity not found exception: {}", e.message)
+    return errorResponse(HttpStatus.CONFLICT, "entity already exists", e.message)
   }
 
   private fun errorResponse(status: HttpStatus, summary: String, description: String?, validationErrors: List<FieldError>? = null): ResponseEntity<ErrorResponse> {

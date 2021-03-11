@@ -17,14 +17,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
-import javax.persistence.EntityManager
 
 @PactBroker
 @Provider("Interventions Service")
@@ -34,9 +34,9 @@ import javax.persistence.EntityManager
 class PactTest {
   @Autowired private lateinit var referralRepository: ReferralRepository
   @Autowired private lateinit var actionPlanRepository: ActionPlanRepository
+  @Autowired private lateinit var actionPlanAppointmentRepository: ActionPlanAppointmentRepository
   @Autowired private lateinit var referralService: ReferralService
-  @Autowired private lateinit var actionPlanService: ActionPlanService
-  @Autowired private lateinit var entityManager: EntityManager
+  @Autowired private lateinit var appointmentsService: AppointmentsService
 
   // rely on interventions and users from the seed data for now
   // once we have working factory methods for creating these we should
@@ -49,6 +49,7 @@ class PactTest {
   fun setup() {
     // start with a clean slate for referrals. this can be removed once we
     // no longer have dependency on the seed migrations (see setup method)
+    actionPlanAppointmentRepository.deleteAll()
     actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
   }
@@ -229,6 +230,61 @@ class PactTest {
       )
     )
     actionPlanRepository.save(draftActionPlan)
+  }
+
+  @State("a draft action plan with ID ebe841a8-c33f-4772-8b01-ad58a16e5b6c exists and has no appointments")
+  fun `create a an empty draft plan with no appointments`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("ebe841a8-c33f-4772-8b01-ad58a16e5b6c"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("ebe841a8-c33f-4772-8b01-ad58a16e5b6c"),
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf()
+    )
+    actionPlanRepository.save(draftActionPlan)
+  }
+
+  @State("a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has some appointments")
+  fun `create a an empty draft plan with some appointments`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d"),
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf()
+    )
+    actionPlanRepository.save(draftActionPlan)
+
+    appointmentsService.createAppointment(draftActionPlan.id, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
+    appointmentsService.createAppointment(draftActionPlan.id, 2, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"), 120, draftActionPlan.createdBy)
+    appointmentsService.createAppointment(draftActionPlan.id, 3, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"), 120, draftActionPlan.createdBy)
+  }
+
+  @State("a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already")
+  fun `create a an empty draft plan with 2 2 hours appointments`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("345059d4-1697-467b-8914-fedec9957279"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("345059d4-1697-467b-8914-fedec9957279"),
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf()
+    )
+    actionPlanRepository.save(draftActionPlan)
+
+    appointmentsService.createAppointment(draftActionPlan.id, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
+    appointmentsService.createAppointment(draftActionPlan.id, 2, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
   }
 
 //  @State("there are some existing sent referrals")
