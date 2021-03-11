@@ -196,8 +196,7 @@ class PactTest {
       createdBy = referral.createdBy,
       createdAt = OffsetDateTime.now(),
       referral = referral,
-      activities = mutableListOf(),
-      appointments = setOf()
+      activities = mutableListOf()
     )
     actionPlanRepository.save(draftActionPlan)
   }
@@ -227,8 +226,7 @@ class PactTest {
           DesiredOutcome(UUID.fromString("65924ac6-9724-455b-ad30-906936291421"), "Desc 2", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
           UUID.fromString("e5755c27-2c85-448b-9f6d-e3959ec9c2d0")
         ),
-      ),
-      appointments = setOf()
+      )
     )
     actionPlanRepository.save(draftActionPlan)
   }

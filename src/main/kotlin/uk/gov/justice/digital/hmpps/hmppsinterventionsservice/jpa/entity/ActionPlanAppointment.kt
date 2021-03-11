@@ -28,35 +28,4 @@ data class ActionPlanAppointment(
   // Required
   @NotNull @ManyToOne val actionPlan: ActionPlan,
   @Id val id: UUID,
-) {
-
-  // Due to the bi-direction relationship with action plan the action plan id should be used
-  // in hashcode/equals to avoid stack overflow
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as ActionPlanAppointment
-
-    if (sessionNumber != other.sessionNumber) return false
-    if (appointmentTime != other.appointmentTime) return false
-    if (durationInMinutes != other.durationInMinutes) return false
-    if (createdBy != other.createdBy) return false
-    if (createdAt != other.createdAt) return false
-    if (actionPlan.id != other.actionPlan.id) return false
-    if (id != other.id) return false
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    var result = sessionNumber
-    result = 31 * result + (appointmentTime?.hashCode() ?: 0)
-    result = 31 * result + (durationInMinutes ?: 0)
-    result = 31 * result + createdBy.hashCode()
-    result = 31 * result + createdAt.hashCode()
-    result = 31 * result + actionPlan.id.hashCode()
-    result = 31 * result + id.hashCode()
-    return result
-  }
-}
+)

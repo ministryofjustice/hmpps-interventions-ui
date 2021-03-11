@@ -32,13 +32,8 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
     entityManager.clear()
 
     val savedAppointment = actionPlanAppointmentRepository.findById(actionPlanAppointment.id).get()
-    val savedActionPlan = actionPlanRepository.findById(actionPlan.id).get()
 
     assertThat(savedAppointment.id).isEqualTo(actionPlanAppointment.id)
-    assertThat(savedAppointment).isEqualTo(savedActionPlan.appointments.first())
-    assertThat(savedActionPlan.id).isEqualTo(actionPlan.id)
-    assertThat(savedActionPlan.appointments.size).isEqualTo(1)
-    assertThat(savedActionPlan.appointments.first()).isEqualTo(savedAppointment)
   }
 
   private fun buildAndPersistReferral(user: AuthUser): Referral {

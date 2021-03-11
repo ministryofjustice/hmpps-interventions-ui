@@ -142,7 +142,6 @@ class SampleData {
       activityCreatedAt: OffsetDateTime = OffsetDateTime.now(),
       activityId: UUID = UUID.randomUUID(),
       activities: List<ActionPlanActivity> = listOf(sampleActionPlanActivity(activityId, desiredOutcome, activityCreatedAt)),
-      appointments: Set<ActionPlanAppointment> = setOf()
     ): ActionPlan {
       return ActionPlan(
         id = id ?: UUID.randomUUID(),
@@ -152,8 +151,7 @@ class SampleData {
         createdAt = createdAt,
         submittedBy = submittedBy,
         submittedAt = submittedAt,
-        activities = activities.toMutableList(),
-        appointments = appointments
+        activities = activities.toMutableList()
       )
     }
 

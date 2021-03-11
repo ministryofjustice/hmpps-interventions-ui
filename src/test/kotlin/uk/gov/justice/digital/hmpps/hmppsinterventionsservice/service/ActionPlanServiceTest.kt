@@ -53,7 +53,6 @@ internal class ActionPlanServiceTest {
           _,
           submittedByArg,
           submittedAtArg,
-          _,
           referralArg,
           _
         ) ->
@@ -191,7 +190,6 @@ internal class ActionPlanServiceTest {
           createdAtArg,
           submittedByArg,
           submittedAtArg,
-          appointmentsArg,
           referralArg,
           idArg,
         ) ->
@@ -203,7 +201,6 @@ internal class ActionPlanServiceTest {
               createdAtArg == actionPlan.createdAt &&
               submittedAtArg!!.isAfter(timeBeforeSubmit) &&
               submittedByArg!! == authUser &&
-              appointmentsArg.isEmpty() &&
               referralArg == actionPlan.referral &&
               idArg == actionPlanId
             )

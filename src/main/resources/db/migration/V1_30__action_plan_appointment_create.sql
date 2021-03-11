@@ -11,4 +11,4 @@ create table action_plan_appointment (
     constraint fk_action_plan_appt_to_created_by foreign key (created_by_id) references auth_user
 );
 
-create index idx_action_plan_appt_plan_id on action_plan_appointment (action_plan_id);
+create unique index idx_action_plan_appt_key on action_plan_appointment (action_plan_id, session_number);

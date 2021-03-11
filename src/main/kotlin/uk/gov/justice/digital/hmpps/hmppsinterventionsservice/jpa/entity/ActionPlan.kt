@@ -10,7 +10,6 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
@@ -32,10 +31,6 @@ data class ActionPlan(
   @NotNull val createdAt: OffsetDateTime,
   @ManyToOne @Fetch(FetchMode.JOIN) var submittedBy: AuthUser? = null,
   var submittedAt: OffsetDateTime? = null,
-
-  // This isn't set directly and hence it's a 'val'. Once an action plan appointment has been persisted, on retrieval
-  // of the associated action plan this list will be automatically set by hibernate.
-  @OneToMany(mappedBy = "actionPlan") val appointments: Set<ActionPlanAppointment>,
 
   // Required
   @NotNull @OneToOne @Fetch(FetchMode.JOIN) val referral: Referral,
