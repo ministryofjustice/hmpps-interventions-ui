@@ -168,6 +168,26 @@ class SampleData {
       )
     }
 
+    fun sampleActionPlanAppointment(
+      id: UUID = UUID.randomUUID(),
+      actionPlan: ActionPlan,
+      sessionNumber: Int = 1,
+      appointmentTime: OffsetDateTime? = null,
+      durationInMinutes: Int? = null,
+      createdAt: OffsetDateTime = OffsetDateTime.now(),
+      createdBy: AuthUser
+    ): ActionPlanAppointment {
+      return ActionPlanAppointment(
+        id = id,
+        actionPlan = actionPlan,
+        sessionNumber = sessionNumber,
+        appointmentTime = appointmentTime,
+        durationInMinutes = durationInMinutes,
+        createdAt = createdAt,
+        createdBy = createdBy
+      )
+    }
+
     fun sampleServiceProvider(
       id: AuthGroupID = "HARMONY_LIVING",
       name: String = "Harmony Living",
