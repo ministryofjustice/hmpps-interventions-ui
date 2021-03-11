@@ -12,6 +12,10 @@ class LocationMapper {
     return ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id)
   }
 
+  fun mapToCurrentRequestBasePath(path: String, id: UUID, ordinalId: Int): UriComponents {
+    return ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id, ordinalId)
+  }
+
   fun mapToCurrentContextPathAsString(path: String, id: UUID): UriComponents {
     return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(id)
   }
