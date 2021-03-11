@@ -1,4 +1,10 @@
-import { DraftActionPlan, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import {
+  Activity,
+  DesiredOutcome,
+  DraftActionPlan,
+  SentReferral,
+  ServiceCategory,
+} from '../../services/interventionsService'
 import utils from '../../utils/utils'
 
 export default class AddActionPlanActivitiesPresenter {
@@ -24,6 +30,13 @@ export default class AddActionPlanActivitiesPresenter {
       description: desiredOutcome.description,
       id: desiredOutcome.id,
       addActivityAction: `/service-provider/action-plan/${this.actionPlan.id}/add-activity`,
+      activities: this.orderedActivitiesForOutcome(desiredOutcome).map(activity => ({ text: activity.description })),
     }
   })
+
+  private orderedActivitiesForOutcome(outcome: DesiredOutcome): Activity[] {
+    return this.actionPlan.activities
+      .filter(activity => activity.desiredOutcome.id === outcome.id)
+      .sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+  }
 }

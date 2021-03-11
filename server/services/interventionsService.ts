@@ -136,7 +136,7 @@ interface ActionPlanFields {
   numberOfSessions: number | null
 }
 
-interface Activity {
+export interface Activity {
   id: string
   desiredOutcome: DesiredOutcome
   description: string
