@@ -165,6 +165,17 @@ export interface ActionPlan {
   submittedAt: string | null
 }
 
+export interface ActionPlanAppointment {
+  sessionNumber: number
+  appointmentTime: string
+  durationInMinutes: number
+}
+
+export interface ActionPlanAppointmentUpdate {
+  appointmentTime: string
+  durationInMinutes: number
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -413,5 +424,40 @@ export default class InterventionsService {
       path: `/draft-action-plan/${id}/submit`,
       headers: { Accept: 'application/json' },
     })) as SubmittedActionPlan
+  }
+
+  async getActionPlanAppointments(token: string, actionPlanId: string): Promise<ActionPlanAppointment[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/action-plan/${actionPlanId}/appointments`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlanAppointment[]
+  }
+
+  async createActionPlanAppointment(
+    token: string,
+    actionPlanId: string,
+    appointment: ActionPlanAppointment
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/action-plan/${actionPlanId}/appointment`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointment },
+    })) as ActionPlanAppointment
+  }
+
+  async updateActionPlanAppointment(
+    token: string,
+    actionPlanId: string,
+    sessionNumber: number,
+    appointmentUpdate: Partial<ActionPlanAppointmentUpdate>
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.patch({
+      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointmentUpdate },
+    })) as ActionPlanAppointment
   }
 }

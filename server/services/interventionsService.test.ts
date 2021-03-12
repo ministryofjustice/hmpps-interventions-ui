@@ -1632,6 +1632,131 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
     })
   })
+
+  describe('getActionPlanAppointments', () => {
+    const actionPlanAppointments = [
+      {
+        sessionNumber: 1,
+        appointmentTime: '2021-05-13T13:30:00+01:00',
+        durationInMinutes: 120,
+      },
+      {
+        sessionNumber: 2,
+        appointmentTime: '2021-05-20T13:30:00+01:00',
+        durationInMinutes: 120,
+      },
+      {
+        sessionNumber: 3,
+        appointmentTime: '2021-05-27T13:30:00+01:00',
+        durationInMinutes: 120,
+      },
+    ]
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has some appointments',
+        uponReceiving: 'a GET request for the appointments on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        withRequest: {
+          method: 'GET',
+          path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(actionPlanAppointments),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns action plan appointments', async () => {
+      expect(
+        await interventionsService.getActionPlanAppointments(token, 'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d')
+      ).toMatchObject(actionPlanAppointments)
+    })
+  })
+
+  describe('createActionPlanAppointment', () => {
+    const actionPlanAppointment = {
+      sessionNumber: 1,
+      appointmentTime: '2021-05-13T13:30:00+01:00',
+      durationInMinutes: 120,
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft action plan with ID ebe841a8-c33f-4772-8b01-ad58a16e5b6c exists and has no appointments',
+        uponReceiving:
+          'a POST request to create appointment for session 1 on action plan with ID ebe841a8-c33f-4772-8b01-ad58a16e5b6c',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/ebe841a8-c33f-4772-8b01-ad58a16e5b6c/appointment',
+          body: actionPlanAppointment,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(actionPlanAppointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns an action plan appointment', async () => {
+      expect(
+        await interventionsService.createActionPlanAppointment(
+          token,
+          'ebe841a8-c33f-4772-8b01-ad58a16e5b6c',
+          actionPlanAppointment
+        )
+      ).toMatchObject(actionPlanAppointment)
+    })
+  })
+
+  describe('updateActionPlanAppointment', () => {
+    const actionPlanAppointment = {
+      sessionNumber: 2,
+      appointmentTime: '2021-05-13T13:30:00+01:00',
+      durationInMinutes: 60,
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state:
+          'a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+        uponReceiving:
+          'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+        withRequest: {
+          method: 'PATCH',
+          path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
+          body: {
+            durationInMinutes: 60,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        // note - this is an exact match
+        willRespondWith: {
+          status: 200,
+          body: actionPlanAppointment,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns an updated action plan appointment', async () => {
+      expect(
+        await interventionsService.updateActionPlanAppointment(token, '345059d4-1697-467b-8914-fedec9957279', 2, {
+          durationInMinutes: 60,
+        })
+      ).toMatchObject(actionPlanAppointment)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
