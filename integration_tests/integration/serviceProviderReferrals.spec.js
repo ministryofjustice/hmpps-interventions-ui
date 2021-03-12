@@ -177,9 +177,31 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('This intervention is assigned to John Smith.')
   })
 
-  it('User adds desired outcomes to an action plan', () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
+  it('User adds activities to an action plan', () => {
+    const desiredOutcomes = [
+      {
+        id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        description:
+          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+      },
+      {
+        id: '65924ac6-9724-455b-ad30-906936291421',
+        description: 'Service User makes progress in obtaining accommodation',
+      },
+      {
+        id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
+        description: 'Service User is helped to secure social or supported housing',
+      },
+      {
+        id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
+        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+      },
+    ]
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })
+    const selectedDesiredOutcomesIds = [desiredOutcomes[0].id, desiredOutcomes[1].id]
+    const referralParams = {
+      referral: { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds },
+    }
     const deliusServiceUser = deliusServiceUserFactory.build()
     const deliusUser = deliusUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
@@ -207,5 +229,55 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Accommodation - create action plan')
     cy.contains('Add suggested activities to Alex’s action plan')
+    cy.contains(desiredOutcomes[0].description)
+    cy.contains(desiredOutcomes[1].description)
+
+    const draftActionPlanWithActivity = {
+      ...draftActionPlan,
+      activities: [
+        {
+          id: '1',
+          desiredOutcome: {
+            id: desiredOutcomes[0].id,
+          },
+          description: 'Attend training course',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    }
+
+    cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
+    cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
+
+    cy.get('#description-1').type('Attend training course')
+    cy.get('#add-activity-1').click()
+
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    cy.contains('Attend training course')
+
+    const draftActionPlanWithAllActivities = {
+      ...draftActionPlanWithActivity,
+      activities: [
+        ...draftActionPlanWithActivity.activities,
+        {
+          id: '2',
+          desiredOutcome: {
+            id: desiredOutcomes[1].id,
+          },
+          description: 'Create appointment with local authority',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    }
+
+    cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
+    cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
+
+    cy.get('#description-2').type('Create appointment with local authority')
+    cy.get('#add-activity-2').click()
+
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    cy.contains('Attend training course')
+    cy.contains('Create appointment with local authority')
   })
 })

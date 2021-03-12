@@ -1,4 +1,27 @@
 {% extends "./actionPlanFormTemplate.njk" %}
 
 {% block formSection %}
+  <p class="govuk-body-m">This will be shared with the service user's probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
+
+  {% for desiredOutcome in presenter.desiredOutcomes %}
+    <form method="post" action="{{ desiredOutcome.addActivityAction }}">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="desired-outcome-id" value="{{ desiredOutcome.id }}">
+
+      <h3 class="govuk-heading-m">
+        Desired outcome {{ loop.index }}
+      </h3>
+
+      <p class="govuk-body">
+      {{ desiredOutcome.description }}
+      </p>
+
+      {% for activity in desiredOutcome.activities %}
+        <h4 class="govuk-heading-s">
+          Activity {{ loop.index }}
+        </h4>
+        <p class="govuk-body">{{ activity.text }}</p>
+      {% endfor %}
+    </form>
+  {% endfor %}
 {% endblock %}

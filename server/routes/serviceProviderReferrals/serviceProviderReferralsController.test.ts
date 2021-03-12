@@ -260,14 +260,18 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
 
 describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () => {
   it('displays a page to add activities to an action plan', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const desiredOutcome = { id: '1', description: 'Achieve a thing' }
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
     const referral = sentReferralFactory.assigned().build({
       referral: {
         serviceCategoryId: serviceCategory.id,
         serviceUser: { firstName: 'Alex', lastName: 'River' },
+        desiredOutcomesIds: [desiredOutcome.id],
       },
     })
-    const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build()
+    const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build({
+      activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
+    })
 
     interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
@@ -279,6 +283,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
       .expect(res => {
         expect(res.text).toContain('Accommodation - create action plan')
         expect(res.text).toContain('Add suggested activities to Alex’s action plan')
+        expect(res.text).toContain('Achieve a thing')
+        expect(res.text).toContain('Do a thing')
       })
   })
 })
