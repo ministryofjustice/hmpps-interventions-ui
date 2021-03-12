@@ -85,7 +85,7 @@ export default class ServiceProviderReferralsController {
     const actionPlanPromise =
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+        : this.interventionsService.getActionPlan(res.locals.user.token, sentReferral.actionPlanId)
 
     const [serviceCategory, actionPlan] = await Promise.all([serviceCategoryPromise, actionPlanPromise])
 
