@@ -1357,40 +1357,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getDraftActionPlan', () => {
-    it('returns an existing action plan', async () => {
-      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
-
-      await provider.addInteraction({
-        state: `an action plan exists with id ${draftActionPlanId}`,
-        uponReceiving: 'a GET request to view the draft action plan',
-        withRequest: {
-          method: 'GET',
-          path: `/draft-action-plan/${draftActionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like({
-            id: draftActionPlanId,
-            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-            numberOfSessions: null,
-            activities: [],
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      })
-
-      const draftActionPlan = await interventionsService.getDraftActionPlan(token, draftActionPlanId)
-      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
-      expect(draftActionPlan.numberOfSessions).toBe(null)
-      expect(draftActionPlan.activities.length).toBe(0)
-    })
-  })
-
   describe('getActionPlan', () => {
     it('returns an existing draft action plan', async () => {
       const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
