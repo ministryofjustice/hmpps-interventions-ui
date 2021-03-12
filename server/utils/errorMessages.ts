@@ -49,5 +49,7 @@ export default {
   },
   actionPlanActivity: {
     empty: 'Enter an activity',
+    noneAdded: (desiredOutcomeDescription: string) =>
+      `You must add at least one activity for the desired outcome “${desiredOutcomeDescription}”`,
   },
 }

@@ -18,6 +18,7 @@ import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
 import InterventionProgressView from './interventionProgressView'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import AddActionPlanActivitiesForm from './addActionPlanActivitiesForm'
+import FinaliseActionPlanActivitiesForm from './finaliseActionPlanActivitiesForm'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -216,5 +217,27 @@ export default class ServiceProviderReferralsController {
 
     res.status(400)
     res.render(...view.renderArgs)
+  }
+
+  async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
+    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const form = new FinaliseActionPlanActivitiesForm(sentReferral, actionPlan, serviceCategory)
+
+    if (form.isValid) {
+      res.redirect(`/service-provider/referrals/${sentReferral.id}/progress`)
+    } else {
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
+      const view = new AddActionPlanActivitiesView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
   }
 }

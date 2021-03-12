@@ -33,6 +33,17 @@ describe(AddActionPlanActivitiesPresenter, () => {
     },
   })
 
+  describe('saveAndContinueFormAction', () => {
+    it('returns a relative URL of the action plan’s add-activities page', () => {
+      const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+
+      expect(presenter.saveAndContinueFormAction).toEqual(
+        `/service-provider/action-plan/${actionPlan.id}/add-activities`
+      )
+    })
+  })
+
   describe('text', () => {
     describe('title', () => {
       it('includes the name of the service category', () => {

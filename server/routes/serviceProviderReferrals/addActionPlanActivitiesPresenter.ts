@@ -17,6 +17,8 @@ export default class AddActionPlanActivitiesPresenter {
     private readonly errors: { desiredOutcomeId: string; error: FormValidationError }[] = []
   ) {}
 
+  readonly saveAndContinueFormAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activities`
+
   private readonly desiredOutcomesIds = this.sentReferral.referral.desiredOutcomesIds
 
   readonly errorSummary = (() => {

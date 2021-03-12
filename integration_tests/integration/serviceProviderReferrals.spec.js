@@ -279,5 +279,8 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
     cy.contains('Attend training course')
     cy.contains('Create appointment with local authority')
+
+    cy.contains('Save and continue').click()
+    cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
   })
 })

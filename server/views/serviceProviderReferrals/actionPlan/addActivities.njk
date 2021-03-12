@@ -31,4 +31,9 @@
       {{ govukButton({ text: "Add activity", classes: "govuk-button--secondary", attributes: { id: 'add-activity-' + loop.index } }) }}
     </form>
   {% endfor %}
+
+  <form method="post" action="{{ presenter.saveAndContinueFormAction }}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{ govukButton({ text: "Save and continue" }) }}
+  </form>
 {% endblock %}

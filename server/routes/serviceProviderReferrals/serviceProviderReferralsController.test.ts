@@ -355,3 +355,65 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
     })
   })
 })
+
+describe('POST /service-provider/action-plan/:id/add-activities', () => {
+  const desiredOutcomes = [
+    {
+      id: '1',
+      description: 'Description 1',
+    },
+    {
+      id: '2',
+      description: 'Description 2',
+    },
+    {
+      id: '3',
+      description: 'Description 3',
+    },
+  ]
+  const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes })
+  const referral = sentReferralFactory.build({
+    referral: {
+      serviceCategoryId: serviceCategory.id,
+      desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+    },
+  })
+
+  describe('when there is an activity in the action plan for every desired outcome of the referral', () => {
+    it('redirects to the next page of the action plan journey', async () => {
+      const actionPlan = draftActionPlanFactory.build({
+        activities: [
+          { id: '1', desiredOutcome: desiredOutcomes[0], createdAt: new Date().toISOString(), description: '' },
+          { id: '2', desiredOutcome: desiredOutcomes[1], createdAt: new Date().toISOString(), description: '' },
+        ],
+      })
+
+      interventionsService.getDraftActionPlan.mockResolvedValue(actionPlan)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+      await request(app)
+        .post(`/service-provider/action-plan/${actionPlan.id}/add-activities`)
+        .expect(302)
+        .expect('Location', `/service-provider/referrals/${referral.id}/progress`)
+    })
+  })
+
+  describe('when there is a desired outcome in the referral for which there is no activity in the action plan', () => {
+    it('responds with a 400 and renders an error', async () => {
+      const actionPlan = draftActionPlanFactory.build({ activities: [] })
+
+      interventionsService.getDraftActionPlan.mockResolvedValue(actionPlan)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+      await request(app)
+        .post(`/service-provider/action-plan/${actionPlan.id}/add-activities`)
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 1”')
+          expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 2”')
+        })
+    })
+  })
+})
