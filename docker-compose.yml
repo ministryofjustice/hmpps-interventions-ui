@@ -69,7 +69,7 @@ services:
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
     environment:
-      - SPRING_PROFILES_ACTIVE=local
+      - SPRING_PROFILES_ACTIVE=local,seed
       - POSTGRES_URI=postgres:5432
 
   postgres:
