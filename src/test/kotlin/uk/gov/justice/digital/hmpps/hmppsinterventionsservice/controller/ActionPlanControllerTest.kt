@@ -58,19 +58,6 @@ internal class ActionPlanControllerTest {
   }
 
   @Test
-  fun `gets draft action plan using id`() {
-    val actionPlanId = UUID.randomUUID()
-    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
-    val actionPlanDTO = ActionPlanDTO.from(actionPlan)
-
-    whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(actionPlan)
-
-    val draftActionPlanResponse = actionPlanController.getDraftActionPlan(actionPlanId)
-
-    assertThat(draftActionPlanResponse).isEqualTo(actionPlanDTO)
-  }
-
-  @Test
   fun `successfully update a draft action plan containing an activity`() {
     val draftActionPlanId = UUID.randomUUID()
     val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "Des Out", UUID.randomUUID())
