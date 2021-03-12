@@ -39,4 +39,16 @@ class EndOfServiceReportControllerTest {
     assertThat(endOfServiceReportResponse.let { it.body }).isEqualTo(endOfServiceReportDTO)
     assertThat(endOfServiceReportResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
   }
+
+  @Test
+  fun `get end of service report successfully`() {
+    val endOfServiceReportId = UUID.randomUUID()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
+
+    whenever(endOfServiceReportService.getEndOfServiceReport(endOfServiceReportId)).thenReturn(endOfServiceReport)
+
+    val endOfServiceReportResponse = endOfServiceReportController.getEndOfServiceReportById(endOfServiceReportId)
+    assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
+  }
 }
