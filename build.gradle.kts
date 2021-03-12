@@ -38,6 +38,9 @@ tasks {
 }
 
 dependencies {
+  // logging
+  implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
+
   // openapi
   implementation("org.springdoc:springdoc-openapi-ui:1.5.5")
 
