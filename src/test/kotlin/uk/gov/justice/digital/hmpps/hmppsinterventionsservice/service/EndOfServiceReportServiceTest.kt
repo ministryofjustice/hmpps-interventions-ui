@@ -70,4 +70,39 @@ class EndOfServiceReportServiceTest {
     }
     assertThat(exception.message).isEqualTo("End of service report not found [id=$endOfServiceReportId]")
   }
+
+  @Test
+  fun `get end of service report by referral Id`() {
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
+
+    whenever(referralRepository.findById(referral.id)).thenReturn(of(referral))
+    val retrievedEndOfServiceReport = endOfServiceReportService.getEndOfServiceReportByReferralId(referral.id)
+    assertThat(retrievedEndOfServiceReport).isEqualTo(endOfServiceReport)
+  }
+
+  @Test
+  fun `referral not found for get end of service report by referral id`() {
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
+
+    whenever(referralRepository.findById(referral.id)).thenReturn(empty())
+
+    val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
+      endOfServiceReportService.getEndOfServiceReportByReferralId(referral.id)
+    }
+    assertThat(exception.message).isEqualTo("Referral not found [id=${referral.id}]")
+  }
+
+  @Test
+  fun `referral has no end of service report for get end of service report by referral id`() {
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+
+    whenever(referralRepository.findById(referral.id)).thenReturn(of(referral))
+
+    val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
+      endOfServiceReportService.getEndOfServiceReportByReferralId(referral.id)
+    }
+    assertThat(exception.message).isEqualTo("End of service report not found for referral [id=${referral.id}]")
+  }
 }

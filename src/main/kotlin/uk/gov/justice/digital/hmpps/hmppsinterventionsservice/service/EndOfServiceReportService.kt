@@ -43,6 +43,14 @@ class EndOfServiceReportService(
     }
   }
 
+  fun getEndOfServiceReportByReferralId(referralId: UUID): EndOfServiceReport {
+    val referral = referralRepository.findById(referralId).orElseThrow {
+      throw EntityNotFoundException("Referral not found [id=$referralId]")
+    }
+    return referral.endOfServiceReport
+      ?: throw EntityNotFoundException("End of service report not found for referral [id=$referralId]")
+  }
+
   private fun getReferral(referralId: UUID): Referral {
     return referralRepository.findById(referralId).orElseThrow {
       throw EntityNotFoundException("referral not found [id=$referralId]")

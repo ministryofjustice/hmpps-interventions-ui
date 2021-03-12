@@ -5,6 +5,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
@@ -38,6 +39,14 @@ class EndOfServiceReportController(
     @PathVariable id: UUID
   ): EndOfServiceReportDTO {
     val endOfServiceReport = endOfServiceReportService.getEndOfServiceReport(id)
+    return EndOfServiceReportDTO.from(endOfServiceReport)
+  }
+
+  @GetMapping("/end-of-service-report")
+  fun getEndOfServiceReportByReferralId(
+    @RequestParam(name = "referralId", required = true) referralId: UUID
+  ): EndOfServiceReportDTO {
+    val endOfServiceReport = endOfServiceReportService.getEndOfServiceReportByReferralId(referralId)
     return EndOfServiceReportDTO.from(endOfServiceReport)
   }
 }

@@ -51,4 +51,16 @@ class EndOfServiceReportControllerTest {
     val endOfServiceReportResponse = endOfServiceReportController.getEndOfServiceReportById(endOfServiceReportId)
     assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
   }
+
+  @Test
+  fun `get end of service report by referral id successfully`() {
+    val referralId = UUID.randomUUID()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
+
+    whenever(endOfServiceReportService.getEndOfServiceReportByReferralId(referralId)).thenReturn(endOfServiceReport)
+
+    val endOfServiceReportResponse = endOfServiceReportController.getEndOfServiceReportByReferralId(referralId)
+    assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
+  }
 }
