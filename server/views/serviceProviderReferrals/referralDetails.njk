@@ -1,23 +1,8 @@
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
+{% extends "./referralNavigationTemplate.njk" %}
 
-{% extends "../partials/layout.njk" %}
-
-{% set pageTitle = "HMPPS Interventions" %}
-{% block pageTitle %}
-  {{ pageTitle }}
-  - GOV.UK
-{% endblock %}
-
-{% block content %}
-  {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-
+{% block referralPageSection %}
       {% if presenter.text.assignedTo == null %}
+        <h3 class="govuk-heading-m">Who do you want to assign this referral to?</h3>
         <form method="get" action={{ presenter.assignmentFormAction }}>
           {{ govukInput(emailInputArgs) }}
           {{ govukButton({ text: "Save and continue" }) }}
@@ -36,6 +21,4 @@
       {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
       <h2 class="govuk-heading-m">Referring probation practitioner details</h2>
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
-    </div>
-  </div>
 {% endblock %}

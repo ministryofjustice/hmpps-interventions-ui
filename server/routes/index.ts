@@ -54,7 +54,9 @@ export default function routes(router: Router, services: Services): Router {
   })
 
   get('/service-provider/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
-  get('/service-provider/referrals/:id', (req, res) => serviceProviderReferralsController.showReferral(req, res))
+  get('/service-provider/referrals/:id/details', (req, res) =>
+    serviceProviderReferralsController.showReferral(req, res)
+  )
   get('/service-provider/referrals/:id/progress', (req, res) =>
     serviceProviderReferralsController.showInterventionProgress(req, res)
   )

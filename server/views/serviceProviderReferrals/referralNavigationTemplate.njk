@@ -1,0 +1,23 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}HMPPS Interventions - GOV.UK{% endblock %}
+
+{% block content %}
+  {{ govukNotificationBanner(serviceUserBannerArgs) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Referral Overview</h1>
+
+      {{ mojSubNavigation(subNavArgs) }}
+
+      {% block referralPageSection %}{% endblock %}
+
+    </div>
+  </div>
+{% endblock %}

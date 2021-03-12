@@ -381,6 +381,15 @@ export default class InterventionsService {
     }
   }
 
+  async getActionPlanForReferral(token: string, referralId: string): Promise<DraftActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/action-plan?referralId=${referralId}`,
+      headers: { Accept: 'application/json' },
+    })) as DraftActionPlan
+  }
+
   async getDraftActionPlan(token: string, actionPlanId: string): Promise<DraftActionPlan> {
     const restClient = this.createRestClient(token)
 

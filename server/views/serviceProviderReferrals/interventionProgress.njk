@@ -1,18 +1,9 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 
-{% extends "../partials/layout.njk" %}
+{% extends "./referralNavigationTemplate.njk" %}
 
-{% set pageTitle = "HMPPS Interventions" %}
-{% block pageTitle %}
-  {{ pageTitle }}
-  - GOV.UK
-{% endblock %}
-
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+{% block referralPageSection %}
 
       <h2 class="govuk-heading-m">Initial assessment appointment</h2>
 
@@ -47,4 +38,5 @@
       </p>
     </div>
   </div>
+
 {% endblock %}

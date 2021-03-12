@@ -76,7 +76,7 @@ describe('GET /service-provider/dashboard', () => {
   })
 })
 
-describe('GET /service-provider/referrals/:id', () => {
+describe('GET /service-provider/referrals/:id/details', () => {
   it('displays information about the referral and service user', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const sentReferral = sentReferralFactory.unassigned().build({
@@ -107,10 +107,10 @@ describe('GET /service-provider/referrals/:id', () => {
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
     await request(app)
-      .get(`/service-provider/referrals/${sentReferral.id}`)
+      .get(`/service-provider/referrals/${sentReferral.id}/details`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Who do you want to assign this accommodation referral to?')
+        expect(res.text).toContain('Who do you want to assign this referral to?')
         expect(res.text).toContain('Bernard Beaks')
         expect(res.text).toContain('bernard.beaks@justice.gov.uk')
         expect(res.text).toContain('alex.river@example.com')
@@ -134,7 +134,7 @@ describe('GET /service-provider/referrals/:id', () => {
       hmppsAuthClient.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
       await request(app)
-        .get(`/service-provider/referrals/${sentReferral.id}`)
+        .get(`/service-provider/referrals/${sentReferral.id}/details`)
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('This intervention is assigned to')
@@ -147,18 +147,20 @@ describe('GET /service-provider/referrals/:id', () => {
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const serviceUser = deliusServiceUser.build()
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { serviceCategoryId: serviceCategory.id },
     })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Accommodation')
+        expect(res.text).toContain('Session progress')
       })
   })
 })
@@ -187,7 +189,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
     await request(app)
       .get(`/service-provider/referrals/123456/assignment/check`)
       .expect(302)
-      .expect('Location', '/service-provider/referrals/123456?error=An%20email%20address%20is%20required')
+      .expect('Location', '/service-provider/referrals/123456/details?error=An%20email%20address%20is%20required')
   })
   it('redirects to referral details page with an error if the assignee email address is not found in hmpps auth', async () => {
     hmppsAuthClient.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
@@ -195,7 +197,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
     await request(app)
       .get(`/service-provider/referrals/123456/assignment/check?email=tom@tom.com`)
       .expect(302)
-      .expect('Location', '/service-provider/referrals/123456?error=Email%20address%20not%20found')
+      .expect('Location', '/service-provider/referrals/123456/details?error=Email%20address%20not%20found')
   })
 })
 

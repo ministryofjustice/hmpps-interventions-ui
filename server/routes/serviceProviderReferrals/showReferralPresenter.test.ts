@@ -4,7 +4,6 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
-import { DeliusServiceUser } from '../../services/communityApiService'
 
 describe(ShowReferralPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({
@@ -518,52 +517,6 @@ describe(ShowReferralPresenter, () => {
             isList: false,
           },
         ])
-      })
-    })
-  })
-
-  describe('serviceUserNotificationBannerArgs', () => {
-    describe('when all contact details are present on the Delius Service User', () => {
-      it('returns a notification banner with service user details', () => {
-        const referral = sentReferralFactory.build(referralParams)
-        const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser, null, null)
-
-        expect(presenter.serviceUserNotificationBannerArgs).toEqual({
-          titleText: 'Service user details',
-          html:
-            `<p class="govuk-notification-banner__heading">Alex River<p>` +
-            `<p>Date of birth: 1 January 1980</p>` +
-            `<p class="govuk-body">07123456789 | alex.river@example.com</p>`,
-        })
-      })
-    })
-
-    describe('if contact details are missing on the Delius Service User', () => {
-      it('displays a useful message to the user in the banner', () => {
-        const sentReferral = sentReferralFactory.build(referralParams)
-        const serviceUserWithoutContactDetails = {
-          firstName: 'Alex',
-          surname: 'River',
-          dateOfBirth: '1980-01-01',
-          contactDetails: {},
-        } as DeliusServiceUser
-
-        const presenter = new ShowReferralPresenter(
-          sentReferral,
-          serviceCategory,
-          deliusUser,
-          serviceUserWithoutContactDetails,
-          null,
-          null
-        )
-
-        expect(presenter.serviceUserNotificationBannerArgs).toEqual({
-          titleText: 'Service user details',
-          html:
-            `<p class="govuk-notification-banner__heading">Alex River<p>` +
-            `<p>Date of birth: 1 January 1980</p>` +
-            `<p class="govuk-body">Mobile number not found | Email address not found</p>`,
-        })
       })
     })
   })
