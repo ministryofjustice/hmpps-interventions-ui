@@ -12,6 +12,7 @@ class SentReferralDTO(
   val assignedTo: AuthUserDTO?,
   val referral: DraftReferralDTO,
   val actionPlanId: UUID?,
+  val endOfServiceReport: EndOfServiceReportDTO?,
 ) {
   companion object {
     fun from(referral: Referral): SentReferralDTO {
@@ -22,7 +23,8 @@ class SentReferralDTO(
         referenceNumber = referral.referenceNumber!!,
         assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),
-        actionPlanId = referral.actionPlan?.id
+        actionPlanId = referral.actionPlan?.id,
+        endOfServiceReport = referral.endOfServiceReport?.let { EndOfServiceReportDTO.from(it) }
       )
     }
   }

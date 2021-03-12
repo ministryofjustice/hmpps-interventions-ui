@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 
 internal class ActionPlanAppointmentsDTOTest {
@@ -19,7 +19,7 @@ internal class ActionPlanAppointmentsDTOTest {
     assertThat(appointmentDTO.appointmentTime).isEqualTo(actionPlanAppointment.appointmentTime)
     assertThat(appointmentDTO.durationInMinutes).isEqualTo(actionPlanAppointment.durationInMinutes)
     assertThat(appointmentDTO.createdAt).isEqualTo(actionPlanAppointment.createdAt)
-    assertThat(appointmentDTO.createdBy).isEqualTo(actionPlanAppointment.createdBy)
+    assertThat(appointmentDTO.createdBy.userId).isEqualTo(actionPlanAppointment.createdBy.id)
   }
 
   @Test
@@ -36,6 +36,6 @@ internal class ActionPlanAppointmentsDTOTest {
     assertThat(appointmentsDTO.first().appointmentTime).isEqualTo(actionPlanAppointment.appointmentTime)
     assertThat(appointmentsDTO.first().durationInMinutes).isEqualTo(actionPlanAppointment.durationInMinutes)
     assertThat(appointmentsDTO.first().createdAt).isEqualTo(actionPlanAppointment.createdAt)
-    assertThat(appointmentsDTO.first().createdBy).isEqualTo(actionPlanAppointment.createdBy)
+    assertThat(appointmentsDTO.first().createdBy.userId).isEqualTo(actionPlanAppointment.createdBy.id)
   }
 }
