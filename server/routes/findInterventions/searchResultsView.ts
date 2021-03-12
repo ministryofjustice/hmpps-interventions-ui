@@ -1,6 +1,7 @@
 import SearchResultsPresenter from './searchResultsPresenter'
 import ViewUtils from '../../utils/viewUtils'
-import { SummaryListArgs, SummaryListItem } from '../../utils/summaryList'
+import { SummaryListItem } from '../../utils/summaryList'
+import { SummaryListArgs } from '../../utils/govukFrontendTypes'
 
 export default class SearchResultsView {
   constructor(private readonly presenter: SearchResultsPresenter) {}

@@ -200,7 +200,7 @@ describe('Service provider referrals dashboard', () => {
 
     cy.login()
 
-    cy.visit(`/service-provider/referrals/${assignedReferral.id}`)
+    cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
     cy.contains('Create action plan').click()
 
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)

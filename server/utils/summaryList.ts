@@ -3,11 +3,3 @@ export interface SummaryListItem {
   lines: string[]
   isList: boolean
 }
-export interface SummaryListArgs {
-  rows: SummaryListRow[]
-}
-
-interface SummaryListRow {
-  key: { text: string }
-  value: { html?: string; text?: string }
-}

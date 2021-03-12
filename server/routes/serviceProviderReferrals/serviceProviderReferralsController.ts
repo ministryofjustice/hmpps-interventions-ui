@@ -15,6 +15,8 @@ import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
 import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
 import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
+import InterventionProgressView from './interventionProgressView'
+import InterventionProgressPresenter from './interventionProgressPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -70,6 +72,25 @@ export default class ServiceProviderReferralsController {
 
     const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee, formError)
     const view = new ShowReferralView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async showInterventionProgress(req: Request, res: Response): Promise<void> {
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const serviceCategoryPromise = this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+    const actionPlanPromise =
+      sentReferral.actionPlanId === null
+        ? Promise.resolve(null)
+        : this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+
+    const [serviceCategory, actionPlan] = await Promise.all([serviceCategoryPromise, actionPlanPromise])
+
+    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlan)
+    const view = new InterventionProgressView(presenter)
 
     res.render(...view.renderArgs)
   }

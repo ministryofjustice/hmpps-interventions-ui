@@ -47,6 +47,7 @@ export interface SentReferral {
   referral: ReferralFields
   sentBy: AuthUser
   assignedTo: AuthUser | null
+  actionPlanId: string | null
 }
 
 export interface ServiceCategory {
@@ -157,6 +158,11 @@ export interface SubmittedActionPlan {
   submittedBy: AuthUser
   submittedAt: string
   actionPlanFields: ActionPlanFields
+}
+
+export interface ActionPlan {
+  id: string
+  submittedAt: string | null
 }
 
 export default class InterventionsService {
@@ -371,6 +377,15 @@ export default class InterventionsService {
       path: `/draft-action-plan/${actionPlanId}`,
       headers: { Accept: 'application/json' },
     })) as DraftActionPlan
+  }
+
+  async getActionPlan(token: string, id: string): Promise<ActionPlan> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/action-plan/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlan
   }
 
   async updateDraftActionPlan(

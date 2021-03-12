@@ -945,6 +945,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       authSource: 'delius',
     },
     assignedTo: null,
+    actionPlanId: null,
     referenceNumber: 'HDJ2123F',
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
@@ -1042,6 +1043,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(await interventionsService.getSentReferral(token, '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')).toMatchObject(
           {
             assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+          }
+        )
+      })
+    })
+
+    describe('for a referral that has an action plan', () => {
+      it('populates the actionPlanId property', async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan',
+          uponReceiving: 'a request for the sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getSentReferral(token, '8b423e17-9b60-4cc2-a927-8941ac76fdf9')).toMatchObject(
+          {
+            actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
           }
         )
       })
@@ -1359,6 +1388,62 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
       expect(draftActionPlan.numberOfSessions).toBe(null)
       expect(draftActionPlan.activities.length).toBe(0)
+    })
+  })
+
+  describe('getActionPlan', () => {
+    it('returns an existing draft action plan', async () => {
+      const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has not been submitted`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            submittedAt: null,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      expect(actionPlan).toMatchObject({ id: actionPlanId, submittedAt: null })
+    })
+
+    it('returns an existing submitted action plan', async () => {
+      const actionPlanId = '7a165933-d851-48c1-9ab0-ff5b8da12695'
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has been submitted`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            submittedAt: '2021-03-09T15:08:38Z',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      expect(actionPlan).toMatchObject({ id: actionPlanId, submittedAt: '2021-03-09T15:08:38Z' })
     })
   })
 

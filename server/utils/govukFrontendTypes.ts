@@ -28,3 +28,17 @@ export interface InputArgs {
 export interface PanelArgs {
   titleText: string
 }
+
+export interface SummaryListArgs {
+  rows: SummaryListRow[]
+}
+
+interface SummaryListRow {
+  key: { text: string }
+  value: { html?: string; text?: string }
+}
+
+export interface TagArgs {
+  text: string
+  classes?: string
+}

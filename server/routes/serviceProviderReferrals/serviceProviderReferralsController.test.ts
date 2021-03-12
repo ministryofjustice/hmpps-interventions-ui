@@ -144,6 +144,25 @@ describe('GET /service-provider/referrals/:id', () => {
   })
 })
 
+describe('GET /service-provider/referrals/:id/progress', () => {
+  it('displays information about the intervention progress', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const sentReferral = sentReferralFactory.assigned().build({
+      referral: { serviceCategoryId: serviceCategory.id },
+    })
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/progress`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Accommodation')
+      })
+  })
+})
+
 describe('GET /service-provider/referrals/:id/assignment/check', () => {
   it('displays the name of the selected caseworker', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
