@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -44,17 +43,17 @@ internal class ActionPlanControllerTest {
     val authUser = AuthUser("CRN123", "auth", "user")
     val actionPlan = SampleData.sampleActionPlan()
     val activities = emptyList<ActionPlanActivity>()
-    val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
+    val actionPlanDTO = ActionPlanDTO.from(actionPlan)
     val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
-    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlanDTO.id)).thenReturn(uriComponents)
+    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", actionPlanDTO.id)).thenReturn(uriComponents)
 
     val draftActionPlanResponse = actionPlanController.createDraftActionPlan(createActionPlanDTO, jwtAuthenticationToken)
 
-    assertThat(draftActionPlanResponse.let { it.body }).isEqualTo(draftActionPlanDTO)
+    assertThat(draftActionPlanResponse.let { it.body }).isEqualTo(actionPlanDTO)
     assertThat(draftActionPlanResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
   }
 
@@ -62,13 +61,13 @@ internal class ActionPlanControllerTest {
   fun `gets draft action plan using id`() {
     val actionPlanId = UUID.randomUUID()
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
-    val draftActionPlanDTO = DraftActionPlanDTO.from(actionPlan)
+    val actionPlanDTO = ActionPlanDTO.from(actionPlan)
 
     whenever(actionPlanService.getDraftActionPlan(actionPlanId)).thenReturn(actionPlan)
 
     val draftActionPlanResponse = actionPlanController.getDraftActionPlan(actionPlanId)
 
-    assertThat(draftActionPlanResponse).isEqualTo(draftActionPlanDTO)
+    assertThat(draftActionPlanResponse).isEqualTo(actionPlanDTO)
   }
 
   @Test
@@ -86,7 +85,7 @@ internal class ActionPlanControllerTest {
 
     val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, updateActionPlanDTO)
 
-    assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
+    assertThat(draftActionPlanResponse).isEqualTo(ActionPlanDTO.from(updatedActionPlan))
   }
 
   @Test
@@ -101,7 +100,7 @@ internal class ActionPlanControllerTest {
     val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, updateActionPlanDTO)
 
     verifyZeroInteractions(actionPlanMapper)
-    assertThat(draftActionPlanResponse).isEqualTo(DraftActionPlanDTO.from(updatedActionPlan))
+    assertThat(draftActionPlanResponse).isEqualTo(ActionPlanDTO.from(updatedActionPlan))
   }
 
   @Test
