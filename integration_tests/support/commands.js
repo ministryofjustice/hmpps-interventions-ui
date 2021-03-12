@@ -11,10 +11,6 @@ Cypress.Commands.add('stubGetAuthUserByUsername', (username, responseJson) => {
   cy.task('stubGetAuthUserByUsername', { username, responseJson })
 })
 
-Cypress.Commands.add('stubGetDraftActionPlan', (id, responseJson) => {
-  cy.task('stubGetDraftActionPlan', { id, responseJson })
-})
-
 Cypress.Commands.add('stubGetActionPlan', (id, responseJson) => {
   cy.task('stubGetActionPlan', { id, responseJson })
 })

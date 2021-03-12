@@ -1,7 +1,7 @@
 import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import draftActionPlanFactory from '../../../testutils/factories/draftActionPlan'
+import actionPlanFactory from '../../../testutils/factories/actionPlan'
 
 describe(AddActionPlanActivitiesPresenter, () => {
   const desiredOutcomes = [
@@ -35,7 +35,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
 
   describe('saveAndContinueFormAction', () => {
     it('returns a relative URL of the action plan’s add-activities page', () => {
-      const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
       const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
 
       expect(presenter.saveAndContinueFormAction).toEqual(
@@ -48,7 +48,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
     describe('title', () => {
       it('includes the name of the service category', () => {
         const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-        const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
         const presenter = new AddActionPlanActivitiesPresenter(sentReferral, socialInclusionServiceCategory, actionPlan)
 
         expect(presenter.text.title).toEqual('Social inclusion - create action plan')
@@ -57,7 +57,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
 
     describe('subTitle', () => {
       it('includes the name of the service user', () => {
-        const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
 
         const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
 
@@ -69,7 +69,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
   describe('errorSummary', () => {
     describe('when an empty array of errors is passed in', () => {
       it('returns null', () => {
-        const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
         const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, [])
 
         expect(presenter.errorSummary).toBeNull()
@@ -78,7 +78,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
 
     describe('when a non-empty array of errors is passed in', () => {
       it('returns a summary of the errors, with the correct index appended to the field ID', () => {
-        const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
         const errors = [
           {
             desiredOutcomeId: desiredOutcomes[0].id,
@@ -103,7 +103,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
 
   describe('desiredOutcomes', () => {
     it('returns the desired outcomes on the Service Category that match those populated on the SentReferral', () => {
-      const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build({ activities: [] })
+      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ activities: [] })
 
       const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
 
@@ -128,7 +128,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
 
     describe('activities', () => {
       it('adds the activities to the correct desired outcome', () => {
-        const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build({
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
           activities: [
             {
               id: '1',
@@ -159,7 +159,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
       })
 
       it('sorts an outcome’s referrals into oldest-to-newest order', () => {
-        const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build({
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
           activities: [
             {
               id: '1',
@@ -184,7 +184,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
     })
 
     describe('errorMessage', () => {
-      const actionPlan = draftActionPlanFactory.justCreated(sentReferral.id).build()
+      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
       const errors = [
         {
           desiredOutcomeId: desiredOutcomes[0].id,

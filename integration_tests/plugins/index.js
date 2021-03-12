@@ -89,10 +89,6 @@ module.exports = on => {
       return interventionsService.stubGetPccRegions(arg.responseJson)
     },
 
-    stubGetDraftActionPlan: arg => {
-      return interventionsService.stubGetDraftActionPlan(arg.id, arg.responseJson)
-    },
-
     stubGetActionPlan: arg => {
       return interventionsService.stubGetActionPlan(arg.id, arg.responseJson)
     },

@@ -1357,43 +1357,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getDraftActionPlan', () => {
-    it('returns an existing action plan', async () => {
-      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
-
-      await provider.addInteraction({
-        state: `an action plan exists with id ${draftActionPlanId}`,
-        uponReceiving: 'a GET request to view the draft action plan',
-        withRequest: {
-          method: 'GET',
-          path: `/draft-action-plan/${draftActionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like({
-            id: draftActionPlanId,
-            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-            numberOfSessions: null,
-            activities: [],
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      })
-
-      const draftActionPlan = await interventionsService.getDraftActionPlan(token, draftActionPlanId)
-      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
-      expect(draftActionPlan.numberOfSessions).toBe(null)
-      expect(draftActionPlan.activities.length).toBe(0)
-    })
-  })
-
   describe('getActionPlan', () => {
     it('returns an existing draft action plan', async () => {
       const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+      const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
 
       await provider.addInteraction({
         state: `an action plan exists with ID ${actionPlanId}, and it has not been submitted`,
@@ -1407,7 +1374,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             id: actionPlanId,
+            referralId,
+            activities: [],
+            numberOfSessions: null,
             submittedAt: null,
+            submittedBy: null,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -1416,11 +1387,36 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
-      expect(actionPlan).toMatchObject({ id: actionPlanId, submittedAt: null })
+      expect(actionPlan).toMatchObject({
+        id: actionPlanId,
+        referralId,
+        activities: [],
+        numberOfSessions: null,
+        submittedAt: null,
+        submittedBy: null,
+      })
     })
 
     it('returns an existing submitted action plan', async () => {
       const actionPlanId = '7a165933-d851-48c1-9ab0-ff5b8da12695'
+      const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
+      const user = {
+        authSource: 'auth',
+        userId: 'BB9C99F7-13EA-43D0-960A-768DC8FA0D91',
+        username: 'SP_USER_1',
+      }
+      const activities = [
+        {
+          id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+          description: 'Attend training course',
+          desiredOutcome: {
+            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            description:
+              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          },
+          createdAt: '2020-12-07T20:45:21.986389Z',
+        },
+      ]
 
       await provider.addInteraction({
         state: `an action plan exists with ID ${actionPlanId}, and it has been submitted`,
@@ -1434,7 +1430,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             id: actionPlanId,
+            referralId,
+            activities,
             submittedAt: '2021-03-09T15:08:38Z',
+            submittedBy: user,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -1443,7 +1442,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
-      expect(actionPlan).toMatchObject({ id: actionPlanId, submittedAt: '2021-03-09T15:08:38Z' })
+      expect(actionPlan).toMatchObject({
+        id: actionPlanId,
+        referralId,
+        activities,
+        submittedAt: '2021-03-09T15:08:38Z',
+        submittedBy: user,
+      })
     })
   })
 
