@@ -1,4 +1,4 @@
-import { ActionPlan, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { ActionPlan, ActionPlanAppointment, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
@@ -10,7 +10,8 @@ export default class InterventionProgressPresenter {
     private readonly referral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly actionPlan: ActionPlan | null,
-    serviceUser: DeliusServiceUser
+    serviceUser: DeliusServiceUser,
+    private readonly actionPlanAppointments: ActionPlanAppointment[]
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
@@ -38,5 +39,28 @@ export default class InterventionProgressPresenter {
 
   get allowActionPlanCreation(): boolean {
     return this.actionPlan === null
+  }
+
+  readonly hasSessions = this.actionPlanAppointments.length !== 0
+
+  readonly sessionTableHeaders = ['Session details', 'Date and time', 'Status', 'Action']
+
+  get sessionTableRows(): Record<string, unknown>[] {
+    if (!this.hasSessions) {
+      return []
+    }
+
+    return this.actionPlanAppointments.map(appointment => {
+      return {
+        sessionNumber: appointment.sessionNumber,
+        appointmentTime: appointment.appointmentTime || '',
+        tagArgs: appointment.appointmentTime
+          ? { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
+          : { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' },
+        linkHtml: appointment.appointmentTime
+          ? '<a class="govuk-link" href="#">Reschedule session</a>'
+          : '<a class="govuk-link" href="#">Edit session details</a>',
+      }
+    })
   }
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { ActionPlanAppointment } from '../../services/interventionsService'
 import HmppsAuthClient, { AuthUser } from '../../data/hmppsAuthClient'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
@@ -103,7 +103,40 @@ export default class ServiceProviderReferralsController {
       serviceUserPromise,
     ])
 
-    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlan, serviceUser)
+    let actionPlanAppointments: ActionPlanAppointment[] = []
+
+    // this code is horribly inefficient and results in a lot of unnecessary log messages from the client.
+    // we are going to change the backend so that all the appointments exist for a submitted action plan,
+    // which will allow us to use the `getActionPlanAppointments` method and clean up this code.
+    if (actionPlan !== null && actionPlan.submittedAt !== null) {
+      const appointmentPromises: Promise<ActionPlanAppointment>[] = []
+
+      // submitted action plans cannot have numberOfSessions === null
+      for (let session = 1; session <= actionPlan.numberOfSessions!; session += 1) {
+        appointmentPromises.push(
+          this.interventionsService.getActionPlanAppointment(res.locals.user.token, actionPlan.id, session).then(
+            appointment => Promise.resolve(appointment),
+            e =>
+              e.status === 404
+                ? {
+                    sessionNumber: session,
+                    appointmentTime: null,
+                    durationInMinutes: null,
+                  }
+                : Promise.reject(e)
+          )
+        )
+      }
+      actionPlanAppointments = await Promise.all(appointmentPromises)
+    }
+
+    const presenter = new InterventionProgressPresenter(
+      sentReferral,
+      serviceCategory,
+      actionPlan,
+      serviceUser,
+      actionPlanAppointments
+    )
     const view = new InterventionProgressView(presenter)
 
     res.render(...view.renderArgs)

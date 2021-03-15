@@ -155,8 +155,8 @@ export interface UpdateDraftActionPlanParams {
 
 export interface ActionPlanAppointment {
   sessionNumber: number
-  appointmentTime: string
-  durationInMinutes: number
+  appointmentTime: string | null
+  durationInMinutes: number | null
 }
 
 export interface ActionPlanAppointmentUpdate {
@@ -411,6 +411,14 @@ export default class InterventionsService {
       path: `/action-plan/${actionPlanId}/appointments`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment[]
+  }
+
+  async getActionPlanAppointment(token: string, actionPlanId: string, session: number): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/action-plan/${actionPlanId}/appointments/${session}`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlanAppointment
   }
 
   async createActionPlanAppointment(

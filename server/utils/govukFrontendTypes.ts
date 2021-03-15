@@ -48,3 +48,15 @@ export interface TagArgs {
   classes?: string
   attributes?: Record<string, string>
 }
+
+interface TableRowItem {
+  text?: string
+  html?: string
+}
+
+export type TableRows = TableRowItem[][]
+
+export interface TableArgs {
+  head: TableRowItem[]
+  rows: TableRows
+}
