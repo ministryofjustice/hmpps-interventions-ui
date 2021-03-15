@@ -23,6 +23,10 @@ Cypress.Commands.add('stubCreateDraftActionPlan', responseJson => {
   cy.task('stubCreateDraftActionPlan', { responseJson })
 })
 
+Cypress.Commands.add('stubUpdateDraftActionPlan', (id, responseJson) => {
+  cy.task('stubUpdateDraftActionPlan', { id, responseJson })
+})
+
 Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {
   cy.contains(text).parent('fieldset').within(action)
 })

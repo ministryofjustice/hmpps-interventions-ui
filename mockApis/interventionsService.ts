@@ -229,6 +229,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubUpdateDraftActionPlan = async (id: string, responseJson: Record<string, unknown>): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'PATCH',
+        urlPattern: `${this.mockPrefix}/draft-action-plan/${id}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubGetActionPlan = async (id: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
