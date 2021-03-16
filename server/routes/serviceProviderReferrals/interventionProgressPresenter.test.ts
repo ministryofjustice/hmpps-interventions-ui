@@ -129,4 +129,25 @@ describe(InterventionProgressPresenter, () => {
       })
     })
   })
+
+  describe('referralAssigned', () => {
+    it('returns false when the referral has no assignee', () => {
+      const referral = sentReferralFactory.unassigned().build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const actionPlan = actionPlanFactory.submitted().build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser)
+
+      expect(presenter.referralAssigned).toEqual(false)
+    })
+    it('returns true when the referral has an assignee', () => {
+      const referral = sentReferralFactory.assigned().build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const actionPlan = actionPlanFactory.submitted().build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser)
+
+      expect(presenter.referralAssigned).toEqual(true)
+    })
+  })
 })
