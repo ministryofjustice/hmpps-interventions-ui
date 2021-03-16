@@ -53,7 +53,7 @@ describe(DashboardPresenter, () => {
           { text: 'George Michael', sortValue: 'michael, george', href: null },
           { text: 'Accommodation', sortValue: null, href: null },
           { text: '', sortValue: null, href: null },
-          { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[0].id}` },
+          { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[0].id}/details` },
         ],
         [
           { text: '13 Sep 2020', sortValue: '2020-09-13', href: null },
@@ -61,7 +61,7 @@ describe(DashboardPresenter, () => {
           { text: 'Jenny Jones', sortValue: 'jones, jenny', href: null },
           { text: 'Social inclusion', sortValue: null, href: null },
           { text: '', sortValue: null, href: null },
-          { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[1].id}` },
+          { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[1].id}/details` },
         ],
       ])
     })

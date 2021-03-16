@@ -78,6 +78,7 @@ export default class ServiceProviderReferralsController {
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
     const serviceCategoryPromise = this.interventionsService.getServiceCategory(
       res.locals.user.token,
       sentReferral.referral.serviceCategoryId
@@ -85,11 +86,15 @@ export default class ServiceProviderReferralsController {
     const actionPlanPromise =
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+        : this.interventionsService.getActionPlan(res.locals.user.token, sentReferral.actionPlanId)
 
-    const [serviceCategory, actionPlan] = await Promise.all([serviceCategoryPromise, actionPlanPromise])
+    const [serviceCategory, actionPlan, serviceUser] = await Promise.all([
+      serviceCategoryPromise,
+      actionPlanPromise,
+      serviceUserPromise,
+    ])
 
-    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlan)
+    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlan, serviceUser)
     const view = new InterventionProgressView(presenter)
 
     res.render(...view.renderArgs)
@@ -100,7 +105,7 @@ export default class ServiceProviderReferralsController {
 
     if (email === undefined || email === '') {
       return res.redirect(
-        `/service-provider/referrals/${req.params.id}?${querystring.stringify({
+        `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
           error: errorMessages.assignReferral.emailEmpty,
         })}`
       )
@@ -113,7 +118,7 @@ export default class ServiceProviderReferralsController {
       assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(token, email)
     } catch (e) {
       return res.redirect(
-        `/service-provider/referrals/${req.params.id}?${querystring.stringify({
+        `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
           error: errorMessages.assignReferral.emailNotFound,
         })}`
       )

@@ -40,7 +40,7 @@ export default class DashboardPresenter {
 
   private static hrefForViewing(referral: SentReferral): string {
     if (referral.assignedTo === null) {
-      return `/service-provider/referrals/${referral.id}`
+      return `/service-provider/referrals/${referral.id}/details`
     }
 
     return `/service-provider/referrals/${referral.id}/progress`

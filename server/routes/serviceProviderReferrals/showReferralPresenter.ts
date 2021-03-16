@@ -1,32 +1,34 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
 import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
-import CalendarDay from '../../utils/calendarDay'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
+import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
 
 export default class ShowReferralPresenter {
+  referralOverviewPagePresenter: ReferralOverviewPagePresenter
+
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
-    private readonly serviceUser: DeliusServiceUser,
+    serviceUser: DeliusServiceUser,
     private readonly assignee: AuthUser | null,
     private readonly assignEmailError: FormValidationError | null
-  ) {}
+  ) {
+    this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
+      ReferralOverviewPageSection.Details,
+      sentReferral,
+      serviceUser
+    )
+  }
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
 
   readonly text = {
-    title:
-      this.sentReferral.assignedTo === null
-        ? `Who do you want to assign this ${this.serviceCategory.name} referral to?`
-        : `${utils.convertToProperCase(this.serviceCategory.name)} referral for ${ReferralDataPresenterUtils.fullName(
-            this.sentReferral.referral.serviceUser
-          )}`,
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
     assignedTo: this.assigneeFullNameOrUnassigned,
     errorMessage: ReferralDataPresenterUtils.errorMessage(this.assignEmailError, 'email'),
@@ -58,7 +60,7 @@ export default class ShowReferralPresenter {
       {
         key: 'Date to be completed by',
         lines: [
-          ShowReferralPresenter.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline),
+          ReferralDataPresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline),
         ],
         isList: false,
       },
@@ -128,51 +130,6 @@ export default class ShowReferralPresenter {
         isList: false,
       },
     ]
-  }
-
-  readonly serviceUserNotificationBannerArgs = {
-    titleText: 'Service user details',
-    html:
-      `<p class="govuk-notification-banner__heading">${this.serviceUser.firstName} ${this.serviceUser.surname}<p>` +
-      `<p>Date of birth: ${ShowReferralPresenter.govukFormattedDateFromStringOrNull(
-        this.serviceUser.dateOfBirth
-      )}</p>` +
-      `<p class="govuk-body">${this.serviceUserMobile} | ${this.serviceUserEmail}</p>`,
-  }
-
-  static govukFormattedDateFromStringOrNull(date: string | null): string {
-    const notFoundMessage = 'Not found'
-
-    if (date) {
-      const iso8601date = CalendarDay.parseIso8601(date)
-
-      return iso8601date ? ReferralDataPresenterUtils.govukFormattedDate(iso8601date) : notFoundMessage
-    }
-
-    return notFoundMessage
-  }
-
-  private get serviceUserEmail(): string {
-    const { emailAddresses } = this.serviceUser.contactDetails
-
-    if (emailAddresses && emailAddresses.length > 0) {
-      return emailAddresses[0]
-    }
-
-    return 'Email address not found'
-  }
-
-  private get serviceUserMobile(): string {
-    const { phoneNumbers } = this.serviceUser.contactDetails
-    const notFoundMessage = 'Mobile number not found'
-
-    if (phoneNumbers) {
-      const mobileNumber = phoneNumbers.find(phoneNumber => phoneNumber.type === 'MOBILE')
-
-      return mobileNumber && mobileNumber.number ? mobileNumber.number : notFoundMessage
-    }
-
-    return notFoundMessage
   }
 
   private get assigneeFullNameOrUnassigned(): string | null {
