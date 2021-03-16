@@ -397,7 +397,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
       await request(app)
         .post(`/service-provider/action-plan/${actionPlan.id}/add-activities`)
         .expect(302)
-        .expect('Location', `/service-provider/referrals/${referral.id}/progress`)
+        .expect('Location', `/service-provider/action-plan/${actionPlan.id}/review`)
     })
   })
 
@@ -417,5 +417,76 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
           expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 2”')
         })
     })
+  })
+})
+
+describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
+  it('renders a summary of the action plan', async () => {
+    const desiredOutcome = { id: '1', description: 'Achieve a thing' }
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+        desiredOutcomesIds: [desiredOutcome.id],
+      },
+    })
+    const draftActionPlan = actionPlanFactory.readyToSubmit(referral.id).build({
+      activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
+      numberOfSessions: 10,
+    })
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/review`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Review Alex’s action plan')
+        expect(res.text).toContain('Achieve a thing')
+        expect(res.text).toContain('Do a thing')
+        expect(res.text).toContain('Suggested number of sessions: 10')
+      })
+  })
+})
+
+describe('POST /service-provider/action-plan/:actionPlanId/submit', () => {
+  it('submits the action plan and redirects to the confirmation page', async () => {
+    const submittedActionPlan = actionPlanFactory.submitted().build()
+
+    interventionsService.submitActionPlan.mockResolvedValue(submittedActionPlan)
+
+    await request(app)
+      .post(`/service-provider/action-plan/${submittedActionPlan.id}/submit`)
+      .expect(302)
+      .expect('Location', `/service-provider/action-plan/${submittedActionPlan.id}/confirmation`)
+
+    expect(interventionsService.submitActionPlan).toHaveBeenCalledWith('token', submittedActionPlan.id)
+  })
+})
+
+describe('GET /service-provider/action-plan/:actionPlanId/confirmation', () => {
+  it('renders a page confirming that the action plan has been submitted', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/action-plan/${submittedActionPlan.id}/confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Action plan submitted for approval')
+      })
   })
 })

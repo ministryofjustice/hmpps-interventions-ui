@@ -81,6 +81,15 @@ export default function routes(router: Router, services: Services): Router {
   post('/service-provider/action-plan/:id/add-activities', (req, res) =>
     serviceProviderReferralsController.finaliseActionPlanActivities(req, res)
   )
+  get('/service-provider/action-plan/:id/review', (req, res) =>
+    serviceProviderReferralsController.reviewActionPlan(req, res)
+  )
+  post('/service-provider/action-plan/:id/submit', (req, res) =>
+    serviceProviderReferralsController.submitActionPlan(req, res)
+  )
+  get('/service-provider/action-plan/:id/confirmation', (req, res) =>
+    serviceProviderReferralsController.showActionPlanConfirmation(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

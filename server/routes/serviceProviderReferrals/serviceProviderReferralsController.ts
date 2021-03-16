@@ -19,6 +19,10 @@ import InterventionProgressView from './interventionProgressView'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import AddActionPlanActivitiesForm from './addActionPlanActivitiesForm'
 import FinaliseActionPlanActivitiesForm from './finaliseActionPlanActivitiesForm'
+import ReviewActionPlanPresenter from './reviewActionPlanPresenter'
+import ReviewActionPlanView from './reviewActionPlanView'
+import ActionPlanConfirmationPresenter from './actionPlanConfirmationPresenter'
+import ActionPlanConfirmationView from './actionPlanConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -236,7 +240,7 @@ export default class ServiceProviderReferralsController {
     const form = new FinaliseActionPlanActivitiesForm(sentReferral, actionPlan, serviceCategory)
 
     if (form.isValid) {
-      res.redirect(`/service-provider/referrals/${sentReferral.id}/progress`)
+      res.redirect(`/service-provider/action-plan/${actionPlan.id}/review`)
     } else {
       const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
       const view = new AddActionPlanActivitiesView(presenter)
@@ -244,5 +248,45 @@ export default class ServiceProviderReferralsController {
       res.status(400)
       res.render(...view.renderArgs)
     }
+  }
+
+  async reviewActionPlan(req: Request, res: Response): Promise<void> {
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
+    const view = new ReviewActionPlanView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async submitActionPlan(req: Request, res: Response): Promise<void> {
+    await this.interventionsService.submitActionPlan(res.locals.user.token, req.params.id)
+    res.redirect(`/service-provider/action-plan/${req.params.id}/confirmation`)
+  }
+
+  async showActionPlanConfirmation(req: Request, res: Response): Promise<void> {
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+
+    if (actionPlan.submittedAt === null) {
+      throw new Error('Trying to view confirmation page for action plan that hasn’t been submitted')
+    }
+
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const presenter = new ActionPlanConfirmationPresenter(sentReferral, serviceCategory)
+    const view = new ActionPlanConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }
