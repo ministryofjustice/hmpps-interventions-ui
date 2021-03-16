@@ -98,8 +98,8 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('.govuk-table__row', 'Jenny Jones').within(() => {
       cy.contains('View').click()
     })
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}`)
-    cy.get('h1').contains('Who do you want to assign this social inclusion referral to?')
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
+    cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('07123456789 | jenny.jones@example.com')
     cy.contains('Social inclusion intervention details')
     cy.contains('Service User makes progress in obtaining accommodation')
@@ -146,9 +146,9 @@ describe('Service provider referrals dashboard', () => {
 
     cy.login()
 
-    cy.visit(`/service-provider/referrals/${referral.id}`)
+    cy.visit(`/service-provider/referrals/${referral.id}/details`)
 
-    cy.get('h1').contains('Who do you want to assign this accommodation referral to?')
+    cy.get('h2').contains('Who do you want to assign this referral to?')
 
     cy.get('#email').type('john@harmonyliving.org.uk')
     cy.contains('Save and continue').click()
@@ -173,7 +173,7 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/dashboard`)
     cy.contains('john.smith')
 
-    cy.visit(`/service-provider/referrals/${referral.id}`)
+    cy.visit(`/service-provider/referrals/${referral.id}/details`)
     cy.contains('This intervention is assigned to John Smith.')
   })
 

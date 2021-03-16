@@ -30,11 +30,12 @@ export default class ShowReferralView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/showReferral',
+      'serviceProviderReferrals/referralDetails',
       {
         presenter: this.presenter,
+        subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserNotificationBannerArgs,
+        serviceUserBannerArgs: this.presenter.referralOverviewPagePresenter.serviceUserBannerArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,

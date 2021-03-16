@@ -120,4 +120,16 @@ export default class ReferralDataPresenterUtils {
   static fullNameSortValue(serviceUser: ServiceUser): string {
     return `${serviceUser.lastName ?? ''}, ${serviceUser.firstName ?? ''}`.toLocaleLowerCase('en-GB')
   }
+
+  static govukFormattedDateFromStringOrNull(date: string | null): string {
+    const notFoundMessage = 'Not found'
+
+    if (date) {
+      const iso8601date = CalendarDay.parseIso8601(date)
+
+      return iso8601date ? this.govukFormattedDate(iso8601date) : notFoundMessage
+    }
+
+    return notFoundMessage
+  }
 }
