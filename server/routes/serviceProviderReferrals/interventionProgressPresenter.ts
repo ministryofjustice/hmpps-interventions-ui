@@ -31,4 +31,8 @@ export default class InterventionProgressPresenter {
   private get actionPlanSubmitted() {
     return this.actionPlan !== null && this.actionPlan.submittedAt !== null
   }
+
+  get allowActionPlanCreation(): boolean {
+    return this.actionPlan === null
+  }
 }
