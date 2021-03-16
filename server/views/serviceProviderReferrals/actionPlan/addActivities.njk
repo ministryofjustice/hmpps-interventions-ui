@@ -1,17 +1,39 @@
-{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
-{% set pageTitle = "HMPPS Interventions" %}
-{% block pageTitle %}
-  {{ pageTitle }}
-  - GOV.UK
-{% endblock %}
+{% extends "./actionPlanFormTemplate.njk" %}
 
-{% block content %}
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+{% block formSection %}
+  <p class="govuk-body-m">This will be shared with the service user's probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
 
-      <h2 class="govuk-heading-l">{{ presenter.text.subTitle }}</h2>
-    </div>
-  </div>
+  {% for desiredOutcome in presenter.desiredOutcomes %}
+    <form method="post" action="{{ desiredOutcome.addActivityAction }}">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="desired-outcome-id" value="{{ desiredOutcome.id }}">
+
+      <h3 class="govuk-heading-m">
+        Desired outcome {{ loop.index }}
+      </h3>
+
+      <p class="govuk-body">
+      {{ desiredOutcome.description }}
+      </p>
+
+      {% for activity in desiredOutcome.activities %}
+        <h4 class="govuk-heading-s">
+          Activity {{ loop.index }}
+        </h4>
+        <p class="govuk-body">{{ activity.text }}</p>
+      {% endfor %}
+
+      {{ govukTextarea(addActivityTextareaArgs(loop.index0)) }}
+
+      {{ govukButton({ text: "Add activity", classes: "govuk-button--secondary", attributes: { id: 'add-activity-' + loop.index } }) }}
+    </form>
+  {% endfor %}
+
+  <form method="post" action="{{ presenter.saveAndContinueFormAction }}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{ govukButton({ text: "Save and continue" }) }}
+  </form>
 {% endblock %}

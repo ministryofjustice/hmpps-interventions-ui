@@ -136,7 +136,7 @@ interface ActionPlanFields {
   numberOfSessions: number | null
 }
 
-interface Activity {
+export interface Activity {
   id: string
   desiredOutcome: DesiredOutcome
   description: string
@@ -148,7 +148,7 @@ interface UpdateActivityParams {
   desiredOutcomeId: string
 }
 
-interface UpdateDraftActionPlanParams {
+export interface UpdateDraftActionPlanParams {
   newActivity?: UpdateActivityParams
   numberOfSessions?: number
 }

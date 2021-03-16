@@ -17,6 +17,8 @@ import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter
 import AddActionPlanActivitiesView from './addActionPlanActivitiesView'
 import InterventionProgressView from './interventionProgressView'
 import InterventionProgressPresenter from './interventionProgressPresenter'
+import AddActionPlanActivitiesForm from './addActionPlanActivitiesForm'
+import FinaliseActionPlanActivitiesForm from './finaliseActionPlanActivitiesForm'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -85,7 +87,7 @@ export default class ServiceProviderReferralsController {
     const actionPlanPromise =
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+        : this.interventionsService.getActionPlan(res.locals.user.token, sentReferral.actionPlanId)
 
     const [serviceCategory, actionPlan] = await Promise.all([serviceCategoryPromise, actionPlanPromise])
 
@@ -173,7 +175,7 @@ export default class ServiceProviderReferralsController {
     res.redirect(303, `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
   }
 
-  async addActivitiesToActionPlan(req: Request, res: Response): Promise<void> {
+  async showActionPlanAddActivitiesForm(req: Request, res: Response): Promise<void> {
     const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
 
@@ -182,9 +184,60 @@ export default class ServiceProviderReferralsController {
       sentReferral.referral.serviceCategoryId
     )
 
-    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory)
+    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
+    const form = await AddActionPlanActivitiesForm.createForm(req)
+
+    if (form.isValid) {
+      await this.interventionsService.updateDraftActionPlan(
+        res.locals.user.token,
+        req.params.id,
+        form.activityParamsForUpdate
+      )
+
+      res.redirect(`/service-provider/action-plan/${req.params.id}/add-activities`)
+      return
+    }
+
+    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
+    const view = new AddActionPlanActivitiesView(presenter)
+
+    res.status(400)
+    res.render(...view.renderArgs)
+  }
+
+  async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
+    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const form = new FinaliseActionPlanActivitiesForm(sentReferral, actionPlan, serviceCategory)
+
+    if (form.isValid) {
+      res.redirect(`/service-provider/referrals/${sentReferral.id}/progress`)
+    } else {
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
+      const view = new AddActionPlanActivitiesView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
   }
 }

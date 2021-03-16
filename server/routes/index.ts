@@ -71,7 +71,13 @@ export default function routes(router: Router, services: Services): Router {
     await serviceProviderReferralsController.createDraftActionPlan(req, res)
   })
   get('/service-provider/action-plan/:id/add-activities', (req, res) =>
-    serviceProviderReferralsController.addActivitiesToActionPlan(req, res)
+    serviceProviderReferralsController.showActionPlanAddActivitiesForm(req, res)
+  )
+  post('/service-provider/action-plan/:id/add-activity', (req, res) =>
+    serviceProviderReferralsController.addActivityToActionPlan(req, res)
+  )
+  post('/service-provider/action-plan/:id/add-activities', (req, res) =>
+    serviceProviderReferralsController.finaliseActionPlanActivities(req, res)
   )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {

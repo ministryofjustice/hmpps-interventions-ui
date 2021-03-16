@@ -47,4 +47,9 @@ export default {
     emailNotFound: 'Email address not found',
     unknownError: 'Could not find email address due to service interruption; please try again later',
   },
+  actionPlanActivity: {
+    empty: 'Enter an activity',
+    noneAdded: (desiredOutcomeDescription: string) =>
+      `You must add at least one activity for the desired outcome “${desiredOutcomeDescription}”`,
+  },
 }
