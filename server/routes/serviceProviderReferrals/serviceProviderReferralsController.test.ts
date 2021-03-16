@@ -397,7 +397,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
       await request(app)
         .post(`/service-provider/action-plan/${actionPlan.id}/add-activities`)
         .expect(302)
-        .expect('Location', `/service-provider/action-plan/${actionPlan.id}/review`)
+        .expect('Location', `/service-provider/action-plan/${actionPlan.id}/number-of-sessions`)
     })
   })
 
@@ -416,6 +416,78 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
           expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 1”')
           expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 2”')
         })
+    })
+  })
+})
+
+describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', () => {
+  it('displays a page to set the number of sessions on an action plan', async () => {
+    const serviceUser = deliusServiceUser.build()
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
+
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/number-of-sessions`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Accommodation - create action plan')
+        expect(res.text).toContain('Add number of sessions for Alex’s action plan')
+      })
+  })
+})
+
+describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', () => {
+  describe('when a valid number of sessions is given', () => {
+    it('updates the action plan on the interventions service and redirects to the next page of the journey', async () => {
+      await request(app)
+        .post(`/service-provider/action-plan/1/number-of-sessions`)
+        .type('form')
+        .send({ 'number-of-sessions': '10' })
+        .expect(302)
+        .expect('Location', `/service-provider/action-plan/1/review`)
+
+      expect(interventionsService.updateDraftActionPlan).toHaveBeenCalledWith('token', '1', { numberOfSessions: 10 })
+    })
+  })
+
+  describe('when an invalid number of sessions is given', () => {
+    it('does not try to update the action plan on the interventions service, and renders an error message', async () => {
+      const serviceUser = deliusServiceUser.build()
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referral = sentReferralFactory.assigned().build({
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceUser: { firstName: 'Alex', lastName: 'River' },
+        },
+      })
+      const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
+
+      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+      await request(app)
+        .post(`/service-provider/action-plan/1/number-of-sessions`)
+        .type('form')
+        .send({ 'number-of-sessions': '0' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('The number of sessions must be 1 or more')
+        })
+
+      expect(interventionsService.updateDraftActionPlan).not.toHaveBeenCalled()
     })
   })
 })

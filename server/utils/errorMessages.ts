@@ -52,4 +52,10 @@ export default {
     noneAdded: (desiredOutcomeDescription: string) =>
       `You must add at least one activity for the desired outcome “${desiredOutcomeDescription}”`,
   },
+  actionPlanNumberOfSessions: {
+    empty: 'Enter the number of sessions',
+    notNumber: 'The number of sessions must be a number, like 5',
+    notWholeNumber: 'The number of sessions must be a whole number, like 5',
+    tooSmall: 'The number of sessions must be 1 or more',
+  },
 }
