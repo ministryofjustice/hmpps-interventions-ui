@@ -8,7 +8,7 @@ export default class ConfirmationView {
     titleText: this.presenter.text.title,
     html: `${ViewUtils.escape(this.presenter.text.referenceNumberIntro)}<br><strong>${ViewUtils.escape(
       this.presenter.text.referenceNumber
-    )}`,
+    )}</strong>`,
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
