@@ -2,6 +2,7 @@ import { ActionPlan, ActionPlanAppointment, SentReferral, ServiceCategory } from
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
+import dateUtils from '../../utils/dateUtils'
 
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -53,7 +54,7 @@ export default class InterventionProgressPresenter {
     return this.actionPlanAppointments.map(appointment => {
       return {
         sessionNumber: appointment.sessionNumber,
-        appointmentTime: appointment.appointmentTime || '',
+        appointmentTime: dateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: appointment.appointmentTime
           ? { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
           : { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' },

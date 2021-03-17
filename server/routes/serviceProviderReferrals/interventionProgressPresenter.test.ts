@@ -45,7 +45,7 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.sessionTableRows).toEqual([
         {
           sessionNumber: 1,
-          appointmentTime: '2020-12-07T13:00:00.000000Z',
+          appointmentTime: '07 Dec 2020, 13:00',
           tagArgs: {
             text: 'SCHEDULED',
             classes: 'govuk-tag--blue',
