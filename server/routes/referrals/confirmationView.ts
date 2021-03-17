@@ -1,3 +1,4 @@
+import ViewUtils from '../../utils/viewUtils'
 import ConfirmationPresenter from './confirmationPresenter'
 
 export default class ConfirmationView {
@@ -5,7 +6,9 @@ export default class ConfirmationView {
 
   private readonly panelArgs = {
     titleText: this.presenter.text.title,
-    html: `${this.presenter.text.referenceNumberIntro}<br><strong>${this.presenter.text.referenceNumber}`,
+    html: `${ViewUtils.escape(this.presenter.text.referenceNumberIntro)}<br><strong>${ViewUtils.escape(
+      this.presenter.text.referenceNumber
+    )}`,
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
