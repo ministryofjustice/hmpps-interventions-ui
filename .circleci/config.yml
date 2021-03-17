@@ -197,6 +197,7 @@ workflows:
                 - main
           requires:
             - validate
+            - publish_data
             - build_and_publish_docker
             - helm_lint
             - vulnerability_scan_and_monitor
