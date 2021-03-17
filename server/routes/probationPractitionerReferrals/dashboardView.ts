@@ -1,3 +1,4 @@
+import ViewUtils from '../../utils/viewUtils'
 import DashboardPresenter from './dashboardPresenter'
 
 export default class DashboardView {
@@ -8,7 +9,10 @@ export default class DashboardView {
       firstCellIsHeader: true,
       head: [{ text: 'Service User' }, { text: 'Started on' }],
       rows: this.presenter.orderedReferrals.map(referral => {
-        return [{ html: `<a href="${referral.url}">${referral.serviceUserFullName}</a>` }, { text: referral.createdAt }]
+        return [
+          { html: `<a href="${ViewUtils.escape(referral.url)}">${ViewUtils.escape(referral.serviceUserFullName)}</a>` },
+          { text: referral.createdAt },
+        ]
       }),
     }
   }
