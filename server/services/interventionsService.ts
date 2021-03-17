@@ -126,14 +126,13 @@ export interface InterventionsFilterParams {
   maximumAge?: number
 }
 
-export interface DraftActionPlan extends ActionPlanFields {
+export interface ActionPlan {
   id: string
-}
-
-interface ActionPlanFields {
   referralId: string
-  activities: Activity[]
   numberOfSessions: number | null
+  activities: Activity[]
+  submittedBy: AuthUser | null
+  submittedAt: string | null
 }
 
 export interface Activity {
@@ -151,18 +150,6 @@ interface UpdateActivityParams {
 export interface UpdateDraftActionPlanParams {
   newActivity?: UpdateActivityParams
   numberOfSessions?: number
-}
-
-export interface SubmittedActionPlan {
-  id: string
-  submittedBy: AuthUser
-  submittedAt: string
-  actionPlanFields: ActionPlanFields
-}
-
-export interface ActionPlan {
-  id: string
-  submittedAt: string | null
 }
 
 export interface ActionPlanAppointment {
@@ -367,7 +354,7 @@ export default class InterventionsService {
     })) as PCCRegion[]
   }
 
-  async createDraftActionPlan(token: string, referralId: string): Promise<DraftActionPlan> {
+  async createDraftActionPlan(token: string, referralId: string): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 
     try {
@@ -375,19 +362,10 @@ export default class InterventionsService {
         path: '/draft-action-plan',
         headers: { Accept: 'application/json' },
         data: { referralId },
-      })) as DraftActionPlan
+      })) as ActionPlan
     } catch (e) {
       throw this.createServiceError(e)
     }
-  }
-
-  async getDraftActionPlan(token: string, actionPlanId: string): Promise<DraftActionPlan> {
-    const restClient = this.createRestClient(token)
-
-    return (await restClient.get({
-      path: `/draft-action-plan/${actionPlanId}`,
-      headers: { Accept: 'application/json' },
-    })) as DraftActionPlan
   }
 
   async getActionPlan(token: string, id: string): Promise<ActionPlan> {
@@ -403,7 +381,7 @@ export default class InterventionsService {
     token: string,
     id: string,
     patch: Partial<UpdateDraftActionPlanParams>
-  ): Promise<DraftActionPlan> {
+  ): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 
     try {
@@ -411,19 +389,19 @@ export default class InterventionsService {
         path: `/draft-action-plan/${id}`,
         headers: { Accept: 'application/json' },
         data: patch,
-      })) as DraftActionPlan
+      })) as ActionPlan
     } catch (e) {
       throw this.createServiceError(e)
     }
   }
 
-  async submitActionPlan(token: string, id: string): Promise<SubmittedActionPlan> {
+  async submitActionPlan(token: string, id: string): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
       path: `/draft-action-plan/${id}/submit`,
       headers: { Accept: 'application/json' },
-    })) as SubmittedActionPlan
+    })) as ActionPlan
   }
 
   async getActionPlanAppointments(token: string, actionPlanId: string): Promise<ActionPlanAppointment[]> {

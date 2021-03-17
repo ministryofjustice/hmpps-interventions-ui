@@ -1,7 +1,7 @@
 import {
+  ActionPlan,
   Activity,
   DesiredOutcome,
-  DraftActionPlan,
   SentReferral,
   ServiceCategory,
 } from '../../services/interventionsService'
@@ -13,7 +13,7 @@ export default class AddActionPlanActivitiesPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
-    private readonly actionPlan: DraftActionPlan,
+    private readonly actionPlan: ActionPlan,
     private readonly errors: { desiredOutcomeId: string; error: FormValidationError }[] = []
   ) {}
 

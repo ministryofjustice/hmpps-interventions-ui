@@ -1,7 +1,7 @@
 import FinaliseActionPlanActivitiesForm from './finaliseActionPlanActivitiesForm'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import draftActionPlanFactory from '../../../testutils/factories/draftActionPlan'
+import actionPlanFactory from '../../../testutils/factories/actionPlan'
 
 describe(FinaliseActionPlanActivitiesForm, () => {
   describe('errors', () => {
@@ -29,7 +29,7 @@ describe(FinaliseActionPlanActivitiesForm, () => {
 
     describe('when there is an activity in the action plan for every desired outcome of the referral', () => {
       it('returns an empty array', () => {
-        const actionPlan = draftActionPlanFactory.build({
+        const actionPlan = actionPlanFactory.build({
           activities: [
             { id: '1', desiredOutcome: desiredOutcomes[0], createdAt: new Date().toISOString(), description: '' },
             { id: '2', desiredOutcome: desiredOutcomes[1], createdAt: new Date().toISOString(), description: '' },
@@ -43,7 +43,7 @@ describe(FinaliseActionPlanActivitiesForm, () => {
 
     describe('when there is a desired outcome in the referral for which there is no activity in the action plan', () => {
       it('returns an error for each outcome without an activity', () => {
-        const actionPlan = draftActionPlanFactory.build({ activities: [] })
+        const actionPlan = actionPlanFactory.build({ activities: [] })
         const form = new FinaliseActionPlanActivitiesForm(referral, actionPlan, serviceCategory)
 
         expect(form.errors).toEqual([

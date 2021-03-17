@@ -1,11 +1,11 @@
-import { DraftActionPlan, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { ActionPlan, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
 
 export default class FinaliseActionPlanActivitiesForm {
   constructor(
     private readonly referral: SentReferral,
-    private readonly actionPlan: DraftActionPlan,
+    private readonly actionPlan: ActionPlan,
     private readonly serviceCategory: ServiceCategory
   ) {}
 

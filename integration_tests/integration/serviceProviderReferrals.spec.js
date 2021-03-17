@@ -3,7 +3,7 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
-import draftActionPlanFactory from '../../testutils/factories/draftActionPlan'
+import actionPlanFactory from '../../testutils/factories/actionPlan'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -208,11 +208,11 @@ describe('Service provider referrals dashboard', () => {
     const assignedReferral = sentReferralFactory
       .assigned()
       .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username } })
-    const draftActionPlan = draftActionPlanFactory.justCreated(assignedReferral.id).build()
+    const draftActionPlan = actionPlanFactory.justCreated(assignedReferral.id).build()
 
     cy.stubGetSentReferrals([assignedReferral])
 
-    cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlan)
+    cy.stubGetActionPlan(draftActionPlan.id, draftActionPlan)
     cy.stubCreateDraftActionPlan(draftActionPlan)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
@@ -246,7 +246,7 @@ describe('Service provider referrals dashboard', () => {
       ],
     }
 
-    cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
+    cy.stubGetActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
     cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
 
     cy.get('#description-1').type('Attend training course')
@@ -270,7 +270,7 @@ describe('Service provider referrals dashboard', () => {
       ],
     }
 
-    cy.stubGetDraftActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
+    cy.stubGetActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
     cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
 
     cy.get('#description-2').type('Create appointment with local authority')

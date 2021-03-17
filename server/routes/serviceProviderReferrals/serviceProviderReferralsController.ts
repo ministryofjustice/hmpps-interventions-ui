@@ -181,7 +181,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showActionPlanAddActivitiesForm(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
@@ -209,7 +209,7 @@ export default class ServiceProviderReferralsController {
       return
     }
 
-    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
@@ -225,7 +225,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getDraftActionPlan(res.locals.user.token, req.params.id)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
     const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
 
     const serviceCategory = await this.interventionsService.getServiceCategory(

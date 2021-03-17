@@ -12,7 +12,7 @@ import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import HmppsAuthClient from '../../data/hmppsAuthClient'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
-import draftActionPlanFactory from '../../../testutils/factories/draftActionPlan'
+import actionPlanFactory from '../../../testutils/factories/actionPlan'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -271,11 +271,11 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
         desiredOutcomesIds: [desiredOutcome.id],
       },
     })
-    const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build({
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
       activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
     })
 
-    interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
 
@@ -300,9 +300,9 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
     })
-    const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build()
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
 
-    interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
 
@@ -335,9 +335,9 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
           desiredOutcomesIds: [desiredOutcome.id],
         },
       })
-      const draftActionPlan = draftActionPlanFactory.justCreated(referral.id).build()
+      const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
 
-      interventionsService.getDraftActionPlan.mockResolvedValue(draftActionPlan)
+      interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
 
@@ -383,14 +383,14 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
 
   describe('when there is an activity in the action plan for every desired outcome of the referral', () => {
     it('redirects to the next page of the action plan journey', async () => {
-      const actionPlan = draftActionPlanFactory.build({
+      const actionPlan = actionPlanFactory.build({
         activities: [
           { id: '1', desiredOutcome: desiredOutcomes[0], createdAt: new Date().toISOString(), description: '' },
           { id: '2', desiredOutcome: desiredOutcomes[1], createdAt: new Date().toISOString(), description: '' },
         ],
       })
 
-      interventionsService.getDraftActionPlan.mockResolvedValue(actionPlan)
+      interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
 
@@ -403,9 +403,9 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
 
   describe('when there is a desired outcome in the referral for which there is no activity in the action plan', () => {
     it('responds with a 400 and renders an error', async () => {
-      const actionPlan = draftActionPlanFactory.build({ activities: [] })
+      const actionPlan = actionPlanFactory.build({ activities: [] })
 
-      interventionsService.getDraftActionPlan.mockResolvedValue(actionPlan)
+      interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
 
