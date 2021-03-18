@@ -60,12 +60,6 @@ class ActionPlanController(
     return ResponseEntity.created(location.toUri()).body(actionPlanDTO)
   }
 
-  @GetMapping("/draft-action-plan/{id}")
-  fun getDraftActionPlan(@PathVariable id: UUID): ActionPlanDTO {
-    val draftActionPlan = actionPlanService.getDraftActionPlan(id)
-    return ActionPlanDTO.from(draftActionPlan)
-  }
-
   @PatchMapping("/draft-action-plan/{id}")
   fun updateDraftActionPlan(
     @PathVariable id: UUID,

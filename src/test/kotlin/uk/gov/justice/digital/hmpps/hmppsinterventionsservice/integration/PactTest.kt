@@ -202,6 +202,36 @@ class PactTest {
     actionPlanRepository.save(draftActionPlan)
   }
 
+  @State("an action plan exists with ID dfb64747-f658-40e0-a827-87b4b0bdcfed, and it has not been submitted")
+  fun `create a an draft plan with activities and has not been submitted`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("dfb64747-f658-40e0-a827-87b4b0bdcfed"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("dfb64747-f658-40e0-a827-87b4b0bdcfed"),
+      numberOfSessions = 4,
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf(
+        ActionPlanActivity(
+          "Attend training course",
+          createdAt = OffsetDateTime.parse("2020-12-07T20:45:21.986389Z"),
+          DesiredOutcome(UUID.fromString("301ead30-30a4-4c7c-8296-2768abfb59b5"), "Desc 1", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
+          UUID.fromString("91e7ceab-74fd-45d8-97c8-ec58844618dd")
+        ),
+        ActionPlanActivity(
+          "Attend session",
+          createdAt = OffsetDateTime.parse("2020-12-07T20:45:22.986389Z"),
+          DesiredOutcome(UUID.fromString("65924ac6-9724-455b-ad30-906936291421"), "Desc 2", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
+          UUID.fromString("e5755c27-2c85-448b-9f6d-e3959ec9c2d0")
+        ),
+      )
+    )
+    actionPlanRepository.save(draftActionPlan)
+  }
+
   @State("a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted")
   fun `create a an draft plan with activities`() {
     val referral = referralService.createDraftReferral(
@@ -221,12 +251,32 @@ class PactTest {
           DesiredOutcome(UUID.fromString("301ead30-30a4-4c7c-8296-2768abfb59b5"), "Desc 1", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
           UUID.fromString("91e7ceab-74fd-45d8-97c8-ec58844618dd")
         ),
+      )
+    )
+    actionPlanRepository.save(draftActionPlan)
+  }
+
+  @State("an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted")
+  fun `create an action plan that has been submitted`() {
+    val referral = referralService.createDraftReferral(
+      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("7a165933-d851-48c1-9ab0-ff5b8da12695"),
+    )
+    referralRepository.save(referral)
+    val draftActionPlan = ActionPlan(
+      id = UUID.fromString("7a165933-d851-48c1-9ab0-ff5b8da12695"),
+      numberOfSessions = 4,
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      submittedBy = referral.createdBy,
+      submittedAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf(
         ActionPlanActivity(
-          "Attend session",
-          createdAt = OffsetDateTime.parse("2020-12-07T20:45:22.986389Z"),
-          DesiredOutcome(UUID.fromString("65924ac6-9724-455b-ad30-906936291421"), "Desc 2", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
-          UUID.fromString("e5755c27-2c85-448b-9f6d-e3959ec9c2d0")
-        ),
+          "Attend training course",
+          createdAt = OffsetDateTime.parse("2020-12-07T20:45:21.986389Z"),
+          DesiredOutcome(UUID.fromString("301ead30-30a4-4c7c-8296-2768abfb59b5"), "Desc 1", UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")),
+          UUID.fromString("91e7ceab-74fd-45d8-97c8-ec58844618dd")
+        )
       )
     )
     actionPlanRepository.save(draftActionPlan)
