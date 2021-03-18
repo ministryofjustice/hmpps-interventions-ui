@@ -19,6 +19,10 @@ export default class InterventionProgressPresenter {
     )
   }
 
+  get referralAssigned(): boolean {
+    return this.referral.assignedTo !== null
+  }
+
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
 
   readonly text = {
