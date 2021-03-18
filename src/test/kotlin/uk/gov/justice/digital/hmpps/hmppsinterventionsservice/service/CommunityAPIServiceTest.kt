@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.LoggerContext
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
@@ -7,8 +9,11 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
@@ -16,8 +21,7 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.org.lidalia.slf4jtest.TestLogger
-import uk.org.lidalia.slf4jtest.TestLoggerFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
@@ -27,9 +31,28 @@ class CommunityAPIServiceTest {
   private val exchangeFunction = mock<ExchangeFunction>()
   private lateinit var communityAPIService: CommunityAPIService
 
+  companion object {
+    private val logger = LoggerFactory.getLogger(CommunityAPIService::class.java) as Logger
+    private var memoryAppender = LoggingMemoryAppender()
+
+    @BeforeAll
+    @JvmStatic
+    fun setupAll() {
+      memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
+      logger.addAppender(memoryAppender)
+      memoryAppender.start()
+    }
+
+    @AfterAll
+    @JvmStatic
+    fun teardownAll() {
+      logger.detachAppender(memoryAppender)
+    }
+  }
+
   @AfterEach
   fun teardown() {
-    TestLoggerFactory.clear()
+    memoryAppender.reset()
   }
 
   @Test
@@ -65,8 +88,6 @@ class CommunityAPIServiceTest {
 
   @Test
   fun `error was logged on exception`() {
-    val logger: TestLogger = TestLoggerFactory.getTestLogger(CommunityAPIService::class.java)
-
     val communityApiWebClient = WebClient.builder()
       .exchangeFunction(exchangeFunction)
       .build()
@@ -84,9 +105,9 @@ class CommunityAPIServiceTest {
 
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException::class.java)
     communityAPIService.onApplicationEvent(referralSentEvent)
-    assertThat(logger.loggingEvents.size).isEqualTo(1)
-    assertThat(logger.loggingEvents[0].level.name).isEqualTo("ERROR")
-    assertThat(logger.loggingEvents[0].message).isEqualTo("Call to community api to update contact log failed:")
+    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
+    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api to update contact log failed")
   }
 
   private val referralSentEvent = ReferralEvent(
