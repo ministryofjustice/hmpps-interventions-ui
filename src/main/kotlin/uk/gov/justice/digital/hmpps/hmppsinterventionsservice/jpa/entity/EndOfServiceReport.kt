@@ -29,6 +29,6 @@ data class EndOfServiceReport(
   // Outcomes
   @ElementCollection
   @CollectionTable(name = "end_of_service_report_outcome", joinColumns = [JoinColumn(name = "end_of_service_report_id")])
-  @NotNull val outcomes: MutableList<EndOfServiceReportOutcome> = mutableListOf(),
+  @NotNull val outcomes: MutableSet<EndOfServiceReportOutcome> = mutableSetOf(),
 
 )

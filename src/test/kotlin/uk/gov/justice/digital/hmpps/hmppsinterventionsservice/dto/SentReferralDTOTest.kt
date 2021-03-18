@@ -140,7 +140,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
       createdAt = createdAt,
       endOfServiceReport = SampleData.sampleEndOfServiceReport(
         createdAt = createdAt, id = id,
-        outcomes = listOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
+        outcomes = setOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
       )
     )
 

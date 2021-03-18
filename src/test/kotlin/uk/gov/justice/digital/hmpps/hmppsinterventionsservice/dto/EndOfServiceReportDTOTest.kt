@@ -18,7 +18,7 @@ class EndOfServiceReportDTOTest(@Autowired private val json: JacksonTester<EndOf
     val createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
     val endOfServiceReport = SampleData.sampleEndOfServiceReport(
       createdAt = createdAt, id = id,
-      outcomes = listOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
+      outcomes = setOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
     )
 
     val out = json.write(EndOfServiceReportDTO.from(endOfServiceReport))

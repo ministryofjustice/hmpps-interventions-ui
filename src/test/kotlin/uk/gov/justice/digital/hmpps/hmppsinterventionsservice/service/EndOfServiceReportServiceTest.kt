@@ -32,7 +32,7 @@ class EndOfServiceReportServiceTest {
   @Test
   fun `create end of service report`() {
     val authUser = AuthUser("CRN123", "auth", "user")
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
     val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
@@ -59,7 +59,7 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `get end of service report`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
     whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
     val retrievedEndOfServiceReport = endOfServiceReportService.getEndOfServiceReport(UUID.randomUUID())
     assertThat(retrievedEndOfServiceReport).isNotNull
@@ -78,7 +78,7 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `get end of service report by referral Id`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
     val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
 
     whenever(referralRepository.findById(referral.id)).thenReturn(of(referral))
@@ -88,7 +88,7 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `referral not found for get end of service report by referral id`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
     val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
 
     whenever(referralRepository.findById(referral.id)).thenReturn(empty())
@@ -113,7 +113,7 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `successfully update end of service report`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
     val endOfServiceReportId = UUID.randomUUID()
     val furtherInformation = "info"
     val outcome = SampleData.sampleEndOfServiceReportOutcome()
@@ -126,14 +126,14 @@ class EndOfServiceReportServiceTest {
     val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
     verify(endOfServiceReportRepository).save(argumentCaptor.capture())
     assertThat(argumentCaptor.firstValue.furtherInformation).isEqualTo(furtherInformation)
-    assertThat(argumentCaptor.firstValue.outcomes[0]).isEqualTo(outcome)
+    assertThat(argumentCaptor.firstValue.outcomes.elementAt(0)).isEqualTo(outcome)
     assertThat(savedEndOfServiceReport).isNotNull
   }
 
   @Test
   fun `successfully update end of service report where dersired outcome already exists`() {
     val endOfServiceReport = SampleData.sampleEndOfServiceReport()
-    val desiredOutcome = endOfServiceReport.outcomes[0].desiredOutcome
+    val desiredOutcome = endOfServiceReport.outcomes.elementAt(0).desiredOutcome
     val endOfServiceReportId = UUID.randomUUID()
     val furtherInformation = "info"
     val outcome = SampleData.sampleEndOfServiceReportOutcome(
@@ -149,7 +149,7 @@ class EndOfServiceReportServiceTest {
 
     verify(endOfServiceReportRepository).save(argumentCaptor.capture())
     assertThat(argumentCaptor.firstValue.furtherInformation).isEqualTo(furtherInformation)
-    assertThat(argumentCaptor.firstValue.outcomes[0].achievementLevel).isEqualTo(AchievementLevel.PARTIALLY_ACHIEVED)
+    assertThat(argumentCaptor.firstValue.outcomes.elementAt(0).achievementLevel).isEqualTo(AchievementLevel.PARTIALLY_ACHIEVED)
     assertThat(savedEndOfServiceReport.outcomes.size).isEqualTo(1)
     assertThat(savedEndOfServiceReport).isNotNull
   }

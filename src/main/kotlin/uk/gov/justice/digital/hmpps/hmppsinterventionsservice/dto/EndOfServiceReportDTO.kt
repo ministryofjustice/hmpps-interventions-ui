@@ -13,7 +13,7 @@ data class EndOfServiceReportDTO(
   val submittedAt: OffsetDateTime? = null,
   val submittedBy: AuthUserDTO? = null,
   val furtherInformation: String? = null,
-  val outcomes: List<EndOfServiceReportOutcomeDTO> = emptyList(),
+  val outcomes: Set<EndOfServiceReportOutcomeDTO> = emptySet(),
 ) {
   companion object {
     fun from(endOfServiceReport: EndOfServiceReport): EndOfServiceReportDTO {
@@ -24,7 +24,7 @@ data class EndOfServiceReportDTO(
         submittedAt = endOfServiceReport.submittedAt,
         submittedBy = endOfServiceReport.submittedBy?.let { AuthUserDTO.from(it) },
         furtherInformation = endOfServiceReport.furtherInformation,
-        outcomes = endOfServiceReport.outcomes.map { EndOfServiceReportOutcomeDTO.from(it) },
+        outcomes = endOfServiceReport.outcomes.map { EndOfServiceReportOutcomeDTO.from(it) }.toMutableSet(),
       )
     }
   }

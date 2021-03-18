@@ -138,7 +138,7 @@ class SampleData {
       submittedAt: OffsetDateTime? = null,
       submittedBy: AuthUser? = null,
       furtherInformation: String? = null,
-      outcomes: List<EndOfServiceReportOutcome> = listOf(sampleEndOfServiceReportOutcome())
+      outcomes: Set<EndOfServiceReportOutcome> = setOf(sampleEndOfServiceReportOutcome())
     ): EndOfServiceReport {
       return EndOfServiceReport(
         id = id ?: UUID.randomUUID(),
@@ -147,7 +147,7 @@ class SampleData {
         submittedAt = submittedAt,
         submittedBy = submittedBy,
         furtherInformation = furtherInformation,
-        outcomes = outcomes.toMutableList()
+        outcomes = outcomes.toMutableSet()
       )
     }
 

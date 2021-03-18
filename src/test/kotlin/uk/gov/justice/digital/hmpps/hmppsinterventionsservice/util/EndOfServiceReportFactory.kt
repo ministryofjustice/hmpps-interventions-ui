@@ -19,7 +19,7 @@ class EndOfServiceReportFactory(em: TestEntityManager? = null) : EntityFactory(e
     submittedAt: OffsetDateTime? = null,
     submittedBy: AuthUser? = null,
     furtherInformation: String? = null,
-    outcomes: List<EndOfServiceReportOutcome>? = null,
+    outcomes: Set<EndOfServiceReportOutcome>? = null,
     desiredOutcome: DesiredOutcome,
     achievementLevel: AchievementLevel? = null,
     progressionComments: String? = null,
@@ -33,7 +33,7 @@ class EndOfServiceReportFactory(em: TestEntityManager? = null) : EntityFactory(e
         submittedAt = submittedAt ?: OffsetDateTime.now(),
         submittedBy = submittedBy ?: authUserFactory.create(),
         furtherInformation = furtherInformation,
-        outcomes = outcomes?.toMutableList() ?: mutableListOf(
+        outcomes = outcomes?.toMutableSet() ?: mutableSetOf(
           EndOfServiceReportOutcome(
             desiredOutcome = desiredOutcome,
             achievementLevel = achievementLevel ?: AchievementLevel.ACHIEVED,
