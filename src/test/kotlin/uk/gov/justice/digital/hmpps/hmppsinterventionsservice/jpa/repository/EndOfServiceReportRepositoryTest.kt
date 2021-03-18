@@ -51,7 +51,7 @@ class EndOfServiceReportRepositoryTest @Autowired constructor(
 
     val endOfServiceReport = SampleData.sampleEndOfServiceReport(
       createdBy = user,
-      outcomes = listOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = desiredOutcome))
+      outcomes = setOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = desiredOutcome))
     )
 
     endOfServiceReportRepository.save(endOfServiceReport)

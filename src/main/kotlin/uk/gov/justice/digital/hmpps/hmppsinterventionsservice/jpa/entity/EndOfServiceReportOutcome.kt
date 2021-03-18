@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull
 
 @Embeddable
 data class EndOfServiceReportOutcome(
+
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val desiredOutcome: DesiredOutcome,
   @Enumerated(EnumType.STRING)
   @NotNull val achievementLevel: AchievementLevel,
