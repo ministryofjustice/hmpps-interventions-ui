@@ -177,7 +177,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('This intervention is assigned to John Smith.')
   })
 
-  it('User adds activities to an action plan', () => {
+  it('User creates an action plan and submits it for approval', () => {
     const desiredOutcomes = [
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
@@ -281,6 +281,23 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Create appointment with local authority')
 
     cy.contains('Save and continue').click()
+
+    const referralWithActionPlanId = { ...assignedReferral, actionPlanId: draftActionPlan.id }
+    const submittedActionPlan = { ...draftActionPlanWithAllActivities, submittedAt: new Date().toISOString() }
+
+    cy.stubGetSentReferral(assignedReferral.id, referralWithActionPlanId)
+    cy.stubSubmitActionPlan(draftActionPlan.id, submittedActionPlan)
+    cy.stubGetActionPlan(draftActionPlan.id, submittedActionPlan)
+
+    cy.contains('Review Alex’s action plan')
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/review`)
+    cy.contains('Submit for approval').click()
+
+    cy.contains('Action plan submitted for approval')
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/confirmation`)
+    cy.contains('Return to service progress').click()
+
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
+    cy.get('#action-plan-status').contains('Submitted')
   })
 })

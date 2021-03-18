@@ -38,7 +38,13 @@ export default class InterventionProgressView {
       rows: [
         {
           key: { text: 'Action plan status' },
-          value: { text: tagMacro({ text: this.presenter.text.actionPlanStatus, classes: this.actionPlanTagClass }) },
+          value: {
+            text: tagMacro({
+              text: this.presenter.text.actionPlanStatus,
+              classes: this.actionPlanTagClass,
+              attributes: { id: 'action-plan-status' },
+            }),
+          },
         },
         {
           key: { text: 'Action' },

@@ -1,0 +1,42 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% extends "./actionPlan/actionPlanFormTemplate.njk" %}
+
+{% block formSection %}
+  <p class="govuk-body-m">Review the action plan before submitting it to the service user’s probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
+
+  <h3 class="govuk-heading-m">
+    Outcomes and activities
+  </h3>
+
+  {% for desiredOutcome in presenter.desiredOutcomes %}
+      <h4 class="govuk-heading-s">
+        Desired outcome {{ loop.index }}
+      </h4>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>{{ desiredOutcome.description }}</li>
+      </ul>
+
+      {% for activity in desiredOutcome.activities %}
+        <h5 class="govuk-body govuk-!-font-weight-bold">
+          Activity {{ loop.index }}
+        </h5>
+        <p class="govuk-body">{{ activity.text }}</p>
+      {% endfor %}
+  {% endfor %}
+
+  <h3 class="govuk-heading-m">
+    Suggested number of sessions for the action plan
+  </h3>
+
+  <p class="govuk-body">
+  Suggested number of sessions: {{ presenter.text.numberOfSessions }}
+  </p>
+
+  <form method="post" action="{{ presenter.submitFormAction }}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{ govukButton({ text: "Submit for approval" }) }}
+  </form>
+{% endblock %}

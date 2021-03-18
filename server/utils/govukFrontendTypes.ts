@@ -41,4 +41,5 @@ interface SummaryListRow {
 export interface TagArgs {
   text: string
   classes?: string
+  attributes?: Record<string, string>
 }
