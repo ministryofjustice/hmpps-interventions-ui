@@ -62,6 +62,32 @@ interface PhoneNumber {
   type: string | null
 }
 
+export interface DeliusConviction {
+  active: boolean
+  convictionDate: string
+  convictionId: number
+  sentence: Sentence
+  offences: Offence[]
+}
+
+interface Sentence {
+  description: string
+  sentenceId: number
+  expectedSentenceEndDate: string
+  sentenceType: {
+    code: string
+    description: string
+  }
+}
+
+interface Offence {
+  detail: {
+    mainCategoryDescription: string
+    subCategoryDescription: string
+  }
+  mainOffence: boolean
+}
+
 export default class CommunityApiService {
   constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
 
@@ -80,5 +106,15 @@ export default class CommunityApiService {
     const token = await this.hmppsAuthClient.getApiClientToken()
     logger.info({ crn }, 'getting details for offender')
     return (await this.restClient(token).get({ path: `/secure/offenders/crn/${crn}` })) as DeliusServiceUser
+  }
+
+  async getActiveConvictionsByCRN(crn: string): Promise<DeliusConviction[]> {
+    const token = await this.hmppsAuthClient.getApiClientToken()
+    logger.info({ crn }, 'getting conviction for service user')
+    const convictions = (await this.restClient(token).get({
+      path: `/secure/offenders/crn/${crn}/convictions`,
+    })) as DeliusConviction[]
+
+    return convictions.filter(conviction => conviction.active)
   }
 }
