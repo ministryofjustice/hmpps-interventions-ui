@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import mu.KotlinLogging
+import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -224,10 +225,10 @@ class ReferralService(
       if (!referralRepository.existsByReferenceNumber(candidate))
         return candidate
       else
-        logger.warn("Clash found for referral number: $candidate")
+        logger.warn("Clash found for referral number", kv("candidate", candidate))
     }
 
-    logger.error("Unable to generate a referral number in $maxReferenceNumberTries tries for referral ${referral.id}")
+    logger.error("Unable to generate a referral number", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
   }
 }

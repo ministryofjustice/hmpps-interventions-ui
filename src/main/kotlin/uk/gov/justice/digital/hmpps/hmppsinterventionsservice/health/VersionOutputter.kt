@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.health
 
 import com.microsoft.applicationinsights.extensibility.ContextInitializer
 import mu.KLogging
+import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.info.BuildProperties
 import org.springframework.context.annotation.Bean
@@ -16,7 +17,7 @@ class VersionOutputter(buildProperties: BuildProperties) {
 
   @EventListener(ApplicationReadyEvent::class)
   fun logVersionOnStartup() {
-    logger.info("Version {} started", version)
+    logger.info("application started", kv("application_version", version))
   }
 
   @Bean

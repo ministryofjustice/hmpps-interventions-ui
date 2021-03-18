@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception
 
 import mu.KLogging
+import net.logstash.logback.argument.StructuredArguments.kv
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -18,7 +19,7 @@ class AsyncEventExceptionAdvice {
       pjp.proceed()
     } catch (exception: Throwable) {
       val event = (pjp as MethodInvocationProceedingJoinPoint).args.getOrNull(0)
-      logger.error("Exception thrown for method annotated with @AsyncEventExceptionHandling: [$event]", exception)
+      logger.error("Exception thrown for method annotated with @AsyncEventExceptionHandling", exception, kv("event", event))
     }
   }
 }
