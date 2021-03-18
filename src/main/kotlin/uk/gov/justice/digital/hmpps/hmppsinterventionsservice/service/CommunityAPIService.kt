@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import org.slf4j.LoggerFactory
+import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
@@ -23,6 +23,7 @@ class CommunityAPIService(
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
   private val communityApiWebClient: WebClient,
 ) : ApplicationListener<ReferralEvent> {
+  companion object : KLogging()
 
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
@@ -50,17 +51,13 @@ class CommunityAPIService(
           .retrieve()
           .bodyToMono(Unit::class.java)
           .onErrorResume { e ->
-            log.error("Call to community api to update contact log failed:", e)
+            logger.error("Call to community api to update contact log failed", e)
             Mono.empty()
           }
           .subscribe()
       }
       else -> {}
     }
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(CommunityAPIService::class.java)
   }
 }
 

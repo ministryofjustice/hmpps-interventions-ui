@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.microsoft.applicationinsights.TelemetryClient
-import org.slf4j.LoggerFactory
+import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -39,46 +39,48 @@ data class ErrorResponse(
 
 @RestControllerAdvice
 class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
+  companion object : KLogging()
+
   @ExceptionHandler(AccessDeniedException::class)
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
-    log.info("access denied exception: {}", e.message)
+    logger.info("access denied exception", e)
     return errorResponse(HttpStatus.FORBIDDEN, "access denied", e.message)
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException::class)
   fun handleInvalidParamException(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
-    log.info("invalid parameter passed to controller method: {}", e.message)
+    logger.info("invalid parameter passed to controller method", e)
     return errorResponse(HttpStatus.BAD_REQUEST, "invalid parameter", e.message)
   }
 
   @ExceptionHandler(ValidationError::class)
   fun handleValidationException(e: ValidationError): ResponseEntity<ErrorResponse> {
-    log.info("validation exception: {}", e.message)
+    logger.info("validation exception", e)
     return errorResponse(HttpStatus.BAD_REQUEST, "validation error", e.message, e.errors)
   }
 
   @ExceptionHandler(ResponseStatusException::class)
   fun handleResponseException(e: ResponseStatusException): ResponseEntity<ErrorResponse> {
-    log.info("internal exception: {}", e.message)
+    logger.info("internal exception", e)
     return errorResponse(e.status, e.status.reasonPhrase, e.reason)
   }
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse> {
-    log.error("unexpected exception: {}", e)
+    logger.error("unexpected exception", e)
     telemetryClient.trackException(e)
     return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "unexpected error", e.message)
   }
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    log.info("entity not found exception: {}", e.message)
+    logger.info("entity not found exception", e)
     return errorResponse(HttpStatus.NOT_FOUND, "entity not found", e.message)
   }
 
   @ExceptionHandler(EntityExistsException::class)
   fun handleEntityExistsException(e: EntityExistsException): ResponseEntity<ErrorResponse> {
-    log.info("entity not found exception: {}", e.message)
+    logger.info("entity exists exception", e)
     return errorResponse(HttpStatus.CONFLICT, "entity already exists", e.message)
   }
 
@@ -93,9 +95,5 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
           validationErrors = validationErrors,
         )
       )
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(ErrorConfiguration::class.java)
   }
 }

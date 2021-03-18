@@ -1,38 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-
-    <springProfile name="local">
-        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-                <charset>utf8</charset>
-            </encoder>
-        </appender>
-        <root level="info">
-            <appender-ref ref="stdout" />
-        </root>
-        <logger name="org.hibernate.SQL" level="debug" additivity="false">
-            <appender-ref ref="stdout" />
-        </logger>
-    </springProfile>
-
-    <springProfile name="!local">
+    <conversionRule conversionWord="pid" converterClass="uk.gov.justice.digital.hmpps.hmppsinterventionsservice.logging.LoggingPidConverter" />
         <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <springProfile name="local">
+                    <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+                </springProfile>
                 <providers>
-                    <timestamp/>
-                    <message/>
-                    <loggerName/>
-                    <threadName/>
-                    <logLevel/>
-                    <stackTrace/>
+                    <loggerName><fieldName>name</fieldName></loggerName>
+                    <timestamp><fieldName>time</fieldName></timestamp>
+                    <message><fieldName>msg</fieldName></message>
+                    <logstashMarkers/>
+                    <arguments/>
+                    <mdc/>
+                    <threadName><fieldName>thread</fieldName></threadName>
+                    <logLevel><fieldName>level</fieldName></logLevel>
+                    <version>
+                        <fieldName>v</fieldName>
+                        <version>0</version>
+                        <writeAsInteger>true</writeAsInteger>
+                    </version>
+                    <nestedField>
+                        <fieldName>err</fieldName>
+                        <providers>
+                            <throwableClassName><fieldName>name</fieldName></throwableClassName>
+                            <stackTrace>
+                                <fieldName>stack</fieldName>
+                                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                                    <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                                    <maxLength>2048</maxLength>
+                                    <shortenedClassNameLength>20</shortenedClassNameLength>
+                                    <rootCauseFirst>false</rootCauseFirst>
+                                    <inlineHash>false</inlineHash>
+                                </throwableConverter>
+                            </stackTrace>
+                            <stackHash><fieldName>stack_hash</fieldName></stackHash>
+                        </providers>
+                    </nestedField>
+                    <pattern><pattern>
+                        {
+                          "pid": "%pid"
+                        }
+                    </pattern></pattern>
                 </providers>
             </encoder>
         </appender>
 
-        <root level="warn">
-            <appender-ref ref="stdout" />
-        </root>
-    </springProfile>
+        <springProfile name="local">
+            <logger name="org.hibernate.SQL" level="debug" additivity="false">
+                <appender-ref ref="stdout" />
+            </logger>
+            <root level="debug">
+                <appender-ref ref="stdout" />
+            </root>
+        </springProfile>
+
+        <springProfile name="!local">
+            <root level="warn">
+                <appender-ref ref="stdout" />
+            </root>
+        </springProfile>
 </configuration>

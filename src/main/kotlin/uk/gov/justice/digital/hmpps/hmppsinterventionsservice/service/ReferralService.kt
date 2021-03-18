@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
+import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -28,6 +29,11 @@ class ReferralService(
   val eventPublisher: ReferralEventPublisher,
   val referenceGenerator: ReferralReferenceGenerator,
 ) {
+  companion object {
+    private val logger = KotlinLogging.logger {}
+    private const val maxReferenceNumberTries = 10
+  }
+
   fun assignSentReferral(referral: Referral, assignedBy: AuthUser, assignedTo: AuthUser): Referral {
     referral.assignedAt = OffsetDateTime.now()
     referral.assignedBy = authUserRepository.save(assignedBy)
@@ -219,15 +225,10 @@ class ReferralService(
       if (!referralRepository.existsByReferenceNumber(candidate))
         return candidate
       else
-        log.warn("Clash found for referral number: $candidate")
+        logger.warn("Clash found for referral number", kv("candidate", candidate))
     }
 
-    log.error("Unable to generate a referral number in $maxReferenceNumberTries tries for referral ${referral.id}")
+    logger.error("Unable to generate a referral number", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
-  }
-
-  companion object {
-    private const val maxReferenceNumberTries = 10
-    private val log = LoggerFactory.getLogger(ReferralService::class.java)
   }
 }

@@ -12,7 +12,6 @@ repositories {
 configurations {
   testImplementation {
     exclude(group = "org.junit.vintage")
-    exclude("ch.qos.logback")
   }
 }
 
@@ -38,6 +37,9 @@ tasks {
 }
 
 dependencies {
+  // logging
+  implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
+
   // openapi
   implementation("org.springdoc:springdoc-openapi-ui:1.5.5")
 
@@ -61,5 +63,4 @@ dependencies {
   testImplementation("au.com.dius.pact.provider:junit5spring:4.2.0")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
-  testImplementation("uk.org.lidalia:slf4j-test:1.2.0")
 }

@@ -5,13 +5,11 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.org.lidalia.slf4jtest.TestLoggerFactory
 
 class HMPPSAuthServiceTest {
   private val mockWebServer = MockWebServer()
@@ -24,11 +22,6 @@ class HMPPSAuthServiceTest {
       mockWebServer.url("/").toString()
     )
   )
-
-  @AfterEach
-  fun teardown() {
-    TestLoggerFactory.clear()
-  }
 
   @Test
   fun `getServiceProviderOrganizationForUser filters results and returns the first service provider org`() {

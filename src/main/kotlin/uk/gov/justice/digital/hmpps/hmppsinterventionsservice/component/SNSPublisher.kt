@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.slf4j.LoggerFactory
+import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sns.SnsClient
@@ -15,11 +15,13 @@ class SNSPublisher(
   @Value("\${aws.sns.enabled}") private val enabled: Boolean,
   @Value("\${aws.sns.topic.arn}") private val arn: String,
 ) {
+  companion object : KLogging()
+
   fun publish(event: EventDTO) {
     if (enabled) {
       buildRequestAndPublish(event)
     } else {
-      log.debug("Event notification was not published due to sns being disabled.")
+      logger.debug("Event notification was not published due to sns being disabled.")
     }
   }
 
@@ -34,9 +36,5 @@ class SNSPublisher(
 
   private fun publishRequest(request: PublishRequest) {
     client.publish(request)
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(SNSPublisher::class.java)
   }
 }

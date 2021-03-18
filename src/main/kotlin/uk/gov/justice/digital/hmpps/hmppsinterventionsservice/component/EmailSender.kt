@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.service.notify.NotificationClient
@@ -15,9 +14,5 @@ class EmailSender(
       return
     }
     client.sendEmail(templateID, emailAddress, personalisation, null)
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(EmailSender::class.java)
   }
 }

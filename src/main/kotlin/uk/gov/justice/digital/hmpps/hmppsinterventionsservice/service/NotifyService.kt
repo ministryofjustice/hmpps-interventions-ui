@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
@@ -48,10 +47,6 @@ class NotifyActionPlanService(
       }
     }
   }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(NotifyActionPlanService::class.java)
-  }
 }
 
 @Service
@@ -96,9 +91,5 @@ class NotifyReferralService(
         )
       }
     }
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(NotifyReferralService::class.java)
   }
 }
