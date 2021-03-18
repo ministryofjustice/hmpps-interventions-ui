@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReportOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
@@ -49,6 +51,28 @@ class EndOfServiceReportService(
     }
     return referral.endOfServiceReport
       ?: throw EntityNotFoundException("End of service report not found for referral [id=$referralId]")
+  }
+
+  fun updateEndOfServiceReport(endOfServiceReportId: UUID, furtherInformation: String?, outcome: EndOfServiceReportOutcome?):
+    EndOfServiceReport {
+      val endOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
+
+      updateEndOfServiceReport(endOfServiceReport, furtherInformation)
+      updateEndOfServiceReportOutcomes(endOfServiceReport, outcome)
+
+      return endOfServiceReportRepository.save(endOfServiceReport)
+    }
+
+  private fun updateEndOfServiceReport(endOfServiceReport: EndOfServiceReport, furtherInformation: String?) {
+    furtherInformation?.let { endOfServiceReport.furtherInformation = it }
+  }
+
+  private fun updateEndOfServiceReportOutcomes(endOfServiceReport: EndOfServiceReport, outcome: EndOfServiceReportOutcome?) {
+    outcome?.let {
+      val draftOutcome = endOfServiceReport.outcomes.find { it.desiredOutcome == outcome.desiredOutcome }
+      endOfServiceReport.outcomes.remove(draftOutcome)
+      endOfServiceReport.outcomes.add(outcome)
+    }
   }
 
   private fun getReferral(referralId: UUID): Referral {

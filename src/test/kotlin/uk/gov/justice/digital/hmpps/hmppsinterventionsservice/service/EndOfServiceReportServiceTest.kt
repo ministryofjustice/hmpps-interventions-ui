@@ -1,12 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AchievementLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
@@ -104,5 +109,48 @@ class EndOfServiceReportServiceTest {
       endOfServiceReportService.getEndOfServiceReportByReferralId(referral.id)
     }
     assertThat(exception.message).isEqualTo("End of service report not found for referral [id=${referral.id}]")
+  }
+
+  @Test
+  fun `successfully update end of service report`() {
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableListOf())
+    val endOfServiceReportId = UUID.randomUUID()
+    val furtherInformation = "info"
+    val outcome = SampleData.sampleEndOfServiceReportOutcome()
+
+    whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
+    whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)
+
+    val savedEndOfServiceReport =
+      endOfServiceReportService.updateEndOfServiceReport(endOfServiceReportId, furtherInformation, outcome)
+    val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
+    verify(endOfServiceReportRepository).save(argumentCaptor.capture())
+    assertThat(argumentCaptor.firstValue.furtherInformation).isEqualTo(furtherInformation)
+    assertThat(argumentCaptor.firstValue.outcomes[0]).isEqualTo(outcome)
+    assertThat(savedEndOfServiceReport).isNotNull
+  }
+
+  @Test
+  fun `successfully update end of service report where dersired outcome already exists`() {
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val desiredOutcome = endOfServiceReport.outcomes[0].desiredOutcome
+    val endOfServiceReportId = UUID.randomUUID()
+    val furtherInformation = "info"
+    val outcome = SampleData.sampleEndOfServiceReportOutcome(
+      desiredOutcome = desiredOutcome, achievementLevel = AchievementLevel.PARTIALLY_ACHIEVED
+    )
+
+    whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
+    whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)
+
+    val savedEndOfServiceReport =
+      endOfServiceReportService.updateEndOfServiceReport(endOfServiceReportId, furtherInformation, outcome)
+    val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
+
+    verify(endOfServiceReportRepository).save(argumentCaptor.capture())
+    assertThat(argumentCaptor.firstValue.furtherInformation).isEqualTo(furtherInformation)
+    assertThat(argumentCaptor.firstValue.outcomes[0].achievementLevel).isEqualTo(AchievementLevel.PARTIALLY_ACHIEVED)
+    assertThat(savedEndOfServiceReport.outcomes.size).isEqualTo(1)
+    assertThat(savedEndOfServiceReport).isNotNull
   }
 }

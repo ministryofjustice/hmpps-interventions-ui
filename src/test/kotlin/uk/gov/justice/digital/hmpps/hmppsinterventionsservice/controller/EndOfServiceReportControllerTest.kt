@@ -1,14 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.EndOfServiceReportOutcomeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportOutcomeDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndOfServiceReportDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateEndOfServiceReportDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AchievementLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.EndOfServiceReportService
@@ -19,8 +24,10 @@ class EndOfServiceReportControllerTest {
   private val jwtAuthUserMapper = mock<JwtAuthUserMapper>()
   private val endOfServiceReportService = mock<EndOfServiceReportService>()
   private val locationMapper = mock<LocationMapper>()
+  private val endOfServiceReportOutcomeMapper = mock<EndOfServiceReportOutcomeMapper>()
 
-  private val endOfServiceReportController = EndOfServiceReportController(jwtAuthUserMapper, locationMapper, endOfServiceReportService)
+  private val endOfServiceReportController =
+    EndOfServiceReportController(jwtAuthUserMapper, locationMapper, endOfServiceReportService, endOfServiceReportOutcomeMapper)
 
   @Test
   fun `create end of service report successfully`() {
@@ -61,6 +68,41 @@ class EndOfServiceReportControllerTest {
     whenever(endOfServiceReportService.getEndOfServiceReportByReferralId(referralId)).thenReturn(endOfServiceReport)
 
     val endOfServiceReportResponse = endOfServiceReportController.getEndOfServiceReportByReferralId(referralId)
+    assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
+  }
+
+  @Test
+  fun `update an end of service report`() {
+    val endOfServiceReportId = UUID.randomUUID()
+    val outcome = CreateEndOfServiceReportOutcomeDTO(UUID.randomUUID(), AchievementLevel.ACHIEVED, null, null)
+    val mappedOutcome = SampleData.sampleEndOfServiceReportOutcome()
+    val updateEndOfServiceReportDTO = UpdateEndOfServiceReportDTO("info", outcome)
+
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
+
+    whenever(endOfServiceReportOutcomeMapper.mapCreateEndOfServiceReportOutcomeDtoToEndOfServiceReportOutcome(outcome))
+      .thenReturn(mappedOutcome)
+    whenever(endOfServiceReportService.updateEndOfServiceReport(endOfServiceReportId, "info", mappedOutcome))
+      .thenReturn(endOfServiceReport)
+
+    val endOfServiceReportResponse = endOfServiceReportController.updateEndOfServiceReport(endOfServiceReportId, updateEndOfServiceReportDTO)
+    assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
+  }
+
+  @Test
+  fun `update end of service report with no extra outcome`() {
+    val endOfServiceReportId = UUID.randomUUID()
+    val outcome = CreateEndOfServiceReportOutcomeDTO(UUID.randomUUID(), AchievementLevel.ACHIEVED, null, null)
+    val updateEndOfServiceReportDTO = UpdateEndOfServiceReportDTO("info", outcome)
+
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
+
+    whenever(endOfServiceReportService.updateEndOfServiceReport(endOfServiceReportId, "info", null))
+      .thenReturn(endOfServiceReport)
+    verifyZeroInteractions(endOfServiceReportOutcomeMapper)
+    val endOfServiceReportResponse = endOfServiceReportController.updateEndOfServiceReport(endOfServiceReportId, updateEndOfServiceReportDTO)
     assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
   }
 }
