@@ -104,4 +104,29 @@ describe(InterventionProgressPresenter, () => {
       })
     })
   })
+
+  describe('allowActionPlanCreation', () => {
+    describe('when there is no action plan', () => {
+      it('returns true', () => {
+        const referral = sentReferralFactory.build()
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser)
+
+        expect(presenter.allowActionPlanCreation).toEqual(true)
+      })
+    })
+
+    describe('when there is an action plan', () => {
+      it('returns false', () => {
+        const referral = sentReferralFactory.build()
+        const serviceCategory = serviceCategoryFactory.build()
+        const actionPlan = actionPlanFactory.notSubmitted().build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser)
+
+        expect(presenter.allowActionPlanCreation).toEqual(false)
+      })
+    })
+  })
 })

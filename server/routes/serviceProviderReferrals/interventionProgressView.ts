@@ -1,4 +1,4 @@
-import { TagArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
+import { TagArgs, SummaryListArgs, SummaryListRow } from '../../utils/govukFrontendTypes'
 
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
@@ -34,31 +34,34 @@ export default class InterventionProgressView {
   }
 
   private actionPlanSummaryListArgs(tagMacro: (args: TagArgs) => string, csrfToken: string): SummaryListArgs {
-    return {
-      rows: [
-        {
-          key: { text: 'Action plan status' },
-          value: {
-            text: tagMacro({
-              text: this.presenter.text.actionPlanStatus,
-              classes: this.actionPlanTagClass,
-              attributes: { id: 'action-plan-status' },
-            }),
-          },
+    const rows: SummaryListRow[] = [
+      {
+        key: { text: 'Action plan status' },
+        value: {
+          text: tagMacro({
+            text: this.presenter.text.actionPlanStatus,
+            classes: this.actionPlanTagClass,
+            attributes: { id: 'action-plan-status' },
+          }),
         },
-        {
-          key: { text: 'Action' },
-          value: {
-            html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
-                     <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
-                     <button class="govuk-button govuk-button--secondary">
-                       Create action plan
-                     </button>
-                   </form>`,
-          },
+      },
+    ]
+
+    if (this.presenter.allowActionPlanCreation) {
+      rows.push({
+        key: { text: 'Action' },
+        value: {
+          html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
+                   <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
+                   <button class="govuk-button govuk-button--secondary">
+                     Create action plan
+                   </button>
+                 </form>`,
         },
-      ],
+      })
     }
+
+    return { rows }
   }
 
   private readonly actionPlanTagClass = this.presenter.actionPlanStatusStyle === 'active' ? '' : 'govuk-tag--grey'
