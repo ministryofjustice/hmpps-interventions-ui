@@ -10,6 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.EndOfServiceReportOutcomeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportOutcomeDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateEndOfServiceReportDTO
@@ -37,12 +38,13 @@ class EndOfServiceReportControllerTest {
     val endOfServiceReport = SampleData.sampleEndOfServiceReport()
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
     val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+    val createEndOfServiceReportDTO = CreateEndOfServiceReportDTO(referralId)
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(endOfServiceReportService.createEndOfServiceReport(referralId, authUser)).thenReturn(endOfServiceReport)
     whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", endOfServiceReportDTO.id)).thenReturn(uriComponents)
 
-    val endOfServiceReportResponse = endOfServiceReportController.createEndOfServiceReport(referralId, jwtAuthenticationToken)
+    val endOfServiceReportResponse = endOfServiceReportController.createEndOfServiceReport(createEndOfServiceReportDTO, jwtAuthenticationToken)
     assertThat(endOfServiceReportResponse.let { it.body }).isEqualTo(endOfServiceReportDTO)
     assertThat(endOfServiceReportResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
   }

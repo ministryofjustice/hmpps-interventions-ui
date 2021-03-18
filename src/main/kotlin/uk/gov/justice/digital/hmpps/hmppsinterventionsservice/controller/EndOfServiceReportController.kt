@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.EndOfServiceReportOutcomeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateEndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.EndOfServiceReportService
@@ -25,14 +26,14 @@ class EndOfServiceReportController(
   val endOfServiceReportOutcomeMapper: EndOfServiceReportOutcomeMapper,
 ) {
 
-  @PostMapping("/referral/{id}/draft-end-of-service-report")
+  @PostMapping("/draft-end-of-service-report")
   fun createEndOfServiceReport(
-    @PathVariable id: UUID,
+    @RequestBody createEndOfServiceReportDTO: CreateEndOfServiceReportDTO,
     authentication: JwtAuthenticationToken
   ): ResponseEntity<EndOfServiceReportDTO> {
 
     val createdByUser = jwtAuthUserMapper.map(authentication)
-    val endOfServiceReport = endOfServiceReportService.createEndOfServiceReport(id, createdByUser)
+    val endOfServiceReport = endOfServiceReportService.createEndOfServiceReport(createEndOfServiceReportDTO.referralId, createdByUser)
 
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
     val location = locationMapper.mapToCurrentRequestBasePath("/{id}", endOfServiceReportDTO.id)
