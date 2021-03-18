@@ -54,7 +54,7 @@ class EndOfServiceReportServiceTest {
     val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
       endOfServiceReportService.createEndOfServiceReport(referralId, authUser)
     }
-    assertThat(exception.message).isEqualTo("referral not found [id=$referralId]")
+    assertThat(exception.message).isEqualTo("Referral not found [id=$referralId]")
   }
 
   @Test

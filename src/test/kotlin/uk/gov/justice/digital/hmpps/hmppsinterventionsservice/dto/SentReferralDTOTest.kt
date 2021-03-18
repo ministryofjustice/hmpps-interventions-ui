@@ -125,4 +125,71 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     """
     )
   }
+
+  @Test
+  fun `sent referral includes end of service report`() {
+    val id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C")
+    val createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+    val sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
+    val sentBy = AuthUser("id", "source", "username")
+
+    val referral = SampleData.sampleReferral(
+      "X123456",
+      "Provider",
+      id = id,
+      createdAt = createdAt,
+      endOfServiceReport = SampleData.sampleEndOfServiceReport(
+        createdAt = createdAt, id = id,
+        outcomes = listOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
+      )
+    )
+
+    referral.referenceNumber = "something"
+    referral.needsInterpreter = true
+    referral.interpreterLanguage = "french"
+    referral.sentAt = sentAt
+    referral.sentBy = sentBy
+
+    val out = json.write(SentReferralDTO.from(referral))
+    Assertions.assertThat(out).isEqualToJson(
+      """
+      {
+        "sentAt": "2021-01-13T21:57:13Z",
+        "sentBy": {
+          "username": "username",
+          "authSource": "source"
+        },
+        "referenceNumber": "something",
+        "referral": {
+          "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
+          "createdAt": "2020-12-04T10:42:43Z",
+          "needsInterpreter": true,
+          "interpreterLanguage": "french",
+          "serviceUser": {"crn": "X123456"},
+          "serviceProvider": {"name": "Provider"}
+        },
+        "endOfServiceReport": {
+        "id" : "3b9ed289-8412-41a9-8291-45e33e60276c",
+        "createdAt" : "2020-12-04T10:42:43Z",
+        "createdBy" :  {
+          "username": "user",
+          "authSource": "auth"
+        },
+        "submittedAt" : null,
+        "submittedBy" :  null,
+        "furtherInformation" : null,
+        "outcomes" : [{
+            "desiredOutcome" : {
+                "id" : "3b9ed289-8412-41a9-8291-45e33e60276c",
+                "description" : "Outcome 1"
+            },
+          "achievementLevel" : "ACHIEVED",
+          "progressionComments" : null,
+          "additionalTaskComments" : null
+        }]
+      }
+    }
+    """
+    )
+  }
 }
