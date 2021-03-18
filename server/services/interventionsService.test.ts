@@ -434,6 +434,41 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.furtherInformation).toBe('Some information about the service user')
     })
 
+    it('returns the updated referral when selecting the relevant sentence', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962',
+        uponReceiving: 'a PATCH request to update the sentence ID',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            relevantSentenceId: 2600295124,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+            relevantSentenceId: 2600295124,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
+        relevantSentenceId: 2600295124,
+      })
+      expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
+      expect(referral.relevantSentenceId).toEqual(2600295124)
+    })
+
     it('returns the updated referral when selecting desired outcomes', async () => {
       await provider.addInteraction({
         state:
@@ -956,6 +991,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       furtherInformation: 'Some information about the service user',
+      relevantSentenceId: 2600295124,
       desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
       accessibilityNeeds: 'She uses a wheelchair',

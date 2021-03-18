@@ -21,6 +21,7 @@ export interface ReferralFields {
   serviceCategoryId: string
   complexityLevelId: string
   furtherInformation: string
+  relevantSentenceId: number
   desiredOutcomesIds: string[]
   additionalNeedsInformation: string
   accessibilityNeeds: string
