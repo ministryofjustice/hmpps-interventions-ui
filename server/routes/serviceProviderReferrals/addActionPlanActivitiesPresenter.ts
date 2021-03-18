@@ -43,6 +43,7 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly text = {
     title: `${utils.convertToProperCase(this.serviceCategory.name)} - create action plan`,
+    pageNumber: 1,
     subTitle: `Add suggested activities to ${this.sentReferral.referral.serviceUser.firstName}’s action plan`,
   }
 
