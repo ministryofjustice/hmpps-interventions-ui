@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -100,9 +99,5 @@ class HMPPSAuthService(
         .map { UserDetail(it.t1, it.t2) }
         .block()
     }
-  }
-
-  companion object {
-    private val log = LoggerFactory.getLogger(HMPPSAuthService::class.java)
   }
 }
