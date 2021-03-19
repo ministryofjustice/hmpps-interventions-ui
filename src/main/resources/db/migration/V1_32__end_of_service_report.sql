@@ -18,7 +18,6 @@ create table end_of_service_report_outcome (
     progression_comments text,
     additional_task_comments text,
 
-    constraint pk_end_of_service_report_outcome primary key (end_of_service_report_id, desired_outcome_id),
     constraint fk_end_of_service_report_id foreign key (end_of_service_report_id) references end_of_service_report,
     constraint fk_desired_outcome_id foreign key (desired_outcome_id) references desired_outcome
 );
