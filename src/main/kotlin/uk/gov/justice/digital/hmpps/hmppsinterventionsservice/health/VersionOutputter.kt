@@ -17,7 +17,7 @@ class VersionOutputter(buildProperties: BuildProperties) {
 
   @EventListener(ApplicationReadyEvent::class)
   fun logVersionOnStartup() {
-    logger.info("application started", kv("application_version", version))
+    logger.info("application started {}", kv("application_version", version))
   }
 
   @Bean

@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
     <conversionRule conversionWord="pid" converterClass="uk.gov.justice.digital.hmpps.hmppsinterventionsservice.logging.LoggingPidConverter" />
+
+    <springProfile name="local">
+        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+
+        <root level="debug">
+            <appender-ref ref="stdout" />
+        </root>
+
+        <logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <appender-ref ref="stdout" />
+        </logger>
+    </springProfile>
+
+    <springProfile name="!local">
         <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-                <springProfile name="local">
-                    <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
-                </springProfile>
                 <providers>
                     <loggerName><fieldName>name</fieldName></loggerName>
                     <timestamp><fieldName>time</fieldName></timestamp>
@@ -46,18 +64,8 @@
             </encoder>
         </appender>
 
-        <springProfile name="local">
-            <logger name="org.hibernate.SQL" level="debug" additivity="false">
-                <appender-ref ref="stdout" />
-            </logger>
-            <root level="debug">
-                <appender-ref ref="stdout" />
-            </root>
-        </springProfile>
-
-        <springProfile name="!local">
-            <root level="warn">
-                <appender-ref ref="stdout" />
-            </root>
-        </springProfile>
+        <root level="warn">
+            <appender-ref ref="stdout" />
+        </root>
+    </springProfile>
 </configuration>
