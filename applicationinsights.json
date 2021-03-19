@@ -9,6 +9,6 @@
   },
   "selfDiagnostics": {
     "destination": "console",
-    "level": "DEBUG"
+    "level": "DEBUG",
   }
 }
