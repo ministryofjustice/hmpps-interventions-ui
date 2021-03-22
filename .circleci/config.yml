@@ -130,6 +130,21 @@ workflows:
             - vulnerability_scan_and_monitor
           context:
             - hmpps-common-vars
+      - approve_research:
+          type: approval
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_research
+          env: "research"
+          retrieve_secrets: "none"
+          slack_notification: true
+          slack_channel_name: "interventions-dev-notifications"
+          requires:
+            - approve_research
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-ui-research
       - approve_preprod:
           type: approval
           requires:
