@@ -2,6 +2,7 @@ import datetime
 import os.path
 import random
 import string
+import sys
 import uuid
 
 random.seed()
@@ -13,8 +14,35 @@ NUM_ENDED_REFERRALS = 0
 
 COMPLETION_DEADLINE_RANGE = (datetime.date(2021, 6, 24), datetime.date(2022, 6, 24))
 
+service_providers = [
+    ('HARMONY_LIVING', 'Harmony Living', 'harmony@example.com'),
+    ('BETTER_LTD', 'Better Ltd.', 'better@example.com'),
+    ('HELPING_HANDS', 'Helping Hands', 'helping-hands@example.com'),
+    ('HOME_TRUST', 'Home Trust', 'home-trust@example.com'),
+    ('NEW_BEGINNINGS', 'New Beginnings Ltd.', 'new-beginnings@example.com'),
+    ('SAFE_LIVING', 'Safe Living Ltd.', 'safe-living@example.com'),
+]
+
+contracts = [
+   # emotional wellbeing service in cleveland
+   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
+   # ETE service for all of yorkshire
+   ('21ef4732-73e6-486b-832c-9f49165d40ab', 'ca374ac3-84eb-4b91-bea7-9005398f426f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
+   # accommodation service for the midlands
+   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   # ETE service for the midlands
+   ('9653676a-a51f-48cf-8541-444af11fe18b', 'ca374ac3-84eb-4b91-bea7-9005398f426f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+]
+
+interventions = [
+    ('0e4dcc37-e3f5-4c44-b043-887dda3a2baa', '952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '2021-03-19', 'Personal Wellbeing', 'Supporting services users around all areas of PW to enhance motivation and allow opportunity for SU change. The project consists of various external 1:1/group work activity across the region which directly link to SU outcome expectation.'),
+    ('ecdc6c7e-f04b-49b1-871d-3f9618555c3d', '21ef4732-73e6-486b-832c-9f49165d40ab', '2021-03-19', 'Employment, Training & Education', 'Support to secure employment, qualifications, training opportunities for people on release from custody or serving a community order. Pre and post-release support available.'),
+    ('5f0a4d93-c26e-439d-b261-0d8d6338e77f', '7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '2021-03-19', 'Accommodation', 'Home Trust Ltd. offers support with sourcing and/or sustaining appropriate accommodation. We offer a range of interventions to help with all accommodation-related support needs.'),
+    ('11f06a1d-da75-4ca3-bb39-b7e848fb7612', '9653676a-a51f-48cf-8541-444af11fe18b', '2021-03-19', 'Employment, Training & Education', 'New Beginnings will provide ETE services to empower and motivate SUs to develop towards and take up education, training and employment.'),
+]
+
 sp_user_ids_with_username_and_organization = [
-    ('5a2c772f-07b9-4c95-93f0-e320f41e7d12', 'JONATHAN.CULLING@DIGITAL.JUSTICE.GOV.UK', 'NEW_BEGINNGINGS'),
+    ('5a2c772f-07b9-4c95-93f0-e320f41e7d12', 'JONATHAN.CULLING@DIGITAL.JUSTICE.GOV.UK', 'NEW_BEGINNINGS'),
     ('8737d791-bc74-4ffe-b383-1c1bd00ff8af', 'GEORGE.GREEN@DIGITAL.JUSTICE.GOV.UK', 'BETTER_LTD'),
     ('990d1f4f-963d-4faa-9f71-740c96ddf51f', 'TMYERS_ADM_AUTH', 'BETTER_LTD'),
     ('20e87c94-cea2-472c-95a3-9a5a5e988910', 'TMYERS_GEN_AUTH', 'NEW_BEGINNINGS'),
@@ -264,13 +292,39 @@ def generate_reference_number(service_category_id):
 
 
 if __name__ == '__main__':
-    cwd = lambda f: os.path.join(os.path.dirname(__file__), f)
+    if len(sys.argv) == 1:
+        raise RuntimeError("please pass a path to write the migration files to")
+
+    migrations_dir = lambda f: os.path.join(sys.argv[1], f)
     sql_values_line = lambda line: '(' + ','.join(map(sql_format, line)) + ')'
     sql_values = lambda values: ',\n'.join(sql_values_line(line) for line in values) + ';'
 
+    with open(migrations_dir('V100_0__service_providers.sql'), 'w') as f:
+        f.write("""insert into service_provider
+            (id, name, incoming_referral_distribution_email)
+        values
+        """)
+
+        f.write(sql_values(service_providers))
+
+    with open(migrations_dir('V100_1__df_contracts.sql'), 'w') as f:
+        f.write("""insert into dynamic_framework_contract
+            (id, service_category_id, service_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
+        values
+        """)
+
+        f.write(sql_values(contracts))
+
+    with open(migrations_dir('V100_2__interventions.sql'), 'w') as f:
+        f.write("""insert into intervention
+            (id, dynamic_framework_contract_id, created_at, title, description)
+        values
+        """)
+        f.write(sql_values(interventions))
+
     auth_users = (u[:2] + ('auth', ) for u in sp_user_ids_with_username_and_organization)
 
-    with open(cwd('V100_3_0__auth_users.sql'), 'w') as f:
+    with open(migrations_dir('V100_3_0__auth_users.sql'), 'w') as f:
         f.write("""insert into auth_user
             (id, user_name, auth_source)
         values
@@ -280,7 +334,7 @@ if __name__ == '__main__':
 
     delius_users = (u + ('delius', ) for u in pp_user_ids_with_username)
 
-    with open(cwd('V100_3_1__delius_users.sql'), 'w') as f:
+    with open(migrations_dir('V100_3_1__delius_users.sql'), 'w') as f:
         f.write("""insert into auth_user
             (id, user_name, auth_source)
         values
@@ -349,7 +403,7 @@ if __name__ == '__main__':
     for values in referrals:
         values.extend([None] * (max_number_of_referral_values - len(values)))
 
-    with open(cwd('V100_4_0__referrals.sql'), 'w') as f:
+    with open(migrations_dir('V100_4_0__referrals.sql'), 'w') as f:
         f.write("""insert into referral
             (id, created_at, created_by_id, service_usercrn, intervention_id,
             complexity_levelid, completion_deadline,
@@ -369,7 +423,7 @@ if __name__ == '__main__':
     # argh these magic numbers are the worst, this is getting out of control...
     referral_service_user_data = [[referral[0]] + list(su_details[referral[3]].values()) for referral in referrals]
 
-    with open(cwd('V100_4_1__referral_service_user_data.sql'), 'w') as f:
+    with open(migrations_dir('V100_4_1__referral_service_user_data.sql'), 'w') as f:
         f.write("""insert into referral_service_user_data
             (referral_id, title, first_name, last_name, dob, gender, ethnicity, preferred_language, religion_or_belief, disabilities)
         values
@@ -385,7 +439,7 @@ if __name__ == '__main__':
         for desired_outcome in desired_outcomes:
             referral_desired_outcomes.append([r[0], desired_outcome])
 
-    with open(cwd('V100_4_2__referral_desired_outcomes.sql'), 'w') as f:
+    with open(migrations_dir('V100_4_2__referral_desired_outcomes.sql'), 'w') as f:
         f.write("""insert into referral_desired_outcome
             (referral_id, desired_outcome_id)
         values
