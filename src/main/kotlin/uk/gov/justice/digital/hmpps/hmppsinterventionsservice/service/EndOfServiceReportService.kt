@@ -62,6 +62,18 @@ class EndOfServiceReportService(
       return endOfServiceReportRepository.save(endOfServiceReport)
     }
 
+  fun submitEndOfServiceReport(endOfServiceReportId: UUID, submittedByUser: AuthUser): EndOfServiceReport {
+    val draftEndOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
+    updateDraftEndOfServiceReportAsSubmitted(draftEndOfServiceReport, submittedByUser)
+
+    return endOfServiceReportRepository.save(draftEndOfServiceReport)
+  }
+
+  private fun updateDraftEndOfServiceReportAsSubmitted(endOfServiceReport: EndOfServiceReport, submittedByUser: AuthUser) {
+    endOfServiceReport.submittedBy = submittedByUser
+    endOfServiceReport.submittedAt = OffsetDateTime.now()
+  }
+
   private fun updateEndOfServiceReport(endOfServiceReport: EndOfServiceReport, furtherInformation: String?) {
     furtherInformation?.let { endOfServiceReport.furtherInformation = it }
   }

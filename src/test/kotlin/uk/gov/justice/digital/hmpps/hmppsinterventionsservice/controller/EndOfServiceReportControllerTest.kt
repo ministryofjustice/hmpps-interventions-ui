@@ -107,4 +107,22 @@ class EndOfServiceReportControllerTest {
     val endOfServiceReportResponse = endOfServiceReportController.updateEndOfServiceReport(endOfServiceReportId, updateEndOfServiceReportDTO)
     assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
   }
+
+  @Test
+  fun `submit end of service report`() {
+    val endOfServiceReportId = UUID.randomUUID()
+    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
+    val authUser = AuthUser("CRN123", "auth", "user")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId)
+    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+
+    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    whenever(locationMapper.mapToCurrentContextPathAsString("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uriComponents)
+    whenever(endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)).thenReturn(endOfServiceReport)
+
+    val responseEntity = endOfServiceReportController.submitEndOfServiceReport(endOfServiceReportId, jwtAuthenticationToken)
+
+    assertThat(responseEntity.headers["location"]).isEqualTo(listOf("/1234"))
+    assertThat(responseEntity.body).isEqualTo(EndOfServiceReportDTO.from(endOfServiceReport))
+  }
 }

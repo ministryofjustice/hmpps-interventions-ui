@@ -153,4 +153,22 @@ class EndOfServiceReportServiceTest {
     assertThat(savedEndOfServiceReport.outcomes.size).isEqualTo(1)
     assertThat(savedEndOfServiceReport).isNotNull
   }
+
+  @Test
+  fun `submit an end of service report`() {
+    val endOfServiceReportId = UUID.randomUUID()
+    val authUser = AuthUser("CRN123", "auth", "user")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId)
+
+    whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
+    whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)
+    val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
+
+    endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)
+
+    verify(endOfServiceReportRepository).save(argumentCaptor.capture())
+    assertThat(argumentCaptor.firstValue.furtherInformation).isEqualTo(endOfServiceReport.furtherInformation)
+    assertThat(argumentCaptor.firstValue.submittedAt).isNotNull
+    assertThat(argumentCaptor.firstValue.submittedBy).isEqualTo(authUser)
+  }
 }
