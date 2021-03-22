@@ -27,9 +27,12 @@ export default class RiskInformationPresenter {
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
-  private readonly utils = new PresenterUtils(this.referral, this.userInputData)
+  private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    additionalRiskInformation: this.utils.stringValue('additionalRiskInformation', 'additional-risk-information'),
+    additionalRiskInformation: this.utils.stringValue(
+      this.referral.additionalRiskInformation,
+      'additional-risk-information'
+    ),
   }
 }

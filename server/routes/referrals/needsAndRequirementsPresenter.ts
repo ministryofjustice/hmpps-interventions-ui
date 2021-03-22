@@ -61,17 +61,20 @@ export default class NeedsAndRequirementsPresenter {
     ],
   })
 
-  private readonly utils = new PresenterUtils(this.referral, this.userInputData)
+  private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    additionalNeedsInformation: this.utils.stringValue('additionalNeedsInformation', 'additional-needs-information'),
-    accessibilityNeeds: this.utils.stringValue('accessibilityNeeds', 'accessibility-needs'),
-    needsInterpreter: this.utils.booleanValue('needsInterpreter', 'needs-interpreter'),
-    interpreterLanguage: this.utils.stringValue('interpreterLanguage', 'interpreter-language'),
+    additionalNeedsInformation: this.utils.stringValue(
+      this.referral.additionalNeedsInformation,
+      'additional-needs-information'
+    ),
+    accessibilityNeeds: this.utils.stringValue(this.referral.accessibilityNeeds, 'accessibility-needs'),
+    needsInterpreter: this.utils.booleanValue(this.referral.needsInterpreter, 'needs-interpreter'),
+    interpreterLanguage: this.utils.stringValue(this.referral.interpreterLanguage, 'interpreter-language'),
     hasAdditionalResponsibilities: this.utils.booleanValue(
-      'hasAdditionalResponsibilities',
+      this.referral.hasAdditionalResponsibilities,
       'has-additional-responsibilities'
     ),
-    whenUnavailable: this.utils.stringValue('whenUnavailable', 'when-unavailable'),
+    whenUnavailable: this.utils.stringValue(this.referral.whenUnavailable, 'when-unavailable'),
   }
 }

@@ -1,34 +1,21 @@
 import { AuthUser } from '../data/hmppsAuthClient'
-import { DraftReferral, ServiceUser } from '../services/interventionsService'
+import { ServiceUser } from '../services/interventionsService'
 import CalendarDay from './calendarDay'
 import utils from './utils'
 
-// This way of extracting all of a type’s properties of a particular type is taken from
-// https://stackoverflow.com/questions/56558289/typescript-generic-type-restriction-on-return-value-of-keyof
-type PropertiesOfType<TObj, TResult> = { [K in keyof TObj]: TObj[K] extends TResult ? K : never }[keyof TObj]
-
 export default class PresenterUtils {
-  constructor(
-    private readonly referral: DraftReferral,
-    private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  constructor(private readonly userInputData: Record<string, unknown> | null = null) {}
 
-  stringValue<K extends PropertiesOfType<DraftReferral, string | number | null>>(
-    referralKey: K,
-    userInputKey: string
-  ): string {
+  stringValue(modelValue: string | number | null, userInputKey: string): string {
     if (this.userInputData === null) {
-      return String(this.referral[referralKey] ?? '')
+      return String(modelValue ?? '')
     }
     return String(this.userInputData[userInputKey] ?? '')
   }
 
-  booleanValue<K extends PropertiesOfType<DraftReferral, boolean | null>>(
-    referralKey: K,
-    userInputKey: string
-  ): boolean | null {
+  booleanValue(modelValue: boolean | null, userInputKey: string): boolean | null {
     if (this.userInputData === null) {
-      return this.referral[referralKey]
+      return modelValue
     }
     if (this.userInputData[userInputKey] === 'yes') {
       return true

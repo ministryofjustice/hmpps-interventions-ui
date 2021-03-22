@@ -25,10 +25,10 @@ export default class RarDaysPresenter {
     },
   }
 
-  private readonly utils = new PresenterUtils(this.referral, this.userInputData)
+  private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    usingRarDays: this.utils.booleanValue('usingRarDays', 'using-rar-days'),
-    maximumRarDays: this.utils.stringValue('maximumRarDays', 'maximum-rar-days'),
+    usingRarDays: this.utils.booleanValue(this.referral.usingRarDays, 'using-rar-days'),
+    maximumRarDays: this.utils.stringValue(this.referral.maximumRarDays, 'maximum-rar-days'),
   }
 }
