@@ -1,13 +1,13 @@
-import { AuthUser } from '../../data/hmppsAuthClient'
-import { DraftReferral, ServiceUser } from '../../services/interventionsService'
-import CalendarDay from '../../utils/calendarDay'
-import utils from '../../utils/utils'
+import { AuthUser } from '../data/hmppsAuthClient'
+import { DraftReferral, ServiceUser } from '../services/interventionsService'
+import CalendarDay from './calendarDay'
+import utils from './utils'
 
 // This way of extracting all of a type’s properties of a particular type is taken from
 // https://stackoverflow.com/questions/56558289/typescript-generic-type-restriction-on-return-value-of-keyof
 type PropertiesOfType<TObj, TResult> = { [K in keyof TObj]: TObj[K] extends TResult ? K : never }[keyof TObj]
 
-export default class ReferralDataPresenterUtils {
+export default class PresenterUtils {
   constructor(
     private readonly referral: DraftReferral,
     private readonly userInputData: Record<string, unknown> | null = null

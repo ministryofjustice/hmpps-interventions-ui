@@ -1,7 +1,7 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import { FormValidationError } from '../../utils/formValidationError'
-import ReferralDataPresenterUtils from './referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class CompletionDeadlinePresenter {
   readonly day: string
@@ -50,14 +50,14 @@ export default class CompletionDeadlinePresenter {
       this.year = String(userInputData['completion-deadline-year'] || '')
     }
 
-    this.errorSummary = ReferralDataPresenterUtils.errorSummary(error)
+    this.errorSummary = PresenterUtils.errorSummary(error)
     this.errorMessage =
-      ReferralDataPresenterUtils.errorMessage(error, 'completion-deadline-day') ??
-      ReferralDataPresenterUtils.errorMessage(error, 'completion-deadline-month') ??
-      ReferralDataPresenterUtils.errorMessage(error, 'completion-deadline-year')
+      PresenterUtils.errorMessage(error, 'completion-deadline-day') ??
+      PresenterUtils.errorMessage(error, 'completion-deadline-month') ??
+      PresenterUtils.errorMessage(error, 'completion-deadline-year')
 
-    this.hasDayError = ReferralDataPresenterUtils.hasError(error, 'completion-deadline-day')
-    this.hasMonthError = ReferralDataPresenterUtils.hasError(error, 'completion-deadline-month')
-    this.hasYearError = ReferralDataPresenterUtils.hasError(error, 'completion-deadline-year')
+    this.hasDayError = PresenterUtils.hasError(error, 'completion-deadline-day')
+    this.hasMonthError = PresenterUtils.hasError(error, 'completion-deadline-month')
+    this.hasYearError = PresenterUtils.hasError(error, 'completion-deadline-year')
   }
 }

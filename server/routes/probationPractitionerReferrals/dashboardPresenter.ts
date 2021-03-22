@@ -1,6 +1,6 @@
 import { DraftReferral } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class DashboardPresenter {
   constructor(private readonly draftReferrals: DraftReferral[]) {}
@@ -9,10 +9,8 @@ export default class DashboardPresenter {
     return this.draftReferrals
       .sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? -1 : 1))
       .map(referral => ({
-        serviceUserFullName: ReferralDataPresenterUtils.fullName(referral.serviceUser),
-        createdAt: ReferralDataPresenterUtils.govukShortFormattedDate(
-          CalendarDay.britishDayForDate(new Date(referral.createdAt))
-        ),
+        serviceUserFullName: PresenterUtils.fullName(referral.serviceUser),
+        createdAt: PresenterUtils.govukShortFormattedDate(CalendarDay.britishDayForDate(new Date(referral.createdAt))),
         url: `/referrals/${referral.id}/form`,
       }))
   }

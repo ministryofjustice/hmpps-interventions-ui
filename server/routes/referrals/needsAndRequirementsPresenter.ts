@@ -1,7 +1,7 @@
 import { DraftReferral } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import { SummaryListItem } from '../../utils/summaryList'
-import ReferralDataPresenterUtils from './referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class NeedsAndRequirementsPresenter {
   constructor(
@@ -17,7 +17,7 @@ export default class NeedsAndRequirementsPresenter {
   ]
 
   private errorMessageForField(field: string): string | null {
-    return ReferralDataPresenterUtils.errorMessage(this.error, field)
+    return PresenterUtils.errorMessage(this.error, field)
   }
 
   readonly text = {
@@ -50,7 +50,7 @@ export default class NeedsAndRequirementsPresenter {
     },
   }
 
-  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error, {
+  readonly errorSummary = PresenterUtils.errorSummary(this.error, {
     fieldOrder: [
       'additional-needs-information',
       'accessibility-needs',
@@ -61,7 +61,7 @@ export default class NeedsAndRequirementsPresenter {
     ],
   })
 
-  private readonly utils = new ReferralDataPresenterUtils(this.referral, this.userInputData)
+  private readonly utils = new PresenterUtils(this.referral, this.userInputData)
 
   readonly fields = {
     additionalNeedsInformation: this.utils.stringValue('additionalNeedsInformation', 'additional-needs-information'),

@@ -1,6 +1,6 @@
 import { DraftReferral } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
-import ReferralDataPresenterUtils from './referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class RiskInformationPresenter {
   constructor(
@@ -21,13 +21,13 @@ export default class RiskInformationPresenter {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
     additionalRiskInformation: {
       label: `Additional information for the provider about ${this.referral.serviceUser?.firstName}’s risks (optional)`,
-      errorMessage: ReferralDataPresenterUtils.errorMessage(this.error, 'additional-risk-information'),
+      errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
     },
   }
 
-  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
-  private readonly utils = new ReferralDataPresenterUtils(this.referral, this.userInputData)
+  private readonly utils = new PresenterUtils(this.referral, this.userInputData)
 
   readonly fields = {
     additionalRiskInformation: this.utils.stringValue('additionalRiskInformation', 'additional-risk-information'),

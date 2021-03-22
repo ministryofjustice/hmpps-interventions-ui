@@ -1,6 +1,6 @@
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
 
 export default class DashboardPresenter {
@@ -21,14 +21,14 @@ export default class DashboardPresenter {
 
       return [
         {
-          text: ReferralDataPresenterUtils.govukShortFormattedDate(sentAtDay),
+          text: PresenterUtils.govukShortFormattedDate(sentAtDay),
           sortValue: sentAtDay.iso8601,
           href: null,
         },
         { text: referral.referenceNumber, sortValue: null, href: null },
         {
-          text: ReferralDataPresenterUtils.fullName(serviceUser),
-          sortValue: ReferralDataPresenterUtils.fullNameSortValue(serviceUser),
+          text: PresenterUtils.fullName(serviceUser),
+          sortValue: PresenterUtils.fullNameSortValue(serviceUser),
           href: null,
         },
         { text: utils.convertToProperCase(serviceCategory.name), sortValue: null, href: null },
