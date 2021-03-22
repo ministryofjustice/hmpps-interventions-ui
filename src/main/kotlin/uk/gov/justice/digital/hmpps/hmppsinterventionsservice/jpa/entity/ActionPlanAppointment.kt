@@ -5,6 +5,8 @@ import org.hibernate.annotations.FetchMode
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.Table
@@ -16,6 +18,9 @@ data class ActionPlanAppointment(
 
   // Attributes
   @NotNull val sessionNumber: Int,
+  @Enumerated(EnumType.STRING)
+  val sessionAttendance: SessionAttendance? = null,
+  val additionalInformation: String? = null,
 
   // Activities
   var appointmentTime: OffsetDateTime? = null,
@@ -29,3 +34,9 @@ data class ActionPlanAppointment(
   @NotNull @ManyToOne val actionPlan: ActionPlan,
   @Id val id: UUID,
 )
+
+enum class SessionAttendance {
+  YES,
+  LATE,
+  NO
+}
