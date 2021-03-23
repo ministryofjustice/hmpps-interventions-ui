@@ -153,4 +153,62 @@ describe(RelevantSentencePresenter, () => {
       })
     })
   })
+
+  describe('errorSummary', () => {
+    const convictions = deliusConvictionFactory.buildList(2)
+
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
+        const presenter = new RelevantSentencePresenter(serviceCategory, convictions)
+
+        expect(presenter.errorSummary).toBeNull()
+      })
+    })
+
+    describe('when an error is passed in', () => {
+      it('returns error information', () => {
+        const presenter = new RelevantSentencePresenter(serviceCategory, convictions, {
+          errors: [
+            {
+              formFields: ['relevant-sentence-id'],
+              errorSummaryLinkedField: 'relevant-sentence-id',
+              message: 'Select the relevant sentence',
+            },
+          ],
+        })
+
+        expect(presenter.errorSummary).toEqual([
+          { field: 'relevant-sentence-id', message: 'Select the relevant sentence' },
+        ])
+      })
+    })
+  })
+
+  describe('errorMessage', () => {
+    const convictions = deliusConvictionFactory.buildList(2)
+
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
+        const presenter = new RelevantSentencePresenter(serviceCategory, convictions)
+
+        expect(presenter.errorMessage).toBeNull()
+      })
+    })
+
+    describe('when an error is passed in', () => {
+      it('returns error information', () => {
+        const presenter = new RelevantSentencePresenter(serviceCategory, convictions, {
+          errors: [
+            {
+              formFields: ['relevant-sentence-id'],
+              errorSummaryLinkedField: 'relevant-sentence-id',
+              message: 'Select the relevant sentence',
+            },
+          ],
+        })
+
+        expect(presenter.errorMessage).toEqual('Select the relevant sentence')
+      })
+    })
+  })
 })

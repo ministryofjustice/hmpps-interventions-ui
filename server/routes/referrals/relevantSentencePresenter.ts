@@ -1,11 +1,20 @@
 import { DeliusConviction } from '../../services/communityApiService'
 import { ServiceCategory } from '../../services/interventionsService'
+import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 
 export default class RelevantSentencePresenter {
-  constructor(private readonly serviceCategory: ServiceCategory, private readonly convictions: DeliusConviction[]) {}
+  constructor(
+    private readonly serviceCategory: ServiceCategory,
+    private readonly convictions: DeliusConviction[],
+    private readonly error: FormValidationError | null = null
+  ) {}
 
   readonly title = `Select the relevant sentence for the ${this.serviceCategory.name.toLocaleLowerCase()} referral`
+
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'relevant-sentence-id')
+
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   get relevantSentenceFields(): {
     category: string

@@ -25,8 +25,11 @@ export default class RelevantSentenceView {
           checked: relevantSentence.checked,
         }
       }),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
     }
   }
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
@@ -34,6 +37,7 @@ export default class RelevantSentenceView {
       {
         presenter: this.presenter,
         radioButtonArgs: this.radioButtonArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
       },
     ]
   }
