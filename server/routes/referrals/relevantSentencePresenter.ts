@@ -7,7 +7,8 @@ export default class RelevantSentencePresenter {
   constructor(
     private readonly serviceCategory: ServiceCategory,
     private readonly convictions: DeliusConviction[],
-    private readonly error: FormValidationError | null = null
+    private readonly error: FormValidationError | null = null,
+    private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
   readonly title = `Select the relevant sentence for the ${this.serviceCategory.name.toLocaleLowerCase()} referral`
@@ -44,8 +45,12 @@ export default class RelevantSentencePresenter {
         endOfSentenceDate:
           PresenterUtils.govukFormattedDateFromStringOrNull(conviction.sentence.expectedSentenceEndDate) ?? 'Not found',
         value: conviction.convictionId,
-        checked: false,
+        checked: this.selectedRelevantSentenceId === conviction.convictionId,
       }
     })
+  }
+
+  private get selectedRelevantSentenceId() {
+    return this.userInputData ? this.userInputData['relevant-sentence-id'] : ''
   }
 }

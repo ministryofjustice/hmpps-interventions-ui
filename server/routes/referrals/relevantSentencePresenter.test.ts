@@ -152,6 +152,36 @@ describe(RelevantSentencePresenter, () => {
         expect(presenter.relevantSentenceFields[0].value).toEqual(123456789)
       })
     })
+
+    describe('checked', () => {
+      describe('when there is no user input data', () => {
+        it('sets the `checked` value to `false`', () => {
+          const convictions = deliusConvictionFactory.buildList(2)
+
+          const presenter = new RelevantSentencePresenter(serviceCategory, convictions)
+
+          expect(presenter.relevantSentenceFields[0].checked).toBe(false)
+          expect(presenter.relevantSentenceFields[1].checked).toBe(false)
+        })
+      })
+
+      describe('when there is user input data', () => {
+        it('sets checked to true for the sentence that the user chose', () => {
+          const convictionWithSelectedSentence = deliusConvictionFactory.build({ convictionId: 123456789 })
+
+          const convictions = [deliusConvictionFactory.build(), convictionWithSelectedSentence]
+
+          const presenter = new RelevantSentencePresenter(serviceCategory, convictions, null, {
+            'relevant-sentence-id': convictionWithSelectedSentence.convictionId,
+          })
+
+          expect(
+            presenter.relevantSentenceFields.find(field => field.value === convictionWithSelectedSentence.convictionId)!
+              .checked
+          ).toEqual(true)
+        })
+      })
+    })
   })
 
   describe('errorSummary', () => {
