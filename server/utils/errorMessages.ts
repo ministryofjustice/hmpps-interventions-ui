@@ -18,6 +18,9 @@ export default {
   complexityLevel: {
     empty: 'Select a complexity level',
   },
+  relevantSentence: {
+    empty: 'Select the relevant sentence',
+  },
   desiredOutcomes: {
     empty: 'Select desired outcomes',
   },
