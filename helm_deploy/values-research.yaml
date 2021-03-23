@@ -14,7 +14,7 @@ ingress:
 env:
   JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
-  INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk"
+  INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
   COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_PROVIDERCODE: "CRS"
   COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_REFERRALTYPE: "CRS01"
