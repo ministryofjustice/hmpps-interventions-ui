@@ -10,6 +10,7 @@ parameters:
 
 orbs:
   hmpps: ministryofjustice/hmpps@2.3.2
+  kubernetes: circleci/kubernetes@0.11.2
   snyk: snyk/snyk@0.0.12
 
 _snyk_options: &snyk_options
@@ -103,6 +104,16 @@ jobs:
           fail-on-issues: << parameters.snyk-fail-build >>
           additional-arguments: << parameters.snyk-args >>
 
+  reset_research_db:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout
+      - hmpps/k8s_setup
+      - kubernetes/create-or-update-resource:
+          # this cleans the database - do not change this namespace!!
+          namespace: hmpps-interventions-research
+          resource-file-path: user_research/reset_env.yaml
 
 workflows:
   version: 2
@@ -175,6 +186,22 @@ workflows:
           slack_channel_name: "interventions-dev-notifications"
           requires:
             - approve_research
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-service-research
+      - approve_reset_research_db:
+          type: approval
+      - reset_research_db:
+          requires:
+            - approve_reset_research_db
+      - hmpps/deploy_env:
+          name: deploy_research_manually
+          env: "research"
+          retrieve_secrets: "none"
+          slack_notification: true
+          slack_channel_name: "interventions-dev-notifications"
+          requires:
+            - reset_research_db
           context:
             - hmpps-common-vars
             - hmpps-interventions-service-research
