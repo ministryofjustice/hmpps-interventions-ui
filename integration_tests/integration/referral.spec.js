@@ -2,6 +2,7 @@ import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 
 describe('Referral form', () => {
   beforeEach(() => {
@@ -76,6 +77,38 @@ describe('Referral form', () => {
       maximumRarDays: 10,
     }
 
+    const convictionWithSentenceToSelect = deliusConvictionFactory.build({
+      convictionId: 123456789,
+      active: true,
+      offences: [
+        {
+          mainOffence: true,
+          detail: {
+            mainCategoryDescription: 'Burglary',
+            subCategoryDescription: 'Theft act, 1968',
+          },
+        },
+        {
+          mainOffence: false,
+          detail: {
+            mainCategoryDescription: 'Common and other types of assault',
+            subCategoryDescription: 'Common assault and battery',
+          },
+        },
+      ],
+      sentence: {
+        sentenceId: 2500284169,
+        description: 'Absolute/Conditional Discharge',
+        expectedSentenceEndDate: '2025-11-15',
+        sentenceType: {
+          code: 'SC',
+          description: 'CJA - Indeterminate Public Prot.',
+        },
+      },
+    })
+
+    const convictions = [convictionWithSentenceToSelect, deliusConvictionFactory.build()]
+
     const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
 
     cy.stubGetServiceUserByCRN('X320741', deliusServiceUser)
@@ -86,6 +119,7 @@ describe('Referral form', () => {
     cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
     cy.stubSendDraftReferral(draftReferral.id, sentReferral)
     cy.stubGetSentReferral(sentReferral.id, sentReferral)
+    cy.stubGetActiveConvictionsByCRN('X320741', convictions)
 
     cy.login()
 
@@ -141,7 +175,15 @@ describe('Referral form', () => {
     cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
-    cy.contains('Select desired outcomes').click()
+
+    cy.contains('Select the relevant sentence for the accommodation referral').click()
+
+    cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
+    cy.get('h1').contains('Select the relevant sentence for the accommodation referral')
+
+    cy.contains('Burglary').click()
+
+    cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/desired-outcomes`)
     cy.get('h1').contains('What are the desired outcomes for the accommodation service?')

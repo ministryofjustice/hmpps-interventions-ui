@@ -41,6 +41,10 @@ module.exports = on => {
       return communityApi.stubGetUserByUsername(arg.username, arg.responseJson)
     },
 
+    stubGetActiveConvictionsByCRN: arg => {
+      return communityApi.stubGetActiveConvictionsByCRN(arg.crn, arg.responseJson)
+    },
+
     stubGetDraftReferral: arg => {
       return interventionsService.stubGetDraftReferral(arg.id, arg.responseJson)
     },
