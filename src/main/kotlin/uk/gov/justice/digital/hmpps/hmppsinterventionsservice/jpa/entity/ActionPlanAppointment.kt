@@ -19,8 +19,8 @@ data class ActionPlanAppointment(
   // Attributes
   @NotNull val sessionNumber: Int,
   @Enumerated(EnumType.STRING)
-  val sessionAttendance: SessionAttendance? = null,
-  val additionalInformation: String? = null,
+  var sessionAttendance: SessionAttendance? = null,
+  var additionalInformation: String? = null,
 
   // Activities
   var appointmentTime: OffsetDateTime? = null,

@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SessionAttendance
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -42,21 +48,25 @@ internal class AppointmentsServiceTest {
       actionPlanAppointmentRepository.save(
         ArgumentMatchers.argThat { (
           sessionNumberArg,
+          sessionAttendanceArg,
+          additionalInformationArg,
           appointmentTimeArg,
           durationInMinutesArg,
           createdByArg,
           createdAtArg,
           actionPlanArg,
+
           _
         ) ->
           (
             sessionNumberArg == sessionNumber &&
+              sessionAttendanceArg == null &&
+              additionalInformationArg == null &&
               appointmentTimeArg == appointmentTime &&
               durationInMinutesArg == durationInMinutes &&
               createdByArg == createdByUser &&
               createdAtArg.isAfter(startTimeOfTest) &&
               actionPlanArg == actionPlan
-
             )
         }
       )
@@ -94,7 +104,7 @@ internal class AppointmentsServiceTest {
         createdByUser
       )
     }
-    assertThat(exception.message).isEqualTo("action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
+    assertThat(exception.message).isEqualTo("Action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 
   @Test
@@ -114,6 +124,8 @@ internal class AppointmentsServiceTest {
       actionPlanAppointmentRepository.save(
         ArgumentMatchers.argThat { (
           sessionNumberArg,
+          sessionAttendanceArg,
+          additionalInformationArg,
           appointmentTimeArg,
           durationInMinutesArg,
           createdByArg,
@@ -123,6 +135,8 @@ internal class AppointmentsServiceTest {
         ) ->
           (
             sessionNumberArg == sessionNumber &&
+              sessionAttendanceArg == null &&
+              additionalInformationArg == null &&
               appointmentTimeArg == appointmentTime &&
               durationInMinutesArg == durationInMinutes &&
               createdByArg == createdByUser &&
@@ -161,7 +175,7 @@ internal class AppointmentsServiceTest {
         durationInMinutes
       )
     }
-    assertThat(exception.message).isEqualTo("action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+    assertThat(exception.message).isEqualTo("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 
   @Test
@@ -191,7 +205,7 @@ internal class AppointmentsServiceTest {
     val exception = assertThrows(EntityNotFoundException::class.java) {
       appointmentsService.getAppointment(actionPlanId, sessionNumber)
     }
-    assertThat(exception.message).isEqualTo("action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+    assertThat(exception.message).isEqualTo("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 
   @Test
@@ -208,5 +222,45 @@ internal class AppointmentsServiceTest {
     assertThat(appointments.first().sessionNumber).isEqualTo(actionPlanAppointment.sessionNumber)
     assertThat(appointments.first().appointmentTime).isEqualTo(actionPlanAppointment.appointmentTime)
     assertThat(appointments.first().durationInMinutes).isEqualTo(actionPlanAppointment.durationInMinutes)
+  }
+
+  @Test
+  fun `update appointment with attendance`() {
+    val appointmentId = UUID.randomUUID()
+    val sessionNumber = 1
+    val sessionAttendance = SessionAttendance.YES
+    val additionalInformation = "extra info"
+    val createdByUser = SampleData.sampleAuthUser()
+    val actionPlan = SampleData.sampleActionPlan()
+
+    val existingAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(appointmentId, sessionNumber))
+      .thenReturn(existingAppointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
+
+    val savedAppointment = appointmentsService.updateAppointmentWithAttendance(appointmentId, 1, sessionAttendance, additionalInformation)
+    val argumentCaptor: ArgumentCaptor<ActionPlanAppointment> = ArgumentCaptor.forClass(ActionPlanAppointment::class.java)
+
+    verify(actionPlanAppointmentRepository).save(argumentCaptor.capture())
+    assertThat(argumentCaptor.firstValue.sessionAttendance).isEqualTo(sessionAttendance)
+    assertThat(argumentCaptor.firstValue.additionalInformation).isEqualTo(additionalInformation)
+    assertThat(savedAppointment).isNotNull
+  }
+
+  @Test
+  fun `update appointment with attendance - no appointment found`() {
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = 1
+    val sessionAttendance = SessionAttendance.YES
+    val additionalInformation = "extra info"
+
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
+      .thenReturn(null)
+
+    val exception = assertThrows(EntityNotFoundException::class.java) {
+      appointmentsService.updateAppointmentWithAttendance(actionPlanId, 1, sessionAttendance, additionalInformation)
+    }
+    assertThat(exception.message).isEqualTo("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 }

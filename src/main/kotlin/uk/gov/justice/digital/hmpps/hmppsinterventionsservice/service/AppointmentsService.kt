@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SessionAttendance
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -54,6 +55,18 @@ class AppointmentsService(
     return actionPlanAppointmentRepository.save(appointment)
   }
 
+  fun updateAppointmentWithAttendance(
+    actionPlanId: UUID,
+    sessionNumber: Int,
+    sessionAttendance: SessionAttendance,
+    additionalInformation: String
+  ): ActionPlanAppointment {
+    val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+    appointment.sessionAttendance = sessionAttendance
+    appointment.additionalInformation = additionalInformation
+    return actionPlanAppointmentRepository.save(appointment)
+  }
+
   fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
 
     return actionPlanAppointmentRepository.findAllByActionPlanId(actionPlanId)
@@ -66,14 +79,14 @@ class AppointmentsService(
 
   private fun checkAppointmentSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {
     getActionPlanAppointment(actionPlanId, sessionNumber)?.let {
-      throw EntityExistsException("action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
+      throw EntityExistsException("Action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
     }
   }
 
   private fun getActionPlanAppointmentOrThrowException(actionPlanId: UUID, sessionNumber: Int): ActionPlanAppointment =
 
     getActionPlanAppointment(actionPlanId, sessionNumber)
-      ?: throw EntityNotFoundException("action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+      ?: throw EntityNotFoundException("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
 
   private fun getActionPlanAppointment(actionPlanId: UUID, sessionNumber: Int) =
     actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)

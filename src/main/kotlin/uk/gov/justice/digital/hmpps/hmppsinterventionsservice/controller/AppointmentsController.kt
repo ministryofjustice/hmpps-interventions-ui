@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Location
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.NewAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentsService
 import java.util.UUID
@@ -82,5 +83,18 @@ class AppointmentsController(
 
     val actionPlanAppointment = appointmentsService.getAppointment(actionPlanId, sessionNumber)
     return ActionPlanAppointmentDTO.from(actionPlanAppointment)
+  }
+
+  @PostMapping("/action-plan/{id}/appointment/{sessionNumber}/record-attendance")
+  fun updateAppointmentWithAttendance(
+    @PathVariable(name = "id") actionPlanId: UUID,
+    @PathVariable sessionNumber: Int,
+    @RequestBody update: UpdateAppointmentAttendanceDTO,
+  ): ActionPlanAppointmentDTO {
+    val updatedAppointment = appointmentsService.updateAppointmentWithAttendance(
+      actionPlanId, sessionNumber, update.sessionAttendance, update.additionalInformation
+    )
+
+    return ActionPlanAppointmentDTO.from(updatedAppointment)
   }
 }
