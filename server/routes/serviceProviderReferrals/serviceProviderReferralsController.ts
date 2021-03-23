@@ -23,6 +23,9 @@ import ReviewActionPlanPresenter from './reviewActionPlanPresenter'
 import ReviewActionPlanView from './reviewActionPlanView'
 import ActionPlanConfirmationPresenter from './actionPlanConfirmationPresenter'
 import ActionPlanConfirmationView from './actionPlanConfirmationView'
+import AddActionPlanNumberOfSessionsView from './actionPlanNumberOfSessionsView'
+import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessionsPresenter'
+import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -240,7 +243,7 @@ export default class ServiceProviderReferralsController {
     const form = new FinaliseActionPlanActivitiesForm(sentReferral, actionPlan, serviceCategory)
 
     if (form.isValid) {
-      res.redirect(`/service-provider/action-plan/${actionPlan.id}/review`)
+      res.redirect(`/service-provider/action-plan/${actionPlan.id}/number-of-sessions`)
     } else {
       const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
       const view = new AddActionPlanActivitiesView(presenter)
@@ -288,5 +291,43 @@ export default class ServiceProviderReferralsController {
     const view = new ActionPlanConfirmationView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async addNumberOfSessionsToActionPlan(req: Request, res: Response): Promise<void> {
+    let userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+    const { user } = res.locals
+    const actionPlanId = req.params.id
+
+    if (req.method === 'POST') {
+      userInputData = req.body
+
+      const form = await ActionPlanNumberOfSessionsForm.createForm(req)
+      formError = form.error
+
+      if (form.isValid) {
+        await this.interventionsService.updateDraftActionPlan(user.token, actionPlanId, form.paramsForUpdate)
+        return res.redirect(`/service-provider/action-plan/${actionPlanId}/review`)
+      }
+    }
+
+    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      user.token,
+      referral.referral.serviceCategoryId
+    )
+
+    const presenter = new AddActionPlanNumberOfSessionsPresenter(
+      actionPlan,
+      serviceUser,
+      serviceCategory,
+      formError,
+      userInputData
+    )
+    const view = new AddActionPlanNumberOfSessionsView(presenter)
+    res.status(formError === null ? 200 : 400)
+    return res.render(...view.renderArgs)
   }
 }

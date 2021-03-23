@@ -1,6 +1,6 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
-import ReferralDataPresenterUtils from './referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class DesiredOutcomesPresenter {
   constructor(
@@ -10,9 +10,9 @@ export default class DesiredOutcomesPresenter {
     private readonly userInputData: Record<string, string[]> | null = null
   ) {}
 
-  readonly errorMessage = ReferralDataPresenterUtils.errorMessage(this.error, 'desired-outcomes-ids')
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'desired-outcomes-ids')
 
-  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly desiredOutcomes: {
     value: string

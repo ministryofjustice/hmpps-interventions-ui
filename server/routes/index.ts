@@ -90,6 +90,12 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/action-plan/:id/confirmation', (req, res) =>
     serviceProviderReferralsController.showActionPlanConfirmation(req, res)
   )
+  get('/service-provider/action-plan/:id/number-of-sessions', (req, res) =>
+    serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
+  )
+  post('/service-provider/action-plan/:id/number-of-sessions', (req, res) =>
+    serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

@@ -1,7 +1,7 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
 
 export default class AssignmentConfirmationPresenter {
@@ -16,7 +16,7 @@ export default class AssignmentConfirmationPresenter {
   readonly summary: SummaryListItem[] = [
     {
       key: 'Name',
-      lines: [ReferralDataPresenterUtils.fullName(this.sentReferral.referral.serviceUser)],
+      lines: [PresenterUtils.fullName(this.sentReferral.referral.serviceUser)],
       isList: false,
     },
     {
@@ -31,7 +31,7 @@ export default class AssignmentConfirmationPresenter {
     },
     {
       key: 'Assigned to',
-      lines: [ReferralDataPresenterUtils.fullName(this.assignee)],
+      lines: [PresenterUtils.fullName(this.assignee)],
       isList: false,
     },
   ]

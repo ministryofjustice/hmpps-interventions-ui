@@ -19,10 +19,15 @@ export interface InputArgs {
     html?: string
     classes?: string
   }
+  classes?: string
+  inputmode?: string
+  pattern?: string
+  spellcheck?: boolean
   autocomplete?: string
   errorMessage?: {
     text: string
   } | null
+  value?: string
 }
 
 export interface PanelArgs {

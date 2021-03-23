@@ -1,6 +1,6 @@
 import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
-import ReferralDataPresenterUtils from './referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class FurtherInformationPresenter {
   constructor(
@@ -15,9 +15,9 @@ export default class FurtherInformationPresenter {
   readonly hint =
     'For example, relevant previous offences, previously completed programmes or further reasons for this referral'
 
-  readonly errorMessage = ReferralDataPresenterUtils.errorMessage(this.error, 'further-information')
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'further-information')
 
-  readonly errorSummary = ReferralDataPresenterUtils.errorSummary(this.error)
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   get value(): string {
     if (this.userInputData !== null) {

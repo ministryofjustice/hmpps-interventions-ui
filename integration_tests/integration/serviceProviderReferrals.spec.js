@@ -282,8 +282,19 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Save and continue').click()
 
+    const draftActionPlanWithNumberOfSessions = { ...draftActionPlanWithAllActivities, numberOfSessions: 4 }
+
+    cy.stubGetActionPlan(draftActionPlan.id, draftActionPlanWithNumberOfSessions)
+    cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithNumberOfSessions)
+
+    cy.contains('Add number of sessions for Alex’s action plan')
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/number-of-sessions`)
+    cy.contains('Number of sessions').type('4')
+
+    cy.contains('Save and continue').click()
+
     const referralWithActionPlanId = { ...assignedReferral, actionPlanId: draftActionPlan.id }
-    const submittedActionPlan = { ...draftActionPlanWithAllActivities, submittedAt: new Date().toISOString() }
+    const submittedActionPlan = { ...draftActionPlanWithNumberOfSessions, submittedAt: new Date().toISOString() }
 
     cy.stubGetSentReferral(assignedReferral.id, referralWithActionPlanId)
     cy.stubSubmitActionPlan(draftActionPlan.id, submittedActionPlan)

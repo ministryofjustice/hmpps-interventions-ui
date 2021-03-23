@@ -3,7 +3,7 @@ import { DeliusServiceUser, DeliusUser } from '../../services/communityApiServic
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
@@ -31,7 +31,7 @@ export default class ShowReferralPresenter {
   readonly text = {
     interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
     assignedTo: this.assigneeFullNameOrUnassigned,
-    errorMessage: ReferralDataPresenterUtils.errorMessage(this.assignEmailError, 'email'),
+    errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [
@@ -59,9 +59,7 @@ export default class ShowReferralPresenter {
       { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text], isList: false },
       {
         key: 'Date to be completed by',
-        lines: [
-          ReferralDataPresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline),
-        ],
+        lines: [PresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],
         isList: false,
       },
       {

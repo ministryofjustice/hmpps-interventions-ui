@@ -7,7 +7,7 @@ import {
 } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import utils from '../../utils/utils'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class AddActionPlanActivitiesPresenter {
   constructor(
@@ -23,7 +23,7 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly errorSummary = (() => {
     const errorSummary = this.errors.reduce((accumIndexedSummary, error) => {
-      const unindexedSummary = ReferralDataPresenterUtils.errorSummary(error.error)
+      const unindexedSummary = PresenterUtils.errorSummary(error.error)
       if (unindexedSummary === null) {
         return accumIndexedSummary
       }
@@ -65,7 +65,7 @@ export default class AddActionPlanActivitiesPresenter {
 
   private errorMessageForOutcome(desiredOutcome: DesiredOutcome): string | null {
     const error = this.errors.find(anError => anError.desiredOutcomeId === desiredOutcome.id)?.error ?? null
-    return ReferralDataPresenterUtils.errorMessage(error, 'description')
+    return PresenterUtils.errorMessage(error, 'description')
   }
 
   private orderedActivitiesForOutcome(outcome: DesiredOutcome): Activity[] {

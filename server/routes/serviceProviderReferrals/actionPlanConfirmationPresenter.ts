@@ -1,7 +1,7 @@
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class ActionPlanConfirmationPresenter {
   constructor(private readonly sentReferral: SentReferral, private readonly serviceCategory: ServiceCategory) {}
@@ -16,7 +16,7 @@ export default class ActionPlanConfirmationPresenter {
   readonly summary: SummaryListItem[] = [
     {
       key: 'Name',
-      lines: [ReferralDataPresenterUtils.fullName(this.sentReferral.referral.serviceUser)],
+      lines: [PresenterUtils.fullName(this.sentReferral.referral.serviceUser)],
       isList: false,
     },
     {

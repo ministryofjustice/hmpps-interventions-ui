@@ -1,6 +1,6 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
 import utils from '../../utils/utils'
-import ReferralDataPresenterUtils from '../referrals/referralDataPresenterUtils'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class ServiceUserBannerPresenter {
   constructor(private readonly serviceUser: DeliusServiceUser) {}
@@ -11,9 +11,7 @@ export default class ServiceUserBannerPresenter {
       `<p class="govuk-notification-banner__heading">${utils.convertToTitleCase(
         `${this.serviceUser.firstName} ${this.serviceUser.surname}`
       )}<p>` +
-      `<p>Date of birth: ${ReferralDataPresenterUtils.govukFormattedDateFromStringOrNull(
-        this.serviceUser.dateOfBirth
-      )}</p>` +
+      `<p>Date of birth: ${PresenterUtils.govukFormattedDateFromStringOrNull(this.serviceUser.dateOfBirth)}</p>` +
       `<p class="govuk-body">${this.serviceUserMobile} | ${this.serviceUserEmail}</p>`,
   }
 
