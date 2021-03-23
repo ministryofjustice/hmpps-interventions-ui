@@ -161,7 +161,7 @@ export default class ReferralsController {
       throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
     }
 
-    const presenter = new RelevantSentencePresenter(serviceCategory, convictions)
+    const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions)
     const view = new RelevantSentenceView(presenter)
 
     res.render(...view.renderArgs)
@@ -202,7 +202,7 @@ export default class ReferralsController {
         throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
       }
 
-      const presenter = new RelevantSentencePresenter(serviceCategory, convictions, error)
+      const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions, error)
       const view = new RelevantSentenceView(presenter)
 
       res.status(400)
