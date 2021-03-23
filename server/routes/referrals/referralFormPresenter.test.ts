@@ -31,7 +31,7 @@ describe('ReferralFormPresenter', () => {
             number: '2',
             status: ReferralFormStatus.NotStarted,
             tasks: [
-              { title: 'Select the relevant sentence for the social inclusion referral', url: null },
+              { title: 'Select the relevant sentence for the social inclusion referral', url: 'relevant-sentence' },
               { title: 'Select desired outcomes', url: 'desired-outcomes' },
               { title: 'Select required complexity level', url: 'complexity-level' },
               {
@@ -105,7 +105,7 @@ describe('ReferralFormPresenter', () => {
             number: '2',
             status: ReferralFormStatus.Completed,
             tasks: [
-              { title: 'Select the relevant sentence for the accommodation referral', url: null },
+              { title: 'Select the relevant sentence for the accommodation referral', url: 'relevant-sentence' },
               { title: 'Select desired outcomes', url: 'desired-outcomes' },
               { title: 'Select required complexity level', url: 'complexity-level' },
               {
