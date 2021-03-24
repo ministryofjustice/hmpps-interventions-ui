@@ -37,19 +37,19 @@ spec:
         - name: hmpps-interventions-service
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: {{ .Values.image.port }}
+            - containerPort: {{ .Values.image.ports.app }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /health/liveness
-              port: {{ .Values.image.port }}
+              port: {{ .Values.image.ports.app }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
             failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /health/readiness
-              port: {{ .Values.image.port }}
+              port: {{ .Values.image.ports.app }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
             failureThreshold: 5

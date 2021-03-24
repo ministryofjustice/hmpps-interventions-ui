@@ -45,6 +45,44 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
 
+  publish_data:
+    executor: hmpps/java
+    docker:
+      - image: cimg/openjdk:11.0
+        environment:
+          POSTGRES_DB: circle_test
+      - image: circleci/postgres:10-alpine-ram
+        environment:
+          POSTGRES_PASSWORD: password
+    steps:
+      - checkout
+      - hmpps/create_app_version
+      - run:
+          name: Migrate the database
+          command: |
+            wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.7.0/flyway-commandline-7.7.0-linux-x64.tar.gz | \
+              tar xvz && sudo ln -s `pwd`/flyway-7.7.0/flyway /usr/local/bin
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration"
+      - run:
+          name: Build data dictionary
+          command: |
+            sudo apt update && sudo apt install graphviz
+            script/build-data-dictionary.sh
+      - setup_remote_docker
+      - run:
+          name: Build docker image
+          command: |
+            docker build --pull --file=script/Dockerfile.data-dictionary script/ --tag="quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}:data-dictionary-${APP_VERSION}"
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Publish docker image
+                command: |
+                  docker login -u="${QUAYIO_USERNAME}" -p="${QUAYIO_PASSWORD}" quay.io
+                  docker push "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}:data-dictionary-${APP_VERSION}"
+
   pact_check_and_publish:
     parameters:
       consumer_tags:
@@ -126,6 +164,7 @@ workflows:
     unless: << pipeline.parameters.only_pacts >>
     jobs:
       - validate
+      - publish_data
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -169,6 +208,7 @@ workflows:
                 - main
           requires:
             - validate
+            - publish_data
             - build_and_publish_docker
             - helm_lint
             - vulnerability_scan_and_monitor

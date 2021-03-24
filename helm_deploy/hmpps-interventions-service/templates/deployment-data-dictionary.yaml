@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "app.fullname" . }}-data-dictionary
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      {{- include "dataDictionary.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "dataDictionary.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: data-dictionary
+          image: "{{ .Values.image.repository }}:data-dictionary-{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.image.ports.dataDictionary }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.image.ports.dataDictionary }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.image.ports.dataDictionary }}
