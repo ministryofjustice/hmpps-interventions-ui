@@ -225,10 +225,10 @@ class ReferralService(
       if (!referralRepository.existsByReferenceNumber(candidate))
         return candidate
       else
-        logger.warn("Clash found for referral number", kv("candidate", candidate))
+        logger.warn("Clash found for referral number {}", kv("candidate", candidate))
     }
 
-    logger.error("Unable to generate a referral number", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
+    logger.error("Unable to generate a referral number {} {}", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
   }
 }

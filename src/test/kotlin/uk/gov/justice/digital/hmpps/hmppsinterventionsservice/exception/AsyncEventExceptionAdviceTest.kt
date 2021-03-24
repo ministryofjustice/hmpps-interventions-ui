@@ -55,7 +55,7 @@ internal class AsyncEventExceptionAdviceTest {
 
     Assertions.assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     Assertions.assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    Assertions.assertThat(memoryAppender.logEvents[0].message).isEqualTo("Exception thrown for method annotated with @AsyncEventExceptionHandling")
+    Assertions.assertThat(memoryAppender.logEvents[0].message).isEqualTo("Exception thrown for method annotated with @AsyncEventExceptionHandling {}")
     Assertions.assertThat(memoryAppender.logEvents[0].argumentArray[1].toString()).isEqualTo("event=NPSRegion(id=G, name=South West)")
   }
 
