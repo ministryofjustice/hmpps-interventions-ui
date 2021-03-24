@@ -17,48 +17,13 @@ export default class CompletionDeadlinePresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  fields = (() => {
-    const errorMessage =
-      PresenterUtils.errorMessage(this.error, 'completion-deadline-day') ??
-      PresenterUtils.errorMessage(this.error, 'completion-deadline-month') ??
-      PresenterUtils.errorMessage(this.error, 'completion-deadline-year')
+  private readonly utils = new PresenterUtils(this.userInputData)
 
-    let dayValue = ''
-    let monthValue = ''
-    let yearValue = ''
-
-    if (this.userInputData === null) {
-      const calendarDay = this.referral.completionDeadline
-        ? CalendarDay.parseIso8601(this.referral.completionDeadline)
-        : null
-
-      if (calendarDay !== null) {
-        dayValue = String(calendarDay?.day ?? '')
-        monthValue = String(calendarDay?.month ?? '')
-        yearValue = String(calendarDay?.year ?? '')
-      }
-    } else {
-      dayValue = String(this.userInputData['completion-deadline-day'] || '')
-      monthValue = String(this.userInputData['completion-deadline-month'] || '')
-      yearValue = String(this.userInputData['completion-deadline-year'] || '')
-    }
-
-    return {
-      completionDeadline: {
-        errorMessage,
-        day: {
-          value: dayValue,
-          hasError: PresenterUtils.hasError(this.error, 'completion-deadline-day'),
-        },
-        month: {
-          value: monthValue,
-          hasError: PresenterUtils.hasError(this.error, 'completion-deadline-month'),
-        },
-        year: {
-          value: yearValue,
-          hasError: PresenterUtils.hasError(this.error, 'completion-deadline-year'),
-        },
-      },
-    }
-  })()
+  fields = {
+    completionDeadline: this.utils.dateValue(
+      this.referral.completionDeadline === null ? null : CalendarDay.parseIso8601Date(this.referral.completionDeadline),
+      'completion-deadline',
+      this.error
+    ),
+  }
 }

@@ -237,6 +237,77 @@ describe(PresenterUtils, () => {
     })
   })
 
+  describe('dateValue', () => {
+    describe('day, month, year values', () => {
+      describe('when the model has a null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns empty strings', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.dateValue(null, 'completion-deadline', null)
+
+            expect(value).toMatchObject({ day: { value: '' }, month: { value: '' }, year: { value: '' } })
+          })
+        })
+      })
+
+      describe('when the model has a non-null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns the corresponding values from the model', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.dateValue(CalendarDay.fromComponents(12, 9, 2021), 'completion-deadline', null)
+
+            expect(value).toMatchObject({ day: { value: '12' }, month: { value: '9' }, year: { value: '2021' } })
+          })
+        })
+      })
+
+      describe('when there is user input data', () => {
+        it('returns the user input data, or an empty string if a field is missing', () => {
+          const utils = new PresenterUtils({ 'completion-deadline-day': 'egg', 'completion-deadline-month': 7 })
+          const value = utils.dateValue(CalendarDay.fromComponents(12, 9, 2021), 'completion-deadline', null)
+
+          expect(value.day.value).toBe('egg')
+          expect(value.month.value).toBe('7')
+          expect(value.year.value).toBe('')
+        })
+      })
+    })
+
+    describe('error information', () => {
+      describe('when a null error is passed in', () => {
+        it('returns no errors', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.dateValue(null, 'completion-deadline', null)
+
+          expect(value.errorMessage).toBeNull()
+          expect(value.day.hasError).toEqual(false)
+          expect(value.month.hasError).toEqual(false)
+          expect(value.year.hasError).toEqual(false)
+        })
+      })
+
+      describe('when a non-null error is passed in', () => {
+        it('returns error information', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.dateValue(null, 'completion-deadline', {
+            errors: [
+              {
+                errorSummaryLinkedField: 'completion-deadline-month',
+                formFields: ['completion-deadline-month', 'completion-deadline-year'],
+                message: 'Please enter a month and a year',
+              },
+            ],
+          })
+
+          expect(value.errorMessage).toBe('Please enter a month and a year')
+          expect(value.day.hasError).toEqual(false)
+          expect(value.month.hasError).toEqual(true)
+          expect(value.year.hasError).toEqual(true)
+        })
+      })
+    })
+  })
+
   describe('.errorSummary', () => {
     describe('with null error', () => {
       it('returns null', () => {
