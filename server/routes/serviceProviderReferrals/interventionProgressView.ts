@@ -1,4 +1,4 @@
-import { TagArgs, SummaryListArgs, SummaryListRow } from '../../utils/govukFrontendTypes'
+import { TagArgs, SummaryListArgs, SummaryListRow, TableArgs } from '../../utils/govukFrontendTypes'
 
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
@@ -66,6 +66,22 @@ export default class InterventionProgressView {
 
   private readonly actionPlanTagClass = this.presenter.actionPlanStatusStyle === 'active' ? '' : 'govuk-tag--grey'
 
+  private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
+    return {
+      head: this.presenter.sessionTableHeaders.map((header: string) => {
+        return { text: header }
+      }),
+      rows: this.presenter.sessionTableRows.map(row => {
+        return [
+          { text: `Session ${row.sessionNumber}` },
+          { text: `${row.appointmentTime}` },
+          { text: tagMacro(row.tagArgs as TagArgs) },
+          { html: `${row.linkHtml}` },
+        ]
+      }),
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/interventionProgress',
@@ -75,6 +91,7 @@ export default class InterventionProgressView {
         serviceUserBannerArgs: this.presenter.referralOverviewPagePresenter.serviceUserBannerArgs,
         initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
         actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
+        sessionTableArgs: this.sessionTableArgs.bind(this),
       },
     ]
   }
