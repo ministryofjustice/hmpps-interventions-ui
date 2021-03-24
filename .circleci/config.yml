@@ -11,6 +11,7 @@ parameters:
 orbs:
   hmpps: ministryofjustice/hmpps@2.3.2
   kubernetes: circleci/kubernetes@0.11.2
+  mem: circleci/rememborb@0.0.1
   snyk: snyk/snyk@0.0.12
 
 _snyk_options: &snyk_options
@@ -56,7 +57,8 @@ jobs:
           POSTGRES_PASSWORD: password
     steps:
       - checkout
-      - hmpps/create_app_version
+      - mem/recall:
+          env_var: APP_VERSION
       - run:
           name: Migrate the database
           command: |
@@ -164,7 +166,10 @@ workflows:
     unless: << pipeline.parameters.only_pacts >>
     jobs:
       - validate
-      - publish_data
+      - publish_data:
+          requires:
+            - build_docker
+            - build_and_publish_docker
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
