@@ -96,6 +96,9 @@ export default function routes(router: Router, services: Services): Router {
   post('/service-provider/action-plan/:id/number-of-sessions', (req, res) =>
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
+  get('/service-provider/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
+    serviceProviderReferralsController.editSession(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

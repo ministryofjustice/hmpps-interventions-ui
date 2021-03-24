@@ -4,6 +4,7 @@ import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
+import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -310,5 +311,30 @@ describe('Service provider referrals dashboard', () => {
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
     cy.get('#action-plan-status').contains('Submitted')
+  })
+
+  it('User views an action plan appointment', () => {
+    const appointment = actionPlanAppointmentFactory.build({
+      sessionNumber: 1,
+      appointmentTime: '2021-03-24T09:02:02Z',
+      durationInMinutes: 75,
+    })
+
+    cy.stubGetSentReferrals([])
+    cy.stubGetActionPlanAppointment('1', 1, appointment)
+
+    cy.login()
+
+    cy.visit(`/service-provider/action-plan/1/sessions/1/edit`)
+
+    cy.get('#date-day').should('have.value', '24')
+    cy.get('#date-month').should('have.value', '3')
+    cy.get('#date-year').should('have.value', '2021')
+    cy.get('#time-hour').should('have.value', '9')
+    cy.get('#time-minute').should('have.value', '02')
+    // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
+    cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
+    cy.get('#duration-hours').should('have.value', '1')
+    cy.get('#duration-minutes').should('have.value', '15')
   })
 })

@@ -13,6 +13,7 @@ import HmppsAuthClient from '../../data/hmppsAuthClient'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
+import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -559,6 +560,21 @@ describe('GET /service-provider/action-plan/:actionPlanId/confirmation', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Action plan submitted for approval')
+      })
+  })
+})
+
+describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', () => {
+  it('renders a form', async () => {
+    const appointment = actionPlanAppointmentFactory.build()
+
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+
+    await request(app)
+      .get(`/service-provider/action-plan/1/sessions/1/edit`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add session 1 details')
       })
   })
 })
