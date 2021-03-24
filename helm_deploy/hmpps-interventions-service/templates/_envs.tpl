@@ -7,32 +7,10 @@ env:
   - name: SERVER_PORT
     value: "{{ .Values.image.port }}"
 
-  - name: SPRING_PROFILES_ACTIVE
-    value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
-
-  - name: JAVA_OPTS
-    value: "{{ .Values.env.JAVA_OPTS }}"
-
-  - name: HMPPSAUTH_BASEURL
-    value: "{{ .Values.env.HMPPSAUTH_BASEURL }}"
-
-  - name: INTERVENTIONSUI_BASEURL
-    value: "{{ .Values.env.INTERVENTIONSUI_BASEURL }}"
-
-  - name: COMMUNITYAPI_BASEURL
-    value: "{{ .Values.env.COMMUNITYAPI_BASEURL }}"
-
-  - name: COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_PROVIDERCODE
-    value: "{{ .Values.env.COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_PROVIDERCODE }}"
-
-  - name: COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_REFERRALTYPE
-    value: "{{ .Values.env.COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_REFERRALTYPE }}"
-
-  - name: COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_STAFFCODE
-    value: "{{ .Values.env.COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_STAFFCODE }}"
-
-  - name: COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_TEAMCODE
-    value: "{{ .Values.env.COMMUNITYAPI_CONTACTNOTIFICATIONCONTEXT_TEAMCODE }}"
+  {{ range $key, $value := .Values.env }}
+  - name: {{ $key }}
+    value: "{{ $value }}"
+  {{ end }}
 
   - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     valueFrom:
