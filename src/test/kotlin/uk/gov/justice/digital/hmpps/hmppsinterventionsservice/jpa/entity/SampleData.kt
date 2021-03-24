@@ -94,7 +94,11 @@ class SampleData {
 
     fun sampleIntervention(
       title: String = "Accommodation Service",
-      description: String = "Help find sheltered housing",
+      description: String = """Help find sheltered housing
+
+        • Bulleted list
+        • With indentation and unicode
+      """,
       dynamicFrameworkContract: DynamicFrameworkContract,
       id: UUID? = null,
       createdAt: OffsetDateTime? = null,
