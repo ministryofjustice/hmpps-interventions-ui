@@ -7,6 +7,9 @@ env:
   - name: SERVER_PORT
     value: "{{ .Values.image.port }}"
 
+  - name: SPRING_PROFILES_ACTIVE
+    value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
+
   - name: JAVA_OPTS
     value: "{{ .Values.env.JAVA_OPTS }}"
 
