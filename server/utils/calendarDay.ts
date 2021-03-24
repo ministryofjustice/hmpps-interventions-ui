@@ -5,7 +5,7 @@ export default class CalendarDay {
     return isValidDate(day, month, year) ? new CalendarDay(day, month, year) : null
   }
 
-  static parseIso8601(val: string): CalendarDay | null {
+  static parseIso8601Date(val: string): CalendarDay | null {
     const result = /^(\d{4})-(\d{2})-(\d{2})$/.exec(val)
 
     if (result === null) {

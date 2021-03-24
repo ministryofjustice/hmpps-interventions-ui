@@ -170,7 +170,7 @@ export default class PresenterUtils {
     const notFoundMessage = 'Not found'
 
     if (date) {
-      const iso8601date = CalendarDay.parseIso8601(date)
+      const iso8601date = CalendarDay.parseIso8601Date(date)
 
       return iso8601date ? this.govukFormattedDate(iso8601date) : notFoundMessage
     }

@@ -35,33 +35,33 @@ describe('CalendarDay', () => {
 
   describe('.parseIso8601', () => {
     it('returns a calendar day when given a valid ISO 8601 formatted date', () => {
-      expect(CalendarDay.parseIso8601('1992-09-15')).toEqual(CalendarDay.fromComponents(15, 9, 1992))
+      expect(CalendarDay.parseIso8601Date('1992-09-15')).toEqual(CalendarDay.fromComponents(15, 9, 1992))
     })
 
     // This is intentional - a moment in time can’t be mapped
     // to a calendar day without also specifying a time zone.
     it('returns null when given an ISO 8601 formatted date and time', () => {
-      expect(CalendarDay.parseIso8601('1992-09-15T12:49:50Z')).toBeNull()
+      expect(CalendarDay.parseIso8601Date('1992-09-15T12:49:50Z')).toBeNull()
     })
 
     it('returns null when given something other than an ISO 8601 formatted date', () => {
-      expect(CalendarDay.parseIso8601('19920915')).toBeNull()
+      expect(CalendarDay.parseIso8601Date('19920915')).toBeNull()
     })
 
     it('returns null when given 31st February in a non-leap year', () => {
-      expect(CalendarDay.parseIso8601('2011-02-31')).toBeNull()
+      expect(CalendarDay.parseIso8601Date('2011-02-31')).toBeNull()
     })
 
     it('returns null when given a month out of bounds', () => {
-      expect(CalendarDay.parseIso8601('2011-13-01')).toBeNull()
+      expect(CalendarDay.parseIso8601Date('2011-13-01')).toBeNull()
     })
 
     it('returns null when given a day out of bounds for any month', () => {
-      expect(CalendarDay.parseIso8601('2011-01-32')).toBeNull()
+      expect(CalendarDay.parseIso8601Date('2011-01-32')).toBeNull()
     })
 
     it('returns null when given a day out of bounds for the month', () => {
-      expect(CalendarDay.parseIso8601('2011-06-31')).toBeNull()
+      expect(CalendarDay.parseIso8601Date('2011-06-31')).toBeNull()
     })
   })
 
