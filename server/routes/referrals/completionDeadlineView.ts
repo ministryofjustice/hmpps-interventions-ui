@@ -19,22 +19,28 @@ export default class CompletionDeadlineView {
       hint: {
         text: this.presenter.hint,
       },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.completionDeadline.errorMessage),
       items: [
         {
-          classes: `govuk-input--width-2${this.presenter.hasDayError ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-2${
+            this.presenter.fields.completionDeadline.day.hasError ? ' govuk-input--error' : ''
+          }`,
           name: 'day',
-          value: this.presenter.day,
+          value: this.presenter.fields.completionDeadline.day.value,
         },
         {
-          classes: `govuk-input--width-2${this.presenter.hasMonthError ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-2${
+            this.presenter.fields.completionDeadline.month.hasError ? ' govuk-input--error' : ''
+          }`,
           name: 'month',
-          value: this.presenter.month,
+          value: this.presenter.fields.completionDeadline.month.value,
         },
         {
-          classes: `govuk-input--width-4${this.presenter.hasYearError ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-4${
+            this.presenter.fields.completionDeadline.year.hasError ? ' govuk-input--error' : ''
+          }`,
           name: 'year',
-          value: this.presenter.year,
+          value: this.presenter.fields.completionDeadline.year.value,
         },
       ],
     }

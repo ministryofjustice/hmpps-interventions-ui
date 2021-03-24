@@ -10,9 +10,9 @@ describe('CompletionDeadlinePresenter', () => {
         const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
         const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
 
-        expect(presenter.day).toBe('')
-        expect(presenter.month).toBe('')
-        expect(presenter.year).toBe('')
+        expect(presenter.fields.completionDeadline.day.value).toBe('')
+        expect(presenter.fields.completionDeadline.month.value).toBe('')
+        expect(presenter.fields.completionDeadline.year.value).toBe('')
       })
     })
 
@@ -24,9 +24,9 @@ describe('CompletionDeadlinePresenter', () => {
           .build({ completionDeadline: '2021-09-12' })
         const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
 
-        expect(presenter.day).toBe('12')
-        expect(presenter.month).toBe('9')
-        expect(presenter.year).toBe('2021')
+        expect(presenter.fields.completionDeadline.day.value).toBe('12')
+        expect(presenter.fields.completionDeadline.month.value).toBe('9')
+        expect(presenter.fields.completionDeadline.year.value).toBe('2021')
       })
     })
 
@@ -42,9 +42,9 @@ describe('CompletionDeadlinePresenter', () => {
           'completion-deadline-month': 7,
         })
 
-        expect(presenter.day).toBe('egg')
-        expect(presenter.month).toBe('7')
-        expect(presenter.year).toBe('')
+        expect(presenter.fields.completionDeadline.day.value).toBe('egg')
+        expect(presenter.fields.completionDeadline.month.value).toBe('7')
+        expect(presenter.fields.completionDeadline.year.value).toBe('')
       })
     })
   })
@@ -56,10 +56,10 @@ describe('CompletionDeadlinePresenter', () => {
         const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
         const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
 
-        expect(presenter.errorMessage).toBeNull()
-        expect(presenter.hasDayError).toEqual(false)
-        expect(presenter.hasMonthError).toEqual(false)
-        expect(presenter.hasYearError).toEqual(false)
+        expect(presenter.fields.completionDeadline.errorMessage).toBeNull()
+        expect(presenter.fields.completionDeadline.day.hasError).toEqual(false)
+        expect(presenter.fields.completionDeadline.month.hasError).toEqual(false)
+        expect(presenter.fields.completionDeadline.year.hasError).toEqual(false)
         expect(presenter.errorSummary).toBeNull()
       })
     })
@@ -78,10 +78,10 @@ describe('CompletionDeadlinePresenter', () => {
           ],
         })
 
-        expect(presenter.errorMessage).toBe('Please enter a month and a year')
-        expect(presenter.hasDayError).toEqual(false)
-        expect(presenter.hasMonthError).toEqual(true)
-        expect(presenter.hasYearError).toEqual(true)
+        expect(presenter.fields.completionDeadline.errorMessage).toBe('Please enter a month and a year')
+        expect(presenter.fields.completionDeadline.day.hasError).toEqual(false)
+        expect(presenter.fields.completionDeadline.month.hasError).toEqual(true)
+        expect(presenter.fields.completionDeadline.year.hasError).toEqual(true)
         expect(presenter.errorSummary).toEqual([
           { message: 'Please enter a month and a year', field: 'completion-deadline-month' },
         ])
