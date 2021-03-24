@@ -42,14 +42,14 @@ describe(InterventionDetailsPresenter, () => {
     })
   })
 
-  describe('body', () => {
+  describe('description', () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         description: 'Some information about the intervention',
       })
     )
     it('returns the intervention description', () => {
-      expect(presenter.body).toEqual('Some information about the intervention')
+      expect(presenter.description).toEqual('Some information about the intervention')
     })
   })
 

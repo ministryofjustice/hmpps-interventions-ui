@@ -47,7 +47,7 @@
           <a class="govuk-link" href="{{ result.hrefInterventionDetails }}">{{ result.title }}</a>
         </h2>
 
-        <p class="govuk-body">{{ result.body }}</p>
+        <p class="govuk-body">{{ result.description | striptags(true) | escape | nl2br }}</p>
 
         {{ govukSummaryList(summaryListArgs(result.summary)) }}
 

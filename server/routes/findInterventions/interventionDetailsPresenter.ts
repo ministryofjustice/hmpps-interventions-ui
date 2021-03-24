@@ -17,7 +17,7 @@ export default class InterventionDetailsPresenter {
     return `/find-interventions/intervention/${this.intervention.id}`
   }
 
-  get body(): string {
+  get description(): string {
     return this.intervention.description
   }
 
