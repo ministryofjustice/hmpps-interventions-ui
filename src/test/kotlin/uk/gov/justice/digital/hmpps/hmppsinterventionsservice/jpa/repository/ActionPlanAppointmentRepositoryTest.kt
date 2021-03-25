@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
@@ -17,8 +18,18 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val actionPlanRepository: ActionPlanRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val interventionRepository: InterventionRepository,
+  val referralRepository: ReferralRepository,
 ) {
   private val authUserFactory = AuthUserFactory(entityManager)
+
+  @BeforeEach
+  fun setup() {
+    actionPlanAppointmentRepository.deleteAll()
+    actionPlanRepository.deleteAll()
+    referralRepository.deleteAll()
+    interventionRepository.deleteAll()
+  }
 
   @Test
   fun `can retrieve an action plan appointment`() {

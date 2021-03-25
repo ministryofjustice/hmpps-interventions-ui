@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SessionAttendance
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -22,7 +22,7 @@ data class UpdateAppointmentDTO(
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes)
 
 data class UpdateAppointmentAttendanceDTO(
-  val attended: SessionAttendance,
+  val attended: Attended,
   val additionalAttendanceInformation: String?
 )
 
@@ -54,11 +54,11 @@ data class ActionPlanAppointmentDTO(
 }
 
 data class AttendanceDTO(
-  val attended: SessionAttendance?,
+  val attended: Attended?,
   val additionalAttendanceInformation: String?
 ) {
   companion object {
-    fun from(attended: SessionAttendance?, additionalAttendanceInformation: String?): AttendanceDTO {
+    fun from(attended: Attended?, additionalAttendanceInformation: String?): AttendanceDTO {
       return AttendanceDTO(
         attended = attended,
         additionalAttendanceInformation = additionalAttendanceInformation

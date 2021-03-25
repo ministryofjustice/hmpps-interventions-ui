@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
 import com.fasterxml.jackson.annotation.JsonValue
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
+import org.hibernate.annotations.Type
+import org.hibernate.annotations.TypeDef
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.Entity
@@ -15,12 +18,14 @@ import javax.validation.constraints.NotNull
 
 @Entity
 @Table(name = "action_plan_appointment")
+@TypeDef(name = "attended", typeClass = PostgreSQLEnumType::class)
 data class ActionPlanAppointment(
 
   // Attributes
   @NotNull val sessionNumber: Int,
+  @Type(type = "attended")
   @Enumerated(EnumType.STRING)
-  var attended: SessionAttendance? = null,
+  var attended: Attended? = null,
   var additionalAttendanceInformation: String? = null,
 
   // Activities
@@ -36,7 +41,7 @@ data class ActionPlanAppointment(
   @Id val id: UUID,
 )
 
-enum class SessionAttendance {
+enum class Attended {
   YES,
   LATE,
   NO;

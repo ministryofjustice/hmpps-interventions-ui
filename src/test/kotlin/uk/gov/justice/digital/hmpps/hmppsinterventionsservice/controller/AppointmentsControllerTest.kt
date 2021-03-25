@@ -12,8 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanAppo
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.NewAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SessionAttendance
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentsService
 import java.net.URI
 import java.time.OffsetDateTime
@@ -117,23 +117,23 @@ internal class AppointmentsControllerTest {
   fun `updates appointment with attendance details`() {
     val actionPlanId = UUID.randomUUID()
     val sessionNumber = 1
-    val update = UpdateAppointmentAttendanceDTO(SessionAttendance.YES, "more info")
+    val update = UpdateAppointmentAttendanceDTO(Attended.YES, "more info")
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
 
     val updatedAppointment = SampleData.sampleActionPlanAppointment(
       actionPlan = actionPlan, createdBy = createdByUser,
-      attended = SessionAttendance.YES, additionalAttendanceInformation = "more info"
+      attended = Attended.YES, additionalAttendanceInformation = "more info"
     )
 
     whenever(
-      appointmentsService.updateAppointmentWithAttendance(
+      appointmentsService.recordAttendance(
         actionPlanId, sessionNumber, update.attended,
         update.additionalAttendanceInformation
       )
     ).thenReturn(updatedAppointment)
 
-    val appointmentResponse = appointmentsController.updateAppointmentWithAttendance(actionPlanId, sessionNumber, update)
+    val appointmentResponse = appointmentsController.recordAttendance(actionPlanId, sessionNumber, update)
 
     assertThat(appointmentResponse).isNotNull
   }

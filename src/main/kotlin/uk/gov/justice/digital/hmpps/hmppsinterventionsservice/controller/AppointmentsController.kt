@@ -86,12 +86,12 @@ class AppointmentsController(
   }
 
   @PostMapping("/action-plan/{id}/appointment/{sessionNumber}/record-attendance")
-  fun updateAppointmentWithAttendance(
+  fun recordAttendance(
     @PathVariable(name = "id") actionPlanId: UUID,
     @PathVariable sessionNumber: Int,
     @RequestBody update: UpdateAppointmentAttendanceDTO,
   ): ActionPlanAppointmentDTO {
-    val updatedAppointment = appointmentsService.updateAppointmentWithAttendance(
+    val updatedAppointment = appointmentsService.recordAttendance(
       actionPlanId, sessionNumber, update.attended, update.additionalAttendanceInformation
     )
 

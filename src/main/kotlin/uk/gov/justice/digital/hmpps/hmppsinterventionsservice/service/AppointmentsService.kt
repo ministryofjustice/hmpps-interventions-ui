@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SessionAttendance
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -55,14 +55,14 @@ class AppointmentsService(
     return actionPlanAppointmentRepository.save(appointment)
   }
 
-  fun updateAppointmentWithAttendance(
+  fun recordAttendance(
     actionPlanId: UUID,
     sessionNumber: Int,
-    sessionAttendance: SessionAttendance,
+    attended: Attended,
     additionalInformation: String?
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
-    setAttendanceFields(appointment, sessionAttendance, additionalInformation)
+    setAttendanceFields(appointment, attended, additionalInformation)
     return actionPlanAppointmentRepository.save(appointment)
   }
 
@@ -76,10 +76,10 @@ class AppointmentsService(
 
   private fun setAttendanceFields(
     appointment: ActionPlanAppointment,
-    sessionAttendance: SessionAttendance,
+    attended: Attended,
     additionalInformation: String?
   ) {
-    appointment.attended = sessionAttendance
+    appointment.attended = attended
     additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
   }
 

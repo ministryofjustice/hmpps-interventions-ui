@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SessionAttendance
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -228,7 +228,7 @@ internal class AppointmentsServiceTest {
   fun `update appointment with attendance`() {
     val appointmentId = UUID.randomUUID()
     val sessionNumber = 1
-    val sessionAttendance = SessionAttendance.YES
+    val sessionAttendance = Attended.YES
     val additionalInformation = "extra info"
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
@@ -239,7 +239,7 @@ internal class AppointmentsServiceTest {
       .thenReturn(existingAppointment)
     whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
 
-    val savedAppointment = appointmentsService.updateAppointmentWithAttendance(appointmentId, 1, sessionAttendance, additionalInformation)
+    val savedAppointment = appointmentsService.recordAttendance(appointmentId, 1, sessionAttendance, additionalInformation)
     val argumentCaptor: ArgumentCaptor<ActionPlanAppointment> = ArgumentCaptor.forClass(ActionPlanAppointment::class.java)
 
     verify(actionPlanAppointmentRepository).save(argumentCaptor.capture())
@@ -252,14 +252,14 @@ internal class AppointmentsServiceTest {
   fun `update appointment with attendance - no appointment found`() {
     val actionPlanId = UUID.randomUUID()
     val sessionNumber = 1
-    val sessionAttendance = SessionAttendance.YES
+    val attended = Attended.YES
     val additionalInformation = "extra info"
 
     whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
       .thenReturn(null)
 
     val exception = assertThrows(EntityNotFoundException::class.java) {
-      appointmentsService.updateAppointmentWithAttendance(actionPlanId, 1, sessionAttendance, additionalInformation)
+      appointmentsService.recordAttendance(actionPlanId, 1, attended, additionalInformation)
     }
     assertThat(exception.message).isEqualTo("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
   }
