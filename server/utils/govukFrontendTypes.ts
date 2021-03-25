@@ -2022,6 +2022,11 @@ export interface TimeInputArgs {
     HTML attributes (for example data attributes) to add to the date-input container.
   */
   attributes?: Record<string, unknown> | null
+
+  /*
+    Arguments for the AM / PM select component.
+  */
+  select: SelectArgs
 }
 
 export interface TimeInputArgsItem {

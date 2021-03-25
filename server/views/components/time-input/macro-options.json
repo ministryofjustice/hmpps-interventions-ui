@@ -113,5 +113,12 @@
         "type": "object",
         "required": false,
         "description": "HTML attributes (for example data attributes) to add to the date-input container."
+    },
+    {
+        "name": "select",
+        "type": "object",
+        "required": true,
+        "isComponent": true,
+        "description": "Arguments for the AM / PM select component."
     }
 ]
