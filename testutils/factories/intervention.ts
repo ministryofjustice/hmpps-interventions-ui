@@ -7,8 +7,15 @@ import eligibilityFactory from './eligibility'
 export default Factory.define<Intervention>(sequence => ({
   id: sequence.toString(),
   title: 'Better solutions (anger management)',
-  description:
-    'To provide service users with key tools and strategies to address issues of anger management and temper control and explore the link between thoughts, emotions and behaviour. It provides the opportunity for service users to practice these strategies in a safe and closed environment.',
+  description: `To provide service users with key tools and strategies to address issues of anger management and temper control and
+explore the link between thoughts, emotions and behaviour. It provides the opportunity for service users to practice
+these strategies in a safe and closed environment.
+
+The service will use the following methods:
+
+• Group therapy sessions
+• One-to-one coaching
+• Hypnotherapy`,
   npsRegion: { id: 'B', name: 'North West' },
   pccRegions: [
     { id: 'cheshire', name: 'Cheshire' },

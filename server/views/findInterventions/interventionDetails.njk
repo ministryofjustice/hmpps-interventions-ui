@@ -15,7 +15,7 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
 
-      <p class="govuk-body">{{ presenter.body }}</p>
+      <p class="govuk-body">{{ presenter.description | striptags(true) | escape | nl2br }}</p>
 
       {{ govukSummaryList(summaryListArgs(presenter.summary)) }}
 
