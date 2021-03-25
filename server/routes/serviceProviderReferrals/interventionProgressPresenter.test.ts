@@ -26,42 +26,56 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.sessionTableRows).toEqual([])
     })
 
-    it('populates the table with formatted session information', () => {
-      const referral = sentReferralFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
-      const serviceUser = serviceUserFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [
-        {
-          sessionNumber: 1,
-          appointmentTime: '2020-12-07T13:00:00.000000Z',
-          durationInMinutes: 120,
-        },
-        {
-          sessionNumber: 2,
-          appointmentTime: null,
-          durationInMinutes: null,
-        },
-      ])
-      expect(presenter.sessionTableRows).toEqual([
-        {
-          sessionNumber: 1,
-          appointmentTime: '07 Dec 2020, 13:00',
-          tagArgs: {
-            text: 'SCHEDULED',
-            classes: 'govuk-tag--blue',
+    describe('when a session exists but an appointment has not yet been scheduled', () => {
+      it('populates the table with formatted session information, with the "Edit session details" link displayed', () => {
+        const referral = sentReferralFactory.build()
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [
+          {
+            sessionNumber: 1,
+            appointmentTime: null,
+            durationInMinutes: null,
           },
-          linkHtml: '<a class="govuk-link" href="#">Reschedule session</a>',
-        },
-        {
-          sessionNumber: 2,
-          appointmentTime: '',
-          tagArgs: {
-            text: 'NOT SCHEDULED',
-            classes: 'govuk-tag--grey',
+        ])
+        expect(presenter.sessionTableRows).toEqual([
+          {
+            sessionNumber: 1,
+            appointmentTime: '',
+            tagArgs: {
+              text: 'NOT SCHEDULED',
+              classes: 'govuk-tag--grey',
+            },
+            linkHtml: '<a class="govuk-link" href="#">Edit session details</a>',
           },
-          linkHtml: '<a class="govuk-link" href="#">Edit session details</a>',
-        },
-      ])
+        ])
+      })
+    })
+
+    describe('when an appointment has been scheduled', () => {
+      it('populates the table with formatted session information, with the "Reschedule session" link displayed', () => {
+        const referral = sentReferralFactory.build()
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [
+          {
+            sessionNumber: 1,
+            appointmentTime: '2020-12-07T13:00:00.000000Z',
+            durationInMinutes: 120,
+          },
+        ])
+        expect(presenter.sessionTableRows).toEqual([
+          {
+            sessionNumber: 1,
+            appointmentTime: '07 Dec 2020, 13:00',
+            tagArgs: {
+              text: 'SCHEDULED',
+              classes: 'govuk-tag--blue',
+            },
+            linkHtml: '<a class="govuk-link" href="#">Reschedule session</a>',
+          },
+        ])
+      })
     })
   })
 
