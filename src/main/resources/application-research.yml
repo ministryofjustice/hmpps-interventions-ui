@@ -1,4 +1,3 @@
 spring:
   flyway:
     locations: classpath:db/migration,classpath:db/research
-    clean-on-validation-error: true
