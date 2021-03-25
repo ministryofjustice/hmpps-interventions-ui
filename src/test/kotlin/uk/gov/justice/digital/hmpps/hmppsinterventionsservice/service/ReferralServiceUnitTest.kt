@@ -1,11 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -35,5 +40,20 @@ class ReferralServiceUnitTest {
     val endedReferral = referralService.endSentReferral(referral, authUser)
     assertThat(endedReferral.endedAt).isNotNull
     assertThat(endedReferral.endedBy).isEqualTo(authUser)
+  }
+
+  @Test
+  fun `get sent referrals sent by current user`() {
+    val referral = SampleData.sampleReferral("CRN123", "Service Provider")
+    val authUser = SampleData.sampleAuthUser()
+
+    whenever(referralRepository.findBySentBy(any())).thenReturn(listOf(referral))
+    val argumentCaptor = argumentCaptor<AuthUser>()
+
+    val result = referralService.getSentReferralsSentBy(authUser)
+
+    assertThat(result).isEqualTo(listOf(referral))
+    verify(referralRepository).findBySentBy(argumentCaptor.capture())
+    assertThat(argumentCaptor.firstValue).isEqualTo(authUser)
   }
 }

@@ -19,13 +19,16 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
+import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -116,5 +119,24 @@ internal class ReferralControllerTest {
       referralController.endSentReferral(UUID.randomUUID(), jwtAuthenticationToken)
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
+  }
+
+  @Test
+  fun `get all sent referrals from current user`() {
+    val authUser = AuthUser("CRN123", "auth", "user")
+    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
+    val referral = SampleData.sampleReferral(
+      "CRN123", "Service Provider",
+      sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00"), sentBy = authUser, referenceNumber = "abc"
+    )
+    val expectedResponse = listOf(referral).map { SentReferralDTO.from(it) }
+
+    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    whenever(referralService.getSentReferralsSentBy(authUser)).thenReturn(listOf(referral))
+    val response = referralController.getSentReferralsSentBy(jwtAuthenticationToken)
+
+    verify(referralService).getSentReferralsSentBy(authUser)
+    assertThat(response.size).isEqualTo(1)
+    assertThat(response[0].id).isEqualTo(expectedResponse[0].id)
   }
 }
