@@ -1798,6 +1798,52 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ).toMatchObject(actionPlanAppointment)
     })
   })
+
+  describe('recordAppointmentAttendance', () => {
+    it('returns an updated action plan appointment with the service user‘s attendance', async () => {
+      await provider.addInteraction({
+        state: 'a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists',
+        uponReceiving:
+          'a POST request to set the attendance for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2/record-attendance',
+          body: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            sessionNumber: 2,
+            appointmentTime: '2021-05-13T13:30:00+01:00',
+            durationInMinutes: 60,
+            attendance: {
+              attended: 'late',
+              additionalAttendanceInformation: 'Alex missed the bus',
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.recordAppointmentAttendance(
+        token,
+        '345059d4-1697-467b-8914-fedec9957279',
+        2,
+        {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        }
+      )
+      expect(appointment.attendance!.attended).toEqual('late')
+      expect(appointment.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
