@@ -2,6 +2,7 @@ import PresenterUtils from './presenterUtils'
 import draftReferralFactory from '../../testutils/factories/draftReferral'
 import CalendarDay from './calendarDay'
 import Duration from './duration'
+import ClockTime from './clockTime'
 
 describe(PresenterUtils, () => {
   describe('stringValue', () => {
@@ -380,6 +381,160 @@ describe(PresenterUtils, () => {
           expect(value.errorMessage).toBe('Please enter a number of minutes')
           expect(value.hours.hasError).toEqual(false)
           expect(value.minutes.hasError).toEqual(true)
+        })
+      })
+    })
+  })
+
+  describe('twelveHourTimeValue', () => {
+    describe('hour, minute values', () => {
+      describe('when the model has a null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns empty strings', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(null, 'start-time', null)
+
+            expect(value).toMatchObject({ hour: { value: '' }, minute: { value: '' } })
+          })
+        })
+      })
+
+      describe('when the model has a non-null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns the corresponding values from the model', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 15, 23), 'start-time', null)
+
+            expect(value).toMatchObject({ hour: { value: '10' }, minute: { value: '15' } })
+          })
+
+          it('returns the correct 12-hour clock hour value', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(22, 15, 23), 'start-time', null)
+
+            expect(value).toMatchObject({ hour: { value: '10' }, minute: { value: '15' } })
+          })
+
+          it('pads the minute value to 2 digits', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 5, 23), 'start-time', null)
+
+            expect(value).toMatchObject({ hour: { value: '10' }, minute: { value: '05' } })
+          })
+        })
+      })
+
+      describe('when there is user input data', () => {
+        it('returns the user input data', () => {
+          const utils = new PresenterUtils({ 'start-time-hour': 'egg', 'start-time-minute': 7 })
+          const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 5, 23), 'start-time', null)
+
+          expect(value.hour.value).toBe('egg')
+          expect(value.minute.value).toBe('7')
+        })
+
+        it('returns an empty string if a field is missing', () => {
+          const utils = new PresenterUtils({ 'start-time-hour': 7 })
+          const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 5, 23), 'start-time', null)
+
+          expect(value.hour.value).toBe('7')
+          expect(value.minute.value).toBe('')
+        })
+      })
+    })
+
+    describe('part of day value', () => {
+      describe('when the model has a null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns null', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(null, 'start-time', null)
+
+            expect(value).toMatchObject({ partOfDay: { value: null } })
+          })
+        })
+      })
+
+      describe('when the model has a non-null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns "am" when the time from the model is before midday', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 15, 23), 'start-time', null)
+
+            expect(value).toMatchObject({ partOfDay: { value: 'am' } })
+          })
+
+          it('returns "pm" when the time from the model is after midday', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(22, 15, 23), 'start-time', null)
+
+            expect(value).toMatchObject({ partOfDay: { value: 'pm' } })
+          })
+        })
+      })
+
+      describe('when there is user input data', () => {
+        it('returns the user input data if a valid option was chosen', () => {
+          const modelValue = ClockTime.fromComponents(10, 5, 23)
+
+          expect(
+            new PresenterUtils({ 'start-time-part-of-day': 'am' }).twelveHourTimeValue(modelValue, 'start-time', null)
+              .partOfDay.value
+          ).toEqual('am')
+
+          expect(
+            new PresenterUtils({ 'start-time-part-of-day': 'pm' }).twelveHourTimeValue(modelValue, 'start-time', null)
+              .partOfDay.value
+          ).toEqual('pm')
+        })
+
+        it('returns null if an invalid option was chosen', () => {
+          const modelValue = ClockTime.fromComponents(10, 5, 23)
+
+          expect(
+            new PresenterUtils({ 'start-time-part-of-day': 'egg' }).twelveHourTimeValue(modelValue, 'start-time', null)
+              .partOfDay.value
+          ).toBeNull()
+        })
+
+        it('returns null if the field is missing', () => {
+          const modelValue = ClockTime.fromComponents(10, 5, 23)
+
+          expect(new PresenterUtils({}).twelveHourTimeValue(modelValue, 'start-time', null).partOfDay.value).toBeNull()
+        })
+      })
+    })
+
+    describe('error information', () => {
+      describe('when a null error is passed in', () => {
+        it('returns no errors', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.twelveHourTimeValue(null, 'start-time', null)
+
+          expect(value.errorMessage).toBeNull()
+          expect(value.hour.hasError).toEqual(false)
+          expect(value.minute.hasError).toEqual(false)
+          expect(value.partOfDay.hasError).toEqual(false)
+        })
+      })
+
+      describe('when a non-null error is passed in', () => {
+        it('returns error information', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.twelveHourTimeValue(null, 'start-time', {
+            errors: [
+              {
+                errorSummaryLinkedField: 'start-time-hour',
+                formFields: ['start-time-hour', 'start-time-part-of-day'],
+                message: 'Please enter an hour and select whether the time is in the AM or the PM',
+              },
+            ],
+          })
+
+          expect(value.errorMessage).toBe('Please enter an hour and select whether the time is in the AM or the PM')
+          expect(value.hour.hasError).toEqual(true)
+          expect(value.minute.hasError).toEqual(false)
+          expect(value.partOfDay.hasError).toEqual(true)
         })
       })
     })
