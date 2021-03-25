@@ -1975,3 +1975,100 @@ export interface WarningTextArgs {
   */
   attributes?: Record<string, unknown> | null
 }
+
+// The time input component is custom to this application.
+export interface TimeInputArgs {
+  /*
+    This is used for the main component and to compose id attribute for each item.
+  */
+  id: string
+
+  /*
+    Optional prefix. This is used to prefix each `item.name` using `-`.
+  */
+  namePrefix?: string | null
+
+  /*
+    An array of input objects with name, value and classes.
+  */
+  items?: TimeInputArgsItem[] | null
+
+  /*
+    Options for the hint component.
+  */
+  hint?: HintArgs | null
+
+  /*
+    Options for the error message component. The error message component will not display if you use a falsy value for `errorMessage`, for example `false` or `null`.
+  */
+  errorMessage?: ErrorMessageArgs | null
+
+  /*
+    Options for the form-group wrapper
+  */
+  formGroup?: TimeInputArgsFormGroup | null
+
+  /*
+    Options for the fieldset component (e.g. legend).
+  */
+  fieldset?: FieldsetArgs | null
+
+  /*
+    Classes to add to the date-input container.
+  */
+  classes?: string | null
+
+  /*
+    HTML attributes (for example data attributes) to add to the date-input container.
+  */
+  attributes?: Record<string, unknown> | null
+}
+
+export interface TimeInputArgsItem {
+  /*
+    Item-specific id. If provided, it will be used instead of the generated id.
+  */
+  id?: string | null
+
+  /*
+    Item-specific name attribute.
+  */
+  name: string
+
+  /*
+    Item-specific label text. If provided, this will be used instead of `name` for item label text.
+  */
+  label?: string | null
+
+  /*
+    If provided, it will be used as the initial value of the input.
+  */
+  value?: string | null
+
+  /*
+    Attribute to [identify input purpose](https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose.html), for instance "bday-day". See [autofill](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill) for full list of attributes that can be used.
+  */
+  autocomplete?: string | null
+
+  /*
+    Attribute to [provide a regular expression pattern](https://www.w3.org/TR/html51/sec-forms.html#the-pattern-attribute), used to match allowed character combinations for the input value.
+  */
+  pattern?: string | null
+
+  /*
+    Classes to add to date input item.
+  */
+  classes?: string | null
+
+  /*
+    HTML attributes (for example data attributes) to add to the date input tag.
+  */
+  attributes?: Record<string, unknown> | null
+}
+
+export interface TimeInputArgsFormGroup {
+  /*
+    Classes to add to the form group (e.g. to show error state for the whole group)
+  */
+  classes?: string | null
+}
