@@ -123,13 +123,13 @@ internal class AppointmentsControllerTest {
 
     val updatedAppointment = SampleData.sampleActionPlanAppointment(
       actionPlan = actionPlan, createdBy = createdByUser,
-      sessionAttendance = SessionAttendance.YES, additionalInformation = "more info"
+      attended = SessionAttendance.YES, additionalAttendanceInformation = "more info"
     )
 
     whenever(
       appointmentsService.updateAppointmentWithAttendance(
-        actionPlanId, sessionNumber, update.sessionAttendance,
-        update.additionalInformation
+        actionPlanId, sessionNumber, update.attended,
+        update.additionalAttendanceInformation
       )
     ).thenReturn(updatedAppointment)
 

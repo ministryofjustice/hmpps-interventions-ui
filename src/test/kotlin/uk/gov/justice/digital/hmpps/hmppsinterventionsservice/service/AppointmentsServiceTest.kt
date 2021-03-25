@@ -243,8 +243,8 @@ internal class AppointmentsServiceTest {
     val argumentCaptor: ArgumentCaptor<ActionPlanAppointment> = ArgumentCaptor.forClass(ActionPlanAppointment::class.java)
 
     verify(actionPlanAppointmentRepository).save(argumentCaptor.capture())
-    assertThat(argumentCaptor.firstValue.sessionAttendance).isEqualTo(sessionAttendance)
-    assertThat(argumentCaptor.firstValue.additionalInformation).isEqualTo(additionalInformation)
+    assertThat(argumentCaptor.firstValue.attended).isEqualTo(sessionAttendance)
+    assertThat(argumentCaptor.firstValue.additionalAttendanceInformation).isEqualTo(additionalInformation)
     assertThat(savedAppointment).isNotNull
   }
 

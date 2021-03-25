@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
+import com.fasterxml.jackson.annotation.JsonValue
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import java.time.OffsetDateTime
@@ -19,8 +20,8 @@ data class ActionPlanAppointment(
   // Attributes
   @NotNull val sessionNumber: Int,
   @Enumerated(EnumType.STRING)
-  var sessionAttendance: SessionAttendance? = null,
-  var additionalInformation: String? = null,
+  var attended: SessionAttendance? = null,
+  var additionalAttendanceInformation: String? = null,
 
   // Activities
   var appointmentTime: OffsetDateTime? = null,
@@ -38,5 +39,10 @@ data class ActionPlanAppointment(
 enum class SessionAttendance {
   YES,
   LATE,
-  NO
+  NO;
+
+  @JsonValue
+  open fun toLower(): String? {
+    return this.toString().toLowerCase()
+  }
 }

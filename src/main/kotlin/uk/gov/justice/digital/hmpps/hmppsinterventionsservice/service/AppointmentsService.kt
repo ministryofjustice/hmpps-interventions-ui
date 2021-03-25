@@ -59,22 +59,28 @@ class AppointmentsService(
     actionPlanId: UUID,
     sessionNumber: Int,
     sessionAttendance: SessionAttendance,
-    additionalInformation: String
+    additionalInformation: String?
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
-    appointment.sessionAttendance = sessionAttendance
-    appointment.additionalInformation = additionalInformation
+    setAttendanceFields(appointment, sessionAttendance, additionalInformation)
     return actionPlanAppointmentRepository.save(appointment)
   }
 
   fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
-
     return actionPlanAppointmentRepository.findAllByActionPlanId(actionPlanId)
   }
 
   fun getAppointment(actionPlanId: UUID, sessionNumber: Int): ActionPlanAppointment {
-
     return getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+  }
+
+  private fun setAttendanceFields(
+    appointment: ActionPlanAppointment,
+    sessionAttendance: SessionAttendance,
+    additionalInformation: String?
+  ) {
+    appointment.attended = sessionAttendance
+    additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
   }
 
   private fun checkAppointmentSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {

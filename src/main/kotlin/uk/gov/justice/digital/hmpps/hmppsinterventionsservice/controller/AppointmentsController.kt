@@ -92,7 +92,7 @@ class AppointmentsController(
     @RequestBody update: UpdateAppointmentAttendanceDTO,
   ): ActionPlanAppointmentDTO {
     val updatedAppointment = appointmentsService.updateAppointmentWithAttendance(
-      actionPlanId, sessionNumber, update.sessionAttendance, update.additionalInformation
+      actionPlanId, sessionNumber, update.attended, update.additionalAttendanceInformation
     )
 
     return ActionPlanAppointmentDTO.from(updatedAppointment)

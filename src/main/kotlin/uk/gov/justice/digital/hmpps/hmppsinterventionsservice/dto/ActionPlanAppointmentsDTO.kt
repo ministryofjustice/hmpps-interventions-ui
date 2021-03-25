@@ -22,8 +22,8 @@ data class UpdateAppointmentDTO(
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes)
 
 data class UpdateAppointmentAttendanceDTO(
-  val sessionAttendance: SessionAttendance,
-  val additionalInformation: String
+  val attended: SessionAttendance,
+  val additionalAttendanceInformation: String?
 )
 
 data class ActionPlanAppointmentDTO(
@@ -33,8 +33,7 @@ data class ActionPlanAppointmentDTO(
   override val durationInMinutes: Int?,
   val createdAt: OffsetDateTime,
   val createdBy: AuthUserDTO,
-  val sessionAttendance: SessionAttendance?,
-  val additionalInformation: String?
+  val attendance: AttendanceDTO,
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes) {
   companion object {
     fun from(appointment: ActionPlanAppointment): ActionPlanAppointmentDTO {
@@ -45,12 +44,25 @@ data class ActionPlanAppointmentDTO(
         durationInMinutes = appointment.durationInMinutes,
         createdAt = appointment.createdAt,
         createdBy = AuthUserDTO.from(appointment.createdBy),
-        sessionAttendance = appointment.sessionAttendance,
-        additionalInformation = appointment.additionalInformation
+        attendance = AttendanceDTO.from(appointment.attended, appointment.additionalAttendanceInformation),
       )
     }
     fun from(appointments: List<ActionPlanAppointment>): List<ActionPlanAppointmentDTO> {
       return appointments.map { from(it) }
+    }
+  }
+}
+
+data class AttendanceDTO(
+  val attended: SessionAttendance?,
+  val additionalAttendanceInformation: String?
+) {
+  companion object {
+    fun from(attended: SessionAttendance?, additionalAttendanceInformation: String?): AttendanceDTO {
+      return AttendanceDTO(
+        attended = attended,
+        additionalAttendanceInformation = additionalAttendanceInformation
+      )
     }
   }
 }
