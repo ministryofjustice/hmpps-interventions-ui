@@ -86,6 +86,7 @@ export default class ReferralFormPresenter {
 
   private determineInterventionDetailsSectionStatus(): ReferralFormStatus {
     const hasCompletedSection = [
+      this.referral.relevantSentenceId,
       this.referral.desiredOutcomesIds,
       this.referral.complexityLevelId,
       this.referral.completionDeadline,
