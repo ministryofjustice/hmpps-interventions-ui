@@ -578,3 +578,38 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
       })
   })
 })
+
+describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', () => {
+  it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const serviceUser = deliusServiceUser.build()
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+    const appointment = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+
+    await request(app)
+      .get(
+        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback`
+      )
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Accommodation: add feedback')
+        expect(res.text).toContain('Session details')
+        expect(res.text).toContain('01 Feb 2021')
+        expect(res.text).toContain('13:00')
+      })
+  })
+})

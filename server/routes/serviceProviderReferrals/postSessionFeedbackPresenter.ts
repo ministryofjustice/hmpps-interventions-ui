@@ -22,12 +22,12 @@ export default class PostSessionFeedbackPresenter {
   readonly sessionDetailsSummary: SummaryListItem[] = [
     {
       key: 'Date',
-      lines: [DateUtils.getDateFromFormattedDateTime(this.appointment.appointmentTime)],
+      lines: [DateUtils.getDateStringFromDateTimeString(this.appointment.appointmentTime)],
       isList: false,
     },
     {
       key: 'Time',
-      lines: [DateUtils.getTimeFromFormattedDateTime(this.appointment.appointmentTime)],
+      lines: [DateUtils.getTimeStringFromDateTimeString(this.appointment.appointmentTime)],
       isList: false,
     },
   ]
