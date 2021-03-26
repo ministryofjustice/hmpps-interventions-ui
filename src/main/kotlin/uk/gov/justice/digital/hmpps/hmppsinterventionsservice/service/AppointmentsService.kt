@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
@@ -54,26 +55,45 @@ class AppointmentsService(
     return actionPlanAppointmentRepository.save(appointment)
   }
 
-  fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
+  fun recordAttendance(
+    actionPlanId: UUID,
+    sessionNumber: Int,
+    attended: Attended,
+    additionalInformation: String?
+  ): ActionPlanAppointment {
+    val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+    setAttendanceFields(appointment, attended, additionalInformation)
+    return actionPlanAppointmentRepository.save(appointment)
+  }
 
+  fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
     return actionPlanAppointmentRepository.findAllByActionPlanId(actionPlanId)
   }
 
   fun getAppointment(actionPlanId: UUID, sessionNumber: Int): ActionPlanAppointment {
-
     return getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+  }
+
+  private fun setAttendanceFields(
+    appointment: ActionPlanAppointment,
+    attended: Attended,
+    additionalInformation: String?
+  ) {
+    appointment.attended = attended
+    additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
   }
 
   private fun checkAppointmentSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {
     getActionPlanAppointment(actionPlanId, sessionNumber)?.let {
-      throw EntityExistsException("action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
+      throw EntityExistsException("Action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
     }
   }
 
   private fun getActionPlanAppointmentOrThrowException(actionPlanId: UUID, sessionNumber: Int): ActionPlanAppointment =
 
     getActionPlanAppointment(actionPlanId, sessionNumber)
-      ?: throw EntityNotFoundException("action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+      ?: throw EntityNotFoundException("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
 
   private fun getActionPlanAppointment(actionPlanId: UUID, sessionNumber: Int) =
     actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)

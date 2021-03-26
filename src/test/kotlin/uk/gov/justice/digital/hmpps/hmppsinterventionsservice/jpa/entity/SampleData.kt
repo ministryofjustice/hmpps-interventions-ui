@@ -210,7 +210,10 @@ class SampleData {
       appointmentTime: OffsetDateTime? = null,
       durationInMinutes: Int? = null,
       createdAt: OffsetDateTime = OffsetDateTime.now(),
-      createdBy: AuthUser
+      createdBy: AuthUser,
+      attended: Attended? = null,
+      additionalAttendanceInformation: String? = null,
+      attendanceSubmittedAt: OffsetDateTime? = null
     ): ActionPlanAppointment {
       return ActionPlanAppointment(
         id = id,
@@ -219,7 +222,10 @@ class SampleData {
         appointmentTime = appointmentTime,
         durationInMinutes = durationInMinutes,
         createdAt = createdAt,
-        createdBy = createdBy
+        createdBy = createdBy,
+        attended = attended,
+        additionalAttendanceInformation = additionalAttendanceInformation,
+        attendanceSubmittedAt = attendanceSubmittedAt
       )
     }
 

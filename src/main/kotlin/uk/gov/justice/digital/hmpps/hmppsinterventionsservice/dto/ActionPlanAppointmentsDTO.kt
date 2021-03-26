@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -20,6 +21,11 @@ data class UpdateAppointmentDTO(
   override val durationInMinutes: Int?,
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes)
 
+data class UpdateAppointmentAttendanceDTO(
+  val attended: Attended,
+  val additionalAttendanceInformation: String?
+)
+
 data class ActionPlanAppointmentDTO(
   val id: UUID,
   val sessionNumber: Int,
@@ -27,6 +33,7 @@ data class ActionPlanAppointmentDTO(
   override val durationInMinutes: Int?,
   val createdAt: OffsetDateTime,
   val createdBy: AuthUserDTO,
+  val attendance: AttendanceDTO,
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes) {
   companion object {
     fun from(appointment: ActionPlanAppointment): ActionPlanAppointmentDTO {
@@ -36,11 +43,26 @@ data class ActionPlanAppointmentDTO(
         appointmentTime = appointment.appointmentTime,
         durationInMinutes = appointment.durationInMinutes,
         createdAt = appointment.createdAt,
-        createdBy = AuthUserDTO.from(appointment.createdBy)
+        createdBy = AuthUserDTO.from(appointment.createdBy),
+        attendance = AttendanceDTO.from(appointment.attended, appointment.additionalAttendanceInformation),
       )
     }
     fun from(appointments: List<ActionPlanAppointment>): List<ActionPlanAppointmentDTO> {
       return appointments.map { from(it) }
+    }
+  }
+}
+
+data class AttendanceDTO(
+  val attended: Attended?,
+  val additionalAttendanceInformation: String?
+) {
+  companion object {
+    fun from(attended: Attended?, additionalAttendanceInformation: String?): AttendanceDTO {
+      return AttendanceDTO(
+        attended = attended,
+        additionalAttendanceInformation = additionalAttendanceInformation
+      )
     }
   }
 }

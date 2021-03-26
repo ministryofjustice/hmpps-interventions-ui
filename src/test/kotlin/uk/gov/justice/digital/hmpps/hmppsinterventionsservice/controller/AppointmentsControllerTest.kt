@@ -10,11 +10,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Location
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.NewAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentsService
 import java.net.URI
 import java.time.OffsetDateTime
+import java.util.UUID
 
 internal class AppointmentsControllerTest {
 
@@ -108,5 +111,30 @@ internal class AppointmentsControllerTest {
 
     assertThat(appointmentsResponse.size).isEqualTo(1)
     assertThat(appointmentsResponse.first()).isEqualTo(ActionPlanAppointmentDTO.from(actionPlanAppointment))
+  }
+
+  @Test
+  fun `updates appointment with attendance details`() {
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = 1
+    val update = UpdateAppointmentAttendanceDTO(Attended.YES, "more info")
+    val createdByUser = SampleData.sampleAuthUser()
+    val actionPlan = SampleData.sampleActionPlan()
+
+    val updatedAppointment = SampleData.sampleActionPlanAppointment(
+      actionPlan = actionPlan, createdBy = createdByUser,
+      attended = Attended.YES, additionalAttendanceInformation = "more info"
+    )
+
+    whenever(
+      appointmentsService.recordAttendance(
+        actionPlanId, sessionNumber, update.attended,
+        update.additionalAttendanceInformation
+      )
+    ).thenReturn(updatedAppointment)
+
+    val appointmentResponse = appointmentsController.recordAttendance(actionPlanId, sessionNumber, update)
+
+    assertThat(appointmentResponse).isNotNull
   }
 }
