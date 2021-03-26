@@ -212,7 +212,8 @@ class SampleData {
       createdAt: OffsetDateTime = OffsetDateTime.now(),
       createdBy: AuthUser,
       attended: Attended? = null,
-      additionalAttendanceInformation: String? = null
+      additionalAttendanceInformation: String? = null,
+      attendanceSubmittedAt: OffsetDateTime? = null
     ): ActionPlanAppointment {
       return ActionPlanAppointment(
         id = id,
@@ -223,7 +224,8 @@ class SampleData {
         createdAt = createdAt,
         createdBy = createdBy,
         attended = attended,
-        additionalAttendanceInformation = additionalAttendanceInformation
+        additionalAttendanceInformation = additionalAttendanceInformation,
+        attendanceSubmittedAt = attendanceSubmittedAt
       )
     }
 

@@ -49,7 +49,8 @@ internal class AppointmentsServiceTest {
         ArgumentMatchers.argThat { (
           sessionNumberArg,
           sessionAttendanceArg,
-          additionalInformationArg,
+          additionalAttendanceInformationArg,
+          attendanceSubmittedAtArg,
           appointmentTimeArg,
           durationInMinutesArg,
           createdByArg,
@@ -61,7 +62,8 @@ internal class AppointmentsServiceTest {
           (
             sessionNumberArg == sessionNumber &&
               sessionAttendanceArg == null &&
-              additionalInformationArg == null &&
+              additionalAttendanceInformationArg == null &&
+              attendanceSubmittedAtArg == null &&
               appointmentTimeArg == appointmentTime &&
               durationInMinutesArg == durationInMinutes &&
               createdByArg == createdByUser &&
@@ -125,7 +127,8 @@ internal class AppointmentsServiceTest {
         ArgumentMatchers.argThat { (
           sessionNumberArg,
           sessionAttendanceArg,
-          additionalInformationArg,
+          additionalAttendanceInformationArg,
+          attendanceSubmittedAtArg,
           appointmentTimeArg,
           durationInMinutesArg,
           createdByArg,
@@ -136,7 +139,8 @@ internal class AppointmentsServiceTest {
           (
             sessionNumberArg == sessionNumber &&
               sessionAttendanceArg == null &&
-              additionalInformationArg == null &&
+              additionalAttendanceInformationArg == null &&
+              attendanceSubmittedAtArg == null &&
               appointmentTimeArg == appointmentTime &&
               durationInMinutesArg == durationInMinutes &&
               createdByArg == createdByUser &&
@@ -245,6 +249,7 @@ internal class AppointmentsServiceTest {
     verify(actionPlanAppointmentRepository).save(argumentCaptor.capture())
     assertThat(argumentCaptor.firstValue.attended).isEqualTo(sessionAttendance)
     assertThat(argumentCaptor.firstValue.additionalAttendanceInformation).isEqualTo(additionalInformation)
+    assertThat(argumentCaptor.firstValue.attendanceSubmittedAt).isNotNull
     assertThat(savedAppointment).isNotNull
   }
 

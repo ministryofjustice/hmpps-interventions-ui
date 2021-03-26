@@ -81,6 +81,7 @@ class AppointmentsService(
   ) {
     appointment.attended = attended
     additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
   }
 
   private fun checkAppointmentSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {

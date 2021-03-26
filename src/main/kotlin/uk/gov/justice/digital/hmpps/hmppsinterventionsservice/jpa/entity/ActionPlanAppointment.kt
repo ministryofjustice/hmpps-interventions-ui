@@ -27,6 +27,7 @@ data class ActionPlanAppointment(
   @Enumerated(EnumType.STRING)
   var attended: Attended? = null,
   var additionalAttendanceInformation: String? = null,
+  var attendanceSubmittedAt: OffsetDateTime? = null,
 
   // Activities
   var appointmentTime: OffsetDateTime? = null,
