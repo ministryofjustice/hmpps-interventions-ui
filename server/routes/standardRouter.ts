@@ -1,15 +1,17 @@
 import { Router } from 'express'
 
-import auth from '../authentication/auth'
+import loginRedirectMiddleware from '../middleware/loginRedirectMiddleware'
+import tokenVerificationMiddleware from '../middleware/tokenVerificationMiddleware'
 import tokenVerifier from '../data/tokenVerification'
-import populateCurrentUser from '../middleware/populateCurrentUser'
-import type UserService from '../services/userService'
+import authorisationMiddleware from '../middleware/authorisationMiddleware'
 
-export default function standardRouter(userService: UserService): Router {
+export default function standardRouter(authorisedRoles: string[] = []): Router {
   const router = Router({ mergeParams: true })
 
-  router.use(auth.authenticationMiddleware(tokenVerifier))
-  router.use(populateCurrentUser(userService))
+  router.use(loginRedirectMiddleware())
+  router.use(tokenVerificationMiddleware(tokenVerifier))
+  router.use(authorisationMiddleware(authorisedRoles))
+
   router.use((req, res, next) => {
     if (typeof req.csrfToken === 'function') {
       res.locals.csrfToken = req.csrfToken()

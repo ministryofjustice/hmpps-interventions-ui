@@ -9,24 +9,22 @@ import compression from 'compression'
 import bodyParser from 'body-parser'
 import createError from 'http-errors'
 import flash from 'connect-flash'
-import passport from 'passport'
 import redis from 'redis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 
-import auth from './authentication/auth'
 import indexRoutes from './routes'
 import healthcheck from './services/healthCheck'
 import nunjucksSetup from './utils/nunjucksSetup'
 import config from './config'
 import errorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
-import authorisationMiddleware from './middleware/authorisationMiddleware'
 import type UserService from './services/userService'
 import CommunityApiService from './services/communityApiService'
 import InterventionsService from './services/interventionsService'
 import OffenderAssessmentsApiService from './services/offenderAssessmentsApiService'
 import HmppsAuthClient from './data/hmppsAuthClient'
+import passportSetup from './authentication/passport'
 
 const RedisStore = connectRedis(session)
 
@@ -38,8 +36,6 @@ export default function createApp(
   hmppsAuthClient: HmppsAuthClient
 ): express.Application {
   const app = express()
-
-  auth.init()
 
   app.set('json spaces', 2)
 
@@ -92,12 +88,12 @@ export default function createApp(
     })
   )
 
-  app.use(passport.initialize())
-  app.use(passport.session())
-
   // Request Processing Configuration
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
+
+  // authentication configuration
+  passportSetup(app, userService)
 
   app.use(flash())
 
@@ -150,11 +146,6 @@ export default function createApp(
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
 
-  app.use((req, res, next) => {
-    res.locals.user = req.user
-    next()
-  })
-
   // Don't cache dynamic resources
   app.use(noCache())
 
@@ -170,41 +161,16 @@ export default function createApp(
     next()
   })
 
-  app.get('/autherror', (req, res) => {
-    res.status(401)
-    return res.render('autherror')
-  })
-
-  app.get('/login', passport.authenticate('oauth2'))
-
-  app.get('/login/callback', (req, res, next) =>
-    passport.authenticate('oauth2', {
-      successReturnToOrRedirect: req.session!.returnTo || '/',
-      failureRedirect: '/autherror',
-    })(req, res, next)
-  )
-
-  const authLogoutUrl = `${config.apis.hmppsAuth.url}/logout?client_id=${config.apis.hmppsAuth.loginClientId}&redirect_uri=${config.domain}`
-
-  app.use('/logout', (req, res) => {
-    if (req.user) {
-      req.logout()
-      req.session!.destroy(() => res.redirect(authLogoutUrl))
-      return
-    }
-    res.redirect(authLogoutUrl)
-  })
-
-  app.use(authorisationMiddleware())
   app.use(
     '/',
-    indexRoutes(standardRouter(userService), {
+    indexRoutes(standardRouter(), {
       communityApiService,
       offenderAssessmentsApiService,
       interventionsService,
       hmppsAuthClient,
     })
   )
+
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(config.production))
 

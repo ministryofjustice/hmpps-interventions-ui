@@ -7,7 +7,11 @@ export const user = {
   lastName: 'smith',
   username: 'user1',
   displayName: 'J. Smith',
-  token: 'token',
+  token: {
+    accessToken: 'token',
+    expiry: 7265674811, // tests will fail in ~180 years
+    roles: [],
+  },
   authSource: 'nomis',
   userId: '123',
 }
@@ -19,7 +23,8 @@ export class MockUserService extends UserService {
 
   async getUserDetails(_token: string): Promise<UserDetails> {
     return {
-      ...user,
+      name: user.name,
+      displayName: user.displayName,
     }
   }
 }
