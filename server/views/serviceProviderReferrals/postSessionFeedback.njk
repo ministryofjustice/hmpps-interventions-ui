@@ -1,4 +1,5 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% extends "./actionPlan/actionPlanFormTemplate.njk" %}
@@ -6,8 +7,12 @@
 {% block formSection %}
   {{ govukSummaryList(summaryListArgs) }}
 
+  <h2 class="govuk-heading-l">Attendance</h2>
+
   <form method="post" action="#">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    {{ govukRadios(radioButtonArgs) }}
+
     {{ govukButton({ text: "Submit for approval" }) }}
   </form>
 {% endblock %}
