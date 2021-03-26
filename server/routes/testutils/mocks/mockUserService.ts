@@ -6,7 +6,7 @@ export const user = {
   firstName: 'john',
   lastName: 'smith',
   username: 'user1',
-  displayName: 'John Smith',
+  displayName: 'J. Smith',
   token: 'token',
   authSource: 'nomis',
   userId: '123',
@@ -17,7 +17,7 @@ export class MockUserService extends UserService {
     super(new MockedHmppsAuthClient())
   }
 
-  async getUser(_token: string): Promise<UserDetails> {
+  async getUserDetails(_token: string): Promise<UserDetails> {
     return {
       ...user,
     }
