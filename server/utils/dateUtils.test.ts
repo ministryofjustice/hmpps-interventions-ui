@@ -21,4 +21,38 @@ describe('DateUtils', () => {
       expect(DateUtils.formatDateTimeOrEmptyString('2021-06-02T00:30:00+01000:00')).toEqual('')
     })
   })
+
+  describe('getDateStringFromDateTimeString', () => {
+    it('returns the time section of the formatted date time string', () => {
+      const dateTimeString = '2021-06-02T00:30:00+01:00'
+      expect(DateUtils.getDateStringFromDateTimeString(dateTimeString)).toEqual('02 Jun 2021')
+    })
+
+    it('returns an empty string for null datetime input', () => {
+      expect(DateUtils.getDateStringFromDateTimeString(null)).toEqual('')
+    })
+
+    it('returns an empty string for invalid datetime input', () => {
+      expect(DateUtils.getDateStringFromDateTimeString(' ')).toEqual('')
+      expect(DateUtils.getDateStringFromDateTimeString('abcdefg')).toEqual('')
+      expect(DateUtils.getDateStringFromDateTimeString('2021-06-02T00:30:00+01000:00')).toEqual('')
+    })
+  })
+
+  describe('getTimeStringFromDateTimeString', () => {
+    it('returns the time section of the formatted date time string', () => {
+      const dateTimeString = '2021-06-02T00:30:00+01:00'
+      expect(DateUtils.getTimeStringFromDateTimeString(dateTimeString)).toEqual('00:30')
+    })
+
+    it('returns an empty string for null datetime input', () => {
+      expect(DateUtils.getTimeStringFromDateTimeString(null)).toEqual('')
+    })
+
+    it('returns an empty string for invalid datetime input', () => {
+      expect(DateUtils.getTimeStringFromDateTimeString(' ')).toEqual('')
+      expect(DateUtils.getTimeStringFromDateTimeString('abcdefg')).toEqual('')
+      expect(DateUtils.getTimeStringFromDateTimeString('2021-06-02T00:30:00+01000:00')).toEqual('')
+    })
+  })
 })

@@ -6,12 +6,23 @@ export default class DateUtils {
     return months[num - 1]
   }
 
-  static formatDateTimeOrEmptyString(d: string | null): string {
-    if (d === null) {
+  static formatDateTimeOrEmptyString(dateTimeString: string | null): string {
+    const date = DateUtils.getDateStringFromDateTimeString(dateTimeString)
+    const time = DateUtils.getTimeStringFromDateTimeString(dateTimeString)
+
+    if (!date || !time) {
       return ''
     }
 
-    const date = new Date(d)
+    return `${date}, ${time}`
+  }
+
+  static getDateStringFromDateTimeString(dateTime: string | null): string {
+    if (dateTime === null) {
+      return ''
+    }
+
+    const date = new Date(dateTime)
 
     if (Number.isNaN(Number(date))) {
       return ''
@@ -22,9 +33,26 @@ export default class DateUtils {
     const { year } = ukDate
     const month = DateUtils.getMonthName(ukDate.month)
     const day = `0${ukDate.day}`.slice(-2)
+
+    return `${day} ${month} ${year}`
+  }
+
+  static getTimeStringFromDateTimeString(dateTime: string | null): string {
+    if (dateTime === null) {
+      return ''
+    }
+
+    const date = new Date(dateTime)
+
+    if (Number.isNaN(Number(date))) {
+      return ''
+    }
+
+    const ukDate = getZonedTime(date, findTimeZone('Europe/London'))
+
     const hour = `0${ukDate.hours}`.slice(-2)
     const minutes = `0${ukDate.minutes}`.slice(-2)
 
-    return `${day} ${month} ${year}, ${hour}:${minutes}`
+    return `${hour}:${minutes}`
   }
 }
