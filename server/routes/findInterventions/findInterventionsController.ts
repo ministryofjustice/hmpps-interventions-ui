@@ -13,8 +13,8 @@ export default class FindInterventionsController {
     const filter = InterventionsFilter.fromRequest(req)
 
     const [interventions, pccRegions] = await Promise.all([
-      this.interventionsService.getInterventions(res.locals.user.token, filter.params),
-      this.interventionsService.getPccRegions(res.locals.user.token),
+      this.interventionsService.getInterventions(res.locals.user.token.accessToken, filter.params),
+      this.interventionsService.getPccRegions(res.locals.user.token.accessToken),
     ])
 
     const presenter = new SearchResultsPresenter(interventions, filter, pccRegions)
@@ -24,7 +24,10 @@ export default class FindInterventionsController {
   }
 
   async viewInterventionDetails(req: Request, res: Response): Promise<void> {
-    const intervention = await this.interventionsService.getIntervention(res.locals.user.token, req.params.id)
+    const intervention = await this.interventionsService.getIntervention(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
 
     const presenter = new InterventionDetailsPresenter(intervention)
     const view = new InterventionDetailsView(presenter)

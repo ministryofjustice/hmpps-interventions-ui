@@ -37,13 +37,15 @@ export default class ServiceProviderReferralsController {
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
-    const referrals = await this.interventionsService.getSentReferrals(res.locals.user.token)
+    const referrals = await this.interventionsService.getSentReferrals(res.locals.user.token.accessToken)
 
     const dedupedServiceCategoryIds = Array.from(
       new Set(referrals.map(referral => referral.referral.serviceCategoryId))
     )
     const serviceCategories = await Promise.all(
-      dedupedServiceCategoryIds.map(id => this.interventionsService.getServiceCategory(res.locals.user.token, id))
+      dedupedServiceCategoryIds.map(id =>
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
+      )
     )
 
     const presenter = new DashboardPresenter(referrals, serviceCategories)
@@ -53,9 +55,15 @@ export default class ServiceProviderReferralsController {
   }
 
   async showReferral(req: Request, res: Response): Promise<void> {
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
     const [serviceCategory, sentBy, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token, sentReferral.referral.serviceCategoryId),
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        sentReferral.referral.serviceCategoryId
+      ),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
@@ -63,7 +71,10 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token, sentReferral.assignedTo.username)
+        : await this.hmppsAuthClient.getSPUserByUsername(
+            res.locals.user.token.accessToken,
+            sentReferral.assignedTo.username
+          )
 
     let formError: FormValidationError | null = null
     if (assignee === null) {
@@ -88,16 +99,19 @@ export default class ServiceProviderReferralsController {
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
     const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
     const serviceCategoryPromise = this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       sentReferral.referral.serviceCategoryId
     )
     const actionPlanPromise =
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(res.locals.user.token, sentReferral.actionPlanId)
+        : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
 
     const [serviceCategory, actionPlan, serviceUser] = await Promise.all([
       serviceCategoryPromise,
@@ -116,17 +130,19 @@ export default class ServiceProviderReferralsController {
       // submitted action plans cannot have numberOfSessions === null
       for (let session = 1; session <= actionPlan.numberOfSessions!; session += 1) {
         appointmentPromises.push(
-          this.interventionsService.getActionPlanAppointment(res.locals.user.token, actionPlan.id, session).then(
-            appointment => Promise.resolve(appointment),
-            e =>
-              e.status === 404
-                ? {
-                    sessionNumber: session,
-                    appointmentTime: null,
-                    durationInMinutes: null,
-                  }
-                : Promise.reject(e)
-          )
+          this.interventionsService
+            .getActionPlanAppointment(res.locals.user.token.accessToken, actionPlan.id, session)
+            .then(
+              appointment => Promise.resolve(appointment),
+              e =>
+                e.status === 404
+                  ? {
+                      sessionNumber: session,
+                      appointmentTime: null,
+                      durationInMinutes: null,
+                    }
+                  : Promise.reject(e)
+            )
         )
       }
       actionPlanAppointments = await Promise.all(appointmentPromises)
@@ -168,9 +184,9 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.referral.serviceCategoryId
     )
 
@@ -187,9 +203,9 @@ export default class ServiceProviderReferralsController {
       return
     }
 
-    const assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(res.locals.user.token, email)
+    const assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(res.locals.user.token.accessToken, email)
 
-    await this.interventionsService.assignSentReferral(res.locals.user.token, req.params.id, {
+    await this.interventionsService.assignSentReferral(res.locals.user.token.accessToken, req.params.id, {
       username: assignee.username,
       userId: assignee.userId,
       authSource: 'auth',
@@ -199,15 +215,18 @@ export default class ServiceProviderReferralsController {
   }
 
   async confirmAssignment(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.assignedTo === null) {
       throw new Error('Can’t view confirmation of assignment, as referral isn’t assigned.')
     }
 
     const [assignee, serviceCategory] = await Promise.all([
-      this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token, referral.assignedTo.username),
-      this.interventionsService.getServiceCategory(res.locals.user.token, referral.referral.serviceCategoryId),
+      this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        referral.referral.serviceCategoryId
+      ),
     ])
 
     const presenter = new AssignmentConfirmationPresenter(referral, serviceCategory, assignee)
@@ -217,17 +236,23 @@ export default class ServiceProviderReferralsController {
   }
 
   async createDraftActionPlan(req: Request, res: Response): Promise<void> {
-    const draftActionPlan = await this.interventionsService.createDraftActionPlan(res.locals.user.token, req.params.id)
+    const draftActionPlan = await this.interventionsService.createDraftActionPlan(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
 
     res.redirect(303, `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
   }
 
   async showActionPlanAddActivitiesForm(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       sentReferral.referral.serviceCategoryId
     )
 
@@ -242,7 +267,7 @@ export default class ServiceProviderReferralsController {
 
     if (form.isValid) {
       await this.interventionsService.updateDraftActionPlan(
-        res.locals.user.token,
+        res.locals.user.token.accessToken,
         req.params.id,
         form.activityParamsForUpdate
       )
@@ -251,11 +276,14 @@ export default class ServiceProviderReferralsController {
       return
     }
 
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       sentReferral.referral.serviceCategoryId
     )
 
@@ -267,11 +295,14 @@ export default class ServiceProviderReferralsController {
   }
 
   async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       sentReferral.referral.serviceCategoryId
     )
 
@@ -289,11 +320,14 @@ export default class ServiceProviderReferralsController {
   }
 
   async reviewActionPlan(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       sentReferral.referral.serviceCategoryId
     )
 
@@ -304,21 +338,24 @@ export default class ServiceProviderReferralsController {
   }
 
   async submitActionPlan(req: Request, res: Response): Promise<void> {
-    await this.interventionsService.submitActionPlan(res.locals.user.token, req.params.id)
+    await this.interventionsService.submitActionPlan(res.locals.user.token.accessToken, req.params.id)
     res.redirect(`/service-provider/action-plan/${req.params.id}/confirmation`)
   }
 
   async showActionPlanConfirmation(req: Request, res: Response): Promise<void> {
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token, req.params.id)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
 
     if (actionPlan.submittedAt === null) {
       throw new Error('Trying to view confirmation page for action plan that hasn’t been submitted')
     }
 
-    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       sentReferral.referral.serviceCategoryId
     )
 
@@ -331,7 +368,7 @@ export default class ServiceProviderReferralsController {
   async addNumberOfSessionsToActionPlan(req: Request, res: Response): Promise<void> {
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
-    const { user } = res.locals
+    const { accessToken: token } = res.locals.user.token
     const actionPlanId = req.params.id
 
     if (req.method === 'POST') {
@@ -341,16 +378,16 @@ export default class ServiceProviderReferralsController {
       formError = form.error
 
       if (form.isValid) {
-        await this.interventionsService.updateDraftActionPlan(user.token, actionPlanId, form.paramsForUpdate)
+        await this.interventionsService.updateDraftActionPlan(token, actionPlanId, form.paramsForUpdate)
         return res.redirect(`/service-provider/action-plan/${actionPlanId}/review`)
       }
     }
 
-    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(token, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(token, actionPlan.referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      user.token,
+      token,
       referral.referral.serviceCategoryId
     )
 
@@ -368,7 +405,7 @@ export default class ServiceProviderReferralsController {
 
   async editSession(req: Request, res: Response): Promise<void> {
     const appointment = await this.interventionsService.getActionPlanAppointment(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       req.params.id,
       Number(req.params.sessionNumber)
     )
