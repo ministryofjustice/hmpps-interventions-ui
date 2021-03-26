@@ -24,7 +24,8 @@
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
     "lint": "eslint . --cache --max-warnings 0 && stylelint **/*.scss",
-    "clean": "rm -rf dist build node_modules stylesheets"
+    "clean": "rm -rf dist build node_modules stylesheets",
+    "generate-frontend-types": "ts-node script/generateGovukFrontendTypes/runner.ts && prettier --write server/utils/govukFrontendTypes.ts"
   },
   "engines": {
     "npm": ">=6",
