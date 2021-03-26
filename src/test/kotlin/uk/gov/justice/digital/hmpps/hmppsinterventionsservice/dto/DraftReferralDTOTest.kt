@@ -17,6 +17,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
     val referral = SampleData.sampleReferral(
       "X123456",
       "Provider",
+      relevantSentenceId = 123456789L,
       id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C"),
       createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     )
@@ -27,6 +28,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       {
         "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
         "createdAt": "2020-12-04T10:42:43Z",
+        "relevantSentenceId": 123456789,
         "serviceUser": {
           "crn": "X123456"
         },
@@ -74,5 +76,15 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
     """
     )
     assertThat(draftReferral.completionDeadline).isEqualTo(LocalDate.of(2021, 2, 10))
+  }
+
+  @Test
+  fun `test deserialization of relevant sentence id`() {
+    val draftReferral = json.parseObject(
+      """
+      {"relevantSentenceId": 123456789}
+    """
+    )
+    assertThat(draftReferral.relevantSentenceId).isEqualTo(123456789)
   }
 }
