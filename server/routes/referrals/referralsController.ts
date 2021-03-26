@@ -35,6 +35,9 @@ import logger from '../../../log'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import ServiceUserDetailsView from './serviceUserDetailsView'
 import ReferralStartForm from './referralStartForm'
+import RelevantSentencePresenter from './relevantSentencePresenter'
+import RelevantSentenceView from './relevantSentenceView'
+import RelevantSentenceForm from './relevantSentenceForm'
 
 export default class ReferralsController {
   constructor(
@@ -138,6 +141,73 @@ export default class ReferralsController {
     const view = new ReferralFormView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async viewRelevantSentence(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+    if (referral.serviceCategoryId === null) {
+      throw new Error('Attempting to view relevant sentence without service category selected')
+    }
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      referral.serviceCategoryId
+    )
+
+    const convictions = await this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn)
+
+    if (convictions.length < 1) {
+      throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+    }
+
+    const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions)
+    const view = new RelevantSentenceView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async updateRelevantSentence(req: Request, res: Response): Promise<void> {
+    const form = await RelevantSentenceForm.createForm(req)
+
+    let error: FormValidationError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+      } catch (e) {
+        error = createFormValidationErrorOrRethrow(e)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (!error) {
+      res.redirect(`/referrals/${req.params.id}/desired-outcomes`)
+    } else {
+      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+
+      if (!referral.serviceCategoryId) {
+        throw new Error('Attempting to view relevant sentence without service category selected')
+      }
+
+      const serviceCategory = await this.interventionsService.getServiceCategory(
+        res.locals.user.token,
+        referral.serviceCategoryId
+      )
+
+      const convictions = await this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn)
+
+      if (convictions.length < 1) {
+        throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+      }
+
+      const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions, error)
+      const view = new RelevantSentenceView(presenter)
+
+      res.status(400)
+      res.render(...view.renderArgs)
+    }
   }
 
   async viewComplexityLevel(req: Request, res: Response): Promise<void> {

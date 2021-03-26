@@ -9,6 +9,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import apiConfig from '../../config'
 import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
+import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -688,6 +689,99 @@ describe('POST /referrals/:id/further-information', () => {
       '1',
       { furtherInformation: 'Further information about the service user' },
     ])
+  })
+})
+
+describe('GET /referrals/:id/relevant-sentence', () => {
+  let serviceUserCRN: string
+
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    serviceUserCRN = referral.serviceUser.crn
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    communityApiService.getActiveConvictionsByCRN.mockResolvedValue(deliusConvictionFactory.buildList(2))
+  })
+
+  it('renders a form page and fetches a conviction from the Community API', async () => {
+    await request(app)
+      .get('/referrals/1/relevant-sentence')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Select the relevant sentence for the social inclusion referral')
+      })
+
+    expect(communityApiService.getActiveConvictionsByCRN).toHaveBeenCalledWith(serviceUserCRN)
+  })
+
+  it('renders an error when the request for a service category fails', async () => {
+    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+
+    await request(app)
+      .get('/referrals/1/relevant-sentence')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get service category')
+      })
+  })
+
+  it('renders an error when no convictions are found for that service user', async () => {
+    communityApiService.getActiveConvictionsByCRN.mockResolvedValue([])
+
+    await request(app)
+      .get('/referrals/1/relevant-sentence')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(`No active convictions found for service user ${serviceUserCRN}`)
+      })
+  })
+})
+
+describe('POST /referrals/:id/relevant-sentence', () => {
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('updates the referral on the backend and redirects to the next question', async () => {
+    await request(app)
+      .post('/referrals/1/relevant-sentence')
+      .type('form')
+      .send({ 'relevant-sentence-id': 2500284169 })
+      .expect(302)
+      .expect('Location', '/referrals/1/desired-outcomes')
+
+    expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+      relevantSentenceId: 2500284169,
+    })
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+
+    await request(app)
+      .post('/referrals/1/relevant-sentence')
+      .type('form')
+      .send({ 'relevant-sentence-id': 2500284169 })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+
+    expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+      relevantSentenceId: 2500284169,
+    })
   })
 })
 
