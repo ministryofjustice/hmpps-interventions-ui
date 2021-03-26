@@ -3,8 +3,8 @@ import { Strategy } from 'passport-oauth2'
 import type { Request, RequestHandler } from 'express'
 
 import config from '../config'
-import generateOauthClientToken from './clientCredentials'
 import type { VerifiableRequest, TokenVerifier } from '../data/tokenVerification'
+import generateOauthClientBaiscAuthHeader from './clientCredentials'
 
 passport.serializeUser((user, done) => {
   // Not used but required for Passport
@@ -49,7 +49,7 @@ function init(): void {
       callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: {
-        Authorization: generateOauthClientToken(authConfig.loginClientId, authConfig.loginClientSecret),
+        Authorization: generateOauthClientBaiscAuthHeader(authConfig.loginClientId, authConfig.loginClientSecret),
       },
     },
     (token, refreshToken, params, profile, done) => {
