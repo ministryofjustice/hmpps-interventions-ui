@@ -6,13 +6,6 @@ interventions-ui:
 
 community-api:
   baseurl: http://localhost:8081
-#  Temporarily stored in config until it is decided where these values will come from. TeamCode may come from the community api
-#  in the future. The rest may be hard coded as generic values.
-  contact-notification-context:
-    provider-code: A00
-    referral-type: C385
-    staff-code: ASPUATU
-    team-code: ASPUAT
 
 aws:
   sns:
