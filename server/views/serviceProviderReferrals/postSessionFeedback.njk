@@ -1,0 +1,13 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% extends "./actionPlan/actionPlanFormTemplate.njk" %}
+
+{% block formSection %}
+  {{ govukSummaryList(summaryListArgs) }}
+
+  <form method="post" action="#">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    {{ govukButton({ text: "Submit for approval" }) }}
+  </form>
+{% endblock %}

@@ -28,6 +28,8 @@ import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessions
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
 import EditSessionPresenter from './editSessionPresenter'
 import EditSessionView from './editSessionView'
+import PostSessionFeedbackView from './postSessionFeedbackView'
+import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -411,6 +413,30 @@ export default class ServiceProviderReferralsController {
     )
     const presenter = new EditSessionPresenter(appointment)
     const view = new EditSessionView(presenter)
+    return res.render(...view.renderArgs)
+  }
+
+  async showPostSessionFeedbackForm(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
+
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      user.token,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      user.token,
+      referral.referral.serviceCategoryId
+    )
+
+    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+    const view = new PostSessionFeedbackView(presenter)
+
     return res.render(...view.renderArgs)
   }
 }
