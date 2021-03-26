@@ -1,1 +1,1 @@
-alter table referral add column sentence_id bigint null;
+alter table referral add column relevant_sentence_id bigint null;

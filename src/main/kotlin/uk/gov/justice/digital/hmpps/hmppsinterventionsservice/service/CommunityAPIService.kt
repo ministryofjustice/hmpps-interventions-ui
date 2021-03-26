@@ -30,7 +30,7 @@ class CommunityAPIService(
 
         val referRequest = ReferRequest(
           event.referral.intervention.dynamicFrameworkContract.serviceCategory.name,
-          event.referral.sentenceId!!,
+          event.referral.relevantSentenceId!!,
           url,
           event.referral.sentAt!!.toLocalDate()
         )

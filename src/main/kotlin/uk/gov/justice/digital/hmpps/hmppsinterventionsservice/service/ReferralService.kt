@@ -196,7 +196,7 @@ class ReferralService(
     }
 
     update.relevantSentenceId?.let {
-      referral.sentenceId = it
+      referral.relevantSentenceId = it
     }
 
     update.serviceUser?.let {

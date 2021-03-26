@@ -46,7 +46,7 @@ class CommunityAPIServiceTest {
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
       crn = "X123456",
-      sentenceId = 123456789,
+      relevantSentenceId = 123456789,
       serviceProviderName = "Harmony Living",
       sentAt = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 0, ZoneOffset.of("+00:00"))
     ),
