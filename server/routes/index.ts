@@ -102,6 +102,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', (req, res) =>
     serviceProviderReferralsController.showPostSessionFeedbackForm(req, res)
   )
+  post('/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', (req, res) =>
+    serviceProviderReferralsController.recordPostSessionFeedback(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

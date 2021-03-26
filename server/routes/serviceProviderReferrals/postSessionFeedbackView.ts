@@ -18,6 +18,7 @@ export default class PostSessionFeedbackView {
           classes: 'govuk-fieldset__legend--m',
         },
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       items: this.presenter.attendanceResponses.map(response => {
         return {
           value: response.value,
@@ -28,6 +29,8 @@ export default class PostSessionFeedbackView {
     }
   }
 
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/postSessionFeedback',
@@ -36,6 +39,7 @@ export default class PostSessionFeedbackView {
         serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         summaryListArgs: this.summaryListArgs,
         radioButtonArgs: this.radioButtonArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
       },
     ]
   }

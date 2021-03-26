@@ -613,3 +613,32 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
       })
   })
 })
+
+describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', () => {
+  it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the confirmation page', async () => {
+    const updatedAppointment = actionPlanAppointmentFactory.build({
+      sessionNumber: 1,
+      attendance: {
+        attended: 'yes',
+      },
+    })
+
+    const actionPlan = actionPlanFactory.build()
+
+    interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+
+    await request(app)
+      .post(
+        `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback`
+      )
+      .type('form')
+      .send({
+        attended: 'yes',
+      })
+      .expect(302)
+      .expect(
+        'Location',
+        `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/confirmation`
+      )
+  })
+})

@@ -54,6 +54,68 @@ describe(PostSessionFeedbackPresenter, () => {
     })
   })
 
+  describe('errorSummary', () => {
+    const appointment = actionPlanAppointmentFactory.build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const serviceUser = deliusServiceUserFactory.build()
+
+    describe('when there is an error', () => {
+      it('returns a summary of the error', () => {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, {
+          errors: [
+            {
+              errorSummaryLinkedField: 'attended',
+              formFields: ['attended'],
+              message: 'Select whether the service user attended or not',
+            },
+          ],
+        })
+
+        expect(presenter.errorSummary).toEqual([
+          { field: 'attended', message: 'Select whether the service user attended or not' },
+        ])
+      })
+    })
+
+    describe('when there is no error', () => {
+      it('returns null', () => {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+
+        expect(presenter.errorSummary).toBeNull()
+      })
+    })
+  })
+
+  describe('errorMessage', () => {
+    const appointment = actionPlanAppointmentFactory.build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const serviceUser = deliusServiceUserFactory.build()
+
+    describe('when there is an error', () => {
+      it('returns the error message', () => {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, {
+          errors: [
+            {
+              errorSummaryLinkedField: 'attended',
+              formFields: ['attended'],
+              message: 'Select whether the service user attended or not',
+            },
+          ],
+        })
+
+        expect(presenter.errorMessage).toEqual('Select whether the service user attended or not')
+      })
+    })
+
+    describe('when there is no error', () => {
+      it('returns null', () => {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+
+        expect(presenter.errorMessage).toBeNull()
+      })
+    })
+  })
+
   describe('attendanceResponses', () => {
     describe('when attendance has not been set on the appointment', () => {
       it('contains the attendance questions and values, and doesn’t set any value to "checked"', () => {

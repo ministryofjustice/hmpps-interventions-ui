@@ -1,6 +1,8 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
 import { ActionPlanAppointment, ServiceCategory } from '../../services/interventionsService'
 import DateUtils from '../../utils/dateUtils'
+import { FormValidationError } from '../../utils/formValidationError'
+import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
@@ -9,7 +11,8 @@ export default class PostSessionFeedbackPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly serviceCategory: ServiceCategory
+    private readonly serviceCategory: ServiceCategory,
+    private readonly error: FormValidationError | null = null
   ) {}
 
   readonly text = {
@@ -17,6 +20,10 @@ export default class PostSessionFeedbackPresenter {
     subTitle: 'Session details',
     attendanceQuestion: `Did ${this.serviceUser.firstName} attend this session?`,
   }
+
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'attended')
+
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly attendanceResponses = [
     {
