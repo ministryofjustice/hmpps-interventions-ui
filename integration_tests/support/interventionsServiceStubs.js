@@ -65,3 +65,7 @@ Cypress.Commands.add('stubUpdateDraftActionPlan', (id, responseJson) => {
 Cypress.Commands.add('stubSubmitActionPlan', (id, responseJson) => {
   cy.task('stubSubmitActionPlan', { id, responseJson })
 })
+
+Cypress.Commands.add('stubRecordAppointmentAttendance', (actionPlanId, sessionNumber, responseJson) => {
+  cy.task('stubRecordAppointmentAttendence', { actionPlanId, sessionNumber, responseJson })
+})
