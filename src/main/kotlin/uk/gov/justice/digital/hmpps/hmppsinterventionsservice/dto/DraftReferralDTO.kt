@@ -24,6 +24,7 @@ data class DraftReferralDTO(
   val desiredOutcomesIds: List<UUID>? = null,
   val serviceUser: ServiceUserDTO? = null,
   val serviceProvider: ServiceProviderDTO? = null,
+  val relevantSentenceId: Long? = null,
 ) {
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
@@ -47,6 +48,7 @@ data class DraftReferralDTO(
         desiredOutcomesIds = referral.desiredOutcomesIDs,
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
+        relevantSentenceId = referral.sentenceId,
         serviceCategoryId = contract.serviceCategory.id,
       )
     }

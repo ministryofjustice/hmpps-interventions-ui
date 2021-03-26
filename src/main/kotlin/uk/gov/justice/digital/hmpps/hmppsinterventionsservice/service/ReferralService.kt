@@ -195,6 +195,10 @@ class ReferralService(
       referral.desiredOutcomesIDs = it
     }
 
+    update.relevantSentenceId?.let {
+      referral.sentenceId = it
+    }
+
     update.serviceUser?.let {
       referral.serviceUserData = ServiceUserData(
         referral = referral,
