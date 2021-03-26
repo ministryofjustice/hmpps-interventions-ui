@@ -165,7 +165,7 @@ export interface ActionPlanAppointmentUpdate {
   durationInMinutes: number | null
 }
 
-interface AppointmentAttendance {
+export interface AppointmentAttendance {
   attended: 'yes' | 'no' | 'late'
   additionalAttendanceInformation?: string
 }

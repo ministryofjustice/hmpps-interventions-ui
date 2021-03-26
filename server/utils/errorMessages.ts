@@ -61,4 +61,7 @@ export default {
     notWholeNumber: 'The number of sessions must be a whole number, like 5',
     tooSmall: 'The number of sessions must be 1 or more',
   },
+  attendedAppointment: {
+    empty: 'Select whether the service user attended or not',
+  },
 }
