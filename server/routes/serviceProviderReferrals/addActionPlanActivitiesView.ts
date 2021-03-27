@@ -1,3 +1,4 @@
+import { TextareaArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import AddActionPlanActivitiesPresenter from './addActionPlanActivitiesPresenter'
 
@@ -17,7 +18,7 @@ export default class AddActionPlanActivitiesView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private addActivityTextareaArgs = (index: number) => {
+  private addActivityTextareaArgs: (index: number) => TextareaArgs = (index: number) => {
     const desiredOutcome = this.presenter.desiredOutcomes[index]!
 
     return {

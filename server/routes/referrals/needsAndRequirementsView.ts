@@ -1,5 +1,6 @@
 import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
 import ViewUtils from '../../utils/viewUtils'
+import { InputArgs, RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
 
 export default class NeedsAndRequirementsView {
   constructor(private readonly presenter: NeedsAndRequirementsPresenter) {}
@@ -10,7 +11,7 @@ export default class NeedsAndRequirementsView {
     return ViewUtils.summaryListArgs(this.presenter.summary)
   }
 
-  private get additionalNeedsInformationTextareaArgs() {
+  private get additionalNeedsInformationTextareaArgs(): TextareaArgs {
     return {
       name: 'additional-needs-information',
       id: 'additional-needs-information',
@@ -23,7 +24,7 @@ export default class NeedsAndRequirementsView {
     }
   }
 
-  private get accessibilityNeedsTextareaArgs() {
+  private get accessibilityNeedsTextareaArgs(): TextareaArgs {
     return {
       name: 'accessibility-needs',
       id: 'accessibility-needs',
@@ -39,7 +40,7 @@ export default class NeedsAndRequirementsView {
     }
   }
 
-  private interpreterRadiosArgs(yesHtml: string) {
+  private interpreterRadiosArgs(yesHtml: string): RadiosArgs {
     return {
       idPrefix: 'needs-interpreter',
       name: 'needs-interpreter',
@@ -68,7 +69,7 @@ export default class NeedsAndRequirementsView {
     }
   }
 
-  private get interpreterLanguageInputArgs() {
+  private get interpreterLanguageInputArgs(): InputArgs {
     return {
       id: 'interpreter-language',
       name: 'interpreter-language',
@@ -81,7 +82,7 @@ export default class NeedsAndRequirementsView {
     }
   }
 
-  private responsibilitiesRadiosArgs(yesHtml: string) {
+  private responsibilitiesRadiosArgs(yesHtml: string): RadiosArgs {
     return {
       idPrefix: 'has-additional-responsibilities',
       name: 'has-additional-responsibilities',
@@ -110,7 +111,7 @@ export default class NeedsAndRequirementsView {
     }
   }
 
-  private get whenUnavailableInputArgs() {
+  private get whenUnavailableInputArgs(): InputArgs {
     return {
       id: 'when-unavailable',
       name: 'when-unavailable',

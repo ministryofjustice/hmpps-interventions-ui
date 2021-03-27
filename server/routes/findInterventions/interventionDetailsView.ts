@@ -6,11 +6,11 @@ import InterventionDetailsPresenter from './interventionDetailsPresenter'
 export default class InterventionDetailsView {
   constructor(private readonly presenter: InterventionDetailsPresenter) {}
 
-  static summaryListArgs(items: SummaryListItem[]): SummaryListArgs & { classes: string } {
+  static summaryListArgs(items: SummaryListItem[]): SummaryListArgs {
     return { ...ViewUtils.summaryListArgs(items), classes: 'govuk-summary-list--no-border' }
   }
 
-  private tabsArgs(summaryListMacro: (args: unknown) => string): TabsArgs {
+  private tabsArgs(summaryListMacro: (args: SummaryListArgs) => string): TabsArgs {
     return {
       items: this.presenter.tabs.map(tab => {
         return {

@@ -1,10 +1,11 @@
 import StaticContentIndexPresenter from './indexPresenter'
 import ViewUtils from '../../utils/viewUtils'
+import { TableArgs } from '../../utils/govukFrontendTypes'
 
 export default class StaticContentIndexView {
   constructor(private readonly presenter: StaticContentIndexPresenter) {}
 
-  private get tableArgs() {
+  private get tableArgs(): TableArgs {
     return {
       firstCellIsHeader: true,
       head: [{ text: 'Page' }, { text: 'URL' }, { text: 'Template file' }],

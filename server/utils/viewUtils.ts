@@ -1,6 +1,6 @@
 import * as nunjucks from 'nunjucks'
 import { SummaryListItem } from './summaryList'
-import { SummaryListArgs } from './govukFrontendTypes'
+import { ErrorSummaryArgs, SummaryListArgs } from './govukFrontendTypes'
 
 export default class ViewUtils {
   static escape(val: string): string {
@@ -12,9 +12,7 @@ export default class ViewUtils {
     return message === null || message === undefined ? null : { text: message }
   }
 
-  static govukErrorSummaryArgs(
-    errorSummary: { field: string; message: string }[] | null
-  ): Record<string, unknown> | null {
+  static govukErrorSummaryArgs(errorSummary: { field: string; message: string }[] | null): ErrorSummaryArgs | null {
     if (errorSummary === null) {
       return null
     }

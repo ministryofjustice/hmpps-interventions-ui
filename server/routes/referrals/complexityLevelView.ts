@@ -1,10 +1,11 @@
 import ComplexityLevelPresenter from './complexityLevelPresenter'
 import ViewUtils from '../../utils/viewUtils'
+import { RadiosArgs } from '../../utils/govukFrontendTypes'
 
 export default class ComplexityLevelView {
   constructor(readonly presenter: ComplexityLevelPresenter) {}
 
-  get radioButtonArgs(): Record<string, unknown> {
+  get radioButtonArgs(): RadiosArgs {
     return {
       classes: 'govuk-radios',
       idPrefix: 'complexity-level-id',
