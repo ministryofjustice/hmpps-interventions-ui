@@ -154,6 +154,13 @@ class ReferralController(
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$id]")
   }
 
+  @GetMapping("/sent-referrals/sent-by")
+  fun getSentReferralsSentBy(authentication: JwtAuthenticationToken): List<SentReferralDTO> {
+    val user = jwtAuthUserMapper.map(authentication)
+
+    return referralService.getSentReferralsSentBy(user).map { SentReferralDTO.from(it) }
+  }
+
   private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
 //     note: this does not allow tokens for client_credentials grant types use this API
     val userID = authentication.token.getClaimAsString("user_id")
