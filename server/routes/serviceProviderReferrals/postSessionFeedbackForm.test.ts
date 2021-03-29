@@ -73,10 +73,13 @@ describe(PostSessionFeedbackForm, () => {
   describe('attendanceParams', () => {
     it('returns the params to be sent to the backend, when the data in the body is valid', async () => {
       const form = await PostSessionFeedbackForm.createForm({
-        body: { attended: 'yes' },
+        body: { attended: 'yes', additionalAttendanceInformation: 'Alex attended the session' },
       } as Request)
 
-      expect(form.attendanceParams).toEqual({ attended: 'yes' })
+      expect(form.attendanceParams).toEqual({
+        attended: 'yes',
+        additionalAttendanceInformation: 'Alex attended the session',
+      })
     })
   })
 })

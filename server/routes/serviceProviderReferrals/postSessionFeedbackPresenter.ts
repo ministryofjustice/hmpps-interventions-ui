@@ -12,13 +12,15 @@ export default class PostSessionFeedbackPresenter {
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly serviceCategory: ServiceCategory,
-    private readonly error: FormValidationError | null = null
+    private readonly error: FormValidationError | null = null,
+    private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
   readonly text = {
     title: `${utils.convertToProperCase(this.serviceCategory.name)}: add feedback`,
     subTitle: 'Session details',
     attendanceQuestion: `Did ${this.serviceUser.firstName} attend this session?`,
+    additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'attended')
@@ -57,4 +59,11 @@ export default class PostSessionFeedbackPresenter {
       isList: false,
     },
   ]
+
+  readonly fields = {
+    additionalAttendanceInformationValue: new PresenterUtils(this.userInputData).stringValue(
+      this.appointment.attendance?.additionalAttendanceInformation || null,
+      'additional-attendance-information'
+    ),
+  }
 }

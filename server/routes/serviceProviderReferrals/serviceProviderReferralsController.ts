@@ -478,7 +478,7 @@ export default class ServiceProviderReferralsController {
       referral.referral.serviceCategoryId
     )
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, formError)
+    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, formError, req.body)
     const view = new PostSessionFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
