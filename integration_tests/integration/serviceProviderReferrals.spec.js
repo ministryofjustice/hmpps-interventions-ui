@@ -379,6 +379,7 @@ describe('Service provider referrals dashboard', () => {
       ...appointment,
       attendance: {
         attended: 'yes',
+        additionalAttendanceInformation: 'Alex attended the session',
       },
     }
 
@@ -389,6 +390,7 @@ describe('Service provider referrals dashboard', () => {
     )
 
     cy.contains('Yes').click()
+    cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
     cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 

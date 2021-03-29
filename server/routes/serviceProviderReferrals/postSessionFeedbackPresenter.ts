@@ -19,6 +19,7 @@ export default class PostSessionFeedbackPresenter {
     title: `${utils.convertToProperCase(this.serviceCategory.name)}: add feedback`,
     subTitle: 'Session details',
     attendanceQuestion: `Did ${this.serviceUser.firstName} attend this session?`,
+    additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'attended')
@@ -57,4 +58,12 @@ export default class PostSessionFeedbackPresenter {
       isList: false,
     },
   ]
+
+  get additionalAttendanceInformationValue(): string {
+    if (this.appointment.attendance?.additionalAttendanceInformation) {
+      return this.appointment.attendance?.additionalAttendanceInformation
+    }
+
+    return ''
+  }
 }

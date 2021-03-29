@@ -5,7 +5,7 @@ import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
 
 describe(PostSessionFeedbackPresenter, () => {
   describe('text', () => {
-    it('contains a title including the name of the service category and a subtitle, and the attendance question', () => {
+    it('contains a title including the name of the service category and a subtitle, and the attendance questions', () => {
       const appointment = actionPlanAppointmentFactory.build()
       const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
@@ -15,6 +15,7 @@ describe(PostSessionFeedbackPresenter, () => {
         title: 'Social inclusion: add feedback',
         subTitle: 'Session details',
         attendanceQuestion: 'Did Alex attend this session?',
+        additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",
       })
     })
   })
@@ -177,6 +178,34 @@ describe(PostSessionFeedbackPresenter, () => {
             ])
           })
         })
+      })
+    })
+  })
+
+  describe('additionalAttendanceInformationValue', () => {
+    describe('when the appointment already has additionalAttendanceInformation set', () => {
+      it('uses that value as the value attribute', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+        })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+
+        expect(presenter.additionalAttendanceInformationValue).toEqual('Alex missed the bus')
+      })
+    })
+
+    describe('when the appointment has no value for additionalAttendanceInformation', () => {
+      it('uses sets the value to an empty string', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          attendance: { attended: 'late' },
+        })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+
+        expect(presenter.additionalAttendanceInformationValue).toEqual('')
       })
     })
   })

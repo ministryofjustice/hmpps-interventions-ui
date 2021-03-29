@@ -1,3 +1,4 @@
+import { TextareaArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
 
@@ -31,6 +32,19 @@ export default class PostSessionFeedbackView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
+  private get textAreaArgs(): TextareaArgs {
+    return {
+      name: 'additional-attendance-information',
+      id: 'additional-attendance-information',
+      label: {
+        text: this.presenter.text.additionalAttendanceInformationLabel,
+        classes: 'govuk-label--s',
+        isPageHeading: false,
+      },
+      value: this.presenter.additionalAttendanceInformationValue,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/postSessionFeedback',
@@ -40,6 +54,7 @@ export default class PostSessionFeedbackView {
         summaryListArgs: this.summaryListArgs,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        textAreaArgs: this.textAreaArgs,
       },
     ]
   }

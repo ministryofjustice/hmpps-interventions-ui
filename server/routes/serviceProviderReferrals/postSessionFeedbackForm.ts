@@ -13,6 +13,7 @@ export default class PostSessionFeedbackForm {
   get attendanceParams(): Partial<AppointmentAttendance> {
     return {
       attended: this.request.body.attended,
+      additionalAttendanceInformation: this.request.body.additionalAttendanceInformation,
     }
   }
 
