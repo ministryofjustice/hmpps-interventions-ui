@@ -1,17 +1,16 @@
 import Wiremock from './mockApis/wiremock'
-/*
 import InterventionsServiceMocks from './mockApis/interventionsService'
+/*
 import sentReferralFactory from './testutils/factories/sentReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 import interventionFactory from './testutils/factories/intervention'
 import deliusUserFactory from './testutils/factories/deliusUser'
 import actionPlanFactory from './testutils/factories/actionPlan'
 */
+import actionPlanAppointmentFactory from './testutils/factories/actionPlanAppointment'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
-/*
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
-*/
 
 export default async function setUpMocks(): Promise<void> {
   await wiremock.resetStubs()
@@ -112,4 +111,15 @@ export default async function setUpMocks(): Promise<void> {
     interventionsMocks.stubGetActionPlan(actionPlan.id, actionPlan),
   ])
   */
+  await Promise.all([
+    interventionsMocks.stubGetActionPlanAppointment(
+      '1',
+      1,
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      })
+    ),
+  ])
 }
