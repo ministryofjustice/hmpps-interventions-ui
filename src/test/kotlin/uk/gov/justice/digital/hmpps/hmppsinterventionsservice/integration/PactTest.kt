@@ -38,9 +38,6 @@ class PactTest {
   @Autowired private lateinit var referralService: ReferralService
   @Autowired private lateinit var appointmentsService: AppointmentsService
 
-  // rely on interventions and users from the seed data for now
-  // once we have working factory methods for creating these we should
-  // be able to completely decouple from the seed data.
   private val accommodationInterventionID = UUID.fromString("98a42c61-c30f-4beb-8062-04033c376e2d")
   private val deliusUser = AuthUser("8751622134", "delius", "BERNARD.BEAKS")
   private val authUser = AuthUser("555224b3-865c-4b56-97dd-c3e817592ba3", "auth", "UserABC")
