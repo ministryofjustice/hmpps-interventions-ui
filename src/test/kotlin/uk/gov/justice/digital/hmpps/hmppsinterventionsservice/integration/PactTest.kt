@@ -92,16 +92,6 @@ class PactTest {
     referralRepository.save(referral)
   }
 
-  @State("There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962")
-  fun `create draft referral with the required id`() {
-    referralService.createDraftReferral(
-      user = deliusUser,
-      crn = "X123456",
-      interventionId = accommodationInterventionID,
-      UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"),
-    )
-  }
-
   @State("an intervention has been selected and a draft referral can be created")
   fun `no referrals, using intervention id 98a42c61 from seed data`() {}
 
@@ -134,6 +124,7 @@ class PactTest {
   fun `use service category 428ee70f from the real data migration`() {}
 
   @State(
+    "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962",
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected",
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service provider selected",
   )
