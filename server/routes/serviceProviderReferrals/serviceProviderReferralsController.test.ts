@@ -637,3 +637,86 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
       )
   })
 })
+
+describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', () => {
+  describe('when final appointment attendance has been recorded', () => {
+    it('renders a page confirming that the action plan has been submitted', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const finalSessionNumber = 2
+      const submittedActionPlan = actionPlanFactory
+        .submitted()
+        .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+
+      interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+
+      const finalAppointment = actionPlanAppointmentFactory.build({ sessionNumber: finalSessionNumber })
+
+      interventionsService.getActionPlanAppointment.mockResolvedValue(finalAppointment)
+      interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
+
+      await request(app)
+        .get(`/service-provider/action-plan/${submittedActionPlan.id}/appointment/2/post-session-feedback/confirmation`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Please submit the end of service report within 5 working days.')
+        })
+    })
+  })
+
+  describe('when any non-final session has been recorded and more sessions are scheduled', () => {
+    it('renders a page confirming that the action plan has been submitted', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const finalSessionNumber = 3
+      const submittedActionPlan = actionPlanFactory
+        .submitted()
+        .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+
+      interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+
+      const penultimateAppointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+
+      const nextAppointment = actionPlanAppointmentFactory.build({
+        sessionNumber: finalSessionNumber,
+        appointmentTime: '2021-03-31T10:50:10.790Z',
+      })
+
+      interventionsService.getActionPlanAppointment.mockResolvedValue(penultimateAppointment)
+      interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(nextAppointment)
+
+      await request(app)
+        .get(
+          `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${penultimateAppointment.sessionNumber}/post-session-feedback/confirmation`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('You can now deliver the next session scheduled for 31 Mar 2021.')
+        })
+    })
+  })
+
+  describe('when any non-final session has been recorded but no more sessions are scheduled', () => {
+    it('renders a page confirming that the action plan has been submitted', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const finalSessionNumber = 3
+      const submittedActionPlan = actionPlanFactory
+        .submitted()
+        .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+
+      interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+
+      const penultimateAppointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+
+      interventionsService.getActionPlanAppointment.mockResolvedValue(penultimateAppointment)
+      interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
+
+      await request(app)
+        .get(
+          `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${penultimateAppointment.sessionNumber}/post-session-feedback/confirmation`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('The probation practitioner has been sent a copy of the session feedback form.')
+        })
+    })
+  })
+})

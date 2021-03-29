@@ -31,6 +31,8 @@ import EditSessionView from './editSessionView'
 import PostSessionFeedbackView from './postSessionFeedbackView'
 import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
 import PostSessionFeedbackForm from './postSessionFeedbackForm'
+import PostSessionFeedbackConfirmationPresenter from './postSessionFeedbackConfirmationPresenter'
+import PostSessionFeedbackConfirmationView from './postSessionFeedbackConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -481,5 +483,32 @@ export default class ServiceProviderReferralsController {
 
     res.status(formError === null ? 200 : 400)
     return res.render(...view.renderArgs)
+  }
+
+  async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { actionPlanId, sessionNumber } = req.params
+    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      user.token,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+
+    const nextAppointmentOrNull = await this.interventionsService.getSubsequentActionPlanAppointment(
+      user.token,
+      actionPlan,
+      currentAppointment
+    )
+
+    const presenter = new PostSessionFeedbackConfirmationPresenter(
+      actionPlan,
+      currentAppointment,
+      nextAppointmentOrNull
+    )
+    const view = new PostSessionFeedbackConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }
