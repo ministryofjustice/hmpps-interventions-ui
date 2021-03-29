@@ -642,3 +642,27 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
       )
   })
 })
+
+describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', () => {
+  it('renders a page confirming that the action plan has been submitted', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/action-plan/${submittedActionPlan.id}/appointment/2/post-session-feedback/confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Session feedback form has been submitted')
+      })
+  })
+})

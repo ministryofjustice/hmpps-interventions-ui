@@ -31,6 +31,8 @@ import EditSessionView from './editSessionView'
 import PostSessionFeedbackView from './postSessionFeedbackView'
 import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
 import PostSessionFeedbackForm from './postSessionFeedbackForm'
+import PostSessionFeedbackConfirmationPresenter from './postSessionFeedbackConfirmationPresenter'
+import PostSessionFeedbackConfirmationView from './postSessionFeedbackConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -444,5 +446,28 @@ export default class ServiceProviderReferralsController {
 
     res.status(formError === null ? 200 : 400)
     return res.render(...view.renderArgs)
+  }
+
+  async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { actionPlanId } = req.params
+    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
+    const sentReferral = await this.interventionsService.getSentReferral(res.locals.user.token, actionPlan.referralId)
+
+    if (sentReferral.assignedTo === null) {
+      throw new Error('Can’t view confirmation of post session feedback, as referral isn’t assigned.')
+    }
+
+    const probationPractitioner = await this.communityApiService.getUserByUsername(sentReferral.assignedTo.username)
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      res.locals.user.token,
+      sentReferral.referral.serviceCategoryId
+    )
+
+    const presenter = new PostSessionFeedbackConfirmationPresenter(sentReferral, serviceCategory, probationPractitioner)
+    const view = new PostSessionFeedbackConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }
