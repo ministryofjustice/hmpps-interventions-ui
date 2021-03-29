@@ -115,6 +115,6 @@ export default class CommunityApiService {
       path: `/secure/offenders/crn/${crn}/convictions`,
     })) as DeliusConviction[]
 
-    return convictions.filter(conviction => conviction.active)
+    return convictions.filter(conviction => conviction.active && conviction.sentence)
   }
 }

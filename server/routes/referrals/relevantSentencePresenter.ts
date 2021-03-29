@@ -30,10 +30,6 @@ export default class RelevantSentencePresenter {
         throw new Error(`No offences found for conviction id: ${conviction.convictionId}`)
       }
 
-      if (!conviction.sentence) {
-        throw new Error(`No sentences found for conviction id: ${conviction.convictionId}`)
-      }
-
       const mainOffence = conviction.offences.find(offence => offence.mainOffence)
 
       if (!mainOffence) {
