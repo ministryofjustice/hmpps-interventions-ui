@@ -58,7 +58,7 @@ export default class RestClient {
         path,
         query: JSON.stringify(query),
       },
-      'getting using user credentials'
+      'making authenticated GET request'
     )
     try {
       const result = await superagent
@@ -89,7 +89,7 @@ export default class RestClient {
   }
 
   async post({ path, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<unknown> {
-    this.logger.info({ path }, 'post using user credentials')
+    this.logger.info({ path }, 'making authenticated POST request')
     try {
       const result = await superagent
         .post(`${this.apiUrl()}${path}`)
@@ -113,7 +113,7 @@ export default class RestClient {
 
   // This is copied from the post method above
   async patch({ path, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<unknown> {
-    this.logger.info({ path }, 'patch using user credentials')
+    this.logger.info({ path }, 'making authenticated PATCH request')
     try {
       const result = await superagent
         .patch(`${this.apiUrl()}${path}`)
@@ -136,7 +136,7 @@ export default class RestClient {
   }
 
   async stream({ path, headers = {}, errorLogger = this.defaultErrorLogger }: StreamRequest = {}): Promise<unknown> {
-    this.logger.info({ path }, 'getting using user credentials')
+    this.logger.info({ path }, 'making authenticated streaming GET request')
     return new Promise((resolve, reject) => {
       superagent
         .get(`${this.apiUrl()}${path}`)

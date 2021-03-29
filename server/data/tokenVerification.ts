@@ -28,7 +28,7 @@ const tokenVerifier: TokenVerifier = async request => {
   const { user, verified } = request
 
   if (!config.apis.tokenVerification.enabled) {
-    logger.debug('Token verification disabled, returning token is valid')
+    logger.debug('token verification disabled; assuming token is valid')
     return true
   }
 
