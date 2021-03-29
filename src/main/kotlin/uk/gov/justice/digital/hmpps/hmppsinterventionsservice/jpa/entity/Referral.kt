@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull
 
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_id")))
-data class Referral(
+class Referral(
   // assigned referral fields
   var assignedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var assignedBy: AuthUser? = null,
@@ -74,4 +74,9 @@ data class Referral(
   @Id val id: UUID,
 
   @OneToOne @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
-)
+) {
+  fun getResponsibleProbationPractitioner(): AuthUser {
+    // fixme: should this sentBy or createdBy?
+    return createdBy
+  }
+}

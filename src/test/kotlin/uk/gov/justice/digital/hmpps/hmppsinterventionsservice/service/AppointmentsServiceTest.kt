@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
@@ -27,8 +28,12 @@ internal class AppointmentsServiceTest {
   private val actionPlanRepository: ActionPlanRepository = mock()
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
   private val authUserRepository: AuthUserRepository = mock()
+  private val appointmentEventPublisher: AppointmentEventPublisher = mock()
 
-  private val appointmentsService = AppointmentsService(actionPlanAppointmentRepository, actionPlanRepository, authUserRepository)
+  private val appointmentsService = AppointmentsService(
+    actionPlanAppointmentRepository, actionPlanRepository,
+    authUserRepository, appointmentEventPublisher
+  )
 
   @Test
   fun `creates an appointment`() {
@@ -232,7 +237,7 @@ internal class AppointmentsServiceTest {
   fun `update appointment with attendance`() {
     val appointmentId = UUID.randomUUID()
     val sessionNumber = 1
-    val sessionAttendance = Attended.YES
+    val attended = Attended.YES
     val additionalInformation = "extra info"
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
@@ -243,11 +248,12 @@ internal class AppointmentsServiceTest {
       .thenReturn(existingAppointment)
     whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
 
-    val savedAppointment = appointmentsService.recordAttendance(appointmentId, 1, sessionAttendance, additionalInformation)
+    val savedAppointment = appointmentsService.recordAttendance(appointmentId, 1, attended, additionalInformation)
     val argumentCaptor: ArgumentCaptor<ActionPlanAppointment> = ArgumentCaptor.forClass(ActionPlanAppointment::class.java)
 
+//    verify(appointmentEventPublisher).appointmentNotAttendedEvent(existingAppointment)
     verify(actionPlanAppointmentRepository).save(argumentCaptor.capture())
-    assertThat(argumentCaptor.firstValue.attended).isEqualTo(sessionAttendance)
+    assertThat(argumentCaptor.firstValue.attended).isEqualTo(attended)
     assertThat(argumentCaptor.firstValue.additionalAttendanceInformation).isEqualTo(additionalInformation)
     assertThat(argumentCaptor.firstValue.attendanceSubmittedAt).isNotNull
     assertThat(savedAppointment).isNotNull
@@ -266,6 +272,26 @@ internal class AppointmentsServiceTest {
     val exception = assertThrows(EntityNotFoundException::class.java) {
       appointmentsService.recordAttendance(actionPlanId, 1, attended, additionalInformation)
     }
+
     assertThat(exception.message).isEqualTo("Action plan appointment not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+  }
+
+  @Test
+  fun `appointment not attended calls notify to send email`() {
+    val appointmentId = UUID.randomUUID()
+    val sessionNumber = 1
+    val createdByUser = SampleData.sampleAuthUser()
+    val actionPlan = SampleData.sampleActionPlan()
+    val attended = Attended.NO
+    val additionalInformation = "extra info"
+
+    val existingAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(appointmentId, sessionNumber))
+      .thenReturn(existingAppointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
+
+    appointmentsService.recordAttendance(appointmentId, 1, attended, additionalInformation)
+    verify(appointmentEventPublisher).appointmentNotAttendedEvent(existingAppointment)
   }
 }
