@@ -1,10 +1,11 @@
 import ReferralStartPresenter from './referralStartPresenter'
 import viewUtils from '../../utils/viewUtils'
+import { InputArgs } from '../../utils/govukFrontendTypes'
 
 export default class ReferralStartView {
   constructor(private readonly presenter: ReferralStartPresenter) {}
 
-  private crnInputArgs(): Record<string, unknown> {
+  private crnInputArgs(): InputArgs {
     return {
       id: 'service-user-crn',
       name: 'service-user-crn',

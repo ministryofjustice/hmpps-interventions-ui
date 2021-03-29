@@ -19,6 +19,7 @@ build-info.json
 yarn-error.log
 .eslintcache
 dist/
+script/build/
 test_results/
 integration_tests/videos/
 integration_tests/screenshots/

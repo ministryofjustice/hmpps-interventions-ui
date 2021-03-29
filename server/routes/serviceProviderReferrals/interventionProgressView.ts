@@ -1,4 +1,4 @@
-import { TagArgs, SummaryListArgs, SummaryListRow, TableArgs } from '../../utils/govukFrontendTypes'
+import { TagArgs, SummaryListArgs, SummaryListArgsRow, TableArgs } from '../../utils/govukFrontendTypes'
 
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
@@ -34,7 +34,7 @@ export default class InterventionProgressView {
   }
 
   private actionPlanSummaryListArgs(tagMacro: (args: TagArgs) => string, csrfToken: string): SummaryListArgs {
-    const rows: SummaryListRow[] = [
+    const rows: SummaryListArgsRow[] = [
       {
         key: { text: 'Action plan status' },
         value: {

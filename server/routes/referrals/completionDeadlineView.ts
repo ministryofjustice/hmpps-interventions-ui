@@ -1,10 +1,11 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ViewUtils from '../../utils/viewUtils'
+import { DateInputArgs } from '../../utils/govukFrontendTypes'
 
 export default class CompletionDeadlineView {
   constructor(private readonly presenter: CompletionDeadlinePresenter) {}
 
-  private get dateInputArgs(): Record<string, unknown> {
+  private get dateInputArgs(): DateInputArgs {
     return {
       id: 'completion-deadline',
       namePrefix: 'completion-deadline',

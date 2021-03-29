@@ -1,3 +1,4 @@
+import { InputArgs, RadiosArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import RarDaysPresenter from './rarDaysPresenter'
 
@@ -6,7 +7,7 @@ export default class RarDaysView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private usingRarDaysRadiosArgs(yesHtml: string) {
+  private usingRarDaysRadiosArgs(yesHtml: string): RadiosArgs {
     return {
       idPrefix: 'using-rar-days',
       name: 'using-rar-days',
@@ -36,7 +37,7 @@ export default class RarDaysView {
     }
   }
 
-  private get maximumRarDaysInputArgs() {
+  private get maximumRarDaysInputArgs(): InputArgs {
     return {
       id: 'maximum-rar-days',
       name: 'maximum-rar-days',

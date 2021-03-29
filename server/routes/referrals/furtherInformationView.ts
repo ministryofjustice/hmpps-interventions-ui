@@ -1,10 +1,11 @@
+import { TextareaArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import FurtherInformationPresenter from './furtherInformationPresenter'
 
 export default class FurtherInformationView {
   constructor(private readonly presenter: FurtherInformationPresenter) {}
 
-  private get textAreaArgs(): Record<string, unknown> {
+  private get textAreaArgs(): TextareaArgs {
     return {
       name: 'further-information',
       id: 'further-information',

@@ -1,12 +1,13 @@
 import RiskInformationPresenter from './riskInformationPresenter'
 import ViewUtils from '../../utils/viewUtils'
+import { SummaryListArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
 
 export default class RiskInformationView {
   constructor(private readonly presenter: RiskInformationPresenter) {}
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private get summaryListArgs() {
+  private get summaryListArgs(): SummaryListArgs {
     return {
       rows: this.presenter.summary.map(item => {
         return {
@@ -17,7 +18,7 @@ export default class RiskInformationView {
     }
   }
 
-  private get additionalRiskInformationTextareaArgs() {
+  private get additionalRiskInformationTextareaArgs(): TextareaArgs {
     return {
       name: 'additional-risk-information',
       id: 'additional-risk-information',

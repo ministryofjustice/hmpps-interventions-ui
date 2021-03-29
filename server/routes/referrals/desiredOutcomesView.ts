@@ -1,10 +1,11 @@
+import { CheckboxesArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import DesiredOutcomesPresenter from './desiredOutcomesPresenter'
 
 export default class DesiredOutcomesView {
   constructor(readonly presenter: DesiredOutcomesPresenter) {}
 
-  get checkboxArgs(): Record<string, unknown> {
+  get checkboxArgs(): CheckboxesArgs {
     return {
       idPrefix: 'desired-outcomes-ids',
       name: 'desired-outcomes-ids[]',

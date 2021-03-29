@@ -1,10 +1,11 @@
+import { RadiosArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import RelevantSentencePresenter from './relevantSentencePresenter'
 
 export default class RelevantSentenceView {
   constructor(readonly presenter: RelevantSentencePresenter) {}
 
-  get radioButtonArgs(): Record<string, unknown> {
+  get radioButtonArgs(): RadiosArgs {
     return {
       classes: 'govuk-radios',
       idPrefix: 'relevant-sentence-id',
@@ -18,7 +19,7 @@ export default class RelevantSentenceView {
       },
       items: this.presenter.relevantSentenceFields.map(relevantSentence => {
         return {
-          value: relevantSentence.value,
+          value: relevantSentence.value.toString(),
           html: `${ViewUtils.escape(relevantSentence.category)}<br>Subcategory: ${ViewUtils.escape(
             relevantSentence.subcategory
           )}<br>End of sentence date: ${ViewUtils.escape(relevantSentence.endOfSentenceDate)}`,

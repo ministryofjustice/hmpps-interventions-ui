@@ -1,10 +1,11 @@
+import { TableArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import DashboardPresenter from './dashboardPresenter'
 
 export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
 
-  private get tableArgs(): Record<string, unknown> {
+  private get tableArgs(): TableArgs {
     return {
       firstCellIsHeader: true,
       head: [{ text: 'Service User' }, { text: 'Started on' }],

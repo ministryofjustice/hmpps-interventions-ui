@@ -1,7 +1,7 @@
 import SearchResultsPresenter from './searchResultsPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { SummaryListItem } from '../../utils/summaryList'
-import { SummaryListArgs } from '../../utils/govukFrontendTypes'
+import { CheckboxesArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
 
 export default class SearchResultsView {
   constructor(private readonly presenter: SearchResultsPresenter) {}
@@ -18,7 +18,7 @@ export default class SearchResultsView {
       text: string
       checked: boolean
     }[]
-  }): Record<string, unknown> {
+  }): CheckboxesArgs {
     return {
       idPrefix: name,
       name: `${name}[]`,
@@ -36,19 +36,19 @@ export default class SearchResultsView {
     }
   }
 
-  private get pccRegionCheckboxArgs(): Record<string, unknown> {
+  private get pccRegionCheckboxArgs(): CheckboxesArgs {
     return this.checkboxArgs({ name: 'pcc-region-ids', legend: 'Regions', checkboxes: this.presenter.pccRegionFilters })
   }
 
-  private get genderCheckboxArgs(): Record<string, unknown> {
+  private get genderCheckboxArgs(): CheckboxesArgs {
     return this.checkboxArgs({ name: 'gender', legend: 'Gender', checkboxes: this.presenter.genderFilters })
   }
 
-  private get ageCheckboxArgs(): Record<string, unknown> {
+  private get ageCheckboxArgs(): CheckboxesArgs {
     return this.checkboxArgs({ name: 'age', legend: 'Age restrictions', checkboxes: this.presenter.ageFilters })
   }
 
-  static summaryListArgs(items: SummaryListItem[]): SummaryListArgs & { classes: string } {
+  static summaryListArgs(items: SummaryListItem[]): SummaryListArgs {
     return { ...ViewUtils.summaryListArgs(items), classes: 'govuk-summary-list--no-border' }
   }
 
