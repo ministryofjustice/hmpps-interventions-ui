@@ -3,8 +3,7 @@ import path from 'path'
 import Component from './component'
 
 export default class Writer {
-  private static async componentDirectoryPaths(): Promise<string[]> {
-    const componentsPath = 'node_modules/govuk-frontend/govuk/components'
+  private static async componentDirectoryPaths(componentsPath: string): Promise<string[]> {
     const componentsDirectoryContents = await fs.readdir(componentsPath)
 
     const componentsDirectoryContentsStats = await Promise.all(
@@ -17,17 +16,29 @@ export default class Writer {
     return componentsDirectoryContentsStats.filter(item => item.stat.isDirectory()).map(item => item.componentPath)
   }
 
-  private static async components(): Promise<Component[]> {
-    const componentDirectoryPaths = await this.componentDirectoryPaths()
+  private static async componentsInDirectory(componentsPath: string, areGovUk: boolean): Promise<Component[]> {
+    const componentDirectoryPaths = await this.componentDirectoryPaths(componentsPath)
 
     return Promise.all(
       componentDirectoryPaths.map(async directoryPath => {
         const macroOptionsBuffer = await fs.readFile(path.join(directoryPath, 'macro-options.json'))
         const macroOptions = JSON.parse(macroOptionsBuffer.toString())
 
-        return new Component(path.basename(directoryPath), macroOptions)
+        return new Component(path.basename(directoryPath), macroOptions, areGovUk)
       })
     )
+  }
+
+  private static async govukFrontendComponents(): Promise<Component[]> {
+    return this.componentsInDirectory('node_modules/govuk-frontend/govuk/components', true)
+  }
+
+  private static async appComponents(): Promise<Component[]> {
+    return this.componentsInDirectory('server/views/components', false)
+  }
+
+  private static async components(): Promise<Component[]> {
+    return [...(await this.govukFrontendComponents()), ...(await this.appComponents())]
   }
 
   static async writeDefinitions(): Promise<void> {
