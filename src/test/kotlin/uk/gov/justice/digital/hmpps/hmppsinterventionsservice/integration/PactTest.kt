@@ -337,13 +337,4 @@ class PactTest {
     appointmentsService.createAppointment(draftActionPlan.id, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
     appointmentsService.createAppointment(draftActionPlan.id, 2, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
   }
-
-//  @State("there are some existing sent referrals")
-//  fun `create the sent referrals with the required fields`() {}
-
-//  @State("a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent")
-//  fun `create a new draft referral with the required fields`() {}
-
-//  @State("There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e")
-//  fun `create a new sent referral with the required fields`() {}
 }
