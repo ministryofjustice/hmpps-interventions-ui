@@ -14,7 +14,7 @@ export default class RelevantSentenceView {
         legend: {
           text: this.presenter.title,
           isPageHeading: true,
-          classes: 'govuk-fieldset__legend--xl',
+          classes: 'govuk-fieldset__legend--xl govuk-!-margin-bottom-8',
         },
       },
       items: this.presenter.relevantSentenceFields.map(relevantSentence => {
