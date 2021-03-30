@@ -34,6 +34,7 @@ class NotifyActionPlanServiceTest {
         id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
         referenceNumber = "HAS71263",
         sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+        sentBy = AuthUser("abc999", "auth", "abc999")
       ),
       submittedBy = AuthUser("abc123", "auth", "abc123")
     ),
@@ -67,7 +68,8 @@ class NotifyActionPlanServiceTest {
 
   @Test
   fun `referral assigned event generates valid url and sends an email`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("tom", "tom@tom.tom"))
+    whenever(hmppsAuthService.getUserDetail(AuthUser("abc999", "auth", "abc999")))
+      .thenReturn(UserDetail("tom", "tom@tom.tom"))
 
     notifyService().onApplicationEvent(actionPlanSubmittedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
