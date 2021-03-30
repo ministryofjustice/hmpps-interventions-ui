@@ -12,7 +12,8 @@ export default class PostSessionFeedbackPresenter {
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly serviceCategory: ServiceCategory,
-    private readonly error: FormValidationError | null = null
+    private readonly error: FormValidationError | null = null,
+    private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
   readonly text = {
@@ -60,10 +61,11 @@ export default class PostSessionFeedbackPresenter {
   ]
 
   get additionalAttendanceInformationValue(): string {
-    if (this.appointment.attendance?.additionalAttendanceInformation) {
-      return this.appointment.attendance?.additionalAttendanceInformation
-    }
+    const presenterUtils = new PresenterUtils(this.userInputData)
 
-    return ''
+    return presenterUtils.stringValue(
+      this.appointment.attendance?.additionalAttendanceInformation || null,
+      'additional-attendance-information'
+    )
   }
 }

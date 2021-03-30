@@ -183,29 +183,46 @@ describe(PostSessionFeedbackPresenter, () => {
   })
 
   describe('additionalAttendanceInformationValue', () => {
-    describe('when the appointment already has additionalAttendanceInformation set', () => {
-      it('uses that value as the value attribute', () => {
+    describe('when there is no user input data', () => {
+      describe('when the appointment already has additionalAttendanceInformation set', () => {
+        it('uses that value as the value attribute', () => {
+          const appointment = actionPlanAppointmentFactory.build({
+            attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+          })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = deliusServiceUserFactory.build()
+          const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+
+          expect(presenter.additionalAttendanceInformationValue).toEqual('Alex missed the bus')
+        })
+      })
+
+      describe('when the appointment has no value for additionalAttendanceInformation', () => {
+        it('uses sets the value to an empty string', () => {
+          const appointment = actionPlanAppointmentFactory.build({
+            attendance: { attended: 'late' },
+          })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = deliusServiceUserFactory.build()
+          const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+
+          expect(presenter.additionalAttendanceInformationValue).toEqual('')
+        })
+      })
+    })
+
+    describe('when there is user input data', () => {
+      it('uses the user input data as the value attribute', () => {
         const appointment = actionPlanAppointmentFactory.build({
           attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
         })
         const serviceCategory = serviceCategoryFactory.build()
         const serviceUser = deliusServiceUserFactory.build()
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
-
-        expect(presenter.additionalAttendanceInformationValue).toEqual('Alex missed the bus')
-      })
-    })
-
-    describe('when the appointment has no value for additionalAttendanceInformation', () => {
-      it('uses sets the value to an empty string', () => {
-        const appointment = actionPlanAppointmentFactory.build({
-          attendance: { attended: 'late' },
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, null, {
+          'additional-attendance-information': "Alex's car broke down en route",
         })
-        const serviceCategory = serviceCategoryFactory.build()
-        const serviceUser = deliusServiceUserFactory.build()
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
 
-        expect(presenter.additionalAttendanceInformationValue).toEqual('')
+        expect(presenter.additionalAttendanceInformationValue).toEqual("Alex's car broke down en route")
       })
     })
   })
