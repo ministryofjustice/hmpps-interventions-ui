@@ -21,6 +21,12 @@ export default class InterventionDetailsPresenter {
     return this.intervention.description
   }
 
+  get truncatedDescription(): string {
+    // take just the first line of the description, up to a maximum of 500 characters
+    const firstLine = this.intervention.description.split('\n')[0]
+    return `${firstLine.substring(0, 500)}${firstLine.length > 500 ? '...' : ''}`
+  }
+
   get tabs(): { id: string; title: string; items: SummaryListItem[] }[] {
     return [
       {

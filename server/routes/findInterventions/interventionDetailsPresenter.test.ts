@@ -53,6 +53,47 @@ describe(InterventionDetailsPresenter, () => {
     })
   })
 
+  describe('truncatedDescription', () => {
+    it('does not modify short single line descriptions', () => {
+      const presenter = new InterventionDetailsPresenter(
+        interventionFactory.build({
+          description: 'Some information about the intervention',
+        })
+      )
+      expect(presenter.truncatedDescription).toEqual('Some information about the intervention')
+    })
+
+    it('trims down multiline descriptions to the first line', () => {
+      const presenter = new InterventionDetailsPresenter(
+        interventionFactory.build({
+          description: `Some information about the intervention
+that is longer than one line
+and even longer than
+three lines.`,
+        })
+      )
+      expect(presenter.truncatedDescription).toEqual('Some information about the intervention')
+    })
+
+    it('trims down long single line descriptions to 500 characters', () => {
+      const presenter = new InterventionDetailsPresenter(
+        interventionFactory.build({
+          description: new Array(1000).join('x'),
+        })
+      )
+      expect(presenter.truncatedDescription).toEqual(`${new Array(501).join('x')}...`)
+    })
+
+    it('trims down long multiline descriptions to 500 characters', () => {
+      const presenter = new InterventionDetailsPresenter(
+        interventionFactory.build({
+          description: `${new Array(1000).join('x')}\n${new Array(1000).join('z')}`,
+        })
+      )
+      expect(presenter.truncatedDescription).toEqual(`${new Array(501).join('x')}...`)
+    })
+  })
+
   describe('tabs', () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
