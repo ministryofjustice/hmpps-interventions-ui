@@ -79,7 +79,7 @@ notify:
 
 interventions-ui:
   locations:
-    sent-referral: "/service-provider/referrals/{id}"
+    sent-referral: "/service-provider/referrals/{id}/details"
     submit-action-plan: "/action-plan/{id}/toBeSpecified"
 
 community-api:
