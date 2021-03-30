@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.NPSRegionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.PCCRegionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
@@ -33,6 +34,7 @@ class InterventionServiceTest @Autowired constructor(
   private val npsRegionFactory = NPSRegionFactory(entityManager)
   private val pccRegionFactory = PCCRegionFactory(entityManager)
   private val serviceProviderFactory = ServiceProviderFactory(entityManager)
+  private val interventionFactory = InterventionFactory(entityManager)
 
   @BeforeEach
   fun setup() {
@@ -86,6 +88,23 @@ class InterventionServiceTest @Autowired constructor(
     assertThat(interventionDTO.description).isEqualTo(intervention.description)
     // fixme
 //    assertThat(interventionDTO.pccRegions.size).isEqualTo(1)
+  }
+
+  @Test
+  fun `unicode multiline descriptions retain their encoding when retrieved from the database`() {
+    val description = """
+      → list
+      → with
+      → arrows
+
+      • list 
+      • with 
+      • bullets
+    """
+
+    val intervention = interventionFactory.create(description = description)
+    val interventionDTO = interventionService.getIntervention(intervention.id)!!
+    assertThat(interventionDTO.description).isEqualTo(description)
   }
 
   @Test

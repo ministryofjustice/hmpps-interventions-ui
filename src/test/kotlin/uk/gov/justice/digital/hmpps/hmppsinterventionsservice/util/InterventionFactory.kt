@@ -13,7 +13,11 @@ class InterventionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     id: UUID? = UUID.randomUUID(),
     createdAt: OffsetDateTime? = null,
     title: String = "Sheffield Housing Services",
-    description: String = "Inclusive housing for South Yorkshire",
+    description: String = """Inclusive housing for South Yorkshire
+
+      • Bulleted list
+      • With indentation and unicode
+    """,
     contract: DynamicFrameworkContract? = null,
   ): Intervention {
     return save(
