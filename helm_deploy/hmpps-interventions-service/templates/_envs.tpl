@@ -78,4 +78,10 @@ env:
         name: notify
         key: api_key
 
+  - name: SENTRY_DSN
+    valueFrom:
+      secretKeyRef:
+        name: sentry
+        key: service_dsn
+
 {{- end -}}
