@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -43,6 +44,20 @@ class AppointmentsService(
     )
 
     return actionPlanAppointmentRepository.save(appointment)
+  }
+
+  fun createUnscheduledAppointmentsForActionPlan(submittedActionPlan: ActionPlan, actionPlanSubmitter: AuthUser) {
+    val numberOfSessions = submittedActionPlan.numberOfSessions!!
+    for (i in 1..numberOfSessions) {
+      val appointment = ActionPlanAppointment(
+        id = UUID.randomUUID(),
+        sessionNumber = i,
+        createdBy = authUserRepository.save(actionPlanSubmitter),
+        createdAt = OffsetDateTime.now(),
+        actionPlan = submittedActionPlan
+      )
+      actionPlanAppointmentRepository.save(appointment)
+    }
   }
 
   fun updateAppointment(
