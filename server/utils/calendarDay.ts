@@ -2,7 +2,15 @@ export default class CalendarDay {
   private constructor(readonly day: number, readonly month: number, readonly year: number) {}
 
   static fromComponents(day: number, month: number, year: number): CalendarDay | null {
-    return isValidDate(day, month, year) ? new CalendarDay(day, month, year) : null
+    return this.isValid(day, month, year) ? new CalendarDay(day, month, year) : null
+  }
+
+  private static isValid(day: number, month: number, year: number): boolean {
+    // Date(Date.UTC(…)) will always return a valid date regardless of input, so if
+    // [day, month, year] aren’t the components of a valid date then they won’t
+    // match the components of this result.
+    const date = new Date(Date.UTC(year, month - 1, day))
+    return year === date.getUTCFullYear() && month === date.getUTCMonth() + 1 && day === date.getUTCDate()
   }
 
   static parseIso8601(val: string): CalendarDay | null {
@@ -14,11 +22,7 @@ export default class CalendarDay {
 
     const [year, month, day] = result.slice(1).map(Number)
 
-    if (!isValidDate(day, month, year)) {
-      return null
-    }
-
-    return new CalendarDay(day, month, year)
+    return CalendarDay.fromComponents(day, month, year)
   }
 
   private static dayForDate(date: Date, ianaTimeZoneIdentifier: string): CalendarDay {
@@ -62,12 +66,4 @@ export default class CalendarDay {
   get utcDate(): Date {
     return new Date(Date.UTC(this.year, this.month - 1, this.day))
   }
-}
-
-function isValidDate(day: number, month: number, year: number) {
-  // Date(Date.UTC(…)) will always return a valid date regardless of input, so if
-  // [day, month, year] aren’t the components of a valid date then they won’t
-  // match the components of this result.
-  const date = new Date(Date.UTC(year, month - 1, day))
-  return year === date.getUTCFullYear() && month === date.getUTCMonth() + 1 && day === date.getUTCDate()
 }
