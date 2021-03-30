@@ -1,7 +1,20 @@
 import { AuthUser } from '../data/hmppsAuthClient'
 import { ServiceUser } from '../services/interventionsService'
 import CalendarDay from './calendarDay'
+import { FormValidationError } from './formValidationError'
 import utils from './utils'
+
+interface DateComponentInputPresenter {
+  value: string
+  hasError: boolean
+}
+
+export interface DateInputPresenter {
+  errorMessage: string | null
+  day: DateComponentInputPresenter
+  month: DateComponentInputPresenter
+  year: DateComponentInputPresenter
+}
 
 export default class PresenterUtils {
   constructor(private readonly userInputData: Record<string, unknown> | null = null) {}
@@ -24,6 +37,51 @@ export default class PresenterUtils {
       return false
     }
     return null
+  }
+
+  dateValue(
+    modelValue: CalendarDay | null,
+    userInputKey: string,
+    error: FormValidationError | null
+  ): DateInputPresenter {
+    const [dayKey, monthKey, yearKey] = ['day', 'month', 'year'].map(suffix => `${userInputKey}-${suffix}`)
+
+    const errorMessage =
+      PresenterUtils.errorMessage(error, dayKey) ??
+      PresenterUtils.errorMessage(error, monthKey) ??
+      PresenterUtils.errorMessage(error, yearKey)
+
+    let dayValue = ''
+    let monthValue = ''
+    let yearValue = ''
+
+    if (this.userInputData === null) {
+      if (modelValue !== null) {
+        dayValue = String(modelValue?.day ?? '')
+        monthValue = String(modelValue?.month ?? '')
+        yearValue = String(modelValue?.year ?? '')
+      }
+    } else {
+      dayValue = String(this.userInputData[dayKey] || '')
+      monthValue = String(this.userInputData[monthKey] || '')
+      yearValue = String(this.userInputData[yearKey] || '')
+    }
+
+    return {
+      errorMessage,
+      day: {
+        value: dayValue,
+        hasError: PresenterUtils.hasError(error, dayKey),
+      },
+      month: {
+        value: monthValue,
+        hasError: PresenterUtils.hasError(error, monthKey),
+      },
+      year: {
+        value: yearValue,
+        hasError: PresenterUtils.hasError(error, yearKey),
+      },
+    }
   }
 
   private static sortedErrors<T extends { errorSummaryLinkedField: string }>(errors: T[], fieldOrder: string[]): T[] {
@@ -112,7 +170,7 @@ export default class PresenterUtils {
     const notFoundMessage = 'Not found'
 
     if (date) {
-      const iso8601date = CalendarDay.parseIso8601(date)
+      const iso8601date = CalendarDay.parseIso8601Date(date)
 
       return iso8601date ? this.govukFormattedDate(iso8601date) : notFoundMessage
     }

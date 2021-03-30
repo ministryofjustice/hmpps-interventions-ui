@@ -207,7 +207,7 @@ export default class InterventionsService {
       : null
 
     const iso8601DateOfBirth = deliusServiceUser.dateOfBirth
-      ? CalendarDay.parseIso8601(deliusServiceUser.dateOfBirth)?.iso8601 || null
+      ? CalendarDay.parseIso8601Date(deliusServiceUser.dateOfBirth)?.iso8601 || null
       : null
 
     return {

@@ -4,21 +4,7 @@ import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 
 export default class CompletionDeadlinePresenter {
-  readonly day: string
-
-  readonly month: string
-
-  readonly year: string
-
-  readonly errorMessage: string | null
-
-  readonly hasMonthError: boolean
-
-  readonly hasDayError: boolean
-
-  readonly hasYearError: boolean
-
-  readonly errorSummary: { field: string; message: string }[] | null
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly title = `What date does the ${this.serviceCategory.name} service need to be completed by?`
 
@@ -27,37 +13,17 @@ export default class CompletionDeadlinePresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
-    error: FormValidationError | null = null,
-    userInputData: Record<string, unknown> | null = null
-  ) {
-    if (!userInputData) {
-      const calendarDay = this.referral.completionDeadline
-        ? CalendarDay.parseIso8601(this.referral.completionDeadline)
-        : null
+    private readonly error: FormValidationError | null = null,
+    private readonly userInputData: Record<string, unknown> | null = null
+  ) {}
 
-      if (!calendarDay) {
-        this.day = ''
-        this.month = ''
-        this.year = ''
-      } else {
-        this.day = String(calendarDay.day)
-        this.month = String(calendarDay.month)
-        this.year = String(calendarDay.year)
-      }
-    } else {
-      this.day = String(userInputData['completion-deadline-day'] || '')
-      this.month = String(userInputData['completion-deadline-month'] || '')
-      this.year = String(userInputData['completion-deadline-year'] || '')
-    }
+  private readonly utils = new PresenterUtils(this.userInputData)
 
-    this.errorSummary = PresenterUtils.errorSummary(error)
-    this.errorMessage =
-      PresenterUtils.errorMessage(error, 'completion-deadline-day') ??
-      PresenterUtils.errorMessage(error, 'completion-deadline-month') ??
-      PresenterUtils.errorMessage(error, 'completion-deadline-year')
-
-    this.hasDayError = PresenterUtils.hasError(error, 'completion-deadline-day')
-    this.hasMonthError = PresenterUtils.hasError(error, 'completion-deadline-month')
-    this.hasYearError = PresenterUtils.hasError(error, 'completion-deadline-year')
+  fields = {
+    completionDeadline: this.utils.dateValue(
+      this.referral.completionDeadline === null ? null : CalendarDay.parseIso8601Date(this.referral.completionDeadline),
+      'completion-deadline',
+      this.error
+    ),
   }
 }
