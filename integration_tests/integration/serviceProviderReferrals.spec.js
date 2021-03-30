@@ -385,9 +385,9 @@ describe('Service provider referrals dashboard', () => {
 
     cy.login()
 
-    cy.visit(
-      `/service-provider/action-plan/${actionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback`
-    )
+    cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+
+    cy.contains('Give feedback').click()
 
     cy.contains('Yes').click()
     cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')

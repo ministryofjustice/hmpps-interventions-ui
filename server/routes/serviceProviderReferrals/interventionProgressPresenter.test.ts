@@ -53,11 +53,12 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when an appointment has been scheduled', () => {
-      it('populates the table with formatted session information, with the "Reschedule session" link displayed', () => {
+      it('populates the table with formatted session information, with the "Reschedule session" and "Give feedback" links displayed', () => {
         const referral = sentReferralFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
         const serviceCategory = serviceCategoryFactory.build()
         const serviceUser = serviceUserFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser, [
           {
             sessionNumber: 1,
             appointmentTime: '2020-12-07T13:00:00.000000Z',
@@ -72,7 +73,7 @@ describe(InterventionProgressPresenter, () => {
               text: 'SCHEDULED',
               classes: 'govuk-tag--blue',
             },
-            linkHtml: '<a class="govuk-link" href="#">Reschedule session</a>',
+            linkHtml: `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback">Give feedback</a>`,
           },
         ])
       })
