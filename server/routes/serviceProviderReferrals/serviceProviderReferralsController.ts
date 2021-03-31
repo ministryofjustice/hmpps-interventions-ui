@@ -26,6 +26,8 @@ import ActionPlanConfirmationView from './actionPlanConfirmationView'
 import AddActionPlanNumberOfSessionsView from './actionPlanNumberOfSessionsView'
 import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessionsPresenter'
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
+import EditSessionPresenter from './editSessionPresenter'
+import EditSessionView from './editSessionView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -361,6 +363,17 @@ export default class ServiceProviderReferralsController {
     )
     const view = new AddActionPlanNumberOfSessionsView(presenter)
     res.status(formError === null ? 200 : 400)
+    return res.render(...view.renderArgs)
+  }
+
+  async editSession(req: Request, res: Response): Promise<void> {
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      res.locals.user.token,
+      req.params.id,
+      Number(req.params.sessionNumber)
+    )
+    const presenter = new EditSessionPresenter(appointment)
+    const view = new EditSessionView(presenter)
     return res.render(...view.renderArgs)
   }
 }
