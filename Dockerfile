@@ -2,7 +2,7 @@
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-FROM node:14-alpine3.12 as base
+FROM node:14-alpine3.13 as base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
@@ -12,6 +12,8 @@ RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezo
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser && \
     adduser appuser appgroup
+
+RUN apk upgrade --no-cache
 
 WORKDIR /app
 
