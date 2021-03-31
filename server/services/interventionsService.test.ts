@@ -1719,6 +1719,46 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('getActionPlanAppointment', () => {
+    const actionPlanAppointment = {
+      sessionNumber: 1,
+      appointmentTime: '2021-05-13T13:30:00+01:00',
+      durationInMinutes: 120,
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state:
+          'a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has an appointment for session 1',
+        uponReceiving:
+          'a GET request for the appointment for session 1 on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        withRequest: {
+          method: 'GET',
+          path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments/1',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(actionPlanAppointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns the requested action plan appointment', async () => {
+      const appointment = await interventionsService.getActionPlanAppointment(
+        token,
+        'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        1
+      )
+      expect(appointment.sessionNumber).toEqual(1)
+      expect(appointment.appointmentTime).toEqual('2021-05-13T13:30:00+01:00')
+      expect(appointment.durationInMinutes).toEqual(120)
+    })
+  })
+
   describe('createActionPlanAppointment', () => {
     const actionPlanAppointment = {
       sessionNumber: 1,
