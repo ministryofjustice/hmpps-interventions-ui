@@ -3,11 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.GetMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.ReferralController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import kotlin.reflect.KFunction
 
 enum class ReferralEventType {
   SENT, ASSIGNED,
@@ -34,10 +32,7 @@ class ReferralEventPublisher(
   }
 
   private fun getSentReferralURL(referral: Referral): String {
-    // get the URL by introspecting the relevant controller method
-    val method = ReferralController::getSentReferral as KFunction<*>
-    val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
-
+    val path = locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)
     return locationMapper.expandPathToCurrentRequestBaseUrl(path, referral.id).toString()
   }
 }

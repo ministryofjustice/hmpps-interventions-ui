@@ -3,11 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.GetMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.ActionPlanController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
-import kotlin.reflect.KFunction
 
 enum class ActionPlanEventType {
   SUBMITTED,
@@ -30,9 +28,7 @@ class ActionPlanEventPublisher(
   }
 
   private fun createDetailUrl(actionPlan: ActionPlan): String {
-    val method = ActionPlanController::getActionPlan as KFunction<*>
-    val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
-
+    val path = locationMapper.getPathFromControllerMethod(ActionPlanController::getActionPlan)
     return locationMapper.expandPathToCurrentRequestBaseUrl(path, actionPlan.id).toString()
   }
 }

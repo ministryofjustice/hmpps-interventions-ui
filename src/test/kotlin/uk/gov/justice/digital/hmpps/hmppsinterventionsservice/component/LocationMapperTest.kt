@@ -4,6 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import java.util.UUID
@@ -29,5 +32,16 @@ internal class LocationMapperTest {
 
     assertThat(locationMapper.expandPathToCurrentRequestBaseUrl("/intervention/{id}/{resource}/{number}", id, "session", 4).toString())
       .isEqualTo("http://localhost/intervention/a98d6ea3-357d-4910-9a43-fd383bf996c5/session/4")
+  }
+
+  @Test
+  fun getPathFromControllerMethod() {
+    @Controller
+    class FooController {
+      @GetMapping("/some/path/{id}")
+      fun somePath(@PathVariable id: UUID) {}
+    }
+
+    assertThat(locationMapper.getPathFromControllerMethod(FooController::somePath)).isEqualTo("/some/path/{id}")
   }
 }
