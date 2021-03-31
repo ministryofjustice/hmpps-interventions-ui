@@ -38,6 +38,6 @@ class ReferralEventPublisher(
     val method = ReferralController::getSentReferral as KFunction<*>
     val path = method.annotations.filterIsInstance<GetMapping>().first().value.first()
 
-    return locationMapper.mapToCurrentContextPathAsString(path, referral.id).toUriString()
+    return locationMapper.expandPathToCurrentRequestBaseUrl(path, referral.id).toString()
   }
 }

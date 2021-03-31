@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
-import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanAppointmentDTO
@@ -36,7 +35,7 @@ internal class AppointmentsControllerTest {
     val newAppointmentDTO = NewAppointmentDTO(1, OffsetDateTime.now(), 10)
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
 
-    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+    val uri = URI.create("http://localhost/action-plan/123/appointment/1")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(createdByUser)
     whenever(
@@ -49,17 +48,17 @@ internal class AppointmentsControllerTest {
       )
     ).thenReturn(actionPlanAppointment)
     whenever(
-      locationMapper.mapToCurrentRequestBasePath(
+      locationMapper.expandPathToCurrentRequestBaseUrl(
         "/action-plan/{id}/appointment/{sessionNumber}",
         actionPlan.id,
         newAppointmentDTO.sessionNumber
       )
-    ).thenReturn(uriComponents)
+    ).thenReturn(uri)
 
     val appointmentResponse = appointmentsController.createAppointment(actionPlan.id, newAppointmentDTO, jwtAuthenticationToken)
 
     assertThat(appointmentResponse.let { it.body }).isEqualTo(ActionPlanAppointmentDTO.from(actionPlanAppointment))
-    assertThat(appointmentResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
+    assertThat(appointmentResponse.let { it.headers["location"] }).isEqualTo(listOf(uri.toString()))
   }
 
   @Test

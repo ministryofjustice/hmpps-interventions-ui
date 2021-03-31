@@ -43,8 +43,8 @@ class ActionPlanController(
     )
 
     val actionPlanDTO = ActionPlanDTO.from(draftActionPlan)
-    val location = locationMapper.mapToCurrentRequestBasePath("/{id}", draftActionPlan.id)
-    return ResponseEntity.created(location.toUri()).body(actionPlanDTO)
+    val location = locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", draftActionPlan.id)
+    return ResponseEntity.created(location).body(actionPlanDTO)
   }
 
   @PostMapping("/draft-action-plan/{id}/submit")
@@ -56,8 +56,8 @@ class ActionPlanController(
     val submittedActionPlan = actionPlanService.submitDraftActionPlan(id, submittedByUser)
 
     val actionPlanDTO = ActionPlanDTO.from(submittedActionPlan)
-    val location = locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlanDTO.id)
-    return ResponseEntity.created(location.toUri()).body(actionPlanDTO)
+    val location = locationMapper.expandPathToCurrentRequestBaseUrl("/action-plan/{id}", actionPlanDTO.id)
+    return ResponseEntity.created(location).body(actionPlanDTO)
   }
 
   @PatchMapping("/draft-action-plan/{id}")

@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
-import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.EndOfServiceReportOutcomeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
@@ -37,16 +36,16 @@ class EndOfServiceReportControllerTest {
     val authUser = AuthUser("CRN123", "auth", "user")
     val endOfServiceReport = SampleData.sampleEndOfServiceReport()
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
-    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+    val uri = URI.create("http://localhost/1234")
     val createEndOfServiceReportDTO = CreateEndOfServiceReportDTO(referralId)
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(endOfServiceReportService.createEndOfServiceReport(referralId, authUser)).thenReturn(endOfServiceReport)
-    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", endOfServiceReportDTO.id)).thenReturn(uriComponents)
+    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", endOfServiceReportDTO.id)).thenReturn(uri)
 
     val endOfServiceReportResponse = endOfServiceReportController.createEndOfServiceReport(createEndOfServiceReportDTO, jwtAuthenticationToken)
     assertThat(endOfServiceReportResponse.let { it.body }).isEqualTo(endOfServiceReportDTO)
-    assertThat(endOfServiceReportResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
+    assertThat(endOfServiceReportResponse.let { it.headers["location"] }).isEqualTo(listOf(uri.toString()))
   }
 
   @Test
@@ -114,15 +113,15 @@ class EndOfServiceReportControllerTest {
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val authUser = AuthUser("CRN123", "auth", "user")
     val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId)
-    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+    val uri = URI.create("http://localhost/end-of-service-report/1234")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(locationMapper.mapToCurrentContextPathAsString("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uriComponents)
+    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uri)
     whenever(endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)).thenReturn(endOfServiceReport)
 
     val responseEntity = endOfServiceReportController.submitEndOfServiceReport(endOfServiceReportId, jwtAuthenticationToken)
 
-    assertThat(responseEntity.headers["location"]).isEqualTo(listOf("/1234"))
+    assertThat(responseEntity.headers["location"]).isEqualTo(listOf(uri.toString()))
     assertThat(responseEntity.body).isEqualTo(EndOfServiceReportDTO.from(endOfServiceReport))
   }
 }

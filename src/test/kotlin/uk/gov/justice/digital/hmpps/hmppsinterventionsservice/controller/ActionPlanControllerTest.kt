@@ -7,7 +7,6 @@ import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
-import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
@@ -44,17 +43,17 @@ internal class ActionPlanControllerTest {
     val actionPlan = SampleData.sampleActionPlan()
     val activities = emptyList<ActionPlanActivity>()
     val actionPlanDTO = ActionPlanDTO.from(actionPlan)
-    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
+    val uri = URI.create("http://localhost/1234")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
-    whenever(locationMapper.mapToCurrentRequestBasePath("/{id}", actionPlanDTO.id)).thenReturn(uriComponents)
+    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", actionPlanDTO.id)).thenReturn(uri)
 
     val draftActionPlanResponse = actionPlanController.createDraftActionPlan(createActionPlanDTO, jwtAuthenticationToken)
 
     assertThat(draftActionPlanResponse.let { it.body }).isEqualTo(actionPlanDTO)
-    assertThat(draftActionPlanResponse.let { it.headers["location"] }).isEqualTo(listOf("/1234"))
+    assertThat(draftActionPlanResponse.let { it.headers["location"] }).isEqualTo(listOf(uri.toString()))
   }
 
   @Test
@@ -100,13 +99,13 @@ internal class ActionPlanControllerTest {
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
     whenever(actionPlanService.submitDraftActionPlan(actionPlanId, authUser)).thenReturn(actionPlan)
 
-    val uriComponents = UriComponentsBuilder.fromUri(URI.create("/1234")).build()
-    whenever(locationMapper.mapToCurrentContextPathAsString("/action-plan/{id}", actionPlan.id)).thenReturn(uriComponents)
+    val uri = URI.create("http://localhost/action-plan/1234")
+    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/action-plan/{id}", actionPlan.id)).thenReturn(uri)
 
     val responseEntity = actionPlanController.submitDraftActionPlan(actionPlanId, jwtAuthenticationToken)
 
     assertThat(responseEntity.statusCode.value()).isEqualTo(HttpStatus.SC_CREATED)
-    assertThat(responseEntity.headers["location"]).isEqualTo(listOf("/1234"))
+    assertThat(responseEntity.headers["location"]).isEqualTo(listOf(uri.toString()))
     assertThat(responseEntity.body).isEqualTo(ActionPlanDTO.from(actionPlan))
   }
 
