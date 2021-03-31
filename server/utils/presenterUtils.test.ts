@@ -1,6 +1,7 @@
 import PresenterUtils from './presenterUtils'
 import draftReferralFactory from '../../testutils/factories/draftReferral'
 import CalendarDay from './calendarDay'
+import Duration from './duration'
 
 describe(PresenterUtils, () => {
   describe('stringValue', () => {
@@ -303,6 +304,82 @@ describe(PresenterUtils, () => {
           expect(value.day.hasError).toEqual(false)
           expect(value.month.hasError).toEqual(true)
           expect(value.year.hasError).toEqual(true)
+        })
+      })
+    })
+  })
+
+  describe('durationValue', () => {
+    describe('hours, minutes values', () => {
+      describe('when the model has a null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns empty strings', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.durationValue(null, 'duration', null)
+
+            expect(value).toMatchObject({ hours: { value: '' }, minutes: { value: '' } })
+          })
+        })
+      })
+
+      describe('when the model has a non-null value for the property', () => {
+        describe('and there is no user input data', () => {
+          it('returns the corresponding values from the model', () => {
+            const utils = new PresenterUtils(null)
+            const value = utils.durationValue(Duration.fromUnits(0, 75, 0), 'duration', null)
+
+            expect(value).toMatchObject({ hours: { value: '1' }, minutes: { value: '15' } })
+          })
+        })
+      })
+
+      describe('when there is user input data', () => {
+        it('returns the user input data', () => {
+          const utils = new PresenterUtils({ 'duration-hours': 'egg', 'duration-minutes': 7 })
+          const value = utils.durationValue(Duration.fromUnits(0, 75, 0), 'duration', null)
+
+          expect(value.hours.value).toBe('egg')
+          expect(value.minutes.value).toBe('7')
+        })
+
+        it('returns an empty string if a field is missing', () => {
+          const utils = new PresenterUtils({ 'duration-hours': 7 })
+          const value = utils.durationValue(Duration.fromUnits(0, 75, 0), 'duration', null)
+
+          expect(value.hours.value).toBe('7')
+          expect(value.minutes.value).toBe('')
+        })
+      })
+    })
+
+    describe('error information', () => {
+      describe('when a null error is passed in', () => {
+        it('returns no errors', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.durationValue(null, 'duration', null)
+
+          expect(value.errorMessage).toBeNull()
+          expect(value.hours.hasError).toEqual(false)
+          expect(value.minutes.hasError).toEqual(false)
+        })
+      })
+
+      describe('when a non-null error is passed in', () => {
+        it('returns error information', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.durationValue(null, 'duration', {
+            errors: [
+              {
+                errorSummaryLinkedField: 'duration-minutes',
+                formFields: ['duration-minutes'],
+                message: 'Please enter a number of minutes',
+              },
+            ],
+          })
+
+          expect(value.errorMessage).toBe('Please enter a number of minutes')
+          expect(value.hours.hasError).toEqual(false)
+          expect(value.minutes.hasError).toEqual(true)
         })
       })
     })

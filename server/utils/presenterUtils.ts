@@ -2,18 +2,25 @@ import { AuthUser } from '../data/hmppsAuthClient'
 import { ServiceUser } from '../services/interventionsService'
 import CalendarDay from './calendarDay'
 import { FormValidationError } from './formValidationError'
+import Duration from './duration'
 import utils from './utils'
 
-interface DateComponentInputPresenter {
+interface DateTimeComponentInputPresenter {
   value: string
   hasError: boolean
 }
 
 export interface DateInputPresenter {
   errorMessage: string | null
-  day: DateComponentInputPresenter
-  month: DateComponentInputPresenter
-  year: DateComponentInputPresenter
+  day: DateTimeComponentInputPresenter
+  month: DateTimeComponentInputPresenter
+  year: DateTimeComponentInputPresenter
+}
+
+interface DurationInputPresenter {
+  errorMessage: string | null
+  hours: DateTimeComponentInputPresenter
+  minutes: DateTimeComponentInputPresenter
 }
 
 export default class PresenterUtils {
@@ -80,6 +87,41 @@ export default class PresenterUtils {
       year: {
         value: yearValue,
         hasError: PresenterUtils.hasError(error, yearKey),
+      },
+    }
+  }
+
+  durationValue(
+    modelValue: Duration | null,
+    userInputKey: string,
+    error: FormValidationError | null
+  ): DurationInputPresenter {
+    const [hoursKey, minutesKey] = ['hours', 'minutes'].map(suffix => `${userInputKey}-${suffix}`)
+
+    const errorMessage = PresenterUtils.errorMessage(error, hoursKey) ?? PresenterUtils.errorMessage(error, minutesKey)
+
+    let hoursValue = ''
+    let minutesValue = ''
+
+    if (this.userInputData === null) {
+      if (modelValue !== null) {
+        hoursValue = String(modelValue?.stopwatchHours ?? '')
+        minutesValue = String(modelValue?.stopwatchMinutes ?? '')
+      }
+    } else {
+      hoursValue = String(this.userInputData[hoursKey] || '')
+      minutesValue = String(this.userInputData[minutesKey] || '')
+    }
+
+    return {
+      errorMessage,
+      hours: {
+        value: hoursValue,
+        hasError: PresenterUtils.hasError(error, hoursKey),
+      },
+      minutes: {
+        value: minutesValue,
+        hasError: PresenterUtils.hasError(error, minutesKey),
       },
     }
   }
