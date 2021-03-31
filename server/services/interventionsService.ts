@@ -427,6 +427,25 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
+  async getSubsequentActionPlanAppointment(
+    token: string,
+    actionPlan: ActionPlan,
+    currentAppointment: ActionPlanAppointment
+  ): Promise<ActionPlanAppointment | null> {
+    const isFinalAppointment =
+      actionPlan.numberOfSessions && actionPlan.numberOfSessions === currentAppointment.sessionNumber
+
+    if (isFinalAppointment) {
+      return null
+    }
+
+    return (await this.getActionPlanAppointment(
+      token,
+      actionPlan.id,
+      currentAppointment.sessionNumber + 1
+    )) as ActionPlanAppointment
+  }
+
   async createActionPlanAppointment(
     token: string,
     actionPlanId: string,
