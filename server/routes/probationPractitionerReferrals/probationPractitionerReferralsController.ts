@@ -9,7 +9,7 @@ export default class ProbationPractitionerReferralsController {
   async showDashboard(req: Request, res: Response): Promise<void> {
     const { token, userId } = res.locals.user
 
-    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token, userId)
+    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token.accessToken, userId)
     const presenter = new DashboardPresenter(existingDraftReferrals)
     const view = new DashboardView(presenter)
 

@@ -11,7 +11,7 @@ const authUser = {
   active: true,
 }
 const deliusUser = {
-  name: 'john smith',
+  name: 'john percy smith',
   authSource: 'delius',
   username: 'johnsmith',
   userId: '123',
@@ -31,31 +31,39 @@ describe('User service', () => {
           groupName: 'NPS West Yorks Staff',
         },
         {
-          groupCode: 'INT_SP_HARMONY',
-          groupName: 'Harmony Living',
+          groupCode: 'INT_SP_HARMONY_LIVING',
+          groupName: 'Int SP Harmony Living',
+        },
+        {
+          groupCode: 'INT_SP_BETTER_LTD',
+          groupName: 'Better Ltd.',
         },
       ])
       userService = new UserService(hmppsAuthClient)
     })
     it('Retrieves and formats user name', async () => {
       hmppsAuthClient.getCurrentUser.mockResolvedValue(deliusUser)
-      const result = await userService.getUser(token)
-      expect(result.displayName).toEqual('John Smith')
+      const result = await userService.getUserDetails(token)
+      expect(result.name).toEqual('john percy smith')
+      expect(result.displayName).toEqual('J. Smith')
     })
     it('filters auth user groups', async () => {
       hmppsAuthClient.getCurrentUser.mockResolvedValue(authUser)
-      const result = await userService.getUser(token)
-      expect(result.organizations).toEqual([{ code: 'INT_SP_HARMONY', name: 'Harmony Living' }])
+      const result = await userService.getUserDetails(token)
+      expect(result.organizations).toEqual([
+        { id: 'HARMONY_LIVING', name: 'Harmony Living' },
+        { id: 'BETTER_LTD', name: 'Better Ltd.' },
+      ])
     })
     it('does not include auth user groups for delius users', async () => {
       hmppsAuthClient.getCurrentUser.mockResolvedValue(deliusUser)
-      const result = await userService.getUser(token)
+      const result = await userService.getUserDetails(token)
       expect(result.organizations).toBeUndefined()
     })
     it('Propagates error', async () => {
       hmppsAuthClient.getCurrentUser.mockRejectedValue(new Error('some error'))
 
-      await expect(userService.getUser(token)).rejects.toEqual(new Error('some error'))
+      await expect(userService.getUserDetails(token)).rejects.toEqual(new Error('some error'))
     })
   })
 })

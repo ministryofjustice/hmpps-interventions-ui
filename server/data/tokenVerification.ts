@@ -2,8 +2,9 @@ import superagent from 'superagent'
 import { Request } from 'express'
 import config from '../config'
 import logger from '../../log'
+import { User } from '../authentication/passport'
 
-function getApiClientToken(token: string) {
+function verifyAccessToken(token: string) {
   return superagent
     .post(`${config.apis.tokenVerification.url}/token/verify`)
     .auth(token, { type: 'bearer' })
@@ -16,10 +17,7 @@ function getApiClientToken(token: string) {
 
 export interface VerifiableRequest extends Request {
   verified?: boolean
-  user: {
-    username: string
-    token: string
-  }
+  user: User
 }
 
 export type TokenVerifier = (request: VerifiableRequest) => Promise<boolean | void>
@@ -27,18 +25,18 @@ export type TokenVerifier = (request: VerifiableRequest) => Promise<boolean | vo
 const tokenVerifier: TokenVerifier = async request => {
   const { user, verified } = request
 
-  if (!config.apis.tokenVerification.enabled) {
-    logger.debug('Token verification disabled, returning token is valid')
-    return true
-  }
-
   if (verified) {
     return true
   }
 
-  logger.debug({ username: user.username }, 'token request')
+  if (!config.apis.tokenVerification.enabled) {
+    logger.debug('token verification disabled; assuming token is valid')
+    return true
+  }
 
-  const result = await getApiClientToken(user.token)
+  logger.debug({ username: user.username }, 'verifying user access token')
+
+  const result = await verifyAccessToken(user.token.accessToken)
   if (result) {
     request.verified = true
   }

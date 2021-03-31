@@ -8,8 +8,7 @@ import allRoutes, { Services } from '../index'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
-import * as auth from '../../authentication/auth'
-import { user, MockUserService } from './mocks/mockUserService'
+import { user } from './mocks/mockUserService'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
 import MockOffenderAssessmentsApiService from './mocks/mockOffenderAssessmentsApiService'
@@ -31,6 +30,9 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
 
   app.use((req, res, next) => {
     req.user = user
+    req.isAuthenticated = () => {
+      return true
+    }
     res.locals = {}
     res.locals.user = req.user
     next()
@@ -55,9 +57,9 @@ export default function appWithAllRoutes({
   overrides?: Partial<Services>
   userType: AppSetupUserType
 }): Express {
-  auth.default.authenticationMiddleware = () => (req, res, next) => next()
+  // auth.default.authenticationMiddleware = () => (req, res, next) => next()
   return appSetup(
-    allRoutes(standardRouter(new MockUserService()), {
+    allRoutes(standardRouter(), {
       communityApiService: new MockCommunityApiService(),
       offenderAssessmentsApiService: new MockOffenderAssessmentsApiService(),
       interventionsService: {} as InterventionsService,

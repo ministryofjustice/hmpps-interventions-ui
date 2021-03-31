@@ -100,11 +100,12 @@ export default class AuthServiceMocks {
         },
         jsonBody: {
           access_token: this.createToken(authSource),
-          token_type: 'bearer',
           user_name: 'USER1',
+          user_id: '9C2744E3-65CD-4B40-B036-95DBD6F9A871',
+          auth_source: authSource,
+          token_type: 'bearer',
           expires_in: 599,
           scope: 'read',
-          internalUser: true,
         },
       },
     })
@@ -122,7 +123,7 @@ export default class AuthServiceMocks {
           'Content-Type': 'application/json;charset=UTF-8',
         },
         jsonBody: {
-          staffId: 231232,
+          userId: '9C2744E3-65CD-4B40-B036-95DBD6F9A871',
           username: 'USER1',
           active: true,
           name: 'john smith',
@@ -214,11 +215,11 @@ export default class AuthServiceMocks {
   }
 
   stubServiceProviderToken = async (): Promise<unknown> => {
-    return this.stubToken('delius')
+    return this.stubToken('auth')
   }
 
   stubProbationPractitionerToken = async (): Promise<unknown> => {
-    return this.stubToken('auth')
+    return this.stubToken('delius')
   }
 
   stubServiceProviderUser = async (): Promise<unknown> => {

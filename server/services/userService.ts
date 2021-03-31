@@ -4,30 +4,32 @@ import type HmppsAuthClient from '../data/hmppsAuthClient'
 export interface UserDetails {
   name: string
   displayName: string
-  userId: string
   organizations?: ServiceProviderOrg[]
 }
 
 export interface ServiceProviderOrg {
-  code: string
+  id: string
   name: string
 }
 
 export default class UserService {
   constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
 
-  private readonly serviceProviderGroupPrefix = 'INT_SP_'
-
-  async getUser(token: string): Promise<UserDetails> {
+  async getUserDetails(token: string): Promise<UserDetails> {
     const user = await this.hmppsAuthClient.getCurrentUser(token)
-    const userDetails: UserDetails = { ...user, displayName: utils.convertToTitleCase(user.name as string) }
+    const nameParts = utils.convertToTitleCase(user.name).split(' ')
+    const displayName = `${nameParts[0][0]}. ${nameParts.reverse()[0]}`
 
-    if (user.authSource === 'auth') {
-      userDetails.organizations = (await this.hmppsAuthClient.getAuthUserGroups(token, user.username))
-        .filter(group => group.groupCode.startsWith(this.serviceProviderGroupPrefix))
-        .map(group => ({ code: group.groupCode, name: group.groupName }))
-    }
+    const organizations =
+      user.authSource === 'auth'
+        ? (await this.hmppsAuthClient.getAuthUserGroups(token, user.username))
+            .filter(group => group.groupCode.startsWith('INT_SP_'))
+            .map(group => ({
+              id: group.groupCode.replace(/^(INT_SP_)/, ''),
+              name: group.groupName.replace(/^(Int SP )/, ''),
+            }))
+        : undefined
 
-    return userDetails
+    return { name: user.name, displayName, organizations }
   }
 }

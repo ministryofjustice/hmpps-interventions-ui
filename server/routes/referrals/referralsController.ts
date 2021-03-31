@@ -96,9 +96,13 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      const referral = await this.interventionsService.createDraftReferral(res.locals.user.token, crn, interventionId)
+      const referral = await this.interventionsService.createDraftReferral(
+        res.locals.user.token.accessToken,
+        crn,
+        interventionId
+      )
 
-      await this.interventionsService.patchDraftReferral(res.locals.user.token, referral.id, {
+      await this.interventionsService.patchDraftReferral(res.locals.user.token.accessToken, referral.id, {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 
@@ -113,7 +117,7 @@ export default class ReferralsController {
   }
 
   async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     const presenter = new ServiceUserDetailsPresenter(referral.serviceUser)
     const view = new ServiceUserDetailsView(presenter)
@@ -126,14 +130,14 @@ export default class ReferralsController {
   }
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('No service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -144,14 +148,14 @@ export default class ReferralsController {
   }
 
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to view relevant sentence without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -174,7 +178,11 @@ export default class ReferralsController {
 
     if (form.isValid) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
@@ -185,14 +193,17 @@ export default class ReferralsController {
     if (!error) {
       res.redirect(`/referrals/${req.params.id}/desired-outcomes`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const referral = await this.interventionsService.getDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id
+      )
 
       if (!referral.serviceCategoryId) {
         throw new Error('Attempting to view relevant sentence without service category selected')
       }
 
       const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token,
+        res.locals.user.token.accessToken,
         referral.serviceCategoryId
       )
 
@@ -211,14 +222,14 @@ export default class ReferralsController {
   }
 
   async viewComplexityLevel(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to view complexity level without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -235,7 +246,11 @@ export default class ReferralsController {
 
     if (form.isValid) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
@@ -246,14 +261,17 @@ export default class ReferralsController {
     if (!error) {
       res.redirect(`/referrals/${req.params.id}/completion-deadline`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const referral = await this.interventionsService.getDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id
+      )
 
       if (referral.serviceCategoryId === null) {
         throw new Error('Attempting to view complexity level without service category selected')
       }
 
       const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token,
+        res.locals.user.token.accessToken,
         referral.serviceCategoryId
       )
 
@@ -266,14 +284,14 @@ export default class ReferralsController {
   }
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to view completion deadline without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -291,7 +309,11 @@ export default class ReferralsController {
 
     if (form.isValid) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
@@ -302,14 +324,17 @@ export default class ReferralsController {
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/rar-days`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const referral = await this.interventionsService.getDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id
+      )
 
       if (referral.serviceCategoryId === null) {
         throw new Error('Attempting to view completion deadline without service category selected')
       }
 
       const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token,
+        res.locals.user.token.accessToken,
         referral.serviceCategoryId
       )
 
@@ -322,14 +347,14 @@ export default class ReferralsController {
   }
 
   async viewFurtherInformation(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to view further information without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -348,7 +373,11 @@ export default class ReferralsController {
     }
 
     try {
-      await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
+      await this.interventionsService.patchDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id,
+        paramsForUpdate
+      )
     } catch (e) {
       error = createFormValidationErrorOrRethrow(e)
     }
@@ -356,14 +385,17 @@ export default class ReferralsController {
     if (!error) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const referral = await this.interventionsService.getDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id
+      )
 
       if (!referral.serviceCategoryId) {
         throw new Error('Attempting to view complexity level without service category selected')
       }
 
       const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token,
+        res.locals.user.token.accessToken,
         referral.serviceCategoryId
       )
 
@@ -376,14 +408,14 @@ export default class ReferralsController {
   }
 
   async viewDesiredOutcomes(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (!referral.serviceCategoryId) {
       throw new Error('Attempting to view desired outcomes without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -400,7 +432,11 @@ export default class ReferralsController {
 
     if (form.isValid) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
@@ -411,14 +447,17 @@ export default class ReferralsController {
     if (!error) {
       res.redirect(`/referrals/${req.params.id}/complexity-level`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const referral = await this.interventionsService.getDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id
+      )
 
       if (!referral.serviceCategoryId) {
         throw new Error('Attempting to view desired outcomes without service category selected')
       }
 
       const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token,
+        res.locals.user.token.accessToken,
         referral.serviceCategoryId
       )
 
@@ -431,7 +470,7 @@ export default class ReferralsController {
   }
 
   async viewNeedsAndRequirements(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     const presenter = new NeedsAndRequirementsPresenter(referral)
     const view = new NeedsAndRequirementsView(presenter)
@@ -440,14 +479,18 @@ export default class ReferralsController {
   }
 
   async updateNeedsAndRequirements(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await NeedsAndRequirementsForm.createForm(req, referral)
 
     let error: FormValidationError | null = null
 
     if (form.isValid) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
@@ -467,7 +510,7 @@ export default class ReferralsController {
   }
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const presenter = new RiskInformationPresenter(referral)
     const view = new RiskInformationView(presenter)
 
@@ -482,7 +525,11 @@ export default class ReferralsController {
     }
 
     try {
-      await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, paramsForUpdate)
+      await this.interventionsService.patchDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id,
+        paramsForUpdate
+      )
     } catch (e) {
       error = createFormValidationErrorOrRethrow(e)
     }
@@ -490,7 +537,10 @@ export default class ReferralsController {
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+      const referral = await this.interventionsService.getDraftReferral(
+        res.locals.user.token.accessToken,
+        req.params.id
+      )
 
       const presenter = new RiskInformationPresenter(referral, error, req.body)
       const view = new RiskInformationView(presenter)
@@ -501,14 +551,14 @@ export default class ReferralsController {
   }
 
   async viewRarDays(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to view RAR days without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -519,14 +569,14 @@ export default class ReferralsController {
   }
 
   async updateRarDays(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to update RAR days without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -536,7 +586,11 @@ export default class ReferralsController {
 
     if (form.isValid) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token, req.params.id, form.paramsForUpdate)
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
@@ -556,12 +610,12 @@ export default class ReferralsController {
   }
 
   async checkAnswers(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to check answers without service category selected')
     }
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token,
+      res.locals.user.token.accessToken,
       referral.serviceCategoryId
     )
 
@@ -572,13 +626,13 @@ export default class ReferralsController {
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.sendDraftReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.sendDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     res.redirect(303, `/referrals/${referral.id}/confirmation`)
   }
 
   async viewConfirmation(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
 
     const presenter = new ConfirmationPresenter(referral)
     const view = new ConfirmationView(presenter)
