@@ -1,3 +1,5 @@
+type PartOfDay = 'am' | 'pm'
+
 export default class ClockTime {
   /*
    * 0 ≤ hour ≤ 23
@@ -8,6 +10,21 @@ export default class ClockTime {
 
   static fromComponents(hour: number, minute: number, second: number): ClockTime | null {
     return ClockTime.isValid(hour, minute, second) ? new ClockTime(hour, minute, second) : null
+  }
+
+  static fromTwelveHourComponents(
+    twelveHourClockHour: number,
+    minute: number,
+    second: number,
+    partOfDay: PartOfDay
+  ): ClockTime | null {
+    if (twelveHourClockHour < (partOfDay === 'pm' ? 1 : 0) || twelveHourClockHour > (partOfDay === 'am' ? 11 : 12)) {
+      return null
+    }
+
+    const hour = partOfDay === 'pm' && twelveHourClockHour < 12 ? twelveHourClockHour + 12 : twelveHourClockHour
+
+    return this.fromComponents(hour, minute, second)
   }
 
   static isValid(hour: number, minute: number, second: number): boolean {
@@ -56,7 +73,7 @@ export default class ClockTime {
     return this.hour > 12 ? this.hour % 12 : this.hour
   }
 
-  get partOfDay(): 'am' | 'pm' {
+  get partOfDay(): PartOfDay {
     return this.hour < 12 ? 'am' : 'pm'
   }
 }
