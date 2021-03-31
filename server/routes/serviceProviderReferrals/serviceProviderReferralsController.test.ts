@@ -579,6 +579,74 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
   })
 })
 
+describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', () => {
+  describe('with valid data', () => {
+    it('updates the appointment on the interventions service and redirects to the intervention progress page', async () => {
+      const actionPlan = actionPlanFactory.build()
+
+      const updatedAppointment = actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      })
+
+      interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+      interventionsService.updateActionPlanAppointment.mockResolvedValue(updatedAppointment)
+
+      await request(app)
+        .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+        .type('form')
+        .send({
+          'date-day': '24',
+          'date-month': '3',
+          'date-year': '2021',
+          'time-hour': '9',
+          'time-minute': '02',
+          'time-part-of-day': 'am',
+          'duration-hours': '1',
+          'duration-minutes': '15',
+        })
+        .expect(302)
+        .expect('Location', `/service-provider/referrals/${actionPlan.referralId}/progress`)
+
+      expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith('token', actionPlan.id, 1, {
+        appointmentTime: '2021-03-24T09:02:00.000Z',
+        durationInMinutes: 75,
+      })
+    })
+  })
+
+  describe('with invalid data', () => {
+    it('does not try to update the action plan on the interventions service, and renders an error message', async () => {
+      const actionPlan = actionPlanFactory.build()
+      const appointment = actionPlanAppointmentFactory.build()
+
+      interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+      interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+
+      await request(app)
+        .post(`/service-provider/action-plan/1/sessions/1/edit`)
+        .type('form')
+        .send({
+          'date-day': '32',
+          'date-month': '3',
+          'date-year': '2021',
+          'time-hour': '9',
+          'time-minute': '02',
+          'time-part-of-day': 'am',
+          'duration-hours': '1',
+          'duration-minutes': '15',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('The session date must be a real date')
+        })
+
+      expect(interventionsService.updateActionPlanAppointment).not.toHaveBeenCalled()
+    })
+  })
+})
+
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
   it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
     const serviceUser = deliusServiceUser.build()

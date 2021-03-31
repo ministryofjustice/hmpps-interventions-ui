@@ -320,17 +320,46 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#action-plan-status').contains('Submitted')
   })
 
-  it('User views an action plan appointment', () => {
-    const appointment = actionPlanAppointmentFactory.build({
-      sessionNumber: 1,
+  it('User schedules and views an action plan appointment', () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
+    const actionPlan = actionPlanFactory.build({ referralId: referral.id })
+    const appointment = actionPlanAppointmentFactory
+      .newlyCreated()
+      .build({ referralId: referral.id, actionPlanId: actionPlan.id, sessionNumber: 1 })
+    const deliusServiceUser = deliusServiceUserFactory.build()
+
+    cy.stubGetSentReferrals([])
+    cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, appointment)
+    cy.stubGetActionPlan(actionPlan.id, actionPlan)
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+
+    cy.login()
+
+    cy.visit(`/service-provider/action-plan/1/sessions/1/edit`)
+
+    cy.get('#date-day').type('24')
+    cy.get('#date-month').type('3')
+    cy.get('#date-year').type('2021')
+    cy.get('#time-hour').type('9')
+    cy.get('#time-minute').type('02')
+    cy.get('#time-part-of-day').select('AM')
+    cy.get('#duration-hours').type('1')
+    cy.get('#duration-minutes').type('15')
+
+    const scheduledAppointment = actionPlanAppointmentFactory.build({
+      ...appointment,
       appointmentTime: '2021-03-24T09:02:02Z',
       durationInMinutes: 75,
     })
+    cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
+    cy.stubUpdateActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
 
-    cy.stubGetSentReferrals([])
-    cy.stubGetActionPlanAppointment('1', 1, appointment)
+    cy.contains('Save and continue').click()
 
-    cy.login()
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
 
     cy.visit(`/service-provider/action-plan/1/sessions/1/edit`)
 

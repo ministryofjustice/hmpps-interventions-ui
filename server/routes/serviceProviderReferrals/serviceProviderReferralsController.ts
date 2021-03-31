@@ -28,6 +28,7 @@ import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessions
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
 import EditSessionPresenter from './editSessionPresenter'
 import EditSessionView from './editSessionView'
+import EditSessionForm from './editSessionForm'
 import PostSessionAttendanceFeedbackView from './postSessionAttendanceFeedbackView'
 import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
 import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
@@ -388,14 +389,45 @@ export default class ServiceProviderReferralsController {
   }
 
   async editSession(req: Request, res: Response): Promise<void> {
+    const sessionNumber = Number(req.params.sessionNumber)
+
+    let userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+
+    if (req.method === 'POST') {
+      const data = await new EditSessionForm(req).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.updateActionPlanAppointment(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          sessionNumber,
+          data.paramsForUpdate
+        )
+
+        const actionPlan = await this.interventionsService.getActionPlan(
+          res.locals.user.token.accessToken,
+          req.params.id
+        )
+
+        res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
+        return
+      }
+    }
+
     const appointment = await this.interventionsService.getActionPlanAppointment(
       res.locals.user.token.accessToken,
       req.params.id,
-      Number(req.params.sessionNumber)
+      sessionNumber
     )
-    const presenter = new EditSessionPresenter(appointment)
+
+    const presenter = new EditSessionPresenter(appointment, formError, userInputData)
     const view = new EditSessionView(presenter)
-    return res.render(...view.renderArgs)
+    res.render(...view.renderArgs)
   }
 
   async showPostSessionAttendanceFeedbackForm(req: Request, res: Response): Promise<void> {

@@ -13,9 +13,12 @@ export default class EditSessionView {
         dateInputArgs: this.dateInputArgs,
         timeInputArgs: this.timeInputArgs,
         durationDateInputArgs: this.durationDateInputArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
       },
     ]
   }
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get dateInputArgs(): DateInputArgs {
     return {
@@ -23,7 +26,7 @@ export default class EditSessionView {
       namePrefix: 'date',
       fieldset: {
         legend: {
-          text: 'Date (optional)',
+          text: 'Date',
           isPageHeading: false,
           classes: 'govuk-fieldset__legend--m',
         },
@@ -55,7 +58,7 @@ export default class EditSessionView {
       namePrefix: 'time',
       fieldset: {
         legend: {
-          text: 'Time (optional)',
+          text: 'Time',
           isPageHeading: false,
           classes: 'govuk-fieldset__legend--m',
         },
@@ -97,7 +100,7 @@ export default class EditSessionView {
       namePrefix: 'duration',
       fieldset: {
         legend: {
-          text: 'Duration of the session (optional)',
+          text: 'Duration of the session',
           isPageHeading: false,
           classes: 'govuk-fieldset__legend--m',
         },

@@ -64,4 +64,25 @@ export default {
   attendedAppointment: {
     empty: 'Select whether the service user attended or not',
   },
+  editSession: {
+    time: {
+      calendarDay: {
+        dayEmpty: 'The session date must include a day',
+        monthEmpty: 'The session date must include a month',
+        yearEmpty: 'The session date must include a year',
+        invalidDate: 'The session date must be a real date',
+      },
+      clockTime: {
+        hourEmpty: 'The session time must include an hour',
+        minuteEmpty: 'The session time must include a minute',
+        partOfDayEmpty: 'Select whether the session time is AM or PM',
+        invalidTime: 'The session time must be a real time',
+      },
+      invalidTime: 'The session time must exist on the session date',
+    },
+    duration: {
+      empty: 'Enter a duration',
+      invalidDuration: 'The session duration must be a real duration',
+    },
+  },
 }
