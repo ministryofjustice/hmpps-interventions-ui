@@ -1,3 +1,8 @@
+import * as TimezoneSupport from 'timezone-support'
+import ClockTime from './clockTime'
+
+const britishIanaTimeZoneIdentifier = 'Europe/London'
+
 export default class CalendarDay {
   private constructor(readonly day: number, readonly month: number, readonly year: number) {}
 
@@ -52,7 +57,7 @@ export default class CalendarDay {
   }
 
   static britishDayForDate(date: Date): CalendarDay {
-    return this.dayForDate(date, 'Europe/London')
+    return this.dayForDate(date, britishIanaTimeZoneIdentifier)
   }
 
   get iso8601(): string {
@@ -65,5 +70,39 @@ export default class CalendarDay {
 
   get utcDate(): Date {
     return new Date(Date.UTC(this.year, this.month - 1, this.day))
+  }
+
+  private atTimeInTimeZone(time: ClockTime, ianaTimeZoneIdentifier: string): Date | null {
+    const zone = TimezoneSupport.findTimeZone(ianaTimeZoneIdentifier)
+    const dateTime = TimezoneSupport.setTimeZone(
+      { ...this, hours: time.hour, minutes: time.minute, seconds: time.second },
+      zone
+    )
+
+    const converted = TimezoneSupport.convertTimeToDate(dateTime)
+
+    // convertTimeToDate doesn’t indicate whether the input is actually valid,
+    // so convert this Date back to components and see whether they match the
+    // input.
+
+    const convertedBack = TimezoneSupport.getZonedTime(converted, zone)
+
+    if (
+      !(
+        convertedBack.year === this.year &&
+        convertedBack.month === this.month &&
+        convertedBack.day === this.day &&
+        convertedBack.hours === time.hour &&
+        convertedBack.minutes === time.minute
+      )
+    ) {
+      return null
+    }
+
+    return converted
+  }
+
+  atTimeInBritain(time: ClockTime): Date | null {
+    return this.atTimeInTimeZone(time, britishIanaTimeZoneIdentifier)
   }
 }
