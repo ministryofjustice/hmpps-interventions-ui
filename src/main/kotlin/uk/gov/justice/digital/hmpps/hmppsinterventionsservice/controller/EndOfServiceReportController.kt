@@ -36,8 +36,8 @@ class EndOfServiceReportController(
     val endOfServiceReport = endOfServiceReportService.createEndOfServiceReport(createEndOfServiceReportDTO.referralId, createdByUser)
 
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
-    val location = locationMapper.mapToCurrentRequestBasePath("/{id}", endOfServiceReportDTO.id)
-    return ResponseEntity.created(location.toUri()).body(endOfServiceReportDTO)
+    val location = locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", endOfServiceReportDTO.id)
+    return ResponseEntity.created(location).body(endOfServiceReportDTO)
   }
 
   @GetMapping("/end-of-service-report/{id}")
@@ -76,7 +76,7 @@ class EndOfServiceReportController(
     val submittedEndOfServiceReport = endOfServiceReportService.submitEndOfServiceReport(id, submittedByUser)
 
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(submittedEndOfServiceReport)
-    val location = locationMapper.mapToCurrentContextPathAsString("/end-of-service-report/{id}", endOfServiceReportDTO.id)
-    return ResponseEntity.created(location.toUri()).body(endOfServiceReportDTO)
+    val location = locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReportDTO.id)
+    return ResponseEntity.created(location).body(endOfServiceReportDTO)
   }
 }

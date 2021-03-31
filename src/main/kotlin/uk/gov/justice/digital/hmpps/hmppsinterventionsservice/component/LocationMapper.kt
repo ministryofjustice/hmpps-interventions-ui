@@ -2,21 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import org.springframework.web.util.UriComponents
-import java.util.UUID
+import java.net.URI
 
 @Component
 class LocationMapper {
-
-  fun mapToCurrentRequestBasePath(path: String, id: UUID): UriComponents {
-    return ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id)
-  }
-
-  fun mapToCurrentRequestBasePath(path: String, id: UUID, ordinalId: Int): UriComponents {
-    return ServletUriComponentsBuilder.fromCurrentRequest().path(path).buildAndExpand(id, ordinalId)
-  }
-
-  fun mapToCurrentContextPathAsString(path: String, id: UUID): UriComponents {
-    return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(id)
+  fun expandPathToCurrentRequestBaseUrl(path: String, vararg uriVariableValues: Any): URI {
+    return ServletUriComponentsBuilder.fromCurrentRequestUri().path(path).buildAndExpand(*uriVariableValues).toUri()
   }
 }

@@ -42,12 +42,12 @@ class AppointmentsController(
     )
 
     val actionPlanAppointmentDTO = ActionPlanAppointmentDTO.from(actionPlanAppointment)
-    val location = locationMapper.mapToCurrentRequestBasePath(
+    val location = locationMapper.expandPathToCurrentRequestBaseUrl(
       "/action-plan/{id}/appointment/{sessionNumber}",
       actionPlanId,
       newAppointmentDTO.sessionNumber
     )
-    return ResponseEntity.created(location.toUri()).body(actionPlanAppointmentDTO)
+    return ResponseEntity.created(location).body(actionPlanAppointmentDTO)
   }
 
   @PatchMapping("/action-plan/{id}/appointment/{sessionNumber}")
