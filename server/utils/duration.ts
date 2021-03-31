@@ -5,6 +5,16 @@ export default class Duration {
     return new Duration(hours * 3600 + minutes * 60 + seconds)
   }
 
+  // If the duration represents a whole number of minutes, then this
+  // returns the number of minutes. Else, it returns null.
+  get minutes(): number | null {
+    if (this.seconds % 60 === 0) {
+      return this.seconds / 60
+    }
+
+    return null
+  }
+
   // The hours value displayed for this duration on a stopwatch
   // that displays durations in hours, minutes, and seconds.
   get stopwatchHours(): number {

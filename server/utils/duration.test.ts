@@ -8,6 +8,16 @@ describe(Duration, () => {
     })
   })
 
+  describe('minutes', () => {
+    it('returns the number of minutes when the duration is a full number of minutes', () => {
+      expect(new Duration(120).minutes).toEqual(2)
+    })
+
+    it('returns null when the duration is not a full number of minutes', () => {
+      expect(new Duration(121).minutes).toBeNull()
+    })
+  })
+
   describe('stopwatch values', () => {
     it('returns the correct values', () => {
       const duration = new Duration(10 * 3600 + 5 * 60 + 32.5)
