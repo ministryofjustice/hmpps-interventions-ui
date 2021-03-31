@@ -1,3 +1,4 @@
+import { Request } from 'express'
 import { SummaryListItem } from '../server/utils/summaryList'
 
 export default class TestUtils {
@@ -5,5 +6,9 @@ export default class TestUtils {
     const items = list()
     const item = items.find(anItem => anItem.key === key)
     return item?.lines ?? null
+  }
+
+  static createRequest = (body: Record<string, unknown>): Request => {
+    return { body } as Request
   }
 }
