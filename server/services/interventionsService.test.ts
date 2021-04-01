@@ -1838,7 +1838,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
-    describe('with null values', async () => {
+    describe('with null values', () => {
       it('returns an updated action plan appointment', async () => {
         const actionPlanAppointment = {
           sessionNumber: 2,
