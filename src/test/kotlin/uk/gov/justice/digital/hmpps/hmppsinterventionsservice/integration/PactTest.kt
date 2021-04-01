@@ -288,40 +288,25 @@ class PactTest {
     actionPlanRepository.save(draftActionPlan)
   }
 
-  @State("a draft action plan with ID ebe841a8-c33f-4772-8b01-ad58a16e5b6c exists and has no appointments")
-  fun `create a an empty draft plan with no appointments`() {
-    val referral = referralService.createDraftReferral(
-      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("ebe841a8-c33f-4772-8b01-ad58a16e5b6c"),
-    )
+  @State("an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and it has 3 scheduled appointments")
+  fun `create a submitted action plan with 3 appointments`() {
+    val referral = referralService.createDraftReferral(deliusUser, "X862134", accommodationInterventionID)
     referralRepository.save(referral)
-    val draftActionPlan = ActionPlan(
-      id = UUID.fromString("ebe841a8-c33f-4772-8b01-ad58a16e5b6c"),
-      createdBy = referral.createdBy,
-      createdAt = OffsetDateTime.now(),
-      referral = referral,
-      activities = mutableListOf()
-    )
-    actionPlanRepository.save(draftActionPlan)
-  }
 
-  @State("a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has some appointments")
-  fun `create a an empty draft plan with some appointments`() {
-    val referral = referralService.createDraftReferral(
-      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d"),
-    )
-    referralRepository.save(referral)
-    val draftActionPlan = ActionPlan(
+    val actionPlan = ActionPlan(
       id = UUID.fromString("e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d"),
-      createdBy = referral.createdBy,
+      createdBy = authUser,
       createdAt = OffsetDateTime.now(),
       referral = referral,
-      activities = mutableListOf()
+      activities = mutableListOf(),
+      submittedAt = OffsetDateTime.now(),
+      submittedBy = authUser,
     )
-    actionPlanRepository.save(draftActionPlan)
+    actionPlanRepository.save(actionPlan)
 
-    appointmentsService.createAppointment(draftActionPlan.id, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
-    appointmentsService.createAppointment(draftActionPlan.id, 2, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"), 120, draftActionPlan.createdBy)
-    appointmentsService.createAppointment(draftActionPlan.id, 3, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"), 120, draftActionPlan.createdBy)
+    appointmentsService.createAppointment(actionPlan, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, authUser)
+    appointmentsService.createAppointment(actionPlan, 2, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"), 120, authUser)
+    appointmentsService.createAppointment(actionPlan, 3, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"), 120, authUser)
   }
 
   @State("There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e")
@@ -338,28 +323,24 @@ class PactTest {
     referralRepository.save(referral)
   }
 
-  @State("a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists")
-  fun `create a new empty draft action plan`() {
-    val referral = referralService.createDraftReferral(
-      deliusUser, "X862134", accommodationInterventionID, UUID.fromString("345059d4-1697-467b-8914-fedec9957279"),
-    )
+  @State("an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already")
+  fun `create a an empty draft plan with 2 2 hours appointments`() {
+    val referral = referralService.createDraftReferral(deliusUser, "X862134", accommodationInterventionID)
     referralRepository.save(referral)
-    val draftActionPlan = ActionPlan(
+
+    val actionPlan = ActionPlan(
       id = UUID.fromString("345059d4-1697-467b-8914-fedec9957279"),
-      createdBy = referral.createdBy,
+      createdBy = authUser,
       createdAt = OffsetDateTime.now(),
       referral = referral,
-      activities = mutableListOf()
+      activities = mutableListOf(),
+      submittedAt = OffsetDateTime.now(),
+      submittedBy = authUser,
     )
-    actionPlanRepository.save(draftActionPlan)
-  }
+    actionPlanRepository.save(actionPlan)
 
-  @State("a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already")
-  fun `create a an empty draft plan with 2 2 hours appointments`() {
-    `create a new empty draft action plan`()
-    val draftActionPlan = actionPlanRepository.findById(UUID.fromString("345059d4-1697-467b-8914-fedec9957279")).get()
-    appointmentsService.createAppointment(draftActionPlan.id, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
-    appointmentsService.createAppointment(draftActionPlan.id, 2, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
+    appointmentsService.createAppointment(actionPlan, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, authUser)
+    appointmentsService.createAppointment(actionPlan, 2, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, authUser)
   }
 
   @State("There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan")
