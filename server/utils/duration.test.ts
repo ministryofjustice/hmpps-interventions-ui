@@ -3,8 +3,14 @@ import Duration from './duration'
 describe(Duration, () => {
   describe('.fromUnits', () => {
     it('converts hours, minutes and seconds to seconds', () => {
-      expect(Duration.fromUnits(10, 5, 32).seconds).toEqual(36332)
-      expect(Duration.fromUnits(0, 500, 0).seconds).toEqual(30000)
+      expect(Duration.fromUnits(10, 5, 32)!.seconds).toEqual(36332)
+      expect(Duration.fromUnits(0, 500, 0)!.seconds).toEqual(30000)
+    })
+
+    it('returns null with invalid input', () => {
+      expect(Duration.fromUnits(-1, 1, 1)).toBeNull()
+      expect(Duration.fromUnits(1, -1, 1)).toBeNull()
+      expect(Duration.fromUnits(1, 1, -1)).toBeNull()
     })
   })
 
