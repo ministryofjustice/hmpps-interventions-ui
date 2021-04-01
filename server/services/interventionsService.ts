@@ -161,8 +161,8 @@ export interface ActionPlanAppointment {
 }
 
 export interface ActionPlanAppointmentUpdate {
-  appointmentTime: string
-  durationInMinutes: number
+  appointmentTime: string | null
+  durationInMinutes: number | null
 }
 
 interface AppointmentAttendance {
