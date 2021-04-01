@@ -1,7 +1,16 @@
 export default class Duration {
   constructor(readonly seconds: number) {}
 
-  static fromUnits(hours: number, minutes: number, seconds: number): Duration {
+  /*
+   * hours ≥ 0
+   * minutes ≥ 0
+   * seconds ≥ 0
+   */
+  static fromUnits(hours: number, minutes: number, seconds: number): Duration | null {
+    if (hours < 0 || minutes < 0 || seconds < 0) {
+      return null
+    }
+
     return new Duration(hours * 3600 + minutes * 60 + seconds)
   }
 
