@@ -76,11 +76,13 @@ notify:
     referral-sent: "336f2158-d130-4c63-a59b-da12df15a5a3"
     referral-assigned: "f0fe2fce-df0f-46c0-839a-822037d39c28"
     action-plan-submitted: "83743b43-9abb-4ffb-913d-dc583ab22dbf"
+    appointment-not-attended: "21b14c86-30d2-4bf2-b355-8f3deb62ef69"
 
 interventions-ui:
   locations:
     sent-referral: "/service-provider/referrals/{id}/details"
-    submit-action-plan: "/action-plan/{id}/toBeSpecified"
+    submit-action-plan: "/service-provider/referrals/{id}/progress" # fixme
+    appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
 
 community-api:
   locations:

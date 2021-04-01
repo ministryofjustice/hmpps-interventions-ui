@@ -7,6 +7,8 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
@@ -42,6 +44,35 @@ class NotifyActionPlanService(
             "submitterFirstName" to userDetail.firstName,
             "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
             "actionPlanUrl" to location.toString(),
+          )
+        )
+      }
+    }
+  }
+}
+
+@Service
+class NotifyAppointmentService(
+  @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.appointment-not-attended}") private val interventionsUIAppointmentNotAttendedLocation: String,
+  private val emailSender: EmailSender,
+  private val hmppsAuthService: HMPPSAuthService,
+) : ApplicationListener<AppointmentEvent>, NotifyService {
+
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: AppointmentEvent) {
+    when (event.type) {
+      AppointmentEventType.NO_ATTENDANCE -> {
+        val ppDetails = hmppsAuthService.getUserDetail(event.appointment.actionPlan.referral.getResponsibleProbationPractitioner())
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUIAppointmentNotAttendedLocation, event.appointment.id)
+        emailSender.sendEmail(
+          appointmentNotAttendedTemplateID,
+          ppDetails.email,
+          mapOf(
+            "ppFirstName" to ppDetails.firstName,
+            "referenceNumber" to event.appointment.actionPlan.referral.referenceNumber!!,
+            "attendanceUrl" to location.toString(),
           )
         )
       }

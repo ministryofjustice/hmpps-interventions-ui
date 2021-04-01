@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.ReferralController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.net.URI
 
@@ -21,6 +22,7 @@ class ReferralEventPublisherTest {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val uri = URI.create("http://localhost/sent-referral/" + referral.id)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
+    whenever(locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)).thenReturn("/sent-referral/{id}")
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
     publisher.referralSentEvent(referral)
@@ -40,6 +42,7 @@ class ReferralEventPublisherTest {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val uri = URI.create("http://localhost/sent-referral/" + referral.id)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
+    whenever(locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)).thenReturn("/sent-referral/{id}")
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
     publisher.referralAssignedEvent(referral)

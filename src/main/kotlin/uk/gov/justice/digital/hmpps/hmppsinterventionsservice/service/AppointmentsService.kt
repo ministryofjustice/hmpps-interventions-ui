@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -17,6 +18,7 @@ class AppointmentsService(
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
   val actionPlanRepository: ActionPlanRepository,
   val authUserRepository: AuthUserRepository,
+  val appointmentEventPublisher: AppointmentEventPublisher
 ) {
   fun createAppointment(
     actionPlanId: UUID,
@@ -63,7 +65,14 @@ class AppointmentsService(
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
     setAttendanceFields(appointment, attended, additionalInformation)
+    notifyIfNoAttendance(appointment, attended)
     return actionPlanAppointmentRepository.save(appointment)
+  }
+
+  private fun notifyIfNoAttendance(appointment: ActionPlanAppointment, attended: Attended) {
+    if (attended == Attended.NO) {
+      appointmentEventPublisher.appointmentNotAttendedEvent(appointment)
+    }
   }
 
   fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
