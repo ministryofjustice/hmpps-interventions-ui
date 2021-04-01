@@ -8,7 +8,7 @@ export default class ClockTime {
    */
   private constructor(readonly hour: number, readonly minute: number, readonly second: number) {}
 
-  static fromComponents(hour: number, minute: number, second: number): ClockTime | null {
+  static fromTwentyFourHourComponents(hour: number, minute: number, second: number): ClockTime | null {
     return ClockTime.isValid(hour, minute, second) ? new ClockTime(hour, minute, second) : null
   }
 
@@ -24,7 +24,7 @@ export default class ClockTime {
 
     const hour = partOfDay === 'pm' && twelveHourClockHour < 12 ? twelveHourClockHour + 12 : twelveHourClockHour
 
-    return this.fromComponents(hour, minute, second)
+    return this.fromTwentyFourHourComponents(hour, minute, second)
   }
 
   static isValid(hour: number, minute: number, second: number): boolean {

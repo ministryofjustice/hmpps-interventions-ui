@@ -403,21 +403,33 @@ describe(PresenterUtils, () => {
         describe('and there is no user input data', () => {
           it('returns the corresponding values from the model', () => {
             const utils = new PresenterUtils(null)
-            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 15, 23), 'start-time', null)
+            const value = utils.twelveHourTimeValue(
+              ClockTime.fromTwentyFourHourComponents(10, 15, 23),
+              'start-time',
+              null
+            )
 
             expect(value).toMatchObject({ hour: { value: '10' }, minute: { value: '15' } })
           })
 
           it('returns the correct 12-hour clock hour value', () => {
             const utils = new PresenterUtils(null)
-            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(22, 15, 23), 'start-time', null)
+            const value = utils.twelveHourTimeValue(
+              ClockTime.fromTwentyFourHourComponents(22, 15, 23),
+              'start-time',
+              null
+            )
 
             expect(value).toMatchObject({ hour: { value: '10' }, minute: { value: '15' } })
           })
 
           it('pads the minute value to 2 digits', () => {
             const utils = new PresenterUtils(null)
-            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 5, 23), 'start-time', null)
+            const value = utils.twelveHourTimeValue(
+              ClockTime.fromTwentyFourHourComponents(10, 5, 23),
+              'start-time',
+              null
+            )
 
             expect(value).toMatchObject({ hour: { value: '10' }, minute: { value: '05' } })
           })
@@ -427,7 +439,7 @@ describe(PresenterUtils, () => {
       describe('when there is user input data', () => {
         it('returns the user input data', () => {
           const utils = new PresenterUtils({ 'start-time-hour': 'egg', 'start-time-minute': 7 })
-          const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 5, 23), 'start-time', null)
+          const value = utils.twelveHourTimeValue(ClockTime.fromTwentyFourHourComponents(10, 5, 23), 'start-time', null)
 
           expect(value.hour.value).toBe('egg')
           expect(value.minute.value).toBe('7')
@@ -435,7 +447,7 @@ describe(PresenterUtils, () => {
 
         it('returns an empty string if a field is missing', () => {
           const utils = new PresenterUtils({ 'start-time-hour': 7 })
-          const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 5, 23), 'start-time', null)
+          const value = utils.twelveHourTimeValue(ClockTime.fromTwentyFourHourComponents(10, 5, 23), 'start-time', null)
 
           expect(value.hour.value).toBe('7')
           expect(value.minute.value).toBe('')
@@ -459,14 +471,22 @@ describe(PresenterUtils, () => {
         describe('and there is no user input data', () => {
           it('returns "am" when the time from the model is before midday', () => {
             const utils = new PresenterUtils(null)
-            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(10, 15, 23), 'start-time', null)
+            const value = utils.twelveHourTimeValue(
+              ClockTime.fromTwentyFourHourComponents(10, 15, 23),
+              'start-time',
+              null
+            )
 
             expect(value).toMatchObject({ partOfDay: { value: 'am' } })
           })
 
           it('returns "pm" when the time from the model is after midday', () => {
             const utils = new PresenterUtils(null)
-            const value = utils.twelveHourTimeValue(ClockTime.fromComponents(22, 15, 23), 'start-time', null)
+            const value = utils.twelveHourTimeValue(
+              ClockTime.fromTwentyFourHourComponents(22, 15, 23),
+              'start-time',
+              null
+            )
 
             expect(value).toMatchObject({ partOfDay: { value: 'pm' } })
           })
@@ -475,7 +495,7 @@ describe(PresenterUtils, () => {
 
       describe('when there is user input data', () => {
         it('returns the user input data if a valid option was chosen', () => {
-          const modelValue = ClockTime.fromComponents(10, 5, 23)
+          const modelValue = ClockTime.fromTwentyFourHourComponents(10, 5, 23)
 
           expect(
             new PresenterUtils({ 'start-time-part-of-day': 'am' }).twelveHourTimeValue(modelValue, 'start-time', null)
@@ -489,7 +509,7 @@ describe(PresenterUtils, () => {
         })
 
         it('returns null if an invalid option was chosen', () => {
-          const modelValue = ClockTime.fromComponents(10, 5, 23)
+          const modelValue = ClockTime.fromTwentyFourHourComponents(10, 5, 23)
 
           expect(
             new PresenterUtils({ 'start-time-part-of-day': 'egg' }).twelveHourTimeValue(modelValue, 'start-time', null)
@@ -498,7 +518,7 @@ describe(PresenterUtils, () => {
         })
 
         it('returns null if the field is missing', () => {
-          const modelValue = ClockTime.fromComponents(10, 5, 23)
+          const modelValue = ClockTime.fromTwentyFourHourComponents(10, 5, 23)
 
           expect(new PresenterUtils({}).twelveHourTimeValue(modelValue, 'start-time', null).partOfDay.value).toBeNull()
         })
