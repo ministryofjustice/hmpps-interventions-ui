@@ -20,7 +20,8 @@ class ActionPlanService(
   val referralRepository: ReferralRepository,
   val actionPlanRepository: ActionPlanRepository,
   val actionPlanValidator: ActionPlanValidator,
-  val actionPlanEventPublisher: ActionPlanEventPublisher
+  val actionPlanEventPublisher: ActionPlanEventPublisher,
+  val appointmentsService: AppointmentsService,
 ) {
 
   fun createDraftActionPlan(
@@ -60,15 +61,16 @@ class ActionPlanService(
   }
 
   fun submitDraftActionPlan(id: UUID, submittedByUser: AuthUser): ActionPlan {
-
     val draftActionPlan = getDraftActionPlanOrElseThrowException(id)
-    updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
-    actionPlanValidator.validateSubmittedActionPlan(draftActionPlan)
+    val submittedActionPlan = updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
+    actionPlanValidator.validateSubmittedActionPlan(submittedActionPlan)
 
-    val savedDraftActionPlan = actionPlanRepository.save(draftActionPlan)
-    actionPlanEventPublisher.actionPlanSubmitEvent(savedDraftActionPlan)
+    appointmentsService.createUnscheduledAppointmentsForActionPlan(submittedActionPlan, submittedByUser)
 
-    return savedDraftActionPlan
+    val savedSubmittedActionPlan = actionPlanRepository.save(submittedActionPlan)
+    actionPlanEventPublisher.actionPlanSubmitEvent(savedSubmittedActionPlan)
+
+    return savedSubmittedActionPlan
   }
 
   fun getActionPlan(id: UUID): ActionPlan {
@@ -101,8 +103,9 @@ class ActionPlanService(
       ?: throw EntityNotFoundException("draft action plan not found [id=$id]")
   }
 
-  private fun updateDraftActionPlanAsSubmitted(draftActionPlan: ActionPlan, submittedByUser: AuthUser) {
+  private fun updateDraftActionPlanAsSubmitted(draftActionPlan: ActionPlan, submittedByUser: AuthUser): ActionPlan {
     draftActionPlan.submittedAt = OffsetDateTime.now()
     draftActionPlan.submittedBy = submittedByUser
+    return draftActionPlan
   }
 }
