@@ -5,7 +5,8 @@ insert into dynamic_framework_contract (id, service_category_id, service_provide
 values ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', TO_DATE('2020-12-15', 'YYYY-MM-DD'), TO_DATE('2023-12-15', 'YYYY-MM-DD'), 'G', null, true, true, 18, 25),
        ('f9d24b4a-390d-4cc1-a7ee-3e6f022e1599', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', TO_DATE('2020-01-01', 'YYYY-MM-DD'), TO_DATE('2022-12-31', 'YYYY-MM-DD'), 'G', null, true, false, 18, 25),
        ('24f7a423-15a6-438d-9d28-063e92b25a9b', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', TO_DATE('2021-12-11', 'YYYY-MM-DD'), TO_DATE('2025-12-11', 'YYYY-MM-DD'), null, 'avon-and-somerset', true, true, 25, null),
-       ('c7d39f92-6f43-49a4-bb62-e0f42c864765', 'c036826e-f077-49a5-8b33-601dca7ad479', 'HARMONY_LIVING', TO_DATE('2021-01-01', 'YYYY-MM-DD'), TO_DATE('2035-05-01', 'YYYY-MM-DD'), 'G', null, false, true, 18, null);
+       ('c7d39f92-6f43-49a4-bb62-e0f42c864765', 'c036826e-f077-49a5-8b33-601dca7ad479', 'HARMONY_LIVING', TO_DATE('2021-01-01', 'YYYY-MM-DD'), TO_DATE('2035-05-01', 'YYYY-MM-DD'), 'G', null, false, true, 18, null),
+       ('0b60d842-9c08-408e-8c8d-f6dbf8e5c3f4', '9556a399-3529-4993-8030-41db2090555e', 'HARMONY_LIVING', TO_DATE('2021-01-01', 'YYYY-MM-DD'), TO_DATE('2035-05-01', 'YYYY-MM-DD'), 'J', null, true, true, 18, null);
 
 insert into intervention (id, dynamic_framework_contract_id, created_at, title, description)
 values ('98a42c61-c30f-4beb-8062-04033c376e2d', '1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', TO_DATE('2020-10-15', 'YYYY-MM-DD'), 'Accommodation Service', 'The service aims are to support in securing settled accommodation.'),
@@ -14,4 +15,5 @@ values ('98a42c61-c30f-4beb-8062-04033c376e2d', '1d7f8fcc-aa12-4705-a6a5-0d40467
        ('f803445f-326c-4ef8-aee2-f7716d417832', 'c7d39f92-6f43-49a4-bb62-e0f42c864765', TO_DATE('2020-11-11', 'YYYY-MM-DD'), 'Social Inclusion', 'This programme is aimed at males who have offended.
 
 • This programme is aimed at males who have offended.
-• This is some more text about the intervention');
+• This is some more text about the intervention'),
+       ('15237ae5-a017-4de6-a033-abf350f14d99', '0b60d842-9c08-408e-8c8d-f6dbf8e5c3f4', TO_DATE('2020-11-11', 'YYYY-MM-DD'), 'Begins at Home', 'This service is dedicated for handling challenging situations at home.');

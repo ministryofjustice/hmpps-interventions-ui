@@ -38,12 +38,9 @@ class PactTest {
   @Autowired private lateinit var referralService: ReferralService
   @Autowired private lateinit var appointmentsService: AppointmentsService
 
-  // rely on interventions and users from the seed data for now
-  // once we have working factory methods for creating these we should
-  // be able to completely decouple from the seed data.
   private val accommodationInterventionID = UUID.fromString("98a42c61-c30f-4beb-8062-04033c376e2d")
   private val deliusUser = AuthUser("8751622134", "delius", "BERNARD.BEAKS")
-  private val authUser = AuthUser("555224b3-865c-4b56-97dd-c3e817592ba3", "auth", "UserABC")
+  private val authUser = AuthUser("608955ae-52ed-44cc-884c-011597a77949", "auth", "AUTH_USER")
 
   @BeforeEach
   fun setup() {
@@ -78,8 +75,11 @@ class PactTest {
     referralRepository.save(referral)
   }
 
-  @State("There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf")
-  fun `create the sent referral`() {
+  @State(
+    "There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf",
+    "There are some existing sent referrals",
+  )
+  fun `create sent referral 400be4c6`() {
     val referral = referralService.createDraftReferral(
       user = deliusUser,
       crn = "X123456",
@@ -92,17 +92,12 @@ class PactTest {
     referralRepository.save(referral)
   }
 
-  @State("There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962")
-  fun `create draft referral with the required id`() {
-    referralService.createDraftReferral(
-      user = deliusUser,
-      crn = "X123456",
-      interventionId = accommodationInterventionID,
-      UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"),
-    )
-  }
-
-  @State("an intervention has been selected and a draft referral can be created")
+  @State(
+    "an intervention has been selected and a draft referral can be created",
+    "There is an existing intervention with ID 15237ae5-a017-4de6-a033-abf350f14d99",
+    "There are some interventions",
+    "There are some PCC regions",
+  )
   fun `no referrals, using intervention id 98a42c61 from seed data`() {}
 
   @State("There is an existing draft referral with ID of ac386c25-52c8-41fa-9213-fcf42e24b0b5")
@@ -134,6 +129,7 @@ class PactTest {
   fun `use service category 428ee70f from the real data migration`() {}
 
   @State(
+    "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962",
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected",
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service provider selected",
   )
@@ -328,8 +324,22 @@ class PactTest {
     appointmentsService.createAppointment(draftActionPlan.id, 3, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"), 120, draftActionPlan.createdBy)
   }
 
-  @State("a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already")
-  fun `create a an empty draft plan with 2 2 hours appointments`() {
+  @State("There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e")
+  fun `create sent referral 81d754aa`() {
+    val referral = referralService.createDraftReferral(
+      user = deliusUser,
+      crn = "X123456",
+      interventionId = accommodationInterventionID,
+      UUID.fromString("81d754aa-d868-4347-9c0f-50690773014e"),
+    )
+    referral.referenceNumber = "XS0002AC"
+    referral.sentBy = deliusUser
+    referral.sentAt = OffsetDateTime.now()
+    referralRepository.save(referral)
+  }
+
+  @State("a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists")
+  fun `create a new empty draft action plan`() {
     val referral = referralService.createDraftReferral(
       deliusUser, "X862134", accommodationInterventionID, UUID.fromString("345059d4-1697-467b-8914-fedec9957279"),
     )
@@ -342,17 +352,48 @@ class PactTest {
       activities = mutableListOf()
     )
     actionPlanRepository.save(draftActionPlan)
+  }
 
+  @State("a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already")
+  fun `create a an empty draft plan with 2 2 hours appointments`() {
+    `create a new empty draft action plan`()
+    val draftActionPlan = actionPlanRepository.findById(UUID.fromString("345059d4-1697-467b-8914-fedec9957279")).get()
     appointmentsService.createAppointment(draftActionPlan.id, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
     appointmentsService.createAppointment(draftActionPlan.id, 2, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, draftActionPlan.createdBy)
   }
 
-//  @State("there are some existing sent referrals")
-//  fun `create the sent referrals with the required fields`() {}
+  @State("There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan")
+  fun `create sent referral 8b423e17 with action plan`() {
+    val referral = referralService.createDraftReferral(
+      user = deliusUser,
+      crn = "X123456",
+      interventionId = accommodationInterventionID,
+      UUID.fromString("8b423e17-9b60-4cc2-a927-8941ac76fdf9"),
+    )
+    referral.referenceNumber = "XS1234AC"
+    referral.sentBy = deliusUser
+    referral.sentAt = OffsetDateTime.now()
+    referralRepository.save(referral)
 
-//  @State("a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent")
-//  fun `create a new draft referral with the required fields`() {}
+    val draftActionPlan = ActionPlan(
+      id = UUID.randomUUID(),
+      createdBy = referral.createdBy,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf()
+    )
+    actionPlanRepository.save(draftActionPlan)
+  }
 
-//  @State("There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e")
-//  fun `create a new sent referral with the required fields`() {}
+  @State("a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent")
+  fun `create referral with 2a67075a id`() {
+    val referral = referralService.createDraftReferral(
+      user = deliusUser,
+      crn = "X862134",
+      interventionId = accommodationInterventionID,
+      overrideID = UUID.fromString("2a67075a-9c77-4103-9de0-63c4cfe3e8d6"),
+      overrideCreatedAt = OffsetDateTime.parse("2020-12-07T20:45:21.986389+00:00"),
+    )
+    referralRepository.save(referral)
+  }
 }
