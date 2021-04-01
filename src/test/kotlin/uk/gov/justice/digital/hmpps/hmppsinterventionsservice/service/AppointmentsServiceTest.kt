@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -17,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import java.time.OffsetDateTime
 import java.util.Optional.of
 import java.util.UUID
@@ -29,6 +32,7 @@ internal class AppointmentsServiceTest {
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
   private val authUserRepository: AuthUserRepository = mock()
   private val appointmentEventPublisher: AppointmentEventPublisher = mock()
+  private val actionPlanFactory = ActionPlanFactory()
 
   private val appointmentsService = AppointmentsService(
     actionPlanAppointmentRepository, actionPlanRepository,
@@ -43,7 +47,7 @@ internal class AppointmentsServiceTest {
     val appointmentTime = OffsetDateTime.now()
     val durationInMinutes = 15
     val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
+    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
 
     whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(null)
     whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
@@ -61,7 +65,6 @@ internal class AppointmentsServiceTest {
           createdByArg,
           createdAtArg,
           actionPlanArg,
-
           _
         ) ->
           (
@@ -80,7 +83,7 @@ internal class AppointmentsServiceTest {
     ).thenReturn(savedAppointment)
 
     val createdAppointment = appointmentsService.createAppointment(
-      actionPlanId,
+      actionPlan,
       sessionNumber,
       appointmentTime,
       durationInMinutes,
@@ -91,27 +94,25 @@ internal class AppointmentsServiceTest {
   }
 
   @Test
-  fun `creates an appointment and throws exception if already exists`() {
-    val actionPlanId = UUID.randomUUID()
-    val sessionNumber = 1
-    val appointmentTime = OffsetDateTime.now()
-    val durationInMinutes = 15
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
+  fun `create unscheduled appointments creates one for each action plan session`() {
+    val actionPlan = actionPlanFactory.create(numberOfSessions = 3)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(eq(actionPlan.id), any())).thenReturn(null)
+    whenever(authUserRepository.save(actionPlan.createdBy)).thenReturn(actionPlan.createdBy)
+    whenever(actionPlanAppointmentRepository.save(any())).thenAnswer { it.arguments[0] }
 
-    val existingAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
-    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(existingAppointment)
+    appointmentsService.createUnscheduledAppointmentsForActionPlan(actionPlan, actionPlan.createdBy)
+    verify(actionPlanAppointmentRepository, times(3)).save(any())
+  }
 
-    val exception = assertThrows(EntityExistsException::class.java) {
-      appointmentsService.createAppointment(
-        actionPlanId,
-        sessionNumber,
-        appointmentTime,
-        durationInMinutes,
-        createdByUser
-      )
+  @Test
+  fun `create unscheduled appointments throws exception if session already exists`() {
+    val actionPlan = actionPlanFactory.create(numberOfSessions = 1)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1))
+      .thenReturn(SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy))
+
+    assertThrows(EntityExistsException::class.java) {
+      appointmentsService.createUnscheduledAppointmentsForActionPlan(actionPlan, actionPlan.createdBy)
     }
-    assertThat(exception.message).isEqualTo("Action plan appointment already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 
   @Test

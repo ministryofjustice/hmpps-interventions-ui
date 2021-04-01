@@ -4,62 +4,21 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanAppointmentDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.NewAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentsService
-import java.net.URI
 import java.time.OffsetDateTime
 import java.util.UUID
 
 internal class AppointmentsControllerTest {
-
-  private val jwtAuthUserMapper = mock<JwtAuthUserMapper>()
   private val appointmentsService = mock<AppointmentsService>()
   private val locationMapper = mock<LocationMapper>()
 
-  private val appointmentsController = AppointmentsController(jwtAuthUserMapper, appointmentsService, locationMapper)
-
-  @Test
-  fun `saves an appointment`() {
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
-
-    val newAppointmentDTO = NewAppointmentDTO(1, OffsetDateTime.now(), 10)
-    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
-
-    val uri = URI.create("http://localhost/action-plan/123/appointment/1")
-
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(createdByUser)
-    whenever(
-      appointmentsService.createAppointment(
-        actionPlan.id,
-        newAppointmentDTO.sessionNumber,
-        newAppointmentDTO.appointmentTime,
-        newAppointmentDTO.durationInMinutes,
-        createdByUser
-      )
-    ).thenReturn(actionPlanAppointment)
-    whenever(
-      locationMapper.expandPathToCurrentRequestBaseUrl(
-        "/action-plan/{id}/appointment/{sessionNumber}",
-        actionPlan.id,
-        newAppointmentDTO.sessionNumber
-      )
-    ).thenReturn(uri)
-
-    val appointmentResponse = appointmentsController.createAppointment(actionPlan.id, newAppointmentDTO, jwtAuthenticationToken)
-
-    assertThat(appointmentResponse.let { it.body }).isEqualTo(ActionPlanAppointmentDTO.from(actionPlanAppointment))
-    assertThat(appointmentResponse.let { it.headers["location"] }).isEqualTo(listOf(uri.toString()))
-  }
+  private val appointmentsController = AppointmentsController(appointmentsService, locationMapper)
 
   @Test
   fun `updates an appointment`() {
