@@ -1697,7 +1697,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     beforeEach(async () => {
       await provider.addInteraction({
-        state: 'a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has some appointments',
+        state: 'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and it has 3 scheduled appointments',
         uponReceiving: 'a GET request for the appointments on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
         withRequest: {
           method: 'GET',
@@ -1731,7 +1731,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     beforeEach(async () => {
       await provider.addInteraction({
         state:
-          'a draft action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has an appointment for session 1',
+          'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has an appointment for session 1',
         uponReceiving:
           'a GET request for the appointment for session 1 on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
         withRequest: {
@@ -1797,45 +1797,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('createActionPlanAppointment', () => {
-    const actionPlanAppointment = {
-      sessionNumber: 1,
-      appointmentTime: '2021-05-13T13:30:00+01:00',
-      durationInMinutes: 120,
-    }
-
-    beforeEach(async () => {
-      await provider.addInteraction({
-        state: 'a draft action plan with ID ebe841a8-c33f-4772-8b01-ad58a16e5b6c exists and has no appointments',
-        uponReceiving:
-          'a POST request to create appointment for session 1 on action plan with ID ebe841a8-c33f-4772-8b01-ad58a16e5b6c',
-        withRequest: {
-          method: 'POST',
-          path: '/action-plan/ebe841a8-c33f-4772-8b01-ad58a16e5b6c/appointment',
-          body: actionPlanAppointment,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 201,
-          body: Matchers.like(actionPlanAppointment),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      })
-    })
-
-    it('returns an action plan appointment', async () => {
-      expect(
-        await interventionsService.createActionPlanAppointment(
-          token,
-          'ebe841a8-c33f-4772-8b01-ad58a16e5b6c',
-          actionPlanAppointment
-        )
-      ).toMatchObject(actionPlanAppointment)
-    })
-  })
-
   describe('updateActionPlanAppointment', () => {
     describe('with non-null values', () => {
       it('returns an updated action plan appointment', async () => {
@@ -1847,7 +1808,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         await provider.addInteraction({
           state:
-            'a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+            'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
           uponReceiving:
             'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
           withRequest: {
@@ -1886,7 +1847,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         await provider.addInteraction({
           state:
-            'a draft action plan with ID a065a681-57a0-4ffc-9681-b00455df462b exists and has 2 2-hour appointments already',
+            'an action plan with ID a065a681-57a0-4ffc-9681-b00455df462b exists and has 2 2-hour appointments already',
           uponReceiving:
             'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID a065a681-57a0-4ffc-9681-b00455df462b',
           withRequest: {
@@ -1921,7 +1882,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('recordAppointmentAttendance', () => {
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
-        state: 'a draft action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists',
+        state:
+          'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
         uponReceiving:
           'a POST request to set the attendance for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
         withRequest: {
