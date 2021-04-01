@@ -1,0 +1,9 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-ALPINE312-BUSYBOX-1089799:
+     - '*':
+         reason: this CVE is actually patched in the Dockerfile build, but snyk isn't seeing the updated libs
+         expiry: 2021-04-14:00:00.000Z
