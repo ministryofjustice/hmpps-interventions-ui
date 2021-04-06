@@ -12,6 +12,7 @@ NUM_SENT_REFERRALS = 100
 PERCENTAGE_OF_SENT_REFERRALS_WHICH_ARE_ASSIGNED_TO_A_CASEWORKER = 25
 NUM_ENDED_REFERRALS = 0
 
+REFERRAL_CREATION_RANGE = (datetime.date(2021, 1, 1), datetime.date.today())
 COMPLETION_DEADLINE_RANGE = (datetime.date(2021, 6, 24), datetime.date(2022, 6, 24))
 
 service_providers = [
@@ -316,10 +317,10 @@ def random_bool():
     return random.choice([True, False])
 
 
-def random_date_between(d1, d2):
+def random_date_between(d1, d2, allow_past=False):
     today = datetime.date.today()
 
-    if d1 < today or d2 < today:
+    if not allow_past and (d1 < today or d2 < today):
         raise RuntimeError("dates can't be in the past")
 
     if d2 < d1:
@@ -404,7 +405,7 @@ if __name__ == '__main__':
         fields = []
 
         referral_id = uuid.uuid4()
-        created_at = datetime.datetime.utcnow()
+        created_at = datetime.datetime.combine(random_date_between(*REFERRAL_CREATION_RANGE, allow_past=True), datetime.time(12))
         created_by_id = random.choice(pp_user_ids_with_username)[0]
         service_usercrn = random.choice(list(su_details.keys()))
         intervention_id = random.choice(intervention_ids)
