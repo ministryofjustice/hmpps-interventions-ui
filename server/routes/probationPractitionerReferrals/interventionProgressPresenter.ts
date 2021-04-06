@@ -26,7 +26,7 @@ export default class InterventionProgressPresenter {
   }
 
   readonly text = {
-    title: utils.convertToTitleCase(this.serviceCategory.name),
+    title: `${utils.convertToTitleCase(this.serviceCategory.name)} progress`,
   }
 
   readonly hasSessions = this.actionPlanAppointments.length !== 0
