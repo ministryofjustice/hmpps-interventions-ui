@@ -105,7 +105,10 @@ sp_user_ids_with_username_and_organization = [
 ]
 
 pp_user_ids_with_username = [
-    ('2500104586', 'TomMyersDevl')
+    ('2500104586', 'TomMyersDevl'),
+    ('2500226598', 'GeorgeGreen'),
+    ('2500226599', 'JonathanCulling'),
+    ('2500228092', 'Refer_Monitor_Probation_Practitioner'),
 ]
 
 service_category_reference_codes = {
