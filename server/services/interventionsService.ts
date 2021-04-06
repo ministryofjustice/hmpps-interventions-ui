@@ -165,7 +165,7 @@ export interface ActionPlanAppointmentUpdate {
   durationInMinutes: number | null
 }
 
-interface AppointmentAttendance {
+export interface AppointmentAttendance {
   attended: 'yes' | 'no' | 'late'
   additionalAttendanceInformation?: string
 }
@@ -425,6 +425,25 @@ export default class InterventionsService {
       path: `/action-plan/${actionPlanId}/appointments/${session}`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment
+  }
+
+  async getSubsequentActionPlanAppointment(
+    token: string,
+    actionPlan: ActionPlan,
+    currentAppointment: ActionPlanAppointment
+  ): Promise<ActionPlanAppointment | null> {
+    const isFinalAppointment =
+      actionPlan.numberOfSessions && actionPlan.numberOfSessions === currentAppointment.sessionNumber
+
+    if (isFinalAppointment) {
+      return null
+    }
+
+    return (await this.getActionPlanAppointment(
+      token,
+      actionPlan.id,
+      currentAppointment.sessionNumber + 1
+    )) as ActionPlanAppointment
   }
 
   async createActionPlanAppointment(

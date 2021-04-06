@@ -10,6 +10,8 @@ import serviceProviderFactory from '../../testutils/factories/serviceProvider'
 import eligibilityFactory from '../../testutils/factories/eligibility'
 import interventionFactory from '../../testutils/factories/intervention'
 import { DeliusServiceUser } from './communityApiService'
+import actionPlanFactory from '../../testutils/factories/actionPlan'
+import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -1756,6 +1758,42 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(appointment.sessionNumber).toEqual(1)
       expect(appointment.appointmentTime).toEqual('2021-05-13T13:30:00+01:00')
       expect(appointment.durationInMinutes).toEqual(120)
+    })
+  })
+
+  describe('getSubsequentActionPlanAppointment', () => {
+    describe('when the current appointment is not the final one', () => {
+      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+      const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+
+      it('fetches the subsequent action plan appointment', async () => {
+        interventionsService.getActionPlanAppointment = jest.fn()
+        await interventionsService.getSubsequentActionPlanAppointment(token, actionPlan, appointment)
+
+        expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(token, actionPlan.id, 2)
+      })
+    })
+
+    describe('when the current appointment is the final one', () => {
+      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+      const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+
+      it('does not fetch the subsequent action plan appointment', async () => {
+        interventionsService.getActionPlanAppointment = jest.fn()
+
+        const subsequentAppointment = await interventionsService.getSubsequentActionPlanAppointment(
+          token,
+          actionPlan,
+          appointment
+        )
+
+        expect(subsequentAppointment).toBeNull()
+        expect(interventionsService.getActionPlanAppointment).not.toHaveBeenCalled()
+      })
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
     })
   })
 
