@@ -82,6 +82,11 @@ export default class InterventionProgressView {
     }
   }
 
+  private readonly backLinkArgs = {
+    text: 'Back',
+    href: '/service-provider/dashboard',
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/interventionProgress',
@@ -92,6 +97,7 @@ export default class InterventionProgressView {
         initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
         actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
         sessionTableArgs: this.sessionTableArgs.bind(this),
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }

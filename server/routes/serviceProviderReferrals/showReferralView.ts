@@ -28,6 +28,11 @@ export default class ShowReferralView {
     }
   }
 
+  private readonly backLinkArgs = {
+    text: 'Back',
+    href: '/service-provider/dashboard',
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/referralDetails',
@@ -41,6 +46,7 @@ export default class ShowReferralView {
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
         serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
         emailInputArgs: this.emailInputArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
