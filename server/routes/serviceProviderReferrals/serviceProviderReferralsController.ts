@@ -125,32 +125,11 @@ export default class ServiceProviderReferralsController {
     ])
 
     let actionPlanAppointments: ActionPlanAppointment[] = []
-
-    // this code is horribly inefficient and results in a lot of unnecessary log messages from the client.
-    // we are going to change the backend so that all the appointments exist for a submitted action plan,
-    // which will allow us to use the `getActionPlanAppointments` method and clean up this code.
     if (actionPlan !== null && actionPlan.submittedAt !== null) {
-      const appointmentPromises: Promise<ActionPlanAppointment>[] = []
-
-      // submitted action plans cannot have numberOfSessions === null
-      for (let session = 1; session <= actionPlan.numberOfSessions!; session += 1) {
-        appointmentPromises.push(
-          this.interventionsService
-            .getActionPlanAppointment(res.locals.user.token.accessToken, actionPlan.id, session)
-            .then(
-              appointment => Promise.resolve(appointment),
-              e =>
-                e.status === 404
-                  ? {
-                      sessionNumber: session,
-                      appointmentTime: null,
-                      durationInMinutes: null,
-                    }
-                  : Promise.reject(e)
-            )
-        )
-      }
-      actionPlanAppointments = await Promise.all(appointmentPromises)
+      actionPlanAppointments = await this.interventionsService.getActionPlanAppointments(
+        res.locals.user.token.accessToken,
+        actionPlan.id
+      )
     }
 
     const presenter = new InterventionProgressPresenter(

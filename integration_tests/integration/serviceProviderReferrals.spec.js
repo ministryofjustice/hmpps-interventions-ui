@@ -210,6 +210,12 @@ describe('Service provider referrals dashboard', () => {
       .assigned()
       .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username } })
     const draftActionPlan = actionPlanFactory.justCreated(assignedReferral.id).build()
+    const actionPlanAppointments = [
+      actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 1 }),
+      actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 2 }),
+      actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 3 }),
+      actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 4 }),
+    ]
 
     cy.stubGetSentReferrals([assignedReferral])
 
@@ -220,6 +226,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+    cy.stubGetActionPlanAppointments(draftActionPlan.id, actionPlanAppointments)
 
     cy.login()
 
@@ -355,11 +362,18 @@ describe('Service provider referrals dashboard', () => {
       numberOfSessions: 4,
     })
 
-    const appointment = actionPlanAppointmentFactory.build({
-      sessionNumber: 1,
-      appointmentTime: '2021-03-24T09:02:02Z',
-      durationInMinutes: 75,
-    })
+    const appointments = [
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      }),
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 2,
+        appointmentTime: '2021-03-31T09:02:02Z',
+        durationInMinutes: 75,
+      }),
+    ]
 
     const assignedReferral = sentReferralFactory.assigned().build({
       ...referralParams,
@@ -369,14 +383,17 @@ describe('Service provider referrals dashboard', () => {
 
     cy.stubGetSentReferrals([assignedReferral])
     cy.stubGetActionPlan(actionPlan.id, actionPlan)
-    cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointment)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
     cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
 
+    cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
+    cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
+    cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
+
     const appointmentWithAttendanceRecorded = {
-      ...appointment,
+      ...appointments[0],
       attendance: {
         attended: 'yes',
         additionalAttendanceInformation: 'Alex attended the session',
@@ -393,14 +410,6 @@ describe('Service provider referrals dashboard', () => {
     cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
     cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
-
-    const subsequentAppointment = actionPlanAppointmentFactory.build({
-      sessionNumber: 2,
-      appointmentTime: '2021-03-31T09:02:02Z',
-      durationInMinutes: 75,
-    })
-
-    cy.stubGetActionPlanAppointment(actionPlan.id, 2, subsequentAppointment)
 
     cy.contains('Submit for approval').click()
     cy.contains('Session feedback added and submitted to the probation practitioner')
