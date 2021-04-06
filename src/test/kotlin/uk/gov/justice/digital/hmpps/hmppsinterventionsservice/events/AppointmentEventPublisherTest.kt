@@ -17,7 +17,7 @@ class AppointmentEventPublisherTest {
   private val locationMapper = mock<LocationMapper>()
 
   @Test
-  fun `builds an appointment not attended event and publishes it`() {
+  fun `builds an appointment attendance recorded event and publishes it`() {
     val appointment = SampleData.sampleActionPlanAppointment(
       actionPlan = SampleData.sampleActionPlan(),
       createdBy = SampleData.sampleAuthUser()
@@ -32,14 +32,14 @@ class AppointmentEventPublisherTest {
     whenever(locationMapper.getPathFromControllerMethod(AppointmentsController::getAppointment)).thenReturn("/action-plan/{id}/appointments/{sessionNumber}")
     val publisher = AppointmentEventPublisher(eventPublisher, locationMapper)
 
-    publisher.appointmentNotAttendedEvent(appointment)
+    publisher.attendanceRecordedEvent(appointment)
 
     val eventCaptor = argumentCaptor<AppointmentEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())
     val event = eventCaptor.firstValue
 
     Assertions.assertThat(event.source).isSameAs(publisher)
-    Assertions.assertThat(event.type).isSameAs(AppointmentEventType.NO_ATTENDANCE)
+    Assertions.assertThat(event.type).isSameAs(AppointmentEventType.ATTENDANCE_RECORDED)
     Assertions.assertThat(event.appointment).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo(uri.toString())
   }
