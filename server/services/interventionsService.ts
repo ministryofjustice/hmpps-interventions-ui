@@ -446,19 +446,6 @@ export default class InterventionsService {
     )) as ActionPlanAppointment
   }
 
-  async createActionPlanAppointment(
-    token: string,
-    actionPlanId: string,
-    appointment: ActionPlanAppointment
-  ): Promise<ActionPlanAppointment> {
-    const restClient = this.createRestClient(token)
-    return (await restClient.post({
-      path: `/action-plan/${actionPlanId}/appointment`,
-      headers: { Accept: 'application/json' },
-      data: { ...appointment },
-    })) as ActionPlanAppointment
-  }
-
   async updateActionPlanAppointment(
     token: string,
     actionPlanId: string,
