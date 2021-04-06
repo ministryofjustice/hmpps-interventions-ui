@@ -80,8 +80,7 @@ class SNSAppointmentService(
       AppointmentEventType.ATTENDANCE_RECORDED -> {
         val referral = event.appointment.actionPlan.referral
         val eventType = "intervention.session-appointment.${when (event.appointment.attended) {
-          Attended.YES -> "attended"
-          Attended.LATE -> "late"
+          Attended.YES, Attended.LATE -> "attended"
           Attended.NO -> "missed"
           null -> throw RuntimeException("event triggered for appointment with no recorded attendance")
         }}"
