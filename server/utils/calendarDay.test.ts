@@ -85,19 +85,25 @@ describe('CalendarDay', () => {
 
   describe('atTimeInBritain', () => {
     it('returns a Date for that day and time in Britain', () => {
-      const date = CalendarDay.fromComponents(30, 1, 2021)!.atTimeInBritain(ClockTime.fromComponents(12, 5, 6)!)
+      const date = CalendarDay.fromComponents(30, 1, 2021)!.atTimeInBritain(
+        ClockTime.fromTwentyFourHourComponents(12, 5, 6)!
+      )
 
       expect(date).toEqual(new Date('2021-01-30T12:05:06Z'))
     })
 
     it('handles daylight saving time', () => {
-      const date = CalendarDay.fromComponents(30, 3, 2021)!.atTimeInBritain(ClockTime.fromComponents(12, 5, 6)!)
+      const date = CalendarDay.fromComponents(30, 3, 2021)!.atTimeInBritain(
+        ClockTime.fromTwentyFourHourComponents(12, 5, 6)!
+      )
 
       expect(date).toEqual(new Date('2021-03-30T11:05:06Z'))
     })
 
     it('returns null when the time doesn’t exist on that day in Britain', () => {
-      const date = CalendarDay.fromComponents(28, 3, 2021)!.atTimeInBritain(ClockTime.fromComponents(1, 30, 0)!)
+      const date = CalendarDay.fromComponents(28, 3, 2021)!.atTimeInBritain(
+        ClockTime.fromTwentyFourHourComponents(1, 30, 0)!
+      )
 
       expect(date).toBeNull()
     })
