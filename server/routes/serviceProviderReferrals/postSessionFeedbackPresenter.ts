@@ -5,7 +5,7 @@ import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
+import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class PostSessionFeedbackPresenter {
   constructor(

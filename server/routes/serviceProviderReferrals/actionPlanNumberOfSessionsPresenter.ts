@@ -3,7 +3,7 @@ import utils from '../../utils/utils'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
-import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
+import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class ActionPlanNumberOfSessionsPresenter {
   constructor(
