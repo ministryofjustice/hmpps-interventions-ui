@@ -17,7 +17,8 @@ export default class InterventionProgressPresenter {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
       referral,
-      serviceUser
+      serviceUser,
+      'service-provider'
     )
   }
 

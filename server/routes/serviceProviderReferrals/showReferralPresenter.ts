@@ -22,7 +22,8 @@ export default class ShowReferralPresenter {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral,
-      serviceUser
+      serviceUser,
+      'service-provider'
     )
   }
 
