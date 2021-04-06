@@ -71,14 +71,8 @@ class AppointmentsService(
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
     setAttendanceFields(appointment, attended, additionalInformation)
-    notifyIfNoAttendance(appointment, attended)
+    appointmentEventPublisher.attendanceRecordedEvent(appointment)
     return actionPlanAppointmentRepository.save(appointment)
-  }
-
-  private fun notifyIfNoAttendance(appointment: ActionPlanAppointment, attended: Attended) {
-    if (attended == Attended.NO) {
-      appointmentEventPublisher.appointmentNotAttendedEvent(appointment)
-    }
   }
 
   fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
