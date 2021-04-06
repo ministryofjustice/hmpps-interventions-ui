@@ -1,5 +1,5 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
+import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
 import { SentReferral } from '../../services/interventionsService'
 
 export enum ReferralOverviewPageSection {
