@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import java.time.OffsetDateTime
 
 interface SNSService
 
@@ -90,7 +89,7 @@ class SNSAppointmentService(
           eventType,
           "Attendance was recorded for a session appointment",
           event.detailUrl,
-          OffsetDateTime.now(),
+          event.appointment.attendanceSubmittedAt!!,
           mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
         )
         snsPublisher.publish(snsEvent)
