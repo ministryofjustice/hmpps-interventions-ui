@@ -22,13 +22,13 @@ class AppointmentsService(
   val appointmentEventPublisher: AppointmentEventPublisher
 ) {
   fun createAppointment(
-    actionPlanId: UUID,
+    actionPlan: ActionPlan,
     sessionNumber: Int,
     appointmentTime: OffsetDateTime?,
     durationInMinutes: Int?,
-    createdByUser: AuthUser
+    createdByUser: AuthUser,
   ): ActionPlanAppointment {
-
+    val actionPlanId = actionPlan.id
     checkAppointmentSessionIsNotDuplicate(actionPlanId, sessionNumber)
 
     val appointment = ActionPlanAppointment(
@@ -38,9 +38,7 @@ class AppointmentsService(
       durationInMinutes = durationInMinutes,
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
-      actionPlan = actionPlanRepository.findById(actionPlanId).orElseThrow {
-        throw EntityNotFoundException("action plan not found [id=$actionPlanId]")
-      }
+      actionPlan = actionPlan,
     )
 
     return actionPlanAppointmentRepository.save(appointment)
@@ -49,14 +47,7 @@ class AppointmentsService(
   fun createUnscheduledAppointmentsForActionPlan(submittedActionPlan: ActionPlan, actionPlanSubmitter: AuthUser) {
     val numberOfSessions = submittedActionPlan.numberOfSessions!!
     for (i in 1..numberOfSessions) {
-      val appointment = ActionPlanAppointment(
-        id = UUID.randomUUID(),
-        sessionNumber = i,
-        createdBy = authUserRepository.save(actionPlanSubmitter),
-        createdAt = OffsetDateTime.now(),
-        actionPlan = submittedActionPlan
-      )
-      actionPlanAppointmentRepository.save(appointment)
+      createAppointment(submittedActionPlan, i, null, null, actionPlanSubmitter)
     }
   }
 
