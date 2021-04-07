@@ -33,7 +33,8 @@ export default function routes(router: Router, services: Services): Router {
   )
 
   const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
-    services.interventionsService
+    services.interventionsService,
+    services.communityApiService
   )
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
   const staticContentController = new StaticContentController()
@@ -124,6 +125,10 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/probation-practitioner/dashboard', (req, res) =>
     probationPractitionerReferralsController.showDashboard(req, res)
+  )
+
+  get('/probation-practitioner/referrals/:id/progress', (req, res) =>
+    probationPractitionerReferralsController.showInterventionProgress(req, res)
   )
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)

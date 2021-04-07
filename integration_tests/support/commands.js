@@ -24,7 +24,7 @@ const getTable = (subject, options = {}) => {
   const headers = [...tableElement.querySelectorAll('thead th')].map(e => e.textContent)
 
   const rows = [...tableElement.querySelectorAll('tbody tr')].map(row => {
-    return [...row.querySelectorAll('td')].map(e => e.textContent)
+    return [...row.querySelectorAll('td')].map(e => e.textContent.trim())
   })
 
   return rows.map(row =>
