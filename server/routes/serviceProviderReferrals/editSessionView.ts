@@ -41,7 +41,7 @@ export default class EditSessionView {
           value: this.presenter.fields.date.month.value,
         },
         {
-          classes: `govuk-input--width-4${this.presenter.fields.date.month.hasError ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-4${this.presenter.fields.date.year.hasError ? ' govuk-input--error' : ''}`,
           name: 'year',
           value: this.presenter.fields.date.year.value,
         },
@@ -68,7 +68,7 @@ export default class EditSessionView {
           value: this.presenter.fields.time.hour.value,
         },
         {
-          classes: `govuk-input--width-2${this.presenter.fields.time.hour.hasError ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-2${this.presenter.fields.time.minute.hasError ? ' govuk-input--error' : ''}`,
           name: 'minute',
           value: this.presenter.fields.time.minute.value,
         },
@@ -109,7 +109,9 @@ export default class EditSessionView {
           value: this.presenter.fields.duration.hours.value,
         },
         {
-          classes: `govuk-input--width-2${this.presenter.fields.duration.hours.hasError ? ' govuk-input--error' : ''}`,
+          classes: `govuk-input--width-2${
+            this.presenter.fields.duration.minutes.hasError ? ' govuk-input--error' : ''
+          }`,
           name: 'minutes',
           value: this.presenter.fields.duration.minutes.value,
         },
