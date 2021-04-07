@@ -40,7 +40,7 @@ export default class CalendarDayInput {
   private error(result: ExpressValidator.Result): FormValidationError | null {
     const error = FormUtils.validationErrorFromResult(result)
     if (error !== null) {
-      return error
+      return this.convertToSingleError(error)
     }
 
     if (this.calendarDay === null) {
@@ -56,6 +56,10 @@ export default class CalendarDayInput {
     }
 
     return null
+  }
+
+  private convertToSingleError(error: FormValidationError): FormValidationError {
+    return { errors: [error.errors[0]] }
   }
 
   private get validations() {

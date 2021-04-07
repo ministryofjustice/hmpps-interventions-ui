@@ -45,6 +45,26 @@ describe(CalendarDayInput, () => {
       })
     })
 
+    it('returns an error when multiple fields are empty', async () => {
+      const request = TestUtils.createRequest({
+        'deadline-year': '',
+        'deadline-month': '',
+        'deadline-day': '12',
+      })
+
+      const result = await new CalendarDayInput(request, 'deadline', messages).validate()
+
+      expect(result.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'deadline-month',
+            formFields: ['deadline-month'],
+            message: 'The deadline must include a month',
+          },
+        ],
+      })
+    })
+
     it('returns an error when a field is just whitespace', async () => {
       const request = TestUtils.createRequest({
         'deadline-year': '2021',
