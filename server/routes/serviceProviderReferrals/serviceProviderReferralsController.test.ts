@@ -579,7 +579,7 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
   })
 })
 
-describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', () => {
+describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
   it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
     const serviceUser = deliusServiceUser.build()
     const referral = sentReferralFactory.assigned().build()
@@ -595,7 +595,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 
     await request(app)
       .get(
-        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback`
+        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance`
       )
       .expect(200)
       .expect(res => {
@@ -607,7 +607,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
   })
 })
 
-describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', () => {
+describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
   it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the confirmation page', async () => {
     const updatedAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
@@ -623,7 +623,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
     await request(app)
       .post(
-        `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback`
+        `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/attendance`
       )
       .type('form')
       .send({

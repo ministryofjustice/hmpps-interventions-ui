@@ -398,7 +398,7 @@ export default class ServiceProviderReferralsController {
     return res.render(...view.renderArgs)
   }
 
-  async showPostSessionFeedbackForm(req: Request, res: Response): Promise<void> {
+  async showPostSessionAttendanceFeedbackForm(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
 
@@ -418,7 +418,7 @@ export default class ServiceProviderReferralsController {
     return res.render(...view.renderArgs)
   }
 
-  async recordPostSessionFeedback(req: Request, res: Response): Promise<void> {
+  async recordPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     let formError: FormValidationError | null = null
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
