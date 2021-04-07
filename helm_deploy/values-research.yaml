@@ -3,7 +3,9 @@ replicaCount: 2
 image:
   repository: quay.io/hmpps/hmpps-interventions-service
   tag: latest
-  port: 8080
+  ports:
+    app: 8080
+    dataDictionary: 8080
 
 ingress:
   enabled: true
