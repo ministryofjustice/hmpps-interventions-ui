@@ -1,5 +1,6 @@
 import { body, Result, ValidationChain, ValidationError, validationResult } from 'express-validator'
 import { Request } from 'express'
+import { FormValidationError } from './formValidationError'
 
 export default class FormUtils {
   static yesNoRadioWithConditionalInputValidationChain({
@@ -28,5 +29,19 @@ export default class FormUtils {
   }): Promise<Result<ValidationError>> {
     await Promise.all(validations.map(validation => validation.run(request)))
     return validationResult(request)
+  }
+
+  static validationErrorFromResult(result: Result): FormValidationError | null {
+    if (result.isEmpty()) {
+      return null
+    }
+
+    return {
+      errors: result.array().map(validationError => ({
+        formFields: [validationError.param],
+        errorSummaryLinkedField: validationError.param,
+        message: validationError.msg,
+      })),
+    }
   }
 }
