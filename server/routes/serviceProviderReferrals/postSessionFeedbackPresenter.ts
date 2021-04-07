@@ -1,5 +1,5 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { ActionPlanAppointment, ServiceCategory } from '../../services/interventionsService'
+import { ActionPlanAppointment } from '../../services/interventionsService'
 import DateUtils from '../../utils/dateUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -10,7 +10,6 @@ export default class PostSessionFeedbackPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly serviceCategory: ServiceCategory,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}

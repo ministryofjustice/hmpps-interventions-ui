@@ -411,12 +411,8 @@ export default class ServiceProviderReferralsController {
       Number(sessionNumber)
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      user.token,
-      referral.referral.serviceCategoryId
-    )
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
     const view = new PostSessionFeedbackView(presenter)
 
     return res.render(...view.renderArgs)
@@ -452,12 +448,8 @@ export default class ServiceProviderReferralsController {
       Number(sessionNumber)
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      user.token,
-      referral.referral.serviceCategoryId
-    )
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, formError, req.body)
+    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, formError, req.body)
     const view = new PostSessionFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)

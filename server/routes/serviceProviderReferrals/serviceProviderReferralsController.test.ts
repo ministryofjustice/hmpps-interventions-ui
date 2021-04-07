@@ -581,7 +581,6 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
 
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', () => {
   it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const serviceUser = deliusServiceUser.build()
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
@@ -592,7 +591,6 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
     interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
 
     await request(app)

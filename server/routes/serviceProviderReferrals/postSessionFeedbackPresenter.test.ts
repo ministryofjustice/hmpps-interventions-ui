@@ -1,15 +1,13 @@
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
 
 describe(PostSessionFeedbackPresenter, () => {
   describe('text', () => {
     it('contains a title including the name of the service category and a subtitle, and the attendance questions', () => {
       const appointment = actionPlanAppointmentFactory.build()
-      const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+      const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
       expect(presenter.text).toMatchObject({
         title: 'Add attendance feedback',
@@ -24,9 +22,8 @@ describe(PostSessionFeedbackPresenter, () => {
   describe('serviceUserBannerPresenter', () => {
     it('is instantiated with the service user', () => {
       const appointment = actionPlanAppointmentFactory.build()
-      const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
       const serviceUser = deliusServiceUserFactory.build()
-      const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+      const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
       expect(presenter.serviceUserBannerPresenter).toBeDefined()
     })
@@ -34,12 +31,11 @@ describe(PostSessionFeedbackPresenter, () => {
 
   describe('sessionDetailsSummary', () => {
     it('extracts the date and time from the appointmentTime and puts it in a SummaryList format', () => {
-      const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
       const serviceUser = deliusServiceUserFactory.build()
       const appointment = actionPlanAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
       })
-      const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+      const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
       expect(presenter.sessionDetailsSummary).toEqual([
         {
@@ -58,12 +54,11 @@ describe(PostSessionFeedbackPresenter, () => {
 
   describe('errorSummary', () => {
     const appointment = actionPlanAppointmentFactory.build()
-    const serviceCategory = serviceCategoryFactory.build()
     const serviceUser = deliusServiceUserFactory.build()
 
     describe('when there is an error', () => {
       it('returns a summary of the error', () => {
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, {
           errors: [
             {
               errorSummaryLinkedField: 'attended',
@@ -81,7 +76,7 @@ describe(PostSessionFeedbackPresenter, () => {
 
     describe('when there is no error', () => {
       it('returns null', () => {
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -90,12 +85,11 @@ describe(PostSessionFeedbackPresenter, () => {
 
   describe('errorMessage', () => {
     const appointment = actionPlanAppointmentFactory.build()
-    const serviceCategory = serviceCategoryFactory.build()
     const serviceUser = deliusServiceUserFactory.build()
 
     describe('when there is an error', () => {
       it('returns the error message', () => {
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, {
           errors: [
             {
               errorSummaryLinkedField: 'attended',
@@ -111,7 +105,7 @@ describe(PostSessionFeedbackPresenter, () => {
 
     describe('when there is no error', () => {
       it('returns null', () => {
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
         expect(presenter.errorMessage).toBeNull()
       })
@@ -122,9 +116,8 @@ describe(PostSessionFeedbackPresenter, () => {
     describe('when attendance has not been set on the appointment', () => {
       it('contains the attendance questions and values, and doesn’t set any value to "checked"', () => {
         const appointment = actionPlanAppointmentFactory.build()
-        const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
         expect(presenter.attendanceResponses).toEqual([
           {
@@ -156,9 +149,8 @@ describe(PostSessionFeedbackPresenter, () => {
 
         describe(`service provider has selected ${responseValue}`, () => {
           it(`contains the attendance questions and values, and marks ${responseValue} as "checked"`, () => {
-            const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
             const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-            const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+            const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
             expect(presenter.attendanceResponses).toEqual([
               {
@@ -190,9 +182,8 @@ describe(PostSessionFeedbackPresenter, () => {
           const appointment = actionPlanAppointmentFactory.build({
             attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
           })
-          const serviceCategory = serviceCategoryFactory.build()
           const serviceUser = deliusServiceUserFactory.build()
-          const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+          const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
           expect(presenter.fields.additionalAttendanceInformationValue).toEqual('Alex missed the bus')
         })
@@ -203,9 +194,8 @@ describe(PostSessionFeedbackPresenter, () => {
           const appointment = actionPlanAppointmentFactory.build({
             attendance: { attended: 'late' },
           })
-          const serviceCategory = serviceCategoryFactory.build()
           const serviceUser = deliusServiceUserFactory.build()
-          const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
+          const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
 
           expect(presenter.fields.additionalAttendanceInformationValue).toEqual('')
         })
@@ -217,9 +207,8 @@ describe(PostSessionFeedbackPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
         })
-        const serviceCategory = serviceCategoryFactory.build()
         const serviceUser = deliusServiceUserFactory.build()
-        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, null, {
+        const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, null, {
           'additional-attendance-information': "Alex's car broke down en route",
         })
 
