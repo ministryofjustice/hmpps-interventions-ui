@@ -6,7 +6,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
-export default class PostSessionFeedbackPresenter {
+export default class PostSessionAttendanceFeedbackPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,

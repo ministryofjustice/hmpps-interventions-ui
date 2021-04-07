@@ -28,9 +28,9 @@ import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessions
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
 import EditSessionPresenter from './editSessionPresenter'
 import EditSessionView from './editSessionView'
-import PostSessionFeedbackView from './postSessionFeedbackView'
-import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
-import PostSessionFeedbackForm from './postSessionFeedbackForm'
+import PostSessionAttendanceFeedbackView from './postSessionAttendanceFeedbackView'
+import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
+import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
 import PostSessionFeedbackConfirmationPresenter from './postSessionFeedbackConfirmationPresenter'
 import PostSessionFeedbackConfirmationView from './postSessionFeedbackConfirmationView'
 
@@ -412,8 +412,8 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser)
-    const view = new PostSessionFeedbackView(presenter)
+    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
+    const view = new PostSessionAttendanceFeedbackView(presenter)
 
     return res.render(...view.renderArgs)
   }
@@ -423,7 +423,7 @@ export default class ServiceProviderReferralsController {
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
 
-    const form = await PostSessionFeedbackForm.createForm(req)
+    const form = await PostSessionAttendanceFeedbackForm.createForm(req)
     formError = form.error
 
     if (form.isValid) {
@@ -449,8 +449,8 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, formError, req.body)
-    const view = new PostSessionFeedbackView(presenter)
+    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, req.body)
+    const view = new PostSessionAttendanceFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
     return res.render(...view.renderArgs)
