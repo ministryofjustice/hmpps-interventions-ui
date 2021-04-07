@@ -53,6 +53,8 @@ export default class InterventionProgressPresenter {
     }
 
     return this.actionPlanAppointments.map(appointment => {
+      const editUrl = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+
       return {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
@@ -60,8 +62,8 @@ export default class InterventionProgressPresenter {
           ? { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
           : { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' },
         linkHtml: appointment.appointmentTime
-          ? `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`
-          : '<a class="govuk-link" href="#">Edit session details</a>',
+          ? `<a class="govuk-link" href="${editUrl}">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`
+          : `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
       }
     })
   }
