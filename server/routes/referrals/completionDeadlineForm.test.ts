@@ -31,8 +31,8 @@ describe('CompletionDeadlineForm', () => {
           errors: [
             {
               errorSummaryLinkedField: 'completion-deadline-day',
-              formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
-              message: 'The date by which the service needs to be completed must be a real date',
+              formFields: ['completion-deadline-day'],
+              message: 'The date by which the service needs to be completed must include a day',
             },
           ],
         })

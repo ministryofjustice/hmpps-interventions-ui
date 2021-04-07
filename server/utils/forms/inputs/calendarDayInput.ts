@@ -38,23 +38,24 @@ export default class CalendarDayInput {
   }
 
   private error(result: ExpressValidator.Result): FormValidationError | null {
-    const isValidDate = this.calendarDay !== null
-
-    if (result.isEmpty() && isValidDate) {
-      return null
+    const error = FormUtils.validationErrorFromResult(result)
+    if (error !== null) {
+      return error
     }
 
-    // TODO (IC-706) use `result`, implement all the rules of the GOV.UK Design
-    // System date input component error handling
-    return {
-      errors: [
-        {
-          errorSummaryLinkedField: this.keys.day,
-          formFields: [this.keys.day, this.keys.month, this.keys.year],
-          message: this.errorMessages.invalidDate,
-        },
-      ],
+    if (this.calendarDay === null) {
+      return {
+        errors: [
+          {
+            errorSummaryLinkedField: this.keys.day,
+            formFields: [this.keys.day, this.keys.month, this.keys.year],
+            message: this.errorMessages.invalidDate,
+          },
+        ],
+      }
     }
+
+    return null
   }
 
   private get validations() {
@@ -64,16 +65,19 @@ export default class CalendarDayInput {
       ExpressValidator.body(this.keys.day)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.dayEmpty)
+        .bail()
         .isInt()
         .withMessage(this.errorMessages.invalidDate),
       ExpressValidator.body(this.keys.month)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.monthEmpty)
+        .bail()
         .isInt()
         .withMessage(this.errorMessages.invalidDate),
       ExpressValidator.body(this.keys.year)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.yearEmpty)
+        .bail()
         .isInt()
         .withMessage(this.errorMessages.invalidDate),
     ]

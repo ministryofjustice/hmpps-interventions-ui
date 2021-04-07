@@ -37,9 +37,9 @@ describe(CalendarDayInput, () => {
       expect(result.error).toEqual({
         errors: [
           {
-            errorSummaryLinkedField: 'deadline-day',
-            formFields: ['deadline-day', 'deadline-month', 'deadline-year'],
-            message: 'The deadline must be a real date',
+            errorSummaryLinkedField: 'deadline-year',
+            formFields: ['deadline-year'],
+            message: 'The deadline must include a year',
           },
         ],
       })
@@ -57,9 +57,9 @@ describe(CalendarDayInput, () => {
       expect(result.error).toEqual({
         errors: [
           {
-            errorSummaryLinkedField: 'deadline-day',
-            formFields: ['deadline-day', 'deadline-month', 'deadline-year'],
-            message: 'The deadline must be a real date',
+            errorSummaryLinkedField: 'deadline-month',
+            formFields: ['deadline-month'],
+            message: 'The deadline must include a month',
           },
         ],
       })
@@ -78,7 +78,7 @@ describe(CalendarDayInput, () => {
         errors: [
           {
             errorSummaryLinkedField: 'deadline-day',
-            formFields: ['deadline-day', 'deadline-month', 'deadline-year'],
+            formFields: ['deadline-day'],
             message: 'The deadline must be a real date',
           },
         ],
