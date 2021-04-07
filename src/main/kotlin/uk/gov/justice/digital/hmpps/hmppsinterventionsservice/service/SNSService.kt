@@ -6,9 +6,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPubli
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 
 interface SNSService
 
@@ -59,6 +62,34 @@ class SNSReferralService(
           event.detailUrl,
           event.referral.assignedAt!!,
           mapOf("referralId" to event.referral.id, "assignedTo" to (event.referral.assignedTo?.userName!!))
+        )
+        snsPublisher.publish(snsEvent)
+      }
+    }
+  }
+}
+
+@Service
+class SNSAppointmentService(
+  private val snsPublisher: SNSPublisher,
+) : ApplicationListener<AppointmentEvent>, SNSService {
+
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: AppointmentEvent) {
+    when (event.type) {
+      AppointmentEventType.ATTENDANCE_RECORDED -> {
+        val referral = event.appointment.actionPlan.referral
+        val eventType = "intervention.session-appointment.${when (event.appointment.attended) {
+          Attended.YES, Attended.LATE -> "attended"
+          Attended.NO -> "missed"
+          null -> throw RuntimeException("event triggered for appointment with no recorded attendance")
+        }}"
+        val snsEvent = EventDTO(
+          eventType,
+          "Attendance was recorded for a session appointment",
+          event.detailUrl,
+          event.appointment.attendanceSubmittedAt!!,
+          mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
         )
         snsPublisher.publish(snsEvent)
       }

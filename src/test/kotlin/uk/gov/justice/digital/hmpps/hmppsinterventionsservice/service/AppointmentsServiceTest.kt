@@ -278,7 +278,7 @@ internal class AppointmentsServiceTest {
   }
 
   @Test
-  fun `appointment not attended calls notify to send email`() {
+  fun `appointment attendance recorded emits application event`() {
     val appointmentId = UUID.randomUUID()
     val sessionNumber = 1
     val createdByUser = SampleData.sampleAuthUser()
@@ -293,6 +293,6 @@ internal class AppointmentsServiceTest {
     whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
 
     appointmentsService.recordAttendance(appointmentId, 1, attended, additionalInformation)
-    verify(appointmentEventPublisher).appointmentNotAttendedEvent(existingAppointment)
+    verify(appointmentEventPublisher).attendanceRecordedEvent(existingAppointment)
   }
 }

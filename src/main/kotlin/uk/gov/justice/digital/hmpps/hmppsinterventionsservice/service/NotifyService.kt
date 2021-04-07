@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.net.URI
 import java.util.UUID
 
@@ -63,18 +64,26 @@ class NotifyAppointmentService(
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: AppointmentEvent) {
     when (event.type) {
-      AppointmentEventType.NO_ATTENDANCE -> {
-        val ppDetails = hmppsAuthService.getUserDetail(event.appointment.actionPlan.referral.getResponsibleProbationPractitioner())
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUIAppointmentNotAttendedLocation, event.appointment.id)
-        emailSender.sendEmail(
-          appointmentNotAttendedTemplateID,
-          ppDetails.email,
-          mapOf(
-            "ppFirstName" to ppDetails.firstName,
-            "referenceNumber" to event.appointment.actionPlan.referral.referenceNumber!!,
-            "attendanceUrl" to location.toString(),
+      AppointmentEventType.ATTENDANCE_RECORDED -> {
+        // notify the responsible PP when an appointment is missed
+        if (event.appointment.attended == Attended.NO) {
+          val ppDetails =
+            hmppsAuthService.getUserDetail(event.appointment.actionPlan.referral.getResponsibleProbationPractitioner())
+          val location = generateResourceUrl(
+            interventionsUIBaseURL,
+            interventionsUIAppointmentNotAttendedLocation,
+            event.appointment.id
           )
-        )
+          emailSender.sendEmail(
+            appointmentNotAttendedTemplateID,
+            ppDetails.email,
+            mapOf(
+              "ppFirstName" to ppDetails.firstName,
+              "referenceNumber" to event.appointment.actionPlan.referral.referenceNumber!!,
+              "attendanceUrl" to location.toString(),
+            )
+          )
+        }
       }
     }
   }
