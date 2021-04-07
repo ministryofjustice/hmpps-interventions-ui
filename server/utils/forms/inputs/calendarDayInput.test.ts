@@ -105,6 +105,26 @@ describe(CalendarDayInput, () => {
       })
     })
 
+    it('returns an error when a field is not an integer', async () => {
+      const request = TestUtils.createRequest({
+        'deadline-year': '2021',
+        'deadline-month': '09',
+        'deadline-day': '12.1',
+      })
+
+      const result = await new CalendarDayInput(request, 'deadline', messages).validate()
+
+      expect(result.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'deadline-day',
+            formFields: ['deadline-day'],
+            message: 'The deadline must be a real date',
+          },
+        ],
+      })
+    })
+
     it('returns an error when the date specified does not exist', async () => {
       const request = TestUtils.createRequest({
         'deadline-year': '2011',
