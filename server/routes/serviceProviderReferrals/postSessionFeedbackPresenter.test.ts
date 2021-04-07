@@ -12,9 +12,10 @@ describe(PostSessionFeedbackPresenter, () => {
       const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
 
       expect(presenter.text).toMatchObject({
-        title: 'Social inclusion: add feedback',
+        title: 'Add attendance feedback',
         subTitle: 'Session details',
         attendanceQuestion: 'Did Alex attend this session?',
+        attendanceQuestionHint: 'Select one option',
         additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",
       })
     })

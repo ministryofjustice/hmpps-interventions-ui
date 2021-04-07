@@ -4,7 +4,6 @@ import DateUtils from '../../utils/dateUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
-import utils from '../../utils/utils'
 import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class PostSessionFeedbackPresenter {
@@ -17,9 +16,10 @@ export default class PostSessionFeedbackPresenter {
   ) {}
 
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)}: add feedback`,
+    title: `Add attendance feedback`,
     subTitle: 'Session details',
     attendanceQuestion: `Did ${this.serviceUser.firstName} attend this session?`,
+    attendanceQuestionHint: 'Select one option',
     additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
   }
 

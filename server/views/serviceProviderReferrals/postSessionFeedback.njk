@@ -8,8 +8,6 @@
 {% block formSection %}
   {{ govukSummaryList(summaryListArgs) }}
 
-  <h2 class="govuk-heading-l">Attendance</h2>
-
   <form method="post" action="#">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
     {{ govukRadios(radioButtonArgs) }}

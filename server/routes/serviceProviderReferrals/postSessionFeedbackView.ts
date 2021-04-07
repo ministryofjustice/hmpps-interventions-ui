@@ -16,8 +16,11 @@ export default class PostSessionFeedbackView {
         legend: {
           text: this.presenter.text.attendanceQuestion,
           isPageHeading: false,
-          classes: 'govuk-fieldset__legend--m',
+          classes: 'govuk-fieldset__legend--l',
         },
+      },
+      hint: {
+        text: this.presenter.text.attendanceQuestionHint,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       items: this.presenter.attendanceResponses.map(response => {

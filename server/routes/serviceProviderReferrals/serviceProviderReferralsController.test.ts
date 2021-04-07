@@ -601,7 +601,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
       )
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Accommodation: add feedback')
+        expect(res.text).toContain('Add attendance feedback')
         expect(res.text).toContain('Session details')
         expect(res.text).toContain('01 Feb 2021')
         expect(res.text).toContain('13:00')
