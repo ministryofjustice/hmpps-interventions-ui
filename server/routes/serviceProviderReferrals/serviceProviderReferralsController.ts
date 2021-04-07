@@ -34,6 +34,9 @@ import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedb
 import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
 import PostSessionFeedbackConfirmationPresenter from './postSessionFeedbackConfirmationPresenter'
 import PostSessionFeedbackConfirmationView from './postSessionFeedbackConfirmationView'
+import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbackPresenter'
+import PostSessionBehaviourFeedbackView from './postSessionBehaviourFeedbackView'
+import PostSessionBehaviourFeedbackForm from './postSessionBehaviourFeedbackForm'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -467,7 +470,7 @@ export default class ServiceProviderReferralsController {
       )
 
       return res.redirect(
-        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/behaviour`
       )
     }
 
@@ -483,6 +486,50 @@ export default class ServiceProviderReferralsController {
 
     const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, req.body)
     const view = new PostSessionAttendanceFeedbackView(presenter)
+
+    return res.render(...view.renderArgs)
+  }
+
+  async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { actionPlanId, sessionNumber } = req.params
+
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    if (req.method === 'POST') {
+      const data = await new PostSessionBehaviourFeedbackForm(req).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.recordAppointmentBehaviour(
+          res.locals.token,
+          actionPlanId,
+          Number(sessionNumber),
+          data.paramsForUpdate
+        )
+
+        return res.redirect(
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+        )
+      }
+    }
+
+    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
+
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      user.token,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, userInputData)
+    const view = new PostSessionBehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
     return res.render(...view.renderArgs)
