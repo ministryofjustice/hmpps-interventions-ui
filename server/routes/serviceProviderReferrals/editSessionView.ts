@@ -84,6 +84,7 @@ export default class EditSessionView {
         label: {
           text: 'AM or PM',
         },
+        classes: this.presenter.fields.time.partOfDay.hasError ? 'govuk-select--error' : '',
       },
     }
   }
