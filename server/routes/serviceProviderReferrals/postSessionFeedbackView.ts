@@ -41,7 +41,7 @@ export default class PostSessionFeedbackView {
       id: 'additional-attendance-information',
       label: {
         text: this.presenter.text.additionalAttendanceInformationLabel,
-        classes: 'govuk-label--s',
+        classes: 'govuk-label--s govuk-!-margin-bottom-4',
         isPageHeading: false,
       },
       value: this.presenter.fields.additionalAttendanceInformationValue,
