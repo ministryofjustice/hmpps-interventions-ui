@@ -14,6 +14,7 @@ describe(ServiceUserBannerPresenter, () => {
       const presenterWithoutEmail = new ServiceUserBannerPresenter(serviceUser)
       expect(presenterWithoutEmail.serviceUserBannerArgs.html).toContain('Email address not found')
     })
+
     it('has mobile number or not found message', () => {
       const serviceUser = serviceUserFactory.build()
       const mobileNumber = serviceUser.contactDetails.phoneNumbers!.filter(x => x.type === 'MOBILE')[0].number
@@ -25,6 +26,7 @@ describe(ServiceUserBannerPresenter, () => {
       const presenterWithoutMobile = new ServiceUserBannerPresenter(serviceUser)
       expect(presenterWithoutMobile.serviceUserBannerArgs.html).toContain('Mobile number not found')
     })
+
     it('has a formatted date of birth or empty string', () => {
       const serviceUser = serviceUserFactory.build()
       serviceUser.dateOfBirth = '1989-02-10'
@@ -37,6 +39,7 @@ describe(ServiceUserBannerPresenter, () => {
       const presenterWithoutDOB = new ServiceUserBannerPresenter(serviceUser)
       expect(presenterWithoutDOB.serviceUserBannerArgs.html).toContain('Date of birth: Not found')
     })
+
     it('has a formatted full name', () => {
       const serviceUser = serviceUserFactory.build()
       serviceUser.firstName = 'tom'

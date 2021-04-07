@@ -2,65 +2,63 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
-{% extends "./referralNavigationTemplate.njk" %}
+{% extends "../partials/referralNavigationTemplate.njk" %}
 
 {% block referralPageSection %}
 
-      <h2 class="govuk-heading-m">Initial assessment appointment</h2>
+  <h2 class="govuk-heading-m">Initial assessment appointment</h2>
 
-      {% if presenter.referralAssigned %}
-          <p class="govuk-body">
-          Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.
-          </p>
+  {% if presenter.referralAssigned %}
+    <p class="govuk-body">
+      Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.
+    </p>
 
-          {{ govukSummaryList(initialAssessmentSummaryListArgs(govukTag)) }}
-      {% else %}
-            <p class="govuk-body">
-            Once a caseworker has been assigned the initial assessment can be booked.
-            </p>
-            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-      {% endif %}
+    {{ govukSummaryList(initialAssessmentSummaryListArgs(govukTag)) }}
+  {% else %}
+    <p class="govuk-body">
+      Once a caseworker has been assigned the initial assessment can be booked.
+    </p>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+  {% endif %}
 
-      <h2 class="govuk-heading-m">Action plan</h2>
+  <h2 class="govuk-heading-m">Action plan</h2>
 
-       {% if presenter.referralAssigned %}
-
-      <p class="govuk-body">
+  {% if presenter.referralAssigned %}
+    <p class="govuk-body">
       Please complete the service user’s action plan and submit it to the probation practitioner for approval.
-      </p>
+    </p>
 
-      {{ govukSummaryList(actionPlanSummaryListArgs(govukTag, csrfToken)) }}
+    {{ govukSummaryList(actionPlanSummaryListArgs(govukTag, csrfToken)) }}
 
-      {% else %}
-            <p class="govuk-body">
-            Once a caseworker has been assigned the action plan can be sumbitted.
-            </p>
-            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+  {% else %}
+    <p class="govuk-body">
+      Once a caseworker has been assigned the action plan can be sumbitted.
+    </p>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-      {% endif %}
+  {% endif %}
 
-      <h2 class="govuk-heading-m">Session progress</h2>
-      <p class="govuk-body">
-        Track the progress of each intervention session.
-      </p>
+  <h2 class="govuk-heading-m">Session progress</h2>
+  <p class="govuk-body">
+    Track the progress of each intervention session.
+  </p>
 
-      {% if presenter.hasSessions %}
-        {{ govukTable(sessionTableArgs(govukTag)) }}
-      {% else %}
-          <p class="govuk-body">
-          Sessions will appear here when the action plan is ready.
-          </p>
+  {% if presenter.hasSessions %}
+    {{ govukTable(sessionTableArgs(govukTag)) }}
+  {% else %}
+    <p class="govuk-body">
+      Sessions will appear here when the action plan is ready.
+    </p>
 
-          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-      {% endif %}
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+  {% endif %}
 
+  <h2 class="govuk-heading-m">End of service report</h2>
 
-      <h2 class="govuk-heading-m">End of service report</h2>
-
-      <p class="govuk-body">
-      You can start the end of service report when all sessions are delivered.
-      </p>
-    </div>
-  </div>
+  <p class="govuk-body">
+    You can start the end of service report when all sessions are delivered.
+  </p>
+</div>
+</div>
 
 {% endblock %}

@@ -14,7 +14,8 @@ export default class ReferralOverviewPagePresenter {
   constructor(
     private readonly section: ReferralOverviewPageSection,
     private readonly referral: SentReferral,
-    serviceUser: DeliusServiceUser
+    serviceUser: DeliusServiceUser,
+    private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
   ) {
     this.serviceUserBannerPresenter = new ServiceUserBannerPresenter(serviceUser)
   }
@@ -27,17 +28,17 @@ export default class ReferralOverviewPagePresenter {
     items: [
       {
         text: 'Progress',
-        href: `/service-provider/referrals/${this.referral.id}/progress`,
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/progress`,
         active: this.section === ReferralOverviewPageSection.Progress,
       },
       {
         text: 'Case notes',
-        href: `/service-provider/referrals/${this.referral.id}/case-notes`,
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/case-notes`,
         active: this.section === ReferralOverviewPageSection.CaseNotes,
       },
       {
         text: 'Referral details',
-        href: `/service-provider/referrals/${this.referral.id}/details`,
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/details`,
         active: this.section === ReferralOverviewPageSection.Details,
       },
     ],

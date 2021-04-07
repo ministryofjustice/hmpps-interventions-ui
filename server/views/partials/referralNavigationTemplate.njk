@@ -5,7 +5,7 @@
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
-{% extends "../partials/layout.njk" %}
+{% extends "./layout.njk" %}
 
 {% block pageTitle %}HMPPS Interventions - GOV.UK{% endblock %}
 
@@ -14,10 +14,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        {{ govukBackLink({
-          text: "Back",
-          href: "/service-provider/dashboard"
-        }) }}
+      {{ govukBackLink(backLinkArgs) }}
 
       <h1 class="govuk-heading-l">Referral overview</h1>
 
