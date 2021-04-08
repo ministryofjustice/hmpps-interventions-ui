@@ -26,6 +26,11 @@ data class UpdateAppointmentAttendanceDTO(
   val additionalAttendanceInformation: String?
 )
 
+data class UpdateAppointmentBehaviourDTO(
+  val behaviourDescription: String,
+  val notifyProbationPractitioner: Boolean,
+)
+
 data class ActionPlanAppointmentDTO(
   val id: UUID,
   val sessionNumber: Int,
