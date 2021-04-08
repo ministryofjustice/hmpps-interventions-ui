@@ -25,14 +25,14 @@ class CommunityAPIBookingService(
   companion object : KLogging()
 
   fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?) {
-    when (bookingsEnabled) {
-      true ->
-        when {
-          isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
-            makeInitialBooking(existingAppointment, appointmentTime!!, durationInMinutes!!)
-          }
-          else -> {}
-        }
+    if (!bookingsEnabled) {
+      return
+    }
+
+    when {
+      isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
+        makeInitialBooking(existingAppointment, appointmentTime!!, durationInMinutes!!)
+      }
       else -> {}
     }
   }
