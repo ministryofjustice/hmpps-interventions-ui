@@ -159,6 +159,7 @@ export interface ActionPlanAppointment {
   durationInMinutes: number | null
   sessionFeedback?: {
     attendance?: AppointmentAttendance
+    behaviour?: AppointmentBehaviour
   }
 }
 
@@ -170,6 +171,11 @@ export interface ActionPlanAppointmentUpdate {
 export interface AppointmentAttendance {
   attended: 'yes' | 'no' | 'late'
   additionalAttendanceInformation?: string
+}
+
+export interface AppointmentBehaviour {
+  behaviourDescription: string
+  notifyProbationPractitioner: boolean
 }
 
 export default class InterventionsService {
@@ -474,6 +480,21 @@ export default class InterventionsService {
       path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-attendance`,
       headers: { Accept: 'application/json' },
       data: appointmentAttendanceUpdate,
+    })) as ActionPlanAppointment
+  }
+
+  async recordAppointmentBehaviour(
+    token: string,
+    actionPlanId: string,
+    sessionNumber: number,
+    appointmentBehaviourUpdate: Partial<AppointmentBehaviour>
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-behaviour`,
+      headers: { Accept: 'application/json' },
+      data: appointmentBehaviourUpdate,
     })) as ActionPlanAppointment
   }
 }
