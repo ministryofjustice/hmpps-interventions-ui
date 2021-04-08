@@ -679,9 +679,11 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
   it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the confirmation page', async () => {
     const updatedAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
-      attendance: {
-        attended: 'yes',
-        additionalAttendanceInformation: 'Alex made the session on time',
+      sessionFeedback: {
+        attendance: {
+          attended: 'yes',
+          additionalAttendanceInformation: 'Alex made the session on time',
+        },
       },
     })
 

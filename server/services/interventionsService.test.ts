@@ -1901,9 +1901,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             sessionNumber: 2,
             appointmentTime: '2021-05-13T13:30:00+01:00',
             durationInMinutes: 60,
-            attendance: {
-              attended: 'late',
-              additionalAttendanceInformation: 'Alex missed the bus',
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
             },
           }),
           headers: {
@@ -1921,8 +1923,61 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
-      expect(appointment.attendance!.attended).toEqual('late')
-      expect(appointment.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(appointment.sessionFeedback!.attendance!.attended).toEqual('late')
+      expect(appointment.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+    })
+  })
+
+  describe('recordAppointmentBehaviour', () => {
+    it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
+      await provider.addInteraction({
+        state:
+          'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+        uponReceiving:
+          'a POST request to set the behaviour for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2/record-behaviour',
+          body: {
+            behaviourDescription: 'Alex was well behaved',
+            notifyProbationPractitioner: false,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            sessionNumber: 2,
+            appointmentTime: '2021-05-13T13:30:00+01:00',
+            durationInMinutes: 60,
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was well behaved',
+                notifyProbationPractitioner: false,
+              },
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.recordAppointmentBehaviour(
+        token,
+        '345059d4-1697-467b-8914-fedec9957279',
+        2,
+        {
+          behaviourDescription: 'Alex was well behaved',
+          notifyProbationPractitioner: false,
+        }
+      )
+      expect(appointment.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
+      expect(appointment.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
     })
   })
 })

@@ -113,6 +113,10 @@ module.exports = on => {
       return interventionsService.stubRecordAppointmentAttendance(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
     },
 
+    stubRecordAppointmentBehaviour: arg => {
+      return interventionsService.stubRecordAppointmentBehaviour(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
+    },
+
     stubGetActionPlanAppointments: arg => {
       return interventionsService.stubGetActionPlanAppointments(arg.id, arg.responseJson)
     },

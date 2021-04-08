@@ -144,7 +144,9 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
 
       responseValues.forEach(responseValue => {
         const appointment = actionPlanAppointmentFactory.build({
-          attendance: { attended: responseValue },
+          sessionFeedback: {
+            attendance: { attended: responseValue },
+          },
         })
 
         describe(`service provider has selected ${responseValue}`, () => {
@@ -180,7 +182,9 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
       describe('when the appointment already has additionalAttendanceInformation set', () => {
         it('uses that value as the value attribute', () => {
           const appointment = actionPlanAppointmentFactory.build({
-            attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+            sessionFeedback: {
+              attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+            },
           })
           const serviceUser = deliusServiceUserFactory.build()
           const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
@@ -192,7 +196,9 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
       describe('when the appointment has no value for additionalAttendanceInformation', () => {
         it('uses sets the value to an empty string', () => {
           const appointment = actionPlanAppointmentFactory.build({
-            attendance: { attended: 'late' },
+            sessionFeedback: {
+              attendance: { attended: 'late' },
+            },
           })
           const serviceUser = deliusServiceUserFactory.build()
           const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
@@ -205,7 +211,9 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
     describe('when there is user input data', () => {
       it('uses the user input data as the value attribute', () => {
         const appointment = actionPlanAppointmentFactory.build({
-          attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+          sessionFeedback: {
+            attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+          },
         })
         const serviceUser = deliusServiceUserFactory.build()
         const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, null, {
