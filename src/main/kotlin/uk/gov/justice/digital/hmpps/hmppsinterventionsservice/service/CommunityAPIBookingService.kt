@@ -29,7 +29,7 @@ class CommunityAPIBookingService(
       true ->
         when {
           isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
-            makeInitialBooking(existingAppointment, appointmentTime, durationInMinutes)
+            makeInitialBooking(existingAppointment, appointmentTime!!, durationInMinutes!!)
           }
           else -> {}
         }
@@ -37,16 +37,16 @@ class CommunityAPIBookingService(
     }
   }
 
-  private fun makeInitialBooking(appointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?) {
+  private fun makeInitialBooking(appointment: ActionPlanAppointment, appointmentTime: OffsetDateTime, durationInMinutes: Int) {
     val resourceUrl = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
       .path(interventionsUIViewAppointment)
       .buildAndExpand(appointment.actionPlan.referral.id)
       .toString()
 
     val appointmentCreateRequestDTO = AppointmentCreateRequestDTO(
-      appointmentDate = appointmentTime!!.toLocalDate(),
+      appointmentDate = appointmentTime.toLocalDate(),
       appointmentStartTime = appointmentTime.toLocalTime(),
-      appointmentEndTime = appointmentTime.plusMinutes(durationInMinutes!!.toLong()).toLocalTime(),
+      appointmentEndTime = appointmentTime.plusMinutes(durationInMinutes.toLong()).toLocalTime(),
       officeLocationCode = officeLocation,
       notes = resourceUrl,
       context = integrationContext,
