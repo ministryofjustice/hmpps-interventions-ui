@@ -1932,12 +1932,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
       await provider.addInteraction({
         state:
-          'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+          'an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance',
         uponReceiving:
-          'a POST request to set the behaviour for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+          'a POST request to set the behaviour for the appointment on action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         withRequest: {
           method: 'POST',
-          path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2/record-behaviour',
+          path: '/action-plan/81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d/appointment/1/record-behaviour',
           body: {
             behaviourDescription: 'Alex was well behaved',
             notifyProbationPractitioner: false,
@@ -1947,9 +1947,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         willRespondWith: {
           status: 200,
           body: Matchers.like({
-            sessionNumber: 2,
+            sessionNumber: 1,
             appointmentTime: '2021-05-13T13:30:00+01:00',
-            durationInMinutes: 60,
+            durationInMinutes: 120,
             sessionFeedback: {
               attendance: {
                 attended: 'late',
@@ -1969,8 +1969,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       const appointment = await interventionsService.recordAppointmentBehaviour(
         token,
-        '345059d4-1697-467b-8914-fedec9957279',
-        2,
+        '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
+        1,
         {
           behaviourDescription: 'Alex was well behaved',
           notifyProbationPractitioner: false,
