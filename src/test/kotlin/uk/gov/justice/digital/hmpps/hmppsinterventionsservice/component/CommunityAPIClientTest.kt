@@ -21,12 +21,13 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.BadRequestException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateRequestDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateResponseDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
 import java.time.LocalDate
 import java.time.LocalTime
@@ -105,10 +106,13 @@ class CommunityAPIClientTest {
     val clientResponse: ClientResponse = ClientResponse
       .create(OK)
       .header("Content-Type", "application/json")
+      .body("{\"appointmentId\":\"1234\"}")
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
+    val response = communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
+
+    assertThat(response?.appointmentId).isEqualTo(1234L)
 
     verify(exchangeFunction, times(1)).exchange(any())
     val requestCaptor = argumentCaptor<ClientRequest>()
@@ -124,10 +128,10 @@ class CommunityAPIClientTest {
     communityAPIClient = CommunityAPIClient(
       WebClient.builder().exchangeFunction(exchangeFunction).build()
     )
-    whenever(exchangeFunction.exchange(any())).thenThrow(java.lang.RuntimeException("A problem"))
+    whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException("A problem"))
 
-    val exception = Assertions.assertThrows(BadRequestException::class.java) {
-      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
+    val exception = Assertions.assertThrows(RuntimeException::class.java) {
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
     }
     assertThat(exception.localizedMessage).isEqualTo("A problem")
 
@@ -149,10 +153,11 @@ class CommunityAPIClientTest {
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    val exception = Assertions.assertThrows(BadRequestException::class.java) {
-      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
+    val exception = Assertions.assertThrows(WebClientResponseException::class.java) {
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
     }
-    assertThat(exception.localizedMessage).isEqualTo("There was a problem Houston")
+    assertThat(exception.localizedMessage).isEqualTo("400 Bad Request from UNKNOWN ")
+    assertThat(exception.responseBodyAsString).isEqualTo("There was a problem Houston")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")

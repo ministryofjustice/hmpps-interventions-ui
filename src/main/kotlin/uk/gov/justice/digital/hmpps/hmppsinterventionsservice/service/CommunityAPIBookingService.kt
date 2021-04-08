@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
@@ -17,10 +18,11 @@ class CommunityAPIBookingService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.view-appointment}") private val interventionsUIViewAppointment: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
-  @Value("\${community-api.crs.office-location}") private val crsOfficeLocation: String,
-  @Value("\${community-api.crs.bookings-context}") private val crsBookingsContext: String,
+  @Value("\${community-api.appointments.office-location}") private val officeLocation: String,
+  @Value("\${community-api.integration-context}") private val integrationContext: String,
   val communityAPIClient: CommunityAPIClient,
 ) {
+  companion object : KLogging()
 
   fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?) {
     when (bookingsEnabled) {
@@ -45,16 +47,18 @@ class CommunityAPIBookingService(
       appointmentDate = appointmentTime!!.toLocalDate(),
       appointmentStartTime = appointmentTime.toLocalTime(),
       appointmentEndTime = appointmentTime.plusMinutes(durationInMinutes!!.toLong()).toLocalTime(),
-      officeLocationCode = crsOfficeLocation,
+      officeLocationCode = officeLocation,
       notes = resourceUrl,
-      context = crsBookingsContext,
+      context = integrationContext,
     )
 
     val referral = appointment.actionPlan.referral
     val communityApiBookAppointmentPath = UriComponentsBuilder.fromPath(communityApiBookAppointmentLocation)
       .buildAndExpand(referral.serviceUserCRN, referral.relevantSentenceId!!)
       .toString()
-    communityAPIClient.makeSyncPostRequest(communityApiBookAppointmentPath, appointmentCreateRequestDTO)
+
+    val response = communityAPIClient.makeSyncPostRequest(communityApiBookAppointmentPath, appointmentCreateRequestDTO, AppointmentCreateResponseDTO::class.java)
+    logger.debug("Requested booking for appointment. Returned appointment id: $response")
   }
 
   fun isInitialBooking(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Boolean =
@@ -81,4 +85,8 @@ data class AppointmentCreateRequestDTO(
   @NotNull val notes: String,
 
   @NotNull val context: String,
+)
+
+data class AppointmentCreateResponseDTO(
+  @NotNull val appointmentId: Long
 )

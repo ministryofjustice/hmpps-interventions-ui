@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
@@ -39,13 +40,17 @@ internal class CommunityAPIBookingServiceTest {
     val now = now()
     val appointment = makeAppointment(null, null)
 
+    val uri = "/appt/X1/123"
+    val link = "http://url/view/${appointment.actionPlan.referral.id}"
+    val request = AppointmentCreateRequestDTO(now.toLocalDate(), now.toLocalTime(), now.toLocalTime().plusMinutes(60), "CRSSHEF", notes = link, "CRS")
+    val response = AppointmentCreateResponseDTO(1234L)
+
+    whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))
+      .thenReturn(response)
+
     communityAPIBookingService.book(appointment, now, 60)
 
-    val link = "http://url/view/${appointment.actionPlan.referral.id}"
-    verify(communityAPIClient).makeSyncPostRequest(
-      "/appt/X1/123",
-      AppointmentCreateRequestDTO(now.toLocalDate(), now.toLocalTime(), now.toLocalTime().plusMinutes(60), "CRSSHEF", notes = link, "CRS")
-    )
+    verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java)
   }
 
   @Test
@@ -74,7 +79,6 @@ internal class CommunityAPIBookingServiceTest {
 
   @Test
   fun `does nothing if not enabled`() {
-    val now = now()
     val appointment = makeAppointment(null, null)
 
     val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(

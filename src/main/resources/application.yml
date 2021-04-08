@@ -89,9 +89,9 @@ community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
     book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments"
-  crs:
+  appointments:
     office-location: CRSSHEF
-    bookings-context: commissioned-rehabilitation-services
+  integration-context: commissioned-rehabilitation-services
 
 appointments:
   bookings:

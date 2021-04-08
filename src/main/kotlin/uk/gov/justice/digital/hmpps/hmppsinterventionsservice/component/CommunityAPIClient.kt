@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException.BadRequest
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.BadRequestException
 
 @Component
 class CommunityAPIClient(
@@ -26,14 +25,14 @@ class CommunityAPIClient(
       .subscribe()
   }
 
-  fun makeSyncPostRequest(uri: String, requestBody: Any) {
-    communityApiWebClient.post().uri(uri)
+  fun <T : Any> makeSyncPostRequest(uri: String, requestBody: Any, responseBodyClass: Class<T>): T? {
+    return communityApiWebClient.post().uri(uri)
       .body(Mono.just(requestBody), requestBody::class.java)
       .retrieve()
-      .bodyToMono(Unit::class.java)
+      .bodyToMono(responseBodyClass)
       .onErrorMap { e ->
-        val responseBodyAsString = handleResponse(e, requestBody)
-        BadRequestException(responseBodyAsString)
+        handleResponse(e, requestBody)
+        e
       }
       .block()
   }

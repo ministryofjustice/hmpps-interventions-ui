@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
@@ -82,6 +83,12 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
   fun handleEntityExistsException(e: EntityExistsException): ResponseEntity<ErrorResponse> {
     logger.info("entity exists exception", e)
     return errorResponse(HttpStatus.CONFLICT, "entity already exists", e.message)
+  }
+
+  @ExceptionHandler(WebClientResponseException::class)
+  fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse> {
+    logger.info("web client exception", e)
+    return errorResponse(e.statusCode, "web client exception", e.responseBodyAsString)
   }
 
   private fun errorResponse(status: HttpStatus, summary: String, description: String?, validationErrors: List<FieldError>? = null): ResponseEntity<ErrorResponse> {
