@@ -8,8 +8,10 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
       const actionPlan = actionPlanFactory.build({ referralId: '9c84b308-2ebb-427a-9b9f-c4da06f5e7c3' })
       const appointment = actionPlanAppointment.build({
         sessionNumber: 1,
-        attendance: {
-          attended: 'yes',
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+          },
         },
       })
       const presenter = new PostSessionFeedbackConfirmationPresenter(actionPlan, appointment)
@@ -26,8 +28,10 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
           const appointments = [
             actionPlanAppointment.build({
               sessionNumber: 1,
-              attendance: {
-                attended: 'yes',
+              sessionFeedback: {
+                attendance: {
+                  attended: 'yes',
+                },
               },
             }),
             actionPlanAppointment.build({
@@ -49,8 +53,10 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
         it('informs the service provider that the probation practitioner has been sent a copy of the session feedback form', () => {
           const appointment = actionPlanAppointment.build({
             sessionNumber: 1,
-            attendance: {
-              attended: 'yes',
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+              },
             },
           })
 
@@ -67,8 +73,10 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
         it('reminds the service provider to submit their end of service report within 5 days', () => {
           const appointment = actionPlanAppointment.build({
             sessionNumber: 2,
-            attendance: {
-              attended: 'yes',
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+              },
             },
           })
 

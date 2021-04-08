@@ -30,17 +30,17 @@ export default class PostSessionAttendanceFeedbackPresenter {
     {
       value: 'yes',
       text: 'Yes, they were on time',
-      checked: this.appointment.attendance?.attended === 'yes',
+      checked: this.appointment.sessionFeedback?.attendance?.attended === 'yes',
     },
     {
       value: 'late',
       text: 'They were late',
-      checked: this.appointment.attendance?.attended === 'late',
+      checked: this.appointment.sessionFeedback?.attendance?.attended === 'late',
     },
     {
       value: 'no',
       text: 'No',
-      checked: this.appointment.attendance?.attended === 'no',
+      checked: this.appointment.sessionFeedback?.attendance?.attended === 'no',
     },
   ]
 
@@ -61,7 +61,7 @@ export default class PostSessionAttendanceFeedbackPresenter {
 
   readonly fields = {
     additionalAttendanceInformationValue: new PresenterUtils(this.userInputData).stringValue(
-      this.appointment.attendance?.additionalAttendanceInformation || null,
+      this.appointment.sessionFeedback?.attendance?.additionalAttendanceInformation || null,
       'additional-attendance-information'
     ),
   }

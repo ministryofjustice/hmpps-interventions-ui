@@ -36,16 +36,20 @@ describe('Probation Practitioner monitor journey', () => {
           sessionNumber: 1,
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
-          attendance: {
-            attended: 'yes',
+          sessionFeedback: {
+            attendance: {
+              attended: 'yes',
+            },
           },
         }),
         actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-04-30T09:02:02Z',
           durationInMinutes: 75,
-          attendance: {
-            attended: 'no',
+          sessionFeedback: {
+            attendance: {
+              attended: 'no',
+            },
           },
         }),
         actionPlanAppointmentFactory.build({

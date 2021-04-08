@@ -157,7 +157,9 @@ export interface ActionPlanAppointment {
   sessionNumber: number
   appointmentTime: string | null
   durationInMinutes: number | null
-  attendance?: AppointmentAttendance
+  sessionFeedback?: {
+    attendance?: AppointmentAttendance
+  }
 }
 
 export interface ActionPlanAppointmentUpdate {

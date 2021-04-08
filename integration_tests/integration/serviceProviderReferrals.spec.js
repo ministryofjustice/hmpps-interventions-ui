@@ -423,9 +423,11 @@ describe('Service provider referrals dashboard', () => {
 
     const appointmentWithAttendanceRecorded = {
       ...appointments[0],
-      attendance: {
-        attended: 'yes',
-        additionalAttendanceInformation: 'Alex attended the session',
+      sessionFeedback: {
+        attendance: {
+          attended: 'yes',
+          additionalAttendanceInformation: 'Alex attended the session',
+        },
       },
     }
 

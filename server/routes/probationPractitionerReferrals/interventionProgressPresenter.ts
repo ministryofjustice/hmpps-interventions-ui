@@ -43,17 +43,19 @@ export default class InterventionProgressPresenter {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: this.tagArgs(appointment),
-        linkHtml: appointment.attendance ? `<a class="govuk-link" href="#">View</a>` : '',
+        linkHtml: appointment.sessionFeedback?.attendance ? `<a class="govuk-link" href="#">View</a>` : '',
       }
     })
   }
 
   private tagArgs(appointment: ActionPlanAppointment): Record<string, unknown> {
-    if (appointment.attendance?.attended === 'no') {
+    const sessionFeedbackAttendance = appointment.sessionFeedback?.attendance
+
+    if (sessionFeedbackAttendance?.attended === 'no') {
       return { text: 'FAILURE TO ATTEND', classes: 'govuk-tag--purple' }
     }
 
-    if (appointment.attendance?.attended === 'yes' || appointment.attendance?.attended === 'late') {
+    if (sessionFeedbackAttendance?.attended === 'yes' || sessionFeedbackAttendance?.attended === 'late') {
       return { text: 'COMPLETED', classes: 'govuk-tag--green' }
     }
 

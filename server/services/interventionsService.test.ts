@@ -1901,9 +1901,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             sessionNumber: 2,
             appointmentTime: '2021-05-13T13:30:00+01:00',
             durationInMinutes: 60,
-            attendance: {
-              attended: 'late',
-              additionalAttendanceInformation: 'Alex missed the bus',
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
             },
           }),
           headers: {
@@ -1921,8 +1923,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
-      expect(appointment.attendance!.attended).toEqual('late')
-      expect(appointment.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(appointment.sessionFeedback!.attendance!.attended).toEqual('late')
+      expect(appointment.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
     })
   })
 })

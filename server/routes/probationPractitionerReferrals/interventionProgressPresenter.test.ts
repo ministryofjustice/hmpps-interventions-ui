@@ -77,16 +77,20 @@ describe(InterventionProgressPresenter, () => {
               sessionNumber: 1,
               appointmentTime: null,
               durationInMinutes: null,
-              attendance: {
-                attended: 'yes',
+              sessionFeedback: {
+                attendance: {
+                  attended: 'yes',
+                },
               },
             },
             {
               sessionNumber: 2,
               appointmentTime: null,
               durationInMinutes: null,
-              attendance: {
-                attended: 'late',
+              sessionFeedback: {
+                attendance: {
+                  attended: 'late',
+                },
               },
             },
           ])
@@ -123,8 +127,10 @@ describe(InterventionProgressPresenter, () => {
               sessionNumber: 1,
               appointmentTime: null,
               durationInMinutes: null,
-              attendance: {
-                attended: 'no',
+              sessionFeedback: {
+                attendance: {
+                  attended: 'no',
+                },
               },
             },
           ])
