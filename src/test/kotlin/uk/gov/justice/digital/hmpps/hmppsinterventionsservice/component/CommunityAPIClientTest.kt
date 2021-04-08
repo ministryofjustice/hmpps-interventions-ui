@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.OK
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -129,6 +130,29 @@ class CommunityAPIClientTest {
       communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
     }
     assertThat(exception.localizedMessage).isEqualTo("A problem")
+
+    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
+    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed")
+  }
+
+  @Test
+  fun `propogates error response body on exception during sync post request`() {
+
+    communityAPIClient = CommunityAPIClient(
+      WebClient.builder().exchangeFunction(exchangeFunction).build()
+    )
+    val clientResponse: ClientResponse = ClientResponse
+      .create(BAD_REQUEST)
+      .header("Content-Type", "application/json")
+      .body("There was a problem Houston")
+      .build()
+    whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
+
+    val exception = Assertions.assertThrows(BadRequestException::class.java) {
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
+    }
+    assertThat(exception.localizedMessage).isEqualTo("There was a problem Houston")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
