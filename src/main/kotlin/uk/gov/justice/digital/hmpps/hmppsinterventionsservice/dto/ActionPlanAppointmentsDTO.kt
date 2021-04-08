@@ -33,7 +33,7 @@ data class ActionPlanAppointmentDTO(
   override val durationInMinutes: Int?,
   val createdAt: OffsetDateTime,
   val createdBy: AuthUserDTO,
-  val attendance: AttendanceDTO,
+  val sessionFeedback: SessionFeedbackDTO,
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes) {
   companion object {
     fun from(appointment: ActionPlanAppointment): ActionPlanAppointmentDTO {
@@ -44,7 +44,12 @@ data class ActionPlanAppointmentDTO(
         durationInMinutes = appointment.durationInMinutes,
         createdAt = appointment.createdAt,
         createdBy = AuthUserDTO.from(appointment.createdBy),
-        attendance = AttendanceDTO.from(appointment.attended, appointment.additionalAttendanceInformation),
+        sessionFeedback = SessionFeedbackDTO.from(
+          appointment.attended,
+          appointment.additionalAttendanceInformation,
+          appointment.attendanceBehaviour,
+          appointment.notifyPPOfAttendanceBehaviour,
+        ),
       )
     }
     fun from(appointments: List<ActionPlanAppointment>): List<ActionPlanAppointmentDTO> {
@@ -53,16 +58,31 @@ data class ActionPlanAppointmentDTO(
   }
 }
 
-data class AttendanceDTO(
-  val attended: Attended?,
-  val additionalAttendanceInformation: String?
+data class SessionFeedbackDTO(
+  val attendance: AttendanceDTO,
+  val behaviour: BehaviourDTO,
 ) {
   companion object {
-    fun from(attended: Attended?, additionalAttendanceInformation: String?): AttendanceDTO {
-      return AttendanceDTO(
-        attended = attended,
-        additionalAttendanceInformation = additionalAttendanceInformation
+    fun from(
+      attended: Attended?,
+      additionalAttendanceInformation: String?,
+      behaviourDescription: String?,
+      notifyProbationPractitioner: Boolean?
+    ): SessionFeedbackDTO {
+      return SessionFeedbackDTO(
+        AttendanceDTO(attended = attended, additionalAttendanceInformation = additionalAttendanceInformation),
+        BehaviourDTO(behaviourDescription, notifyProbationPractitioner),
       )
     }
   }
 }
+
+data class AttendanceDTO(
+  val attended: Attended?,
+  val additionalAttendanceInformation: String?,
+)
+
+data class BehaviourDTO(
+  val behaviourDescription: String?,
+  val notifyProbationPractitioner: Boolean?,
+)
