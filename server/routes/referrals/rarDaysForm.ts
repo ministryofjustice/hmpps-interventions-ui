@@ -52,16 +52,6 @@ export default class RarDaysForm {
   }
 
   get error(): FormValidationError | null {
-    if (this.result.isEmpty()) {
-      return null
-    }
-
-    return {
-      errors: this.result.array().map(validationError => ({
-        formFields: [validationError.param],
-        errorSummaryLinkedField: validationError.param,
-        message: validationError.msg,
-      })),
-    }
+    return FormUtils.validationErrorFromResult(this.result)
   }
 }

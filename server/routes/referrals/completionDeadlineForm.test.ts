@@ -1,160 +1,42 @@
-import { Request } from 'express'
 import CompletionDeadlineForm from './completionDeadlineForm'
+import TestUtils from '../../../testutils/testUtils'
 
 describe('CompletionDeadlineForm', () => {
-  describe('createForm', () => {
-    it('returns a form and sanitizes the request body', async () => {
-      const req = {
-        body: {
+  describe('data', () => {
+    describe('with valid data', () => {
+      it('returns a paramsForUpdate with the completionDeadline key and an ISO-formatted date', async () => {
+        const request = TestUtils.createRequest({
           'completion-deadline-year': '2021',
           'completion-deadline-month': '09',
           'completion-deadline-day': '12',
-        },
-      } as Request
+        })
 
-      await CompletionDeadlineForm.createForm(req)
+        const data = await new CompletionDeadlineForm(request).data()
 
-      expect(req.body['completion-deadline-year']).toBe(2021)
-      expect(req.body['completion-deadline-month']).toBe(9)
-      expect(req.body['completion-deadline-day']).toBe(12)
+        expect(data.paramsForUpdate).toEqual({ completionDeadline: '2021-09-12' })
+      })
     })
 
     describe('with invalid data', () => {
-      it('does not modify the invalid fields', async () => {
-        const req = {
-          body: {
-            'completion-deadline-year': '2021',
-            'completion-deadline-month': '09',
-            'completion-deadline-day': 'hello',
-          },
-        } as Request
-
-        await CompletionDeadlineForm.createForm(req)
-
-        expect(req.body['completion-deadline-year']).toBe(2021)
-        expect(req.body['completion-deadline-month']).toBe(9)
-        expect(req.body['completion-deadline-day']).toBe('hello')
-      })
-    })
-  })
-
-  describe('errors', () => {
-    it('returns null with valid data', async () => {
-      const req = {
-        body: {
+      it('returns an error', async () => {
+        const request = TestUtils.createRequest({
           'completion-deadline-year': '2021',
           'completion-deadline-month': '09',
-          'completion-deadline-day': '12',
-        },
-      } as Request
+          'completion-deadline-day': '',
+        })
 
-      const form = await CompletionDeadlineForm.createForm(req)
+        const data = await new CompletionDeadlineForm(request).data()
 
-      expect(form.error).toBeNull()
-    })
-
-    it('returns an error when a field is empty', async () => {
-      const req = {
-        body: {
-          'completion-deadline-year': '',
-          'completion-deadline-month': '09',
-          'completion-deadline-day': '12',
-        },
-      } as Request
-
-      const form = await CompletionDeadlineForm.createForm(req)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'completion-deadline-day',
-            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
-            message: 'The date by which the service needs to be completed must be a real date',
-          },
-        ],
+        expect(data.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'completion-deadline-day',
+              formFields: ['completion-deadline-day'],
+              message: 'The date by which the service needs to be completed must include a day',
+            },
+          ],
+        })
       })
-    })
-
-    it('returns an error when a field is just whitespace', async () => {
-      const req = {
-        body: {
-          'completion-deadline-year': '2021',
-          'completion-deadline-month': '     ',
-          'completion-deadline-day': '12',
-        },
-      } as Request
-
-      const form = await CompletionDeadlineForm.createForm(req)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'completion-deadline-day',
-            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
-            message: 'The date by which the service needs to be completed must be a real date',
-          },
-        ],
-      })
-    })
-
-    it('returns an error when a field is non-numeric', async () => {
-      const req = {
-        body: {
-          'completion-deadline-year': '2021',
-          'completion-deadline-month': '09',
-          'completion-deadline-day': 'hello',
-        },
-      } as Request
-
-      const form = await CompletionDeadlineForm.createForm(req)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'completion-deadline-day',
-            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
-            message: 'The date by which the service needs to be completed must be a real date',
-          },
-        ],
-      })
-    })
-
-    it('returns an error when the date specified does not exist', async () => {
-      const req = {
-        body: {
-          'completion-deadline-year': '2011',
-          'completion-deadline-month': '02',
-          'completion-deadline-day': '31',
-        },
-      } as Request
-
-      const form = await CompletionDeadlineForm.createForm(req)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'completion-deadline-day',
-            formFields: ['completion-deadline-day', 'completion-deadline-month', 'completion-deadline-year'],
-            message: 'The date by which the service needs to be completed must be a real date',
-          },
-        ],
-      })
-    })
-  })
-
-  describe('paramsForUpdate', () => {
-    it('returns an object with the completionDeadline key and an ISO-formatted date', async () => {
-      const req = {
-        body: {
-          'completion-deadline-year': '2021',
-          'completion-deadline-month': '09',
-          'completion-deadline-day': '12',
-        },
-      } as Request
-
-      const form = await CompletionDeadlineForm.createForm(req)
-
-      expect(form.paramsForUpdate).toEqual({ completionDeadline: '2021-09-12' })
     })
   })
 })

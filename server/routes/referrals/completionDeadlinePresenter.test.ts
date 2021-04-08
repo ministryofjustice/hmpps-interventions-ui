@@ -39,7 +39,7 @@ describe('CompletionDeadlinePresenter', () => {
           .build()
         const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, null, {
           'completion-deadline-day': 'egg',
-          'completion-deadline-month': 7,
+          'completion-deadline-month': '7',
         })
 
         expect(presenter.fields.completionDeadline.day.value).toBe('egg')

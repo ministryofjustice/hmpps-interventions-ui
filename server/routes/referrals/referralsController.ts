@@ -303,22 +303,22 @@ export default class ReferralsController {
   }
 
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
-    const form = await CompletionDeadlineForm.createForm(req)
+    const data = await new CompletionDeadlineForm(req).data()
 
     let error: FormValidationError | null = null
 
-    if (form.isValid) {
+    if (data.paramsForUpdate) {
       try {
         await this.interventionsService.patchDraftReferral(
           res.locals.user.token.accessToken,
           req.params.id,
-          form.paramsForUpdate
+          data.paramsForUpdate
         )
       } catch (e) {
         error = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      error = form.error
+      error = data.error
     }
 
     if (error === null) {
