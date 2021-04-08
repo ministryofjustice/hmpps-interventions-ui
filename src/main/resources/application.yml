@@ -13,6 +13,7 @@ spring:
     date-format: "yyyy-MM-dd HH:mm:ss"
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+    time-zone: "Europe/London"
   security:
     oauth2:
       client:
@@ -83,10 +84,19 @@ interventions-ui:
     sent-referral: "/service-provider/referrals/{id}/details"
     submit-action-plan: "/service-provider/referrals/{id}/progress" # fixme
     appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
+    view-appointment: "/probation-practitioner/referrals/{id}/progress"
 
 community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
+    book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments"
+  appointments:
+    office-location: CRSSHEF
+  integration-context: commissioned-rehabilitation-services
+
+appointments:
+  bookings:
+    enabled: false
 
 hmppsauth:
   api:

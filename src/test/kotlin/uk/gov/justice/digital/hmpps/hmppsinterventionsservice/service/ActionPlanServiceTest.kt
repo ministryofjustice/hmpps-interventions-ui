@@ -1,8 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.same
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -15,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -32,8 +32,7 @@ internal class ActionPlanServiceTest {
   private val actionPlanRepository: ActionPlanRepository = mock()
   private val actionPlanValidator: ActionPlanValidator = mock()
   private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
-  private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
-  private val appointmentsService = AppointmentsService(actionPlanAppointmentRepository, actionPlanRepository, authUserRepository, mock())
+  private val appointmentsService: AppointmentsService = mock()
 
   private val actionPlanService = ActionPlanService(
     authUserRepository,
@@ -219,17 +218,29 @@ internal class ActionPlanServiceTest {
       )
     ).thenReturn(SampleData.sampleActionPlan())
     whenever(authUserRepository.save(any())).thenReturn(SampleData.sampleAuthUser())
-    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(
-      SampleData.sampleActionPlanAppointment(
-        actionPlan = SampleData.sampleActionPlan(), createdBy = SampleData.sampleAuthUser()
-      )
-    )
 
     val submittedActionPlan = actionPlanService.submitDraftActionPlan(actionPlanId, authUser)
 
     assertThat(submittedActionPlan).isNotNull
     verify(actionPlanValidator).validateSubmittedActionPlan(any())
-    verify(actionPlanAppointmentRepository, times(2)).save(any())
+    verify(appointmentsService).createUnscheduledAppointmentsForActionPlan(any(), any())
+  }
+
+  @Test
+  fun `creates unscheduled appointments`() {
+    val actionPlanId = UUID.randomUUID()
+    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId, numberOfSessions = 2)
+    val authUser = AuthUser("CRN123", "auth", "user")
+    whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(actionPlanId)).thenReturn(actionPlan)
+    val savedActionPlan = SampleData.sampleActionPlan()
+    whenever(actionPlanRepository.save(any())).thenReturn(savedActionPlan)
+    whenever(authUserRepository.save(any())).thenReturn(SampleData.sampleAuthUser())
+
+    val submittedActionPlan = actionPlanService.submitDraftActionPlan(actionPlanId, authUser)
+
+    assertThat(submittedActionPlan).isEqualTo(savedActionPlan)
+    verify(actionPlanValidator).validateSubmittedActionPlan(any())
+    verify(appointmentsService).createUnscheduledAppointmentsForActionPlan(same(actionPlan), eq(authUser))
   }
 
   @Test

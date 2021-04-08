@@ -1,6 +1,10 @@
 notify:
   enabled: false
 
+appointments:
+  bookings:
+    enabled: false
+
 interventions-ui:
   baseurl: http://localhost:3000
 

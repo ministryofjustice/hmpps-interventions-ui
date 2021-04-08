@@ -32,11 +32,13 @@ internal class AppointmentsServiceTest {
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
   private val authUserRepository: AuthUserRepository = mock()
   private val appointmentEventPublisher: AppointmentEventPublisher = mock()
+  private val communityAPIBookingService: CommunityAPIBookingService = mock()
   private val actionPlanFactory = ActionPlanFactory()
 
   private val appointmentsService = AppointmentsService(
     actionPlanAppointmentRepository, actionPlanRepository,
-    authUserRepository, appointmentEventPublisher
+    authUserRepository, appointmentEventPublisher,
+    communityAPIBookingService
   )
 
   @Test
@@ -166,6 +168,31 @@ internal class AppointmentsServiceTest {
     )
 
     assertThat(updatedAppointment).isEqualTo(actionPlanAppointment)
+  }
+
+  @Test
+  fun `makes a booking when an appointment is updated`() {
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = 1
+    val appointmentTime = OffsetDateTime.now()
+    val durationInMinutes = 15
+    val createdByUser = SampleData.sampleAuthUser()
+    val actionPlan = SampleData.sampleActionPlan()
+    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(actionPlanAppointment)
+    whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(actionPlanAppointment)
+
+    val updatedAppointment = appointmentsService.updateAppointment(
+      actionPlanId,
+      sessionNumber,
+      appointmentTime,
+      durationInMinutes
+    )
+
+    assertThat(updatedAppointment).isEqualTo(actionPlanAppointment)
+    verify(communityAPIBookingService).book(actionPlanAppointment, appointmentTime, durationInMinutes)
   }
 
   @Test

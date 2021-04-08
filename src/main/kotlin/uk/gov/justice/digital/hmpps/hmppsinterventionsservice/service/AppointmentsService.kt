@@ -19,7 +19,8 @@ class AppointmentsService(
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
   val actionPlanRepository: ActionPlanRepository,
   val authUserRepository: AuthUserRepository,
-  val appointmentEventPublisher: AppointmentEventPublisher
+  val appointmentEventPublisher: AppointmentEventPublisher,
+  val communityAPIBookingService: CommunityAPIBookingService,
 ) {
   fun createAppointment(
     actionPlan: ActionPlan,
@@ -59,6 +60,8 @@ class AppointmentsService(
   ): ActionPlanAppointment {
 
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+    communityAPIBookingService.book(appointment, appointmentTime, durationInMinutes)
+
     mergeAppointment(appointment, appointmentTime, durationInMinutes)
     return actionPlanAppointmentRepository.save(appointment)
   }
