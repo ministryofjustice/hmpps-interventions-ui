@@ -1,25 +1,24 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { ActionPlanAppointment, ServiceCategory } from '../../services/interventionsService'
+import { ActionPlanAppointment } from '../../services/interventionsService'
 import DateUtils from '../../utils/dateUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
-import utils from '../../utils/utils'
 import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
-export default class PostSessionFeedbackPresenter {
+export default class PostSessionAttendanceFeedbackPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly serviceCategory: ServiceCategory,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)}: add feedback`,
+    title: `Add attendance feedback`,
     subTitle: 'Session details',
     attendanceQuestion: `Did ${this.serviceUser.firstName} attend this session?`,
+    attendanceQuestionHint: 'Select one option',
     additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
   }
 

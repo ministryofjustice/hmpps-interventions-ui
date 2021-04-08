@@ -100,11 +100,13 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
     serviceProviderReferralsController.editSession(req, res)
   )
-  get('/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', (req, res) =>
-    serviceProviderReferralsController.showPostSessionFeedbackForm(req, res)
+  get(
+    '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance',
+    (req, res) => serviceProviderReferralsController.showPostSessionAttendanceFeedbackForm(req, res)
   )
-  post('/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/', (req, res) =>
-    serviceProviderReferralsController.recordPostSessionFeedback(req, res)
+  post(
+    '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance',
+    (req, res) => serviceProviderReferralsController.recordPostSessionAttendanceFeedback(req, res)
   )
   get(
     '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation',

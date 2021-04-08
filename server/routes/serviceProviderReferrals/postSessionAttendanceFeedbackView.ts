@@ -1,9 +1,9 @@
 import { TextareaArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
+import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
 
-export default class PostSessionFeedbackView {
-  constructor(private readonly presenter: PostSessionFeedbackPresenter) {}
+export default class PostSessionAttendanceFeedbackView {
+  constructor(private readonly presenter: PostSessionAttendanceFeedbackPresenter) {}
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
 
@@ -16,8 +16,11 @@ export default class PostSessionFeedbackView {
         legend: {
           text: this.presenter.text.attendanceQuestion,
           isPageHeading: false,
-          classes: 'govuk-fieldset__legend--m',
+          classes: 'govuk-fieldset__legend--l',
         },
+      },
+      hint: {
+        text: this.presenter.text.attendanceQuestionHint,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       items: this.presenter.attendanceResponses.map(response => {
@@ -38,7 +41,7 @@ export default class PostSessionFeedbackView {
       id: 'additional-attendance-information',
       label: {
         text: this.presenter.text.additionalAttendanceInformationLabel,
-        classes: 'govuk-label--s',
+        classes: 'govuk-label--s govuk-!-margin-bottom-4',
         isPageHeading: false,
       },
       value: this.presenter.fields.additionalAttendanceInformationValue,
@@ -47,7 +50,7 @@ export default class PostSessionFeedbackView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/postSessionFeedback',
+      'serviceProviderReferrals/postSessionAttendanceFeedback',
       {
         presenter: this.presenter,
         serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,

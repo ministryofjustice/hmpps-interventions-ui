@@ -73,7 +73,7 @@ describe(InterventionProgressPresenter, () => {
               text: 'SCHEDULED',
               classes: 'govuk-tag--blue',
             },
-            linkHtml: `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback">Give feedback</a>`,
+            linkHtml: `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance">Give feedback</a>`,
           },
         ])
       })

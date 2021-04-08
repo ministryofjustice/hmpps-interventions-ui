@@ -1,10 +1,10 @@
 import { Request } from 'express'
-import PostSessionFeedbackForm from './postSessionFeedbackForm'
+import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
 
-describe(PostSessionFeedbackForm, () => {
+describe(PostSessionAttendanceFeedbackForm, () => {
   describe('isValid', () => {
     it('returns true when the attendance property is present in the body', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: { attended: 'yes' },
       } as Request)
 
@@ -12,7 +12,7 @@ describe(PostSessionFeedbackForm, () => {
     })
 
     it('returns false when the attendance property is absent in the body', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: {},
       } as Request)
 
@@ -20,7 +20,7 @@ describe(PostSessionFeedbackForm, () => {
     })
 
     it('returns false when the attendance property is null in the body', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: { attended: null },
       } as Request)
 
@@ -30,7 +30,7 @@ describe(PostSessionFeedbackForm, () => {
 
   describe('error', () => {
     it('returns null when the attendance property is present in the body', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: { attended: 'yes' },
       } as Request)
 
@@ -38,7 +38,7 @@ describe(PostSessionFeedbackForm, () => {
     })
 
     it('returns an error object when the attendance property is absent in the body', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: {},
       } as Request)
 
@@ -54,7 +54,7 @@ describe(PostSessionFeedbackForm, () => {
     })
 
     it('returns an error object when the attendance property is null in the body', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: { attended: null },
       } as Request)
 
@@ -72,7 +72,7 @@ describe(PostSessionFeedbackForm, () => {
 
   describe('attendanceParams', () => {
     it('returns the params to be sent to the backend, when the data in the body is valid', async () => {
-      const form = await PostSessionFeedbackForm.createForm({
+      const form = await PostSessionAttendanceFeedbackForm.createForm({
         body: { attended: 'yes', additionalAttendanceInformation: 'Alex attended the session' },
       } as Request)
 

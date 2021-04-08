@@ -60,7 +60,7 @@ export default class InterventionProgressPresenter {
           ? { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
           : { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' },
         linkHtml: appointment.appointmentTime
-          ? `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback">Give feedback</a>`
+          ? `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`
           : '<a class="govuk-link" href="#">Edit session details</a>',
       }
     })

@@ -28,9 +28,9 @@ import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessions
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
 import EditSessionPresenter from './editSessionPresenter'
 import EditSessionView from './editSessionView'
-import PostSessionFeedbackView from './postSessionFeedbackView'
-import PostSessionFeedbackPresenter from './postSessionFeedbackPresenter'
-import PostSessionFeedbackForm from './postSessionFeedbackForm'
+import PostSessionAttendanceFeedbackView from './postSessionAttendanceFeedbackView'
+import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
+import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
 import PostSessionFeedbackConfirmationPresenter from './postSessionFeedbackConfirmationPresenter'
 import PostSessionFeedbackConfirmationView from './postSessionFeedbackConfirmationView'
 
@@ -398,7 +398,7 @@ export default class ServiceProviderReferralsController {
     return res.render(...view.renderArgs)
   }
 
-  async showPostSessionFeedbackForm(req: Request, res: Response): Promise<void> {
+  async showPostSessionAttendanceFeedbackForm(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
 
@@ -411,23 +411,19 @@ export default class ServiceProviderReferralsController {
       Number(sessionNumber)
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      user.token,
-      referral.referral.serviceCategoryId
-    )
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory)
-    const view = new PostSessionFeedbackView(presenter)
+    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
+    const view = new PostSessionAttendanceFeedbackView(presenter)
 
     return res.render(...view.renderArgs)
   }
 
-  async recordPostSessionFeedback(req: Request, res: Response): Promise<void> {
+  async recordPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     let formError: FormValidationError | null = null
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
 
-    const form = await PostSessionFeedbackForm.createForm(req)
+    const form = await PostSessionAttendanceFeedbackForm.createForm(req)
     formError = form.error
 
     if (form.isValid) {
@@ -452,13 +448,9 @@ export default class ServiceProviderReferralsController {
       Number(sessionNumber)
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      user.token,
-      referral.referral.serviceCategoryId
-    )
 
-    const presenter = new PostSessionFeedbackPresenter(appointment, serviceUser, serviceCategory, formError, req.body)
-    const view = new PostSessionFeedbackView(presenter)
+    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, req.body)
+    const view = new PostSessionAttendanceFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
     return res.render(...view.renderArgs)

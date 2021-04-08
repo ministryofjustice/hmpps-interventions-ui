@@ -3,11 +3,11 @@ import { AppointmentAttendance } from '../../services/interventionsService'
 import errorMessages from '../../utils/errorMessages'
 import { FormValidationError } from '../../utils/formValidationError'
 
-export default class PostSessionFeedbackForm {
+export default class PostSessionAttendanceFeedbackForm {
   private constructor(private readonly request: Request) {}
 
-  static async createForm(request: Request): Promise<PostSessionFeedbackForm> {
-    return new PostSessionFeedbackForm(request)
+  static async createForm(request: Request): Promise<PostSessionAttendanceFeedbackForm> {
+    return new PostSessionAttendanceFeedbackForm(request)
   }
 
   get attendanceParams(): Partial<AppointmentAttendance> {

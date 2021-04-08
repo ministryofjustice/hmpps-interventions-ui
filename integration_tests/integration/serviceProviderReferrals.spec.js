@@ -411,7 +411,7 @@ describe('Service provider referrals dashboard', () => {
 
     cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
-    cy.contains('Submit for approval').click()
+    cy.contains('Save and continue').click()
     cy.contains('Session feedback added and submitted to the probation practitioner')
     cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
   })
