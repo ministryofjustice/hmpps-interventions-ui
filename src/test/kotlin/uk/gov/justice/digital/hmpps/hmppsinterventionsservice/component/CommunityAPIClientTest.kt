@@ -15,11 +15,12 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus.OK
 import org.springframework.web.reactive.function.client.ClientRequest
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.BadRequestException
@@ -31,9 +32,6 @@ import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
-import org.springframework.http.HttpStatus.LENGTH_REQUIRED
-import org.springframework.http.HttpStatus.OK
-import org.springframework.web.reactive.function.client.ClientResponse
 
 class CommunityAPIClientTest {
 
@@ -105,7 +103,7 @@ class CommunityAPIClientTest {
     )
     val clientResponse: ClientResponse = ClientResponse
       .create(OK)
-      .header("Content-Type","application/json")
+      .header("Content-Type", "application/json")
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
