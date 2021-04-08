@@ -7,7 +7,8 @@ FROM node:14-alpine3.13 as base
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ENV TZ=Europe/London
-RUN test -e "/usr/share/zoneinfo/$TZ" && \
+RUN apk add --no-cache tzdata && \
+      test -e "/usr/share/zoneinfo/$TZ" && \
       ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && \
       echo "$TZ" > /etc/timezone
 
