@@ -96,7 +96,7 @@ community-api:
 
 appointments:
   bookings:
-    enabled: true
+    enabled: false
 
 hmppsauth:
   api:
