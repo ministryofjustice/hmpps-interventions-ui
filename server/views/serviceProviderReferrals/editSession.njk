@@ -15,6 +15,10 @@
       <form method="post" novalidate>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
+
         <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
         {{ govukDateInput(dateInputArgs) }}
