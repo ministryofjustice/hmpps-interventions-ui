@@ -9,9 +9,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 
 enum class AppointmentEventType {
   ATTENDANCE_RECORDED,
+  BEHAVIOUR_RECORDED,
 }
 
-class AppointmentEvent(source: Any, val type: AppointmentEventType, val appointment: ActionPlanAppointment, val detailUrl: String) : ApplicationEvent(source) {
+class AppointmentEvent(source: Any, val type: AppointmentEventType, val appointment: ActionPlanAppointment, val detailUrl: String, val notifyPP: Boolean) : ApplicationEvent(source) {
   override fun toString(): String {
     return "AppointmentEvent(type=$type, appointment=${appointment.id}, detailUrl='$detailUrl', source=$source)"
   }
@@ -22,13 +23,19 @@ class AppointmentEventPublisher(
   private val applicationEventPublisher: ApplicationEventPublisher,
   private val locationMapper: LocationMapper
 ) {
-  fun attendanceRecordedEvent(appointment: ActionPlanAppointment) {
+  fun attendanceRecordedEvent(appointment: ActionPlanAppointment, notifyPP: Boolean) {
     applicationEventPublisher.publishEvent(
-      AppointmentEvent(this, AppointmentEventType.ATTENDANCE_RECORDED, appointment, getAppointmentAttendanceURL(appointment))
+      AppointmentEvent(this, AppointmentEventType.ATTENDANCE_RECORDED, appointment, getAppointmentURL(appointment), notifyPP)
     )
   }
 
-  private fun getAppointmentAttendanceURL(appointment: ActionPlanAppointment): String {
+  fun behaviourRecordedEvent(appointment: ActionPlanAppointment, notifyPP: Boolean) {
+    applicationEventPublisher.publishEvent(
+      AppointmentEvent(this, AppointmentEventType.BEHAVIOUR_RECORDED, appointment, getAppointmentURL(appointment), notifyPP)
+    )
+  }
+
+  private fun getAppointmentURL(appointment: ActionPlanAppointment): String {
     val path = locationMapper.getPathFromControllerMethod(AppointmentsController::getAppointment)
     return locationMapper.expandPathToCurrentRequestBaseUrl(path, appointment.actionPlan.id, appointment.sessionNumber).toString()
   }

@@ -11,7 +11,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
@@ -43,7 +42,6 @@ internal class AppointmentsServiceTest {
 
   @Test
   fun `creates an appointment`() {
-    val startTimeOfTest = OffsetDateTime.now()
     val actionPlanId = UUID.randomUUID()
     val sessionNumber = 1
     val appointmentTime = OffsetDateTime.now()
@@ -55,34 +53,7 @@ internal class AppointmentsServiceTest {
     whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
     whenever(actionPlanRepository.findById(actionPlanId)).thenReturn(of(actionPlan))
     val savedAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
-    whenever(
-      actionPlanAppointmentRepository.save(
-        ArgumentMatchers.argThat { (
-          sessionNumberArg,
-          sessionAttendanceArg,
-          additionalAttendanceInformationArg,
-          attendanceSubmittedAtArg,
-          appointmentTimeArg,
-          durationInMinutesArg,
-          createdByArg,
-          createdAtArg,
-          actionPlanArg,
-          _
-        ) ->
-          (
-            sessionNumberArg == sessionNumber &&
-              sessionAttendanceArg == null &&
-              additionalAttendanceInformationArg == null &&
-              attendanceSubmittedAtArg == null &&
-              appointmentTimeArg == appointmentTime &&
-              durationInMinutesArg == durationInMinutes &&
-              createdByArg == createdByUser &&
-              createdAtArg.isAfter(startTimeOfTest) &&
-              actionPlanArg == actionPlan
-            )
-        }
-      )
-    ).thenReturn(savedAppointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(savedAppointment)
 
     val createdAppointment = appointmentsService.createAppointment(
       actionPlan,
@@ -130,35 +101,7 @@ internal class AppointmentsServiceTest {
 
     whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(actionPlanAppointment)
     whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
-    whenever(
-      actionPlanAppointmentRepository.save(
-        ArgumentMatchers.argThat { (
-          sessionNumberArg,
-          sessionAttendanceArg,
-          additionalAttendanceInformationArg,
-          attendanceSubmittedAtArg,
-          appointmentTimeArg,
-          durationInMinutesArg,
-          createdByArg,
-          createdAtArg,
-          actionPlanArg,
-          _
-        ) ->
-          (
-            sessionNumberArg == sessionNumber &&
-              sessionAttendanceArg == null &&
-              additionalAttendanceInformationArg == null &&
-              attendanceSubmittedAtArg == null &&
-              appointmentTimeArg == appointmentTime &&
-              durationInMinutesArg == durationInMinutes &&
-              createdByArg == createdByUser &&
-              createdAtArg.isAfter(startTimeOfTest) &&
-              actionPlanArg == actionPlan
-
-            )
-        }
-      )
-    ).thenReturn(actionPlanAppointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(actionPlanAppointment)
 
     val updatedAppointment = appointmentsService.updateAppointment(
       actionPlanId,
@@ -320,6 +263,6 @@ internal class AppointmentsServiceTest {
     whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
 
     appointmentsService.recordAttendance(appointmentId, 1, attended, additionalInformation)
-    verify(appointmentEventPublisher).attendanceRecordedEvent(existingAppointment)
+    verify(appointmentEventPublisher).attendanceRecordedEvent(existingAppointment, true)
   }
 }

@@ -32,7 +32,7 @@ class AppointmentEventPublisherTest {
     whenever(locationMapper.getPathFromControllerMethod(AppointmentsController::getAppointment)).thenReturn("/action-plan/{id}/appointments/{sessionNumber}")
     val publisher = AppointmentEventPublisher(eventPublisher, locationMapper)
 
-    publisher.attendanceRecordedEvent(appointment)
+    publisher.attendanceRecordedEvent(appointment, false)
 
     val eventCaptor = argumentCaptor<AppointmentEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())
@@ -42,5 +42,6 @@ class AppointmentEventPublisherTest {
     Assertions.assertThat(event.type).isSameAs(AppointmentEventType.ATTENDANCE_RECORDED)
     Assertions.assertThat(event.appointment).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo(uri.toString())
+    Assertions.assertThat(event.notifyPP).isFalse
   }
 }
