@@ -25,6 +25,7 @@ internal class CommunityAPIBookingServiceTest {
   private val communityAPIClient: CommunityAPIClient = mock()
 
   private val communityAPIBookingService = CommunityAPIBookingService(
+    true,
     httpBaseUrl,
     viewUrl,
     apiUrl,
@@ -48,7 +49,7 @@ internal class CommunityAPIBookingServiceTest {
   }
 
   @Test
-  fun `does nothing if not initial booking`() {
+  fun `does nothing if not not enabled`() {
     communityAPIBookingService.book(makeAppointment(null, null), now(), null)
     verifyZeroInteractions(communityAPIClient)
   }
@@ -69,6 +70,25 @@ internal class CommunityAPIBookingServiceTest {
     assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), 60), null, null)).isFalse()
     assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(null, null), now(), null)).isFalse()
     assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(null, null), now(), 60)).isTrue()
+  }
+
+  @Test
+  fun `does nothing if not initial booking`() {
+    val now = now()
+    val appointment = makeAppointment(null, null)
+
+    val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(
+      false,
+      httpBaseUrl,
+      viewUrl,
+      apiUrl,
+      crsOfficeLocation,
+      crsBookingsContext,
+      communityAPIClient
+    )
+
+    communityAPIBookingServiceNotEnabled.book(appointment, now(), 60)
+    verifyZeroInteractions(communityAPIClient)
   }
 
   private fun makeAppointment(appointmentTime: OffsetDateTime?, durationInMinutes: Int?): ActionPlanAppointment {

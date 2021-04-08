@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull
 
 @Service
 class CommunityAPIBookingService(
+  @Value("\${appointments.bookings.enabled}") private val bookingsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.view-appointment}") private val interventionsUIViewAppointment: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
@@ -22,10 +23,14 @@ class CommunityAPIBookingService(
 ) {
 
   fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?) {
-    when {
-      isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
-        makeInitialBooking(existingAppointment, appointmentTime, durationInMinutes)
-      }
+    when (bookingsEnabled) {
+      true ->
+        when {
+          isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
+            makeInitialBooking(existingAppointment, appointmentTime, durationInMinutes)
+          }
+          else -> {}
+        }
       else -> {}
     }
   }

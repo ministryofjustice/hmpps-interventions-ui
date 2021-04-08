@@ -93,6 +93,10 @@ community-api:
     office-location: CRSSHEF
     bookings-context: commissioned-rehabilitation-services
 
+appointments:
+  bookings:
+    enabled: true
+
 hmppsauth:
   api:
     locations:
