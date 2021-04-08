@@ -312,4 +312,20 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubUpdateActionPlanAppointment = async (id: string, session: number, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'PATCH',
+        urlPattern: `${this.mockPrefix}/action-plan/${id}/appointment/${session}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
