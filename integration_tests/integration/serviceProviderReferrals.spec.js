@@ -374,76 +374,176 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#duration-minutes').should('have.value', '15')
   })
 
-  it('User records post session feedback', () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referralParams = {
-      id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-      referral: { serviceCategoryId: serviceCategory.id },
-    }
-    const deliusServiceUser = deliusServiceUserFactory.build()
-    const probationPractitioner = deliusUserFactory.build({
-      firstName: 'John',
-      surname: 'Smith',
-      username: 'john.smith',
-    })
-    const actionPlan = actionPlanFactory.submitted().build({
-      referralId: referralParams.id,
-      numberOfSessions: 4,
-    })
+  describe('Recording post session feedback', () => {
+    it('user records the Service User as having attended, and fills out behaviour screen', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referralParams = {
+        id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
+        referral: { serviceCategoryId: serviceCategory.id },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const probationPractitioner = deliusUserFactory.build({
+        firstName: 'John',
+        surname: 'Smith',
+        username: 'john.smith',
+      })
+      const actionPlan = actionPlanFactory.submitted().build({
+        referralId: referralParams.id,
+        numberOfSessions: 4,
+      })
 
-    const appointments = [
-      actionPlanAppointmentFactory.build({
-        sessionNumber: 1,
-        appointmentTime: '2021-03-24T09:02:02Z',
-        durationInMinutes: 75,
-      }),
-      actionPlanAppointmentFactory.build({
-        sessionNumber: 2,
-        appointmentTime: '2021-03-31T09:02:02Z',
-        durationInMinutes: 75,
-      }),
-    ]
+      const appointments = [
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 1,
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: '2021-03-31T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+      ]
 
-    const assignedReferral = sentReferralFactory.assigned().build({
-      ...referralParams,
-      assignedTo: { username: probationPractitioner.username },
-      actionPlanId: actionPlan.id,
-    })
+      const assignedReferral = sentReferralFactory.assigned().build({
+        ...referralParams,
+        assignedTo: { username: probationPractitioner.username },
+        actionPlanId: actionPlan.id,
+      })
 
-    cy.stubGetSentReferrals([assignedReferral])
-    cy.stubGetActionPlan(actionPlan.id, actionPlan)
-    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
-    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
-    cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
 
-    cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
-    cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
-    cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
+      cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
+      cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
 
-    const appointmentWithAttendanceRecorded = {
-      ...appointments[0],
-      sessionFeedback: {
-        attendance: {
-          attended: 'yes',
-          additionalAttendanceInformation: 'Alex attended the session',
+      const appointmentWithAttendanceRecorded = {
+        ...appointments[0],
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex attended the session',
+          },
         },
-      },
-    }
+      }
 
-    cy.login()
+      const appointmentWithBehaviourRecorded = {
+        ...appointmentWithAttendanceRecorded,
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex attended the session',
+          },
+          behaviour: {
+            behaviourDescription: 'Alex was well-behaved',
+            notifyProbationPractitioner: false,
+          },
+        },
+      }
 
-    cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+      cy.login()
 
-    cy.contains('Give feedback').click()
+      cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
 
-    cy.contains('Yes').click()
-    cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
+      cy.contains('Give feedback').click()
 
-    cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+      cy.contains('Yes').click()
+      cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
-    cy.contains('Save and continue').click()
-    cy.contains('Session feedback added and submitted to the probation practitioner')
-    cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+      cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+
+      cy.contains('Save and continue').click()
+
+      cy.contains('Add behaviour feedback')
+
+      cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
+      cy.contains('No').click()
+
+      cy.stubRecordAppointmentBehaviour(actionPlan.id, 1, appointmentWithBehaviourRecorded)
+
+      cy.contains('Save and continue').click()
+
+      cy.contains('Session feedback added and submitted to the probation practitioner')
+      cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+    })
+
+    it('user records the Service User as having not attended, and skips behaviour screen', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referralParams = {
+        id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
+        referral: { serviceCategoryId: serviceCategory.id },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const probationPractitioner = deliusUserFactory.build({
+        firstName: 'John',
+        surname: 'Smith',
+        username: 'john.smith',
+      })
+      const actionPlan = actionPlanFactory.submitted().build({
+        referralId: referralParams.id,
+        numberOfSessions: 4,
+      })
+
+      const appointments = [
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 1,
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: '2021-03-31T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+      ]
+
+      const assignedReferral = sentReferralFactory.assigned().build({
+        ...referralParams,
+        assignedTo: { username: probationPractitioner.username },
+        actionPlanId: actionPlan.id,
+      })
+
+      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+
+      cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
+      cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
+
+      const appointmentWithAttendanceRecorded = {
+        ...appointments[0],
+        sessionFeedback: {
+          attendance: {
+            attended: 'no',
+            additionalAttendanceInformation: "Alex didn't attend",
+          },
+        },
+      }
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+
+      cy.contains('Give feedback').click()
+
+      cy.contains('Yes').click()
+      cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
+
+      cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+
+      cy.contains('Save and continue').click()
+
+      cy.contains('Session feedback added and submitted to the probation practitioner')
+      cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+    })
   })
 })
