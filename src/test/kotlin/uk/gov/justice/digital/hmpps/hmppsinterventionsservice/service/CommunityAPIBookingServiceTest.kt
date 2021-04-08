@@ -49,7 +49,7 @@ internal class CommunityAPIBookingServiceTest {
   }
 
   @Test
-  fun `does nothing if not not enabled`() {
+  fun `does nothing if not initial booking`() {
     communityAPIBookingService.book(makeAppointment(null, null), now(), null)
     verifyZeroInteractions(communityAPIClient)
   }
@@ -73,7 +73,7 @@ internal class CommunityAPIBookingServiceTest {
   }
 
   @Test
-  fun `does nothing if not initial booking`() {
+  fun `does nothing if not enabled`() {
     val now = now()
     val appointment = makeAppointment(null, null)
 
