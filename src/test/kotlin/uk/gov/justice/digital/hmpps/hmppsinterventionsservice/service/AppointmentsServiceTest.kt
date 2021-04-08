@@ -265,4 +265,28 @@ internal class AppointmentsServiceTest {
     appointmentsService.recordAttendance(appointmentId, 1, attended, additionalInformation)
     verify(appointmentEventPublisher).attendanceRecordedEvent(existingAppointment, true)
   }
+
+  @Test
+  fun `updating session behaviour sets relevant fields`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(any(), any())).thenReturn(appointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(appointment)
+    val updatedAppointment = appointmentsService.recordBehaviour(appointment.id, 1, "not good", false)
+
+    verify(actionPlanAppointmentRepository, times(1)).save(appointment)
+    assertThat(updatedAppointment).isSameAs(appointment)
+    assertThat(appointment.attendanceBehaviour).isEqualTo("not good")
+    assertThat(appointment.notifyPPOfAttendanceBehaviour).isFalse
+    assertThat(appointment.attendanceBehaviourSubmittedAt).isNotNull
+  }
+
+  @Test
+  fun `updating session behaviour for missing appointment throws error`() {
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(any(), any())).thenReturn(null)
+
+    assertThrows(EntityNotFoundException::class.java) {
+      appointmentsService.recordBehaviour(UUID.randomUUID(), 1, "not good", false)
+    }
+  }
 }
