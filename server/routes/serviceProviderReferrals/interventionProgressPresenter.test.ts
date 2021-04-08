@@ -30,8 +30,9 @@ describe(InterventionProgressPresenter, () => {
       it('populates the table with formatted session information, with the "Edit session details" link displayed', () => {
         const referral = sentReferralFactory.build()
         const serviceCategory = serviceCategoryFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
         const serviceUser = serviceUserFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser, [
           {
             sessionNumber: 1,
             appointmentTime: null,
@@ -46,7 +47,8 @@ describe(InterventionProgressPresenter, () => {
               text: 'NOT SCHEDULED',
               classes: 'govuk-tag--grey',
             },
-            linkHtml: '<a class="govuk-link" href="#">Edit session details</a>',
+            linkHtml:
+              '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit">Edit session details</a>',
           },
         ])
       })
@@ -73,7 +75,7 @@ describe(InterventionProgressPresenter, () => {
               text: 'SCHEDULED',
               classes: 'govuk-tag--blue',
             },
-            linkHtml: `<a class="govuk-link" href="#">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance">Give feedback</a>`,
+            linkHtml: `<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance">Give feedback</a>`,
           },
         ])
       })
