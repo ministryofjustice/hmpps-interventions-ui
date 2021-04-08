@@ -27,8 +27,9 @@ export default class FormUtils {
     request: Request
     validations: ValidationChain[]
   }): Promise<Result<ValidationError>> {
-    await Promise.all(validations.map(validation => validation.run(request)))
-    return validationResult(request)
+    const clonedRequest = { ...request }
+    await Promise.all(validations.map(validation => validation.run(clonedRequest)))
+    return validationResult(clonedRequest)
   }
 
   static validationErrorFromResult(result: Result): FormValidationError | null {

@@ -81,5 +81,18 @@ describe('FormUtils', () => {
         { location: 'body', msg: 'field3 is empty', param: 'field3', value: '' },
       ])
     })
+
+    it('can be used multiple times on the same request with different validations', async () => {
+      const validations = [body('field2').notEmpty().withMessage('field2 is empty')]
+      const secondValidations = [body('field3').notEmpty().withMessage('field3 is empty')]
+
+      const request = { body: { field1: 'Hello', field2: '', field3: '' } } as Request
+
+      const result = await FormUtils.runValidations({ request, validations })
+      const secondResult = await FormUtils.runValidations({ request, validations: secondValidations })
+
+      expect(result.array()).toEqual([{ location: 'body', msg: 'field2 is empty', param: 'field2', value: '' }])
+      expect(secondResult.array()).toEqual([{ location: 'body', msg: 'field3 is empty', param: 'field3', value: '' }])
+    })
   })
 })
