@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.com
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
@@ -11,6 +11,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
@@ -21,8 +22,12 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.BadRequestException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
@@ -57,7 +62,7 @@ class CommunityAPIClientTest {
   }
 
   @Test
-  fun `makes request successfully`() {
+  fun `makes async post request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
       WebClient.builder().exchangeFunction(exchangeFunction).build()
@@ -75,7 +80,7 @@ class CommunityAPIClientTest {
   }
 
   @Test
-  fun `error was logged on exception`() {
+  fun `error was logged on exception during async post request`() {
 
     communityAPIClient = CommunityAPIClient(
       WebClient.builder().exchangeFunction(exchangeFunction).build()
@@ -83,6 +88,24 @@ class CommunityAPIClientTest {
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException::class.java)
 
     communityAPIClient.makeAsyncPostRequest("/uriValue", referralSentEvent)
+
+    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
+    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed")
+  }
+
+  @Test
+  fun `error was logged on exception during sync post request`() {
+
+    communityAPIClient = CommunityAPIClient(
+      WebClient.builder().exchangeFunction(exchangeFunction).build()
+    )
+    whenever(exchangeFunction.exchange(any())).thenThrow(java.lang.RuntimeException("A problem"))
+
+    val exception = Assertions.assertThrows(BadRequestException::class.java) {
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
+    }
+    assertThat(exception.localizedMessage).isEqualTo("A problem")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
@@ -101,5 +124,14 @@ class CommunityAPIClientTest {
       sentAt = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 0, ZoneOffset.of("+00:00"))
     ),
     "http://url"
+  )
+
+  private val appointmentCreateRequest = AppointmentCreateRequestDTO(
+    appointmentDate = LocalDate.now(),
+    appointmentStartTime = LocalTime.now(),
+    appointmentEndTime = LocalTime.now(),
+    officeLocationCode = "CRSSHEF",
+    notes = "http://backLink",
+    context = "c-r-s",
   )
 }

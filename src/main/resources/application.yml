@@ -83,10 +83,15 @@ interventions-ui:
     sent-referral: "/service-provider/referrals/{id}/details"
     submit-action-plan: "/service-provider/referrals/{id}/progress" # fixme
     appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
+    view-appointment: "/probation-practitioner/referrals/{id}/progress"
 
 community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
+    book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments"
+  crs:
+    office-location: CRSSHEF
+    bookings-context: commissioned-rehabilitation-services
 
 hmppsauth:
   api:
