@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.com
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
@@ -31,6 +31,9 @@ import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
+import org.springframework.http.HttpStatus.LENGTH_REQUIRED
+import org.springframework.http.HttpStatus.OK
+import org.springframework.web.reactive.function.client.ClientResponse
 
 class CommunityAPIClientTest {
 
@@ -92,6 +95,28 @@ class CommunityAPIClientTest {
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
     assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed")
+  }
+
+  @Test
+  fun `makes sync post request successfully`() {
+
+    communityAPIClient = CommunityAPIClient(
+      WebClient.builder().exchangeFunction(exchangeFunction).build()
+    )
+    val clientResponse: ClientResponse = ClientResponse
+      .create(OK)
+      .header("Content-Type","application/json")
+      .build()
+    whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
+
+    communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest)
+
+    verify(exchangeFunction, times(1)).exchange(any())
+    val requestCaptor = argumentCaptor<ClientRequest>()
+    verify(exchangeFunction).exchange(requestCaptor.capture())
+    val requestDetails = requestCaptor.firstValue
+
+    assertThat("/uriValue").isEqualTo(requestDetails.url().toString())
   }
 
   @Test
