@@ -93,7 +93,7 @@ class AppointmentsService(
   fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
 
-    if (appointment.attendanceSubmittedAt != null) {
+    if (appointment.sessionFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "session feedback has already been submitted for this appointment")
     }
 
