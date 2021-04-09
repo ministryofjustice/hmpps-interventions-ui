@@ -54,6 +54,7 @@ data class ActionPlanAppointmentDTO(
           appointment.additionalAttendanceInformation,
           appointment.attendanceBehaviour,
           appointment.notifyPPOfAttendanceBehaviour,
+          appointment.attendanceSubmittedAt != null,
         ),
       )
     }
@@ -66,17 +67,20 @@ data class ActionPlanAppointmentDTO(
 data class SessionFeedbackDTO(
   val attendance: AttendanceDTO,
   val behaviour: BehaviourDTO,
+  val submitted: Boolean,
 ) {
   companion object {
     fun from(
       attended: Attended?,
       additionalAttendanceInformation: String?,
       behaviourDescription: String?,
-      notifyProbationPractitioner: Boolean?
+      notifyProbationPractitioner: Boolean?,
+      submitted: Boolean,
     ): SessionFeedbackDTO {
       return SessionFeedbackDTO(
         AttendanceDTO(attended = attended, additionalAttendanceInformation = additionalAttendanceInformation),
         BehaviourDTO(behaviourDescription, notifyProbationPractitioner),
+        submitted,
       )
     }
   }
