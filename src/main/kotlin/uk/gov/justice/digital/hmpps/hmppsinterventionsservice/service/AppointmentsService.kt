@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
@@ -74,7 +76,6 @@ class AppointmentsService(
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
     setAttendanceFields(appointment, attended, additionalInformation)
-    appointmentEventPublisher.attendanceRecordedEvent(appointment, attended == Attended.NO)
     return actionPlanAppointmentRepository.save(appointment)
   }
 
@@ -86,8 +87,26 @@ class AppointmentsService(
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner)
-    appointmentEventPublisher.behaviourRecordedEvent(appointment, notifyProbationPractitioner)
     return actionPlanAppointmentRepository.save(appointment)
+  }
+
+  fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int): ActionPlanAppointment {
+    val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+
+    if (appointment.attendanceSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "session feedback has already been submitted for this appointment")
+    }
+
+    if (appointment.attendanceBehaviourSubmittedAt == null || appointment.attendanceSubmittedAt == null) {
+      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "can't submit session feedback unless attendance and behaviour have been recorded")
+    }
+
+    appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+    actionPlanAppointmentRepository.save(appointment)
+
+    appointmentEventPublisher.attendanceRecordedEvent(appointment, appointment.attended == Attended.NO)
+    appointmentEventPublisher.behaviourRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour!!)
+    return appointment
   }
 
   fun getAppointments(actionPlanId: UUID): List<ActionPlanAppointment> {
