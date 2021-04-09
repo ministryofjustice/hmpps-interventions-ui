@@ -22,6 +22,68 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
         },
       })
     })
+
+    describe('when there are errors', () => {
+      it('populates the error messages for the fields with errors', () => {
+        const appointment = actionPlanAppointmentFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, {
+          errors: [
+            {
+              formFields: ['behaviour-description'],
+              errorSummaryLinkedField: 'behaviour-description',
+              message: 'behaviour msg',
+            },
+            {
+              formFields: ['notify-probation-practitioner'],
+              errorSummaryLinkedField: 'notify-probation-practitioner',
+              message: 'notify pp msg',
+            },
+          ],
+        })
+
+        expect(presenter.fields.behaviourDescription.errorMessage).toEqual('behaviour msg')
+        expect(presenter.fields.notifyProbationPractitioner.errorMessage).toEqual('notify pp msg')
+      })
+    })
+  })
+
+  describe('errorSummary', () => {
+    describe('when error is null', () => {
+      it('returns null', () => {
+        const appointment = actionPlanAppointmentFactory.build()
+        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser)
+
+        expect(presenter.errorSummary).toBeNull()
+      })
+    })
+
+    describe('when error is not null', () => {
+      it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
+        const appointment = actionPlanAppointmentFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, {
+          errors: [
+            {
+              formFields: ['behaviour-description'],
+              errorSummaryLinkedField: 'behaviour-description',
+              message: 'behaviour msg',
+            },
+            {
+              formFields: ['notify-probation-practitioner'],
+              errorSummaryLinkedField: 'notify-probation-practitioner',
+              message: 'notify pp msg',
+            },
+          ],
+        })
+
+        expect(presenter.errorSummary).toEqual([
+          { field: 'behaviour-description', message: 'behaviour msg' },
+          { field: 'notify-probation-practitioner', message: 'notify pp msg' },
+        ])
+      })
+    })
   })
 
   describe('serviceUserBannerPresenter', () => {
@@ -47,7 +109,7 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
             const serviceUser = deliusServiceUserFactory.build()
             const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser)
 
-            expect(presenter.fields.behaviourDescriptionValue).toEqual('Alex was well behaved')
+            expect(presenter.fields.behaviourDescription.value).toEqual('Alex was well behaved')
           })
         })
 
@@ -61,7 +123,7 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
             const serviceUser = deliusServiceUserFactory.build()
             const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser)
 
-            expect(presenter.fields.behaviourDescriptionValue).toEqual('')
+            expect(presenter.fields.behaviourDescription.value).toEqual('')
           })
         })
       })
@@ -74,11 +136,11 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
             },
           })
           const serviceUser = deliusServiceUserFactory.build()
-          const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, {
+          const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, null, {
             'behaviour-description': 'Alex misbehaved during the session',
           })
 
-          expect(presenter.fields.behaviourDescriptionValue).toEqual('Alex misbehaved during the session')
+          expect(presenter.fields.behaviourDescription.value).toEqual('Alex misbehaved during the session')
         })
       })
     })
@@ -96,7 +158,7 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
             const serviceUser = deliusServiceUserFactory.build()
             const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser)
 
-            expect(presenter.fields.notifyProbationPractitioner).toEqual(false)
+            expect(presenter.fields.notifyProbationPractitioner.value).toEqual(false)
           })
         })
 
@@ -111,7 +173,7 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
             const serviceUser = deliusServiceUserFactory.build()
             const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser)
 
-            expect(presenter.fields.notifyProbationPractitioner).toEqual(null)
+            expect(presenter.fields.notifyProbationPractitioner.value).toEqual(null)
           })
         })
       })
@@ -124,12 +186,12 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
             },
           })
           const serviceUser = deliusServiceUserFactory.build()
-          const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, {
+          const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, null, {
             'behaviour-description': 'Alex misbehaved during the session',
             'notify-probation-practitioner': 'yes',
           })
 
-          expect(presenter.fields.notifyProbationPractitioner).toEqual(true)
+          expect(presenter.fields.notifyProbationPractitioner.value).toEqual(true)
         })
       })
     })

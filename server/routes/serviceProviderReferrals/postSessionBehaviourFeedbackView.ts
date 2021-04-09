@@ -5,6 +5,8 @@ import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbac
 export default class PostSessionBehaviourFeedbackView {
   constructor(private readonly presenter: PostSessionBehaviourFeedbackPresenter) {}
 
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
+
   private get textAreaArgs(): TextareaArgs {
     return {
       name: 'behaviour-description',
@@ -17,7 +19,8 @@ export default class PostSessionBehaviourFeedbackView {
       hint: {
         text: this.presenter.text.behaviourDescription.hint,
       },
-      value: this.presenter.fields.behaviourDescriptionValue,
+      value: this.presenter.fields.behaviourDescription.value,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.behaviourDescription.errorMessage),
     }
   }
 
@@ -43,14 +46,15 @@ export default class PostSessionBehaviourFeedbackView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: this.presenter.fields.notifyProbationPractitioner === true,
+          checked: this.presenter.fields.notifyProbationPractitioner.value === true,
         },
         {
           value: 'no',
           text: 'No',
-          checked: this.presenter.fields.notifyProbationPractitioner === false,
+          checked: this.presenter.fields.notifyProbationPractitioner.value === false,
         },
       ],
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.notifyProbationPractitioner.errorMessage),
     }
   }
 
@@ -62,6 +66,7 @@ export default class PostSessionBehaviourFeedbackView {
         serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         textAreaArgs: this.textAreaArgs,
         radioButtonArgs: this.radioButtonArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
       },
     ]
   }

@@ -528,7 +528,7 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, userInputData)
+    const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
     const view = new PostSessionBehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
