@@ -28,6 +28,9 @@ data class ActionPlanAppointment(
   var attended: Attended? = null,
   var additionalAttendanceInformation: String? = null,
   var attendanceSubmittedAt: OffsetDateTime? = null,
+  var attendanceBehaviour: String? = null,
+  var attendanceBehaviourSubmittedAt: OffsetDateTime? = null,
+  var notifyPPOfAttendanceBehaviour: Boolean? = null,
 
   // Activities
   var appointmentTime: OffsetDateTime? = null,

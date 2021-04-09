@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
@@ -341,6 +342,29 @@ class PactTest {
 
     appointmentsService.createAppointment(actionPlan, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, authUser)
     appointmentsService.createAppointment(actionPlan, 2, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, authUser)
+  }
+
+  @State("an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance")
+  fun `create an empty action plan with 1 appointment that has had attendance recorded`() {
+    val referral = referralService.createDraftReferral(deliusUser, "X862134", accommodationInterventionID)
+    referralRepository.save(referral)
+
+    val actionPlan = ActionPlan(
+      id = UUID.fromString("81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d"),
+      createdBy = authUser,
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
+      activities = mutableListOf(),
+      submittedAt = OffsetDateTime.now(),
+      submittedBy = authUser,
+    )
+    actionPlanRepository.save(actionPlan)
+
+    val appointment = appointmentsService.createAppointment(actionPlan, 1, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), 120, authUser)
+    appointment.attended = Attended.LATE
+    appointment.additionalAttendanceInformation = "Alex missed the bus"
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
+    actionPlanAppointmentRepository.save(appointment)
   }
 
   @State("There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan")

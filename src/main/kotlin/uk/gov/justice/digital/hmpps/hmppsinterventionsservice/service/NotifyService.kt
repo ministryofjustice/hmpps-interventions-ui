@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.net.URI
 import java.util.UUID
 
@@ -34,7 +33,6 @@ class NotifyActionPlanService(
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
-
       ActionPlanEventType.SUBMITTED -> {
         val userDetail = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
         val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
@@ -55,32 +53,43 @@ class NotifyActionPlanService(
 @Service
 class NotifyAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
+  @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.appointment-not-attended}") private val interventionsUIAppointmentNotAttendedLocation: String,
+  @Value("\${interventions-ui.locations.pp-referral-progress}") private val interventionsUiPPReferralProgressLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<AppointmentEvent>, NotifyService {
-
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: AppointmentEvent) {
-    when (event.type) {
-      AppointmentEventType.ATTENDANCE_RECORDED -> {
-        // notify the responsible PP when an appointment is missed
-        if (event.appointment.attended == Attended.NO) {
-          val ppDetails =
-            hmppsAuthService.getUserDetail(event.appointment.actionPlan.referral.getResponsibleProbationPractitioner())
-          val location = generateResourceUrl(
-            interventionsUIBaseURL,
-            interventionsUIAppointmentNotAttendedLocation,
-            event.appointment.id
-          )
+    if (event.notifyPP) {
+      val referral = event.appointment.actionPlan.referral
+      val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
+      val location = generateResourceUrl(
+        interventionsUIBaseURL,
+        interventionsUiPPReferralProgressLocation,
+        referral.id,
+      )
+
+      when (event.type) {
+        AppointmentEventType.ATTENDANCE_RECORDED -> {
           emailSender.sendEmail(
             appointmentNotAttendedTemplateID,
             ppDetails.email,
             mapOf(
               "ppFirstName" to ppDetails.firstName,
-              "referenceNumber" to event.appointment.actionPlan.referral.referenceNumber!!,
+              "referenceNumber" to referral.referenceNumber!!,
               "attendanceUrl" to location.toString(),
+            )
+          )
+        }
+        AppointmentEventType.BEHAVIOUR_RECORDED -> {
+          emailSender.sendEmail(
+            concerningBehaviourTemplateID,
+            ppDetails.email,
+            mapOf(
+              "ppFirstName" to ppDetails.firstName,
+              "referenceNumber" to referral.referenceNumber!!,
+              "sessionUrl" to location.toString(),
             )
           )
         }

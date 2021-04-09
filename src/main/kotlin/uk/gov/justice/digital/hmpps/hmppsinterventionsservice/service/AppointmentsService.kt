@@ -74,7 +74,19 @@ class AppointmentsService(
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
     setAttendanceFields(appointment, attended, additionalInformation)
-    appointmentEventPublisher.attendanceRecordedEvent(appointment)
+    appointmentEventPublisher.attendanceRecordedEvent(appointment, attended == Attended.NO)
+    return actionPlanAppointmentRepository.save(appointment)
+  }
+
+  fun recordBehaviour(
+    actionPlanId: UUID,
+    sessionNumber: Int,
+    behaviourDescription: String,
+    notifyProbationPractitioner: Boolean,
+  ): ActionPlanAppointment {
+    val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner)
+    appointmentEventPublisher.behaviourRecordedEvent(appointment, notifyProbationPractitioner)
     return actionPlanAppointmentRepository.save(appointment)
   }
 
@@ -94,6 +106,16 @@ class AppointmentsService(
     appointment.attended = attended
     additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
     appointment.attendanceSubmittedAt = OffsetDateTime.now()
+  }
+
+  private fun setBehaviourFields(
+    appointment: ActionPlanAppointment,
+    behaviour: String,
+    notifyProbationPractitioner: Boolean,
+  ) {
+    appointment.attendanceBehaviour = behaviour
+    appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
+    appointment.notifyPPOfAttendanceBehaviour = notifyProbationPractitioner
   }
 
   private fun checkAppointmentSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {

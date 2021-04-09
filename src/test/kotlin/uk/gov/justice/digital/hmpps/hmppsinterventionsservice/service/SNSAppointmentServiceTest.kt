@@ -34,7 +34,8 @@ internal class SNSAppointmentServiceTest {
       attended = attendance,
       attendanceSubmittedAt = now,
     ),
-    "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1"
+    "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1",
+    false,
   )
 
   @Test
