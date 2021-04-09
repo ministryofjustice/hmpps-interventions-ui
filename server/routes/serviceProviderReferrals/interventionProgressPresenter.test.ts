@@ -315,14 +315,14 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
-  describe('allowActionPlanCreation', () => {
+  describe('actionPlanExists', () => {
     describe('when there is no action plan', () => {
       it('returns true', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
 
-        expect(presenter.allowActionPlanCreation).toEqual(true)
+        expect(presenter.actionPlanExists).toEqual(false)
       })
     })
 
@@ -333,7 +333,7 @@ describe(InterventionProgressPresenter, () => {
         const actionPlan = actionPlanFactory.notSubmitted().build()
         const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
 
-        expect(presenter.allowActionPlanCreation).toEqual(false)
+        expect(presenter.actionPlanExists).toEqual(true)
       })
     })
   })
