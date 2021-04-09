@@ -37,12 +37,12 @@ internal class CommunityAPIBookingServiceTest {
 
   @Test
   fun `requests booking for an appointment when timings specified`() {
-    val now = now()
+    val now = OffsetDateTime.now()
     val appointment = makeAppointment(null, null)
 
     val uri = "/appt/X1/123"
     val link = "http://url/view/${appointment.actionPlan.referral.id}"
-    val request = AppointmentCreateRequestDTO(now.toLocalDate(), now.toLocalTime(), now.toLocalTime().plusMinutes(60), "CRSSHEF", notes = link, "CRS")
+    val request = AppointmentCreateRequestDTO(now, now.plusMinutes(60), "CRSSHEF", notes = link, "CRS")
     val response = AppointmentCreateResponseDTO(1234L)
 
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))

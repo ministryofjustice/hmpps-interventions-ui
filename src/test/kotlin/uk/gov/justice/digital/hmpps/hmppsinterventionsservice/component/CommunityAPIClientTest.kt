@@ -29,8 +29,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateResponseDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
@@ -179,9 +177,8 @@ class CommunityAPIClientTest {
   )
 
   private val appointmentCreateRequest = AppointmentCreateRequestDTO(
-    appointmentDate = LocalDate.now(),
-    appointmentStartTime = LocalTime.now(),
-    appointmentEndTime = LocalTime.now(),
+    appointmentStart = OffsetDateTime.now(),
+    appointmentEnd = OffsetDateTime.now(),
     officeLocationCode = "CRSSHEF",
     notes = "http://backLink",
     context = "c-r-s",
