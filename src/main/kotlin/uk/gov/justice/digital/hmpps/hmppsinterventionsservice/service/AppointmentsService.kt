@@ -75,6 +75,11 @@ class AppointmentsService(
     additionalInformation: String?
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+
+    if (appointment.sessionFeedbackSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this appointment")
+    }
+
     setAttendanceFields(appointment, attended, additionalInformation)
     return actionPlanAppointmentRepository.save(appointment)
   }
@@ -86,6 +91,11 @@ class AppointmentsService(
     notifyProbationPractitioner: Boolean,
   ): ActionPlanAppointment {
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
+
+    if (appointment.sessionFeedbackSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this appointment")
+    }
+
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner)
     return actionPlanAppointmentRepository.save(appointment)
   }
@@ -94,7 +104,7 @@ class AppointmentsService(
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
 
     if (appointment.sessionFeedbackSubmittedAt != null) {
-      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "session feedback has already been submitted for this appointment")
+      throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this appointment")
     }
 
     if (appointment.attendanceBehaviourSubmittedAt == null || appointment.attendanceSubmittedAt == null) {

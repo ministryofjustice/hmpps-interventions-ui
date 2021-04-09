@@ -344,4 +344,28 @@ internal class AppointmentsServiceTest {
     verify(appointmentEventPublisher).attendanceRecordedEvent(appointment, false)
     verify(appointmentEventPublisher).behaviourRecordedEvent(appointment, true)
   }
+
+  @Test
+  fun `attendance can't be updated once session feedback has been submitted`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.recordAttendance(actionPlan.id, 1, Attended.YES, "")
+    }
+  }
+
+  @Test
+  fun `behaviour can't be updated once session feedback has been submitted`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.recordBehaviour(actionPlan.id, 1, "bad", false)
+    }
+  }
 }
