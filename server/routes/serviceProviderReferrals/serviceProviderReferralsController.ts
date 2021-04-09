@@ -462,15 +462,18 @@ export default class ServiceProviderReferralsController {
     formError = form.error
 
     if (form.isValid) {
-      await this.interventionsService.recordAppointmentAttendance(
+      const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
         res.locals.token,
         actionPlanId,
         Number(sessionNumber),
         form.attendanceParams
       )
 
+      const redirectPath =
+        updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'confirmation' : 'behaviour'
+
       return res.redirect(
-        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/behaviour`
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
       )
     }
 
