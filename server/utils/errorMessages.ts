@@ -64,6 +64,10 @@ export default {
   attendedAppointment: {
     empty: 'Select whether the service user attended or not',
   },
+  appointmentBehaviour: {
+    descriptionEmpty: "Enter a description of the service user's behaviour",
+    notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
+  },
   editSession: {
     time: {
       calendarDay: {
