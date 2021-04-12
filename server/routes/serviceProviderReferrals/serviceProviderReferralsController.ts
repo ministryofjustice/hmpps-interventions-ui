@@ -433,27 +433,7 @@ export default class ServiceProviderReferralsController {
     res.render(...view.renderArgs)
   }
 
-  async showPostSessionAttendanceFeedbackForm(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { actionPlanId, sessionNumber } = req.params
-
-    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
-
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      user.token,
-      actionPlanId,
-      Number(sessionNumber)
-    )
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
-    const view = new PostSessionAttendanceFeedbackView(presenter)
-
-    return res.render(...view.renderArgs)
-  }
-
-  async recordPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
 
@@ -462,24 +442,26 @@ export default class ServiceProviderReferralsController {
 
     const data = await new PostSessionAttendanceFeedbackForm(req).data()
 
-    if (data.error) {
-      res.status(400)
-      formError = data.error
-      userInputData = req.body
-    } else {
-      const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
-        res.locals.token,
-        actionPlanId,
-        Number(sessionNumber),
-        data.paramsForUpdate
-      )
+    if (req.method === 'POST') {
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
+          res.locals.token,
+          actionPlanId,
+          Number(sessionNumber),
+          data.paramsForUpdate
+        )
 
-      const redirectPath =
-        updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'confirmation' : 'behaviour'
+        const redirectPath =
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'confirmation' : 'behaviour'
 
-      return res.redirect(
-        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
-      )
+        return res.redirect(
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
+        )
+      }
     }
 
     const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
