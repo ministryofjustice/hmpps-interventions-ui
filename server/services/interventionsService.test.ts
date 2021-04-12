@@ -128,7 +128,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               id: '037cc90b-beaa-4a32-9ab7-7f79136e1d27',
               serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
               desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-              complexityLevelId: null,
             }),
             headers: { 'Content-Type': 'application/json' },
           },
