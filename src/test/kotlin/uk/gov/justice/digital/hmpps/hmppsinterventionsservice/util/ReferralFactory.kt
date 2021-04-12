@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -18,8 +20,9 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     intervention: Intervention = interventionFactory.create(),
-
     completionDeadline: LocalDate? = null,
+    desiredOutcomes: List<DesiredOutcome> = emptyList(),
+    serviceUserData: ServiceUserData? = null,
   ): Referral {
     return create(
       id = id,
@@ -28,6 +31,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       serviceUserCRN = serviceUserCRN,
       intervention = intervention,
       completionDeadline = completionDeadline,
+      desiredOutcomes = desiredOutcomes,
+      serviceUserData = serviceUserData,
     )
   }
 
@@ -108,6 +113,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     intervention: Intervention,
 
     completionDeadline: LocalDate? = null,
+    desiredOutcomes: List<DesiredOutcome> = emptyList(),
+    serviceUserData: ServiceUserData? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
@@ -127,6 +134,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         serviceUserCRN = serviceUserCRN,
         intervention = intervention,
         completionDeadline = completionDeadline,
+        desiredOutcomesIDs = desiredOutcomes.map { it.id },
+        serviceUserData = serviceUserData,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,
