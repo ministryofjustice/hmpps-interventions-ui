@@ -1023,7 +1023,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: Matchers.like(sentReferral),
           headers: {
             'Content-Type': 'application/json',
-            Location: 'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6'
+            ),
           },
         },
       })
