@@ -1,6 +1,5 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
-import { term } from '@pact-foundation/pact/dsl/matchers'
 
 import InterventionsService, { SentReferral, ServiceUser } from './interventionsService'
 import config from '../config'
@@ -873,10 +872,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             id: '428ee70f-3001-4399-95a6-ad25eaaede16',
-            name: term({
-              generate: 'accommodation',
-              matcher: '[^A-Z]+',
-            }),
+            name: 'Accommodation',
             complexityLevels,
             desiredOutcomes,
           }),
@@ -894,7 +890,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
 
       expect(serviceCategory.id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-      expect(serviceCategory.name).toEqual('accommodation')
+      expect(serviceCategory.name).toEqual('Accommodation')
       expect(serviceCategory.complexityLevels).toEqual(complexityLevels)
       expect(serviceCategory.desiredOutcomes).toEqual(desiredOutcomes)
     })
