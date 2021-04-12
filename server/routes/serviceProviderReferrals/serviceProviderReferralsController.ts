@@ -454,19 +454,24 @@ export default class ServiceProviderReferralsController {
   }
 
   async recordPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
-    let formError: FormValidationError | null = null
     const { user } = res.locals
     const { actionPlanId, sessionNumber } = req.params
 
-    const form = await PostSessionAttendanceFeedbackForm.createForm(req)
-    formError = form.error
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
 
-    if (form.isValid) {
+    const data = await new PostSessionAttendanceFeedbackForm(req).data()
+
+    if (data.error) {
+      res.status(400)
+      formError = data.error
+      userInputData = req.body
+    } else {
       const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
         res.locals.token,
         actionPlanId,
         Number(sessionNumber),
-        form.attendanceParams
+        data.paramsForUpdate
       )
 
       const redirectPath =
@@ -487,7 +492,7 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, req.body)
+    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, userInputData)
     const view = new PostSessionAttendanceFeedbackView(presenter)
 
     return res.render(...view.renderArgs)
