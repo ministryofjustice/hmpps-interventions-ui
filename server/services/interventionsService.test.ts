@@ -346,14 +346,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: { completionDeadline: '2021-04-01' },
+          body: { completionDeadline: '2045-04-01' },
         },
         willRespondWith: {
           status: 200,
           body: {
             id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
             createdAt: '2020-12-07T20:45:21.986389Z',
-            completionDeadline: '2021-04-01',
+            completionDeadline: '2045-04-01',
           },
           headers: {
             'Content-Type': 'application/json',
@@ -362,10 +362,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        completionDeadline: '2021-04-01',
+        completionDeadline: '2045-04-01',
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-      expect(referral.completionDeadline).toBe('2021-04-01')
+      expect(referral.completionDeadline).toBe('2045-04-01')
     })
 
     it('returns the updated referral when selecting the complexity level', async () => {
