@@ -105,7 +105,7 @@ class ActionPlanService(
 
   private fun updateDraftActionPlanAsSubmitted(draftActionPlan: ActionPlan, submittedByUser: AuthUser): ActionPlan {
     draftActionPlan.submittedAt = OffsetDateTime.now()
-    draftActionPlan.submittedBy = submittedByUser
+    draftActionPlan.submittedBy = authUserRepository.save(submittedByUser)
     return draftActionPlan
   }
 }
