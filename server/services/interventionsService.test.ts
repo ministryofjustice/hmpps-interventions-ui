@@ -1677,17 +1677,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const actionPlanAppointments = [
       {
         sessionNumber: 1,
-        appointmentTime: '2021-05-13T13:30:00+01:00',
+        appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 120,
       },
       {
         sessionNumber: 2,
-        appointmentTime: '2021-05-20T13:30:00+01:00',
+        appointmentTime: '2021-05-20T12:30:00Z',
         durationInMinutes: 120,
       },
       {
         sessionNumber: 3,
-        appointmentTime: '2021-05-27T13:30:00+01:00',
+        appointmentTime: '2021-05-27T12:30:00Z',
         durationInMinutes: 120,
       },
     ]
@@ -1721,7 +1721,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('getActionPlanAppointment', () => {
     const actionPlanAppointment = {
       sessionNumber: 1,
-      appointmentTime: '2021-05-13T13:30:00+01:00',
+      appointmentTime: '2021-05-13T12:30:00Z',
       durationInMinutes: 120,
     }
 
@@ -1753,7 +1753,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         1
       )
       expect(appointment.sessionNumber).toEqual(1)
-      expect(appointment.appointmentTime).toEqual('2021-05-13T13:30:00+01:00')
+      expect(appointment.appointmentTime).toEqual('2021-05-13T12:30:00Z')
       expect(appointment.durationInMinutes).toEqual(120)
     })
   })
@@ -1799,7 +1799,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       it('returns an updated action plan appointment', async () => {
         const actionPlanAppointment = {
           sessionNumber: 2,
-          appointmentTime: '2021-05-13T13:30:00+01:00',
+          appointmentTime: '2021-05-13T12:30:00Z',
           durationInMinutes: 60,
         }
 
@@ -1855,7 +1855,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             sessionNumber: 2,
-            appointmentTime: '2021-05-13T13:30:00+01:00',
+            appointmentTime: '2021-05-13T12:30:00Z',
             durationInMinutes: 60,
             sessionFeedback: {
               attendance: {
@@ -1904,7 +1904,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             sessionNumber: 1,
-            appointmentTime: '2021-05-13T13:30:00+01:00',
+            appointmentTime: '2021-05-13T12:30:00Z',
             durationInMinutes: 120,
             sessionFeedback: {
               attendance: {
