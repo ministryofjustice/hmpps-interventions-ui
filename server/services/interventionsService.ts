@@ -500,4 +500,17 @@ export default class InterventionsService {
       data: appointmentBehaviourUpdate,
     })) as ActionPlanAppointment
   }
+
+  async submitSessionFeedback(
+    token: string,
+    actionPlanId: string,
+    sessionNumber: number
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/submit`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlanAppointment
+  }
 }

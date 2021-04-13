@@ -1936,6 +1936,51 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(appointment.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
     })
   })
+
+  describe('submitSessionFeedback', () => {
+    it('submits attendance and behaviour feedback to the PP', async () => {
+      await provider.addInteraction({
+        state:
+          'an action plan with ID 0f5afe04-e323-4699-9423-fb6122580638 exists with 1 appointment with recorded attendance and behaviour',
+        uponReceiving:
+          'a POST request to submit the feedback for appointment 1 on action plan with ID 0f5afe04-e323-4699-9423-fb6122580638',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/0f5afe04-e323-4699-9423-fb6122580638/appointment/1/submit',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            sessionNumber: 1,
+            appointmentTime: '2021-05-13T12:30:00Z',
+            durationInMinutes: 120,
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was well behaved',
+                notifyProbationPractitioner: false,
+              },
+              submitted: true,
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.submitSessionFeedback(
+        token,
+        '0f5afe04-e323-4699-9423-fb6122580638',
+        1
+      )
+      expect(appointment.sessionFeedback!.submitted).toEqual(true)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
