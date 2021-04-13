@@ -29,7 +29,9 @@ export default class PostSessionFeedbackConfirmationPresenter {
   }
 
   private get hasNextSessionDate() {
-    return this.nextAppointment !== null
+    return (
+      this.nextAppointment !== null && DateUtils.getDateStringFromDateTimeString(this.nextAppointment!.appointmentTime)
+    )
   }
 
   private get isFinalSession() {

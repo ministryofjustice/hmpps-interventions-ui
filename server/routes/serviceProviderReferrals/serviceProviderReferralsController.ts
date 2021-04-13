@@ -435,6 +435,7 @@ export default class ServiceProviderReferralsController {
 
   async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
+    const { accessToken } = user.token
     const { actionPlanId, sessionNumber } = req.params
 
     let formError: FormValidationError | null = null
@@ -449,7 +450,7 @@ export default class ServiceProviderReferralsController {
         userInputData = req.body
       } else {
         const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
-          res.locals.token,
+          accessToken,
           actionPlanId,
           Number(sessionNumber),
           data.paramsForUpdate
@@ -464,11 +465,12 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
     const appointment = await this.interventionsService.getActionPlanAppointment(
-      user.token,
+      accessToken,
       actionPlanId,
       Number(sessionNumber)
     )
@@ -482,6 +484,7 @@ export default class ServiceProviderReferralsController {
 
   async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
+    const { accessToken } = user.token
     const { actionPlanId, sessionNumber } = req.params
 
     let formError: FormValidationError | null = null
@@ -496,7 +499,7 @@ export default class ServiceProviderReferralsController {
         userInputData = req.body
       } else {
         await this.interventionsService.recordAppointmentBehaviour(
-          res.locals.token,
+          accessToken,
           actionPlanId,
           Number(sessionNumber),
           data.paramsForUpdate
@@ -508,11 +511,11 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(user.token, actionPlan.referralId)
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
     const appointment = await this.interventionsService.getActionPlanAppointment(
-      user.token,
+      accessToken,
       actionPlanId,
       Number(sessionNumber)
     )
@@ -527,17 +530,18 @@ export default class ServiceProviderReferralsController {
 
   async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
+    const { accessToken } = user.token
     const { actionPlanId, sessionNumber } = req.params
-    const actionPlan = await this.interventionsService.getActionPlan(user.token, actionPlanId)
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
 
     const currentAppointment = await this.interventionsService.getActionPlanAppointment(
-      user.token,
+      accessToken,
       actionPlanId,
       Number(sessionNumber)
     )
 
     const nextAppointmentOrNull = await this.interventionsService.getSubsequentActionPlanAppointment(
-      user.token,
+      accessToken,
       actionPlan,
       currentAppointment
     )
