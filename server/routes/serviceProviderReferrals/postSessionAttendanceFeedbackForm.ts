@@ -1,39 +1,53 @@
 import { Request } from 'express'
+import { body, Result, ValidationChain, ValidationError } from 'express-validator'
 import { AppointmentAttendance } from '../../services/interventionsService'
 import errorMessages from '../../utils/errorMessages'
 import { FormValidationError } from '../../utils/formValidationError'
+import { FormData } from '../../utils/forms/formData'
+import FormUtils from '../../utils/formUtils'
 
 export default class PostSessionAttendanceFeedbackForm {
-  private constructor(private readonly request: Request) {}
+  constructor(private readonly request: Request) {}
 
-  static async createForm(request: Request): Promise<PostSessionAttendanceFeedbackForm> {
-    return new PostSessionAttendanceFeedbackForm(request)
-  }
+  async data(): Promise<FormData<Partial<AppointmentAttendance>>> {
+    const validationResult = await FormUtils.runValidations({
+      request: this.request,
+      validations: PostSessionAttendanceFeedbackForm.validations,
+    })
 
-  get attendanceParams(): Partial<AppointmentAttendance> {
+    const error = this.error(validationResult)
+
+    if (error) {
+      return {
+        paramsForUpdate: null,
+        error,
+      }
+    }
+
     return {
-      attended: this.request.body.attended,
-      additionalAttendanceInformation: this.request.body.additionalAttendanceInformation,
+      paramsForUpdate: {
+        attended: this.request.body.attended,
+        additionalAttendanceInformation: this.request.body['additional-attendance-information'],
+      },
+      error: null,
     }
   }
 
-  get isValid(): boolean {
-    return this.request.body.attended !== null && this.request.body.attended !== undefined
+  static get validations(): ValidationChain[] {
+    return [body('attended').isIn(['yes', 'late', 'no']).withMessage(errorMessages.attendedAppointment.empty)]
   }
 
-  get error(): FormValidationError | null {
-    if (this.isValid) {
+  private error(validationResult: Result<ValidationError>): FormValidationError | null {
+    if (validationResult.isEmpty()) {
       return null
     }
 
     return {
-      errors: [
-        {
-          formFields: ['attended'],
-          errorSummaryLinkedField: 'attended',
-          message: errorMessages.attendedAppointment.empty,
-        },
-      ],
+      errors: validationResult.array().map(validationError => ({
+        formFields: [validationError.param],
+        errorSummaryLinkedField: validationError.param,
+        message: validationError.msg,
+      })),
     }
   }
 }

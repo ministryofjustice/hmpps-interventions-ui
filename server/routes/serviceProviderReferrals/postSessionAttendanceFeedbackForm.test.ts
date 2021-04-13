@@ -1,84 +1,36 @@
-import { Request } from 'express'
+import TestUtils from '../../../testutils/testUtils'
 import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
 
 describe(PostSessionAttendanceFeedbackForm, () => {
-  describe('isValid', () => {
-    it('returns true when the attendance property is present in the body', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: { attended: 'yes' },
-      } as Request)
+  describe('data', () => {
+    describe('with valid data', () => {
+      const validAttendedValues = ['yes', 'late', 'no']
 
-      expect(form.isValid).toBe(true)
-    })
+      validAttendedValues.forEach(validAttendedValue => {
+        it('returns a paramsForUpdate with the attended property and optional further information', async () => {
+          const request = TestUtils.createRequest({
+            attended: validAttendedValue,
+            'additional-attendance-information': 'Alex missed the bus',
+          })
+          const data = await new PostSessionAttendanceFeedbackForm(request).data()
 
-    it('returns false when the attendance property is absent in the body', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: {},
-      } as Request)
-
-      expect(form.isValid).toBe(false)
-    })
-
-    it('returns false when the attendance property is null in the body', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: { attended: null },
-      } as Request)
-
-      expect(form.isValid).toBe(false)
-    })
-  })
-
-  describe('error', () => {
-    it('returns null when the attendance property is present in the body', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: { attended: 'yes' },
-      } as Request)
-
-      expect(form.error).toBe(null)
-    })
-
-    it('returns an error object when the attendance property is absent in the body', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: {},
-      } as Request)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'attended',
-            formFields: ['attended'],
-            message: 'Select whether the service user attended or not',
-          },
-        ],
+          expect(data.paramsForUpdate?.attended).toEqual(validAttendedValue)
+          expect(data.paramsForUpdate?.additionalAttendanceInformation).toEqual('Alex missed the bus')
+        })
       })
     })
 
-    it('returns an error object when the attendance property is null in the body', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: { attended: null },
-      } as Request)
+    describe('invalid fields', () => {
+      it('returns an error when the attended property is not present', async () => {
+        const request = TestUtils.createRequest({})
 
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'attended',
-            formFields: ['attended'],
-            message: 'Select whether the service user attended or not',
-          },
-        ],
-      })
-    })
-  })
+        const data = await new PostSessionAttendanceFeedbackForm(request).data()
 
-  describe('attendanceParams', () => {
-    it('returns the params to be sent to the backend, when the data in the body is valid', async () => {
-      const form = await PostSessionAttendanceFeedbackForm.createForm({
-        body: { attended: 'yes', additionalAttendanceInformation: 'Alex attended the session' },
-      } as Request)
-
-      expect(form.attendanceParams).toEqual({
-        attended: 'yes',
-        additionalAttendanceInformation: 'Alex attended the session',
+        expect(data.error?.errors).toContainEqual({
+          errorSummaryLinkedField: 'attended',
+          formFields: ['attended'],
+          message: 'Select whether the service user attended or not',
+        })
       })
     })
   })

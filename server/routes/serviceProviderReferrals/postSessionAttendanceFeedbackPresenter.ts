@@ -22,27 +22,7 @@ export default class PostSessionAttendanceFeedbackPresenter {
     additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
   }
 
-  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'attended')
-
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
-
-  readonly attendanceResponses = [
-    {
-      value: 'yes',
-      text: 'Yes, they were on time',
-      checked: this.appointment.sessionFeedback?.attendance?.attended === 'yes',
-    },
-    {
-      value: 'late',
-      text: 'They were late',
-      checked: this.appointment.sessionFeedback?.attendance?.attended === 'late',
-    },
-    {
-      value: 'no',
-      text: 'No',
-      checked: this.appointment.sessionFeedback?.attendance?.attended === 'no',
-    },
-  ]
 
   readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
@@ -60,9 +40,36 @@ export default class PostSessionAttendanceFeedbackPresenter {
   ]
 
   readonly fields = {
-    additionalAttendanceInformationValue: new PresenterUtils(this.userInputData).stringValue(
-      this.appointment.sessionFeedback?.attendance?.additionalAttendanceInformation || null,
-      'additional-attendance-information'
-    ),
+    attended: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.sessionFeedback?.attendance?.attended ?? null,
+        'attended'
+      ),
+      errorMessage: PresenterUtils.errorMessage(this.error, 'attended'),
+    },
+    additionalAttendanceInformation: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.sessionFeedback?.attendance?.additionalAttendanceInformation ?? null,
+        'additional-attendance-information'
+      ),
+    },
   }
+
+  readonly attendanceResponses = [
+    {
+      value: 'yes',
+      text: 'Yes, they were on time',
+      checked: this.fields.attended.value === 'yes',
+    },
+    {
+      value: 'late',
+      text: 'They were late',
+      checked: this.fields.attended.value === 'late',
+    },
+    {
+      value: 'no',
+      text: 'No',
+      checked: this.fields.attended.value === 'no',
+    },
+  ]
 }

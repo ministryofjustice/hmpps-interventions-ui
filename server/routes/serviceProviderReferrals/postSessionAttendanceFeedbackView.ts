@@ -22,7 +22,7 @@ export default class PostSessionAttendanceFeedbackView {
       hint: {
         text: this.presenter.text.attendanceQuestionHint,
       },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.attended.errorMessage),
       items: this.presenter.attendanceResponses.map(response => {
         return {
           value: response.value,
@@ -44,7 +44,7 @@ export default class PostSessionAttendanceFeedbackView {
         classes: 'govuk-label--s govuk-!-margin-bottom-4',
         isPageHeading: false,
       },
-      value: this.presenter.fields.additionalAttendanceInformationValue,
+      value: this.presenter.fields.additionalAttendanceInformation.value,
     }
   }
 
