@@ -1,6 +1,5 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
-import { term } from '@pact-foundation/pact/dsl/matchers'
 
 import InterventionsService, { SentReferral, ServiceUser } from './interventionsService'
 import config from '../config'
@@ -129,7 +128,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               id: '037cc90b-beaa-4a32-9ab7-7f79136e1d27',
               serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
               desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-              complexityLevelId: null,
             }),
             headers: { 'Content-Type': 'application/json' },
           },
@@ -347,14 +345,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: { completionDeadline: '2021-04-01' },
+          body: { completionDeadline: '2045-04-01' },
         },
         willRespondWith: {
           status: 200,
           body: {
             id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
             createdAt: '2020-12-07T20:45:21.986389Z',
-            completionDeadline: '2021-04-01',
+            completionDeadline: '2045-04-01',
           },
           headers: {
             'Content-Type': 'application/json',
@@ -363,10 +361,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        completionDeadline: '2021-04-01',
+        completionDeadline: '2045-04-01',
       })
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-      expect(referral.completionDeadline).toBe('2021-04-01')
+      expect(referral.completionDeadline).toBe('2045-04-01')
     })
 
     it('returns the updated referral when selecting the complexity level', async () => {
@@ -873,10 +871,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             id: '428ee70f-3001-4399-95a6-ad25eaaede16',
-            name: term({
-              generate: 'accommodation',
-              matcher: '[^A-Z]+',
-            }),
+            name: 'Accommodation',
             complexityLevels,
             desiredOutcomes,
           }),
@@ -894,7 +889,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
 
       expect(serviceCategory.id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-      expect(serviceCategory.name).toEqual('accommodation')
+      expect(serviceCategory.name).toEqual('Accommodation')
       expect(serviceCategory.complexityLevels).toEqual(complexityLevels)
       expect(serviceCategory.desiredOutcomes).toEqual(desiredOutcomes)
     })
@@ -1023,7 +1018,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: Matchers.like(sentReferral),
           headers: {
             'Content-Type': 'application/json',
-            Location: 'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6'
+            ),
           },
         },
       })
