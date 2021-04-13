@@ -10,7 +10,7 @@ describe(PostSessionAttendanceFeedbackForm, () => {
         it('returns a paramsForUpdate with the attended property and optional further information', async () => {
           const request = TestUtils.createRequest({
             attended: validAttendedValue,
-            additionalAttendanceInformation: 'Alex missed the bus',
+            'additional-attendance-information': 'Alex missed the bus',
           })
           const data = await new PostSessionAttendanceFeedbackForm(request).data()
 

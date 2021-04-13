@@ -27,7 +27,7 @@ export default class PostSessionAttendanceFeedbackForm {
     return {
       paramsForUpdate: {
         attended: this.request.body.attended,
-        additionalAttendanceInformation: this.request.body.additionalAttendanceInformation,
+        additionalAttendanceInformation: this.request.body['additional-attendance-information'],
       },
       error: null,
     }
