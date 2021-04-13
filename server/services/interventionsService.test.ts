@@ -1833,47 +1833,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         ).toMatchObject(actionPlanAppointment)
       })
     })
-
-    describe('with null values', () => {
-      it('returns an updated action plan appointment', async () => {
-        const actionPlanAppointment = {
-          sessionNumber: 2,
-          appointmentTime: null,
-          durationInMinutes: null,
-        }
-
-        await provider.addInteraction({
-          state:
-            'an action plan with ID a065a681-57a0-4ffc-9681-b00455df462b exists and has 2 2-hour appointments already',
-          uponReceiving:
-            'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID a065a681-57a0-4ffc-9681-b00455df462b',
-          withRequest: {
-            method: 'PATCH',
-            path: '/action-plan/a065a681-57a0-4ffc-9681-b00455df462b/appointment/2',
-            body: {
-              appointmentTime: null,
-              durationInMinutes: null,
-            },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-          },
-          // note - this is an exact match
-          willRespondWith: {
-            status: 200,
-            body: actionPlanAppointment,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        })
-
-        expect(
-          await interventionsService.updateActionPlanAppointment(token, 'a065a681-57a0-4ffc-9681-b00455df462b', 2, {
-            appointmentTime: null,
-            durationInMinutes: null,
-          })
-        ).toMatchObject(actionPlanAppointment)
-      })
-    })
   })
 
   describe('recordAppointmentAttendance', () => {
