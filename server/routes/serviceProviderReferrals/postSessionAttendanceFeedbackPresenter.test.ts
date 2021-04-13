@@ -99,7 +99,7 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
           ],
         })
 
-        expect(presenter.errorMessage).toEqual('Select whether the service user attended or not')
+        expect(presenter.fields.attended.errorMessage).toEqual('Select whether the service user attended or not')
       })
     })
 
@@ -107,7 +107,7 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
       it('returns null', () => {
         const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
 
-        expect(presenter.errorMessage).toBeNull()
+        expect(presenter.fields.attended.errorMessage).toBeNull()
       })
     })
   })
@@ -189,7 +189,7 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
           const serviceUser = deliusServiceUserFactory.build()
           const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
 
-          expect(presenter.fields.additionalAttendanceInformationValue).toEqual('Alex missed the bus')
+          expect(presenter.fields.additionalAttendanceInformation.value).toEqual('Alex missed the bus')
         })
       })
 
@@ -203,7 +203,7 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
           const serviceUser = deliusServiceUserFactory.build()
           const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
 
-          expect(presenter.fields.additionalAttendanceInformationValue).toEqual('')
+          expect(presenter.fields.additionalAttendanceInformation.value).toEqual('')
         })
       })
     })
@@ -217,10 +217,12 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build()
         const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, null, {
+          attended: 'no',
           'additional-attendance-information': "Alex's car broke down en route",
         })
 
-        expect(presenter.fields.additionalAttendanceInformationValue).toEqual("Alex's car broke down en route")
+        expect(presenter.fields.attended.value).toEqual('no')
+        expect(presenter.fields.additionalAttendanceInformation.value).toEqual("Alex's car broke down en route")
       })
     })
   })
