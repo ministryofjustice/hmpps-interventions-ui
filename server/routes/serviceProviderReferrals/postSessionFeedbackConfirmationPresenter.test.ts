@@ -69,6 +69,33 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
         })
       })
 
+      describe('and there is not date for a subsequent session', () => {
+        it('informs the service provider that the probation practitioner has been sent a copy of the session feedback form', () => {
+          const appointments = [
+            actionPlanAppointment.build({
+              sessionNumber: 1,
+              sessionFeedback: {
+                attendance: {
+                  attended: 'yes',
+                },
+              },
+            }),
+            actionPlanAppointment.build({
+              appointmentTime: '',
+              durationInMinutes: 60,
+              sessionNumber: 2,
+            }),
+          ]
+
+          const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+          const presenter = new PostSessionFeedbackConfirmationPresenter(actionPlan, appointments[0], appointments[1])
+
+          expect(presenter.text.whatHappensNext).toEqual(
+            'The probation practitioner has been sent a copy of the session feedback form.'
+          )
+        })
+      })
+
       describe('and this is the final session', () => {
         it('reminds the service provider to submit their end of service report within 5 days', () => {
           const appointment = actionPlanAppointment.build({
