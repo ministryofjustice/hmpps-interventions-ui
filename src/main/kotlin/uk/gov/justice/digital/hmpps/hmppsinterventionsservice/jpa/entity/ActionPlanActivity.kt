@@ -12,13 +12,13 @@ import javax.validation.constraints.NotNull
 data class ActionPlanActivity(
 
   // Attributes
-  @NotNull val description: String,
+  @NotNull var description: String,
 
   // For ordering
   @NotNull val createdAt: OffsetDateTime = OffsetDateTime.now(),
 
   // required fields
-  @NotNull @ManyToOne(fetch = FetchType.LAZY) val desiredOutcome: DesiredOutcome,
+  @NotNull @ManyToOne(fetch = FetchType.LAZY) var desiredOutcome: DesiredOutcome,
 
   // as an embedded collection entry each instance have no unique identifier
   // this uuid can be though of as a unique handle to each entry for future use

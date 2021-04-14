@@ -6,8 +6,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -22,6 +24,7 @@ class ActionPlanService(
   val actionPlanValidator: ActionPlanValidator,
   val actionPlanEventPublisher: ActionPlanEventPublisher,
   val appointmentsService: AppointmentsService,
+  val desiredOutcomeRepository: DesiredOutcomeRepository,
 ) {
 
   fun createDraftActionPlan(
@@ -58,6 +61,17 @@ class ActionPlanService(
     actionPlanValidator.validateDraftActionPlanUpdate(draftActionPlan)
 
     return actionPlanRepository.save(draftActionPlan)
+  }
+
+  fun updateActionPlanActivity(actionPlanId: UUID, activityId: UUID, description: String?, desiredOutcomeId: UUID?): ActionPlan {
+    val actionPlan = getActionPlan(actionPlanId)
+    actionPlan.activities.forEach { x ->
+      if (x.id == activityId) {
+        description?.let { x.description = description }
+        desiredOutcomeId?.let { x.desiredOutcome = getDesiredOutcomeByIdOrElseThrowException(it) }
+      }
+    }
+    return actionPlanRepository.save(actionPlan)
   }
 
   fun submitDraftActionPlan(id: UUID, submittedByUser: AuthUser): ActionPlan {
@@ -107,5 +121,11 @@ class ActionPlanService(
     draftActionPlan.submittedAt = OffsetDateTime.now()
     draftActionPlan.submittedBy = authUserRepository.save(submittedByUser)
     return draftActionPlan
+  }
+
+  private fun getDesiredOutcomeByIdOrElseThrowException(id: UUID): DesiredOutcome {
+    return desiredOutcomeRepository.findById(id).orElseThrow {
+      throw EntityNotFoundException("desired outcome not found [id=$id]")
+    }
   }
 }
