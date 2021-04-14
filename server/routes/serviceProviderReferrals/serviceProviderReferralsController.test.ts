@@ -803,6 +803,33 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
   })
 })
 
+describe('GET /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers', () => {
+  it('renders a page with answers the user has so far selected', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const serviceUser = deliusServiceUser.build()
+    const referral = sentReferralFactory.assigned().build()
+    const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+    const appointment = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+
+    await request(app)
+      .get(
+        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback/check-your-answers`
+      )
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm feedback')
+      })
+  })
+})
+
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', () => {
   describe('when final appointment attendance has been recorded', () => {
     it('renders a page confirming that the action plan has been submitted', async () => {
