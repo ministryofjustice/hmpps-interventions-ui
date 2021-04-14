@@ -544,6 +544,14 @@ export default class ServiceProviderReferralsController {
       Number(sessionNumber)
     )
 
+    if (req.method === 'POST') {
+      await this.interventionsService.submitSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+
+      return res.redirect(
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+      )
+    }
+
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser)

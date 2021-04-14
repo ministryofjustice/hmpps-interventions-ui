@@ -830,6 +830,36 @@ describe('GET /service-provider/action-plan:actionPlanId/appointment/:sessionNum
   })
 })
 
+describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers', () => {
+  it('marks the appointment as submitted and redirects to the confirmation page', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+    const appointment = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+
+    await request(app)
+      .post(
+        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback/check-your-answers`
+      )
+      .expect(302)
+      .expect(
+        'Location',
+        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback/confirmation`
+      )
+
+    expect(interventionsService.submitSessionFeedback).toHaveBeenCalledWith(
+      'token',
+      submittedActionPlan.id,
+      appointment.sessionNumber
+    )
+  })
+})
+
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', () => {
   describe('when final appointment attendance has been recorded', () => {
     it('renders a page confirming that the action plan has been submitted', async () => {
