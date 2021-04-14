@@ -236,6 +236,9 @@ workflows:
             - hmpps-interventions-service-research
       - approve_reset_research_db:
           type: approval
+          filters:
+            branches:
+              only: [main]
       - reset_research_db:
           requires:
             - approve_reset_research_db
