@@ -157,9 +157,10 @@ export interface ActionPlanAppointment {
   sessionNumber: number
   appointmentTime: string | null
   durationInMinutes: number | null
-  sessionFeedback?: {
-    attendance?: AppointmentAttendance
-    behaviour?: AppointmentBehaviour
+  sessionFeedback: {
+    attendance: AppointmentAttendance
+    behaviour: AppointmentBehaviour
+    submitted: boolean
   }
 }
 
@@ -168,14 +169,16 @@ export interface ActionPlanAppointmentUpdate {
   durationInMinutes: number | null
 }
 
+export type Attended = 'yes' | 'no' | 'late' | null
+
 export interface AppointmentAttendance {
-  attended: 'yes' | 'no' | 'late'
-  additionalAttendanceInformation?: string
+  attended: Attended
+  additionalAttendanceInformation: string | null
 }
 
 export interface AppointmentBehaviour {
-  behaviourDescription: string
-  notifyProbationPractitioner: boolean
+  behaviourDescription: string | null
+  notifyProbationPractitioner: boolean | null
 }
 
 export default class InterventionsService {

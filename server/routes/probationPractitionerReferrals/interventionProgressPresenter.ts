@@ -43,7 +43,7 @@ export default class InterventionProgressPresenter {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: this.tagArgs(appointment),
-        linkHtml: appointment.sessionFeedback?.attendance ? `<a class="govuk-link" href="#">View</a>` : '',
+        linkHtml: appointment.sessionFeedback?.submitted ? `<a class="govuk-link" href="#">View</a>` : '',
       }
     })
   }
