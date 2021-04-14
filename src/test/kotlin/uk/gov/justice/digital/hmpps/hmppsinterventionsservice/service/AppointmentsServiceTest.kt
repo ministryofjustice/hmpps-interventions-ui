@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
@@ -11,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
+import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
@@ -248,25 +251,6 @@ internal class AppointmentsServiceTest {
   }
 
   @Test
-  fun `appointment attendance recorded emits application event`() {
-    val appointmentId = UUID.randomUUID()
-    val sessionNumber = 1
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
-    val attended = Attended.NO
-    val additionalInformation = "extra info"
-
-    val existingAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
-
-    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(appointmentId, sessionNumber))
-      .thenReturn(existingAppointment)
-    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(existingAppointment)
-
-    appointmentsService.recordAttendance(appointmentId, 1, attended, additionalInformation)
-    verify(appointmentEventPublisher).attendanceRecordedEvent(existingAppointment, true)
-  }
-
-  @Test
   fun `updating session behaviour sets relevant fields`() {
     val actionPlan = SampleData.sampleActionPlan()
     val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
@@ -287,6 +271,101 @@ internal class AppointmentsServiceTest {
 
     assertThrows(EntityNotFoundException::class.java) {
       appointmentsService.recordBehaviour(UUID.randomUUID(), 1, "not good", false)
+    }
+  }
+
+  @Test
+  fun `session feedback cant be submitted more than once`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(appointment)
+
+    appointmentsService.recordAttendance(actionPlan.id, 1, Attended.YES, "")
+    appointmentsService.recordBehaviour(actionPlan.id, 1, "bad", false)
+    appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.submitSessionFeedback(actionPlan.id, 1)
+    }
+  }
+
+  @Test
+  fun `session feedback cant be submitted if attendance is missing`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(appointment)
+
+    appointmentsService.recordBehaviour(actionPlan.id, 1, "bad", false)
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.submitSessionFeedback(actionPlan.id, 1)
+    }
+  }
+
+  @Test
+  fun `session feedback cant be submitted if behaviour is missing`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(appointment)
+
+    appointmentsService.recordAttendance(actionPlan.id, 1, Attended.YES, "")
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.submitSessionFeedback(actionPlan.id, 1)
+    }
+  }
+
+  @Test
+  fun `session feedback can be submitted and stores timestamp and emits application events`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(
+      appointment
+    )
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(appointment)
+
+    appointmentsService.recordAttendance(actionPlan.id, 1, Attended.YES, "")
+    appointmentsService.recordBehaviour(actionPlan.id, 1, "bad", true)
+    appointmentsService.submitSessionFeedback(actionPlan.id, 1)
+
+    val appointmentCaptor = argumentCaptor<ActionPlanAppointment>()
+    verify(actionPlanAppointmentRepository, atLeastOnce()).save(appointmentCaptor.capture())
+    appointmentCaptor.allValues.forEach {
+      if (it == appointmentCaptor.lastValue) {
+        assertThat(it.sessionFeedbackSubmittedAt != null)
+      } else {
+        assertThat(it.sessionFeedbackSubmittedAt == null)
+      }
+    }
+
+    verify(appointmentEventPublisher).attendanceRecordedEvent(appointment, false)
+    verify(appointmentEventPublisher).behaviourRecordedEvent(appointment, true)
+  }
+
+  @Test
+  fun `attendance can't be updated once session feedback has been submitted`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.recordAttendance(actionPlan.id, 1, Attended.YES, "")
+    }
+  }
+
+  @Test
+  fun `behaviour can't be updated once session feedback has been submitted`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
+    appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
+
+    assertThrows(ResponseStatusException::class.java) {
+      appointmentsService.recordBehaviour(actionPlan.id, 1, "bad", false)
     }
   }
 }

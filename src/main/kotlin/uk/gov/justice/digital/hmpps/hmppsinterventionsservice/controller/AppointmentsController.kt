@@ -71,4 +71,9 @@ class AppointmentsController(
   fun recordBehaviour(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int, @RequestBody update: UpdateAppointmentBehaviourDTO): ActionPlanAppointmentDTO {
     return ActionPlanAppointmentDTO.from(appointmentsService.recordBehaviour(actionPlanId, sessionNumber, update.behaviourDescription, update.notifyProbationPractitioner))
   }
+
+  @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/submit")
+  fun submitSessionFeedback(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int): ActionPlanAppointmentDTO {
+    return ActionPlanAppointmentDTO.from(appointmentsService.submitSessionFeedback(actionPlanId, sessionNumber))
+  }
 }
