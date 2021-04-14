@@ -830,6 +830,23 @@ describe('GET /service-provider/action-plan:actionPlanId/appointment/:sessionNum
   })
 })
 
+describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/submit', () => {
+  it('marks the appointment as submitted and redirects to the confirmation page', async () => {
+    const actionPlanId = '91e7ceab-74fd-45d8-97c8-ec58844618dd'
+    const sessionNumber = 2
+
+    await request(app)
+      .post(`/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/submit`)
+      .expect(302)
+      .expect(
+        'Location',
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+      )
+
+    expect(interventionsService.submitSessionFeedback).toHaveBeenCalledWith('token', actionPlanId, sessionNumber)
+  })
+})
+
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', () => {
   describe('when final appointment attendance has been recorded', () => {
     it('renders a page confirming that the action plan has been submitted', async () => {

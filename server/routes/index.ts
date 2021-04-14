@@ -123,6 +123,10 @@ export default function routes(router: Router, services: Services): Router {
     '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers',
     (req, res) => serviceProviderReferralsController.checkPostSessionFeedbackAnswers(req, res)
   )
+  post(
+    '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/submit',
+    (req, res) => serviceProviderReferralsController.submitPostSessionFeedback(req, res)
+  )
   get(
     '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation',
     (req, res) => serviceProviderReferralsController.showPostSessionFeedbackConfirmation(req, res)

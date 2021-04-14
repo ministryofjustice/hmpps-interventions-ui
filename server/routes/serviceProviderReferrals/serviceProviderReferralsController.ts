@@ -546,10 +546,22 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser)
+    const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser, actionPlanId)
     const view = new PostSessionFeedbackCheckAnswersView(presenter)
 
     return res.render(...view.renderArgs)
+  }
+
+  async submitPostSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    await this.interventionsService.submitSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+
+    return res.redirect(
+      `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+    )
   }
 
   async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {

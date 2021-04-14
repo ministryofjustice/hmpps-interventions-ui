@@ -7,8 +7,9 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
     it('includes the title of the page', () => {
       const appointment = actionPlanAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build()
+      const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
 
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
       expect(presenter.text).toMatchObject({
         title: 'Confirm feedback',
@@ -16,7 +17,23 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
     })
   })
 
+  describe('submitHref', () => {
+    it('includes the action plan id and session number', () => {
+      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+      const serviceUser = deliusServiceUserFactory.build()
+      const actionPlanId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+
+      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
+
+      expect(presenter.submitHref).toEqual(
+        '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/submit'
+      )
+    })
+  })
+
   describe('attendedAnswers', () => {
+    const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
+
     it('returns an object with the question and answer given', () => {
       const appointment = actionPlanAppointmentFactory.build({
         sessionFeedback: {
@@ -31,7 +48,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
       })
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
       expect(presenter.attendedAnswers).toEqual({
         question: 'Did Alex attend this session?',
@@ -54,13 +71,15 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
         expect(presenter.attendedAnswers).toBeNull()
       })
     })
   })
 
   describe('additionalAttendanceAnswers', () => {
+    const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
+
     describe('when there is an answer for AdditionalAttendanceInformation', () => {
       it('returns an object with the question and answer given', () => {
         const appointment = actionPlanAppointmentFactory.build({
@@ -77,7 +96,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.additionalAttendanceAnswers).toEqual({
           question: "Add additional information about Alex's attendance:",
@@ -102,7 +121,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.additionalAttendanceAnswers).toEqual({
           question: "Add additional information about Alex's attendance:",
@@ -127,13 +146,15 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
         expect(presenter.additionalAttendanceAnswers).toBeNull()
       })
     })
   })
 
   describe('behaviourDescriptionAnswers', () => {
+    const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
+
     describe('if the behaviour question was answered', () => {
       it('returns an object with the question and answer given', () => {
         const appointment = actionPlanAppointmentFactory.build({
@@ -149,7 +170,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.behaviourDescriptionAnswers).toEqual({
           question: "Describe Alex's behaviour in this session",
@@ -173,7 +194,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.behaviourDescriptionAnswers).toBeNull()
       })
@@ -181,6 +202,8 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
   })
 
   describe('notifyProbationPractitionerAnswers', () => {
+    const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
+
     describe('if the behaviour question was answered with yes', () => {
       it('returns an object with the question and answer given, converting the boolean value into a "yes"', () => {
         const appointment = actionPlanAppointmentFactory.build({
@@ -194,7 +217,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
 
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
           question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
@@ -216,7 +239,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
 
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
           question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
@@ -237,7 +260,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+        const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
         expect(presenter.notifyProbationPractitionerAnswers).toBeNull()
       })
@@ -248,7 +271,8 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
     it('is instantiated with the service user', () => {
       const appointment = actionPlanAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build()
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser)
+      const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
+      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
       expect(presenter.serviceUserBannerPresenter).toBeDefined()
     })
