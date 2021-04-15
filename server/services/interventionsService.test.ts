@@ -1675,21 +1675,21 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getActionPlanAppointments', () => {
     const actionPlanAppointments = [
-      {
+      actionPlanAppointmentFactory.build({
         sessionNumber: 1,
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 120,
-      },
-      {
+      }),
+      actionPlanAppointmentFactory.build({
         sessionNumber: 2,
         appointmentTime: '2021-05-20T12:30:00Z',
         durationInMinutes: 120,
-      },
-      {
+      }),
+      actionPlanAppointmentFactory.build({
         sessionNumber: 3,
         appointmentTime: '2021-05-27T12:30:00Z',
         durationInMinutes: 120,
-      },
+      }),
     ]
 
     beforeEach(async () => {
@@ -1719,11 +1719,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('getActionPlanAppointment', () => {
-    const actionPlanAppointment = {
+    const actionPlanAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
       appointmentTime: '2021-05-13T12:30:00Z',
       durationInMinutes: 120,
-    }
+    })
 
     beforeEach(async () => {
       await provider.addInteraction({
@@ -1797,11 +1797,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('updateActionPlanAppointment', () => {
     describe('with non-null values', () => {
       it('returns an updated action plan appointment', async () => {
-        const actionPlanAppointment = {
+        const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-05-13T12:30:00Z',
           durationInMinutes: 60,
-        }
+        })
 
         await provider.addInteraction({
           state:
@@ -1862,6 +1862,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 attended: 'late',
                 additionalAttendanceInformation: 'Alex missed the bus',
               },
+              behaviour: {
+                behaviourDescription: null,
+                notifyProbationPractitioner: null,
+              },
+              submitted: false,
             },
           }),
           headers: {
@@ -1916,6 +1921,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: false,
               },
             },
+            submitted: false,
           }),
           headers: {
             'Content-Type': 'application/json',
