@@ -459,7 +459,7 @@ export default class ServiceProviderReferralsController {
         )
 
         const redirectPath =
-          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'confirmation' : 'behaviour'
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
 
         return res.redirect(
           `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
@@ -508,7 +508,7 @@ export default class ServiceProviderReferralsController {
         )
 
         return res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
         )
       }
     }
