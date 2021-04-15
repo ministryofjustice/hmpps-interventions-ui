@@ -41,7 +41,7 @@ describe(InterventionProgressPresenter, () => {
             sessionNumber: 1,
             appointmentTime: '',
             tagArgs: {
-              text: 'NOT SCHEDULED',
+              text: 'not scheduled',
               classes: 'govuk-tag--grey',
             },
             linkHtml:
@@ -69,12 +69,72 @@ describe(InterventionProgressPresenter, () => {
             sessionNumber: 1,
             appointmentTime: '07 Dec 2020, 13:00',
             tagArgs: {
-              text: 'SCHEDULED',
+              text: 'scheduled',
               classes: 'govuk-tag--blue',
             },
             linkHtml: `<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance">Give feedback</a>`,
           },
         ])
+      })
+    })
+
+    describe('when the session feedback has been recorded', () => {
+      describe('when the service user attended the session or was late', () => {
+        it('populates the table with the "completed" status against that session and a link to view it', () => {
+          const referral = sentReferralFactory.build()
+          const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser, [
+            actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
+            actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
+          ])
+
+          expect(presenter.sessionTableRows).toEqual([
+            {
+              sessionNumber: 1,
+              appointmentTime: '',
+              tagArgs: {
+                text: 'completed',
+                classes: 'govuk-tag--green',
+              },
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
+            },
+            {
+              sessionNumber: 2,
+              appointmentTime: '',
+              tagArgs: {
+                text: 'completed',
+                classes: 'govuk-tag--green',
+              },
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
+            },
+          ])
+        })
+      })
+
+      describe('when the service did not attend the session', () => {
+        it('populates the table with the "failure to attend" status against that session and a link to view it', () => {
+          const referral = sentReferralFactory.build()
+          const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser, [
+            actionPlanAppointmentFactory.attended('no').build(),
+          ])
+
+          expect(presenter.sessionTableRows).toEqual([
+            {
+              sessionNumber: 1,
+              appointmentTime: '',
+              tagArgs: {
+                text: 'did not attend',
+                classes: 'govuk-tag--purple',
+              },
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
+            },
+          ])
+        })
       })
     })
   })
