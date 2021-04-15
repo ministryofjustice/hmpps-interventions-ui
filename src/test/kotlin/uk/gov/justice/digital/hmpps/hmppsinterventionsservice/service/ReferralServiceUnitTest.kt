@@ -10,8 +10,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
@@ -23,11 +25,15 @@ class ReferralServiceUnitTest {
   private val interventionRepository: InterventionRepository = mock()
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referralReferenceGenerator: ReferralReferenceGenerator = mock()
+  private val cancellationReasonRepository: CancellationReasonRepository = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
 
-  private val referralService = ReferralService(referralRepository, authUserRepository, interventionRepository, referralEventPublisher, referralReferenceGenerator)
+  private val referralService = ReferralService(
+    referralRepository, authUserRepository, interventionRepository,
+    referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository
+  )
 
   @Test
   fun `set ended fields on a sent referral`() {
@@ -55,5 +61,16 @@ class ReferralServiceUnitTest {
     assertThat(result).isEqualTo(listOf(referral))
     verify(referralRepository).findBySentBy(argumentCaptor.capture())
     assertThat(argumentCaptor.firstValue).isEqualTo(authUser)
+  }
+
+  @Test
+  fun `get all cancellation reasons`() {
+    val cancellationReasons = listOf(
+      CancellationReason(id = "aaa", description = "reason 1"),
+      CancellationReason(id = "bbb", description = "reason 2")
+    )
+    whenever(cancellationReasonRepository.findAll()).thenReturn(cancellationReasons)
+    val result = referralService.getCancellationReasons()
+    assertThat(result).isNotNull
   }
 }

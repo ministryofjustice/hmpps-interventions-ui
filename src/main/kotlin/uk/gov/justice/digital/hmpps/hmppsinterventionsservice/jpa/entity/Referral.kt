@@ -14,6 +14,7 @@ import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.Index
+import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
@@ -37,6 +38,9 @@ class Referral(
   // ended referral fields
   var endedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var endedBy: AuthUser? = null,
+
+  @ManyToOne @JoinColumn(name = "cancellation_reason_id")
+  var cancellationReason: CancellationReason? = null,
 
   // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn var serviceUserData: ServiceUserData? = null,
