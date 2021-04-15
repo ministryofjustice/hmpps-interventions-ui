@@ -3,6 +3,7 @@ import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import DateUtils from '../../utils/dateUtils'
+import sessionStatusTags from '../../utils/sessionStatusTags'
 
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -53,18 +54,46 @@ export default class InterventionProgressPresenter {
     }
 
     return this.actionPlanAppointments.map(appointment => {
-      const editUrl = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+      const sessionTableParams = this.sessionTableParams(appointment)
 
       return {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
-        tagArgs: appointment.appointmentTime
-          ? { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
-          : { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' },
-        linkHtml: appointment.appointmentTime
-          ? `<a class="govuk-link" href="${editUrl}">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`
-          : `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
+        tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.classes },
+        linkHtml: sessionTableParams.linkHTML,
       }
     })
+  }
+
+  private sessionTableParams(appointment: ActionPlanAppointment): { text: string; classes: string; linkHTML: string } {
+    const sessionFeedbackAttendance = appointment.sessionFeedback.attendance
+
+    const editUrl = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+
+    if (sessionFeedbackAttendance.attended === 'no') {
+      return {
+        ...sessionStatusTags.didNotAttend,
+        linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+      }
+    }
+
+    if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
+      return {
+        ...sessionStatusTags.completed,
+        linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+      }
+    }
+
+    if (appointment.appointmentTime) {
+      return {
+        ...sessionStatusTags.scheduled,
+        linkHTML: `<a class="govuk-link" href="${editUrl}">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`,
+      }
+    }
+
+    return {
+      ...sessionStatusTags.notScheduled,
+      linkHTML: `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
+    }
   }
 }
