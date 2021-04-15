@@ -3,6 +3,7 @@ import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import DateUtils from '../../utils/dateUtils'
+import sessionStatusTags from '../../utils/sessionStatusTags'
 
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -39,30 +40,44 @@ export default class InterventionProgressPresenter {
     }
 
     return this.actionPlanAppointments.map(appointment => {
+      const sessionTableParams = this.sessionTableParams(appointment)
+
       return {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
-        tagArgs: this.tagArgs(appointment),
-        linkHtml: appointment.sessionFeedback?.submitted ? `<a class="govuk-link" href="#">View</a>` : '',
+        tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.classes },
+        linkHtml: sessionTableParams.linkHTML,
       }
     })
   }
 
-  private tagArgs(appointment: ActionPlanAppointment): Record<string, unknown> {
-    const sessionFeedbackAttendance = appointment.sessionFeedback?.attendance
+  private sessionTableParams(appointment: ActionPlanAppointment): { text: string; classes: string; linkHTML: string } {
+    const sessionFeedbackAttendance = appointment.sessionFeedback.attendance
 
-    if (sessionFeedbackAttendance?.attended === 'no') {
-      return { text: 'FAILURE TO ATTEND', classes: 'govuk-tag--purple' }
+    if (sessionFeedbackAttendance.attended === 'no') {
+      return {
+        ...sessionStatusTags.didNotAttend,
+        linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+      }
     }
 
-    if (sessionFeedbackAttendance?.attended === 'yes' || sessionFeedbackAttendance?.attended === 'late') {
-      return { text: 'COMPLETED', classes: 'govuk-tag--green' }
+    if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
+      return {
+        ...sessionStatusTags.completed,
+        linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+      }
     }
 
     if (appointment.appointmentTime) {
-      return { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
+      return {
+        ...sessionStatusTags.scheduled,
+        linkHTML: '',
+      }
     }
 
-    return { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' }
+    return {
+      ...sessionStatusTags.notScheduled,
+      linkHTML: '',
+    }
   }
 }

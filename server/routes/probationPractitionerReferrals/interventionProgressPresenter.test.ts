@@ -3,6 +3,7 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import serviceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import sessionStatusTags from '../../utils/sessionStatusTags'
 
 describe(InterventionProgressPresenter, () => {
   describe('sessionTableRows', () => {
@@ -27,10 +28,7 @@ describe(InterventionProgressPresenter, () => {
           {
             sessionNumber: 1,
             appointmentTime: '',
-            tagArgs: {
-              text: 'NOT SCHEDULED',
-              classes: 'govuk-tag--grey',
-            },
+            tagArgs: sessionStatusTags.notScheduled,
             linkHtml: '',
           },
         ])
@@ -53,10 +51,7 @@ describe(InterventionProgressPresenter, () => {
           {
             sessionNumber: 1,
             appointmentTime: '07 Dec 2020, 13:00',
-            tagArgs: {
-              text: 'SCHEDULED',
-              classes: 'govuk-tag--blue',
-            },
+            tagArgs: sessionStatusTags.scheduled,
             linkHtml: '',
           },
         ])
@@ -77,20 +72,14 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 1,
               appointmentTime: '',
-              tagArgs: {
-                text: 'COMPLETED',
-                classes: 'govuk-tag--green',
-              },
-              linkHtml: '<a class="govuk-link" href="#">View</a>',
+              tagArgs: sessionStatusTags.completed,
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
             },
             {
               sessionNumber: 2,
               appointmentTime: '',
-              tagArgs: {
-                text: 'COMPLETED',
-                classes: 'govuk-tag--green',
-              },
-              linkHtml: '<a class="govuk-link" href="#">View</a>',
+              tagArgs: sessionStatusTags.completed,
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
             },
           ])
         })
@@ -108,11 +97,8 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 1,
               appointmentTime: '',
-              tagArgs: {
-                text: 'FAILURE TO ATTEND',
-                classes: 'govuk-tag--purple',
-              },
-              linkHtml: '<a class="govuk-link" href="#">View</a>',
+              tagArgs: sessionStatusTags.didNotAttend,
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
             },
           ])
         })

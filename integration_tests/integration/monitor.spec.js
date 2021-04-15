@@ -86,13 +86,13 @@ describe('Probation Practitioner monitor journey', () => {
             'Session details': 'Session 1',
             'Date and time': '24 Mar 2021, 09:02',
             Status: 'COMPLETED',
-            Action: 'View',
+            Action: 'View feedback form',
           },
           {
             'Session details': 'Session 2',
             'Date and time': '30 Apr 2021, 10:02',
-            Status: 'FAILURE TO ATTEND',
-            Action: 'View',
+            Status: 'DID NOT ATTEND',
+            Action: 'View feedback form',
           },
           {
             'Session details': 'Session 3',
