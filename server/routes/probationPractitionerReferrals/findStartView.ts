@@ -1,9 +1,9 @@
 import { TableArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import DashboardPresenter from './dashboardPresenter'
+import FindStartPresenter from './findStartPresenter'
 
-export default class DashboardView {
-  constructor(private readonly presenter: DashboardPresenter) {}
+export default class FindStartView {
+  constructor(private readonly presenter: FindStartPresenter) {}
 
   private get tableArgs(): TableArgs {
     return {
@@ -20,7 +20,7 @@ export default class DashboardView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'probationPractitionerReferrals/dashboard',
+      'probationPractitionerReferrals/findStart',
       {
         presenter: this.presenter,
         tableArgs: this.tableArgs,

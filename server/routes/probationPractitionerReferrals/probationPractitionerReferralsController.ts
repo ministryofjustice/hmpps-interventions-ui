@@ -3,8 +3,8 @@ import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, { ActionPlanAppointment } from '../../services/interventionsService'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import InterventionProgressView from './interventionProgressView'
-import DashboardPresenter from './dashboardPresenter'
-import DashboardView from './dashboardView'
+import FindStartPresenter from './findStartPresenter'
+import FindStartView from './findStartView'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -12,12 +12,12 @@ export default class ProbationPractitionerReferralsController {
     private readonly communityApiService: CommunityApiService
   ) {}
 
-  async showDashboard(req: Request, res: Response): Promise<void> {
+  async showFindStartPage(req: Request, res: Response): Promise<void> {
     const { token, userId } = res.locals.user
 
     const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token.accessToken, userId)
-    const presenter = new DashboardPresenter(existingDraftReferrals)
-    const view = new DashboardView(presenter)
+    const presenter = new FindStartPresenter(existingDraftReferrals)
+    const view = new FindStartView(presenter)
 
     res.render(...view.renderArgs)
   }

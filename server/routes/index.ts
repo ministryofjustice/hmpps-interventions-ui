@@ -147,8 +147,8 @@ export default function routes(router: Router, services: Services): Router {
     })
   }
 
-  get('/probation-practitioner/dashboard', (req, res) =>
-    probationPractitionerReferralsController.showDashboard(req, res)
+  get('/probation-practitioner/find', (req, res) =>
+    probationPractitionerReferralsController.showFindStartPage(req, res)
   )
 
   get('/probation-practitioner/referrals/:id/progress', (req, res) =>

@@ -2,7 +2,7 @@ import { DraftReferral } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 
-export default class DashboardPresenter {
+export default class FindStartPresenter {
   constructor(private readonly draftReferrals: DraftReferral[]) {}
 
   get orderedReferrals(): DraftReferralSummaryPresenter[] {
