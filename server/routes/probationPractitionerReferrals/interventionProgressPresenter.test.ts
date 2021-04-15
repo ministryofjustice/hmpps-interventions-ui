@@ -28,7 +28,7 @@ describe(InterventionProgressPresenter, () => {
             sessionNumber: 1,
             appointmentTime: '',
             tagArgs: {
-              text: 'NOT SCHEDULED',
+              text: 'not scheduled',
               classes: 'govuk-tag--grey',
             },
             linkHtml: '',
@@ -54,7 +54,7 @@ describe(InterventionProgressPresenter, () => {
             sessionNumber: 1,
             appointmentTime: '07 Dec 2020, 13:00',
             tagArgs: {
-              text: 'SCHEDULED',
+              text: 'scheduled',
               classes: 'govuk-tag--blue',
             },
             linkHtml: '',
@@ -63,7 +63,7 @@ describe(InterventionProgressPresenter, () => {
       })
     })
 
-    describe('after the scheduled appointment', () => {
+    describe('when session feedback has been recorded', () => {
       describe('when the service user attended the session or was late', () => {
         it('populates the table with the "completed" status against that session and a link to view it', () => {
           const referral = sentReferralFactory.build()
@@ -78,19 +78,19 @@ describe(InterventionProgressPresenter, () => {
               sessionNumber: 1,
               appointmentTime: '',
               tagArgs: {
-                text: 'COMPLETED',
+                text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml: '<a class="govuk-link" href="#">View</a>',
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
             },
             {
               sessionNumber: 2,
               appointmentTime: '',
               tagArgs: {
-                text: 'COMPLETED',
+                text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml: '<a class="govuk-link" href="#">View</a>',
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
             },
           ])
         })
@@ -109,10 +109,10 @@ describe(InterventionProgressPresenter, () => {
               sessionNumber: 1,
               appointmentTime: '',
               tagArgs: {
-                text: 'FAILURE TO ATTEND',
+                text: 'did not attend',
                 classes: 'govuk-tag--purple',
               },
-              linkHtml: '<a class="govuk-link" href="#">View</a>',
+              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
             },
           ])
         })
