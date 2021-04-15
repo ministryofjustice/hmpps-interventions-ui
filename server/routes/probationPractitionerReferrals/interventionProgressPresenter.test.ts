@@ -2,6 +2,7 @@ import InterventionProgressPresenter from './interventionProgressPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import serviceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 
 describe(InterventionProgressPresenter, () => {
   describe('sessionTableRows', () => {
@@ -15,16 +16,12 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when a session exists but an appointment has not yet been scheduled', () => {
-      it('populates the table with formatted session information, with the "Edit session details" link displayed', () => {
+      it('populates the table with formatted session information, with no link displayed', () => {
         const referral = sentReferralFactory.build()
         const serviceCategory = serviceCategoryFactory.build()
         const serviceUser = serviceUserFactory.build()
         const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [
-          {
-            sessionNumber: 1,
-            appointmentTime: null,
-            durationInMinutes: null,
-          },
+          actionPlanAppointmentFactory.newlyCreated().build(),
         ])
         expect(presenter.sessionTableRows).toEqual([
           {
@@ -46,11 +43,11 @@ describe(InterventionProgressPresenter, () => {
         const serviceCategory = serviceCategoryFactory.build()
         const serviceUser = serviceUserFactory.build()
         const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [
-          {
+          actionPlanAppointmentFactory.build({
             sessionNumber: 1,
             appointmentTime: '2020-12-07T13:00:00.000000Z',
             durationInMinutes: 120,
-          },
+          }),
         ])
         expect(presenter.sessionTableRows).toEqual([
           {
@@ -73,26 +70,8 @@ describe(InterventionProgressPresenter, () => {
           const serviceCategory = serviceCategoryFactory.build()
           const serviceUser = serviceUserFactory.build()
           const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [
-            {
-              sessionNumber: 1,
-              appointmentTime: null,
-              durationInMinutes: null,
-              sessionFeedback: {
-                attendance: {
-                  attended: 'yes',
-                },
-              },
-            },
-            {
-              sessionNumber: 2,
-              appointmentTime: null,
-              durationInMinutes: null,
-              sessionFeedback: {
-                attendance: {
-                  attended: 'late',
-                },
-              },
-            },
+            actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
+            actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
           ])
           expect(presenter.sessionTableRows).toEqual([
             {
@@ -123,16 +102,7 @@ describe(InterventionProgressPresenter, () => {
           const serviceCategory = serviceCategoryFactory.build()
           const serviceUser = serviceUserFactory.build()
           const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [
-            {
-              sessionNumber: 1,
-              appointmentTime: null,
-              durationInMinutes: null,
-              sessionFeedback: {
-                attendance: {
-                  attended: 'no',
-                },
-              },
-            },
+            actionPlanAppointmentFactory.attended('no').build(),
           ])
           expect(presenter.sessionTableRows).toEqual([
             {
