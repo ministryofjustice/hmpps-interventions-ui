@@ -305,20 +305,6 @@ internal class AppointmentsServiceTest {
   }
 
   @Test
-  fun `session feedback cant be submitted if behaviour is missing`() {
-    val actionPlan = SampleData.sampleActionPlan()
-    val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
-    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1)).thenReturn(appointment)
-    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(appointment)
-
-    appointmentsService.recordAttendance(actionPlan.id, 1, Attended.YES, "")
-
-    assertThrows(ResponseStatusException::class.java) {
-      appointmentsService.submitSessionFeedback(actionPlan.id, 1)
-    }
-  }
-
-  @Test
   fun `session feedback can be submitted and stores timestamp and emits application events`() {
     val actionPlan = SampleData.sampleActionPlan()
     val appointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = actionPlan.createdBy)
