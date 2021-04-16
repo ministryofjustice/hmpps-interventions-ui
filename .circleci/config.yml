@@ -9,7 +9,7 @@ parameters:
     default: main
 
 orbs:
-  hmpps: ministryofjustice/hmpps@2.3.2
+  hmpps: ministryofjustice/hmpps@3.0.4
   kubernetes: circleci/kubernetes@0.11.2
   mem: circleci/rememborb@0.0.1
   snyk: snyk/snyk@0.0.12
@@ -204,7 +204,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
-          retrieve_secrets: "none"
           slack_notification: true
           slack_channel_name: "interventions-dev-notifications"
           filters:
@@ -226,7 +225,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_research
           env: "research"
-          retrieve_secrets: "none"
           slack_notification: true
           slack_channel_name: "interventions-dev-notifications"
           requires:
@@ -245,7 +243,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_research_manually
           env: "research"
-          retrieve_secrets: "none"
           slack_notification: true
           slack_channel_name: "interventions-dev-notifications"
           requires:
@@ -260,7 +257,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          retrieve_secrets: "none"
           slack_notification: true
           slack_channel_name: "interventions-dev-notifications"
           requires:
