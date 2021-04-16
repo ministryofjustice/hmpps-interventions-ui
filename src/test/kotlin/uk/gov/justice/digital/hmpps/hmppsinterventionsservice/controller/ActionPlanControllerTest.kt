@@ -135,12 +135,11 @@ internal class ActionPlanControllerTest {
   fun `update action plan activity`() {
     val actionPlan = SampleData.sampleActionPlan()
     val activityId = UUID.randomUUID()
-    val desiredOutcomeId = UUID.randomUUID()
     val description = "description"
 
-    val updateActionPlanActivityDTO = UpdateActionPlanActivityDTO("description", desiredOutcomeId)
+    val updateActionPlanActivityDTO = UpdateActionPlanActivityDTO("description")
 
-    whenever(actionPlanService.updateActionPlanActivity(actionPlan.id, activityId, description, desiredOutcomeId))
+    whenever(actionPlanService.updateActionPlanActivity(actionPlan.id, activityId, description))
       .thenReturn(actionPlan)
 
     val updatedActionPlanDTO = actionPlanController.updateActionPlanActivity(actionPlan.id, activityId, updateActionPlanActivityDTO)

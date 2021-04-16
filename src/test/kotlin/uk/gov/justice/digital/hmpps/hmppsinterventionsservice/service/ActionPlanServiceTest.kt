@@ -45,7 +45,6 @@ internal class ActionPlanServiceTest {
     actionPlanValidator,
     actionPlanEventPublisher,
     appointmentsService,
-    desiredOutcomeRepository,
   )
 
   @Test
@@ -284,24 +283,20 @@ internal class ActionPlanServiceTest {
     val activity2 = SampleData.sampleActionPlanActivity(desiredOutcome = SampleData.sampleDesiredOutcome())
     val actionPlan = SampleData.sampleActionPlan(activities = listOf(activity1, activity2))
     val updatedDescription = "updated description"
-    val updatedDesiredOutcome = SampleData.sampleDesiredOutcome(description = "new description")
     val argument: ArgumentCaptor<ActionPlan> = ArgumentCaptor.forClass(ActionPlan::class.java)
 
     whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
-    whenever(desiredOutcomeRepository.findById(any())).thenReturn(of(SampleData.sampleDesiredOutcome()))
     whenever(actionPlanRepository.save(any())).thenReturn(actionPlan)
 
-    actionPlanService.updateActionPlanActivity(actionPlan.id, activity1.id, updatedDescription, updatedDesiredOutcome.id)
+    actionPlanService.updateActionPlanActivity(actionPlan.id, activity1.id, updatedDescription)
 
     verify(actionPlanRepository).save(argument.capture())
     val savedActionPlan = argument.value
     assertThat(savedActionPlan.activities[0].description == updatedDescription)
-    assertThat(savedActionPlan.activities[0].desiredOutcome == updatedDesiredOutcome)
     assertThat(
       savedActionPlan.activities[1].description == SampleData.sampleActionPlanActivity(
         desiredOutcome = SampleData.sampleDesiredOutcome()
       ).description
     )
-    assertThat(savedActionPlan.activities[1].desiredOutcome == SampleData.sampleDesiredOutcome())
   }
 }

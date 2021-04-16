@@ -48,3 +48,7 @@ data class ActionPlanActivityDTO(
     }
   }
 }
+
+data class UpdateActionPlanActivityDTO(
+  val description: String?,
+)

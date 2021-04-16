@@ -78,10 +78,7 @@ class ActionPlanController(
     @PathVariable activityId: UUID,
     @RequestBody update: UpdateActionPlanActivityDTO,
   ): ActionPlanDTO {
-    val updatedActionPlan = actionPlanService.updateActionPlanActivity(
-      actionPlanId, activityId,
-      update.description, update.desiredOutcomeId
-    )
+    val updatedActionPlan = actionPlanService.updateActionPlanActivity(actionPlanId, activityId, update.description)
     return ActionPlanDTO.from(updatedActionPlan)
   }
 
