@@ -49,6 +49,12 @@ env:
         name: elasticache-redis
         key: auth_token
 
+  - name: SENTRY_DSN
+    valueFrom:
+      secretKeyRef:
+        name: sentry
+        key: ui_dsn
+
   - name: REDIS_TLS_ENABLED
     value: {{ .Values.env.REDIS_TLS_ENABLED | quote }}
 

@@ -40,6 +40,9 @@ export default {
   port: get('PORT', 3000),
   https: production,
   staticResourceCacheDuration: 20,
+  sentry: {
+    environment: get('ENV', 'local', requiredInProduction),
+  },
   redis: {
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT) || 6379,

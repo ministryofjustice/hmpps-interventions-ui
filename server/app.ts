@@ -1,5 +1,6 @@
 import express from 'express'
 
+import * as Sentry from '@sentry/node'
 import addRequestId from 'express-request-id'
 import helmet from 'helmet'
 import noCache from 'nocache'
@@ -51,6 +52,12 @@ export default function createApp(
 
   // Server Configuration
   app.set('port', config.port)
+
+  // Reads config from SENTRY_DSN env variable, if exists
+  Sentry.init({ environment: config.sentry.environment })
+
+  // The Sentry request handler must be the first middleware on the app
+  app.use(Sentry.Handlers.requestHandler())
 
   // Secure code best practice - see:
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
@@ -173,7 +180,11 @@ export default function createApp(
   )
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
+
   app.use(authErrorHandler)
+
+  // The Sentry error handler must be before any other error middleware and after all controllers
+  app.use(Sentry.Handlers.errorHandler())
   app.use(errorHandler(config.production))
 
   return app
