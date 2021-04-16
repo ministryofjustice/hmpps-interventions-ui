@@ -1,7 +1,7 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
-import { ActionPlanAppointment } from '../../services/interventionsService'
-import { SummaryListItem } from '../../utils/summaryList'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
+import { DeliusServiceUser } from '../../../services/communityApiService'
+import { ActionPlanAppointment } from '../../../services/interventionsService'
+import { SummaryListItem } from '../../../utils/summaryList'
+import ServiceUserBannerPresenter from '../../shared/serviceUserBannerPresenter'
 import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
 import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbackPresenter'
 

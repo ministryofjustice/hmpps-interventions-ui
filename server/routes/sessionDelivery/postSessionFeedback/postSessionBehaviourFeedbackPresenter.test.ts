@@ -1,5 +1,5 @@
-import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import actionPlanAppointmentFactory from '../../../../testutils/factories/actionPlanAppointment'
+import deliusServiceUserFactory from '../../../../testutils/factories/deliusServiceUser'
 import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbackPresenter'
 
 describe(PostSessionBehaviourFeedbackPresenter, () => {

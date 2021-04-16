@@ -1,5 +1,5 @@
-import { ActionPlan, ActionPlanAppointment } from '../../services/interventionsService'
-import DateUtils from '../../utils/dateUtils'
+import { ActionPlan, ActionPlanAppointment } from '../../../services/interventionsService'
+import DateUtils from '../../../utils/dateUtils'
 
 export default class PostSessionFeedbackConfirmationPresenter {
   constructor(

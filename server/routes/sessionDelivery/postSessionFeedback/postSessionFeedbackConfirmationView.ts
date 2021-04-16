@@ -5,7 +5,7 @@ export default class PostSessionFeedbackConfirmationView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/postSessionFeedbackConfirmation',
+      'sessionDelivery/postSessionFeedback/postSessionFeedbackConfirmation',
       {
         presenter: this.presenter,
       },

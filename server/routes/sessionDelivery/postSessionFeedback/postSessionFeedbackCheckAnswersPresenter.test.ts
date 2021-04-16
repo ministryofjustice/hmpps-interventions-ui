@@ -1,6 +1,6 @@
 import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
-import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import actionPlanAppointmentFactory from '../../../../testutils/factories/actionPlanAppointment'
+import deliusServiceUserFactory from '../../../../testutils/factories/deliusServiceUser'
 
 describe(PostSessionFeedbackCheckAnswersPresenter, () => {
   describe('text', () => {

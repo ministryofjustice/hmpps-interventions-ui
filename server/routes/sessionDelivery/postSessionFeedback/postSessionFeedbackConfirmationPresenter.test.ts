@@ -1,5 +1,5 @@
-import actionPlanFactory from '../../../testutils/factories/actionPlan'
-import actionPlanAppointment from '../../../testutils/factories/actionPlanAppointment'
+import actionPlanFactory from '../../../../testutils/factories/actionPlan'
+import actionPlanAppointment from '../../../../testutils/factories/actionPlanAppointment'
 import PostSessionFeedbackConfirmationPresenter from './postSessionFeedbackConfirmationPresenter'
 
 describe(PostSessionFeedbackConfirmationPresenter, () => {

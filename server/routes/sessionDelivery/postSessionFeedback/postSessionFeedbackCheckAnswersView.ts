@@ -1,4 +1,4 @@
-import ViewUtils from '../../utils/viewUtils'
+import ViewUtils from '../../../utils/viewUtils'
 import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
 
 export default class PostSessionFeedbackCheckAnswersView {
@@ -8,7 +8,7 @@ export default class PostSessionFeedbackCheckAnswersView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/postSessionFeedbackCheckAnswers',
+      'sessionDelivery/postSessionFeedback/postSessionFeedbackCheckAnswers',
       {
         presenter: this.presenter,
         serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,

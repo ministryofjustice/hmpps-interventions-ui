@@ -1,10 +1,10 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import { AppointmentBehaviour } from '../../services/interventionsService'
-import errorMessages from '../../utils/errorMessages'
-import FormUtils from '../../utils/formUtils'
-import { FormValidationError } from '../../utils/formValidationError'
-import { FormData } from '../../utils/forms/formData'
+import { AppointmentBehaviour } from '../../../services/interventionsService'
+import errorMessages from '../../../utils/errorMessages'
+import FormUtils from '../../../utils/formUtils'
+import { FormValidationError } from '../../../utils/formValidationError'
+import { FormData } from '../../../utils/forms/formData'
 
 export default class PostSessionBehaviourFeedbackForm {
   constructor(private readonly request: Request) {}

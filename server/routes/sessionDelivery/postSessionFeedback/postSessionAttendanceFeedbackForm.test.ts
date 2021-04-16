@@ -1,4 +1,4 @@
-import TestUtils from '../../../testutils/testUtils'
+import TestUtils from '../../../../testutils/testUtils'
 import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
 
 describe(PostSessionAttendanceFeedbackForm, () => {

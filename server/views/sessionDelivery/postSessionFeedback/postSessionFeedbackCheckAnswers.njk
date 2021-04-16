@@ -3,7 +3,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
-{% extends "./actionPlan/actionPlanFormTemplate.njk" %}
+{% extends "../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
 
 {% block formSection %}
   {{ govukSummaryList(summaryListArgs) }}
