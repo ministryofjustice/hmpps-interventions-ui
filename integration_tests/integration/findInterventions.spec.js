@@ -10,6 +10,7 @@ context('Find an intervention', () => {
   })
 
   it('Probation practitioner views a list of search results', () => {
+    cy.stubGetSentReferrals([])
     cy.stubGetDraftReferralsForUser([])
     cy.login()
 

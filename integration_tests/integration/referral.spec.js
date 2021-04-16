@@ -115,6 +115,7 @@ describe('Referral form', () => {
     cy.stubGetServiceUserByCRN('X320741', deliusServiceUser)
     cy.stubCreateDraftReferral(draftReferral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetSentReferrals([])
     cy.stubGetDraftReferralsForUser([])
     cy.stubGetDraftReferral(draftReferral.id, draftReferral)
     cy.stubPatchDraftReferral(draftReferral.id, draftReferral)

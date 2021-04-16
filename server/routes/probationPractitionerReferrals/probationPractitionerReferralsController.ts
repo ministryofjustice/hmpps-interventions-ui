@@ -4,13 +4,35 @@ import InterventionsService, { ActionPlanAppointment } from '../../services/inte
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import InterventionProgressView from './interventionProgressView'
 import FindStartPresenter from './findStartPresenter'
+import MyCasesView from './myCasesView'
+import MyCasesPresenter from './myCasesPresenter'
 import FindStartView from './findStartView'
+import AuthUtils from '../../utils/authUtils'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService
   ) {}
+
+  async showMyCases(req: Request, res: Response): Promise<void> {
+    const userId = AuthUtils.getProbationPractitionerUserId(res.locals.user)
+    const cases = await this.interventionsService.getReferralsSentByProbationPractitioner(
+      res.locals.user.token.accessToken,
+      userId
+    )
+
+    const dedupedServiceCategoryIds = Array.from(new Set(cases.map(referral => referral.referral.serviceCategoryId)))
+    const serviceCategories = await Promise.all(
+      dedupedServiceCategoryIds.map(id =>
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
+      )
+    )
+
+    const presenter = new MyCasesPresenter(cases, serviceCategories)
+    const view = new MyCasesView(presenter)
+    res.render(...view.renderArgs)
+  }
 
   async showFindStartPage(req: Request, res: Response): Promise<void> {
     const { token, userId } = res.locals.user
