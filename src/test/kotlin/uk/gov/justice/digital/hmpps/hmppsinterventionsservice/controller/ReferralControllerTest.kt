@@ -20,11 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationRe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-<<<<<<< HEAD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-=======
->>>>>>> fa6b81a (change /sent-referrals endpoint to accept query params for filtering referrals based on different criteria)
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService

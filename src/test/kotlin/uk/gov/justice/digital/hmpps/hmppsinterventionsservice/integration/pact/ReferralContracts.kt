@@ -12,12 +12,12 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
 
   @State(
     "There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf",
-    "There are some existing sent referrals",
+    "There are some existing sent referrals sent to HARMONY_LIVING",
+    "There are some existing sent referrals sent by user with id 'bernard.beaks'",
   )
   fun `create sent referral 400be4c6`() {
     val referral = setupAssistant.createSentReferral(id = UUID.fromString("400be4c6-1aa4-4f52-ae86-cbd5d23309bf"))
     setupAssistant.fillReferralFields(referral)
-    setupAssistant.mockServiceProviderOrganization(referral.intervention.dynamicFrameworkContract.serviceProvider.id)
   }
 
   @State("There is an existing draft referral with ID of ac386c25-52c8-41fa-9213-fcf42e24b0b5")
