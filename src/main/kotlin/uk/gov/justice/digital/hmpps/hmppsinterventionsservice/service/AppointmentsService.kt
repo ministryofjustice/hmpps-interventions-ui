@@ -107,8 +107,8 @@ class AppointmentsService(
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this appointment")
     }
 
-    if (appointment.attendanceBehaviourSubmittedAt == null || appointment.attendanceSubmittedAt == null) {
-      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "can't submit session feedback unless attendance and behaviour have been recorded")
+    if (appointment.attendanceSubmittedAt == null) {
+      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "can't submit session feedback unless attendance has been recorded")
     }
 
     appointment.sessionFeedbackSubmittedAt = OffsetDateTime.now()
