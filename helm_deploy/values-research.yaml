@@ -13,6 +13,9 @@ ingress:
     - host: hmpps-interventions-service-research.apps.live-1.cloud-platform.service.justice.gov.uk
   path: /
 
+env_details:
+  contains_live_data: false
+
 env:
   SPRING_PROFILES_ACTIVE: research
   JAVA_OPTS: "-Xmx512m"
