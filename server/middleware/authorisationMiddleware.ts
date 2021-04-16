@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express'
 import logger from '../../log'
+import { AuthError, ErrorType } from '../authentication/authErrorHandler'
 
 export default function authorisationMiddleware(authorisedRoles: string[] = []): RequestHandler {
   return (req, res, next) => {
@@ -9,8 +10,7 @@ export default function authorisationMiddleware(authorisedRoles: string[] = []):
 
     if (authorisedRoles.length && !res.locals.user.token.roles.some((role: string) => authorisedRoles.includes(role))) {
       logger.error({ authorisedRoles }, 'user does not have the required role to access this page')
-      res.status(403)
-      return res.render('authError')
+      throw new AuthError(ErrorType.INVALID_ROLES)
     }
 
     return next()

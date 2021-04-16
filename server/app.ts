@@ -25,6 +25,7 @@ import InterventionsService from './services/interventionsService'
 import OffenderAssessmentsApiService from './services/offenderAssessmentsApiService'
 import HmppsAuthClient from './data/hmppsAuthClient'
 import passportSetup from './authentication/passport'
+import authErrorHandler from './authentication/authErrorHandler'
 
 const RedisStore = connectRedis(session)
 
@@ -172,6 +173,7 @@ export default function createApp(
   )
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
+  app.use(authErrorHandler)
   app.use(errorHandler(config.production))
 
   return app

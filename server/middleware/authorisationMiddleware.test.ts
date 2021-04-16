@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 
 import authorisationMiddleware from './authorisationMiddleware'
+import { AuthError } from '../authentication/authErrorHandler'
 
 describe('authorisationMiddleware', () => {
   const next = jest.fn()
@@ -36,13 +37,13 @@ describe('authorisationMiddleware', () => {
     expect(authorisationResponse).toEqual(next())
   })
 
-  it('should redirect when user has no authorised roles', () => {
+  it('should throw AuthError when user has no authorised roles', () => {
     const req = createReqWithAuth(true)
     const res = createResWithToken(['SOME_OTHER_ROLES', 'THAT_ARENT_AUTHORISED'])
 
-    const authorisationResponse = authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
-
-    expect(authorisationResponse).toEqual('authError')
+    expect(() => {
+      authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
+    }).toThrow(AuthError)
   })
 
   it('should return next when user has authorised role', () => {

@@ -13,6 +13,10 @@ export default function createErrorHandler(production: boolean) {
       'Error handling request'
     )
 
+    if (res.headersSent) {
+      return next(error)
+    }
+
     res.locals.message = production
       ? 'Something went wrong. The error has been logged. Please try again'
       : error.message
