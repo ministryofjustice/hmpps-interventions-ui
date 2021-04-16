@@ -162,7 +162,7 @@ class ReferralController(
     return referralService.getSentReferralsSentBy(user).map { SentReferralDTO.from(it) }
   }
 
-  @GetMapping("/cancellation-reasons")
+  @GetMapping("/referral-cancellation-reasons")
   fun getCancellationReasons(): CancellationReasonsDTO {
     return CancellationReasonsDTO.from(referralService.getCancellationReasons())
   }
