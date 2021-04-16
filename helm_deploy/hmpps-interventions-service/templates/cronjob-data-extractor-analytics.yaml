@@ -1,0 +1,59 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: data-extractor-analytics
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: "Never"
+          containers:
+          - name: data-extractor-analytics
+            image: ministryofjustice/data-engineering-data-extractor:develop
+            {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
+            command: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
+            {{ else }}
+            command: ["sh", "-c", "extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
+            {{ end }}
+            env:
+              - name: LOCAL_EXPORT_DESTINATION
+                value: export
+              - name: PGHOST
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres
+                    key: rds_instance_address
+              - name: PGDATABASE
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres
+                    key: database_name
+              - name: PGUSER
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres
+                    key: database_username
+              - name: PGPASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres
+                    key: database_password
+              - name: S3_DESTINATION
+                valueFrom:
+                  secretKeyRef:
+                    name: analytical-platform-reporting-s3-bucket
+                    key: destination_bucket
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: analytical-platform-reporting-s3-bucket
+                    key: access_key_id
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: analytical-platform-reporting-s3-bucket
+                    key: secret_access_key
+              - name: AWS_DEFAULT_REGION
+                value: eu-west-2
