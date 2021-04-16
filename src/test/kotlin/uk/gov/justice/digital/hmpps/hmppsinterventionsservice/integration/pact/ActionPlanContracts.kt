@@ -83,4 +83,19 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       )
     )
   }
+
+  @State("an action plan with ID 0f5afe04-e323-4699-9423-fb6122580638 exists with 1 appointment with recorded attendance and behaviour")
+  fun `create an action plan with an appointment with recorded attendance and behaviour`() {
+    val actionPlan = setupAssistant.createActionPlan(
+      id = UUID.fromString("0f5afe04-e323-4699-9423-fb6122580638"),
+      numberOfSessions = 1,
+    )
+
+    setupAssistant.createActionPlanAppointment(
+      actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"),
+      Attended.LATE, "Alex missed the bus",
+      behaviour = "Alex was well behaved",
+      notifyPPOfBehaviour = false
+    )
+  }
 }
