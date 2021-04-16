@@ -17,6 +17,7 @@ interface HmmpsAuthUser {
   }
   username: string
   userId: string
+  authSource: string
 }
 export type User = HmmpsAuthUser & UserDetails
 

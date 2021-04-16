@@ -27,6 +27,9 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
   nunjucksSetup(app, path)
 
   user.authSource = userType
+  if (userType === AppSetupUserType.serviceProvider) {
+    user.organizations = [{ id: 'HARMONY_LIVING', name: 'Harmony Living' }]
+  }
 
   app.use((req, res, next) => {
     req.user = user
