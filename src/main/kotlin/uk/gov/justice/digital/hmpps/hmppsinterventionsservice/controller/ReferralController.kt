@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationReasonsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
@@ -159,6 +160,11 @@ class ReferralController(
     val user = jwtAuthUserMapper.map(authentication)
 
     return referralService.getSentReferralsSentBy(user).map { SentReferralDTO.from(it) }
+  }
+
+  @GetMapping("/referral-cancellation-reasons")
+  fun getCancellationReasons(): CancellationReasonsDTO {
+    return CancellationReasonsDTO.from(referralService.getCancellationReasons())
   }
 
   private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {

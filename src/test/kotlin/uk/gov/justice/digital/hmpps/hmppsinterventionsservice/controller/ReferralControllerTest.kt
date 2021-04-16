@@ -17,10 +17,12 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationReasonsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
@@ -138,5 +140,16 @@ internal class ReferralControllerTest {
     verify(referralService).getSentReferralsSentBy(authUser)
     assertThat(response.size).isEqualTo(1)
     assertThat(response[0].id).isEqualTo(expectedResponse[0].id)
+  }
+
+  @Test
+  fun `get all cancellation reasons`() {
+    val cancellationReasons = listOf(
+      CancellationReason(id = "aaa", description = "reason 1"),
+      CancellationReason(id = "bbb", description = "reason 2")
+    )
+    whenever(referralService.getCancellationReasons()).thenReturn(cancellationReasons)
+    val response = referralController.getCancellationReasons()
+    assertThat(response).isEqualTo(CancellationReasonsDTO.from(cancellationReasons))
   }
 }

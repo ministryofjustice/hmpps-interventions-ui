@@ -11,10 +11,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.LocalDate
@@ -28,6 +30,7 @@ class ReferralService(
   val interventionRepository: InterventionRepository,
   val eventPublisher: ReferralEventPublisher,
   val referenceGenerator: ReferralReferenceGenerator,
+  val cancellationReasonRepository: CancellationReasonRepository,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -223,6 +226,10 @@ class ReferralService(
 
   fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
     return referralRepository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
+  }
+
+  fun getCancellationReasons(): List<CancellationReason> {
+    return cancellationReasonRepository.findAll()
   }
 
   private fun generateReferenceNumber(referral: Referral): String? {
