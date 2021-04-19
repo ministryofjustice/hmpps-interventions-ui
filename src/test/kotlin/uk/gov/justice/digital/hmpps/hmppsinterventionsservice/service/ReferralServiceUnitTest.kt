@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Can
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 
 class ReferralServiceUnitTest {
@@ -29,6 +30,7 @@ class ReferralServiceUnitTest {
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
+  private val cancellationReasonFactory = CancellationReasonFactory()
 
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository,
@@ -39,13 +41,15 @@ class ReferralServiceUnitTest {
   fun `set ended fields on a sent referral`() {
     val referral = referralFactory.createSent()
     val authUser = authUserFactory.create()
+    val cancellationReason = cancellationReasonFactory.create()
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
     whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded())
 
-    val endedReferral = referralService.endSentReferral(referral, authUser)
+    val endedReferral = referralService.endSentReferral(referral, authUser, cancellationReason)
     assertThat(endedReferral.endedAt).isNotNull
     assertThat(endedReferral.endedBy).isEqualTo(authUser)
+    assertThat(endedReferral.cancellationReason).isEqualTo(cancellationReason)
   }
 
   @Test

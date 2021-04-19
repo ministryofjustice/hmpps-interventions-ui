@@ -11,6 +11,7 @@ class EndedReferralDTO(
   val referenceNumber: String,
   val assignedTo: AuthUserDTO?,
   val referral: DraftReferralDTO,
+  val cancellationReason: String
 ) {
   companion object {
     fun from(referral: Referral): EndedReferralDTO {
@@ -21,6 +22,7 @@ class EndedReferralDTO(
         referenceNumber = referral.referenceNumber!!,
         assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),
+        cancellationReason = referral.cancellationReason!!.id
       )
     }
   }

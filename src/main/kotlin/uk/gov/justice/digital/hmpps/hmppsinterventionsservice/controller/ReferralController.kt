@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationReasonsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
@@ -34,7 +36,8 @@ class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService,
   private val hmppsAuthService: HMPPSAuthService,
-  val jwtAuthUserMapper: JwtAuthUserMapper,
+  private val jwtAuthUserMapper: JwtAuthUserMapper,
+  private val cancellationReasonMapper: CancellationReasonMapper,
 ) {
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
@@ -92,12 +95,14 @@ class ReferralController(
   }
 
   @PostMapping("/sent-referral/{id}/end")
-  fun endSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): EndedReferralDTO {
+  fun endSentReferral(@PathVariable id: UUID, @RequestBody endReferral: EndReferralDTO, authentication: JwtAuthenticationToken): EndedReferralDTO {
     val sentReferral = referralService.getSentReferral(id)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
     val user = jwtAuthUserMapper.map(authentication)
-    val endedReferral = referralService.endSentReferral(sentReferral, user)
+    val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferral.cancellationReasonId)
+
+    val endedReferral = referralService.endSentReferral(sentReferral, user, cancellationReason)
 
     return EndedReferralDTO.from(endedReferral)
   }

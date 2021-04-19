@@ -15,10 +15,12 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationReasonsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -39,7 +41,11 @@ internal class ReferralControllerTest {
   private val serviceCategoryService = mock<ServiceCategoryService>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val jwtAuthUserMapper = mock<JwtAuthUserMapper>()
-  private val referralController = ReferralController(referralService, serviceCategoryService, hmppsAuthService, jwtAuthUserMapper)
+  private val cancellationReasonMapper = mock<CancellationReasonMapper>()
+  private val referralController = ReferralController(
+    referralService, serviceCategoryService, hmppsAuthService,
+    jwtAuthUserMapper, cancellationReasonMapper
+  )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
   private val userFactory = AuthUserFactory()
@@ -102,23 +108,32 @@ internal class ReferralControllerTest {
   @Test
   fun `successfully call end referral endpoint`() {
     val referral = referralFactory.createSent()
+    val endReferralDTO = EndReferralDTO("AAA")
+    val cancellationReason = CancellationReason("AAA", "description")
+
+    whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
     whenever(referralService.getSentReferral(any())).thenReturn(referral)
 
     val authUser = AuthUser("CRN123", "auth", "user")
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(referralService.endSentReferral(any(), any())).thenReturn(referralFactory.createEnded())
+    whenever(referralService.endSentReferral(any(), any(), any())).thenReturn(referralFactory.createEnded())
 
-    referralController.endSentReferral(referral.id, jwtAuthenticationToken)
-    verify(referralService).endSentReferral(referral, authUser)
+    referralController.endSentReferral(referral.id, endReferralDTO, jwtAuthenticationToken)
+    verify(referralService).endSentReferral(referral, authUser, cancellationReason)
   }
 
   @Test
   fun `end referral endpoint does not find referral`() {
+    val endReferralDTO = EndReferralDTO("AAA")
+    val cancellationReason = CancellationReason("AAA", "description")
+
+    whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
+
     whenever(referralService.getSentReferral(any())).thenReturn(null)
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val e = assertThrows<ResponseStatusException> {
-      referralController.endSentReferral(UUID.randomUUID(), jwtAuthenticationToken)
+      referralController.endSentReferral(UUID.randomUUID(), endReferralDTO, jwtAuthenticationToken)
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
   }
