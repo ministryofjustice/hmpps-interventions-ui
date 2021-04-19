@@ -54,7 +54,7 @@ export default function createApp(
   app.set('port', config.port)
 
   // Reads config from SENTRY_DSN env variable, if exists
-  Sentry.init({ environment: config.sentry.environment })
+  Sentry.init({ environment: config.deploymentEnvironment })
 
   // The Sentry request handler must be the first middleware on the app
   app.use(Sentry.Handlers.requestHandler())

@@ -12,7 +12,7 @@ ingress:
   path: /
 
 env:
-  ENV: research
+  DEPLOYMENT_ENV: research
   HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
   COMMUNITY_API_URL: https://community-api-secure.test.delius.probation.hmpps.dsd.io
   OFFENDER_ASSESSMENTS_API_URL: http://offender-dev.aks-dev-1.studio-hosting.service.justice.gov.uk/
