@@ -37,6 +37,8 @@ import PostSessionFeedbackConfirmationView from './postSessionFeedbackConfirmati
 import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbackPresenter'
 import PostSessionBehaviourFeedbackView from './postSessionBehaviourFeedbackView'
 import PostSessionBehaviourFeedbackForm from './postSessionBehaviourFeedbackForm'
+import PostSessionFeedbackCheckAnswersView from './postSessionFeedbackCheckAnswersView'
+import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -457,7 +459,7 @@ export default class ServiceProviderReferralsController {
         )
 
         const redirectPath =
-          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'confirmation' : 'behaviour'
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
 
         return res.redirect(
           `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
@@ -506,7 +508,7 @@ export default class ServiceProviderReferralsController {
         )
 
         return res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
         )
       }
     }
@@ -526,6 +528,40 @@ export default class ServiceProviderReferralsController {
 
     res.status(formError === null ? 200 : 400)
     return res.render(...view.renderArgs)
+  }
+
+  async checkPostSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser, actionPlanId)
+    const view = new PostSessionFeedbackCheckAnswersView(presenter)
+
+    return res.render(...view.renderArgs)
+  }
+
+  async submitPostSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    await this.interventionsService.submitSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+
+    return res.redirect(
+      `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+    )
   }
 
   async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {

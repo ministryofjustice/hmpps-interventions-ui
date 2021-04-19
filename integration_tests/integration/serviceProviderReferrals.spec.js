@@ -445,6 +445,20 @@ describe('Service provider referrals dashboard', () => {
           },
         },
       }
+      const appointmentWithSubmittedFeedback = {
+        ...appointmentWithBehaviourRecorded,
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex attended the session',
+          },
+          behaviour: {
+            behaviourDescription: 'Alex was well-behaved',
+            notifyProbationPractitioner: false,
+          },
+          submitted: true,
+        },
+      }
 
       cy.login()
 
@@ -466,7 +480,19 @@ describe('Service provider referrals dashboard', () => {
 
       cy.stubRecordAppointmentBehaviour(actionPlan.id, 1, appointmentWithBehaviourRecorded)
 
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithBehaviourRecorded)
+
       cy.contains('Save and continue').click()
+
+      cy.contains('Confirm feedback')
+      cy.contains('Alex attended the session')
+      cy.contains('Yes, they were on time')
+      cy.contains('Alex was well-behaved')
+      cy.contains('No')
+
+      cy.stubSubmitSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+
+      cy.get('form').contains('Confirm').click()
 
       cy.contains('Session feedback added and submitted to the probation practitioner')
       cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
@@ -526,6 +552,25 @@ describe('Service provider referrals dashboard', () => {
             attended: 'no',
             additionalAttendanceInformation: "Alex didn't attend",
           },
+          behaviour: {
+            behaviourDescription: null,
+            notifyProbationPractitioner: null,
+          },
+        },
+      }
+
+      const appointmentWithSubmittedFeedback = {
+        ...appointmentWithAttendanceRecorded,
+        sessionFeedback: {
+          attendance: {
+            attended: 'no',
+            additionalAttendanceInformation: "Alex didn't attend",
+          },
+          behaviour: {
+            behaviourDescription: null,
+            notifyProbationPractitioner: null,
+          },
+          submitted: true,
         },
       }
 
@@ -535,12 +580,22 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Give feedback').click()
 
-      cy.contains('Yes').click()
-      cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
+      cy.contains('No').click()
+      cy.contains("Add additional information about Alex's attendance").type("Alex didn't attend")
 
       cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+
       cy.contains('Save and continue').click()
+
+      cy.contains('Confirm feedback')
+      cy.contains('No')
+      cy.contains("Alex didn't attend")
+
+      cy.stubSubmitSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+
+      cy.get('form').contains('Confirm').click()
 
       cy.contains('Session feedback added and submitted to the probation practitioner')
       cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')

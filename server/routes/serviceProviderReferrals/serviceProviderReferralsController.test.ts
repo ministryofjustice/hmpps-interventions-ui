@@ -710,7 +710,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
   })
 
   describe('when the Service Provider marks the Service User as not having attended the session', () => {
-    it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the confirmation page', async () => {
+    it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the check-your-answers page', async () => {
       const updatedAppointment = actionPlanAppointmentFactory.build({
         sessionNumber: 1,
         sessionFeedback: {
@@ -737,7 +737,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
         .expect(302)
         .expect(
           'Location',
-          `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/confirmation`
+          `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/check-your-answers`
         )
     })
   })
@@ -771,7 +771,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', () => {
-  it('makes a request to the interventions service to record the Service User‘s behaviour and redirects to the confirmation page', async () => {
+  it('makes a request to the interventions service to record the Service User‘s behaviour and redirects to the check your answers page', async () => {
     const updatedAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
       sessionFeedback: {
@@ -798,8 +798,52 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
       .expect(302)
       .expect(
         'Location',
-        `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/confirmation`
+        `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/check-your-answers`
       )
+  })
+})
+
+describe('GET /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers', () => {
+  it('renders a page with answers the user has so far selected', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const serviceUser = deliusServiceUser.build()
+    const referral = sentReferralFactory.assigned().build()
+    const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+    const appointment = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+
+    await request(app)
+      .get(
+        `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${appointment.sessionNumber}/post-session-feedback/check-your-answers`
+      )
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm feedback')
+      })
+  })
+})
+
+describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/submit', () => {
+  it('marks the appointment as submitted and redirects to the confirmation page', async () => {
+    const actionPlanId = '91e7ceab-74fd-45d8-97c8-ec58844618dd'
+    const sessionNumber = 2
+
+    await request(app)
+      .post(`/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/submit`)
+      .expect(302)
+      .expect(
+        'Location',
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+      )
+
+    expect(interventionsService.submitSessionFeedback).toHaveBeenCalledWith('token', actionPlanId, sessionNumber)
   })
 })
 

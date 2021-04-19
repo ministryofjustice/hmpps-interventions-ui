@@ -18,7 +18,9 @@
       {% endif %}
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-      <h2 class="govuk-heading-l">{{ presenter.text.subTitle }}</h2>
+      {% if presenter.text.subTitle %}
+        <h2 class="govuk-heading-l">{{ presenter.text.subTitle }}</h2>
+      {% endif %}
 
       {% if presenter.text.pageNumber %}
         <p class="govuk-hint">Page {{ presenter.text.pageNumber }} of 3</p>
