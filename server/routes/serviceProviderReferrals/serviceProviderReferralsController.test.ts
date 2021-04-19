@@ -1146,3 +1146,43 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
     })
   })
 })
+
+describe('GET /service-provider/end-of-service-report/:id/further-information', () => {
+  it('renders a form page', async () => {
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    const referral = sentReferralFactory.build()
+    const serviceCategory = serviceCategoryFactory.build()
+
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Would you like to give any additional information about this intervention (optional)?'
+        )
+      })
+  })
+})
+
+describe('POST /service-provider/end-of-service-report/:id/further-information', () => {
+  it('updates the appointment on the interventions service and redirects to the check your answers page', async () => {
+    const endOfServiceReport = endOfServiceReportFactory.build()
+
+    interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+    await request(app)
+      .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
+      .type('form')
+      .send({ 'further-information': 'Some further information' })
+      .expect(302)
+      .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/check-answers`)
+
+    expect(interventionsService.updateDraftEndOfServiceReport).toHaveBeenCalledWith('token', endOfServiceReport.id, {
+      furtherInformation: 'Some further information',
+    })
+  })
+})

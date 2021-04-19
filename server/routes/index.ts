@@ -143,6 +143,12 @@ export default function routes(router: Router, services: Services): Router {
   post('/service-provider/end-of-service-report/:id/outcomes/:number', (req, res) =>
     serviceProviderReferralsController.editEndOfServiceReportOutcome(req, res)
   )
+  get('/service-provider/end-of-service-report/:id/further-information', (req, res) =>
+    serviceProviderReferralsController.editEndOfServiceReportFurtherInformation(req, res)
+  )
+  post('/service-provider/end-of-service-report/:id/further-information', (req, res) =>
+    serviceProviderReferralsController.editEndOfServiceReportFurtherInformation(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

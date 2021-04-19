@@ -46,6 +46,9 @@ import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessio
 import EndOfServiceReportOutcomeForm from './endOfServiceReportOutcomeForm'
 import EndOfServiceReportOutcomePresenter from './endOfServiceReportOutcomePresenter'
 import EndOfServiceReportOutcomeView from './endOfServiceReportOutcomeView'
+import EndOfServiceReportFurtherInformationForm from './endOfServiceReportFurtherInformationForm'
+import EndOfServiceReportFurtherInformationPresenter from './endOfServiceReportFurtherInformationPresenter'
+import EndOfServiceReportFurtherInformationView from './endOfServiceReportFurtherInformationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -702,6 +705,34 @@ export default class ServiceProviderReferralsController {
       formValidationError
     )
     const view = new EndOfServiceReportOutcomeView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async editEndOfServiceReportFurtherInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id } = req.params
+
+    if (req.method === 'POST') {
+      const form = new EndOfServiceReportFurtherInformationForm(req)
+      await this.interventionsService.updateDraftEndOfServiceReport(accessToken, id, form.paramsForUpdate)
+      res.redirect(`/service-provider/end-of-service-report/${id}/check-answers`)
+      return
+    }
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+    const presenter = new EndOfServiceReportFurtherInformationPresenter(
+      endOfServiceReport,
+      serviceCategory,
+      referral,
+      null
+    )
+    const view = new EndOfServiceReportFurtherInformationView(presenter)
 
     res.render(...view.renderArgs)
   }

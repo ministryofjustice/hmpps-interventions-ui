@@ -1,0 +1,14 @@
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "./formTemplate.njk" %}
+
+{% block formSection %}
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+    {{ govukTextarea(furtherInformationTextareaArgs) }}
+
+    {{ govukButton({ text: "Save and continue" }) }}
+  </form>
+{% endblock %}
