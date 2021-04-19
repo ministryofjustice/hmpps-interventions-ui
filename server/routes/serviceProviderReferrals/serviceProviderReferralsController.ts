@@ -49,7 +49,7 @@ export default class ServiceProviderReferralsController {
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
-    const serviceProvider = AuthUtils.getSPUserOrganization(res.locals.user)
+    const serviceProvider = AuthUtils.getServiceProviderUserOrganization(res.locals.user)
     const referrals = await this.interventionsService.getReferralsSentToServiceProvider(
       res.locals.user.token.accessToken,
       serviceProvider.id

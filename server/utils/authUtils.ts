@@ -1,13 +1,15 @@
-import { ServiceProviderOrg, UserDetails } from '../services/userService'
+import { ServiceProviderOrg } from '../services/userService'
+import { AuthError, ErrorType } from '../authentication/authErrorHandler'
+import { User } from '../authentication/passport'
 
-function getSPUserOrganization(userDetails: UserDetails): ServiceProviderOrg {
-  const { organizations } = userDetails
+function getServiceProviderUserOrganization(user: User): ServiceProviderOrg {
+  const { organizations } = user
   if (organizations === undefined) {
-    throw new Error('user is not an SP user')
+    throw new AuthError(ErrorType.REQUIRES_SP_USER)
   }
 
   if (organizations.length === 0) {
-    throw new Error('user is not associated with a service provider organization')
+    throw new AuthError(ErrorType.NO_SP_ORG)
   }
 
   // for now we just take the first listed organization - this will change
@@ -16,5 +18,5 @@ function getSPUserOrganization(userDetails: UserDetails): ServiceProviderOrg {
 }
 
 export default {
-  getSPUserOrganization,
+  getServiceProviderUserOrganization,
 }
