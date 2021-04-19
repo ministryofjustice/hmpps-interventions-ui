@@ -754,4 +754,9 @@ export default class ServiceProviderReferralsController {
 
     res.render(...view.renderArgs)
   }
+
+  async submitEndOfServiceReport(req: Request, res: Response): Promise<void> {
+    await this.interventionsService.submitEndOfServiceReport(res.locals.user.token.accessToken, req.params.id)
+    res.redirect(`/service-provider/end-of-service-report/${req.params.id}/confirmation`)
+  }
 }

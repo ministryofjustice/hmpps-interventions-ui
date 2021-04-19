@@ -1221,3 +1221,17 @@ describe('GET /service-provider/end-of-service-report/:id/check-answers', () => 
       })
   })
 })
+
+describe('POST /service-provider/end-of-service-report/:id/submit', () => {
+  it('submits the end of service report on the interventions service, and redirects to the confirmation page', async () => {
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    interventionsService.submitEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+    await request(app)
+      .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/submit`)
+      .expect(302)
+      .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/confirmation`)
+
+    expect(interventionsService.submitEndOfServiceReport).toHaveBeenCalledWith('token', endOfServiceReport.id)
+  })
+})
