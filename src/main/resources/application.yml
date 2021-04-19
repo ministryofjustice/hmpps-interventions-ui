@@ -13,7 +13,6 @@ spring:
     date-format: "yyyy-MM-dd HH:mm:ss"
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
-    time-zone: "Europe/London"
   security:
     oauth2:
       client:
@@ -98,7 +97,7 @@ community-api:
 
 appointments:
   bookings:
-    enabled: false
+    enabled: true
 
 hmppsauth:
   api:
