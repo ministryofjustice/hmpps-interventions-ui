@@ -49,6 +49,7 @@ export interface SentReferral {
   sentBy: AuthUser
   assignedTo: AuthUser | null
   actionPlanId: string | null
+  endOfServiceReport: EndOfServiceReport | null
 }
 
 export interface ServiceCategory {
@@ -179,6 +180,35 @@ export interface AppointmentAttendance {
 export interface AppointmentBehaviour {
   behaviourDescription: string | null
   notifyProbationPractitioner: boolean | null
+}
+
+export interface EndOfServiceReport {
+  id: string
+  referralId: string
+  submittedAt: string | null
+  furtherInformation: string | null
+  outcomes: EndOfServiceReportOutcome[]
+}
+
+export type AchievementLevel = 'ACHIEVED' | 'PARTIALLY_ACHIEVED' | 'NOT_ACHIEVED'
+
+export interface EndOfServiceReportOutcome {
+  desiredOutcome: DesiredOutcome
+  achievementLevel: AchievementLevel
+  progressionComments: string
+  additionalTaskComments: string
+}
+
+export interface CreateEndOfServiceReportOutcome {
+  desiredOutcomeId: string
+  achievementLevel: AchievementLevel
+  progressionComments: string
+  additionalTaskComments: string
+}
+
+export interface UpdateDraftEndOfServiceReportParams {
+  furtherInformation: string | null
+  outcome: CreateEndOfServiceReportOutcome | null
 }
 
 export default class InterventionsService {
@@ -523,5 +553,55 @@ export default class InterventionsService {
       path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/submit`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment
+  }
+
+  async createDraftEndOfServiceReport(token: string, referralId: string): Promise<EndOfServiceReport> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.post({
+        path: '/draft-end-of-service-report',
+        headers: { Accept: 'application/json' },
+        data: { referralId },
+      })) as EndOfServiceReport
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
+  }
+
+  async getEndOfServiceReport(token: string, id: string): Promise<EndOfServiceReport> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/end-of-service-report/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as EndOfServiceReport
+  }
+
+  async updateDraftEndOfServiceReport(
+    token: string,
+    id: string,
+    patch: Partial<UpdateDraftEndOfServiceReportParams>
+  ): Promise<EndOfServiceReport> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.patch({
+        path: `/draft-end-of-service-report/${id}`,
+        headers: { Accept: 'application/json' },
+        data: patch,
+      })) as EndOfServiceReport
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
+  }
+
+  async submitEndOfServiceReport(token: string, id: string): Promise<EndOfServiceReport> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/draft-end-of-service-report/${id}/submit`,
+      headers: { Accept: 'application/json' },
+    })) as EndOfServiceReport
   }
 }
