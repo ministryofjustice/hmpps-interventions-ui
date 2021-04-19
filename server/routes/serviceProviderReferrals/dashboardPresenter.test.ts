@@ -3,21 +3,6 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 
 describe(DashboardPresenter, () => {
-  describe('tableHeadings', () => {
-    it('returns the table’s headings', () => {
-      const presenter = new DashboardPresenter([], [])
-
-      expect(presenter.tableHeadings).toEqual([
-        'Date received',
-        'Referral',
-        'Service user',
-        'Intervention type',
-        'Caseworker',
-        'Action',
-      ])
-    })
-  })
-
   describe('tableRows', () => {
     it('returns the table’s rows', () => {
       const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })

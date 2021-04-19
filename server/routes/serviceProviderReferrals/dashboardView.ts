@@ -6,33 +6,8 @@ export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
 
   private get tableArgs(): TableArgs {
-    return {
-      head: this.presenter.tableHeadings.map(heading => {
-        return {
-          text: heading,
-          attributes: {
-            'aria-sort': 'none',
-          },
-        }
-      }),
-      rows: this.presenter.tableRows.map(row => {
-        return row.map(cell => {
-          const result: Record<string, unknown> = {}
-
-          if (cell.sortValue !== null) {
-            result.attributes = { 'data-sort-value': cell.sortValue }
-          }
-
-          if (cell.href === null) {
-            result.text = cell.text
-          } else {
-            result.html = `<a href="${cell.href}" class="govuk-link">${ViewUtils.escape(cell.text)}</a>`
-          }
-
-          return result
-        })
-      }),
-    }
+    const { tableHeadings, tableRows } = this.presenter
+    return ViewUtils.sortableTable(tableHeadings, tableRows)
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
