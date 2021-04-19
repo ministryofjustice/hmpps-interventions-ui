@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.util.UUID
@@ -68,6 +69,16 @@ class ActionPlanController(
     val newActivity = update.newActivity?.let { actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(it) }
     val updatedActionPlan = actionPlanService.updateActionPlan(id, update.numberOfSessions, newActivity)
 
+    return ActionPlanDTO.from(updatedActionPlan)
+  }
+
+  @PatchMapping("/action-plan/{actionPlanId}/activities/{activityId}")
+  fun updateActionPlanActivity(
+    @PathVariable actionPlanId: UUID,
+    @PathVariable activityId: UUID,
+    @RequestBody update: UpdateActionPlanActivityDTO,
+  ): ActionPlanDTO {
+    val updatedActionPlan = actionPlanService.updateActionPlanActivity(actionPlanId, activityId, update.description)
     return ActionPlanDTO.from(updatedActionPlan)
   }
 

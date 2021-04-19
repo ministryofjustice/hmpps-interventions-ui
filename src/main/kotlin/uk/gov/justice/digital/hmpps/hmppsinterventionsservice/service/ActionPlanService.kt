@@ -60,6 +60,16 @@ class ActionPlanService(
     return actionPlanRepository.save(draftActionPlan)
   }
 
+  fun updateActionPlanActivity(actionPlanId: UUID, activityId: UUID, description: String?): ActionPlan {
+    val actionPlan = getActionPlan(actionPlanId)
+    actionPlan.activities.forEach { activity ->
+      if (activity.id == activityId) {
+        description?.let { activity.description = description }
+      }
+    }
+    return actionPlanRepository.save(actionPlan)
+  }
+
   fun submitDraftActionPlan(id: UUID, submittedByUser: AuthUser): ActionPlan {
     val draftActionPlan = getDraftActionPlanOrElseThrowException(id)
     val submittedActionPlan = updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)

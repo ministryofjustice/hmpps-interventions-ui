@@ -9,15 +9,18 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
 import java.util.Optional.empty
@@ -33,6 +36,7 @@ internal class ActionPlanServiceTest {
   private val actionPlanValidator: ActionPlanValidator = mock()
   private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
   private val appointmentsService: AppointmentsService = mock()
+  private val desiredOutcomeRepository: DesiredOutcomeRepository = mock()
 
   private val actionPlanService = ActionPlanService(
     authUserRepository,
@@ -115,10 +119,9 @@ internal class ActionPlanServiceTest {
     val updatedDraftActionPlan = draftActionPlan.copy(numberOfSessions = 5)
     whenever(
       actionPlanRepository.save(
-        ArgumentMatchers.argThat {
-          (
-            numberOfSessionsArg, activitiesArg, _, _, _, _, _, _
-          ) ->
+        ArgumentMatchers.argThat { (
+          numberOfSessionsArg, activitiesArg, _, _, _, _, _, _
+        ) ->
           (
             numberOfSessionsArg == 5 && activitiesArg.size == draftActionPlan.activities.size
             )
@@ -143,10 +146,9 @@ internal class ActionPlanServiceTest {
 
     whenever(
       actionPlanRepository.save(
-        ArgumentMatchers.argThat {
-          (
-            numberOfSessionsArg, activitiesArg, _, _, _, _, _, _
-          ) ->
+        ArgumentMatchers.argThat { (
+          numberOfSessionsArg, activitiesArg, _, _, _, _, _, _
+        ) ->
           (
             numberOfSessionsArg == 9 && activitiesArg.size == 1
             )
@@ -273,5 +275,28 @@ internal class ActionPlanServiceTest {
       actionPlanService.getActionPlanByReferral(referralId)
     }
     assertThat(exception.message).isEqualTo("action plan not found [referralId=$referralId]")
+  }
+
+  @Test
+  fun `update action plan activity`() {
+    val activity1 = SampleData.sampleActionPlanActivity(desiredOutcome = SampleData.sampleDesiredOutcome())
+    val activity2 = SampleData.sampleActionPlanActivity(desiredOutcome = SampleData.sampleDesiredOutcome())
+    val actionPlan = SampleData.sampleActionPlan(activities = listOf(activity1, activity2))
+    val updatedDescription = "updated description"
+    val argument: ArgumentCaptor<ActionPlan> = ArgumentCaptor.forClass(ActionPlan::class.java)
+
+    whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
+    whenever(actionPlanRepository.save(any())).thenReturn(actionPlan)
+
+    actionPlanService.updateActionPlanActivity(actionPlan.id, activity1.id, updatedDescription)
+
+    verify(actionPlanRepository).save(argument.capture())
+    val savedActionPlan = argument.value
+    assertThat(savedActionPlan.activities[0].description == updatedDescription)
+    assertThat(
+      savedActionPlan.activities[1].description == SampleData.sampleActionPlanActivity(
+        desiredOutcome = SampleData.sampleDesiredOutcome()
+      ).description
+    )
   }
 }

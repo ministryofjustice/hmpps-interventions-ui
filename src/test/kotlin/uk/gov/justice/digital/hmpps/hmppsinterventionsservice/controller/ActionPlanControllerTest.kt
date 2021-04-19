@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -128,5 +129,20 @@ internal class ActionPlanControllerTest {
     val retrievedActionPlan = actionPlanController.getActionPlanByReferral(referralId)
 
     assertThat(retrievedActionPlan).isNotNull
+  }
+
+  @Test
+  fun `update action plan activity`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val activityId = UUID.randomUUID()
+    val description = "description"
+
+    val updateActionPlanActivityDTO = UpdateActionPlanActivityDTO("description")
+
+    whenever(actionPlanService.updateActionPlanActivity(actionPlan.id, activityId, description))
+      .thenReturn(actionPlan)
+
+    val updatedActionPlanDTO = actionPlanController.updateActionPlanActivity(actionPlan.id, activityId, updateActionPlanActivityDTO)
+    assertThat(updatedActionPlanDTO).isEqualTo(ActionPlanDTO.from(actionPlan))
   }
 }
