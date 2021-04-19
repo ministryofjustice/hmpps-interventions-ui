@@ -51,6 +51,8 @@ import EndOfServiceReportFurtherInformationPresenter from './endOfServiceReportF
 import EndOfServiceReportFurtherInformationView from './endOfServiceReportFurtherInformationView'
 import EndOfServiceReportCheckAnswersPresenter from './endOfServiceReportCheckAnswersPresenter'
 import EndOfServiceReportCheckAnswersView from './endOfServiceReportCheckAnswersView'
+import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
+import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -758,5 +760,21 @@ export default class ServiceProviderReferralsController {
   async submitEndOfServiceReport(req: Request, res: Response): Promise<void> {
     await this.interventionsService.submitEndOfServiceReport(res.locals.user.token.accessToken, req.params.id)
     res.redirect(`/service-provider/end-of-service-report/${req.params.id}/confirmation`)
+  }
+
+  async showEndOfServiceReportConfirmation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+
+    const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategory)
+    const view = new EndOfServiceReportConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

@@ -1,0 +1,32 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({titleText: "End of service report submitted"}) }}
+
+      <h2 class="govuk-heading-m">Service user details</h2>
+
+      {{ govukSummaryList(summaryListArgs) }}
+
+      <h2 class="govuk-heading-m">What happens next?</h2>
+
+      <p class="govuk-body">
+      The end of service report has been saved and submitted.
+      </p>
+
+      <p class="govuk-body">
+      This case will appear in your dashboard.
+      </p>
+
+      <a href="{{ presenter.progressHref }}" class="govuk-button">Return to service progress</a>
+    </div>
+  </div>
+{% endblock %}

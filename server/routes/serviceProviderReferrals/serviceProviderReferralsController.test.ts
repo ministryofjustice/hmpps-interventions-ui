@@ -1235,3 +1235,22 @@ describe('POST /service-provider/end-of-service-report/:id/submit', () => {
     expect(interventionsService.submitEndOfServiceReport).toHaveBeenCalledWith('token', endOfServiceReport.id)
   })
 })
+
+describe('GET /service-provider/end-of-service-report/:id/confirmation', () => {
+  it('displays a confirmation page for that end of service report', async () => {
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    const referral = sentReferralFactory.build()
+    const serviceCategory = serviceCategoryFactory.build()
+
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('End of service report submitted')
+      })
+  })
+})
