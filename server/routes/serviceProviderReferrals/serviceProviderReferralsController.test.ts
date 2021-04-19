@@ -983,3 +983,166 @@ describe('POST /service-provider/referrals/:id/end-of-service-report', () => {
     expect(interventionsService.createDraftEndOfServiceReport).toHaveBeenCalledWith('token', '19')
   })
 })
+
+describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () => {
+  it('renders a form', async () => {
+    const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+    const desiredOutcome = serviceCategory.desiredOutcomes[0]
+    const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: [desiredOutcome.id, '2', '3'] } })
+    const endOfServiceReport = endOfServiceReportFactory.build()
+
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+    await request(app)
+      .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Social inclusion: End of service report')
+        expect(res.text).toContain('About desired outcome 1')
+        expect(res.text).toContain(desiredOutcome.description)
+      })
+  })
+
+  describe('when the outcome number is greater than the number of desired outcomes in the referral', () => {
+    it('returns a 404', async () => {
+      const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: ['1', '2', '3'] } })
+      const endOfServiceReport = endOfServiceReportFactory.build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+      await request(app).get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/4`).expect(404)
+    })
+  })
+})
+
+describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', () => {
+  describe('with valid data', () => {
+    describe('when the outcome number doesn’t refer to the last of the referral’s desired outcomes', () => {
+      it('updates the appointment on the interventions service and redirects to the page for the next outcome', async () => {
+        const serviceCategory = serviceCategoryFactory.build()
+        const desiredOutcome = serviceCategory.desiredOutcomes[0]
+        const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: [desiredOutcome.id, '2', '3'] } })
+        const endOfServiceReport = endOfServiceReportFactory.build()
+
+        interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+        interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+        await request(app)
+          .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+          .type('form')
+          .send({
+            'achievement-level': 'PARTIALLY_ACHIEVED',
+            'progression-comments': 'Some progression comments',
+            'additional-task-comments': 'Some additional task comments',
+          })
+          .expect(302)
+          .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/2`)
+
+        expect(interventionsService.updateDraftEndOfServiceReport).toHaveBeenCalledWith(
+          'token',
+          endOfServiceReport.id,
+          {
+            outcome: {
+              achievementLevel: 'PARTIALLY_ACHIEVED',
+              additionalTaskComments: 'Some additional task comments',
+              desiredOutcomeId: desiredOutcome.id,
+              progressionComments: 'Some progression comments',
+            },
+          }
+        )
+      })
+    })
+
+    describe('when the outcome refers to the last of the referral’s desired outcomes', () => {
+      it('updates the appointment on the interventions service and redirects to the further information form', async () => {
+        const serviceCategory = serviceCategoryFactory.build()
+        const desiredOutcome = serviceCategory.desiredOutcomes[0]
+        const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: ['2', '3', desiredOutcome.id] } })
+        const endOfServiceReport = endOfServiceReportFactory.build()
+
+        interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+        interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+        await request(app)
+          .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/3`)
+          .type('form')
+          .send({
+            'achievement-level': 'PARTIALLY_ACHIEVED',
+            'progression-comments': 'Some progression comments',
+            'additional-task-comments': 'Some additional task comments',
+          })
+          .expect(302)
+          .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
+
+        expect(interventionsService.updateDraftEndOfServiceReport).toHaveBeenCalledWith(
+          'token',
+          endOfServiceReport.id,
+          {
+            outcome: {
+              achievementLevel: 'PARTIALLY_ACHIEVED',
+              progressionComments: 'Some progression comments',
+              additionalTaskComments: 'Some additional task comments',
+              desiredOutcomeId: desiredOutcome.id,
+            },
+          }
+        )
+      })
+    })
+
+    describe('when the outcome number is greater than the number of desired outcomes in the referral', () => {
+      it('returns a 404 and doesn’t try to update the end of service report', async () => {
+        const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: ['1', '2', '3'] } })
+        const endOfServiceReport = endOfServiceReportFactory.build()
+
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+        await request(app)
+          .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/4`)
+          .type('form')
+          .send({
+            'achievement-level': 'PARTIALLY_ACHIEVED',
+            'progression-comments': 'Some progression comments',
+            'additional-task-comments': 'Some additional task comments',
+          })
+          .expect(404)
+
+        expect(interventionsService.updateDraftEndOfServiceReport).not.toHaveBeenCalled()
+      })
+    })
+  })
+
+  describe('with invalid data', () => {
+    it('renders an error page and does not update the appointment on the interventions service', async () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const desiredOutcome = serviceCategory.desiredOutcomes[0]
+      const referral = sentReferralFactory.build({
+        referral: { serviceUser: { firstName: 'Alex' }, desiredOutcomesIds: [desiredOutcome.id, '2', '3'] },
+      })
+      const endOfServiceReport = endOfServiceReportFactory.build()
+
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+      interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+      await request(app)
+        .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+        .type('form')
+        .send({})
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Select whether Alex achieved the desired outcome')
+        })
+
+      expect(interventionsService.updateDraftEndOfServiceReport).not.toHaveBeenCalled()
+    })
+  })
+})

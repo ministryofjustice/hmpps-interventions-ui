@@ -89,4 +89,9 @@ export default {
       invalidDuration: 'The session duration must be a real duration',
     },
   },
+  endOfServiceReportOutcome: {
+    achievementLevel: {
+      empty: (name: string) => `Select whether ${name} achieved the desired outcome`,
+    },
+  },
 }

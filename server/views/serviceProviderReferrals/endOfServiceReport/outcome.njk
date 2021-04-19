@@ -1,0 +1,31 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "./formTemplate.njk" %}
+
+{% block pageTitle %}
+  HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block formSection %}
+  <p class="govuk-body">
+  <strong>{{ presenter.text.desiredOutcomeNumberDescription }}</strong>
+  </p>
+
+  <div class="govuk-inset-text">
+    {{ presenter.text.desiredOutcomeDescription }}
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--visible">
+
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+    {{ govukRadios(achievementLevelRadiosArgs) }}
+    {{ govukTextarea(progressionCommentsTextareaArgs) }}
+    {{ govukTextarea(additionalTaskCommentsTextareaArgs) }}
+
+    {{ govukButton({ text: "Save and continue" }) }}
+  </form>
+{% endblock %}

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, { ActionPlanAppointment } from '../../services/interventionsService'
@@ -42,6 +43,9 @@ import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheck
 import AuthUtils from '../../utils/authUtils'
 import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
 import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessionFeedbackPresenter'
+import EndOfServiceReportOutcomeForm from './endOfServiceReportOutcomeForm'
+import EndOfServiceReportOutcomePresenter from './endOfServiceReportOutcomePresenter'
+import EndOfServiceReportOutcomeView from './endOfServiceReportOutcomeView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -628,5 +632,77 @@ export default class ServiceProviderReferralsController {
     )
 
     res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`)
+  }
+
+  async editEndOfServiceReportOutcome(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+
+    const desiredOutcomeNumber = Number(req.params.number)
+
+    if (desiredOutcomeNumber > referral.referral.desiredOutcomesIds.length) {
+      throw createError(404, 'Outcome number is out of bounds')
+    }
+
+    const desiredOutcomeId = referral.referral.desiredOutcomesIds[desiredOutcomeNumber - 1]
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+
+    const desiredOutcome = serviceCategory.desiredOutcomes.find(val => val.id === desiredOutcomeId)
+
+    if (desiredOutcome === undefined) {
+      throw new Error(`Desired outcome for ID ${desiredOutcomeId} not found`)
+    }
+
+    const outcome = endOfServiceReport.outcomes.find(val => val.desiredOutcome.id === desiredOutcomeId) ?? null
+
+    let formValidationError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    if (req.method === 'POST') {
+      userInputData = req.body
+      const form = new EndOfServiceReportOutcomeForm(req, desiredOutcomeId, referral.referral.serviceUser)
+      const formData = await form.data()
+
+      if (formData.error) {
+        formValidationError = formData.error
+        res.status(400)
+      } else {
+        await this.interventionsService.updateDraftEndOfServiceReport(
+          accessToken,
+          endOfServiceReport.id,
+          formData.paramsForUpdate
+        )
+
+        const isLastDesiredOutcome = desiredOutcomeNumber === referral.referral.desiredOutcomesIds.length
+        if (isLastDesiredOutcome) {
+          res.redirect(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
+        } else {
+          res.redirect(
+            `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/${desiredOutcomeNumber + 1}`
+          )
+        }
+        return
+      }
+    }
+
+    const presenter = new EndOfServiceReportOutcomePresenter(
+      referral,
+      endOfServiceReport,
+      serviceCategory,
+      desiredOutcome,
+      desiredOutcomeNumber,
+      outcome,
+      userInputData,
+      formValidationError
+    )
+    const view = new EndOfServiceReportOutcomeView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }
