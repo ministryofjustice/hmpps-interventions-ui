@@ -1839,7 +1839,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
         state:
-          'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+          'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has an appointment for which no session feedback has been recorded',
         uponReceiving:
           'a POST request to set the attendance for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
         withRequest: {
