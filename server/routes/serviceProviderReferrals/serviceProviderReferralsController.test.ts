@@ -14,6 +14,7 @@ import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -927,5 +928,19 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
           expect(res.text).toContain('The probation practitioner has been sent a copy of the session feedback form.')
         })
     })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/end-of-service-report', () => {
+  it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    interventionsService.createDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+
+    await request(app)
+      .post(`/service-provider/referrals/19/end-of-service-report`)
+      .expect(303)
+      .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+
+    expect(interventionsService.createDraftEndOfServiceReport).toHaveBeenCalledWith('token', '19')
   })
 })

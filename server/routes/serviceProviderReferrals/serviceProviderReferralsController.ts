@@ -596,4 +596,13 @@ export default class ServiceProviderReferralsController {
 
     res.render(...view.renderArgs)
   }
+
+  async createDraftEndOfServiceReport(req: Request, res: Response): Promise<void> {
+    const draftEndOfServiceReport = await this.interventionsService.createDraftEndOfServiceReport(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
+
+    res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`)
+  }
 }
