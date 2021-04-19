@@ -17,6 +17,16 @@ function getServiceProviderUserOrganization(user: User): ServiceProviderOrg {
   return organizations[0]
 }
 
+function getProbationPractitionerUserId(user: User): string {
+  const { userId, authSource } = user
+  if (authSource !== 'delius') {
+    throw new AuthError(ErrorType.REQUIRES_PP_USER)
+  }
+
+  return userId
+}
+
 export default {
   getServiceProviderUserOrganization,
+  getProbationPractitionerUserId,
 }
