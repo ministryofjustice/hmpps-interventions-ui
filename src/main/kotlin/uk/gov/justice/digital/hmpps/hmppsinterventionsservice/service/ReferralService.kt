@@ -59,9 +59,16 @@ class ReferralService(
     return referralRepository.findBySentBy(user)
   }
 
-  fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<SentReferralDTO> {
+  fun getSentReferralsSentBy(userId: String): List<Referral> {
+    return referralRepository.findBySentById(userId)
+  }
+
+  fun getSentReferralsAssignedTo(userId: String): List<Referral> {
+    return referralRepository.findByAssignedToId(userId)
+  }
+
+  fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<Referral> {
     return referralRepository.findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(serviceProviderID)
-      .map { SentReferralDTO.from(it) }
   }
 
   fun endSentReferral(referral: Referral, user: AuthUser): Referral {

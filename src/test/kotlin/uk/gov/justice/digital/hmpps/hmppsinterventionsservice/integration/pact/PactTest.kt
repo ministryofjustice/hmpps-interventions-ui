@@ -62,7 +62,6 @@ class PactTest {
       npsRegionRepository,
       dynamicFrameworkContractRepository,
       desiredOutcomeRepository,
-      hmppsAuthService,
     )
 
     setupAssistant.cleanAll()

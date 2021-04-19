@@ -13,6 +13,8 @@ interface ReferralRepository : JpaRepository<Referral, UUID> {
   fun findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(id: AuthGroupID): List<Referral>
   fun existsByReferenceNumber(reference: String): Boolean
   fun findBySentBy(user: AuthUser): List<Referral>
+  fun findBySentById(userId: String): List<Referral>
+  fun findByAssignedToId(userId: String): List<Referral>
 
   // queries for draft referrals
   fun findByIdAndSentAtIsNull(id: UUID): Referral?

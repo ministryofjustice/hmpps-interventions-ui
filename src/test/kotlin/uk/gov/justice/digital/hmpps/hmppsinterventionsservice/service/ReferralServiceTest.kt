@@ -22,7 +22,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -37,6 +42,12 @@ class ReferralServiceTest @Autowired constructor(
   val interventionRepository: InterventionRepository,
   val cancellationReasonRepository: CancellationReasonRepository,
 ) {
+
+  private val userFactory = AuthUserFactory(entityManager)
+  private val interventionFactory = InterventionFactory(entityManager)
+  private val contractFactory = DynamicFrameworkContractFactory(entityManager)
+  private val serviceProviderFactory = ServiceProviderFactory(entityManager)
+  private val referralFactory = ReferralFactory(entityManager)
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
@@ -354,23 +365,46 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
-  fun `get sent referrals by provider id returns filtered referrals`() {
-    val referrals = listOf("PROVIDER1", "PROVIDER2").map {
-      SampleData.persistReferral(
-        entityManager,
-        SampleData.sampleReferral(
-          "X123456",
-          it,
-          sentAt = OffsetDateTime.now(),
-          sentBy = AuthUser("123456", "user_id", "user_name"),
-          referenceNumber = "REF123"
-        )
-      )
+  fun `get sent referrals sent by PP returns filtered referrals`() {
+    val users = listOf(userFactory.create("pp_user_1", "delius"), userFactory.create("pp_user_2", "delius"))
+    users.forEach {
+      referralFactory.createSent(sentBy = it)
     }
 
-    val sentReferrals = referralService.getSentReferralsForServiceProviderID("PROVIDER2")
-    assertThat(sentReferrals.first().actionPlanId).isEqualTo(referrals.last().actionPlan?.id)
-    assertThat(sentReferrals.size).isEqualTo(1)
-    assertThat(referralService.getSentReferralsForServiceProviderID("PROVIDER3").size).isEqualTo(0)
+    val referrals = referralService.getSentReferralsSentBy(users[0])
+    assertThat(referralService.getSentReferralsSentBy(users[0].id)).isEqualTo(referrals)
+    assertThat(referrals.size).isEqualTo(1)
+    assertThat(referrals[0].sentBy).isEqualTo(users[0])
+
+    assertThat(referralService.getSentReferralsAssignedTo("missing")).isEmpty()
+  }
+
+  @Test
+  fun `get sent referrals sent to SP org returns filtered referrals`() {
+    val spOrgs = listOf(serviceProviderFactory.create("sp_org_1"), serviceProviderFactory.create("sp_org_2"))
+    spOrgs.forEach {
+      val intervention = interventionFactory.create(contract = contractFactory.create(serviceProvider = it))
+      referralFactory.createSent(intervention = intervention)
+    }
+
+    val referrals = referralService.getSentReferralsForServiceProviderID(spOrgs[0].id)
+    assertThat(referrals.size).isEqualTo(1)
+    assertThat(referrals[0].intervention.dynamicFrameworkContract.serviceProvider).isEqualTo(spOrgs[0])
+
+    assertThat(referralService.getSentReferralsForServiceProviderID("missing")).isEmpty()
+  }
+
+  @Test
+  fun `get sent referrals assigned to SP user returns filtered referrals`() {
+    val spUsers = listOf(userFactory.create("sp_user_1"), userFactory.create("sp_user_2"))
+    spUsers.forEach {
+      referralFactory.createSent(assignedTo = it)
+    }
+
+    val referrals = referralService.getSentReferralsAssignedTo(spUsers[0].id)
+    assertThat(referrals.size).isEqualTo(1)
+    assertThat(referrals[0].assignedTo).isEqualTo(spUsers[0])
+
+    assertThat(referralService.getSentReferralsAssignedTo("missing")).isEmpty()
   }
 }

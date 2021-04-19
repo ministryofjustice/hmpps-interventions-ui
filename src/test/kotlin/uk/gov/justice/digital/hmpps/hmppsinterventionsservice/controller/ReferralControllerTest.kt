@@ -11,7 +11,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
@@ -20,17 +19,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationReasonsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
-import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -53,17 +49,31 @@ internal class ReferralControllerTest {
   }
 
   @Test
-  fun `getSentReferrals filters by service provider organization from auth token`() {
-    whenever(hmppsAuthService.getServiceProviderOrganizationForUser(any())).thenReturn("HARMONY_LIVING")
-    referralController.getSentReferrals(tokenFactory.create())
+  fun `getSentReferrals filters by service provider organization from query param`() {
+    referralController.getSentReferrals(sentTo = "HARMONY_LIVING")
     verify(referralService).getSentReferralsForServiceProviderID("HARMONY_LIVING")
   }
 
   @Test
-  fun `getSentReferrals throws AccessDeniedException when user is not associated with a service provider`() {
-    whenever(hmppsAuthService.getServiceProviderOrganizationForUser(any())).thenReturn(null)
-    assertThrows<AccessDeniedException> {
-      referralController.getSentReferrals(tokenFactory.create())
+  fun `getSentReferrals filters by PP from query param`() {
+    referralController.getSentReferrals(sentBy = "bernard.beaks")
+    verify(referralService).getSentReferralsSentBy("bernard.beaks")
+  }
+
+  @Test
+  fun `getSentReferrals filters by assignee from query param`() {
+    referralController.getSentReferrals(assignedTo = "someone@provider.com")
+    verify(referralService).getSentReferralsAssignedTo("someone@provider.com")
+  }
+
+  @Test
+  fun `getSentReferrals throws error unless a single query param is passed`() {
+    assertThrows<ServerWebInputException> {
+      referralController.getSentReferrals()
+    }
+
+    assertThrows<ServerWebInputException> {
+      referralController.getSentReferrals(sentBy = "bernard.beaks", sentTo = "HARMONY_LIVING")
     }
   }
 
@@ -121,25 +131,6 @@ internal class ReferralControllerTest {
       referralController.endSentReferral(UUID.randomUUID(), jwtAuthenticationToken)
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
-  }
-
-  @Test
-  fun `get all sent referrals from current user`() {
-    val authUser = AuthUser("CRN123", "auth", "user")
-    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
-    val referral = SampleData.sampleReferral(
-      "CRN123", "Service Provider",
-      sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00"), sentBy = authUser, referenceNumber = "abc"
-    )
-    val expectedResponse = listOf(referral).map { SentReferralDTO.from(it) }
-
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(referralService.getSentReferralsSentBy(authUser)).thenReturn(listOf(referral))
-    val response = referralController.getSentReferralsSentBy(jwtAuthenticationToken)
-
-    verify(referralService).getSentReferralsSentBy(authUser)
-    assertThat(response.size).isEqualTo(1)
-    assertThat(response[0].id).isEqualTo(expectedResponse[0].id)
   }
 
   @Test

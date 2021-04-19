@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -83,12 +82,28 @@ class ReferralController(
   }
 
   @GetMapping("/sent-referrals")
-  fun getSentReferrals(authentication: JwtAuthenticationToken): List<SentReferralDTO> {
-    val user = parseAuthUserToken(authentication)
-    val organization = hmppsAuthService.getServiceProviderOrganizationForUser(user)
-    return organization?.let {
-      referralService.getSentReferralsForServiceProviderID(organization)
-    } ?: throw AccessDeniedException("user is not associated with a service provider organization")
+  fun getSentReferrals(
+    @RequestParam sentBy: String? = null,
+    @RequestParam sentTo: String? = null,
+    @RequestParam assignedTo: String? = null,
+  ): List<SentReferralDTO> {
+    if (listOfNotNull(sentBy, sentTo, assignedTo).size != 1) {
+      throw ServerWebInputException("a single search parameter must be supplied")
+    }
+
+    sentBy?.let {
+      return referralService.getSentReferralsSentBy(it).map { referral -> SentReferralDTO.from(referral) }
+    }
+
+    sentTo?.let {
+      return referralService.getSentReferralsForServiceProviderID(it).map { referral -> SentReferralDTO.from(referral) }
+    }
+
+    assignedTo?.let {
+      return referralService.getSentReferralsAssignedTo(it).map { referral -> SentReferralDTO.from(referral) }
+    }
+
+    return emptyList()
   }
 
   @PostMapping("/sent-referral/{id}/end")
@@ -153,13 +168,6 @@ class ReferralController(
     return serviceCategoryService.getServiceCategoryByID(id)
       ?.let { ServiceCategoryDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$id]")
-  }
-
-  @GetMapping("/sent-referrals/sent-by")
-  fun getSentReferralsSentBy(authentication: JwtAuthenticationToken): List<SentReferralDTO> {
-    val user = jwtAuthUserMapper.map(authentication)
-
-    return referralService.getSentReferralsSentBy(user).map { SentReferralDTO.from(it) }
   }
 
   @GetMapping("/referral-cancellation-reasons")

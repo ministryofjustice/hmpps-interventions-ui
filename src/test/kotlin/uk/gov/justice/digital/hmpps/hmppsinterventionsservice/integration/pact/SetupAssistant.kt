@@ -1,12 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
@@ -23,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPS
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -49,7 +45,6 @@ class SetupAssistant(
   private val npsRegionRepository: NPSRegionRepository,
   private val dynamicFrameworkContractRepository: DynamicFrameworkContractRepository,
   private val desiredOutcomeRepository: DesiredOutcomeRepository,
-  private val mockHMPPSAuthService: HMPPSAuthService,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -70,10 +65,6 @@ class SetupAssistant(
 
     serviceProviderRepository.deleteAll()
     authUserRepository.deleteAll()
-  }
-
-  fun mockServiceProviderOrganization(organization: AuthGroupID) {
-    whenever(mockHMPPSAuthService.getServiceProviderOrganizationForUser(any())).thenReturn(organization)
   }
 
   fun randomServiceCategory(): ServiceCategory {
