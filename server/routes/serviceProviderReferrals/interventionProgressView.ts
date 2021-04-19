@@ -87,6 +87,40 @@ export default class InterventionProgressView {
     href: '/service-provider/dashboard',
   }
 
+  private endOfServiceReportSummaryListArgs(tagMacro: (args: TagArgs) => string, csrfToken: string): SummaryListArgs {
+    const rows: SummaryListArgsRow[] = [
+      {
+        key: { text: 'End of service report status' },
+        value: {
+          text: tagMacro({
+            text: this.presenter.text.endOfServiceReportStatus,
+            classes: this.endOfServiceReportTagClass,
+            attributes: { id: 'end-of-service-report-status' },
+          }),
+        },
+      },
+    ]
+
+    if (this.presenter.allowEndOfServiceReportCreation) {
+      rows.push({
+        key: { text: 'Action' },
+        value: {
+          html: `<form method="post" action="${ViewUtils.escape(this.presenter.createEndOfServiceReportFormAction)}">
+                   <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
+                   <button class="govuk-button govuk-button--secondary">
+                     Create end of service report
+                   </button>
+                 </form>`,
+        },
+      })
+    }
+
+    return { rows }
+  }
+
+  private readonly endOfServiceReportTagClass =
+    this.presenter.endOfServiceReportStatusStyle === 'active' ? '' : 'govuk-tag--grey'
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/interventionProgress',
@@ -98,6 +132,7 @@ export default class InterventionProgressView {
         actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
+        endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
       },
     ]
   }

@@ -33,6 +33,7 @@ export default class InterventionProgressPresenter {
   readonly text = {
     title: utils.convertToTitleCase(this.serviceCategory.name),
     actionPlanStatus: this.actionPlanSubmitted ? 'Submitted' : 'Not submitted',
+    endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
   }
 
   readonly actionPlanStatusStyle: 'active' | 'inactive' = this.actionPlanSubmitted ? 'active' : 'inactive'
@@ -102,5 +103,19 @@ export default class InterventionProgressPresenter {
           linkHTML: `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
         }
     }
+  }
+
+  readonly createEndOfServiceReportFormAction = `/service-provider/referrals/${this.referral.id}/end-of-service-report`
+
+  readonly endOfServiceReportStatusStyle: 'active' | 'inactive' = this.endOfServiceReportSubmitted
+    ? 'active'
+    : 'inactive'
+
+  private get endOfServiceReportSubmitted() {
+    return this.referral.endOfServiceReport !== null && this.referral.endOfServiceReport.submittedAt !== null
+  }
+
+  get allowEndOfServiceReportCreation(): boolean {
+    return this.referral.endOfServiceReport === null
   }
 }

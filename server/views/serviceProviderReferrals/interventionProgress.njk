@@ -56,9 +56,9 @@
   <h2 class="govuk-heading-m">End of service report</h2>
 
   <p class="govuk-body">
-    You can start the end of service report when all sessions are delivered.
+  You can start the end of service report when all sessions are delivered.
   </p>
-</div>
-</div>
+
+  {{ govukSummaryList(endOfServiceReportSummaryListArgs(govukTag, csrfToken)) }}
 
 {% endblock %}
