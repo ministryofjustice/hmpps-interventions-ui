@@ -1,10 +1,9 @@
 import UserService, { UserDetails } from '../../../services/userService'
 import MockedHmppsAuthClient from '../../../data/testutils/hmppsAuthClientSetup'
+import { User } from '../../../authentication/passport'
 
-export const user = {
+export const user: User = {
   name: 'john smith',
-  firstName: 'john',
-  lastName: 'smith',
   username: 'user1',
   displayName: 'J. Smith',
   token: {

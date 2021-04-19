@@ -1112,14 +1112,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getSentReferrals', () => {
-    it('returns a list of all sent referrals', async () => {
+  describe('getReferralsSentToServiceProvider', () => {
+    it('returns a list of all sent referrals for the SP user', async () => {
       await provider.addInteraction({
-        state: 'There are some existing sent referrals',
-        uponReceiving: 'a request for all sent referrals',
+        state: 'There are some existing sent referrals sent to HARMONY_LIVING',
+        uponReceiving: "a request for all sent referrals for the SP user's organization",
         withRequest: {
           method: 'GET',
           path: '/sent-referrals',
+          query: { sentTo: 'HARMONY_LIVING' },
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -1129,7 +1130,35 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getSentReferrals(token)).toEqual([sentReferral, sentReferral])
+      expect(await interventionsService.getReferralsSentToServiceProvider(token, 'HARMONY_LIVING')).toEqual([
+        sentReferral,
+        sentReferral,
+      ])
+    })
+  })
+
+  describe('getReferralsSentByProbationPractitioner', () => {
+    it('returns a list of all referrals sent by the PP user', async () => {
+      await provider.addInteraction({
+        state: "There are some existing sent referrals sent by user with id 'bernard.beaks'",
+        uponReceiving: "a request for all sent referrals for the SP user's organization",
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals',
+          query: { sentBy: 'bernard.beaks' },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([sentReferral, sentReferral]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getReferralsSentByProbationPractitioner(token, 'bernard.beaks')).toEqual([
+        sentReferral,
+        sentReferral,
+      ])
     })
   })
 

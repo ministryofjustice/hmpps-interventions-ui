@@ -39,6 +39,7 @@ import PostSessionBehaviourFeedbackView from './postSessionBehaviourFeedbackView
 import PostSessionBehaviourFeedbackForm from './postSessionBehaviourFeedbackForm'
 import PostSessionFeedbackCheckAnswersView from './postSessionFeedbackCheckAnswersView'
 import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
+import AuthUtils from '../../utils/authUtils'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -48,7 +49,11 @@ export default class ServiceProviderReferralsController {
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
-    const referrals = await this.interventionsService.getSentReferrals(res.locals.user.token.accessToken)
+    const serviceProvider = AuthUtils.getSPUserOrganization(res.locals.user)
+    const referrals = await this.interventionsService.getReferralsSentToServiceProvider(
+      res.locals.user.token.accessToken,
+      serviceProvider.id
+    )
 
     const dedupedServiceCategoryIds = Array.from(
       new Set(referrals.map(referral => referral.referral.serviceCategoryId))
