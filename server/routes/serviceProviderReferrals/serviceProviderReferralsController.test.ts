@@ -1186,3 +1186,38 @@ describe('POST /service-provider/end-of-service-report/:id/further-information',
     })
   })
 })
+
+describe('GET /service-provider/end-of-service-report/:id/check-answers', () => {
+  it('renders a page with the contents of the end of service report', async () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = sentReferralFactory.build({
+      referral: { desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
+    })
+    const endOfServiceReport = endOfServiceReportFactory.build({
+      outcomes: [
+        {
+          desiredOutcome: serviceCategory.desiredOutcomes[0],
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some task comments',
+        },
+      ],
+      furtherInformation: 'Some further information',
+    })
+
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/check-answers`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Achieved')
+        expect(res.text).toContain(serviceCategory.desiredOutcomes[0].description)
+        expect(res.text).toContain('Some progression comments')
+        expect(res.text).toContain('Some task comments')
+        expect(res.text).toContain('Some further information')
+      })
+  })
+})

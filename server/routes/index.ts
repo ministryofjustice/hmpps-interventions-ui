@@ -149,6 +149,9 @@ export default function routes(router: Router, services: Services): Router {
   post('/service-provider/end-of-service-report/:id/further-information', (req, res) =>
     serviceProviderReferralsController.editEndOfServiceReportFurtherInformation(req, res)
   )
+  get('/service-provider/end-of-service-report/:id/check-answers', (req, res) =>
+    serviceProviderReferralsController.endOfServiceReportCheckAnswers(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {
