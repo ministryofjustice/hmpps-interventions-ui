@@ -15,6 +15,7 @@ ingress:
   path: /
 
 env:
+  DEPLOYMENT_ENV: preprod
   HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
   COMMUNITY_API_URL: https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io
   OFFENDER_ASSESSMENTS_API_URL: https://offender-prprod.aks-live-1.studio-hosting.service.justice.gov.uk

@@ -49,26 +49,16 @@ env:
         name: elasticache-redis
         key: auth_token
 
-  - name: REDIS_TLS_ENABLED
-    value: {{ .Values.env.REDIS_TLS_ENABLED | quote }}
+  - name: SENTRY_DSN
+    valueFrom:
+      secretKeyRef:
+        name: sentry
+        key: ui_dsn
 
-  - name: HMPPS_AUTH_URL
-    value: {{ .Values.env.HMPPS_AUTH_URL | quote }}
-
-  - name: COMMUNITY_API_URL
-    value: {{ .Values.env.COMMUNITY_API_URL | quote }}
-
-  - name: OFFENDER_ASSESSMENTS_API_URL
-    value: {{ .Values.env.OFFENDER_ASSESSMENTS_API_URL | quote }}
-
-  - name: INTERVENTIONS_SERVICE_URL
-    value: {{ .Values.env.INTERVENTIONS_SERVICE_URL | quote }}
-
-  - name: TOKEN_VERIFICATION_API_URL
-    value: {{ .Values.env.TOKEN_VERIFICATION_API_URL | quote }}
-
-  - name: TOKEN_VERIFICATION_ENABLED
-    value: {{ .Values.env.TOKEN_VERIFICATION_ENABLED | quote }}
+  {{ range $key, $value := .Values.env }}
+  - name: {{ $key }}
+    value: {{ $value | quote }}
+  {{ end }}
 
   - name: NODE_ENV
     value: production
