@@ -1,0 +1,19 @@
+{% if presenter.attendedAnswers %}
+  <h3 class="govuk-heading-s">{{ presenter.attendedAnswers.question }}</h3>
+  <p>{{ presenter.attendedAnswers.answer }}</p>
+{% endif %}
+
+{% if presenter.additionalAttendanceAnswers %}
+  <h3 class="govuk-heading-s">{{ presenter.additionalAttendanceAnswers.question }}</h3>
+  <p>{{ presenter.additionalAttendanceAnswers.answer }}</p>
+{% endif %}
+
+{% if presenter.behaviourDescriptionAnswers %}
+  <h3 class="govuk-heading-s">{{ presenter.behaviourDescriptionAnswers.question }}</h3>
+  <p>{{ presenter.behaviourDescriptionAnswers.answer }}</p>
+{% endif %}
+
+{% if presenter.notifyProbationPractitionerAnswers %}
+  <h3 class="govuk-heading-s">{{ presenter.notifyProbationPractitionerAnswers.question }}</h3>
+  <p>{{ presenter.notifyProbationPractitionerAnswers.answer }}</p>
+{% endif %}
