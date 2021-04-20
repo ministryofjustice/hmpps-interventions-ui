@@ -1,9 +1,12 @@
 import { DraftReferral } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
+import DashboardNavPresenter from './dashboardNavPresenter'
 
 export default class FindStartPresenter {
   constructor(private readonly draftReferrals: DraftReferral[]) {}
+
+  readonly navItemsPresenter = new DashboardNavPresenter('Find interventions')
 
   get orderedReferrals(): DraftReferralSummaryPresenter[] {
     return this.draftReferrals

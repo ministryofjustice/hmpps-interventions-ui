@@ -1,9 +1,14 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "HMPPS Interventions" %}
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+
+{% block primaryNav %}
+    {{ mojPrimaryNavigation(primaryNavArgs) }}
+{% endblock %}
 
 {% block content %}
     <div class="govuk-grid-row">

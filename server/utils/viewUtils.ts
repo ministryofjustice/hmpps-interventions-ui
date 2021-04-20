@@ -4,6 +4,7 @@ import { ErrorSummaryArgs, SummaryListArgs, TableArgs } from './govukFrontendTyp
 
 export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none' }[]
 export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
+export type PrimaryNavItem = { text: string; href: string; active: boolean }
 
 export default class ViewUtils {
   static escape(val: string): string {
@@ -83,6 +84,13 @@ export default class ViewUtils {
           return result
         })
       }),
+    }
+  }
+
+  static primaryNav(items: PrimaryNavItem[]): Record<string, unknown> {
+    return {
+      label: 'Primary navigation',
+      items,
     }
   }
 }

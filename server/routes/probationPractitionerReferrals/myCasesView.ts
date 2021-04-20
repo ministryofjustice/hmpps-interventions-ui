@@ -16,6 +16,7 @@ export default class MyCasesView {
       {
         presenter: this.presenter,
         tableArgs: this.tableArgs,
+        primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
       },
     ]
   }

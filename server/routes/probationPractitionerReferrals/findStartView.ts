@@ -24,6 +24,7 @@ export default class FindStartView {
       {
         presenter: this.presenter,
         tableArgs: this.tableArgs,
+        primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
       },
     ]
   }
