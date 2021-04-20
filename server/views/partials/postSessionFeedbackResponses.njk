@@ -1,19 +1,21 @@
-{% if presenter.attendedAnswers %}
-  <h3 class="govuk-heading-s">{{ presenter.attendedAnswers.question }}</h3>
-  <p>{{ presenter.attendedAnswers.answer }}</p>
+{% set feedbackAnswersPresenter = presenter.feedbackAnswersPresenter %}
+
+{% if feedbackAnswersPresenter.attendedAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.attendedAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.attendedAnswers.answer }}</p>
 {% endif %}
 
-{% if presenter.additionalAttendanceAnswers %}
-  <h3 class="govuk-heading-s">{{ presenter.additionalAttendanceAnswers.question }}</h3>
-  <p>{{ presenter.additionalAttendanceAnswers.answer }}</p>
+{% if feedbackAnswersPresenter.additionalAttendanceAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.additionalAttendanceAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.additionalAttendanceAnswers.answer }}</p>
 {% endif %}
 
-{% if presenter.behaviourDescriptionAnswers %}
-  <h3 class="govuk-heading-s">{{ presenter.behaviourDescriptionAnswers.question }}</h3>
-  <p>{{ presenter.behaviourDescriptionAnswers.answer }}</p>
+{% if feedbackAnswersPresenter.behaviourDescriptionAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.answer }}</p>
 {% endif %}
 
-{% if presenter.notifyProbationPractitionerAnswers %}
-  <h3 class="govuk-heading-s">{{ presenter.notifyProbationPractitionerAnswers.question }}</h3>
-  <p>{{ presenter.notifyProbationPractitionerAnswers.answer }}</p>
+{% if feedbackAnswersPresenter.notifyProbationPractitionerAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.notifyProbationPractitionerAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.notifyProbationPractitionerAnswers.answer }}</p>
 {% endif %}
