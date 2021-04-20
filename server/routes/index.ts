@@ -131,6 +131,9 @@ export default function routes(router: Router, services: Services): Router {
     '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation',
     (req, res) => serviceProviderReferralsController.showPostSessionFeedbackConfirmation(req, res)
   )
+  get('/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
+    serviceProviderReferralsController.viewSubmittedPostSessionFeedback(req, res)
+  )
   post('/service-provider/referrals/:id/end-of-service-report', (req, res) =>
     serviceProviderReferralsController.createDraftEndOfServiceReport(req, res)
   )

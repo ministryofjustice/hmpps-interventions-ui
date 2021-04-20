@@ -40,6 +40,8 @@ import PostSessionBehaviourFeedbackForm from './postSessionBehaviourFeedbackForm
 import PostSessionFeedbackCheckAnswersView from './postSessionFeedbackCheckAnswersView'
 import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
 import AuthUtils from '../../utils/authUtils'
+import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
+import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessionFeedbackPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -567,6 +569,28 @@ export default class ServiceProviderReferralsController {
     return res.redirect(
       `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
     )
+  }
+
+  async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser)
+    const view = new SubmittedPostSessionFeedbackView(presenter)
+
+    return res.render(...view.renderArgs)
   }
 
   async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {

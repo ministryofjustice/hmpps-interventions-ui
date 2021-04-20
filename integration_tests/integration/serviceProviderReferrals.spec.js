@@ -645,4 +645,68 @@ describe('Service provider referrals dashboard', () => {
         ])
     })
   })
+
+  describe('Viewing session feedback', () => {
+    it('allows users to click through to a page to view session feedback', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referralParams = {
+        id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
+        referral: { serviceCategoryId: serviceCategory.id },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const probationPractitioner = deliusUserFactory.build({
+        firstName: 'John',
+        surname: 'Smith',
+        username: 'john.smith',
+      })
+      const actionPlan = actionPlanFactory.submitted().build({
+        referralId: referralParams.id,
+        numberOfSessions: 4,
+      })
+
+      const assignedReferral = sentReferralFactory.assigned().build({
+        ...referralParams,
+        assignedTo: { username: probationPractitioner.username },
+        actionPlanId: actionPlan.id,
+      })
+
+      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+
+      const appointmentsWithSubmittedFeedback = [
+        actionPlanAppointmentFactory.scheduled().build({
+          sessionNumber: 1,
+          sessionFeedback: {
+            attendance: {
+              attended: 'yes',
+              additionalAttendanceInformation: 'Alex attended the session',
+            },
+            behaviour: {
+              behaviourDescription: 'Alex was well-behaved',
+              notifyProbationPractitioner: false,
+            },
+            submitted: true,
+          },
+        }),
+      ]
+
+      cy.stubGetActionPlanAppointments(actionPlan.id, appointmentsWithSubmittedFeedback)
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+
+      cy.contains('View feedback form').click()
+
+      cy.contains('Alex attended the session')
+      cy.contains('Yes, they were on time')
+      cy.contains('Alex was well-behaved')
+      cy.contains('No')
+    })
+  })
 })

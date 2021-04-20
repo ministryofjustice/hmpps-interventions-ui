@@ -98,7 +98,8 @@ describe(InterventionProgressPresenter, () => {
                 text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
+              linkHtml:
+                '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback">View feedback form</a>',
             },
             {
               sessionNumber: 2,
@@ -107,7 +108,8 @@ describe(InterventionProgressPresenter, () => {
                 text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
+              linkHtml:
+                '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback">View feedback form</a>',
             },
           ])
         })
@@ -131,7 +133,8 @@ describe(InterventionProgressPresenter, () => {
                 text: 'did not attend',
                 classes: 'govuk-tag--purple',
               },
-              linkHtml: '<a class="govuk-link" href="#">View feedback form</a>',
+              linkHtml:
+                '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback">View feedback form</a>',
             },
           ])
         })
