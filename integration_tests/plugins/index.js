@@ -132,5 +132,21 @@ module.exports = on => {
     stubSubmitSessionFeedback: arg => {
       return interventionsService.stubSubmitSessionFeedback(arg.actionPlanId, arg.session, arg.responseJson)
     },
+
+    stubGetEndOfServiceReport: arg => {
+      return interventionsService.stubGetEndOfServiceReport(arg.id, arg.responseJson)
+    },
+
+    stubCreateDraftEndOfServiceReport: arg => {
+      return interventionsService.stubCreateDraftEndOfServiceReport(arg.responseJson)
+    },
+
+    stubUpdateDraftEndOfServiceReport: arg => {
+      return interventionsService.stubUpdateDraftEndOfServiceReport(arg.id, arg.responseJson)
+    },
+
+    stubSubmitEndOfServiceReport: arg => {
+      return interventionsService.stubSubmitEndOfServiceReport(arg.id, arg.responseJson)
+    },
   })
 }

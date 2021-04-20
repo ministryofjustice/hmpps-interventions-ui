@@ -89,3 +89,19 @@ Cypress.Commands.add('stubUpdateActionPlanAppointment', (id, session, responseJs
 Cypress.Commands.add('stubSubmitSessionFeedback', (actionPlanId, session, responseJson) => {
   cy.task('stubSubmitSessionFeedback', { actionPlanId, session, responseJson })
 })
+
+Cypress.Commands.add('stubGetEndOfServiceReport', (id, responseJson) => {
+  cy.task('stubGetEndOfServiceReport', { id, responseJson })
+})
+
+Cypress.Commands.add('stubCreateDraftEndOfServiceReport', responseJson => {
+  cy.task('stubCreateDraftEndOfServiceReport', { responseJson })
+})
+
+Cypress.Commands.add('stubUpdateDraftEndOfServiceReport', (id, responseJson) => {
+  cy.task('stubUpdateDraftEndOfServiceReport', { id, responseJson })
+})
+
+Cypress.Commands.add('stubSubmitEndOfServiceReport', (id, responseJson) => {
+  cy.task('stubSubmitEndOfServiceReport', { id, responseJson })
+})
