@@ -1,7 +1,11 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
-import InterventionsService, { SentReferral, ServiceUser } from './interventionsService'
+import InterventionsService, {
+  SentReferral,
+  ServiceUser,
+  UpdateDraftEndOfServiceReportParams,
+} from './interventionsService'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
@@ -11,6 +15,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import { DeliusServiceUser } from './communityApiService'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
+import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -978,6 +983,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     },
     assignedTo: null,
     actionPlanId: null,
+    endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
@@ -1108,6 +1114,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
           }
         )
+      })
+    })
+
+    describe('for a referral that has an end of service report', () => {
+      it('populates the endOfServiceReport property', async () => {
+        const id = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
+        const endOfServiceReport = endOfServiceReportFactory.build()
+
+        await provider.addInteraction({
+          state: `There is an existing sent referral with ID of ${id}, and it has an end of service report`,
+          uponReceiving: `a request for the sent referral with ID of ${id}`,
+          withRequest: {
+            method: 'GET',
+            path: `/sent-referral/${id}`,
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              endOfServiceReport,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getSentReferral(token, id)).toMatchObject({
+          endOfServiceReport,
+        })
       })
     })
   })
@@ -1424,7 +1458,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('getActionPlan', () => {
     it('returns an existing draft action plan', async () => {
       const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
-      const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
+      const referralId = '1be9f8e5-535f-4836-9b00-4d64c96784fd'
 
       await provider.addInteraction({
         state: `an action plan exists with ID ${actionPlanId}, and it has not been submitted`,
@@ -2014,6 +2048,139 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         1
       )
       expect(appointment.sessionFeedback!.submitted).toEqual(true)
+    })
+  })
+
+  describe('createDraftEndOfServiceReport', () => {
+    it('creates a draft end of service report for a referral', async () => {
+      const referralId = '993d7bdf-bab7-4594-8b27-7d9f7061b403'
+      const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
+
+      await provider.addInteraction({
+        state: `a sent referral exists with ID ${referralId}`,
+        uponReceiving: `a request to create a draft end of service report for the referral with ID ${referralId}`,
+        withRequest: {
+          method: 'POST',
+          path: '/draft-end-of-service-report',
+          body: { referralId },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(endOfServiceReport),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.createDraftEndOfServiceReport(token, referralId)
+      expect(result).toEqual(endOfServiceReport)
+    })
+  })
+
+  describe('getEndOfServiceReport', () => {
+    it('returns an existing end of service report', async () => {
+      const id = '31ad504a-1827-46e4-ac95-68b4e1256659'
+      const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
+
+      await provider.addInteraction({
+        state: `an end of service report exists with ID ${id}`,
+        uponReceiving: `a request for the end of service report with ID ${id}`,
+        withRequest: {
+          method: 'GET',
+          path: `/end-of-service-report/${id}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(endOfServiceReport),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.getEndOfServiceReport(token, id)
+      expect(result).toEqual(endOfServiceReport)
+    })
+  })
+
+  describe('updateEndOfServiceReport', () => {
+    it('updates a draft end of service report', async () => {
+      const id = 'c1a23b08-5a52-47bb-90c2-37c2f3a409aa'
+      const desiredOutcomeId = 'dc4894fa-4088-4999-bf58-5f05495979df'
+      const updatedEndOfServiceReport = endOfServiceReportFactory.justCreated().build({
+        furtherInformation: 'Some further information',
+        outcomes: [
+          {
+            desiredOutcome: {
+              id: desiredOutcomeId,
+              description: 'Example',
+            },
+            achievementLevel: 'ACHIEVED',
+            progressionComments: 'Some progression comments',
+            additionalTaskComments: 'Some additional task comments',
+          },
+        ],
+      })
+      const patch: UpdateDraftEndOfServiceReportParams = {
+        furtherInformation: 'Some further information',
+        outcome: {
+          desiredOutcomeId,
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some additional task comments',
+        },
+      }
+
+      await provider.addInteraction({
+        state: `an end of service report exists with ID ${id}`,
+        uponReceiving: `a request for the end of service report with ID ${id}`,
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-end-of-service-report/${id}`,
+          body: patch,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(updatedEndOfServiceReport),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.updateDraftEndOfServiceReport(token, id, patch)
+      expect(result).toEqual(updatedEndOfServiceReport)
+    })
+  })
+
+  describe('submitEndOfServiceReport', () => {
+    it('submits a draft end of service report', async () => {
+      const id = 'c3239695-b258-4ac6-9478-cb6929668aaa'
+      const submittedEndOfServiceReport = endOfServiceReportFactory.submitted().build()
+
+      await provider.addInteraction({
+        state: `an end of service report exists with ID ${id}`,
+        uponReceiving: `a request for the end of service report with ID ${id}`,
+        withRequest: {
+          method: 'POST',
+          path: `/draft-end-of-service-report/${id}/submit`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(submittedEndOfServiceReport),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.submitEndOfServiceReport(token, id)
+      expect(result).toEqual(submittedEndOfServiceReport)
     })
   })
 })

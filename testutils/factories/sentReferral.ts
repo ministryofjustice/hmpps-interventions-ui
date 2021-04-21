@@ -78,4 +78,5 @@ export default SentReferralFactory.define(({ sequence }) => ({
   referral: exampleReferralFields(),
   assignedTo: null,
   actionPlanId: null,
+  endOfServiceReport: null,
 }))
