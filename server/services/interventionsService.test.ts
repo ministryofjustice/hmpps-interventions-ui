@@ -2220,7 +2220,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
-    it('returns a sent referral', async () => {
+    it('returns an ended referral', async () => {
       expect(
         await interventionsService.cancelReferral(
           token,
@@ -2229,6 +2229,34 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           'Alex was arrested for driving without insurance and immediately recalled.'
         )
       ).toMatchObject(endedReferral)
+    })
+  })
+
+  describe('getCancellationReasons', () => {
+    const reasons = [
+      { code: 'REC', description: 'Service user has been recalled' },
+      { code: 'DIE', description: 'Service user died' },
+    ]
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'nothing',
+        uponReceiving: 'a GET request for the cancellation reasons',
+        withRequest: {
+          method: 'GET',
+          path: '/referral-cancellation-reasons',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(reasons),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+    })
+
+    it('returns cancellation reasons', async () => {
+      expect(await interventionsService.getReferralCancellationReasons(token)).toMatchObject(reasons)
     })
   })
 })

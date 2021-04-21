@@ -221,6 +221,11 @@ export interface UpdateDraftEndOfServiceReportParams {
   outcome: CreateEndOfServiceReportOutcome | null
 }
 
+export interface CancellationReason {
+  code: string
+  description: string
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -630,5 +635,13 @@ export default class InterventionsService {
       },
       headers: { Accept: 'application/json' },
     })) as EndedReferral
+  }
+
+  async getReferralCancellationReasons(token: string): Promise<CancellationReason[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: '/referral-cancellation-reasons',
+      headers: { Accept: 'application/json' },
+    })) as CancellationReason[]
   }
 }
