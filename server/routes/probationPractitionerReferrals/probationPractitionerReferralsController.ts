@@ -102,7 +102,11 @@ export default class ProbationPractitionerReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser)
+    if (!referral.assignedTo) {
+      throw new Error('Referral has not yet been assigned to a caseworker')
+    }
+
+    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
     const view = new SubmittedPostSessionFeedbackView(presenter)
 
     return res.render(...view.renderArgs)

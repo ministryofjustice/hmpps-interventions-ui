@@ -169,6 +169,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.contains('View feedback form').click()
 
+      cy.contains('john.smith')
       cy.contains('Alex attended the session')
       cy.contains('Yes, they were on time')
       cy.contains('Alex was well-behaved')
