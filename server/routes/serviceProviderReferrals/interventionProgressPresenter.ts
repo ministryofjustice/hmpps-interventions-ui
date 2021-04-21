@@ -3,6 +3,8 @@ import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import DateUtils from '../../utils/dateUtils'
+import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
+import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -53,18 +55,48 @@ export default class InterventionProgressPresenter {
     }
 
     return this.actionPlanAppointments.map(appointment => {
-      const editUrl = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+      const sessionTableParams = this.sessionTableParams(appointment)
 
       return {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
-        tagArgs: appointment.appointmentTime
-          ? { text: 'SCHEDULED', classes: 'govuk-tag--blue' }
-          : { text: 'NOT SCHEDULED', classes: 'govuk-tag--grey' },
-        linkHtml: appointment.appointmentTime
-          ? `<a class="govuk-link" href="${editUrl}">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`
-          : `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
+        tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
+        linkHtml: sessionTableParams.linkHTML,
       }
     })
+  }
+
+  private sessionTableParams(appointment: ActionPlanAppointment): { text: string; tagClass: string; linkHTML: string } {
+    const status = sessionStatus.forAppointment(appointment)
+    const presenter = new SessionStatusPresenter(status)
+
+    const editUrl = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+
+    switch (status) {
+      case SessionStatus.didNotAttend:
+        return {
+          text: presenter.text,
+          tagClass: presenter.tagClass,
+          linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+        }
+      case SessionStatus.completed:
+        return {
+          text: presenter.text,
+          tagClass: presenter.tagClass,
+          linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+        }
+      case SessionStatus.scheduled:
+        return {
+          text: presenter.text,
+          tagClass: presenter.tagClass,
+          linkHTML: `<a class="govuk-link" href="${editUrl}">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`,
+        }
+      default:
+        return {
+          text: presenter.text,
+          tagClass: presenter.tagClass,
+          linkHTML: `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
+        }
+    }
   }
 }

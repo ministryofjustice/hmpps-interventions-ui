@@ -85,25 +85,25 @@ describe('Probation Practitioner monitor journey', () => {
           {
             'Session details': 'Session 1',
             'Date and time': '24 Mar 2021, 09:02',
-            Status: 'COMPLETED',
-            Action: 'View',
+            Status: 'completed',
+            Action: 'View feedback form',
           },
           {
             'Session details': 'Session 2',
             'Date and time': '30 Apr 2021, 10:02',
-            Status: 'FAILURE TO ATTEND',
-            Action: 'View',
+            Status: 'did not attend',
+            Action: 'View feedback form',
           },
           {
             'Session details': 'Session 3',
             'Date and time': '31 May 2021, 10:02',
-            Status: 'SCHEDULED',
+            Status: 'scheduled',
             Action: '',
           },
           {
             'Session details': 'Session 4',
             'Date and time': '',
-            Status: 'NOT SCHEDULED',
+            Status: 'not scheduled',
             Action: '',
           },
         ])

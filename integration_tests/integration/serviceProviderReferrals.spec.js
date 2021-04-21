@@ -496,6 +496,28 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Session feedback added and submitted to the probation practitioner')
       cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+
+      const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
+      cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
+
+      cy.contains('Return to service progress').click()
+
+      cy.get('table')
+        .getTable()
+        .should('deep.equal', [
+          {
+            'Session details': 'Session 1',
+            'Date and time': '24 Mar 2021, 09:02',
+            Status: 'completed',
+            Action: 'View feedback form',
+          },
+          {
+            'Session details': 'Session 2',
+            'Date and time': '31 Mar 2021, 10:02',
+            Status: 'scheduled',
+            Action: 'Reschedule sessionGive feedback',
+          },
+        ])
     })
 
     it('user records the Service User as having not attended, and skips behaviour screen', () => {
@@ -599,6 +621,28 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Session feedback added and submitted to the probation practitioner')
       cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+
+      const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
+      cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
+
+      cy.contains('Return to service progress').click()
+
+      cy.get('table')
+        .getTable()
+        .should('deep.equal', [
+          {
+            'Session details': 'Session 1',
+            'Date and time': '24 Mar 2021, 09:02',
+            Status: 'did not attend',
+            Action: 'View feedback form',
+          },
+          {
+            'Session details': 'Session 2',
+            'Date and time': '31 Mar 2021, 10:02',
+            Status: 'scheduled',
+            Action: 'Reschedule sessionGive feedback',
+          },
+        ])
     })
   })
 })
