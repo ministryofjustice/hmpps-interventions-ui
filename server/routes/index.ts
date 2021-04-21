@@ -157,6 +157,10 @@ export default function routes(router: Router, services: Services): Router {
   get('/probation-practitioner/referrals/:id/progress', (req, res) =>
     probationPractitionerReferralsController.showInterventionProgress(req, res)
   )
+  get(
+    '/probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback',
+    (req, res) => probationPractitionerReferralsController.viewSubmittedPostSessionFeedback(req, res)
+  )
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)

@@ -61,13 +61,13 @@ export default class InterventionProgressPresenter {
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+          linkHTML: `<a class="govuk-link" href="/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback">View feedback form</a>`,
         }
       case SessionStatus.completed:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="#">View feedback form</a>`,
+          linkHTML: `<a class="govuk-link" href="/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback">View feedback form</a>`,
         }
       case SessionStatus.scheduled:
         return {
