@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReportOutcome
@@ -18,6 +19,7 @@ class EndOfServiceReportService(
   val authUserRepository: AuthUserRepository,
   val referralRepository: ReferralRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
+  val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher
 ) {
 
   fun createEndOfServiceReport(
@@ -66,8 +68,18 @@ class EndOfServiceReportService(
   fun submitEndOfServiceReport(endOfServiceReportId: UUID, submittedByUser: AuthUser): EndOfServiceReport {
     val draftEndOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
     updateDraftEndOfServiceReportAsSubmitted(draftEndOfServiceReport, submittedByUser)
+    val referral = getReferralByEndOfServiceReportId(endOfServiceReportId)
+    endOfServiceReportEventPublisher.endOfServiceReportSubmittedEvent(
+      draftEndOfServiceReport, referral.referenceNumber!!,
+      referral.getResponsibleProbationPractitioner()
+    )
 
     return endOfServiceReportRepository.save(draftEndOfServiceReport)
+  }
+
+  private fun getReferralByEndOfServiceReportId(id: UUID): Referral {
+    return referralRepository.findByEndOfServiceReportId(id)
+      ?: throw EntityNotFoundException("referral not found for end of service report [id=$id]")
   }
 
   private fun updateDraftEndOfServiceReportAsSubmitted(endOfServiceReport: EndOfServiceReport, submittedByUser: AuthUser) {

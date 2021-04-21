@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AchievementLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -16,6 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID
@@ -26,8 +29,14 @@ class EndOfServiceReportServiceTest {
   private val authUserRepository: AuthUserRepository = mock()
   private val referralRepository: ReferralRepository = mock()
   private val endOfServiceReportRepository: EndOfServiceReportRepository = mock()
+  private val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher = mock()
+  private val referralFactory = ReferralFactory()
+  private val endOfServiceReportFactory = EndOfServiceReportFactory()
 
-  private val endOfServiceReportService = EndOfServiceReportService(authUserRepository, referralRepository, endOfServiceReportRepository)
+  private val endOfServiceReportService = EndOfServiceReportService(
+    authUserRepository, referralRepository,
+    endOfServiceReportRepository, endOfServiceReportEventPublisher
+  )
 
   @Test
   fun `create end of service report`() {
@@ -161,15 +170,18 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `submit an end of service report`() {
-    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+//    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
     val endOfServiceReportId = UUID.randomUUID()
     val authUser = AuthUser("CRN123", "auth", "user")
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId, referral)
+
+    val endOfServiceReport = endOfServiceReportFactory.create(id = endOfServiceReportId)
+    val referral = referralFactory.createSent()
 
     whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
     whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)
-    val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
+    whenever(referralRepository.findByEndOfServiceReportId(any())).thenReturn(referral)
 
+    val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
     endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)
 
     verify(endOfServiceReportRepository).save(argumentCaptor.capture())

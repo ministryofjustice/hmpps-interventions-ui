@@ -15,6 +15,7 @@ interface ReferralRepository : JpaRepository<Referral, UUID> {
   fun findBySentBy(user: AuthUser): List<Referral>
   fun findBySentById(userId: String): List<Referral>
   fun findByAssignedToId(userId: String): List<Referral>
+  fun findByEndOfServiceReportId(id: UUID): Referral?
 
   // queries for draft referrals
   fun findByIdAndSentAtIsNull(id: UUID): Referral?
