@@ -32,12 +32,12 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /probation-practitioner/dashboard', () => {
+describe('GET /probation-practitioner/find', () => {
   interventionsService.getDraftReferralsForUser.mockResolvedValue([])
 
   it('displays a dashboard page', async () => {
     await request(app)
-      .get('/probation-practitioner/dashboard')
+      .get('/probation-practitioner/find')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Refer and monitor an intervention')
@@ -51,7 +51,7 @@ describe('GET /probation-practitioner/dashboard', () => {
     interventionsService.getDraftReferralsForUser.mockResolvedValue([referral])
 
     await request(app)
-      .get('/probation-practitioner/dashboard')
+      .get('/probation-practitioner/find')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Alex River')

@@ -1,7 +1,7 @@
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
-import DashboardPresenter from './dashboardPresenter'
+import FindStartPresenter from './findStartPresenter'
 
-describe('DashboardPresenter', () => {
+describe('FindStartPresenter', () => {
   const referrals = [
     draftReferralFactory.createdAt(new Date('2021-01-02T12:00:00Z')).build({
       serviceUser: {
@@ -25,7 +25,7 @@ describe('DashboardPresenter', () => {
 
   describe('orderedReferrals', () => {
     it('returns an ordered list of draft referrals with formatted dates and names', () => {
-      const presenter = new DashboardPresenter(referrals)
+      const presenter = new FindStartPresenter(referrals)
 
       expect(presenter.orderedReferrals).toEqual([
         expect.objectContaining({ createdAt: '1 Jan 2021', serviceUserFullName: 'Jenny Catherine' }),
