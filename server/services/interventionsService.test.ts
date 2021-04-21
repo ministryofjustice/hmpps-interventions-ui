@@ -1983,8 +1983,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 behaviourDescription: 'Alex was well behaved',
                 notifyProbationPractitioner: false,
               },
+              submitted: false,
             },
-            submitted: false,
           }),
           headers: {
             'Content-Type': 'application/json',
