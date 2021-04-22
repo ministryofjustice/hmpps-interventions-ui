@@ -8,6 +8,8 @@ import MyCasesView from './myCasesView'
 import MyCasesPresenter from './myCasesPresenter'
 import FindStartView from './findStartView'
 import AuthUtils from '../../utils/authUtils'
+import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessionFeedbackPresenter'
+import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -82,5 +84,31 @@ export default class ProbationPractitionerReferralsController {
     const view = new InterventionProgressView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    if (!referral.assignedTo) {
+      throw new Error('Referral has not yet been assigned to a caseworker')
+    }
+
+    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
+    const view = new SubmittedPostSessionFeedbackView(presenter)
+
+    return res.render(...view.renderArgs)
   }
 }
