@@ -64,10 +64,11 @@ class ReferralService(
       .map { SentReferralDTO.from(it) }
   }
 
-  fun endSentReferral(referral: Referral, user: AuthUser, cancellationReason: CancellationReason): Referral {
+  fun endSentReferral(referral: Referral, user: AuthUser, cancellationReason: CancellationReason, cancellationComments: String): Referral {
     referral.endedAt = OffsetDateTime.now()
     referral.endedBy = authUserRepository.save(user)
     referral.cancellationReason = cancellationReason
+    referral.cancellationComments = cancellationComments
     return referralRepository.save(referral)
   }
 

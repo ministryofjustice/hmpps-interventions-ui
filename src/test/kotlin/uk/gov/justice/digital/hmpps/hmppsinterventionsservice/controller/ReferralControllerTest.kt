@@ -108,7 +108,7 @@ internal class ReferralControllerTest {
   @Test
   fun `successfully call end referral endpoint`() {
     val referral = referralFactory.createSent()
-    val endReferralDTO = EndReferralDTO("AAA")
+    val endReferralDTO = EndReferralDTO("AAA", "comment")
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
@@ -117,15 +117,15 @@ internal class ReferralControllerTest {
     val authUser = AuthUser("CRN123", "auth", "user")
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(referralService.endSentReferral(any(), any(), any())).thenReturn(referralFactory.createEnded())
+    whenever(referralService.endSentReferral(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(cancellationComments = "comment"))
 
     referralController.endSentReferral(referral.id, endReferralDTO, jwtAuthenticationToken)
-    verify(referralService).endSentReferral(referral, authUser, cancellationReason)
+    verify(referralService).endSentReferral(referral, authUser, cancellationReason, "comment")
   }
 
   @Test
   fun `end referral endpoint does not find referral`() {
-    val endReferralDTO = EndReferralDTO("AAA")
+    val endReferralDTO = EndReferralDTO("AAA", "comment")
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)

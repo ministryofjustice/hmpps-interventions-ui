@@ -100,9 +100,9 @@ class ReferralController(
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
     val user = jwtAuthUserMapper.map(authentication)
-    val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferral.cancellationReasonId)
+    val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferral.cancellationReasonCode)
 
-    val endedReferral = referralService.endSentReferral(sentReferral, user, cancellationReason)
+    val endedReferral = referralService.endSentReferral(sentReferral, user, cancellationReason, endReferral.cancellationComments)
 
     return EndedReferralDTO.from(endedReferral)
   }

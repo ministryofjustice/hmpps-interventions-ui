@@ -13,6 +13,6 @@ class CancellationReasonMapper(
 ) {
   fun mapCancellationReasonIdToCancellationReason(cancellationReasonId: String): CancellationReason {
     return cancellationReasonRepository.findByIdOrNull(cancellationReasonId)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Cancellation reason not found [id=$cancellationReasonId]")
+      ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid cancellation code. [code=$cancellationReasonId]")
   }
 }
