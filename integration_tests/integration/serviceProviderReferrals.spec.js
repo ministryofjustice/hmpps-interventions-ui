@@ -5,6 +5,7 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
+import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -708,5 +709,178 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Alex was well-behaved')
       cy.contains('No')
     })
+  })
+
+  it('User fills in, reviews, changes, and submits an end of service report', () => {
+    const desiredOutcomes = [
+      {
+        id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        description:
+          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+      },
+      {
+        id: '65924ac6-9724-455b-ad30-906936291421',
+        description: 'Service User makes progress in obtaining accommodation',
+      },
+      {
+        id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
+        description: 'Service User is helped to secure social or supported housing',
+      },
+      {
+        id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
+        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+      },
+    ]
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })
+    const selectedDesiredOutcomes = [desiredOutcomes[0], desiredOutcomes[1]]
+    const selectedDesiredOutcomesIds = selectedDesiredOutcomes.map(outcome => outcome.id)
+    const referralParams = {
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        desiredOutcomesIds: selectedDesiredOutcomesIds,
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    }
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusUser = deliusUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+    const referral = sentReferralFactory
+      .assigned()
+      .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username } })
+    const actionPlan = actionPlanFactory.submitted(referral.id).build()
+    referral.actionPlanId = actionPlan.id
+    const draftEndOfServiceReport = endOfServiceReportFactory.justCreated().build({ referralId: referral.id })
+
+    cy.stubGetSentReferrals([referral])
+
+    cy.stubGetActionPlan(actionPlan.id, actionPlan)
+    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+    cy.stubCreateDraftEndOfServiceReport(draftEndOfServiceReport)
+    cy.stubGetEndOfServiceReport(draftEndOfServiceReport.id, draftEndOfServiceReport)
+    cy.stubGetActionPlanAppointments(actionPlan.id, [])
+
+    cy.login()
+
+    cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+    cy.contains('Create end of service report').click()
+
+    cy.location('pathname').should(
+      'equal',
+      `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`
+    )
+
+    cy.contains('Accommodation: End of service report')
+    cy.contains('About desired outcome 1')
+    cy.contains(selectedDesiredOutcomes[0].description)
+
+    cy.withinFieldsetThatContains('Overall, did Alex achieve desired outcome 1?', () => {
+      cy.contains('Achieved').click()
+    })
+    cy.contains('Do you have any further comments about their progression on this outcome?').type(
+      'They have done very well'
+    )
+    cy.contains('Is there anything else that needs doing to achieve this outcome?').type('They could still do x')
+
+    const endOfServiceReportWithFirstOutcome = {
+      ...draftEndOfServiceReport,
+      outcomes: [
+        {
+          desiredOutcome: selectedDesiredOutcomes[0],
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'They have done very well',
+          additionalTaskComments: 'They could still do x',
+        },
+      ],
+    }
+    cy.stubUpdateDraftEndOfServiceReport(endOfServiceReportWithFirstOutcome.id, endOfServiceReportWithFirstOutcome)
+    cy.stubGetEndOfServiceReport(endOfServiceReportWithFirstOutcome.id, endOfServiceReportWithFirstOutcome)
+
+    cy.contains('Save and continue').click()
+
+    cy.contains('Accommodation: End of service report')
+    cy.contains('About desired outcome 2')
+    cy.contains(selectedDesiredOutcomes[1].description)
+
+    cy.withinFieldsetThatContains('Overall, did Alex achieve desired outcome 2?', () => {
+      cy.contains('Partially achieved').click()
+    })
+    cy.contains('Do you have any further comments about their progression on this outcome?').type(
+      'They have done fairly well'
+    )
+    cy.contains('Is there anything else that needs doing to achieve this outcome?').type(
+      'They could still do x, y, and z'
+    )
+
+    const endOfServiceReportWithSecondOutcome = {
+      ...draftEndOfServiceReport,
+      outcomes: [
+        ...endOfServiceReportWithFirstOutcome.outcomes,
+        {
+          desiredOutcome: selectedDesiredOutcomes[1],
+          achievementLevel: 'PARTIALLY_ACHIEVED',
+          progressionComments: 'They have done fairly well',
+          additionalTaskComments: 'They could still do x, y, and z',
+        },
+      ],
+    }
+    cy.stubUpdateDraftEndOfServiceReport(endOfServiceReportWithSecondOutcome.id, endOfServiceReportWithSecondOutcome)
+    cy.stubGetEndOfServiceReport(endOfServiceReportWithSecondOutcome.id, endOfServiceReportWithSecondOutcome)
+
+    cy.contains('Save and continue').click()
+
+    cy.contains('Accommodation: End of service report')
+    cy.contains('Would you like to give any additional information about this intervention (optional)?')
+    cy.contains(
+      'Provide any further information that you believe is important for the probation practitioner to know.'
+    ).type('You should know x and y')
+
+    const endOfServiceReportWithFurtherInformation = {
+      ...endOfServiceReportWithSecondOutcome,
+      furtherInformation: 'You should know x and y',
+    }
+    cy.stubUpdateDraftEndOfServiceReport(
+      endOfServiceReportWithFurtherInformation.id,
+      endOfServiceReportWithFurtherInformation
+    )
+    cy.stubGetEndOfServiceReport(endOfServiceReportWithFurtherInformation.id, endOfServiceReportWithFurtherInformation)
+
+    cy.contains('Save and continue').click()
+
+    cy.contains('Review the end of service report')
+
+    cy.get('#change-outcome-2').click()
+    cy.contains('Do you have any further comments about their progression on this outcome?').type(
+      'They have done fairly well but could make some changes'
+    )
+
+    cy.contains('Save and continue').click()
+
+    cy.contains('Would you like to give any additional information about this intervention (optional)?')
+    cy.contains(
+      'Provide any further information that you believe is important for the probation practitioner to know.'
+    ).type('You should know x and y and p and q')
+
+    cy.contains('Save and continue').click()
+
+    cy.contains('Review the end of service report')
+
+    const submittedEndOfServiceReport = {
+      ...endOfServiceReportWithFurtherInformation,
+      submittedAt: new Date().toISOString(),
+    }
+
+    cy.stubGetSentReferral(referral.id, { ...referral, endOfServiceReport: submittedEndOfServiceReport })
+    cy.stubSubmitEndOfServiceReport(submittedEndOfServiceReport.id, submittedEndOfServiceReport)
+
+    cy.contains('Submit the report').click()
+
+    cy.contains('End of service report submitted')
+
+    cy.contains('Return to service progress').click()
+    cy.get('#end-of-service-report-status').contains('Submitted')
   })
 })
