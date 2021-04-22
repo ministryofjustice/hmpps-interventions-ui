@@ -52,6 +52,16 @@ export interface SentReferral {
   endOfServiceReport: EndOfServiceReport | null
 }
 
+export interface EndedReferral {
+  id: string
+  referenceNumber: string
+  referral: ReferralFields
+  endedAt: string
+  endedBy: AuthUser
+  cancellationReason: string
+  cancellationComments: string | null
+}
+
 export interface ServiceCategory {
   id: string
   name: string
@@ -209,6 +219,11 @@ export interface CreateEndOfServiceReportOutcome {
 export interface UpdateDraftEndOfServiceReportParams {
   furtherInformation: string | null
   outcome: CreateEndOfServiceReportOutcome | null
+}
+
+export interface CancellationReason {
+  code: string
+  description: string
 }
 
 export default class InterventionsService {
@@ -603,5 +618,30 @@ export default class InterventionsService {
       path: `/draft-end-of-service-report/${id}/submit`,
       headers: { Accept: 'application/json' },
     })) as EndOfServiceReport
+  }
+
+  async cancelReferral(
+    token: string,
+    referralId: string,
+    reasonCode: string,
+    cancellationComments: string
+  ): Promise<EndedReferral> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/end`,
+      data: {
+        cancellationReasonCode: reasonCode,
+        cancellationComments,
+      },
+      headers: { Accept: 'application/json' },
+    })) as EndedReferral
+  }
+
+  async getReferralCancellationReasons(token: string): Promise<CancellationReason[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: '/referral-cancellation-reasons',
+      headers: { Accept: 'application/json' },
+    })) as CancellationReason[]
   }
 }

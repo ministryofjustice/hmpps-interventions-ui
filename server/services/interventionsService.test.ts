@@ -2183,6 +2183,82 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(result).toEqual(submittedEndOfServiceReport)
     })
   })
+
+  describe('endReferral', () => {
+    const endedReferral = {
+      id: '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+      referenceNumber: 'SJ12345AC',
+      endedAt: '2021-05-13T12:30:00Z',
+      endedBy: {
+        username: 'BERNARD.BEAKS',
+        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+        authSource: 'delius',
+      },
+      cancellationReason: 'Service user has been recalled',
+      cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled.',
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+        uponReceiving:
+          'a POST request to end the referral with ID 400be4c6-1aa4-4f52-ae86-cbd5d23309bf because SU was recalled ',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/end',
+          body: {
+            cancellationReasonCode: 'REC',
+            cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled.',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(endedReferral),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+    })
+
+    it('returns an ended referral', async () => {
+      expect(
+        await interventionsService.cancelReferral(
+          token,
+          '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+          'REC',
+          'Alex was arrested for driving without insurance and immediately recalled.'
+        )
+      ).toMatchObject(endedReferral)
+    })
+  })
+
+  describe('getCancellationReasons', () => {
+    const reasons = [
+      { code: 'REC', description: 'Service user has been recalled' },
+      { code: 'DIE', description: 'Service user died' },
+    ]
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'nothing',
+        uponReceiving: 'a GET request for the cancellation reasons',
+        withRequest: {
+          method: 'GET',
+          path: '/referral-cancellation-reasons',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(reasons),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+    })
+
+    it('returns cancellation reasons', async () => {
+      expect(await interventionsService.getReferralCancellationReasons(token)).toMatchObject(reasons)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {

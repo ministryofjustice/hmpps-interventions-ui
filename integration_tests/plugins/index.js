@@ -148,5 +148,13 @@ module.exports = on => {
     stubSubmitEndOfServiceReport: arg => {
       return interventionsService.stubSubmitEndOfServiceReport(arg.id, arg.responseJson)
     },
+
+    stubEndReferral: arg => {
+      return interventionsService.stubEndReferral(arg.referralId, arg.responseJson)
+    },
+
+    stubGetReferralCancellationReasons: arg => {
+      return interventionsService.stubGetReferralCancellationReasons(arg.responseJson)
+    },
   })
 }

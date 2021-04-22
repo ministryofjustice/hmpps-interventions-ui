@@ -432,4 +432,36 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubEndReferral = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/end`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  stubGetReferralCancellationReasons = async (responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/referral-cancellation-reasons`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
