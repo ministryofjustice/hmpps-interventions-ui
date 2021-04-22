@@ -93,6 +93,7 @@ services:
       - "9092:8080"
     volumes:
       - ./wiremock_mappings:/home/wiremock/mappings
+    command: '--verbose'
 
 networks:
   hmpps:

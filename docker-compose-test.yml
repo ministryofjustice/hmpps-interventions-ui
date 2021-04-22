@@ -18,6 +18,7 @@ services:
     restart: always
     ports:
       - "9091:8080"
+    command: '--verbose'
 
 networks:
   hmpps_int:
