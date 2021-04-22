@@ -137,6 +137,27 @@ export default function routes(router: Router, services: Services): Router {
   post('/service-provider/referrals/:id/end-of-service-report', (req, res) =>
     serviceProviderReferralsController.createDraftEndOfServiceReport(req, res)
   )
+  get('/service-provider/end-of-service-report/:id/outcomes/:number', (req, res) =>
+    serviceProviderReferralsController.editEndOfServiceReportOutcome(req, res)
+  )
+  post('/service-provider/end-of-service-report/:id/outcomes/:number', (req, res) =>
+    serviceProviderReferralsController.editEndOfServiceReportOutcome(req, res)
+  )
+  get('/service-provider/end-of-service-report/:id/further-information', (req, res) =>
+    serviceProviderReferralsController.editEndOfServiceReportFurtherInformation(req, res)
+  )
+  post('/service-provider/end-of-service-report/:id/further-information', (req, res) =>
+    serviceProviderReferralsController.editEndOfServiceReportFurtherInformation(req, res)
+  )
+  get('/service-provider/end-of-service-report/:id/check-answers', (req, res) =>
+    serviceProviderReferralsController.endOfServiceReportCheckAnswers(req, res)
+  )
+  post('/service-provider/end-of-service-report/:id/submit', (req, res) =>
+    serviceProviderReferralsController.submitEndOfServiceReport(req, res)
+  )
+  get('/service-provider/end-of-service-report/:id/confirmation', (req, res) =>
+    serviceProviderReferralsController.showEndOfServiceReportConfirmation(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

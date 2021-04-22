@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, { ActionPlanAppointment } from '../../services/interventionsService'
@@ -42,6 +43,16 @@ import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheck
 import AuthUtils from '../../utils/authUtils'
 import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
 import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessionFeedbackPresenter'
+import EndOfServiceReportOutcomeForm from './endOfServiceReportOutcomeForm'
+import EndOfServiceReportOutcomePresenter from './endOfServiceReportOutcomePresenter'
+import EndOfServiceReportOutcomeView from './endOfServiceReportOutcomeView'
+import EndOfServiceReportFurtherInformationForm from './endOfServiceReportFurtherInformationForm'
+import EndOfServiceReportFurtherInformationPresenter from './endOfServiceReportFurtherInformationPresenter'
+import EndOfServiceReportFurtherInformationView from './endOfServiceReportFurtherInformationView'
+import EndOfServiceReportCheckAnswersPresenter from './endOfServiceReportCheckAnswersPresenter'
+import EndOfServiceReportCheckAnswersView from './endOfServiceReportCheckAnswersView'
+import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
+import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -628,5 +639,142 @@ export default class ServiceProviderReferralsController {
     )
 
     res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`)
+  }
+
+  async editEndOfServiceReportOutcome(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+
+    const desiredOutcomeNumber = Number(req.params.number)
+
+    if (desiredOutcomeNumber > referral.referral.desiredOutcomesIds.length) {
+      throw createError(404, 'Outcome number is out of bounds')
+    }
+
+    const desiredOutcomeId = referral.referral.desiredOutcomesIds[desiredOutcomeNumber - 1]
+
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+
+    const desiredOutcome = serviceCategory.desiredOutcomes.find(val => val.id === desiredOutcomeId)
+
+    if (desiredOutcome === undefined) {
+      throw new Error(`Desired outcome for ID ${desiredOutcomeId} not found`)
+    }
+
+    const outcome = endOfServiceReport.outcomes.find(val => val.desiredOutcome.id === desiredOutcomeId) ?? null
+
+    let formValidationError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    if (req.method === 'POST') {
+      userInputData = req.body
+      const form = new EndOfServiceReportOutcomeForm(req, desiredOutcomeId, referral.referral.serviceUser)
+      const formData = await form.data()
+
+      if (formData.error) {
+        formValidationError = formData.error
+        res.status(400)
+      } else {
+        await this.interventionsService.updateDraftEndOfServiceReport(
+          accessToken,
+          endOfServiceReport.id,
+          formData.paramsForUpdate
+        )
+
+        const isLastDesiredOutcome = desiredOutcomeNumber === referral.referral.desiredOutcomesIds.length
+        if (isLastDesiredOutcome) {
+          res.redirect(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
+        } else {
+          res.redirect(
+            `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/${desiredOutcomeNumber + 1}`
+          )
+        }
+        return
+      }
+    }
+
+    const presenter = new EndOfServiceReportOutcomePresenter(
+      referral,
+      endOfServiceReport,
+      serviceCategory,
+      desiredOutcome,
+      desiredOutcomeNumber,
+      outcome,
+      userInputData,
+      formValidationError
+    )
+    const view = new EndOfServiceReportOutcomeView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async editEndOfServiceReportFurtherInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id } = req.params
+
+    if (req.method === 'POST') {
+      const form = new EndOfServiceReportFurtherInformationForm(req)
+      await this.interventionsService.updateDraftEndOfServiceReport(accessToken, id, form.paramsForUpdate)
+      res.redirect(`/service-provider/end-of-service-report/${id}/check-answers`)
+      return
+    }
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+    const presenter = new EndOfServiceReportFurtherInformationPresenter(
+      endOfServiceReport,
+      serviceCategory,
+      referral,
+      null
+    )
+    const view = new EndOfServiceReportFurtherInformationView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async endOfServiceReportCheckAnswers(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+
+    const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategory)
+    const view = new EndOfServiceReportCheckAnswersView(presenter)
+
+    res.render(...view.renderArgs)
+  }
+
+  async submitEndOfServiceReport(req: Request, res: Response): Promise<void> {
+    await this.interventionsService.submitEndOfServiceReport(res.locals.user.token.accessToken, req.params.id)
+    res.redirect(`/service-provider/end-of-service-report/${req.params.id}/confirmation`)
+  }
+
+  async showEndOfServiceReportConfirmation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+
+    const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategory)
+    const view = new EndOfServiceReportConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

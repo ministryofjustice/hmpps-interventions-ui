@@ -4,6 +4,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import serviceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 
 describe(InterventionProgressPresenter, () => {
   describe('createActionPlanFormAction', () => {
@@ -192,6 +193,43 @@ describe(InterventionProgressPresenter, () => {
         })
       })
     })
+
+    describe('endOfServiceReportStatus', () => {
+      describe('when there is no end of service report', () => {
+        it('returns “Not submitted”', () => {
+          const referral = sentReferralFactory.build({ endOfServiceReport: null })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+          expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Not submitted' })
+        })
+      })
+
+      describe('when the end of service report has not been submitted', () => {
+        it('returns “Not submitted”', () => {
+          const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+          const referral = sentReferralFactory.build({ endOfServiceReport })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+          expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Not submitted' })
+        })
+      })
+
+      describe('when the end of service report has been submitted', () => {
+        it('returns “Submitted”', () => {
+          const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+          const referral = sentReferralFactory.build({ endOfServiceReport })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+          expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Submitted' })
+        })
+      })
+    })
   })
 
   describe('actionPlanStatusStyle', () => {
@@ -274,6 +312,68 @@ describe(InterventionProgressPresenter, () => {
       const presenter = new InterventionProgressPresenter(referral, serviceCategory, actionPlan, serviceUser, [])
 
       expect(presenter.referralAssigned).toEqual(true)
+    })
+  })
+
+  describe('endOfServiceReportStatusStyle', () => {
+    describe('when there is no end of service report', () => {
+      it('returns the inactive style', () => {
+        const referral = sentReferralFactory.build({ endOfServiceReport: null })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+        expect(presenter.endOfServiceReportStatusStyle).toEqual('inactive')
+      })
+    })
+
+    describe('when the end of service report has not been submitted', () => {
+      it('returns the active style', () => {
+        const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+        const referral = sentReferralFactory.build({ endOfServiceReport })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+        expect(presenter.endOfServiceReportStatusStyle).toEqual('inactive')
+      })
+    })
+
+    describe('when the end of service report has been submitted', () => {
+      it('returns the active style', () => {
+        const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+        const referral = sentReferralFactory.build({ endOfServiceReport })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+        expect(presenter.endOfServiceReportStatusStyle).toEqual('active')
+      })
+    })
+  })
+
+  describe('allowEndOfServiceReportCreation', () => {
+    describe('when there is no end of service report', () => {
+      it('returns true', () => {
+        const referral = sentReferralFactory.build({ endOfServiceReport: null })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+        expect(presenter.allowEndOfServiceReportCreation).toEqual(true)
+      })
+    })
+
+    describe('when there is an end of service report', () => {
+      it('returns false', () => {
+        const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+        const referral = sentReferralFactory.build({ endOfServiceReport })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+        expect(presenter.allowEndOfServiceReportCreation).toEqual(false)
+      })
     })
   })
 })
