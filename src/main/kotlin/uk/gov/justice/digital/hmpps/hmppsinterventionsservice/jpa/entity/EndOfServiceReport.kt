@@ -10,6 +10,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
@@ -17,6 +18,7 @@ import javax.validation.constraints.NotNull
 @Table(name = "end_of_service_report")
 data class EndOfServiceReport(
   @Id val id: UUID,
+  @OneToOne(mappedBy = "endOfServiceReport") val referral: Referral,
 
   @NotNull val createdAt: OffsetDateTime,
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,

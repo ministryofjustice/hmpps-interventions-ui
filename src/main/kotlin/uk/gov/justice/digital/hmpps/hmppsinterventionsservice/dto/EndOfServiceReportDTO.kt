@@ -8,6 +8,7 @@ import java.util.UUID
 
 data class EndOfServiceReportDTO(
   val id: UUID,
+  val referralId: UUID,
   val createdAt: OffsetDateTime,
   val createdBy: AuthUserDTO,
   val submittedAt: OffsetDateTime? = null,
@@ -19,6 +20,7 @@ data class EndOfServiceReportDTO(
     fun from(endOfServiceReport: EndOfServiceReport): EndOfServiceReportDTO {
       return EndOfServiceReportDTO(
         id = endOfServiceReport.id,
+        referralId = endOfServiceReport.referral.id,
         createdAt = endOfServiceReport.createdAt,
         createdBy = AuthUserDTO.from(endOfServiceReport.createdBy),
         submittedAt = endOfServiceReport.submittedAt,
