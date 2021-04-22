@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Achieve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.EndOfServiceReportService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.net.URI
 import java.util.UUID
 
@@ -25,22 +26,23 @@ class EndOfServiceReportControllerTest {
   private val endOfServiceReportService = mock<EndOfServiceReportService>()
   private val locationMapper = mock<LocationMapper>()
   private val endOfServiceReportOutcomeMapper = mock<EndOfServiceReportOutcomeMapper>()
+  private val referralFactory = ReferralFactory()
 
   private val endOfServiceReportController =
     EndOfServiceReportController(jwtAuthUserMapper, locationMapper, endOfServiceReportService, endOfServiceReportOutcomeMapper)
 
   @Test
   fun `create end of service report successfully`() {
-    val referralId = UUID.randomUUID()
+    val referral = referralFactory.createSent()
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val authUser = AuthUser("CRN123", "auth", "user")
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(referral = referral)
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
     val uri = URI.create("http://localhost/1234")
-    val createEndOfServiceReportDTO = CreateEndOfServiceReportDTO(referralId)
+    val createEndOfServiceReportDTO = CreateEndOfServiceReportDTO(referral.id)
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(endOfServiceReportService.createEndOfServiceReport(referralId, authUser)).thenReturn(endOfServiceReport)
+    whenever(endOfServiceReportService.createEndOfServiceReport(referral.id, authUser)).thenReturn(endOfServiceReport)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", endOfServiceReportDTO.id)).thenReturn(uri)
 
     val endOfServiceReportResponse = endOfServiceReportController.createEndOfServiceReport(createEndOfServiceReportDTO, jwtAuthenticationToken)
@@ -50,8 +52,9 @@ class EndOfServiceReportControllerTest {
 
   @Test
   fun `get end of service report successfully`() {
+    val referral = referralFactory.createSent()
     val endOfServiceReportId = UUID.randomUUID()
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(referral = referral)
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
 
     whenever(endOfServiceReportService.getEndOfServiceReport(endOfServiceReportId)).thenReturn(endOfServiceReport)
@@ -62,24 +65,25 @@ class EndOfServiceReportControllerTest {
 
   @Test
   fun `get end of service report by referral id successfully`() {
-    val referralId = UUID.randomUUID()
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val referral = referralFactory.createSent()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(referral = referral)
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
 
-    whenever(endOfServiceReportService.getEndOfServiceReportByReferralId(referralId)).thenReturn(endOfServiceReport)
+    whenever(endOfServiceReportService.getEndOfServiceReportByReferralId(referral.id)).thenReturn(endOfServiceReport)
 
-    val endOfServiceReportResponse = endOfServiceReportController.getEndOfServiceReportByReferralId(referralId)
+    val endOfServiceReportResponse = endOfServiceReportController.getEndOfServiceReportByReferralId(referral.id)
     assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
   }
 
   @Test
   fun `update an end of service report`() {
+    val referral = referralFactory.createSent()
     val endOfServiceReportId = UUID.randomUUID()
     val outcome = CreateEndOfServiceReportOutcomeDTO(UUID.randomUUID(), AchievementLevel.ACHIEVED, null, null)
     val mappedOutcome = SampleData.sampleEndOfServiceReportOutcome()
     val updateEndOfServiceReportDTO = UpdateEndOfServiceReportDTO("info", outcome)
 
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(referral = referral)
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
 
     whenever(endOfServiceReportOutcomeMapper.mapCreateEndOfServiceReportOutcomeDtoToEndOfServiceReportOutcome(outcome))
@@ -93,11 +97,12 @@ class EndOfServiceReportControllerTest {
 
   @Test
   fun `update end of service report with no extra outcome`() {
+    val referral = referralFactory.createSent()
     val endOfServiceReportId = UUID.randomUUID()
     val outcome = CreateEndOfServiceReportOutcomeDTO(UUID.randomUUID(), AchievementLevel.ACHIEVED, null, null)
     val updateEndOfServiceReportDTO = UpdateEndOfServiceReportDTO("info", outcome)
 
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(referral = referral)
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
 
     whenever(endOfServiceReportService.updateEndOfServiceReport(endOfServiceReportId, "info", null))
@@ -109,10 +114,11 @@ class EndOfServiceReportControllerTest {
 
   @Test
   fun `submit end of service report`() {
+    val referral = referralFactory.createSent()
     val endOfServiceReportId = UUID.randomUUID()
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val authUser = AuthUser("CRN123", "auth", "user")
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId)
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId, referral = referral)
     val uri = URI.create("http://localhost/end-of-service-report/1234")
 
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
