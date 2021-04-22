@@ -9,6 +9,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
@@ -125,6 +126,41 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
         expect(res.text).toContain('Alex was well-behaved')
         expect(res.text).toContain('No')
       })
+  })
+
+  describe('GET /probation-practitioner/end-of-service-report/:id', () => {
+    it('renders a page with the contents of the end of service report', async () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const referral = sentReferralFactory.build({
+        referral: { desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
+      })
+      const endOfServiceReport = endOfServiceReportFactory.build({
+        outcomes: [
+          {
+            desiredOutcome: serviceCategory.desiredOutcomes[0],
+            achievementLevel: 'ACHIEVED',
+            progressionComments: 'Some progression comments',
+            additionalTaskComments: 'Some task comments',
+          },
+        ],
+        furtherInformation: 'Some further information',
+      })
+
+      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+      await request(app)
+        .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Achieved')
+          expect(res.text).toContain(serviceCategory.desiredOutcomes[0].description)
+          expect(res.text).toContain('Some progression comments')
+          expect(res.text).toContain('Some task comments')
+          expect(res.text).toContain('Some further information')
+        })
+    })
   })
 })
 

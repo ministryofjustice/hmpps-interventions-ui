@@ -1,5 +1,6 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
+import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -69,5 +70,41 @@ describe('Probation practitioner referrals dashboard', () => {
           Action: 'View',
         },
       ])
+  })
+
+  it('user views an end of service report', () => {
+    cy.stubGetSentReferrals([])
+    cy.login()
+
+    const serviceCategory = serviceCategoryFactory.build()
+    const referral = sentReferralFactory.build({
+      referral: { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
+    })
+    const endOfServiceReport = endOfServiceReportFactory.build({
+      referralId: referral.id,
+      outcomes: [
+        {
+          desiredOutcome: serviceCategory.desiredOutcomes[0],
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some task comments',
+        },
+      ],
+      furtherInformation: 'Some further information',
+    })
+
+    cy.stubGetEndOfServiceReport(endOfServiceReport.id, endOfServiceReport)
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+
+    cy.visit(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
+
+    cy.contains('End of service report')
+    cy.contains('The service provider has created an end of service report')
+    cy.contains('Achieved')
+    cy.contains(serviceCategory.desiredOutcomes[0].description)
+    cy.contains('Some progression comments')
+    cy.contains('Some task comments')
+    cy.contains('Some further information')
   })
 })
