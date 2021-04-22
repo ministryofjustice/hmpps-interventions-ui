@@ -6,6 +6,13 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
+interface ProgressSessionTableRow {
+  sessionNumber: number
+  appointmentTime: string
+  tagArgs: { text: string; classes: string }
+  link: { text: string; href: string }
+}
+
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -37,7 +44,7 @@ export default class InterventionProgressPresenter {
 
   readonly sessionTableHeaders = ['Session details', 'Date and time', 'Status', 'Action']
 
-  get sessionTableRows(): Record<string, unknown>[] {
+  get sessionTableRows(): ProgressSessionTableRow[] {
     if (!this.hasSessions) {
       return []
     }
@@ -49,12 +56,14 @@ export default class InterventionProgressPresenter {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
-        linkHtml: sessionTableParams.linkHTML,
+        link: { text: sessionTableParams.linkText, href: sessionTableParams.linkHref },
       }
     })
   }
 
-  private sessionTableParams(appointment: ActionPlanAppointment): { text: string; tagClass: string; linkHTML: string } {
+  private sessionTableParams(
+    appointment: ActionPlanAppointment
+  ): { text: string; tagClass: string; linkText: string; linkHref: string } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
 
@@ -63,25 +72,29 @@ export default class InterventionProgressPresenter {
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback">View feedback form</a>`,
+          linkText: 'View feedback form',
+          linkHref: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
         }
       case SessionStatus.completed:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback">View feedback form</a>`,
+          linkText: 'View feedback form',
+          linkHref: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
         }
       case SessionStatus.scheduled:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: '',
+          linkText: '',
+          linkHref: '',
         }
       default:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: '',
+          linkText: '',
+          linkHref: '',
         }
     }
   }
