@@ -5,6 +5,6 @@ import javax.persistence.Id
 
 @Entity
 data class CancellationReason(
-  @Id val id: String,
+  @Id val code: String,
   val description: String
 )

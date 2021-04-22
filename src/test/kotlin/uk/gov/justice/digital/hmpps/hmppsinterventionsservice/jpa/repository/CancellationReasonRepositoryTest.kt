@@ -16,7 +16,7 @@ class CancellationReasonRepositoryTest @Autowired constructor(
     val persistedReason = cancellationReasonRepository.findById("MIS").get()
 
     assertThat(persistedReason).isNotNull
-    assertThat(persistedReason.id).isEqualTo("MIS")
+    assertThat(persistedReason.code).isEqualTo("MIS")
     assertThat(persistedReason.description).isEqualTo("Referral was made by mistake")
   }
 }

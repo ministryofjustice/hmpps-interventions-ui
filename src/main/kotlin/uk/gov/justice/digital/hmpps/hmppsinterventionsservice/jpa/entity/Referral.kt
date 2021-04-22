@@ -39,8 +39,9 @@ class Referral(
   var endedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var endedBy: AuthUser? = null,
 
-  @ManyToOne @JoinColumn(name = "cancellation_reason_id")
+  @ManyToOne @JoinColumn(name = "cancellation_reason_code")
   var cancellationReason: CancellationReason? = null,
+  var cancellationComments: String? = null,
 
   // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn var serviceUserData: ServiceUserData? = null,

@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -70,8 +69,8 @@ class ReferralServiceUnitTest {
   @Test
   fun `get all cancellation reasons`() {
     val cancellationReasons = listOf(
-      CancellationReason(id = "aaa", description = "reason 1"),
-      CancellationReason(id = "bbb", description = "reason 2")
+      CancellationReason(code = "aaa", description = "reason 1"),
+      CancellationReason(code = "bbb", description = "reason 2")
     )
     whenever(cancellationReasonRepository.findAll()).thenReturn(cancellationReasons)
     val result = referralService.getCancellationReasons()

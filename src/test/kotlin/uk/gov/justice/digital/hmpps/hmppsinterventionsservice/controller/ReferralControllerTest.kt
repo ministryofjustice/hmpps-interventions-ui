@@ -160,8 +160,8 @@ internal class ReferralControllerTest {
   @Test
   fun `get all cancellation reasons`() {
     val cancellationReasons = listOf(
-      CancellationReason(id = "aaa", description = "reason 1"),
-      CancellationReason(id = "bbb", description = "reason 2")
+      CancellationReason(code = "aaa", description = "reason 1"),
+      CancellationReason(code = "bbb", description = "reason 2")
     )
     whenever(referralService.getCancellationReasons()).thenReturn(cancellationReasons)
     val response = referralController.getCancellationReasons()

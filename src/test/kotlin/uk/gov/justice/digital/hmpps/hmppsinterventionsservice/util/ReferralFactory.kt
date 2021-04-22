@@ -86,7 +86,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedAt: OffsetDateTime? = null,
     endedAt: OffsetDateTime? = OffsetDateTime.now(),
     endedBy: AuthUser? = authUserFactory.create(),
-    cancellationReason: CancellationReason? = calcellationReasonFactory.create()
+    cancellationReason: CancellationReason? = calcellationReasonFactory.create(),
+    cancellationComments: String? = null
   ): Referral {
     return create(
       id = id,
@@ -105,7 +106,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
 
       endedAt = endedAt,
       endedBy = endedBy,
-      cancellationReason = cancellationReason
+      cancellationReason = cancellationReason,
+      cancellationComments = cancellationComments
     )
   }
 
@@ -130,6 +132,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     endedAt: OffsetDateTime? = null,
     endedBy: AuthUser? = null,
     cancellationReason: CancellationReason? = null,
+    cancellationComments: String? = null,
   ): Referral {
     return save(
       Referral(
@@ -150,6 +153,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         endedAt = endedAt,
         endedBy = endedBy,
         cancellationReason = cancellationReason,
+        cancellationComments = cancellationComments,
       )
     )
   }

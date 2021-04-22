@@ -22,7 +22,7 @@ class EndedReferralDTO(
         referenceNumber = referral.referenceNumber!!,
         assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),
-        cancellationReason = referral.cancellationReason!!.id
+        cancellationReason = referral.cancellationReason!!.code
       )
     }
   }
