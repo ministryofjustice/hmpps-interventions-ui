@@ -135,6 +135,19 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
+  describe('referralCancellationHref', () => {
+    it('returns the url including referral id for the referral cancellation page', () => {
+      const referral = sentReferralFactory.build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
+
+      expect(presenter.referralCancellationHref).toEqual(
+        `/probation-practitioner/referrals/${referral.id}/cancellation/reason`
+      )
+    })
+  })
+
   describe('referralAssigned', () => {
     it('returns false when the referral has no assignee', () => {
       const referral = sentReferralFactory.unassigned().build()

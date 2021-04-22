@@ -1,0 +1,24 @@
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}{{ pageTitle }}
+  - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-width">
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body-m">{{ presenter.text.information }}</p>
+    </div>
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+      {{ govukTextarea(additionalCommentsTextareaArgs) }}
+
+      {{ govukButton({ text: "Continue" }) }}
+    </form>
+  </div>
+{% endblock %}
