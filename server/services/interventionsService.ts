@@ -624,7 +624,7 @@ export default class InterventionsService {
     token: string,
     referralId: string,
     reasonCode: string,
-    cancellationComments: string
+    cancellationComments: string | null
   ): Promise<EndedReferral> {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
