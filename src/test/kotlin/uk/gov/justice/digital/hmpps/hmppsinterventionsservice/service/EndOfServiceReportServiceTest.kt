@@ -170,7 +170,6 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `submit an end of service report`() {
-//    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
     val endOfServiceReportId = UUID.randomUUID()
     val authUser = AuthUser("CRN123", "auth", "user")
 

@@ -10,7 +10,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
 
 @RepositoryTest
@@ -20,8 +22,12 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
+  val authUserRepository: AuthUserRepository,
+  val endOfServiceReportRepository: EndOfServiceReportRepository,
 ) {
   private val authUserFactory = AuthUserFactory(entityManager)
+  private val referralFactory = ReferralFactory(entityManager)
+  private val actionPlanFactory = ActionPlanFactory(entityManager)
 
   @BeforeEach
   fun setup() {
@@ -29,14 +35,15 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
     actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
+    endOfServiceReportRepository.deleteAll()
+    authUserRepository.deleteAll()
   }
 
   @Test
   fun `can retrieve an action plan appointment`() {
     val user = authUserFactory.create(id = "referral_repository_test_user_id")
-
-    val referral = buildAndPersistReferral(user)
-    val actionPlan = buildAndPersistActionPlan(user, referral)
+    val referral = referralFactory.createDraft(createdBy = user)
+    val actionPlan = actionPlanFactory.create(referral = referral)
     val actionPlanAppointment = buildAndPersistActionPlanAppointment(user, actionPlan)
 
     entityManager.flush()

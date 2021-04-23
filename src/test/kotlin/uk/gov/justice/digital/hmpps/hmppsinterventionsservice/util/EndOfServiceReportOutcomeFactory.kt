@@ -6,7 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Desired
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReportOutcome
 
 class EndOfServiceReportOutcomeFactory(em: TestEntityManager? = null) : EntityFactory(em) {
-  private val desiredOutcomeFactory = DesiredOutcomeFactory(em)
+  private val desiredOutcomesFactory = DesiredOutcomesFactory(em)
+  private val serviceCategoryFactory = ServiceCategoryFactory(em)
 
   fun create(
     desiredOutcome: DesiredOutcome? = null,
@@ -16,7 +17,7 @@ class EndOfServiceReportOutcomeFactory(em: TestEntityManager? = null) : EntityFa
   ): EndOfServiceReportOutcome {
     return save(
       EndOfServiceReportOutcome(
-        desiredOutcome = desiredOutcome ?: desiredOutcomeFactory.create(),
+        desiredOutcome = desiredOutcome ?: desiredOutcomesFactory.create(serviceCategoryFactory.create(), 1)[0],
         achievementLevel = achievementLevel,
         progressionComments = progressionComments,
         additionalTaskComments = additionalTaskComments,

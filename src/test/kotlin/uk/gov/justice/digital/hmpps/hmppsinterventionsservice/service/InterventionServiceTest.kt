@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -27,7 +29,9 @@ class InterventionServiceTest @Autowired constructor(
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
   val actionPlanRepository: ActionPlanRepository,
-  val actionPlanAppointmentRepository: ActionPlanAppointmentRepository
+  val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val authUserRepository: AuthUserRepository,
+  val endOfServiceReportRepository: EndOfServiceReportRepository,
 ) {
   private val interventionService = InterventionService(pccRegionRepository, interventionRepository)
   private val serviceCategoryFactory = ServiceCategoryFactory(entityManager)
@@ -42,6 +46,8 @@ class InterventionServiceTest @Autowired constructor(
     actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
+    endOfServiceReportRepository.deleteAll()
+    authUserRepository.deleteAll()
   }
 
   @Test
