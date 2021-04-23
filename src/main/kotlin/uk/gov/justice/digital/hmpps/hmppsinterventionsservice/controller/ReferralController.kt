@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -38,6 +39,13 @@ class ReferralController(
   private val jwtAuthUserMapper: JwtAuthUserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
 ) {
+  @GetMapping("/referral/{id}")
+  fun getReferral(@PathVariable id: UUID): ReferralDTO {
+    return referralService.getReferral(id)
+      ?.let { ReferralDTO.from(it) }
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
+  }
+
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
     @PathVariable id: UUID,
