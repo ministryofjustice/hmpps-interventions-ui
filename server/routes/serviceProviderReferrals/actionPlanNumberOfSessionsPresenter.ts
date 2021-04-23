@@ -1,4 +1,4 @@
-import { ActionPlan, ServiceCategory } from '../../services/interventionsService'
+import { ActionPlan, ServiceCategoryFull } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -9,7 +9,7 @@ export default class ActionPlanNumberOfSessionsPresenter {
   constructor(
     private readonly actionPlan: ActionPlan,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategory: ServiceCategoryFull,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}

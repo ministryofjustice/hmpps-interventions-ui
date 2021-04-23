@@ -1,10 +1,13 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
 
 export default class MyCasesPresenter {
-  constructor(private readonly sentReferrals: SentReferral[], private readonly serviceCategories: ServiceCategory[]) {}
+  constructor(
+    private readonly sentReferrals: SentReferral[],
+    private readonly serviceCategories: ServiceCategoryFull[]
+  ) {}
 
   readonly navItemsPresenter = new DashboardNavPresenter('My cases')
 

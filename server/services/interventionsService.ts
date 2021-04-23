@@ -62,7 +62,7 @@ export interface EndedReferral {
   cancellationComments: string | null
 }
 
-export interface ServiceCategory {
+export interface ServiceCategoryFull {
   id: string
   name: string
   complexityLevels: ComplexityLevel[]
@@ -109,7 +109,7 @@ export interface Intervention {
   description: string
   npsRegion: NPSRegion | null
   pccRegions: PCCRegion[]
-  serviceCategory: ServiceCategory
+  serviceCategory: ServiceCategoryFull
   serviceProvider: ServiceProvider
   eligibility: Eligibility
 }
@@ -323,14 +323,14 @@ export default class InterventionsService {
     }
   }
 
-  async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
+  async getServiceCategory(token: string, id: string): Promise<ServiceCategoryFull> {
     const restClient = this.createRestClient(token)
 
     try {
       return (await restClient.get({
         path: `/service-category/${id}`,
         headers: { Accept: 'application/json' },
-      })) as ServiceCategory
+      })) as ServiceCategoryFull
     } catch (e) {
       throw this.createServiceError(e)
     }

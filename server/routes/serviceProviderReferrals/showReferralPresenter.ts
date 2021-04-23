@@ -1,6 +1,6 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
 import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -13,7 +13,7 @@ export default class ShowReferralPresenter {
 
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategory: ServiceCategoryFull,
     private readonly sentBy: DeliusUser,
     serviceUser: DeliusServiceUser,
     private readonly assignee: AuthUser | null,

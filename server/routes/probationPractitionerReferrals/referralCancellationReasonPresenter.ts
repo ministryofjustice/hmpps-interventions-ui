@@ -1,13 +1,13 @@
 import a from 'indefinite'
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { CancellationReason, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { CancellationReason, SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 
 export default class ReferralCancellationReasonPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategory: ServiceCategoryFull,
     private readonly serviceUser: DeliusServiceUser,
     private readonly cancellationReasons: CancellationReason[],
     private readonly error: FormValidationError | null = null

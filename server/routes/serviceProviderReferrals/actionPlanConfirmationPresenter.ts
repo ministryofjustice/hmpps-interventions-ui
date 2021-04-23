@@ -1,10 +1,10 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
 
 export default class ActionPlanConfirmationPresenter {
-  constructor(private readonly sentReferral: SentReferral, private readonly serviceCategory: ServiceCategory) {}
+  constructor(private readonly sentReferral: SentReferral, private readonly serviceCategory: ServiceCategoryFull) {}
 
   progressHref = `/service-provider/referrals/${this.sentReferral.id}/progress`
 
