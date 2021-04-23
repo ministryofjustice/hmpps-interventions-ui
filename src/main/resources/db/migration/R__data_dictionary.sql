@@ -1,0 +1,98 @@
+COMMENT ON TABLE auth_user IS 'details about the user from hmpps-auth';
+COMMENT ON COLUMN auth_user.id IS 'the user ID';
+COMMENT ON COLUMN auth_user.auth_source IS 'where the user has come from';
+COMMENT ON COLUMN auth_user.user_name IS 'the username';
+
+COMMENT ON TABLE service_category IS '**reference data** intervention service categories, which relate to service user needs';
+COMMENT ON COLUMN service_category.id IS 'service-owned unique identifier';
+COMMENT ON COLUMN service_category.created IS 'when the record was added';
+COMMENT ON COLUMN service_category.name IS 'intervention service category';
+
+COMMENT ON TABLE complexity_level IS '**reference data** complexity levels for each intervention service category';
+COMMENT ON COLUMN complexity_level.id IS 'service-owned unique identifier';
+COMMENT ON COLUMN complexity_level.service_category_id IS 'the ID of the intervention service category it belongs to';
+COMMENT ON COLUMN complexity_level.title IS 'complexity level of needs, usually: low, medium, high';
+COMMENT ON COLUMN complexity_level.description IS 'rationale for the complexity level';
+
+COMMENT ON TABLE desired_outcome IS '**reference data** desired outcomes available for each intervention service category';
+COMMENT ON COLUMN desired_outcome.id IS 'service-owned unique identifier';
+COMMENT ON COLUMN desired_outcome.service_category_id IS 'the ID of the intervention service category it belongs to';
+COMMENT ON COLUMN desired_outcome.description IS 'describes what the outcome should be for the service user';
+
+COMMENT ON TABLE nps_region IS '**reference data** National Probation Service (NPS) region details';
+COMMENT ON COLUMN nps_region.id IS 'the ID of the NPS region unique identifier';
+COMMENT ON COLUMN nps_region.name IS 'NPS region name';
+
+COMMENT ON TABLE pcc_region IS '**reference data** Police and Crime Commissioner (PCC) region details';
+COMMENT ON COLUMN pcc_region.id IS 'PCC region unique identifier';
+COMMENT ON COLUMN pcc_region.name IS 'PCC region name';
+COMMENT ON COLUMN pcc_region.nps_region_id IS 'the ID of the National Probation Service (NPS) region the PCC is in';
+
+COMMENT ON TABLE service_provider IS 'service provider details';
+COMMENT ON COLUMN service_provider.id IS 'service provider unique identifier, used in hmpps-auth as group code';
+COMMENT ON COLUMN service_provider.name IS 'service provider name';
+COMMENT ON COLUMN service_provider.incoming_referral_distribution_email IS 'service provider email address';
+
+COMMENT ON TABLE intervention IS 'intervention details';
+COMMENT ON COLUMN intervention.id IS 'intervention unique identifier';
+COMMENT ON COLUMN intervention.dynamic_framework_contract_id IS 'dynamic framework unique identifier';
+COMMENT ON COLUMN intervention.created_at IS 'when the record was added';
+COMMENT ON COLUMN intervention.title IS 'intervention name';
+COMMENT ON COLUMN intervention.description IS 'intervention description';
+
+COMMENT ON TABLE referral IS 'referral details';
+COMMENT ON COLUMN referral.id IS 'referral unique identifier';
+COMMENT ON COLUMN referral.intervention_id IS 'intervention unique identifier';
+COMMENT ON COLUMN referral.created_at IS 'when the referral was started';
+COMMENT ON COLUMN referral.created_by_id IS 'ID of the person who started the referral';
+COMMENT ON COLUMN referral.service_usercrn IS 'the referred person''s probation Case Reference Number';
+COMMENT ON COLUMN referral.complexity_levelid IS 'complexity level unique identifier';
+COMMENT ON COLUMN referral.completion_deadline IS 'when the intervention should be completed by';
+COMMENT ON COLUMN referral.further_information IS 'further information about the service user';
+COMMENT ON COLUMN referral.accessibility_needs IS 'accessibility needs of the service user';
+COMMENT ON COLUMN referral.additional_needs_information IS 'further information about the service user''s needs';
+COMMENT ON COLUMN referral.needs_interpreter IS 'whether the service user needs an interpreter';
+COMMENT ON COLUMN referral.interpreter_language IS 'what language the interpreter should speak';
+COMMENT ON COLUMN referral.has_additional_responsibilities IS 'if the service user has attitional responsibilities in their life';
+COMMENT ON COLUMN referral.when_unavailable IS 'when the service user is unavailable due to existing commitments';
+COMMENT ON COLUMN referral.additional_risk_information IS 'further risk information about the service user';
+COMMENT ON COLUMN referral.using_rar_days IS 'how many enforceable/RAR days can be used';
+COMMENT ON COLUMN referral.maximum_rar_days IS 'the maximum number of enforceable/RAR days that can be used';
+COMMENT ON COLUMN referral.reference_number IS 'referral number';
+COMMENT ON COLUMN referral.sent_at IS 'when the referral was sent';
+COMMENT ON COLUMN referral.sent_by_id IS 'ID of the person who sent the referral';
+COMMENT ON COLUMN referral.assigned_at IS 'when the case was assigned';
+COMMENT ON COLUMN referral.assigned_by_id IS 'ID of the person who assigned the case';
+COMMENT ON COLUMN referral.assigned_to_id IS 'ID of the person who the case is assigned to';
+
+COMMENT ON TABLE referral_desired_outcome IS 'desired outcome details';
+COMMENT ON COLUMN referral_desired_outcome.referral_id IS 'referral unique identifier';
+COMMENT ON COLUMN referral_desired_outcome.desired_outcome_id IS 'desired outcome unique identifier';
+
+COMMENT ON TABLE referral_service_user_data IS 'referral service user details';
+COMMENT ON COLUMN referral_service_user_data.referral_id IS 'referral unique identifier';
+COMMENT ON COLUMN referral_service_user_data.disabilities IS 'information about disabilities';
+COMMENT ON COLUMN referral_service_user_data.dob IS 'date of birth';
+COMMENT ON COLUMN referral_service_user_data.ethnicity IS 'ethnicity';
+COMMENT ON COLUMN referral_service_user_data.first_name IS 'service user''s first name';
+COMMENT ON COLUMN referral_service_user_data.last_name IS 'service user''s last name';
+COMMENT ON COLUMN referral_service_user_data.preferred_language IS 'the preferred language of the service user';
+COMMENT ON COLUMN referral_service_user_data.religion_or_belief IS 'the religion or belief system of the service user';
+COMMENT ON COLUMN referral_service_user_data.gender IS 'the service user''s gender';
+COMMENT ON COLUMN referral_service_user_data.title IS 'the service user''s title';
+
+COMMENT ON TABLE action_plan IS 'service user''s action plan details';
+COMMENT ON COLUMN action_plan.id IS 'service user''s action plan unique identifier';
+COMMENT ON COLUMN action_plan.referral_id IS 'service user''s action plan referral unique identifier';
+COMMENT ON COLUMN action_plan.number_of_sessions IS 'number of sessions the service user will have';
+COMMENT ON COLUMN action_plan.created_by_id IS 'who the service user''s action plan was created by';
+COMMENT ON COLUMN action_plan.created_at IS 'when the service user''s action plan was created';
+COMMENT ON COLUMN action_plan.submitted_at IS 'when the service user''s action plan was submitted for approval';
+COMMENT ON COLUMN action_plan.submitted_by_id IS 'who submitted the service user''s action plan';
+
+COMMENT ON TABLE action_plan_activity IS 'service user''s action plan activity details';
+COMMENT ON COLUMN action_plan_activity.id IS 'service user''s action plan activity unique identifier';
+COMMENT ON COLUMN action_plan_activity.action_plan_id IS 'service user''s action plan unique identifier';
+COMMENT ON COLUMN action_plan_activity.desired_outcome_id IS 'desired outcome unique identifier';
+COMMENT ON COLUMN action_plan_activity.description IS 'description of the activity';
+COMMENT ON COLUMN action_plan_activity.created_at IS 'when the service user''s action plan was created';
