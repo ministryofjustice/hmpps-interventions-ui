@@ -12,7 +12,11 @@ spec:
           containers:
           - name: data-extractor
             image: ministryofjustice/data-engineering-data-extractor:develop
+            {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
+            command: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
+            {{ else }}
             command: ["sh", "-c", "extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
+            {{ end }}
             env:
               - name: LOCAL_EXPORT_DESTINATION
                 value: export

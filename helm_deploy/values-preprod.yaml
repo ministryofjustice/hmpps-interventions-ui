@@ -15,6 +15,9 @@ ingress:
   hosts:
     - host: hmpps-interventions-service-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
 
+env_details:
+  contains_live_data: true
+
 env:
   JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
