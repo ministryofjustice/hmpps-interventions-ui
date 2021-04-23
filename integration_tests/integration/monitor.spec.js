@@ -176,4 +176,74 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('No')
     })
   })
+
+  describe('cancelling a referral', () => {
+    it('displays a form to allow users to submit comments and cancel a referral', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referralParams = {
+        id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
+        referral: { serviceCategoryId: serviceCategory.id },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const probationPractitioner = deliusUserFactory.build({
+        firstName: 'John',
+        surname: 'Smith',
+        username: 'john.smith',
+      })
+      const actionPlan = actionPlanFactory.submitted().build({
+        referralId: referralParams.id,
+        numberOfSessions: 4,
+      })
+
+      const appointments = [
+        actionPlanAppointmentFactory.attended('yes').build({
+          sessionNumber: 1,
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 2,
+          appointmentTime: '2021-04-30T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 3,
+          appointmentTime: '2021-05-31T09:02:02Z',
+          durationInMinutes: 75,
+        }),
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 4,
+          durationInMinutes: 75,
+        }),
+      ]
+
+      const assignedReferral = sentReferralFactory.assigned().build({
+        ...referralParams,
+        assignedTo: { username: probationPractitioner.username },
+        actionPlanId: actionPlan.id,
+      })
+
+      // Necessary until we add the Monitor dashboard
+      cy.stubGetDraftReferralsForUser([])
+
+      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+
+      cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
+      cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
+
+      cy.login()
+
+      cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
+
+      cy.contains('Cancel this referral').click()
+      cy.contains('Additional comments (optional)').type('Some additional comments')
+      cy.contains('Continue').click()
+    })
+  })
 })

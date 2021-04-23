@@ -31,6 +31,8 @@ export default class InterventionProgressPresenter {
     title: `${utils.convertToTitleCase(this.serviceCategory.name)} progress`,
   }
 
+  readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/reason`
+
   readonly hasSessions = this.actionPlanAppointments.length !== 0
 
   readonly sessionTableHeaders = ['Session details', 'Date and time', 'Status', 'Action']

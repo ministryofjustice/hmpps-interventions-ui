@@ -127,3 +127,23 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
       })
   })
 })
+
+describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => {
+  it('renders a page where the PP can add comments and cancel a referral', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const serviceUser = deliusServiceUserFactory.build()
+
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/cancellation/reason`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Referral cancellation')
+        expect(res.text).toContain('Additional comments (optional)')
+      })
+  })
+})
