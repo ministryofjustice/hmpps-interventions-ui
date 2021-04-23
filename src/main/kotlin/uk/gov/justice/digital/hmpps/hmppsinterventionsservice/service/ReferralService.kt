@@ -71,9 +71,11 @@ class ReferralService(
     return referralRepository.findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(serviceProviderID)
   }
 
-  fun endSentReferral(referral: Referral, user: AuthUser): Referral {
+  fun endSentReferral(referral: Referral, user: AuthUser, cancellationReason: CancellationReason, cancellationComments: String?): Referral {
     referral.endedAt = OffsetDateTime.now()
     referral.endedBy = authUserRepository.save(user)
+    referral.cancellationReason = cancellationReason
+    cancellationComments?.let { referral.cancellationComments = it }
     return referralRepository.save(referral)
   }
 

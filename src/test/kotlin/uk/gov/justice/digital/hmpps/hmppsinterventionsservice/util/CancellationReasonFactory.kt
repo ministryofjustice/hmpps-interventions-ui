@@ -10,7 +10,7 @@ class CancellationReasonFactory(em: TestEntityManager? = null) : EntityFactory(e
   ): CancellationReason {
     return save(
       CancellationReason(
-        id = id,
+        code = id,
         description = description,
       )
     )

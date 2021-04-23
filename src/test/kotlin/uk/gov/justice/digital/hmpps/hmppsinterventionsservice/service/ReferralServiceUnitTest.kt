@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.firstValue
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -17,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Can
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 
 class ReferralServiceUnitTest {
@@ -29,6 +29,7 @@ class ReferralServiceUnitTest {
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
+  private val cancellationReasonFactory = CancellationReasonFactory()
 
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository,
@@ -39,13 +40,17 @@ class ReferralServiceUnitTest {
   fun `set ended fields on a sent referral`() {
     val referral = referralFactory.createSent()
     val authUser = authUserFactory.create()
+    val cancellationReason = cancellationReasonFactory.create()
+    val cancellationComments = "comment"
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
-    whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded())
+    whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded(cancellationComments = cancellationComments))
 
-    val endedReferral = referralService.endSentReferral(referral, authUser)
+    val endedReferral = referralService.endSentReferral(referral, authUser, cancellationReason, cancellationComments)
     assertThat(endedReferral.endedAt).isNotNull
     assertThat(endedReferral.endedBy).isEqualTo(authUser)
+    assertThat(endedReferral.cancellationReason).isEqualTo(cancellationReason)
+    assertThat(endedReferral.cancellationComments).isEqualTo(cancellationComments)
   }
 
   @Test
@@ -66,8 +71,8 @@ class ReferralServiceUnitTest {
   @Test
   fun `get all cancellation reasons`() {
     val cancellationReasons = listOf(
-      CancellationReason(id = "aaa", description = "reason 1"),
-      CancellationReason(id = "bbb", description = "reason 2")
+      CancellationReason(code = "aaa", description = "reason 1"),
+      CancellationReason(code = "bbb", description = "reason 2")
     )
     whenever(cancellationReasonRepository.findAll()).thenReturn(cancellationReasons)
     val result = referralService.getCancellationReasons()

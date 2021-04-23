@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -13,6 +14,7 @@ import java.util.UUID
 class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
   private val interventionFactory = InterventionFactory(em)
+  private val calcellationReasonFactory = CancellationReasonFactory(em)
 
   fun createDraft(
     id: UUID = UUID.randomUUID(),
@@ -86,6 +88,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedAt: OffsetDateTime? = null,
     endedAt: OffsetDateTime? = OffsetDateTime.now(),
     endedBy: AuthUser? = authUserFactory.create(),
+    cancellationReason: CancellationReason? = calcellationReasonFactory.create(),
+    cancellationComments: String? = null
   ): Referral {
     return create(
       id = id,
@@ -104,6 +108,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
 
       endedAt = endedAt,
       endedBy = endedBy,
+      cancellationReason = cancellationReason,
+      cancellationComments = cancellationComments
     )
   }
 
@@ -127,6 +133,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedTo: AuthUser? = null,
     endedAt: OffsetDateTime? = null,
     endedBy: AuthUser? = null,
+    cancellationReason: CancellationReason? = null,
+    cancellationComments: String? = null,
   ): Referral {
     return save(
       Referral(
@@ -146,6 +154,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         assignedTo = assignedTo,
         endedAt = endedAt,
         endedBy = endedBy,
+        cancellationReason = cancellationReason,
+        cancellationComments = cancellationComments,
       )
     )
   }
