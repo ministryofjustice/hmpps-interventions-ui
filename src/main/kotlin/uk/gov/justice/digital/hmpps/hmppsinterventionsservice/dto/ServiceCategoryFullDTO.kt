@@ -21,19 +21,33 @@ data class ComplexityLevelDTO(
   val description: String,
 )
 
-data class ServiceCategoryDTO(
+data class ServiceCategoryFullDTO(
   val id: UUID,
   val name: String,
   val complexityLevels: List<ComplexityLevelDTO>,
   val desiredOutcomes: List<DesiredOutcomeDTO>
 ) {
   companion object {
-    fun from(serviceCategory: ServiceCategory): ServiceCategoryDTO {
-      return ServiceCategoryDTO(
+    fun from(serviceCategory: ServiceCategory): ServiceCategoryFullDTO {
+      return ServiceCategoryFullDTO(
         id = serviceCategory.id,
         name = serviceCategory.name,
         complexityLevels = serviceCategory.complexityLevels.map { ComplexityLevelDTO(it.id, it.title, it.description) },
         desiredOutcomes = serviceCategory.desiredOutcomes.map { DesiredOutcomeDTO(it.id, it.description) },
+      )
+    }
+  }
+}
+
+data class ServiceCategoryDTO(
+  val id: UUID,
+  val name: String,
+) {
+  companion object {
+    fun from(serviceCategory: ServiceCategory): ServiceCategoryDTO {
+      return ServiceCategoryDTO(
+        id = serviceCategory.id,
+        name = serviceCategory.name,
       )
     }
   }

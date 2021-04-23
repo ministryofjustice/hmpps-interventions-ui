@@ -42,7 +42,7 @@ data class ReferralDTO(
   val id: UUID,
   val createdAt: OffsetDateTime,
   val serviceUser: ServiceUserDTO,
-  val serviceCategoryId: UUID,
+  val serviceCategory: ServiceCategoryDTO,
   val serviceProvider: ServiceProviderDTO,
 
   val draftReferralFields: DraftReferralFields,
@@ -57,7 +57,7 @@ data class ReferralDTO(
         id = referral.id,
         createdAt = referral.createdAt,
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
-        serviceCategoryId = contract.serviceCategory.id,
+        serviceCategory = ServiceCategoryDTO.from(contract.serviceCategory),
         serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
 
         draftReferralFields = DraftReferralFields(

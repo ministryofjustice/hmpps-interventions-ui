@@ -10,7 +10,7 @@ data class InterventionDTO(
   val description: String,
   val npsRegion: NPSRegionDTO?,
   val pccRegions: List<PCCRegionDTO>,
-  val serviceCategory: ServiceCategoryDTO,
+  val serviceCategory: ServiceCategoryFullDTO,
   val serviceProvider: ServiceProviderDTO,
   val eligibility: ContractEligibilityDTO,
 ) {
@@ -23,7 +23,7 @@ data class InterventionDTO(
         description = intervention.description,
         npsRegion = contract.npsRegion?.let { NPSRegionDTO.from(it) },
         pccRegions = pccRegions.map { PCCRegionDTO.from(it) },
-        serviceCategory = ServiceCategoryDTO.from(contract.serviceCategory),
+        serviceCategory = ServiceCategoryFullDTO.from(contract.serviceCategory),
         serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
         eligibility = ContractEligibilityDTO(
           contract.minimumAge,

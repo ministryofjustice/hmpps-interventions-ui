@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
@@ -177,9 +177,9 @@ class ReferralController(
   }
 
   @GetMapping("/service-category/{id}")
-  fun getServiceCategoryByID(@PathVariable id: UUID): ServiceCategoryDTO {
+  fun getServiceCategoryByID(@PathVariable id: UUID): ServiceCategoryFullDTO {
     return serviceCategoryService.getServiceCategoryByID(id)
-      ?.let { ServiceCategoryDTO.from(it) }
+      ?.let { ServiceCategoryFullDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$id]")
   }
 
