@@ -27,7 +27,10 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
     setupAssistant.createActionPlanAppointment(actionPlan, 3, 120, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"))
   }
 
-  @State("an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already")
+  @State(
+    "an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already",
+    "an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has an appointment for which no session feedback has been recorded"
+  )
   fun `create an empty draft plan with 2 2 hours appointments`() {
     val actionPlan = setupAssistant.createActionPlan(id = UUID.fromString("345059d4-1697-467b-8914-fedec9957279"), numberOfSessions = 2)
     setupAssistant.createActionPlanAppointment(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"))
