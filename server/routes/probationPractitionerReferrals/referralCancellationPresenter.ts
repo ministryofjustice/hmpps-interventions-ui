@@ -1,12 +1,13 @@
 import a from 'indefinite'
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { CancellationReason, SentReferral, ServiceCategory } from '../../services/interventionsService'
 
 export default class ReferralCancellationPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
-    private readonly serviceUser: DeliusServiceUser
+    private readonly serviceUser: DeliusServiceUser,
+    private readonly cancellationReasons: CancellationReason[]
   ) {}
 
   readonly text = {
@@ -15,5 +16,13 @@ export default class ReferralCancellationPresenter {
       this.serviceCategory.name
     )} intervention with ${this.sentReferral.referral.serviceProvider.name}.`,
     additionalCommentsLabel: 'Additional comments (optional):',
+  }
+
+  get cancellationReasonsFields(): { value: string; text: string; checked: boolean }[] {
+    return this.cancellationReasons.map(cancellationReason => ({
+      value: cancellationReason.code,
+      text: cancellationReason.description,
+      checked: false,
+    }))
   }
 }

@@ -120,12 +120,13 @@ export default class ProbationPractitionerReferralsController {
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
     const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
+      accessToken,
       sentReferral.referral.serviceCategoryId
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
 
-    const presenter = new ReferralCancellationPresenter(sentReferral, serviceCategory, serviceUser)
+    const presenter = new ReferralCancellationPresenter(sentReferral, serviceCategory, serviceUser, cancellationReasons)
     const view = new ReferralCancellationView(presenter)
 
     return res.render(...view.renderArgs)

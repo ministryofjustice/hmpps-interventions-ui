@@ -137,12 +137,19 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => 
     interventionsService.getSentReferral.mockResolvedValue(referral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getReferralCancellationReasons.mockResolvedValue([
+      { code: 'MIS', description: 'Referral was made by mistake' },
+      { code: 'MOV', description: 'Service user has moved out of delivery area' },
+    ])
 
     await request(app)
       .get(`/probation-practitioner/referrals/${referral.id}/cancellation/reason`)
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Referral cancellation')
+        expect(res.text).toContain('What is the reason for the cancellation of this referral?')
+        expect(res.text).toContain('Referral was made by mistake')
+        expect(res.text).toContain('Service user has moved out of delivery area')
         expect(res.text).toContain('Additional comments (optional)')
       })
   })
