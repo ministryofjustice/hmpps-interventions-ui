@@ -139,6 +139,7 @@ class SampleData {
     }
     fun sampleEndOfServiceReport(
       id: UUID? = null,
+      referral: Referral,
       createdAt: OffsetDateTime = OffsetDateTime.now(),
       createdBy: AuthUser = AuthUser("CRN123", "auth", "user"),
       submittedAt: OffsetDateTime? = null,
@@ -148,6 +149,7 @@ class SampleData {
     ): EndOfServiceReport {
       return EndOfServiceReport(
         id = id ?: UUID.randomUUID(),
+        referral = referral,
         createdAt = createdAt,
         createdBy = createdBy,
         submittedAt = submittedAt,

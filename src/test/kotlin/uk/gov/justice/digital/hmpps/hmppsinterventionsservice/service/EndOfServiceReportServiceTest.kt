@@ -32,8 +32,8 @@ class EndOfServiceReportServiceTest {
   @Test
   fun `create end of service report`() {
     val authUser = AuthUser("CRN123", "auth", "user")
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
-    val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf(), referral = referral)
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
     whenever(referralRepository.findById(referral.id)).thenReturn(of(referral))
@@ -59,7 +59,8 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `get end of service report`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf(), referral = referral)
     whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
     val retrievedEndOfServiceReport = endOfServiceReportService.getEndOfServiceReport(UUID.randomUUID())
     assertThat(retrievedEndOfServiceReport).isNotNull
@@ -78,8 +79,9 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `get end of service report by referral Id`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
-    val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf(), referral = referral)
+    referral.endOfServiceReport = endOfServiceReport
 
     whenever(referralRepository.findById(referral.id)).thenReturn(of(referral))
     val retrievedEndOfServiceReport = endOfServiceReportService.getEndOfServiceReportByReferralId(referral.id)
@@ -88,8 +90,9 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `referral not found for get end of service report by referral id`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
-    val referral = SampleData.sampleReferral(endOfServiceReport = endOfServiceReport, crn = "CRN123", serviceProviderName = "Service Provider")
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf(), referral = referral)
+    referral.endOfServiceReport = endOfServiceReport
 
     whenever(referralRepository.findById(referral.id)).thenReturn(empty())
 
@@ -113,7 +116,8 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `successfully update end of service report`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf())
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf(), referral = referral)
     val endOfServiceReportId = UUID.randomUUID()
     val furtherInformation = "info"
     val outcome = SampleData.sampleEndOfServiceReportOutcome()
@@ -132,7 +136,8 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `successfully update end of service report where dersired outcome already exists`() {
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport()
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(referral = referral)
     val desiredOutcome = endOfServiceReport.outcomes.elementAt(0).desiredOutcome
     val endOfServiceReportId = UUID.randomUUID()
     val furtherInformation = "info"
@@ -156,9 +161,10 @@ class EndOfServiceReportServiceTest {
 
   @Test
   fun `submit an end of service report`() {
+    val referral = SampleData.sampleReferral(crn = "CRN123", serviceProviderName = "Service Provider")
     val endOfServiceReportId = UUID.randomUUID()
     val authUser = AuthUser("CRN123", "auth", "user")
-    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId)
+    val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId, referral)
 
     whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
     whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)

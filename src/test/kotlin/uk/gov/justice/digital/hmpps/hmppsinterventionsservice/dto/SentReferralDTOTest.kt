@@ -138,10 +138,12 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
       "Provider",
       id = id,
       createdAt = createdAt,
-      endOfServiceReport = SampleData.sampleEndOfServiceReport(
-        createdAt = createdAt, id = id,
-        outcomes = setOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
-      )
+    )
+
+    referral.endOfServiceReport = SampleData.sampleEndOfServiceReport(
+      referral = referral,
+      createdAt = createdAt, id = id,
+      outcomes = setOf(SampleData.sampleEndOfServiceReportOutcome(desiredOutcome = SampleData.sampleDesiredOutcome(id = id)))
     )
 
     referral.referenceNumber = "something"
@@ -170,6 +172,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
         },
         "endOfServiceReport": {
         "id" : "3b9ed289-8412-41a9-8291-45e33e60276c",
+        "referralId": "3b9ed289-8412-41a9-8291-45e33e60276c",
         "createdAt" : "2020-12-04T10:42:43Z",
         "createdBy" :  {
           "username": "user",

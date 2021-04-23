@@ -28,6 +28,7 @@ class EndOfServiceReportService(
 
     val endOfServiceReport = EndOfServiceReport(
       id = UUID.randomUUID(),
+      referral = referral,
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
     )

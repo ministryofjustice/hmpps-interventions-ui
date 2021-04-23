@@ -42,6 +42,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     intervention: Intervention = interventionFactory.create(),
+    desiredOutcomes: List<DesiredOutcome> = emptyList(),
 
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
@@ -57,6 +58,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       createdBy = createdBy,
       serviceUserCRN = serviceUserCRN,
       intervention = intervention,
+      desiredOutcomes = desiredOutcomes,
 
       sentAt = sentAt,
       sentBy = sentBy,
