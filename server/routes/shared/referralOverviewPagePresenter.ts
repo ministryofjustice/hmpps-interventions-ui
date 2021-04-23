@@ -1,6 +1,5 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
 import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
-import { SentReferral } from '../../services/interventionsService'
 
 export enum ReferralOverviewPageSection {
   Progress = 1,
@@ -13,7 +12,7 @@ export default class ReferralOverviewPagePresenter {
 
   constructor(
     private readonly section: ReferralOverviewPageSection,
-    private readonly referral: SentReferral,
+    private readonly referralId: string,
     serviceUser: DeliusServiceUser,
     private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
   ) {
@@ -28,17 +27,17 @@ export default class ReferralOverviewPagePresenter {
     items: [
       {
         text: 'Progress',
-        href: `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/progress`,
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/progress`,
         active: this.section === ReferralOverviewPageSection.Progress,
       },
       {
         text: 'Case notes',
-        href: `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/case-notes`,
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/case-notes`,
         active: this.section === ReferralOverviewPageSection.CaseNotes,
       },
       {
         text: 'Referral details',
-        href: `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/details`,
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/details`,
         active: this.section === ReferralOverviewPageSection.Details,
       },
     ],
