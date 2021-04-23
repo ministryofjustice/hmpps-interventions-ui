@@ -232,6 +232,10 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetReferralCancellationReasons([
+        { code: 'MIS', description: 'Referral was made by mistake' },
+        { code: 'MOV', description: 'Service user has moved out of delivery area' },
+      ])
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -242,6 +246,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
       cy.contains('Cancel this referral').click()
+      cy.contains('Service user has moved out of delivery area').click()
       cy.contains('Additional comments (optional)').type('Some additional comments')
       cy.contains('Continue').click()
     })
