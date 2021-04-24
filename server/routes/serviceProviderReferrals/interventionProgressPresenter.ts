@@ -1,9 +1,4 @@
-import {
-  ActionPlan,
-  ActionPlanAppointment,
-  SentReferral,
-  ServiceCategoryFull,
-} from '../../services/interventionsService'
+import { ActionPlan, ActionPlanAppointment, Referral } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
@@ -15,8 +10,7 @@ export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
   constructor(
-    private readonly referral: SentReferral,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly referral: Referral,
     private readonly actionPlan: ActionPlan | null,
     serviceUser: DeliusServiceUser,
     private readonly actionPlanAppointments: ActionPlanAppointment[]
@@ -30,13 +24,13 @@ export default class InterventionProgressPresenter {
   }
 
   get referralAssigned(): boolean {
-    return this.referral.assignedTo !== null
+    return this.referral.sentReferralFields?.assignedTo != null
   }
 
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
 
   readonly text = {
-    title: utils.convertToTitleCase(this.serviceCategory.name),
+    title: utils.convertToTitleCase(this.referral.serviceCategory.name),
     actionPlanStatus: this.actionPlanSubmitted ? 'Submitted' : 'Not submitted',
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
   }
@@ -117,10 +111,10 @@ export default class InterventionProgressPresenter {
     : 'inactive'
 
   private get endOfServiceReportSubmitted() {
-    return this.referral.endOfServiceReport !== null && this.referral.endOfServiceReport.submittedAt !== null
+    return this.referral.sentReferralFields?.endOfServiceReport?.submittedAt != null
   }
 
   get allowEndOfServiceReportCreation(): boolean {
-    return this.referral.endOfServiceReport === null
+    return this.referral.sentReferralFields?.endOfServiceReport == null
   }
 }

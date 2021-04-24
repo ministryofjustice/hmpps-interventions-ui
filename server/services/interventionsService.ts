@@ -14,6 +14,51 @@ export interface InterventionsServiceValidationError {
 
 type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 
+export interface DraftReferralFields {
+  completionDeadline: string | null
+  complexityLevelId: string | null
+  furtherInformation: string | null
+  relevantSentenceId: number | null
+  desiredOutcomesIds: string[] | null
+  additionalNeedsInformation: string | null
+  accessibilityNeeds: string | null
+  needsInterpreter: boolean | null
+  interpreterLanguage: string | null
+  hasAdditionalResponsibilities: boolean | null
+  whenUnavailable: string | null
+  additionalRiskInformation: string | null
+  usingRarDays: boolean | null
+  maximumRarDays: number | null
+}
+
+export interface SentReferralFields {
+  sentAt: string
+  sentBy: AuthUser
+  referenceNumber: string
+  assignedTo: AuthUser | null
+  actionPlanId: string | null
+  endOfServiceReport: EndOfServiceReport | null
+}
+
+export interface EndedReferralFields {
+  endedAt: string
+  endedBy: AuthUser
+  cancellationReason: string
+  cancellationComments: string | null
+}
+
+export interface Referral {
+  id: string
+  createdAt: string
+  serviceUser: ServiceUser
+  serviceCategory: ServiceCategory
+  serviceProvider: ServiceProvider
+
+  draftReferralFields: DraftReferralFields
+  sentReferralFields: SentReferralFields | null
+  endedReferralField: EndedReferralFields | null
+}
+
 export interface ReferralFields {
   createdAt: string
   completionDeadline: string
@@ -60,6 +105,11 @@ export interface EndedReferral {
   endedBy: AuthUser
   cancellationReason: string
   cancellationComments: string | null
+}
+
+export interface ServiceCategory {
+  id: string
+  name: string
 }
 
 export interface ServiceCategoryFull {
@@ -362,6 +412,15 @@ export default class InterventionsService {
       path: `/sent-referral/${id}`,
       headers: { Accept: 'application/json' },
     })) as SentReferral
+  }
+
+  async getReferral(token: string, id: string): Promise<Referral> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/referral/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as Referral
   }
 
   async getReferralsSentByProbationPractitioner(token: string, userId: string): Promise<SentReferral[]> {
