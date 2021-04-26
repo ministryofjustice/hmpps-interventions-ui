@@ -36,7 +36,7 @@ class EndOfServiceReportServiceTest {
     val endOfServiceReport = SampleData.sampleEndOfServiceReport(outcomes = mutableSetOf(), referral = referral)
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
-    whenever(referralRepository.findById(referral.id)).thenReturn(of(referral))
+    whenever(referralRepository.getOne(referral.id)).thenReturn(referral)
     whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)
     whenever(referralRepository.save(any())).thenReturn(referral)
 
@@ -49,12 +49,11 @@ class EndOfServiceReportServiceTest {
   fun `referral not found when creating end of service report`() {
     val authUser = AuthUser("CRN123", "auth", "user")
     val referralId = UUID.randomUUID()
-    whenever(referralRepository.findById(referralId)).thenReturn(empty())
+    whenever(referralRepository.getOne(referralId)).thenThrow(EntityNotFoundException::class.java)
 
     val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
       endOfServiceReportService.createEndOfServiceReport(referralId, authUser)
     }
-    assertThat(exception.message).isEqualTo("Referral not found [id=$referralId]")
   }
 
   @Test
