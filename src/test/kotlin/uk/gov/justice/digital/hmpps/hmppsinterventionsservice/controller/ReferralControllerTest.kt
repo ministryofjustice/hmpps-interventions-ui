@@ -17,7 +17,6 @@ import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CancellationReasonsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
@@ -156,6 +155,6 @@ internal class ReferralControllerTest {
     )
     whenever(referralService.getCancellationReasons()).thenReturn(cancellationReasons)
     val response = referralController.getCancellationReasons()
-    assertThat(response).isEqualTo(CancellationReasonsDTO.from(cancellationReasons))
+    assertThat(response).isEqualTo(cancellationReasons)
   }
 }
