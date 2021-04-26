@@ -190,4 +190,21 @@ export default class ProbationPractitionerReferralsController {
 
     return res.render(...view.renderArgs)
   }
+
+  async cancelReferral(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const cancellationReason = req.body['cancellation-reason']
+    const cancellationComments = req.body['cancellation-comments']
+
+    await this.interventionsService.cancelReferral(accessToken, referralId, cancellationReason, cancellationComments)
+
+    return res.redirect(`/probation-practitioner/referrals/${referralId}/cancellation/confirmation`)
+  }
+
+  async showCancellationConfirmationPage(req: Request, res: Response): Promise<void> {
+    res.render('probationPractitionerReferrals/referralCancellationConfirmation')
+  }
 }

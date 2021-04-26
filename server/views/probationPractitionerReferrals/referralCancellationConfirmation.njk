@@ -1,0 +1,15 @@
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Inteventions - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({titleText: "This referral has been cancelled" }) }}
+    </div>
+  </div>
+{% endblock %}
