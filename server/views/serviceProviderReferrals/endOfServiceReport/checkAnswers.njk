@@ -5,34 +5,7 @@
 {% extends "./formTemplate.njk" %}
 
 {% block formSection %}
-  {{ govukSummaryList(interventionSummarySummaryListArgs) }}
-
-  {% for outcome in presenter.outcomes %}
-    <h3 class="govuk-heading-m">{{ outcome.title }}</h3>
-
-    {{ govukTag({ text: outcome.achievementLevelText, classes: achievementLevelTagClass(outcome.achievementLevelStyle) }) }}
-
-    <br>
-
-    <div class="govuk-inset-text">{{ outcome.subtitle }}</div>
-
-    <p class="govuk-body"><strong>Do you have any further comments about their progression on this outcome?</strong></p>
-    <p class="govuk-body">{{ outcome.progressionComments }}</p>
-
-    <p class="govuk-body"><strong>Is there anything else that needs doing to achieve this outcome?</strong></p>
-    <p class="govuk-body">{{ outcome.additionalTaskComments }}</p>
-
-    <p>
-    <a class="govuk-link" id="change-outcome-{{loop.index}}" href="{{ outcome.changeHref }}">Change</a>
-    </p>
-  {% endfor %}
-
-  <h3 class="govuk-heading-m">Additional information</h3>
-
-  <p class="govuk-body">{{ presenter.furtherInformation.text }}</p>
-  <p>
-  <a class="govuk-link" id="change-further-information" href="{{ presenter.furtherInformation.changeHref }}">Change</a>
-  </p>
+  {% include "../../partials/endOfServiceReportAnswers.njk" %}
 
   <form method="post" action="{{ presenter.formAction }}">
     {{ govukButton({ text: "Submit the report" }) }}

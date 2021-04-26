@@ -1,11 +1,5 @@
-import {
-  EndOfServiceReport,
-  EndOfServiceReportOutcome,
-  SentReferral,
-  ServiceCategory,
-} from '../../services/interventionsService'
-import PresenterUtils from '../../utils/presenterUtils'
-import { SummaryListItem } from '../../utils/summaryList'
+import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import EndOfServiceReportAnswersPresenter from '../shared/endOfServiceReportAnswersPresenter'
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
 
 export type EndOfServiceReportAchievementLevelStyle = 'ACHIEVED' | 'PARTIALLY_ACHIEVED' | 'NOT_ACHIEVED'
@@ -35,53 +29,9 @@ export default class EndOfServiceReportCheckAnswersPresenter {
 
   readonly formPagePresenter = new EndOfServiceReportFormPresenter(this.serviceCategory, this.referral).checkAnswersPage
 
-  readonly interventionSummary: SummaryListItem[] = [
-    // TODO IC-1322 Populate this fully
-    { key: 'Service user’s name', lines: [PresenterUtils.fullName(this.referral.referral.serviceUser)], isList: false },
-  ]
-
-  readonly outcomes: OutcomePresenter[] = this.referral.referral.desiredOutcomesIds.map((desiredOutcomeId, index) => {
-    const number = index + 1
-    const outcome = this.endOfServiceReport.outcomes.find(anOutcome => anOutcome.desiredOutcome.id === desiredOutcomeId)
-
-    if (!outcome) {
-      throw new Error(`Outcome not found for desired outcome ${desiredOutcomeId}`)
-    }
-
-    const desiredOutcome = this.serviceCategory.desiredOutcomes.find(
-      aDesiredOutcome => aDesiredOutcome.id === desiredOutcomeId
-    )
-
-    if (!desiredOutcome) {
-      throw new Error(`Desired outcome ${desiredOutcomeId} not found`)
-    }
-
-    return {
-      title: `Outcome ${number}`,
-      subtitle: desiredOutcome.description,
-      progressionComments: outcome.progressionComments?.length ? outcome.progressionComments : 'None',
-      additionalTaskComments: outcome.additionalTaskComments?.length ? outcome.additionalTaskComments : 'None',
-      changeHref: `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/outcomes/${number}`,
-      achievementLevelText: this.achievementLevelText(outcome),
-      achievementLevelStyle: outcome.achievementLevel,
-    }
-  })
-
-  private achievementLevelText(outcome: EndOfServiceReportOutcome): string {
-    switch (outcome.achievementLevel) {
-      case 'ACHIEVED':
-        return 'Achieved'
-      case 'NOT_ACHIEVED':
-        return 'Not achieved'
-      case 'PARTIALLY_ACHIEVED':
-        return 'Partially achieved'
-      default:
-        return ''
-    }
-  }
-
-  readonly furtherInformation = {
-    text: this.endOfServiceReport.furtherInformation?.length ? this.endOfServiceReport.furtherInformation : 'None',
-    changeHref: `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/further-information`,
-  }
+  readonly answersPresenter = new EndOfServiceReportAnswersPresenter(
+    this.referral,
+    this.endOfServiceReport,
+    this.serviceCategory
+  )
 }
