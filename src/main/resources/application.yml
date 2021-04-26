@@ -90,7 +90,7 @@ interventions-ui:
 community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
-    book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments"
+    book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments/context/{contextName}"
   appointments:
     office-location: CRSSHEF
   integration-context: commissioned-rehabilitation-services

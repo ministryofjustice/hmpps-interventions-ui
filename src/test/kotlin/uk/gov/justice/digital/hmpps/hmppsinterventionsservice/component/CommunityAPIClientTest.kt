@@ -180,7 +180,6 @@ class CommunityAPIClientTest {
     appointmentStart = OffsetDateTime.now(),
     appointmentEnd = OffsetDateTime.now(),
     officeLocationCode = "CRSSHEF",
-    notes = "http://backLink",
-    context = "c-r-s",
+    notes = "http://backLink"
   )
 }
