@@ -87,7 +87,7 @@ interventions-ui:
     appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
     view-appointment: "/probation-practitioner/referrals/{id}/progress"
     pp-referral-progress: "/probation-practitioner/referrals/{id}/progress"
-    submit-end-of-service-report: "/service-provider/referrals/{id}/progress" # fixme
+    submit-end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
 
 community-api:
   locations:

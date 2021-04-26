@@ -178,7 +178,7 @@ class EndOfServiceReportServiceTest {
 
     whenever(endOfServiceReportRepository.findById(any())).thenReturn(of(endOfServiceReport))
     whenever(endOfServiceReportRepository.save(any())).thenReturn(endOfServiceReport)
-    whenever(referralRepository.findByEndOfServiceReportId(any())).thenReturn(referral)
+    whenever(authUserRepository.save(any())).thenReturn(authUser)
 
     val argumentCaptor: ArgumentCaptor<EndOfServiceReport> = ArgumentCaptor.forClass(EndOfServiceReport::class.java)
     endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)

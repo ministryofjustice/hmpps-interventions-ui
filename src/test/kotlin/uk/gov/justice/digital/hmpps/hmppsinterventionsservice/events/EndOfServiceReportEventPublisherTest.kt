@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.EndOfServiceReportController
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import java.net.URI
 
@@ -18,12 +17,10 @@ class EndOfServiceReportEventPublisherTest {
   private val eventPublisher = mock<ApplicationEventPublisher>()
   private val locationMapper = mock<LocationMapper>()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
-  private val authUserFactory = AuthUserFactory()
 
   @Test
   fun `builds an end of service report submit event and publishes it`() {
     val endOfServiceReport = endOfServiceReportFactory.create()
-    val ppUser = authUserFactory.create()
 
     val uri = URI.create("http://localhost/end-of-service-report/${endOfServiceReport.id}")
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReport.id))
@@ -32,7 +29,7 @@ class EndOfServiceReportEventPublisherTest {
       .thenReturn("/end-of-service-report/{id}")
     val publisher = EndOfServiceReportEventPublisher(eventPublisher, locationMapper)
 
-    publisher.endOfServiceReportSubmittedEvent(endOfServiceReport, "ref1", ppUser)
+    publisher.endOfServiceReportSubmittedEvent(endOfServiceReport)
 
     val eventCaptor = argumentCaptor<EndOfServiceReportEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())

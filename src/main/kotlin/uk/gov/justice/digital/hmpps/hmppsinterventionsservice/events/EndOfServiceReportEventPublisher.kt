@@ -5,7 +5,6 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.EndOfServiceReportController
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 
 enum class EndOfServiceReportEventType {
@@ -16,13 +15,11 @@ class EndOfServiceReportEvent(
   source: Any,
   val type: EndOfServiceReportEventType,
   val endOfServiceReport: EndOfServiceReport,
-  val detailUrl: String,
-  val referralReference: String,
-  val ppUser: AuthUser,
+  val detailUrl: String
 ) :
   ApplicationEvent(source) {
   override fun toString(): String {
-    return "EndOfServiceReportEvent(type=$type, referral=${endOfServiceReport.id}, detailUrl='$detailUrl', source=$source, referralReference='$referralReference, ppUser='$ppUser)"
+    return "EndOfServiceReportEvent(type=$type, referral=${endOfServiceReport.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 
@@ -31,11 +28,11 @@ class EndOfServiceReportEventPublisher(
   private val applicationEventPublisher: ApplicationEventPublisher,
   private val locationMapper: LocationMapper
 ) {
-  fun endOfServiceReportSubmittedEvent(endOfServiceReport: EndOfServiceReport, referralReference: String, ppUser: AuthUser) {
+  fun endOfServiceReportSubmittedEvent(endOfServiceReport: EndOfServiceReport) {
     applicationEventPublisher.publishEvent(
       EndOfServiceReportEvent(
         this, EndOfServiceReportEventType.SUBMITTED,
-        endOfServiceReport, getEndOfServiceReportUrl(endOfServiceReport), referralReference, ppUser
+        endOfServiceReport, getEndOfServiceReportUrl(endOfServiceReport)
       )
     )
   }

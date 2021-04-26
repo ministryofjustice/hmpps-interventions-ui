@@ -65,14 +65,14 @@ class NotifyEndOfServiceReportService(
   override fun onApplicationEvent(event: EndOfServiceReportEvent) {
     when (event.type) {
       EndOfServiceReportEventType.SUBMITTED -> {
-        val userDetail = hmppsAuthService.getUserDetail(event.ppUser)
+        val userDetail = hmppsAuthService.getUserDetail(event.endOfServiceReport.referral.getResponsibleProbationPractitioner())
         val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitEndOfServiceReportLocation, event.endOfServiceReport.id)
         emailSender.sendEmail(
           endOfServiceReportSubmittedTemplateID,
           userDetail.email,
           mapOf(
             "ppFirstName" to userDetail.firstName,
-            "referralReference" to event.referralReference,
+            "referralReference" to event.endOfServiceReport.referral.referenceNumber!!,
             "endOfServiceReportLink" to location.toString(),
           )
         )

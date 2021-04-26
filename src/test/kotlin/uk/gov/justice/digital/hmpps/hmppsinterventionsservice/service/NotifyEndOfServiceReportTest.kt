@@ -13,8 +13,6 @@ import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import java.util.UUID
 
@@ -22,7 +20,6 @@ class NotifyEndOfServiceReportTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
-  private val authUserFactory = AuthUserFactory()
 
   private val endOfServiceReportSubmittedEvent = EndOfServiceReportEvent(
     "source",
@@ -30,9 +27,7 @@ class NotifyEndOfServiceReportTest {
     endOfServiceReportFactory.create(
       id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
     ),
-    "http://localhost:8080/end-of-service-report/42c7d267-0776-4272-a8e8-a673bfe30d0d",
-    "ref1",
-    authUserFactory.create("abc999", "auth", "abc999")
+    "http://localhost:8080/end-of-service-report/42c7d267-0776-4272-a8e8-a673bfe30d0d"
   )
 
   private fun notifyService(): NotifyEndOfServiceReportService {
@@ -56,14 +51,14 @@ class NotifyEndOfServiceReportTest {
 
   @Test
   fun `end of service report submitted event generates valid url and sends an email`() {
-    whenever(hmppsAuthService.getUserDetail(AuthUser("abc999", "auth", "abc999")))
+    whenever(hmppsAuthService.getUserDetail(any()))
       .thenReturn(UserDetail("abc", "abc@abc.abc"))
 
     notifyService().onApplicationEvent(endOfServiceReportSubmittedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.abc"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
-    Assertions.assertThat(personalisationCaptor.firstValue["referralReference"]).isEqualTo("ref1")
+    Assertions.assertThat(personalisationCaptor.firstValue["referralReference"]).isEqualTo("JS18726AC")
     Assertions.assertThat(personalisationCaptor.firstValue["endOfServiceReportLink"]).isEqualTo("http://example.com/end-of-service-report/42c7d267-0776-4272-a8e8-a673bfe30d0d")
   }
 }
