@@ -72,7 +72,6 @@ class EndOfServiceReportService(
     endOfServiceReportEventPublisher.endOfServiceReportSubmittedEvent(
       draftEndOfServiceReport, referral.referenceNumber!!,
       referral.getResponsibleProbationPractitioner()
-    )
 
     return endOfServiceReportRepository.save(draftEndOfServiceReport)
   }
@@ -83,7 +82,7 @@ class EndOfServiceReportService(
   }
 
   private fun updateDraftEndOfServiceReportAsSubmitted(endOfServiceReport: EndOfServiceReport, submittedByUser: AuthUser) {
-    endOfServiceReport.submittedBy = submittedByUser
+    endOfServiceReport.submittedBy = authUserRepository.save(submittedByUser)
     endOfServiceReport.submittedAt = OffsetDateTime.now()
   }
 
