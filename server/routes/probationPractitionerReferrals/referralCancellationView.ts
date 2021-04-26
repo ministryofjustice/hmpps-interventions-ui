@@ -20,8 +20,8 @@ export default class ReferralCancellationView {
 
   private get additionalCommentsTextareaArgs(): TextareaArgs {
     return {
-      id: 'progression-comments',
-      name: 'progression-comments',
+      id: 'cancellation-comments',
+      name: 'cancellation-comments',
       label: {
         text: this.presenter.text.additionalCommentsLabel,
       },
