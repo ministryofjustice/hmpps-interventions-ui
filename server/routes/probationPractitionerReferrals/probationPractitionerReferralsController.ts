@@ -12,6 +12,8 @@ import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessio
 import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
 import ReferralCancellationPresenter from './referralCancellationPresenter'
 import ReferralCancellationView from './referralCancellationView'
+import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
+import EndOfServiceReportView from './endOfServiceReportView'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -130,5 +132,21 @@ export default class ProbationPractitionerReferralsController {
     const view = new ReferralCancellationView(presenter)
 
     return res.render(...view.renderArgs)
+  }
+
+  async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      referral.referral.serviceCategoryId
+    )
+
+    const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategory)
+    const view = new EndOfServiceReportView(presenter)
+
+    res.render(...view.renderArgs)
   }
 }

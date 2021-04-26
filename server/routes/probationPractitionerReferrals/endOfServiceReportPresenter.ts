@@ -1,26 +1,24 @@
 import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import EndOfServiceReportAnswersPresenter from '../shared/endOfServiceReportAnswersPresenter'
-import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
+import PresenterUtils from '../../utils/presenterUtils'
 
-export default class EndOfServiceReportCheckAnswersPresenter {
+export default class EndOfServiceReportPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
     private readonly serviceCategory: ServiceCategory
   ) {}
 
-  readonly formAction = `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/submit`
-
   readonly text = {
-    subTitle: 'Review the end of service report',
+    introduction: `The service provider has created an end of service report for ${PresenterUtils.fullName(
+      this.referral.referral.serviceUser
+    )}’s intervention. Please view the following end of service report.`,
   }
-
-  readonly formPagePresenter = new EndOfServiceReportFormPresenter(this.serviceCategory, this.referral).checkAnswersPage
 
   readonly answersPresenter = new EndOfServiceReportAnswersPresenter(
     this.referral,
     this.endOfServiceReport,
     this.serviceCategory,
-    true
+    false
   )
 }

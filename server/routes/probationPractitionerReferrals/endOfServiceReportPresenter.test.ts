@@ -1,9 +1,9 @@
-import EndOfServiceReportCheckAnswersPresenter from './endOfServiceReportCheckAnswersPresenter'
+import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 
-describe(EndOfServiceReportCheckAnswersPresenter, () => {
+describe(EndOfServiceReportPresenter, () => {
   const referral = sentReferralFactory.build({
     referral: { desiredOutcomesIds: ['1', '3'], serviceUser: { firstName: 'Alex', lastName: 'River' } },
   })
@@ -35,25 +35,18 @@ describe(EndOfServiceReportCheckAnswersPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new EndOfServiceReportCheckAnswersPresenter(
-        referral,
-        buildEndOfServiceReport(),
-        serviceCategory
-      )
+      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), serviceCategory)
 
       expect(presenter.text).toEqual({
-        subTitle: 'Review the end of service report',
+        introduction:
+          'The service provider has created an end of service report for Alex River’s intervention. Please view the following end of service report.',
       })
     })
   })
 
   describe('answersPresenter', () => {
     it('returns a presenter', () => {
-      const presenter = new EndOfServiceReportCheckAnswersPresenter(
-        referral,
-        buildEndOfServiceReport(),
-        serviceCategory
-      )
+      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), serviceCategory)
 
       expect(presenter.answersPresenter).toBeDefined()
     })

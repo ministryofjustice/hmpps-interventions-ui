@@ -1,0 +1,32 @@
+{{ govukSummaryList(interventionSummarySummaryListArgs) }}
+
+{% for outcome in endOfServiceReportAnswersPresenter.outcomes %}
+  <h3 class="govuk-heading-m">{{ outcome.title }}</h3>
+
+  {{ govukTag({ text: outcome.achievementLevelText, classes: achievementLevelTagClass(outcome.achievementLevelStyle) }) }}
+
+  <br>
+
+  <div class="govuk-inset-text">{{ outcome.subtitle }}</div>
+
+  <p class="govuk-body"><strong>Do you have any further comments about their progression on this outcome?</strong></p>
+  <p class="govuk-body">{{ outcome.progressionComments }}</p>
+
+  <p class="govuk-body"><strong>Is there anything else that needs doing to achieve this outcome?</strong></p>
+  <p class="govuk-body">{{ outcome.additionalTaskComments }}</p>
+
+  {% if endOfServiceReportAnswersPresenter.allowChange %}
+    <p>
+    <a class="govuk-link" id="change-outcome-{{loop.index}}" href="{{ outcome.changeHref }}">Change</a>
+    </p>
+  {% endif %}
+{% endfor %}
+
+<h3 class="govuk-heading-m">Additional information</h3>
+
+<p class="govuk-body">{{ endOfServiceReportAnswersPresenter.furtherInformation.text }}</p>
+{% if endOfServiceReportAnswersPresenter.allowChange %}
+  <p>
+  <a class="govuk-link" id="change-further-information" href="{{ endOfServiceReportAnswersPresenter.furtherInformation.changeHref }}">Change</a>
+  </p>
+{% endif %}

@@ -1,0 +1,17 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}HMPPS Interventions - GOV.UK{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">End of service report</h1>
+
+      <p class="govuk-body">{{ presenter.text.introduction }}</p>
+
+      {% include "../partials/endOfServiceReportAnswers.njk" %}
+    </div>
+  </div>
+{% endblock %}

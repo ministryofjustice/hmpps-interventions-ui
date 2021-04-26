@@ -182,6 +182,9 @@ export default function routes(router: Router, services: Services): Router {
     '/probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback',
     (req, res) => probationPractitionerReferralsController.viewSubmittedPostSessionFeedback(req, res)
   )
+  get('/probation-practitioner/end-of-service-report/:id', (req, res) =>
+    probationPractitionerReferralsController.viewEndOfServiceReport(req, res)
+  )
 
   get('/probation-practitioner/referrals/:id/cancellation/reason', (req, res) =>
     probationPractitionerReferralsController.showReferralCancellationPage(req, res)
