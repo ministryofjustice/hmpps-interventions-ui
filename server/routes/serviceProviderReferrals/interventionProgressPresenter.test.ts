@@ -202,7 +202,7 @@ describe(InterventionProgressPresenter, () => {
         it('returns “Not submitted”', () => {
           const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
           const referral = ReferralFactory.sent().build({
-            sentReferralFields: {
+            sentFields: {
               endOfServiceReport,
             },
           })
@@ -217,7 +217,7 @@ describe(InterventionProgressPresenter, () => {
         it('returns “Submitted”', () => {
           const endOfServiceReport = endOfServiceReportFactory.submitted().build()
           const referral = ReferralFactory.sent().build({
-            sentReferralFields: {
+            sentFields: {
               endOfServiceReport,
             },
           })
@@ -321,7 +321,7 @@ describe(InterventionProgressPresenter, () => {
       it('returns the active style', () => {
         const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
         const referral = ReferralFactory.sent().build({
-          sentReferralFields: {
+          sentFields: {
             endOfServiceReport,
           },
         })
@@ -336,7 +336,7 @@ describe(InterventionProgressPresenter, () => {
       it('returns the active style', () => {
         const endOfServiceReport = endOfServiceReportFactory.submitted().build()
         const referral = ReferralFactory.sent().build({
-          sentReferralFields: {
+          sentFields: {
             endOfServiceReport,
           },
         })
@@ -363,7 +363,7 @@ describe(InterventionProgressPresenter, () => {
       it('returns false', () => {
         const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
         const referral = ReferralFactory.sent().build({
-          sentReferralFields: {
+          sentFields: {
             endOfServiceReport,
           },
         })

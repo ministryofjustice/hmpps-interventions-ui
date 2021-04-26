@@ -218,9 +218,9 @@ describe('Service provider referrals dashboard', () => {
     const assignedReferral = referralFactory.assigned().build({
       id: oldStyleAssignedReferral.id,
       serviceUser: { crn: referralParams.referral.serviceUser.crn },
-      draftReferralFields: { desiredOutcomesIds: selectedDesiredOutcomesIds },
+      formFields: { desiredOutcomesIds: selectedDesiredOutcomesIds },
     })
-    assignedReferral.sentReferralFields.assignedTo = { username: hmppsAuthUser.username }
+    assignedReferral.sentFields.assignedTo = { username: hmppsAuthUser.username }
     const draftActionPlan = actionPlanFactory.justCreated(assignedReferral.id).build()
     const actionPlanAppointments = [
       actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 1 }),
@@ -315,7 +315,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Save and continue').click()
 
     const referralWithActionPlanId = referralFactory.build({ ...assignedReferral })
-    referralWithActionPlanId.sentReferralFields.actionPlanId = draftActionPlan.id
+    referralWithActionPlanId.sentFields.actionPlanId = draftActionPlan.id
     const submittedActionPlan = { ...draftActionPlanWithNumberOfSessions, submittedAt: new Date().toISOString() }
 
     cy.stubGetReferral(assignedReferral.id, referralWithActionPlanId)
@@ -422,7 +422,7 @@ describe('Service provider referrals dashboard', () => {
       const assignedReferral = referralFactory
         .assigned()
         .build({ id: referralParams.id, serviceUser: { crn: referralParams.referral.serviceUser.crn } })
-      assignedReferral.sentReferralFields.actionPlanId = actionPlan.id
+      assignedReferral.sentFields.actionPlanId = actionPlan.id
 
       cy.stubGetSentReferrals([oldStyleAssignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
@@ -566,7 +566,7 @@ describe('Service provider referrals dashboard', () => {
       const assignedReferral = referralFactory
         .assigned()
         .build({ id: referralParams.id, serviceUser: { crn: referralParams.referral.serviceUser.crn } })
-      assignedReferral.sentReferralFields.actionPlanId = actionPlan.id
+      assignedReferral.sentFields.actionPlanId = actionPlan.id
 
       cy.stubGetSentReferrals([oldStyleAssignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
@@ -676,7 +676,7 @@ describe('Service provider referrals dashboard', () => {
         id: referralParams.id,
         serviceUser: { crn: referralParams.referral.serviceUser.crn },
       })
-      assignedReferral.sentReferralFields.actionPlanId = actionPlan.id
+      assignedReferral.sentFields.actionPlanId = actionPlan.id
 
       cy.stubGetSentReferrals([oldStyleAssignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
@@ -761,7 +761,7 @@ describe('Service provider referrals dashboard', () => {
     const referral = referralFactory.assigned().build({
       id: oldStyleReferral.id,
       serviceUser: referralParams.serviceUser,
-      draftReferralFields: { desiredOutcomesIds: selectedDesiredOutcomesIds },
+      formFields: { desiredOutcomesIds: selectedDesiredOutcomesIds },
     })
 
     const actionPlan = actionPlanFactory.submitted(referral.id).build()
@@ -891,7 +891,7 @@ describe('Service provider referrals dashboard', () => {
     }
 
     const referralWithEosr = referralFactory.build({ ...referral })
-    referralWithEosr.sentReferralFields.endOfServiceReport = submittedEndOfServiceReport
+    referralWithEosr.sentFields.endOfServiceReport = submittedEndOfServiceReport
     cy.stubGetReferral(referralWithEosr.id, referralWithEosr)
     cy.stubSubmitEndOfServiceReport(submittedEndOfServiceReport.id, submittedEndOfServiceReport)
 

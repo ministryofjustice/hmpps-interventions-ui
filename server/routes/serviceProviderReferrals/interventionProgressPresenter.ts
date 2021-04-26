@@ -24,7 +24,7 @@ export default class InterventionProgressPresenter {
   }
 
   get referralAssigned(): boolean {
-    return this.referral.sentReferralFields?.assignedTo != null
+    return this.referral.sentFields?.assignedTo != null
   }
 
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
@@ -111,10 +111,10 @@ export default class InterventionProgressPresenter {
     : 'inactive'
 
   private get endOfServiceReportSubmitted() {
-    return this.referral.sentReferralFields?.endOfServiceReport?.submittedAt != null
+    return this.referral.sentFields?.endOfServiceReport?.submittedAt != null
   }
 
   get allowEndOfServiceReportCreation(): boolean {
-    return this.referral.sentReferralFields?.endOfServiceReport == null
+    return this.referral.sentFields?.endOfServiceReport == null
   }
 }

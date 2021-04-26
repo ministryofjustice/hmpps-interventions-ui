@@ -10,7 +10,7 @@ class ReferralFactory extends Factory<Referral> {
 
   sent() {
     return this.params({
-      sentReferralFields: {
+      sentFields: {
         sentAt: new Date().toISOString(),
         sentBy: {
           username: 'bernard.beaks',
@@ -27,7 +27,7 @@ class ReferralFactory extends Factory<Referral> {
 
   assigned() {
     return this.params({
-      sentReferralFields: {
+      sentFields: {
         sentAt: new Date().toISOString(),
         sentBy: {
           username: 'bernard.beaks',
@@ -73,7 +73,7 @@ export default ReferralFactory.define(({ sequence }) => ({
   },
   serviceProvider: ServiceProviderFactory.build(),
 
-  draftReferralFields: {
+  formFields: {
     completionDeadline: null,
     complexityLevelId: null,
     furtherInformation: null,
@@ -89,6 +89,6 @@ export default ReferralFactory.define(({ sequence }) => ({
     usingRarDays: null,
     maximumRarDays: null,
   },
-  sentReferralFields: null,
-  endedReferralField: null,
+  sentFields: null,
+  endedFields: null,
 }))

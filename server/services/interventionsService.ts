@@ -14,7 +14,7 @@ export interface InterventionsServiceValidationError {
 
 type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 
-export interface DraftReferralFields {
+export interface FormFields {
   completionDeadline: string | null
   complexityLevelId: string | null
   furtherInformation: string | null
@@ -31,7 +31,7 @@ export interface DraftReferralFields {
   maximumRarDays: number | null
 }
 
-export interface SentReferralFields {
+export interface SentFields {
   sentAt: string
   sentBy: AuthUser
   referenceNumber: string
@@ -40,7 +40,7 @@ export interface SentReferralFields {
   endOfServiceReport: EndOfServiceReport | null
 }
 
-export interface EndedReferralFields {
+export interface EndedFields {
   endedAt: string
   endedBy: AuthUser
   cancellationReason: string
@@ -54,9 +54,9 @@ export interface Referral {
   serviceCategory: ServiceCategory
   serviceProvider: ServiceProvider
 
-  draftReferralFields: DraftReferralFields
-  sentReferralFields: SentReferralFields | null
-  endedReferralField: EndedReferralFields | null
+  formFields: FormFields
+  sentFields: SentFields | null
+  endedFields: EndedFields | null
 }
 
 export interface ReferralFields {

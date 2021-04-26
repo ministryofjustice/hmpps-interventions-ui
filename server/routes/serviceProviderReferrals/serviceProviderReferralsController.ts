@@ -129,18 +129,15 @@ export default class ServiceProviderReferralsController {
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getReferral(res.locals.user.token.accessToken, req.params.id)
-    if (referral.sentReferralFields === null) {
+    if (referral.sentFields === null) {
       throw Error("referral hasn't been sent yet")
     }
 
     const serviceUserPromise = this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
     const actionPlanPromise =
-      referral.sentReferralFields.actionPlanId === null
+      referral.sentFields.actionPlanId === null
         ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(
-            res.locals.user.token.accessToken,
-            referral.sentReferralFields.actionPlanId
-          )
+        : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, referral.sentFields.actionPlanId)
 
     const [actionPlan, serviceUser] = await Promise.all([actionPlanPromise, serviceUserPromise])
 
