@@ -1,8 +1,11 @@
 import { RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
+import ViewUtils from '../../utils/viewUtils'
 import ReferralCancellationPresenter from './referralCancellationPresenter'
 
 export default class ReferralCancellationView {
   constructor(private readonly presenter: ReferralCancellationPresenter) {}
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private get referralCancellationRadiosArgs(): RadiosArgs {
     return {
@@ -13,6 +16,7 @@ export default class ReferralCancellationView {
           classes: 'govuk-fieldset__legend--m govuk-!-margin-bottom-6',
         },
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       name: 'cancellation-reason',
       items: this.presenter.cancellationReasonsFields,
     }
@@ -33,6 +37,7 @@ export default class ReferralCancellationView {
       'probationPractitionerReferrals/referralCancellation',
       {
         presenter: this.presenter,
+        errorSummaryArgs: this.errorSummaryArgs,
         referralCancellationRadiosArgs: this.referralCancellationRadiosArgs,
         additionalCommentsTextareaArgs: this.additionalCommentsTextareaArgs,
       },

@@ -14,6 +14,8 @@ import ReferralCancellationPresenter from './referralCancellationPresenter'
 import ReferralCancellationView from './referralCancellationView'
 import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
 import EndOfServiceReportView from './endOfServiceReportView'
+import ReferralCancellationForm from './referralCancellationForm'
+import { FormValidationError } from '../../utils/formValidationError'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -148,5 +150,44 @@ export default class ProbationPractitionerReferralsController {
     const view = new EndOfServiceReportView(presenter)
 
     res.render(...view.renderArgs)
+  }
+
+  async redirectToCancellationCheckAnswersPage(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    let formError: FormValidationError | null = null
+
+    const data = await new ReferralCancellationForm(req).data()
+
+    if (data.error) {
+      res.status(400)
+      formError = data.error
+    } else {
+      const referralId = req.params.id
+
+      return res.render('probationPractitionerReferrals/referralCancellationCheckAnswers', {
+        ...data.paramsForUpdate,
+        href: `/probation-practitioner/referrals/${referralId}/cancellation/submit`,
+      })
+    }
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      sentReferral.referral.serviceCategoryId
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
+
+    const presenter = new ReferralCancellationPresenter(
+      sentReferral,
+      serviceCategory,
+      serviceUser,
+      cancellationReasons,
+      formError
+    )
+    const view = new ReferralCancellationView(presenter)
+
+    return res.render(...view.renderArgs)
   }
 }

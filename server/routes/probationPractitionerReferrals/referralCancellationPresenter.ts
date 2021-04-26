@@ -1,13 +1,16 @@
 import a from 'indefinite'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import { CancellationReason, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { FormValidationError } from '../../utils/formValidationError'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class ReferralCancellationPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly cancellationReasons: CancellationReason[]
+    private readonly cancellationReasons: CancellationReason[],
+    private readonly error: FormValidationError | null = null
   ) {}
 
   readonly text = {
@@ -17,6 +20,12 @@ export default class ReferralCancellationPresenter {
     )} intervention with ${this.sentReferral.referral.serviceProvider.name}.`,
     additionalCommentsLabel: 'Additional comments (optional):',
   }
+
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'cancellation-reason')
+
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
+
+  readonly checkAnswersHref = `/probation-practitioner/referrals/${this.sentReferral.id}/cancellation/check-your-answers`
 
   get cancellationReasonsFields(): { value: string; text: string; checked: boolean }[] {
     return this.cancellationReasons.map(cancellationReason => ({

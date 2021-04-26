@@ -51,4 +51,90 @@ describe(ReferralCancellationPresenter, () => {
       ])
     })
   })
+
+  describe('errorSummary', () => {
+    const sentReferral = sentReferralFactory.build()
+    const serviceUser = deliusServiceUserFactory.build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const cancellationReasons: CancellationReason[] = []
+
+    describe('when there is an error', () => {
+      it('returns a summary of the error', () => {
+        const presenter = new ReferralCancellationPresenter(
+          sentReferral,
+          serviceCategory,
+          serviceUser,
+          cancellationReasons,
+          {
+            errors: [
+              {
+                errorSummaryLinkedField: 'cancellation-reason',
+                formFields: ['cancellation-reason'],
+                message: 'Select a reason for cancelling the referral',
+              },
+            ],
+          }
+        )
+
+        expect(presenter.errorSummary).toEqual([
+          { field: 'cancellation-reason', message: 'Select a reason for cancelling the referral' },
+        ])
+      })
+    })
+
+    describe('when there is no error', () => {
+      it('returns null', () => {
+        const presenter = new ReferralCancellationPresenter(
+          sentReferral,
+          serviceCategory,
+          serviceUser,
+          cancellationReasons
+        )
+
+        expect(presenter.errorSummary).toBeNull()
+      })
+    })
+  })
+
+  describe('errorMessage', () => {
+    const sentReferral = sentReferralFactory.build()
+    const serviceUser = deliusServiceUserFactory.build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const cancellationReasons: CancellationReason[] = []
+
+    describe('when there is an error', () => {
+      it('returns the error message', () => {
+        const presenter = new ReferralCancellationPresenter(
+          sentReferral,
+          serviceCategory,
+          serviceUser,
+          cancellationReasons,
+          {
+            errors: [
+              {
+                errorSummaryLinkedField: 'cancellation-reason',
+                formFields: ['cancellation-reason'],
+                message: 'Select a reason for cancelling the referral',
+              },
+            ],
+          }
+        )
+
+        expect(presenter.errorMessage).toEqual('Select a reason for cancelling the referral')
+      })
+    })
+
+    describe('when there is no error', () => {
+      it('returns null', () => {
+        const presenter = new ReferralCancellationPresenter(
+          sentReferral,
+          serviceCategory,
+          serviceUser,
+          cancellationReasons
+        )
+
+        expect(presenter.errorMessage).toBeNull()
+      })
+    })
+  })
 })

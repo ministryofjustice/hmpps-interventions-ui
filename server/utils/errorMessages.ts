@@ -94,4 +94,9 @@ export default {
       empty: (name: string) => `Select whether ${name} achieved the desired outcome`,
     },
   },
+  cancelReferral: {
+    cancellationReason: {
+      empty: 'Select a reason for cancelling the referral',
+    },
+  },
 }
