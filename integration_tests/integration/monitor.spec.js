@@ -248,9 +248,15 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('Cancel this referral').click()
       cy.contains('Service user has moved out of delivery area').click()
       cy.contains('Additional comments (optional)').type('Some additional comments')
+
+      cy.stubCancelReferral(assignedReferral.id, assignedReferral)
+
       cy.contains('Continue').click()
 
       cy.contains('Are you sure you want to cancel this referral?')
+
+      cy.contains('Cancel referral').click()
+      cy.contains('This referral has been cancelled')
     })
   })
 })

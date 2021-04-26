@@ -214,3 +214,24 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/check-your-ans
       })
   })
 })
+
+describe('POST /probation-practitioner/referrals/:id/cancellation/submit', () => {
+  it('submits a request to cancel the referral on the backend and redirects to the confirmation screen', async () => {
+    await request(app)
+      .post(`/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/submit`)
+      .type('form')
+      .send({ 'cancellation-reason': 'MOV', 'cancellation-comments': 'Alex has moved out of the area' })
+      .expect(302)
+      .expect(
+        'Location',
+        `/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/confirmation`
+      )
+
+    expect(interventionsService.cancelReferral).toHaveBeenCalledWith(
+      'token',
+      '9747b7fb-51bc-40e2-bbbd-791a9be9284b',
+      'MOV',
+      'Alex has moved out of the area'
+    )
+  })
+})

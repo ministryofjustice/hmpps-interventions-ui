@@ -18,6 +18,8 @@ import ReferralCancellationCheckAnswersPresenter from './referralCancellationChe
 import ReferralCancellationCheckAnswersView from './referralCancellationCheckAnswersView'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralCancellationReasonForm from './referralCancellationReasonForm'
+import ReferralCancellationConfirmationView from './referralCancellationConfirmationView'
+import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -187,6 +189,36 @@ export default class ProbationPractitionerReferralsController {
     const view = new ReferralCancellationCheckAnswersView(presenter)
 
     return res.render(...view.renderArgs)
+  }
+
+  async cancelReferral(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const cancellationReason = req.body['cancellation-reason']
+    const cancellationComments = req.body['cancellation-comments']
+
+    await this.interventionsService.cancelReferral(accessToken, referralId, cancellationReason, cancellationComments)
+
+    return res.redirect(`/probation-practitioner/referrals/${referralId}/cancellation/confirmation`)
+  }
+
+  async showCancellationConfirmationPage(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+    const serviceCategory = await this.interventionsService.getServiceCategory(
+      accessToken,
+      sentReferral.referral.serviceCategoryId
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
+    const view = new ReferralCancellationConfirmationView(presenter)
+
+    res.render(...view.renderArgs)
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
