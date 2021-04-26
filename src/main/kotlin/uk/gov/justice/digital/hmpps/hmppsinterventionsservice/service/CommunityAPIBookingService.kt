@@ -45,12 +45,11 @@ class CommunityAPIBookingService(
       appointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
       officeLocationCode = officeLocation,
       notes = resourceUrl,
-      context = integrationContext,
     )
 
     val referral = appointment.actionPlan.referral
     val communityApiBookAppointmentPath = UriComponentsBuilder.fromPath(communityApiBookAppointmentLocation)
-      .buildAndExpand(referral.serviceUserCRN, referral.relevantSentenceId!!)
+      .buildAndExpand(referral.serviceUserCRN, referral.relevantSentenceId!!, integrationContext)
       .toString()
 
     val response = communityAPIClient.makeSyncPostRequest(communityApiBookAppointmentPath, appointmentCreateRequestDTO, AppointmentCreateResponseDTO::class.java)
@@ -70,7 +69,6 @@ data class AppointmentCreateRequestDTO(
   val appointmentEnd: OffsetDateTime,
   val officeLocationCode: String,
   val notes: String,
-  val context: String,
 )
 
 data class AppointmentCreateResponseDTO(
