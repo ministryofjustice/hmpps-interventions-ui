@@ -15,14 +15,18 @@
   <p class="govuk-body"><strong>Is there anything else that needs doing to achieve this outcome?</strong></p>
   <p class="govuk-body">{{ outcome.additionalTaskComments }}</p>
 
-  <p>
-  <a class="govuk-link" id="change-outcome-{{loop.index}}" href="{{ outcome.changeHref }}">Change</a>
-  </p>
+  {% if endOfServiceReportAnswersPresenter.allowChange %}
+    <p>
+    <a class="govuk-link" id="change-outcome-{{loop.index}}" href="{{ outcome.changeHref }}">Change</a>
+    </p>
+  {% endif %}
 {% endfor %}
 
 <h3 class="govuk-heading-m">Additional information</h3>
 
 <p class="govuk-body">{{ endOfServiceReportAnswersPresenter.furtherInformation.text }}</p>
-<p>
-<a class="govuk-link" id="change-further-information" href="{{ endOfServiceReportAnswersPresenter.furtherInformation.changeHref }}">Change</a>
-</p>
+{% if endOfServiceReportAnswersPresenter.allowChange %}
+  <p>
+  <a class="govuk-link" id="change-further-information" href="{{ endOfServiceReportAnswersPresenter.furtherInformation.changeHref }}">Change</a>
+  </p>
+{% endif %}

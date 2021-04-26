@@ -23,7 +23,8 @@ export default class EndOfServiceReportAnswersPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategory
+    private readonly serviceCategory: ServiceCategory,
+    private readonly allowChange: boolean = true
   ) {}
 
   readonly interventionSummary: SummaryListItem[] = [

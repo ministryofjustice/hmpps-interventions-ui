@@ -2,18 +2,6 @@ import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../service
 import EndOfServiceReportAnswersPresenter from '../shared/endOfServiceReportAnswersPresenter'
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
 
-export type EndOfServiceReportAchievementLevelStyle = 'ACHIEVED' | 'PARTIALLY_ACHIEVED' | 'NOT_ACHIEVED'
-
-interface OutcomePresenter {
-  title: string
-  subtitle: string
-  progressionComments: string
-  additionalTaskComments: string
-  changeHref: string
-  achievementLevelText: string
-  achievementLevelStyle: EndOfServiceReportAchievementLevelStyle
-}
-
 export default class EndOfServiceReportCheckAnswersPresenter {
   constructor(
     private readonly referral: SentReferral,
@@ -32,6 +20,7 @@ export default class EndOfServiceReportCheckAnswersPresenter {
   readonly answersPresenter = new EndOfServiceReportAnswersPresenter(
     this.referral,
     this.endOfServiceReport,
-    this.serviceCategory
+    this.serviceCategory,
+    true
   )
 }
