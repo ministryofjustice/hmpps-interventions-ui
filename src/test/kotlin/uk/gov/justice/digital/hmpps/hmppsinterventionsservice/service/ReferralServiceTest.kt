@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -71,6 +72,20 @@ class ReferralServiceTest @Autowired constructor(
       SampleData.sampleReferral("X123456", "Harmony Living")
     )
     sampleIntervention = sampleReferral.intervention
+  }
+
+  @Nested
+  inner class GetReferral {
+    @Test
+    fun `non persisted referral returns null`() {
+      val referral = referralService.getReferral(UUID.randomUUID())
+      assertThat(referral).isNull()
+    }
+    @Test
+    fun `persisted referral is returned`() {
+      val referral = referralService.getReferral(sampleReferral.id)
+      assertThat(referral).isNotNull
+    }
   }
 
   @Test
