@@ -3,6 +3,8 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import serviceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 
 describe(InterventionProgressPresenter, () => {
   describe('sessionTableRows', () => {
@@ -164,6 +166,78 @@ describe(InterventionProgressPresenter, () => {
       const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
 
       expect(presenter.referralAssigned).toEqual(true)
+    })
+  })
+
+  describe('hasEndOfServiceReport', () => {
+    describe('when the referral has no end of service report', () => {
+      it('returns false', () => {
+        const referral = sentReferralFactory.build({ endOfServiceReport: null })
+        const serviceCategory = serviceCategoryFactory.build()
+        const serviceUser = serviceUserFactory.build()
+        const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
+
+        expect(presenter.hasEndOfServiceReport).toEqual(false)
+      })
+    })
+    describe('when the referral has an end of service report', () => {
+      describe('and it is not submitted', () => {
+        it('returns false', () => {
+          const referral = sentReferralFactory.build({
+            endOfServiceReport: endOfServiceReportFactory.justCreated().build(),
+          })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
+
+          expect(presenter.hasEndOfServiceReport).toEqual(false)
+        })
+      })
+
+      describe('and it is submitted', () => {
+        it('returns true', () => {
+          const referral = sentReferralFactory.build({
+            endOfServiceReport: endOfServiceReportFactory.submitted().build(),
+          })
+          const serviceCategory = serviceCategoryFactory.build()
+          const serviceUser = serviceUserFactory.build()
+          const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
+
+          expect(presenter.hasEndOfServiceReport).toEqual(true)
+        })
+      })
+    })
+  })
+
+  describe('endOfServiceReportTableHeaders', () => {
+    it('returns the headers for the end of service report table', () => {
+      const referral = sentReferralFactory.build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
+
+      expect(presenter.endOfServiceReportTableHeaders).toEqual(['Caseworker', 'Status', 'Action'])
+    })
+  })
+
+  describe('endOfServiceReportTableRows', () => {
+    it('returns the contents of a table detailing the end of service report', () => {
+      const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+      const referral = sentReferralFactory.build({
+        assignedTo: hmppsAuthUserFactory.build({ username: 'john.bloggs' }),
+        endOfServiceReport,
+      })
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [])
+
+      expect(presenter.endOfServiceReportTableRows).toEqual([
+        {
+          caseworker: 'john.bloggs',
+          linkHtml: `<a class="govuk-link" href="/probation-practitioner/end-of-service-report/${endOfServiceReport.id}">View</a>`,
+          tagArgs: { classes: 'govuk-tag--green', text: 'Completed' },
+        },
+      ])
     })
   })
 })

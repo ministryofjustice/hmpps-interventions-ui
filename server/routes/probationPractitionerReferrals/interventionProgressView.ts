@@ -21,6 +21,17 @@ export default class InterventionProgressView {
     }
   }
 
+  private endOfServiceReportTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
+    return {
+      head: this.presenter.endOfServiceReportTableHeaders.map((header: string) => {
+        return { text: header }
+      }),
+      rows: this.presenter.endOfServiceReportTableRows.map(row => {
+        return [{ text: `${row.caseworker}` }, { text: tagMacro(row.tagArgs as TagArgs) }, { html: `${row.linkHtml}` }]
+      }),
+    }
+  }
+
   private readonly backLinkArgs = {
     text: 'Back',
     href: '/probation-practitioner/dashboard',
@@ -35,6 +46,7 @@ export default class InterventionProgressView {
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         serviceUserBannerArgs: this.presenter.referralOverviewPagePresenter.serviceUserBannerArgs,
         sessionTableArgs: this.sessionTableArgs.bind(this),
+        endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
       },
     ]
   }

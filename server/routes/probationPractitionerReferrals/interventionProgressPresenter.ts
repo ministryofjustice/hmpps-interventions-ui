@@ -85,4 +85,28 @@ export default class InterventionProgressPresenter {
         }
     }
   }
+
+  readonly hasEndOfServiceReport = (this.referral.endOfServiceReport?.submittedAt ?? null) !== null
+
+  readonly endOfServiceReportTableHeaders = ['Caseworker', 'Status', 'Action']
+
+  get endOfServiceReportTableRows(): Record<string, unknown>[] {
+    return [
+      {
+        caseworker: this.referral.assignedTo?.username ?? '',
+        tagArgs: {
+          text: this.endOfServiceReportTableParams.text,
+          classes: this.endOfServiceReportTableParams.tagClass,
+        },
+        linkHtml: this.endOfServiceReportTableParams.linkHTML,
+      },
+    ]
+  }
+
+  private endOfServiceReportTableParams = {
+    // At the moment this method is only used by the template when the end of service report is submitted, hence the hardcoded "Completed"
+    text: 'Completed',
+    tagClass: 'govuk-tag--green',
+    linkHTML: `<a class="govuk-link" href="/probation-practitioner/end-of-service-report/${this.referral.endOfServiceReport?.id}">View</a>`,
+  }
 }

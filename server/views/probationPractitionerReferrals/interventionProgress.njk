@@ -22,7 +22,13 @@
   {% endif %}
 
   <h2 class="govuk-heading-m">End of service report</h2>
-  <p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
+  {% if presenter.hasEndOfServiceReport %}
+    <p>This is the end of service report created by the service provider.</p>
+
+    {{ govukTable(endOfServiceReportTableArgs(govukTag)) }}
+  {% else %}
+    <p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
+  {% endif %}
 
   <a href='{{ presenter.referralCancellationHref }}'>Cancel this referral</a>
 {% endblock %}
