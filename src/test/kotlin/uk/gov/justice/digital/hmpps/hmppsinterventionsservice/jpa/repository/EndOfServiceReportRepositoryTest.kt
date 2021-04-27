@@ -31,7 +31,7 @@ class EndOfServiceReportRepositoryTest @Autowired constructor(
       referral = referral,
       outcomes = outcomes.map {
         EndOfServiceReportOutcome(it, AchievementLevel.ACHIEVED, "alex did really well")
-      }.toSet()
+      }.toMutableSet()
     )
 
     val outcome = endOfServiceReport.outcomes.first()
