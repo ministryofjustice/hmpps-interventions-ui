@@ -1,8 +1,8 @@
 import { RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
-import ReferralCancellationPresenter from './referralCancellationPresenter'
+import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 
-export default class ReferralCancellationView {
-  constructor(private readonly presenter: ReferralCancellationPresenter) {}
+export default class ReferralCancellationReasonView {
+  constructor(private readonly presenter: ReferralCancellationReasonPresenter) {}
 
   private get referralCancellationRadiosArgs(): RadiosArgs {
     return {

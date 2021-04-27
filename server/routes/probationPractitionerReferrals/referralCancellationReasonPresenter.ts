@@ -2,7 +2,7 @@ import a from 'indefinite'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import { CancellationReason, SentReferral, ServiceCategory } from '../../services/interventionsService'
 
-export default class ReferralCancellationPresenter {
+export default class ReferralCancellationReasonPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,

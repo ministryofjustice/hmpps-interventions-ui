@@ -3,9 +3,9 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import { CancellationReason } from '../../services/interventionsService'
-import ReferralCancellationPresenter from './referralCancellationPresenter'
+import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 
-describe(ReferralCancellationPresenter, () => {
+describe(ReferralCancellationReasonPresenter, () => {
   describe('text', () => {
     it('includes a title, information and label for the additional comments question', () => {
       const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
@@ -14,7 +14,7 @@ describe(ReferralCancellationPresenter, () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const cancellationReasons: CancellationReason[] = []
 
-      const presenter = new ReferralCancellationPresenter(
+      const presenter = new ReferralCancellationReasonPresenter(
         sentReferral,
         serviceCategory,
         serviceUser,
@@ -38,7 +38,7 @@ describe(ReferralCancellationPresenter, () => {
         { code: 'MOV', description: 'Service user has moved out of delivery area' },
       ]
 
-      const presenter = new ReferralCancellationPresenter(
+      const presenter = new ReferralCancellationReasonPresenter(
         sentReferral,
         serviceCategory,
         serviceUser,
