@@ -71,12 +71,10 @@ class EndOfServiceReportController(
   fun submitEndOfServiceReport(
     @PathVariable id: UUID,
     authentication: JwtAuthenticationToken
-  ): ResponseEntity<EndOfServiceReportDTO> {
+  ): EndOfServiceReportDTO {
     val submittedByUser = jwtAuthUserMapper.map(authentication)
     val submittedEndOfServiceReport = endOfServiceReportService.submitEndOfServiceReport(id, submittedByUser)
 
-    val endOfServiceReportDTO = EndOfServiceReportDTO.from(submittedEndOfServiceReport)
-    val location = locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReportDTO.id)
-    return ResponseEntity.created(location).body(endOfServiceReportDTO)
+    return EndOfServiceReportDTO.from(submittedEndOfServiceReport)
   }
 }

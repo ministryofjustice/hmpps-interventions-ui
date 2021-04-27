@@ -125,9 +125,7 @@ class EndOfServiceReportControllerTest {
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uri)
     whenever(endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)).thenReturn(endOfServiceReport)
 
-    val responseEntity = endOfServiceReportController.submitEndOfServiceReport(endOfServiceReportId, jwtAuthenticationToken)
-
-    assertThat(responseEntity.headers["location"]).isEqualTo(listOf(uri.toString()))
-    assertThat(responseEntity.body).isEqualTo(EndOfServiceReportDTO.from(endOfServiceReport))
+    val response = endOfServiceReportController.submitEndOfServiceReport(endOfServiceReportId, jwtAuthenticationToken)
+    assertThat(response).isEqualTo(EndOfServiceReportDTO.from(endOfServiceReport))
   }
 }
