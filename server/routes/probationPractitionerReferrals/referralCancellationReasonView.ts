@@ -30,7 +30,7 @@ export default class ReferralCancellationReasonView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'probationPractitionerReferrals/referralCancellation',
+      'probationPractitionerReferrals/referralCancellationReason',
       {
         presenter: this.presenter,
         referralCancellationRadiosArgs: this.referralCancellationRadiosArgs,
