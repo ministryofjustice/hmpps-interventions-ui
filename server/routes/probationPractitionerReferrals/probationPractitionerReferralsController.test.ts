@@ -191,20 +191,26 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => 
   })
 })
 
-describe('GET /probation-practitioner/referrals/:id/cancellation/check-your-answers', () => {
-  it('renders a page where the PP can confirm whether or not to cancel a referral', async () => {
+describe('POST /probation-practitioner/referrals/:id/cancellation/check-your-answers', () => {
+  it('passes through params to a page where the PP can confirm whether or not to cancel a referral', async () => {
     const referral = sentReferralFactory.assigned().build()
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const serviceUser = deliusServiceUserFactory.build()
 
     interventionsService.getSentReferral.mockResolvedValue(referral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
 
     await request(app)
-      .get(`/probation-practitioner/referrals/${referral.id}/cancellation/check-your-answers`)
+      .post(`/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/check-your-answers`)
+      .type('form')
+      .send({ 'cancellation-reason': 'MOV', 'cancellation-comments': 'Alex has moved out of the area' })
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Referral Cancellation')
         expect(res.text).toContain('Are you sure you want to cancel this referral?')
+        expect(res.text).toContain('MOV')
+        expect(res.text).toContain('Alex has moved out of the area')
       })
   })
 })

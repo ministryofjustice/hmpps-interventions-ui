@@ -19,6 +19,8 @@
     </div>
     <form method="post" action="#">
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="cancellation-reason" value="{{ hiddenFields.cancellationReason }}">
+      <input type="hidden" name="cancellation-comments" value="{{ hiddenFields.cancellationComments }}">
 
       {{ govukButton({ text: "Cancel referral" }) }}
     </form>

@@ -9,6 +9,7 @@ export default class ReferralCancellationCheckAnswersView {
       {
         presenter: this.presenter,
         serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
+        hiddenFields: this.presenter.hiddenFields,
       },
     ]
   }

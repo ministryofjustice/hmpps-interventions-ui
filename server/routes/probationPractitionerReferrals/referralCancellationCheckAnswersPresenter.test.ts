@@ -41,4 +41,21 @@ describe(ReferralCancellationCheckAnswersPresenter, () => {
       expect(presenter.serviceUserBannerPresenter).toBeDefined()
     })
   })
+
+  describe('hiddenFields', () => {
+    it('contains the cancellation code and comments', () => {
+      const serviceUser = deliusServiceUser.build()
+      const presenter = new ReferralCancellationCheckAnswersPresenter(
+        '89047822-1014-4f8f-a52c-c348137c89a5',
+        serviceUser,
+        'MOV',
+        'Alex moved out of the area'
+      )
+
+      expect(presenter.hiddenFields).toMatchObject({
+        cancellationReason: 'MOV',
+        cancellationComments: 'Alex moved out of the area',
+      })
+    })
+  })
 })
