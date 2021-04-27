@@ -8,6 +8,7 @@
   {% include "../../partials/endOfServiceReportAnswers.njk" %}
 
   <form method="post" action="{{ presenter.formAction }}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{ govukButton({ text: "Submit the report" }) }}
   </form>
 {% endblock %}
