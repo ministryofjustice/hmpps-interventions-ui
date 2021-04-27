@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: data-extractor
+  name: data-extractor-reporting
 spec:
   schedule: "0 1 * * *"
   jobTemplate:
@@ -10,7 +10,7 @@ spec:
         spec:
           restartPolicy: "Never"
           containers:
-          - name: data-extractor
+          - name: data-extractor-reporting
             image: ministryofjustice/data-engineering-data-extractor:develop
             {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
             command: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
@@ -43,17 +43,17 @@ spec:
               - name: S3_DESTINATION
                 valueFrom:
                   secretKeyRef:
-                    name: analytical-platform-reporting-s3-bucket
+                    name: reporting-s3-bucket
                     key: destination_bucket
               - name: AWS_ACCESS_KEY_ID
                 valueFrom:
                   secretKeyRef:
-                    name: analytical-platform-reporting-s3-bucket
+                    name: reporting-s3-bucket
                     key: access_key_id
               - name: AWS_SECRET_ACCESS_KEY
                 valueFrom:
                   secretKeyRef:
-                    name: analytical-platform-reporting-s3-bucket
+                    name: reporting-s3-bucket
                     key: secret_access_key
               - name: AWS_DEFAULT_REGION
                 value: eu-west-2
