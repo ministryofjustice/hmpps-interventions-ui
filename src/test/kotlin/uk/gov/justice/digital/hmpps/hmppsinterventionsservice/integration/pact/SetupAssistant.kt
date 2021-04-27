@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
@@ -49,6 +51,7 @@ class SetupAssistant(
   private val dynamicFrameworkContractRepository: DynamicFrameworkContractRepository,
   private val desiredOutcomeRepository: DesiredOutcomeRepository,
   private val endOfServiceReportRepository: EndOfServiceReportRepository,
+  private val cancellationReasonRepository: CancellationReasonRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -58,6 +61,7 @@ class SetupAssistant(
 
   private val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   private val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
+  private val cancellationReasons = cancellationReasonRepository.findAll().associateBy { it.code }
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
@@ -75,6 +79,9 @@ class SetupAssistant(
 
   fun randomServiceCategory(): ServiceCategory {
     return serviceCategories.random().value
+  }
+  fun randomCancellationReason(): CancellationReason {
+    return cancellationReasons.random().value
   }
 
   fun randomDesiredOutcome(): DesiredOutcome {
@@ -132,6 +139,12 @@ class SetupAssistant(
         serviceUserCRN = serviceUserCRN,
       )
     )
+  }
+
+  fun createEndedReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention(), cancellationReason: CancellationReason? = randomCancellationReason(), cancellationComments: String? = null): Referral {
+    val ppUser = createPPUser()
+    val spUser = createSPUser()
+    return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endedBy = ppUser, assignedTo = spUser, cancellationReason = cancellationReason, cancellationComments = cancellationComments))
   }
 
   fun createSentReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention()): Referral {

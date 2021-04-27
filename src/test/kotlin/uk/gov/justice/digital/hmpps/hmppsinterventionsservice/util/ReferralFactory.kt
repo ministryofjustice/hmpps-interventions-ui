@@ -14,7 +14,7 @@ import java.util.UUID
 class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
   private val interventionFactory = InterventionFactory(em)
-  private val calcellationReasonFactory = CancellationReasonFactory(em)
+  private val cancellationReasonFactory = CancellationReasonFactory(em)
 
   fun createDraft(
     id: UUID = UUID.randomUUID(),
@@ -88,7 +88,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedAt: OffsetDateTime? = null,
     endedAt: OffsetDateTime? = OffsetDateTime.now(),
     endedBy: AuthUser? = authUserFactory.create(),
-    cancellationReason: CancellationReason? = calcellationReasonFactory.create(),
+    cancellationReason: CancellationReason? = cancellationReasonFactory.create(),
     cancellationComments: String? = null
   ): Referral {
     return create(
