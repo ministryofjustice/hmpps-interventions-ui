@@ -20,9 +20,5 @@ values ('F6D6710F-8812-43D0-96F9-C0BDE9FF66F9', '21EA6AFE-C437-4018-9260-BF1A829
        ('7F8EBDFF-E127-475B-986F-635288CED216', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 2, '2021-04-07 12:00:00.000000+00', 120, '2021-03-12 18:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949'),
        ('C6AA09D1-3BA2-4069-AFFB-1E9F98CDFF8D', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 3, null, null, '2021-03-12 18:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949');
 
-insert into end_of_service_report(id, created_at, created_by_id, submitted_at, submitted_by_id, further_information)
-values ('2cfcfa79-bb3c-484a-9428-85072e600812', '2021-04-22 09:00:00.000000+00', '608955ae-52ed-44cc-884c-011597a77949', null, null, null);
-
-update referral
-    set end_of_service_report_id = '2cfcfa79-bb3c-484a-9428-85072e600812'
-    where id = 'a2a551aa-3d11-44b1-907b-42a028852bc1';
+insert into end_of_service_report(id, referral_id, created_at, created_by_id, submitted_at, submitted_by_id, further_information)
+values ('2cfcfa79-bb3c-484a-9428-85072e600812', 'a2a551aa-3d11-44b1-907b-42a028852bc1', '2021-04-22 09:00:00.000000+00', '608955ae-52ed-44cc-884c-011597a77949', null, null, null);

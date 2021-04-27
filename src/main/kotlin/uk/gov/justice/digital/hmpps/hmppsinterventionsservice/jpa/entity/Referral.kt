@@ -78,7 +78,7 @@ class Referral(
   @NotNull val createdAt: OffsetDateTime,
   @Id val id: UUID,
 
-  @OneToOne @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
+  @OneToOne(mappedBy = "referral") @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
 ) {
   fun getResponsibleProbationPractitioner(): AuthUser {
     // fixme: should this sentBy or createdBy?

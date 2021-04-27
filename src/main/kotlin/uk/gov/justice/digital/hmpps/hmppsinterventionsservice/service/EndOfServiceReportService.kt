@@ -24,20 +24,14 @@ class EndOfServiceReportService(
     referralId: UUID,
     createdByUser: AuthUser
   ): EndOfServiceReport {
-    val referral = getReferral(referralId)
-
     val endOfServiceReport = EndOfServiceReport(
       id = UUID.randomUUID(),
-      referral = referral,
+      referral = referralRepository.getOne(referralId),
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
     )
 
-    val savedEndOfServiceReport = endOfServiceReportRepository.save(endOfServiceReport)
-    referral.endOfServiceReport = endOfServiceReport
-    referralRepository.save(referral)
-
-    return savedEndOfServiceReport
+    return endOfServiceReportRepository.save(endOfServiceReport)
   }
 
   fun getEndOfServiceReport(endOfServiceReportId: UUID): EndOfServiceReport {

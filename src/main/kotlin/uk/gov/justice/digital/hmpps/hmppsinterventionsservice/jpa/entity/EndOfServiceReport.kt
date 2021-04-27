@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull
 @Table(name = "end_of_service_report")
 data class EndOfServiceReport(
   @Id val id: UUID,
-  @OneToOne(mappedBy = "endOfServiceReport") val referral: Referral,
+  @OneToOne val referral: Referral,
 
   @NotNull val createdAt: OffsetDateTime,
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,
