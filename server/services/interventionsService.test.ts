@@ -16,6 +16,7 @@ import { DeliusServiceUser } from './communityApiService'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
+import referralFactory from '../../testutils/factories/referral'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -27,6 +28,57 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
     token = oauth2TokenFactory.deliusToken().build()
+  })
+
+  describe('getReferral', () => {
+    it('returns a sent referral for the given ID', async () => {
+      const sentReferral = referralFactory.sent().build({ id: '81d754aa-d868-4347-9c0f-50690773014e' })
+
+      await provider.addInteraction({
+        state: `There is an existing sent referral with ID of ${sentReferral.id}`,
+        uponReceiving: `a request for the referral with ID ${sentReferral.id}`,
+        withRequest: {
+          method: 'GET',
+          path: `/referral/${sentReferral.id}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(sentReferral),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const referral = await interventionsService.getReferral(token, sentReferral.id)
+      expect(referral.id).toBe(sentReferral.id)
+      expect(referral.sentFields).not.toBeNull()
+    })
+
+    it('returns an ended referral for the given ID', async () => {
+      const endedReferral = referralFactory.ended().build({ id: '351e7f35-6399-43df-b615-cb41d5ba3e14' })
+
+      await provider.addInteraction({
+        state: `There is an existing referral with ID of ${endedReferral.id} which has been ended containing a cancellation reason and comment`,
+        uponReceiving: `a request for the referral with ID ${endedReferral.id}`,
+        withRequest: {
+          method: 'GET',
+          path: `/referral/${endedReferral.id}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(endedReferral),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const referral = await interventionsService.getReferral(token, endedReferral.id)
+      expect(referral.id).toBe(endedReferral.id)
+      expect(referral.sentFields).not.toBeNull()
+      expect(referral.endedFields).not.toBeNull()
+      expect(referral.endedFields?.cancellationComments).toEqual(endedReferral.endedFields?.cancellationComments)
+      expect(referral.endedFields?.cancellationReason).toEqual(endedReferral.endedFields?.cancellationReason)
+    })
   })
 
   describe('getDraftReferral', () => {

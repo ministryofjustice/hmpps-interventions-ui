@@ -1,15 +1,37 @@
 import { Factory } from 'fishery'
+import { v4 as uuidv4 } from 'uuid'
 import ServiceProviderFactory from './serviceProvider'
 import { Referral } from '../../server/services/interventionsService'
 
 class ReferralFactory extends Factory<Referral> {
-  draft() {
-    // todo
+  justCreated() {
     return this.params({})
   }
 
+  draft() {
+    const today = new Date()
+    return this.justCreated().params({
+      formFields: {
+        completionDeadline: new Date(today.setMonth(today.getMonth() + 6)).toISOString(),
+        complexityLevelId: uuidv4(),
+        furtherInformation: '',
+        relevantSentenceId: 8976125623,
+        desiredOutcomesIds: [uuidv4(), uuidv4()],
+        additionalNeedsInformation: '',
+        accessibilityNeeds: 'alex requires wheelchair access',
+        needsInterpreter: true,
+        interpreterLanguage: 'urdu',
+        hasAdditionalResponsibilities: true,
+        whenUnavailable: 'wednesdays',
+        additionalRiskInformation: '',
+        usingRarDays: true,
+        maximumRarDays: 5,
+      },
+    })
+  }
+
   sent() {
-    return this.params({
+    return this.draft().params({
       sentFields: {
         sentAt: new Date().toISOString(),
         sentBy: {
@@ -26,7 +48,7 @@ class ReferralFactory extends Factory<Referral> {
   }
 
   assigned() {
-    return this.params({
+    return this.draft().params({
       sentFields: {
         sentAt: new Date().toISOString(),
         sentBy: {
@@ -37,7 +59,7 @@ class ReferralFactory extends Factory<Referral> {
         referenceNumber: 'KA3825AC',
         assignedTo: {
           username: 'UserABC',
-          userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+          userId: uuidv4(),
           authSource: 'auth',
         },
         actionPlanId: null,
@@ -47,13 +69,23 @@ class ReferralFactory extends Factory<Referral> {
   }
 
   ended() {
-    // todo
-    return this.params({})
+    return this.assigned().params({
+      endedFields: {
+        endedAt: '2021-05-13T12:30:00Z',
+        endedBy: {
+          username: 'BERNARD.BEAKS',
+          userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+          authSource: 'delius',
+        },
+        cancellationReason: 'Service user has been recalled',
+        cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled',
+      },
+    })
   }
 }
 
 export default ReferralFactory.define(({ sequence }) => ({
-  id: sequence.toString(),
+  id: uuidv4(),
   createdAt: new Date().toISOString(),
   serviceUser: {
     crn: sequence.toString(),
@@ -68,7 +100,7 @@ export default ReferralFactory.define(({ sequence }) => ({
     disabilities: ['Autism spectrum condition', 'Sciatica'],
   },
   serviceCategory: {
-    id: sequence.toString(),
+    id: uuidv4(),
     name: 'accommodation',
   },
   serviceProvider: ServiceProviderFactory.build(),
