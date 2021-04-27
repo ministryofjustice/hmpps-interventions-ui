@@ -190,3 +190,21 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => 
       })
   })
 })
+
+describe('GET /probation-practitioner/referrals/:id/cancellation/check-your-answers', () => {
+  it('renders a page where the PP can confirm whether or not to cancel a referral', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const serviceUser = deliusServiceUserFactory.build()
+
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/cancellation/check-your-answers`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Referral Cancellation')
+        expect(res.text).toContain('Are you sure you want to cancel this referral?')
+      })
+  })
+})

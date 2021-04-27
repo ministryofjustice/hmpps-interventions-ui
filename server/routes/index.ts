@@ -189,6 +189,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/probation-practitioner/referrals/:id/cancellation/reason', (req, res) =>
     probationPractitionerReferralsController.showReferralCancellationReasonPage(req, res)
   )
+  get('/probation-practitioner/referrals/:id/cancellation/check-your-answers', (req, res) =>
+    probationPractitionerReferralsController.showReferralCancellationCheckAnswersPage(req, res)
+  )
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
   get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)

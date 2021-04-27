@@ -14,6 +14,8 @@ import ReferralCancellationReasonPresenter from './referralCancellationReasonPre
 import ReferralCancellationReasonView from './referralCancellationReasonView'
 import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
 import EndOfServiceReportView from './endOfServiceReportView'
+import ReferralCancellationCheckAnswersPresenter from './referralCancellationCheckAnswersPresenter'
+import ReferralCancellationCheckAnswersView from './referralCancellationCheckAnswersView'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -135,6 +137,20 @@ export default class ProbationPractitionerReferralsController {
       cancellationReasons
     )
     const view = new ReferralCancellationReasonView(presenter)
+
+    return res.render(...view.renderArgs)
+  }
+
+  async showReferralCancellationCheckAnswersPage(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new ReferralCancellationCheckAnswersPresenter(req.params.id, serviceUser)
+    const view = new ReferralCancellationCheckAnswersView(presenter)
 
     return res.render(...view.renderArgs)
   }
