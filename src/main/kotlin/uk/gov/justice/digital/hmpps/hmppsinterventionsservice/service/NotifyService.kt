@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
@@ -43,6 +45,35 @@ class NotifyActionPlanService(
             "submitterFirstName" to userDetail.firstName,
             "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
             "actionPlanUrl" to location.toString(),
+          )
+        )
+      }
+    }
+  }
+}
+
+@Service
+class NotifyEndOfServiceReportService(
+  @Value("\${notify.templates.end-of-service-report-submitted}") private val endOfServiceReportSubmittedTemplateID: String,
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUISubmitEndOfServiceReportLocation: String,
+  private val emailSender: EmailSender,
+  private val hmppsAuthService: HMPPSAuthService,
+) : ApplicationListener<EndOfServiceReportEvent>, NotifyService {
+
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: EndOfServiceReportEvent) {
+    when (event.type) {
+      EndOfServiceReportEventType.SUBMITTED -> {
+        val userDetail = hmppsAuthService.getUserDetail(event.endOfServiceReport.referral.getResponsibleProbationPractitioner())
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitEndOfServiceReportLocation, event.endOfServiceReport.id)
+        emailSender.sendEmail(
+          endOfServiceReportSubmittedTemplateID,
+          userDetail.email,
+          mapOf(
+            "ppFirstName" to userDetail.firstName,
+            "referralReference" to event.endOfServiceReport.referral.referenceNumber!!,
+            "endOfServiceReportLink" to location.toString(),
           )
         )
       }

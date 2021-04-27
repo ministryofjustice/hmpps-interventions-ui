@@ -11,6 +11,7 @@ import java.util.UUID
 class EndOfServiceReportFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
   private val referralFactory = ReferralFactory(em)
+  private val endOfServiceReportOutcomeFactory = EndOfServiceReportOutcomeFactory(em)
 
   fun create(
     id: UUID? = null,
@@ -20,7 +21,7 @@ class EndOfServiceReportFactory(em: TestEntityManager? = null) : EntityFactory(e
     submittedAt: OffsetDateTime? = null,
     submittedBy: AuthUser? = null,
     furtherInformation: String? = null,
-    outcomes: Set<EndOfServiceReportOutcome> = emptySet(),
+    outcomes: Set<EndOfServiceReportOutcome>? = null,
   ): EndOfServiceReport {
     return save(
       EndOfServiceReport(
@@ -31,7 +32,7 @@ class EndOfServiceReportFactory(em: TestEntityManager? = null) : EntityFactory(e
         submittedAt = submittedAt ?: OffsetDateTime.now(),
         submittedBy = submittedBy ?: authUserFactory.create(),
         furtherInformation = furtherInformation,
-        outcomes = outcomes.toMutableSet(),
+        outcomes = outcomes?.toMutableSet() ?: mutableSetOf(endOfServiceReportOutcomeFactory.create())
       )
     )
   }
