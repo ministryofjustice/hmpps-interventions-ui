@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
@@ -15,12 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPSRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
@@ -45,11 +48,13 @@ class SetupAssistant(
   private val npsRegionRepository: NPSRegionRepository,
   private val dynamicFrameworkContractRepository: DynamicFrameworkContractRepository,
   private val desiredOutcomeRepository: DesiredOutcomeRepository,
+  private val endOfServiceReportRepository: EndOfServiceReportRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
   private val referralFactory = ReferralFactory()
   private val serviceProviderFactory = ServiceProviderFactory()
+  private val endOfServiceReportFactory = EndOfServiceReportFactory()
 
   private val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   private val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -58,6 +63,7 @@ class SetupAssistant(
     // order of cleanup is important here to avoid breaking foreign key constraints
     actionPlanAppointmentRepository.deleteAll()
     actionPlanRepository.deleteAll()
+    endOfServiceReportRepository.deleteAll()
 
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
@@ -77,6 +83,10 @@ class SetupAssistant(
 
   fun desiredOutcomesForServiceCategory(serviceCategoryId: UUID): List<DesiredOutcome> {
     return desiredOutcomeRepository.findByServiceCategoryId(serviceCategoryId)
+  }
+
+  fun createDesiredOutcome(id: UUID, description: String, serviceCategoryId: UUID): DesiredOutcome {
+    return desiredOutcomeRepository.save(DesiredOutcome(id, description, serviceCategoryId))
   }
 
   fun createPPUser(): AuthUser {
@@ -242,5 +252,13 @@ class SetupAssistant(
     referral.whenUnavailable = whenUnavailable
 
     return referralRepository.save(referral)
+  }
+
+  fun createEndOfServiceReport(id: UUID = UUID.randomUUID(), referral: Referral = createAssignedReferral()): EndOfServiceReport {
+    val eosr = endOfServiceReportRepository.save(
+      endOfServiceReportFactory.create(id = id, referral = referral, createdBy = referral.assignedTo!!)
+    )
+    referral.endOfServiceReport = eosr
+    return eosr
   }
 }

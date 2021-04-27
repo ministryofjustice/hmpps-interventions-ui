@@ -19,7 +19,7 @@ internal class CommunityAPIBookingServiceTest {
 
   private val httpBaseUrl = "http://url"
   private val viewUrl = "/view/{referralId}"
-  private val apiUrl = "/appt/{CRN}/{sentenceId}"
+  private val apiUrl = "/appt/{CRN}/{sentenceId}/{contextName}"
   private val crsOfficeLocation = "CRSSHEF"
   private val crsBookingsContext = "CRS"
 
@@ -40,9 +40,9 @@ internal class CommunityAPIBookingServiceTest {
     val now = OffsetDateTime.now()
     val appointment = makeAppointment(null, null)
 
-    val uri = "/appt/X1/123"
+    val uri = "/appt/X1/123/CRS"
     val link = "http://url/view/${appointment.actionPlan.referral.id}"
-    val request = AppointmentCreateRequestDTO(now, now.plusMinutes(60), "CRSSHEF", notes = link, "CRS")
+    val request = AppointmentCreateRequestDTO(now, now.plusMinutes(60), "CRSSHEF", notes = link)
     val response = AppointmentCreateResponseDTO(1234L)
 
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))

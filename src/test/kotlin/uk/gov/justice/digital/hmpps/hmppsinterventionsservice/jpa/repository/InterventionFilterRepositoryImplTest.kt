@@ -19,6 +19,8 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
   val referralRepository: ReferralRepository,
   val actionPlanRepository: ActionPlanRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val authUserRepository: AuthUserRepository,
+  val endOfServiceReportRepository: EndOfServiceReportRepository,
 ) {
 
   private val interventionFactory = InterventionFactory(entityManager)
@@ -32,6 +34,8 @@ class InterventionFilterRepositoryImplTest @Autowired constructor(
     actionPlanRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
+    endOfServiceReportRepository.deleteAll()
+    authUserRepository.deleteAll()
   }
 
   @Test

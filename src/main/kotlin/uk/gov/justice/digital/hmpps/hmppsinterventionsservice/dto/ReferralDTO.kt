@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
-data class DraftReferralFields(
+data class FormFields(
   val completionDeadline: LocalDate? = null,
   val complexityLevelId: UUID? = null,
   val furtherInformation: String? = null,
@@ -22,7 +22,7 @@ data class DraftReferralFields(
   val relevantSentenceId: Long? = null,
 )
 
-data class SentReferralFields(
+data class SentFields(
   val sentAt: OffsetDateTime,
   val sentBy: AuthUserDTO,
   val referenceNumber: String,
@@ -31,7 +31,7 @@ data class SentReferralFields(
   val endOfServiceReport: EndOfServiceReportDTO?,
 )
 
-data class EndedReferralFields(
+data class EndedFields(
   val endedAt: OffsetDateTime,
   val endedBy: AuthUserDTO,
   val cancellationReason: String,
@@ -45,9 +45,9 @@ data class ReferralDTO(
   val serviceCategory: ServiceCategoryDTO,
   val serviceProvider: ServiceProviderDTO,
 
-  val draftReferralFields: DraftReferralFields,
-  var sentReferralFields: SentReferralFields? = null,
-  var endedReferralFields: EndedReferralFields? = null,
+  val formFields: FormFields,
+  var sentFields: SentFields? = null,
+  var endedFields: EndedFields? = null,
 ) {
   companion object {
     fun from(referral: Referral): ReferralDTO {
@@ -60,7 +60,7 @@ data class ReferralDTO(
         serviceCategory = ServiceCategoryDTO.from(contract.serviceCategory),
         serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
 
-        draftReferralFields = DraftReferralFields(
+        formFields = FormFields(
           completionDeadline = referral.completionDeadline,
           complexityLevelId = referral.complexityLevelID,
           furtherInformation = referral.furtherInformation,
@@ -79,7 +79,7 @@ data class ReferralDTO(
       )
 
       referral.sentAt?.let {
-        referralDTO.sentReferralFields = SentReferralFields(
+        referralDTO.sentFields = SentFields(
           sentAt = it,
           sentBy = AuthUserDTO.from(referral.sentBy!!),
           referenceNumber = referral.referenceNumber!!,
@@ -90,7 +90,7 @@ data class ReferralDTO(
       }
 
       referral.endedAt?.let {
-        referralDTO.endedReferralFields = EndedReferralFields(
+        referralDTO.endedFields = EndedFields(
           endedAt = it,
           endedBy = AuthUserDTO.from(referral.endedBy!!),
           cancellationReason = referral.cancellationReason!!.description,

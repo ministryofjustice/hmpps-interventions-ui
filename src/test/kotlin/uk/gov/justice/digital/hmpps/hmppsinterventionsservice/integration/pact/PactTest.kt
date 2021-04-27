@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext
 import au.com.dius.pact.provider.junitsupport.Provider
+import au.com.dius.pact.provider.junitsupport.State
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider
 import org.junit.jupiter.api.BeforeEach
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPSRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -42,6 +44,7 @@ class PactTest {
   @Autowired private lateinit var npsRegionRepository: NPSRegionRepository
   @Autowired private lateinit var dynamicFrameworkContractRepository: DynamicFrameworkContractRepository
   @Autowired private lateinit var desiredOutcomeRepository: DesiredOutcomeRepository
+  @Autowired private lateinit var endOfServiceReportRepository: EndOfServiceReportRepository
 
   @TestTemplate
   @ExtendWith(PactVerificationSpringProvider::class)
@@ -62,6 +65,7 @@ class PactTest {
       npsRegionRepository,
       dynamicFrameworkContractRepository,
       desiredOutcomeRepository,
+      endOfServiceReportRepository,
     )
 
     setupAssistant.cleanAll()
@@ -71,6 +75,10 @@ class PactTest {
       InterventionContracts(setupAssistant),
       ReferralContracts(setupAssistant),
       ServiceCategoryContracts(setupAssistant),
+      EndOfServiceReportContracts(setupAssistant),
     )
   }
+
+  @State("nothing")
+  fun `noop`() {}
 }

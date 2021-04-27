@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReportOutcome
@@ -18,26 +19,21 @@ class EndOfServiceReportService(
   val authUserRepository: AuthUserRepository,
   val referralRepository: ReferralRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
+  val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher
 ) {
 
   fun createEndOfServiceReport(
     referralId: UUID,
     createdByUser: AuthUser
   ): EndOfServiceReport {
-    val referral = getReferral(referralId)
-
     val endOfServiceReport = EndOfServiceReport(
       id = UUID.randomUUID(),
-      referral = referral,
+      referral = referralRepository.getOne(referralId),
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
     )
 
-    val savedEndOfServiceReport = endOfServiceReportRepository.save(endOfServiceReport)
-    referral.endOfServiceReport = endOfServiceReport
-    referralRepository.save(referral)
-
-    return savedEndOfServiceReport
+    return endOfServiceReportRepository.save(endOfServiceReport)
   }
 
   fun getEndOfServiceReport(endOfServiceReportId: UUID): EndOfServiceReport {
@@ -66,12 +62,13 @@ class EndOfServiceReportService(
   fun submitEndOfServiceReport(endOfServiceReportId: UUID, submittedByUser: AuthUser): EndOfServiceReport {
     val draftEndOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
     updateDraftEndOfServiceReportAsSubmitted(draftEndOfServiceReport, submittedByUser)
+    endOfServiceReportEventPublisher.endOfServiceReportSubmittedEvent(draftEndOfServiceReport)
 
     return endOfServiceReportRepository.save(draftEndOfServiceReport)
   }
 
   private fun updateDraftEndOfServiceReportAsSubmitted(endOfServiceReport: EndOfServiceReport, submittedByUser: AuthUser) {
-    endOfServiceReport.submittedBy = submittedByUser
+    endOfServiceReport.submittedBy = authUserRepository.save(submittedByUser)
     endOfServiceReport.submittedAt = OffsetDateTime.now()
   }
 
