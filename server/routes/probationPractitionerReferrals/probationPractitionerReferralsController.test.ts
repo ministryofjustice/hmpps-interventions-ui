@@ -227,7 +227,7 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/submit', () =>
         `/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/confirmation`
       )
 
-    expect(interventionsService.cancelReferral).toHaveBeenCalledWith(
+    expect(interventionsService.endReferral).toHaveBeenCalledWith(
       'token',
       '9747b7fb-51bc-40e2-bbbd-791a9be9284b',
       'MOV',

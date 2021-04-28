@@ -2267,19 +2267,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('cancelReferral', () => {
-    const cancelledReferral = {
-      id: '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
-      referenceNumber: 'SJ12345AC',
-      endedAt: '2021-05-13T12:30:00Z',
-      endedBy: {
-        username: 'BERNARD.BEAKS',
-        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-        authSource: 'delius',
-      },
-      cancellationReason: 'Service user has been recalled',
-      cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled.',
-    }
+  describe('endReferral', () => {
+    const endedReferral = sentReferralFactory.endRequested().build()
 
     beforeEach(async () => {
       await provider.addInteraction({
@@ -2290,14 +2279,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'POST',
           path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/end',
           body: {
-            cancellationReasonCode: 'REC',
-            cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled.',
+            reasonCode: 'REC',
+            comments: 'Alex was arrested for driving without insurance and immediately recalled.',
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(cancelledReferral),
+          body: Matchers.like(endedReferral),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2305,13 +2294,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns an ended referral', async () => {
       expect(
-        await interventionsService.cancelReferral(
+        await interventionsService.endReferral(
           token,
           '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
           'REC',
           'Alex was arrested for driving without insurance and immediately recalled.'
         )
-      ).toMatchObject(cancelledReferral)
+      ).toMatchObject(endedReferral)
     })
   })
 

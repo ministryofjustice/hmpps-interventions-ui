@@ -433,7 +433,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubCancelReferral = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+  stubEndReferral = async (referralId: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',

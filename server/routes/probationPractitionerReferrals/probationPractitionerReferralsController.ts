@@ -199,7 +199,7 @@ export default class ProbationPractitionerReferralsController {
     const cancellationReason = req.body['cancellation-reason']
     const cancellationComments = req.body['cancellation-comments']
 
-    await this.interventionsService.cancelReferral(accessToken, referralId, cancellationReason, cancellationComments)
+    await this.interventionsService.endReferral(accessToken, referralId, cancellationReason, cancellationComments)
 
     return res.redirect(`/probation-practitioner/referrals/${referralId}/cancellation/confirmation`)
   }

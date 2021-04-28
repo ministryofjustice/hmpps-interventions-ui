@@ -683,21 +683,21 @@ export default class InterventionsService {
     })) as EndOfServiceReport
   }
 
-  async cancelReferral(
+  async endReferral(
     token: string,
     referralId: string,
     reasonCode: string,
-    cancellationComments: string | null
-  ): Promise<EndedReferral> {
+    comments: string | null
+  ): Promise<SentReferral> {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${referralId}/end`,
       data: {
-        cancellationReasonCode: reasonCode,
-        cancellationComments,
+        reasonCode,
+        comments,
       },
       headers: { Accept: 'application/json' },
-    })) as EndedReferral
+    })) as SentReferral
   }
 
   async getReferralCancellationReasons(token: string): Promise<CancellationReason[]> {
