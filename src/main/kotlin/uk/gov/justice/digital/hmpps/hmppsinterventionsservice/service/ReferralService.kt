@@ -86,7 +86,7 @@ class ReferralService(
     comments?.let { referral.endRequestedComments = it }
 
     if (canBeConcluded(referral)) {
-      referral.concludedAt = now
+      concludeReferral(referral)
     }
 
     return referralRepository.save(referral)
@@ -267,6 +267,11 @@ class ReferralService(
 
     logger.error("Unable to generate a referral number {} {}", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
+  }
+
+  fun concludeReferral(referral: Referral) {
+    referral.concludedAt = OffsetDateTime.now()
+    referralRepository.save(referral)
   }
 
   private fun canBeConcluded(referral: Referral): Boolean {

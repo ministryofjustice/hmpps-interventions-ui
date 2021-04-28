@@ -19,7 +19,8 @@ class EndOfServiceReportService(
   val authUserRepository: AuthUserRepository,
   val referralRepository: ReferralRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
-  val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher
+  val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher,
+  val referralService: ReferralService,
 ) {
 
   fun createEndOfServiceReport(
@@ -62,6 +63,9 @@ class EndOfServiceReportService(
   fun submitEndOfServiceReport(endOfServiceReportId: UUID, submittedByUser: AuthUser): EndOfServiceReport {
     val draftEndOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
     updateDraftEndOfServiceReportAsSubmitted(draftEndOfServiceReport, submittedByUser)
+
+    referralService.concludeReferral(draftEndOfServiceReport.referral)
+
     endOfServiceReportEventPublisher.endOfServiceReportSubmittedEvent(draftEndOfServiceReport)
 
     return endOfServiceReportRepository.save(draftEndOfServiceReport)
