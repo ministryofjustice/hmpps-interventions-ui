@@ -28,7 +28,7 @@ export default class NeedsAndRequirementsPresenter {
     },
     accessibilityNeeds: {
       label: `Does ${this.referral.serviceUser?.firstName} have any other mobility, disability or accessibility needs? (optional)`,
-      hint: 'For example, if they use a wheelchair, use a hearing aid or have a learning difficulty',
+      hint: 'For example, if they use a wheelchair, use a hearing aid or have a learning difficulty.',
       errorMessage: this.errorMessageForField('accessibility-needs'),
     },
     needsInterpreter: {

@@ -61,7 +61,7 @@ describe('NeedsAndRequirementsPresenter', () => {
       expect(presenter.text).toEqual({
         accessibilityNeeds: {
           errorMessage: null,
-          hint: 'For example, if they use a wheelchair, use a hearing aid or have a learning difficulty',
+          hint: 'For example, if they use a wheelchair, use a hearing aid or have a learning difficulty.',
           label: 'Does Geoffrey have any other mobility, disability or accessibility needs? (optional)',
         },
         additionalNeedsInformation: {
