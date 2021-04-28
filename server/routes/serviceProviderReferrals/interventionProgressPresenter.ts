@@ -1,4 +1,4 @@
-import { ActionPlan, ActionPlanAppointment, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { ActionPlan, ActionPlanAppointment, Referral } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
@@ -10,28 +10,27 @@ export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
   constructor(
-    private readonly referral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly referral: Referral,
     private readonly actionPlan: ActionPlan | null,
     serviceUser: DeliusServiceUser,
     private readonly actionPlanAppointments: ActionPlanAppointment[]
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
-      referral,
+      referral.id,
       serviceUser,
       'service-provider'
     )
   }
 
   get referralAssigned(): boolean {
-    return this.referral.assignedTo !== null
+    return this.referral.sentFields?.assignedTo != null
   }
 
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
 
   readonly text = {
-    title: utils.convertToTitleCase(this.serviceCategory.name),
+    title: utils.convertToTitleCase(this.referral.serviceCategory.name),
     actionPlanStatus: this.actionPlanSubmitted ? 'Submitted' : 'Not submitted',
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
   }
@@ -112,10 +111,10 @@ export default class InterventionProgressPresenter {
     : 'inactive'
 
   private get endOfServiceReportSubmitted() {
-    return this.referral.endOfServiceReport !== null && this.referral.endOfServiceReport.submittedAt !== null
+    return this.referral.sentFields?.endOfServiceReport?.submittedAt != null
   }
 
   get allowEndOfServiceReportCreation(): boolean {
-    return this.referral.endOfServiceReport === null
+    return this.referral.sentFields?.endOfServiceReport == null
   }
 }

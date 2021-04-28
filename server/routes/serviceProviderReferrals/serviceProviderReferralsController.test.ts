@@ -4,6 +4,7 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
+import referralFactory from '../../../testutils/factories/referral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
@@ -148,14 +149,10 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const serviceUser = deliusServiceUser.build()
-    const sentReferral = sentReferralFactory.assigned().build({
-      referral: { serviceCategoryId: serviceCategory.id },
-    })
+    const sentReferral = referralFactory.assigned().build()
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
-    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getReferral.mockResolvedValue(sentReferral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
     await request(app)

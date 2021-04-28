@@ -1,11 +1,11 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 
 export default class DashboardPresenter {
-  constructor(private readonly referrals: SentReferral[], private readonly serviceCategories: ServiceCategory[]) {}
+  constructor(private readonly referrals: SentReferral[], private readonly serviceCategories: ServiceCategoryFull[]) {}
 
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Date received', sort: 'none' },

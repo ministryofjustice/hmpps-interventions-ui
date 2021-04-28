@@ -1,7 +1,7 @@
-import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
+import { DraftReferral, ServiceCategoryFull } from '../../services/interventionsService'
 
 export default class CheckAnswersPresenter {
-  constructor(private readonly referral: DraftReferral, private readonly serviceCategory: ServiceCategory) {}
+  constructor(private readonly referral: DraftReferral, private readonly serviceCategory: ServiceCategoryFull) {}
 
   // TODO IC-679 build this page properly - this
   // is just a placeholder to show the data’s coming in

@@ -10,7 +10,7 @@ describe(ReferralOverviewPagePresenter, () => {
       const sentReferral = sentReferralFactory.build()
       const presenter = new ReferralOverviewPagePresenter(
         ReferralOverviewPageSection.Details,
-        sentReferral,
+        sentReferral.id,
         serviceUser,
         'service-provider'
       )
@@ -25,7 +25,7 @@ describe(ReferralOverviewPagePresenter, () => {
 
       const detailsPresenter = new ReferralOverviewPagePresenter(
         ReferralOverviewPageSection.Details,
-        sentReferral,
+        sentReferral.id,
         serviceUser,
         'service-provider'
       )
@@ -35,7 +35,7 @@ describe(ReferralOverviewPagePresenter, () => {
 
       const progressPresenter = new ReferralOverviewPagePresenter(
         ReferralOverviewPageSection.Progress,
-        sentReferral,
+        sentReferral.id,
         serviceUser,
         'service-provider'
       )
@@ -51,7 +51,7 @@ describe(ReferralOverviewPagePresenter, () => {
 
     const presenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
-      sentReferral,
+      sentReferral.id,
       serviceUser,
       'service-provider'
     )

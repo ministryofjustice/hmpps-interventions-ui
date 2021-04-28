@@ -113,3 +113,7 @@ Cypress.Commands.add('stubCancelReferral', (referralId, responseJson) => {
 Cypress.Commands.add('stubGetReferralCancellationReasons', responseJson => {
   cy.task('stubGetReferralCancellationReasons', { responseJson })
 })
+
+Cypress.Commands.add('stubGetReferral', (id, responseJson) => {
+  cy.task('stubGetReferral', { id, responseJson })
+})

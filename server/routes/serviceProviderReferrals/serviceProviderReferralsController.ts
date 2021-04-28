@@ -128,25 +128,18 @@ export default class ServiceProviderReferralsController {
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
-    const sentReferral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      req.params.id
-    )
-    const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
-    const serviceCategoryPromise = this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
-    )
-    const actionPlanPromise =
-      sentReferral.actionPlanId === null
-        ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
+    const referral = await this.interventionsService.getReferral(res.locals.user.token.accessToken, req.params.id)
+    if (referral.sentFields === null) {
+      throw Error("referral hasn't been sent yet")
+    }
 
-    const [serviceCategory, actionPlan, serviceUser] = await Promise.all([
-      serviceCategoryPromise,
-      actionPlanPromise,
-      serviceUserPromise,
-    ])
+    const serviceUserPromise = this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+    const actionPlanPromise =
+      referral.sentFields.actionPlanId === null
+        ? Promise.resolve(null)
+        : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, referral.sentFields.actionPlanId)
+
+    const [actionPlan, serviceUser] = await Promise.all([actionPlanPromise, serviceUserPromise])
 
     let actionPlanAppointments: ActionPlanAppointment[] = []
     if (actionPlan !== null && actionPlan.submittedAt !== null) {
@@ -156,13 +149,7 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(
-      sentReferral,
-      serviceCategory,
-      actionPlan,
-      serviceUser,
-      actionPlanAppointments
-    )
+    const presenter = new InterventionProgressPresenter(referral, actionPlan, serviceUser, actionPlanAppointments)
     const view = new InterventionProgressView(presenter)
 
     res.render(...view.renderArgs)

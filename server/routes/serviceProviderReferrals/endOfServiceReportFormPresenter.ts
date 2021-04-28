@@ -1,4 +1,4 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import { SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 
 interface EndOfServiceReportFormPagePresenter {
@@ -10,7 +10,7 @@ interface EndOfServiceReportFormPagePresenter {
 }
 
 export default class EndOfServiceReportFormPresenter {
-  constructor(private readonly serviceCategory: ServiceCategory, private readonly referral: SentReferral) {}
+  constructor(private readonly serviceCategory: ServiceCategoryFull, private readonly referral: SentReferral) {}
 
   private get numberOfDesiredOutcomes(): number {
     return this.referral.referral.desiredOutcomesIds.length

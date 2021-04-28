@@ -1,4 +1,4 @@
-import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
+import { DraftReferral, ServiceCategoryFull } from '../../services/interventionsService'
 import CalendarDay from '../../utils/calendarDay'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -12,7 +12,7 @@ export default class CompletionDeadlinePresenter {
 
   constructor(
     private readonly referral: DraftReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategory: ServiceCategoryFull,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
