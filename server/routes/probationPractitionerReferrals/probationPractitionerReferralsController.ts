@@ -14,6 +14,10 @@ import ReferralCancellationReasonPresenter from './referralCancellationReasonPre
 import ReferralCancellationReasonView from './referralCancellationReasonView'
 import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
 import EndOfServiceReportView from './endOfServiceReportView'
+import ReferralCancellationCheckAnswersPresenter from './referralCancellationCheckAnswersPresenter'
+import ReferralCancellationCheckAnswersView from './referralCancellationCheckAnswersView'
+import { FormValidationError } from '../../utils/formValidationError'
+import ReferralCancellationReasonForm from './referralCancellationReasonForm'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -135,6 +139,52 @@ export default class ProbationPractitionerReferralsController {
       cancellationReasons
     )
     const view = new ReferralCancellationReasonView(presenter)
+
+    return res.render(...view.renderArgs)
+  }
+
+  async submitFormAndShowCancellationCheckAnswersPage(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    let formError: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    const data = await new ReferralCancellationReasonForm(req).data()
+
+    if (data.error) {
+      res.status(400)
+      formError = data.error
+
+      const serviceCategory = await this.interventionsService.getServiceCategory(
+        accessToken,
+        sentReferral.referral.serviceCategoryId
+      )
+      const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
+
+      const presenter = new ReferralCancellationReasonPresenter(
+        sentReferral,
+        serviceCategory,
+        serviceUser,
+        cancellationReasons,
+        formError
+      )
+      const view = new ReferralCancellationReasonView(presenter)
+
+      return res.render(...view.renderArgs)
+    }
+
+    const { cancellationReason, cancellationComments } = data.paramsForUpdate
+
+    const presenter = new ReferralCancellationCheckAnswersPresenter(
+      req.params.id,
+      serviceUser,
+      cancellationReason,
+      cancellationComments
+    )
+
+    const view = new ReferralCancellationCheckAnswersView(presenter)
 
     return res.render(...view.renderArgs)
   }

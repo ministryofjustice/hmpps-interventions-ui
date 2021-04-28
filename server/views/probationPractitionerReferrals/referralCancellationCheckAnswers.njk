@@ -1,0 +1,28 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "HMPPS Interventions" %}
+{% block pageTitle %}{{ pageTitle }}
+  - GOV.UK{% endblock %}
+
+{% block content %}
+ {% if serviceUserNotificationBannerArgs !== undefined and serviceUserNotificationBannerArgs !== null %}
+    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-width">
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.confirmationQuestion }}</p>
+    </div>
+    <form method="post" action="#">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="cancellation-reason" value="{{ hiddenFields.cancellationReason }}">
+      <input type="hidden" name="cancellation-comments" value="{{ hiddenFields.cancellationComments }}">
+
+      {{ govukButton({ text: "Cancel referral" }) }}
+    </form>
+  </div>
+{% endblock %}
