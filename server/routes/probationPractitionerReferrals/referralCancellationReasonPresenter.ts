@@ -1,5 +1,5 @@
 import a from 'indefinite'
-import { DeliusServiceUser } from '../../services/communityApiService'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import CancellationReason from '../../models/cancellationReason'
 import ServiceCategory from '../../models/serviceCategory'
 import SentReferral from '../../models/sentReferral'

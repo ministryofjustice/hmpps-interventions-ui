@@ -1,4 +1,4 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import { ActionPlanAppointment } from '../../models/actionPlan'
 import DateUtils from '../../utils/dateUtils'
 import { SummaryListItem } from '../../utils/summaryList'

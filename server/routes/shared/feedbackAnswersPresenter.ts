@@ -1,4 +1,4 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import { ActionPlanAppointment } from '../../models/actionPlan'
 import PostSessionAttendanceFeedbackPresenter from '../serviceProviderReferrals/postSessionAttendanceFeedbackPresenter'
 import PostSessionBehaviourFeedbackPresenter from '../serviceProviderReferrals/postSessionBehaviourFeedbackPresenter'

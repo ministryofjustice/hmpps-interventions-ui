@@ -1,7 +1,7 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { DeliusUser } from '../../services/communityApiService'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
+import DeliusUser from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'

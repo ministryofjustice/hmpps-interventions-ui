@@ -1,4 +1,3 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
 import ServiceCategory from '../../models/serviceCategory'
 import SentReferral from '../../models/sentReferral'
 import PresenterUtils from '../../utils/presenterUtils'

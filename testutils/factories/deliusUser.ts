@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { DeliusUser } from '../../server/services/communityApiService'
+import DeliusUser from '../../server/models/delius/deliusUser'
 
 export default Factory.define<DeliusUser>(sequence => ({
   userId: sequence.toString(),

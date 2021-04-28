@@ -1,4 +1,4 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
 
 export default class LayoutPresenter {

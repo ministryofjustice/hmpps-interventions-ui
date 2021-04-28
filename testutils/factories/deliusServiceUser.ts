@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { DeliusServiceUser } from '../../server/services/communityApiService'
+import DeliusServiceUser from '../../server/models/delius/deliusServiceUser'
 
 export default Factory.define<DeliusServiceUser>(() => ({
   otherIds: {
