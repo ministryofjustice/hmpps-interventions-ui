@@ -2184,8 +2184,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('endReferral', () => {
-    const endedReferral = {
+  describe('cancelReferral', () => {
+    const cancelledReferral = {
       id: '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
       referenceNumber: 'SJ12345AC',
       endedAt: '2021-05-13T12:30:00Z',
@@ -2214,7 +2214,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(endedReferral),
+          body: Matchers.like(cancelledReferral),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2228,7 +2228,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           'REC',
           'Alex was arrested for driving without insurance and immediately recalled.'
         )
-      ).toMatchObject(endedReferral)
+      ).toMatchObject(cancelledReferral)
     })
   })
 

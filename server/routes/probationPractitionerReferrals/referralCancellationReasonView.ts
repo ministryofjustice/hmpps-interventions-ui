@@ -1,8 +1,8 @@
 import { RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
-import ReferralCancellationPresenter from './referralCancellationPresenter'
+import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 
-export default class ReferralCancellationView {
-  constructor(private readonly presenter: ReferralCancellationPresenter) {}
+export default class ReferralCancellationReasonView {
+  constructor(private readonly presenter: ReferralCancellationReasonPresenter) {}
 
   private get referralCancellationRadiosArgs(): RadiosArgs {
     return {
@@ -20,8 +20,8 @@ export default class ReferralCancellationView {
 
   private get additionalCommentsTextareaArgs(): TextareaArgs {
     return {
-      id: 'progression-comments',
-      name: 'progression-comments',
+      id: 'cancellation-comments',
+      name: 'cancellation-comments',
       label: {
         text: this.presenter.text.additionalCommentsLabel,
       },
@@ -30,7 +30,7 @@ export default class ReferralCancellationView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'probationPractitionerReferrals/referralCancellation',
+      'probationPractitionerReferrals/referralCancellationReason',
       {
         presenter: this.presenter,
         referralCancellationRadiosArgs: this.referralCancellationRadiosArgs,

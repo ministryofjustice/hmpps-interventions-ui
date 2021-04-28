@@ -187,7 +187,7 @@ export default function routes(router: Router, services: Services): Router {
   )
 
   get('/probation-practitioner/referrals/:id/cancellation/reason', (req, res) =>
-    probationPractitionerReferralsController.showReferralCancellationPage(req, res)
+    probationPractitionerReferralsController.showReferralCancellationReasonPage(req, res)
   )
 
   get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)

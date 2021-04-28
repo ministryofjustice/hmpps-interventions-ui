@@ -433,11 +433,11 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubEndReferral = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+  stubCancelReferral = async (referralId: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',
-        urlPattern: `${this.mockPrefix}/referral/${referralId}/end`,
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/end`,
       },
       response: {
         status: 200,

@@ -10,8 +10,8 @@ import FindStartView from './findStartView'
 import AuthUtils from '../../utils/authUtils'
 import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessionFeedbackPresenter'
 import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
-import ReferralCancellationPresenter from './referralCancellationPresenter'
-import ReferralCancellationView from './referralCancellationView'
+import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
+import ReferralCancellationReasonView from './referralCancellationReasonView'
 import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
 import EndOfServiceReportView from './endOfServiceReportView'
 
@@ -116,7 +116,7 @@ export default class ProbationPractitionerReferralsController {
     return res.render(...view.renderArgs)
   }
 
-  async showReferralCancellationPage(req: Request, res: Response): Promise<void> {
+  async showReferralCancellationReasonPage(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
 
@@ -128,8 +128,13 @@ export default class ProbationPractitionerReferralsController {
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
     const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
 
-    const presenter = new ReferralCancellationPresenter(sentReferral, serviceCategory, serviceUser, cancellationReasons)
-    const view = new ReferralCancellationView(presenter)
+    const presenter = new ReferralCancellationReasonPresenter(
+      sentReferral,
+      serviceCategory,
+      serviceUser,
+      cancellationReasons
+    )
+    const view = new ReferralCancellationReasonView(presenter)
 
     return res.render(...view.renderArgs)
   }
