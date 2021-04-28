@@ -15,10 +15,18 @@ export default class InterventionProgressView {
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
           { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: `${row.linkHtml}` },
+          { html: this.linkHtml(row.link) },
         ]
       }),
     }
+  }
+
+  private linkHtml(link: { text: string; href: string }): string {
+    if (link.text && link.href) {
+      return `<a class="govuk-link" href="${link.href}">${link.text}</a>`
+    }
+
+    return ''
   }
 
   private endOfServiceReportTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
@@ -27,7 +35,11 @@ export default class InterventionProgressView {
         return { text: header }
       }),
       rows: this.presenter.endOfServiceReportTableRows.map(row => {
-        return [{ text: `${row.caseworker}` }, { text: tagMacro(row.tagArgs as TagArgs) }, { html: `${row.linkHtml}` }]
+        return [
+          { text: `${row.caseworker}` },
+          { text: tagMacro(row.tagArgs as TagArgs) },
+          { html: `${this.linkHtml(row.link)}` },
+        ]
       }),
     }
   }

@@ -18,7 +18,7 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when a session exists but an appointment has not yet been scheduled', () => {
-      it('populates the table with formatted session information, with no link displayed', () => {
+      it('populates the table with formatted session information, with no link text or href', () => {
         const referral = sentReferralFactory.build()
         const serviceCategory = serviceCategoryFactory.build()
         const serviceUser = serviceUserFactory.build()
@@ -33,7 +33,10 @@ describe(InterventionProgressPresenter, () => {
               text: 'not scheduled',
               classes: 'govuk-tag--grey',
             },
-            linkHtml: '',
+            link: {
+              text: '',
+              href: '',
+            },
           },
         ])
       })
@@ -59,7 +62,10 @@ describe(InterventionProgressPresenter, () => {
               text: 'scheduled',
               classes: 'govuk-tag--blue',
             },
-            linkHtml: '',
+            link: {
+              text: '',
+              href: '',
+            },
           },
         ])
       })
@@ -68,7 +74,7 @@ describe(InterventionProgressPresenter, () => {
     describe('when session feedback has been recorded', () => {
       describe('when the service user attended the session or was late', () => {
         it('populates the table with the "completed" status against that session and a link to view it', () => {
-          const referral = sentReferralFactory.build()
+          const referral = sentReferralFactory.build({ actionPlanId: 'c59809e0-ab78-4723-bbef-bd34bc6df110' })
           const serviceCategory = serviceCategoryFactory.build()
           const serviceUser = serviceUserFactory.build()
           const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [
@@ -83,7 +89,10 @@ describe(InterventionProgressPresenter, () => {
                 text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml: `<a class="govuk-link" href="/probation-practitioner/action-plan/${referral.actionPlanId}/appointment/1/post-session-feedback">View feedback form</a>`,
+              link: {
+                href: `/probation-practitioner/action-plan/c59809e0-ab78-4723-bbef-bd34bc6df110/appointment/1/post-session-feedback`,
+                text: 'View feedback form',
+              },
             },
             {
               sessionNumber: 2,
@@ -92,7 +101,10 @@ describe(InterventionProgressPresenter, () => {
                 text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml: `<a class="govuk-link" href="/probation-practitioner/action-plan/${referral.actionPlanId}/appointment/2/post-session-feedback">View feedback form</a>`,
+              link: {
+                href: `/probation-practitioner/action-plan/c59809e0-ab78-4723-bbef-bd34bc6df110/appointment/2/post-session-feedback`,
+                text: 'View feedback form',
+              },
             },
           ])
         })
@@ -100,7 +112,7 @@ describe(InterventionProgressPresenter, () => {
 
       describe('when the service did not attend the session', () => {
         it('populates the table with the "failure to attend" status against that session and a link to view it', () => {
-          const referral = sentReferralFactory.build()
+          const referral = sentReferralFactory.build({ actionPlanId: 'c59809e0-ab78-4723-bbef-bd34bc6df110' })
           const serviceCategory = serviceCategoryFactory.build()
           const serviceUser = serviceUserFactory.build()
           const presenter = new InterventionProgressPresenter(referral, serviceCategory, serviceUser, [
@@ -114,7 +126,10 @@ describe(InterventionProgressPresenter, () => {
                 text: 'did not attend',
                 classes: 'govuk-tag--purple',
               },
-              linkHtml: `<a class="govuk-link" href="/probation-practitioner/action-plan/${referral.actionPlanId}/appointment/1/post-session-feedback">View feedback form</a>`,
+              link: {
+                href: `/probation-practitioner/action-plan/c59809e0-ab78-4723-bbef-bd34bc6df110/appointment/1/post-session-feedback`,
+                text: 'View feedback form',
+              },
             },
           ])
         })
@@ -234,8 +249,11 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.endOfServiceReportTableRows).toEqual([
         {
           caseworker: 'john.bloggs',
-          linkHtml: `<a class="govuk-link" href="/probation-practitioner/end-of-service-report/${endOfServiceReport.id}">View</a>`,
           tagArgs: { classes: 'govuk-tag--green', text: 'Completed' },
+          link: {
+            href: `/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`,
+            text: 'View',
+          },
         },
       ])
     })
