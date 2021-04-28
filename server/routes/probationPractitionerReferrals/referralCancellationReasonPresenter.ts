@@ -3,6 +3,7 @@ import { DeliusServiceUser } from '../../services/communityApiService'
 import { CancellationReason, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class ReferralCancellationReasonPresenter {
   constructor(
@@ -28,6 +29,8 @@ export default class ReferralCancellationReasonPresenter {
       checked: false,
     }))
   }
+
+  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'cancellation-reason')
 
