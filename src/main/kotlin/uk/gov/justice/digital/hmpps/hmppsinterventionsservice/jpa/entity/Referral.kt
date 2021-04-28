@@ -65,9 +65,7 @@ class Referral(
 
   var relevantSentenceId: Long? = null,
 
-  // This can't be set directly and hence it's a 'val'. Once an action plan has been persisted on retrieval
-  // of the associated referral this field will be automatically set by hibernate.
-  @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) val actionPlan: ActionPlan? = null,
+  @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) var actionPlan: ActionPlan? = null,
 
   // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,

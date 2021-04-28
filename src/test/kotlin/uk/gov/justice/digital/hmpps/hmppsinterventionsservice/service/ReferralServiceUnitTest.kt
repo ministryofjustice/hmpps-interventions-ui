@@ -11,10 +11,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -26,14 +28,17 @@ class ReferralServiceUnitTest {
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referralReferenceGenerator: ReferralReferenceGenerator = mock()
   private val cancellationReasonRepository: CancellationReasonRepository = mock()
+  private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
   private val cancellationReasonFactory = CancellationReasonFactory()
+  private val actionPlanFactory = ActionPlanFactory()
 
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository,
-    referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository
+    referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
+    actionPlanAppointmentRepository,
   )
 
   @Test
@@ -51,6 +56,43 @@ class ReferralServiceUnitTest {
     assertThat(endedReferral.endRequestedBy).isEqualTo(authUser)
     assertThat(endedReferral.endRequestedReason).isEqualTo(cancellationReason)
     assertThat(endedReferral.endRequestedComments).isEqualTo(cancellationComments)
+  }
+
+  @Test
+  fun `concludedAt is set when there is no action plan`() {
+    val referral = referralFactory.createSent()
+    whenever(referralRepository.save(referral)).thenReturn(referral)
+
+    val endedReferral = referralService.requestReferralEnd(referral, referral.createdBy, cancellationReasonFactory.create(), null)
+    assertThat(endedReferral.concludedAt).isNotNull
+  }
+
+  @Test
+  fun `concludedAt is set when there are no attended appointments`() {
+    val referral = referralFactory.createSent()
+    referral.actionPlan = actionPlanFactory.create()
+    referralFactory.save(referral)
+
+    whenever(referralRepository.save(referral)).thenReturn(referral)
+    whenever(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(any())).thenReturn(0)
+
+    val endedReferral =
+      referralService.requestReferralEnd(referral, referral.createdBy, cancellationReasonFactory.create(), null)
+    assertThat(endedReferral.concludedAt).isNotNull
+  }
+
+  @Test
+  fun `concludedAt is not set when there are attended appointments`() {
+    val referral = referralFactory.createSent()
+    referral.actionPlan = actionPlanFactory.create()
+    referralFactory.save(referral)
+
+    whenever(referralRepository.save(referral)).thenReturn(referral)
+    whenever(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(any())).thenReturn(2)
+
+    val endedReferral =
+      referralService.requestReferralEnd(referral, referral.createdBy, cancellationReasonFactory.create(), null)
+    assertThat(endedReferral.concludedAt).isNull()
   }
 
   @Test
