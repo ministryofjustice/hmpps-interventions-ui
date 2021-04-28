@@ -437,7 +437,7 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',
-        urlPattern: `${this.mockPrefix}/referral/${referralId}/end`,
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/end`,
       },
       response: {
         status: 200,
