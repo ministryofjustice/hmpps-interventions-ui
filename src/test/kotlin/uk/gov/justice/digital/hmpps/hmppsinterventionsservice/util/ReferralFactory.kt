@@ -86,10 +86,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
     assignedAt: OffsetDateTime? = null,
-    endedAt: OffsetDateTime? = OffsetDateTime.now(),
-    endedBy: AuthUser? = authUserFactory.create(),
-    cancellationReason: CancellationReason? = cancellationReasonFactory.create(),
-    cancellationComments: String? = null
+    endRequestedAt: OffsetDateTime? = OffsetDateTime.now(),
+    endRequestedBy: AuthUser? = authUserFactory.create(),
+    endRequestedReason: CancellationReason? = cancellationReasonFactory.create(),
+    endRequestedComments: String? = null
   ): Referral {
     return create(
       id = id,
@@ -106,10 +106,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       assignedTo = assignedTo,
       assignedAt = assignedAt,
 
-      endedAt = endedAt,
-      endedBy = endedBy,
-      cancellationReason = cancellationReason,
-      cancellationComments = cancellationComments
+      endRequestedAt = endRequestedAt,
+      endRequestedBy = endRequestedBy,
+      endRequestedReason = endRequestedReason,
+      endRequestedComments = endRequestedComments
     )
   }
 
@@ -131,10 +131,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedAt: OffsetDateTime? = null,
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
-    endedAt: OffsetDateTime? = null,
-    endedBy: AuthUser? = null,
-    cancellationReason: CancellationReason? = null,
-    cancellationComments: String? = null,
+    endRequestedAt: OffsetDateTime? = null,
+    endRequestedBy: AuthUser? = null,
+    endRequestedReason: CancellationReason? = null,
+    endRequestedComments: String? = null,
   ): Referral {
     return save(
       Referral(
@@ -152,10 +152,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         assignedAt = assignedAt,
         assignedBy = assignedBy,
         assignedTo = assignedTo,
-        endedAt = endedAt,
-        endedBy = endedBy,
-        cancellationReason = cancellationReason,
-        cancellationComments = cancellationComments,
+        endRequestedAt = endRequestedAt,
+        endRequestedBy = endRequestedBy,
+        endRequestedReason = endRequestedReason,
+        endRequestedComments = endRequestedComments,
       )
     )
   }

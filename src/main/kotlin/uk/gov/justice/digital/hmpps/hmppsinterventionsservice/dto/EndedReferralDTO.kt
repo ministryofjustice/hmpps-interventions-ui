@@ -19,13 +19,13 @@ class EndedReferralDTO(
     fun from(referral: Referral): EndedReferralDTO {
       return EndedReferralDTO(
         id = referral.id,
-        endedAt = referral.endedAt!!,
-        endedBy = AuthUserDTO.from(referral.endedBy!!),
+        endedAt = referral.endRequestedAt!!,
+        endedBy = AuthUserDTO.from(referral.endRequestedBy!!),
         referenceNumber = referral.referenceNumber!!,
         assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),
-        cancellationReason = referral.cancellationReason!!.description,
-        cancellationComments = referral.cancellationComments,
+        cancellationReason = referral.endRequestedReason!!.description,
+        cancellationComments = referral.endRequestedComments,
         endOfServiceReport = referral.endOfServiceReport?.let { EndOfServiceReportDTO.from(it) }
       )
     }

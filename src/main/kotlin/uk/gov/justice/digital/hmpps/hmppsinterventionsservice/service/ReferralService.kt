@@ -77,10 +77,10 @@ class ReferralService(
   }
 
   fun endSentReferral(referral: Referral, user: AuthUser, cancellationReason: CancellationReason, cancellationComments: String?): Referral {
-    referral.endedAt = OffsetDateTime.now()
-    referral.endedBy = authUserRepository.save(user)
-    referral.cancellationReason = cancellationReason
-    cancellationComments?.let { referral.cancellationComments = it }
+    referral.endRequestedAt = OffsetDateTime.now()
+    referral.endRequestedBy = authUserRepository.save(user)
+    referral.endRequestedReason = cancellationReason
+    cancellationComments?.let { referral.endRequestedComments = it }
     return referralRepository.save(referral)
   }
 

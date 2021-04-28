@@ -147,7 +147,7 @@ internal class ReferralControllerTest {
     val authUser = AuthUser("CRN123", "auth", "user")
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(referralService.endSentReferral(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(cancellationComments = "comment"))
+    whenever(referralService.endSentReferral(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(endRequestedComments = "comment"))
 
     referralController.endSentReferral(referral.id, endReferralDTO, jwtAuthenticationToken)
     verify(referralService).endSentReferral(referral, authUser, cancellationReason, "comment")

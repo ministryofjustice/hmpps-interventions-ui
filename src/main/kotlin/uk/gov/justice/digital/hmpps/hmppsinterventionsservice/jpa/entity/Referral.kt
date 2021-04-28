@@ -35,13 +35,10 @@ class Referral(
   @ManyToOne @Fetch(FetchMode.JOIN) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
 
-  // ended referral fields
-  var endedAt: OffsetDateTime? = null,
-  @ManyToOne @Fetch(FetchMode.JOIN) var endedBy: AuthUser? = null,
-
-  @ManyToOne @JoinColumn(name = "cancellation_reason_code")
-  var cancellationReason: CancellationReason? = null,
-  var cancellationComments: String? = null,
+  var endRequestedAt: OffsetDateTime? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var endRequestedBy: AuthUser? = null,
+  @ManyToOne @JoinColumn(name = "end_requested_reason_code") var endRequestedReason: CancellationReason? = null,
+  var endRequestedComments: String? = null,
 
   // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn var serviceUserData: ServiceUserData? = null,

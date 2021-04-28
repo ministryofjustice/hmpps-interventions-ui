@@ -44,13 +44,13 @@ class ReferralServiceUnitTest {
     val cancellationComments = "comment"
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
-    whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded(cancellationComments = cancellationComments))
+    whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded(endRequestedComments = cancellationComments))
 
     val endedReferral = referralService.endSentReferral(referral, authUser, cancellationReason, cancellationComments)
-    assertThat(endedReferral.endedAt).isNotNull
-    assertThat(endedReferral.endedBy).isEqualTo(authUser)
-    assertThat(endedReferral.cancellationReason).isEqualTo(cancellationReason)
-    assertThat(endedReferral.cancellationComments).isEqualTo(cancellationComments)
+    assertThat(endedReferral.endRequestedAt).isNotNull
+    assertThat(endedReferral.endRequestedBy).isEqualTo(authUser)
+    assertThat(endedReferral.endRequestedReason).isEqualTo(cancellationReason)
+    assertThat(endedReferral.endRequestedComments).isEqualTo(cancellationComments)
   }
 
   @Test
