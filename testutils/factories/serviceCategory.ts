@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { ServiceCategory } from '../../server/services/interventionsService'
+import ServiceCategory from '../../server/models/serviceCategory'
 
 export default Factory.define<ServiceCategory>(({ sequence }) => ({
   id: sequence.toString(),

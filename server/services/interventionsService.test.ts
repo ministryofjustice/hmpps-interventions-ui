@@ -1,11 +1,9 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
-import InterventionsService, {
-  SentReferral,
-  ServiceUser,
-  UpdateDraftEndOfServiceReportParams,
-} from './interventionsService'
+import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
+import SentReferral from '../models/sentReferral'
+import ServiceUser from '../models/serviceUser'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'

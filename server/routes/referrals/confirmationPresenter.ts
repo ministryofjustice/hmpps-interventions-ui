@@ -1,4 +1,4 @@
-import { SentReferral } from '../../services/interventionsService'
+import SentReferral from '../../models/sentReferral'
 
 export default class ConfirmationPresenter {
   constructor(private readonly referral: SentReferral) {}

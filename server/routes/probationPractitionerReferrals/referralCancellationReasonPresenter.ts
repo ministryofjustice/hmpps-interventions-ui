@@ -1,6 +1,8 @@
 import a from 'indefinite'
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { CancellationReason, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import CancellationReason from '../../models/cancellationReason'
+import ServiceCategory from '../../models/serviceCategory'
+import SentReferral from '../../models/sentReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 

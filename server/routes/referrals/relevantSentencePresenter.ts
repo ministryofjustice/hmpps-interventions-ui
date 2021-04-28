@@ -1,5 +1,6 @@
 import { DeliusConviction } from '../../services/communityApiService'
-import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 

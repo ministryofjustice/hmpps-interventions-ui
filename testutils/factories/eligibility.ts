@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { Eligibility } from '../../server/services/interventionsService'
+import { Eligibility } from '../../server/models/intervention'
 
 class EligibilityFactory extends Factory<Eligibility> {
   allAdults() {

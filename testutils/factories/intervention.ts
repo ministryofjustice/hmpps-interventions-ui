@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { Intervention } from '../../server/services/interventionsService'
+import Intervention from '../../server/models/intervention'
 import serviceCategoryFactory from './serviceCategory'
 import serviceProviderFactory from './serviceProvider'
 import eligibilityFactory from './eligibility'

@@ -1,4 +1,6 @@
-import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import ServiceCategory from '../../models/serviceCategory'
+import SentReferral from '../../models/sentReferral'
+import EndOfServiceReport from '../../models/endOfServiceReport'
 import EndOfServiceReportAnswersPresenter from '../shared/endOfServiceReportAnswersPresenter'
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
 

@@ -1,10 +1,7 @@
-import {
-  DesiredOutcome,
-  EndOfServiceReport,
-  EndOfServiceReportOutcome,
-  SentReferral,
-  ServiceCategory,
-} from '../../services/interventionsService'
+import DesiredOutcome from '../../models/desiredOutcome'
+import EndOfServiceReport, { EndOfServiceReportOutcome } from '../../models/endOfServiceReport'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'

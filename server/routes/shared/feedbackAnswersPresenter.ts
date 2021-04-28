@@ -1,5 +1,5 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { ActionPlanAppointment } from '../../services/interventionsService'
+import { ActionPlanAppointment } from '../../models/actionPlan'
 import PostSessionAttendanceFeedbackPresenter from '../serviceProviderReferrals/postSessionAttendanceFeedbackPresenter'
 import PostSessionBehaviourFeedbackPresenter from '../serviceProviderReferrals/postSessionBehaviourFeedbackPresenter'
 

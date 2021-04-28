@@ -1,5 +1,5 @@
 import { DeliusServiceUser } from '../../services/communityApiService'
-import { ActionPlanAppointment } from '../../services/interventionsService'
+import { ActionPlanAppointment } from '../../models/actionPlan'
 import DateUtils from '../../utils/dateUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import FeedbackAnswersPresenter from '../shared/feedbackAnswersPresenter'

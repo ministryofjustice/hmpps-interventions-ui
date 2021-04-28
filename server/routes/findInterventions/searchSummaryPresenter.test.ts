@@ -1,7 +1,7 @@
 import InterventionsFilter from './interventionsFilter'
 import SearchSummaryPresenter from './searchSummaryPresenter'
 import pccRegionFactory from '../../../testutils/factories/pccRegion'
-import { PCCRegion } from '../../services/interventionsService'
+import PCCRegion from '../../models/pccRegion'
 import TestUtils from '../../../testutils/testUtils'
 
 describe(SearchSummaryPresenter, () => {

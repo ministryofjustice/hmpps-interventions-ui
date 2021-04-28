@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { EndOfServiceReport } from '../../server/services/interventionsService'
+import EndOfServiceReport from '../../server/models/endOfServiceReport'
 
 class EndOfServiceReportFactory extends Factory<EndOfServiceReport> {
   justCreated() {

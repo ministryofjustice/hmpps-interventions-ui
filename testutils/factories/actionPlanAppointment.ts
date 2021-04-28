@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { ActionPlanAppointment, Attended } from '../../server/services/interventionsService'
+import { ActionPlanAppointment, Attended } from '../../server/models/actionPlan'
 
 class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
   newlyCreated() {

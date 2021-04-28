@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { ActionPlan } from '../../server/services/interventionsService'
+import ActionPlan from '../../server/models/actionPlan'
 
 class ActionPlanFactory extends Factory<ActionPlan> {
   notSubmitted() {

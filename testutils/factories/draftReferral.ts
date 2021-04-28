@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { DraftReferral } from '../../server/services/interventionsService'
+import DraftReferral from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 
 class DraftReferralFactory extends Factory<DraftReferral> {

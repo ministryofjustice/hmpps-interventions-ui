@@ -2,7 +2,8 @@ import * as ExpressValidator from 'express-validator'
 import { Request } from 'express'
 import { FormData } from '../../utils/forms/formData'
 import errorMessages from '../../utils/errorMessages'
-import { ServiceUser, UpdateDraftEndOfServiceReportParams } from '../../services/interventionsService'
+import { UpdateDraftEndOfServiceReportParams } from '../../services/interventionsService'
+import ServiceUser from '../../models/serviceUser'
 import FormUtils from '../../utils/formUtils'
 
 export default class EndOfServiceReportOutcomeForm {

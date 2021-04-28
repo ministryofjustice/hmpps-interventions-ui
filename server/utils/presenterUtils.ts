@@ -1,5 +1,5 @@
 import { AuthUser } from '../data/hmppsAuthClient'
-import { ServiceUser } from '../services/interventionsService'
+import ServiceUser from '../models/serviceUser'
 import CalendarDay from './calendarDay'
 import ClockTime from './clockTime'
 import { FormValidationError } from './formValidationError'

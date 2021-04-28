@@ -1,4 +1,4 @@
-import { DraftReferral } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
 
 export default class ReferralFormPresenter {
   constructor(private readonly referral: DraftReferral, private readonly serviceCategoryName: string) {}

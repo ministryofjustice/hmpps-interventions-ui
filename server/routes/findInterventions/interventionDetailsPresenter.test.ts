@@ -2,7 +2,7 @@ import { DeepPartial } from 'fishery'
 import interventionFactory from '../../../testutils/factories/intervention'
 import eligibilityFactory from '../../../testutils/factories/eligibility'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
-import { Intervention } from '../../services/interventionsService'
+import Intervention from '../../models/intervention'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import TestUtils from '../../../testutils/testUtils'
 

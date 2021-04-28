@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../services/interventionsService'
+import { ActionPlanAppointment } from '../models/actionPlan'
 
 export enum SessionStatus {
   notScheduled,

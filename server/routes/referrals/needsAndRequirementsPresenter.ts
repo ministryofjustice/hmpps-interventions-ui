@@ -1,4 +1,4 @@
-import { DraftReferral } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'

@@ -4,6 +4,16 @@ import { ApiConfig } from '../config'
 import { SanitisedError } from '../sanitisedError'
 import { DeliusServiceUser } from './communityApiService'
 import CalendarDay from '../utils/calendarDay'
+import AuthUser from '../models/authUser'
+import EndOfServiceReport, { AchievementLevel } from '../models/endOfServiceReport'
+import ServiceUser from '../models/serviceUser'
+import Intervention from '../models/intervention'
+import PCCRegion from '../models/pccRegion'
+import CancellationReason from '../models/cancellationReason'
+import ServiceCategory from '../models/serviceCategory'
+import ActionPlan, { ActionPlanAppointment, AppointmentAttendance, AppointmentBehaviour } from '../models/actionPlan'
+import DraftReferral from '../models/draftReferral'
+import SentReferral from '../models/sentReferral'
 
 export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
@@ -12,140 +22,11 @@ export interface InterventionsServiceValidationError {
   error: string
 }
 
-type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
-
-export interface ReferralFields {
-  createdAt: string
-  completionDeadline: string
-  serviceProvider: ServiceProvider
-  serviceCategoryId: string
-  complexityLevelId: string
-  furtherInformation: string
-  relevantSentenceId: number
-  desiredOutcomesIds: string[]
-  additionalNeedsInformation: string
-  accessibilityNeeds: string
-  needsInterpreter: boolean
-  interpreterLanguage: string | null
-  hasAdditionalResponsibilities: boolean
-  whenUnavailable: string | null
-  serviceUser: ServiceUser
-  additionalRiskInformation: string
-  usingRarDays: boolean
-  maximumRarDays: number | null
-}
-
-export interface DraftReferral extends WithNullableValues<ReferralFields> {
-  id: string
-  createdAt: string
-  serviceUser: ServiceUser
-}
-
-export interface SentReferral {
-  id: string
-  sentAt: string
-  referenceNumber: string
-  referral: ReferralFields
-  sentBy: AuthUser
-  assignedTo: AuthUser | null
-  actionPlanId: string | null
-  endRequestedAt: string | null
-  endRequestedReason: string | null
-  endRequestedComments: string | null
-  endOfServiceReport: EndOfServiceReport | null
-  concludedAt: string | null
-}
-
-export interface ServiceCategory {
-  id: string
-  name: string
-  complexityLevels: ComplexityLevel[]
-  desiredOutcomes: DesiredOutcome[]
-}
-
-export interface ComplexityLevel {
-  id: string
-  title: string
-  description: string
-}
-
-export interface DesiredOutcome {
-  id: string
-  description: string
-}
-
-export interface ServiceUser {
-  crn: string
-  title: string | null
-  firstName: string | null
-  lastName: string | null
-  dateOfBirth: string | null
-  gender: string | null
-  ethnicity: string | null
-  preferredLanguage: string | null
-  religionOrBelief: string | null
-  disabilities: string[] | null
-}
-
-export interface ServiceProvider {
-  name: string
-}
-
-export interface AuthUser {
-  username: string
-  userId: string
-  authSource: string
-}
-
-export interface Intervention {
-  id: string
-  title: string
-  description: string
-  npsRegion: NPSRegion | null
-  pccRegions: PCCRegion[]
-  serviceCategory: ServiceCategory
-  serviceProvider: ServiceProvider
-  eligibility: Eligibility
-}
-
-export interface PCCRegion {
-  id: string
-  name: string
-}
-
-export interface NPSRegion {
-  id: string
-  name: string
-}
-
-export interface Eligibility {
-  minimumAge: number
-  maximumAge: number | null
-  allowsFemale: boolean
-  allowsMale: boolean
-}
-
 export interface InterventionsFilterParams {
   allowsMale?: boolean
   allowsFemale?: boolean
   pccRegionIds?: string[]
   maximumAge?: number
-}
-
-export interface ActionPlan {
-  id: string
-  referralId: string
-  numberOfSessions: number | null
-  activities: Activity[]
-  submittedBy: AuthUser | null
-  submittedAt: string | null
-}
-
-export interface Activity {
-  id: string
-  desiredOutcome: DesiredOutcome
-  description: string
-  createdAt: string
 }
 
 interface UpdateActivityParams {
@@ -158,49 +39,9 @@ export interface UpdateDraftActionPlanParams {
   numberOfSessions?: number
 }
 
-export interface ActionPlanAppointment {
-  sessionNumber: number
-  appointmentTime: string | null
-  durationInMinutes: number | null
-  sessionFeedback: {
-    attendance: AppointmentAttendance
-    behaviour: AppointmentBehaviour
-    submitted: boolean
-  }
-}
-
 export interface ActionPlanAppointmentUpdate {
   appointmentTime: string | null
   durationInMinutes: number | null
-}
-
-export type Attended = 'yes' | 'no' | 'late' | null
-
-export interface AppointmentAttendance {
-  attended: Attended
-  additionalAttendanceInformation: string | null
-}
-
-export interface AppointmentBehaviour {
-  behaviourDescription: string | null
-  notifyProbationPractitioner: boolean | null
-}
-
-export interface EndOfServiceReport {
-  id: string
-  referralId: string
-  submittedAt: string | null
-  furtherInformation: string | null
-  outcomes: EndOfServiceReportOutcome[]
-}
-
-export type AchievementLevel = 'ACHIEVED' | 'PARTIALLY_ACHIEVED' | 'NOT_ACHIEVED'
-
-export interface EndOfServiceReportOutcome {
-  desiredOutcome: DesiredOutcome
-  achievementLevel: AchievementLevel
-  progressionComments: string
-  additionalTaskComments: string
 }
 
 export interface CreateEndOfServiceReportOutcome {
@@ -213,11 +54,6 @@ export interface CreateEndOfServiceReportOutcome {
 export interface UpdateDraftEndOfServiceReportParams {
   furtherInformation: string | null
   outcome: CreateEndOfServiceReportOutcome | null
-}
-
-export interface CancellationReason {
-  code: string
-  description: string
 }
 
 export default class InterventionsService {

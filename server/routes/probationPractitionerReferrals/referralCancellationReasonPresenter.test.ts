@@ -2,7 +2,7 @@ import deliusServiceUserFactory from '../../../testutils/factories/deliusService
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
-import { CancellationReason } from '../../services/interventionsService'
+import CancellationReason from '../../models/cancellationReason'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 
 describe(ReferralCancellationReasonPresenter, () => {

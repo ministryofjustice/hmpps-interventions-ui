@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { Result, ValidationChain, ValidationError } from 'express-validator'
-import { DraftReferral } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
 import errorMessages from '../../utils/errorMessages'
 import FormUtils from '../../utils/formUtils'
 import { FormValidationError } from '../../utils/formValidationError'

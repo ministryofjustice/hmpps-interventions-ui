@@ -1,4 +1,4 @@
-import { DraftReferral } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'

@@ -1,4 +1,5 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'

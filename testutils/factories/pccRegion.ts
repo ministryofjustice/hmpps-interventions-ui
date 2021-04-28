@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { PCCRegion } from '../../server/services/interventionsService'
+import PCCRegion from '../../server/models/pccRegion'
 
 export default Factory.define<PCCRegion>(({ sequence }) => ({
   id: sequence.toString(),
