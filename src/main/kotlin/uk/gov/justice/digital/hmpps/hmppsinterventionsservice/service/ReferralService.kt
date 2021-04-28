@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -35,6 +36,10 @@ class ReferralService(
   companion object {
     private val logger = KotlinLogging.logger {}
     private const val maxReferenceNumberTries = 10
+  }
+
+  fun getReferral(id: UUID): Referral? {
+    return referralRepository.findByIdOrNull(id)
   }
 
   fun assignSentReferral(referral: Referral, assignedBy: AuthUser, assignedTo: AuthUser): Referral {

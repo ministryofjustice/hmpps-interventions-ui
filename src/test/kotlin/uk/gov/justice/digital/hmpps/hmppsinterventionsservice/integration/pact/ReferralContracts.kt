@@ -10,6 +10,12 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
     setupAssistant.createAssignedReferral(id = UUID.fromString("2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e"))
   }
 
+  @State("There is an existing referral with ID of 351e7f35-6399-43df-b615-cb41d5ba3e14 which has been ended containing a cancellation reason and comment")
+  fun `create an ended referral`() {
+    var endedReferral = setupAssistant.createEndedReferral(id = UUID.fromString("351e7f35-6399-43df-b615-cb41d5ba3e14"), cancellationComments = "Alex was arrested for driving without insurance and immediately recalled")
+    setupAssistant.fillReferralFields(endedReferral)
+  }
+
   @State(
     "There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf",
     "There are some existing sent referrals sent to HARMONY_LIVING",

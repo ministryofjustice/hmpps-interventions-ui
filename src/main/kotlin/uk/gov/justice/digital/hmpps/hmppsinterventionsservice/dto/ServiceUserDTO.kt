@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import java.time.LocalDate
 
 data class ServiceUserDTO(
-  var crn: String? = null,
+  var crn: String,
   var title: String? = null,
   var firstName: String? = null,
   var lastName: String? = null,

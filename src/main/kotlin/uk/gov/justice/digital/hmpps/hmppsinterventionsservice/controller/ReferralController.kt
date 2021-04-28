@@ -20,8 +20,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
@@ -38,6 +39,13 @@ class ReferralController(
   private val jwtAuthUserMapper: JwtAuthUserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
 ) {
+  @GetMapping("/referral/{id}")
+  fun getReferral(@PathVariable id: UUID): ReferralDTO {
+    return referralService.getReferral(id)
+      ?.let { ReferralDTO.from(it) }
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
+  }
+
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
     @PathVariable id: UUID,
@@ -169,9 +177,9 @@ class ReferralController(
   }
 
   @GetMapping("/service-category/{id}")
-  fun getServiceCategoryByID(@PathVariable id: UUID): ServiceCategoryDTO {
+  fun getServiceCategoryByID(@PathVariable id: UUID): ServiceCategoryFullDTO {
     return serviceCategoryService.getServiceCategoryByID(id)
-      ?.let { ServiceCategoryDTO.from(it) }
+      ?.let { ServiceCategoryFullDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "service category not found [id=$id]")
   }
 
