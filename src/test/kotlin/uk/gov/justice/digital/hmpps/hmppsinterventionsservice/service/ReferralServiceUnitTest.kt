@@ -46,7 +46,7 @@ class ReferralServiceUnitTest {
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
     whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded(endRequestedComments = cancellationComments))
 
-    val endedReferral = referralService.endSentReferral(referral, authUser, cancellationReason, cancellationComments)
+    val endedReferral = referralService.requestReferralEnd(referral, authUser, cancellationReason, cancellationComments)
     assertThat(endedReferral.endRequestedAt).isNotNull
     assertThat(endedReferral.endRequestedBy).isEqualTo(authUser)
     assertThat(endedReferral.endRequestedReason).isEqualTo(cancellationReason)

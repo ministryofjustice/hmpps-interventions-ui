@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -138,7 +138,7 @@ internal class ReferralControllerTest {
   @Test
   fun `successfully call end referral endpoint`() {
     val referral = referralFactory.createSent()
-    val endReferralDTO = EndReferralDTO("AAA", "comment")
+    val endReferralDTO = EndReferralRequestDTO("AAA", "comment")
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
@@ -147,15 +147,15 @@ internal class ReferralControllerTest {
     val authUser = AuthUser("CRN123", "auth", "user")
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(referralService.endSentReferral(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(endRequestedComments = "comment"))
+    whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(endRequestedComments = "comment"))
 
     referralController.endSentReferral(referral.id, endReferralDTO, jwtAuthenticationToken)
-    verify(referralService).endSentReferral(referral, authUser, cancellationReason, "comment")
+    verify(referralService).requestReferralEnd(referral, authUser, cancellationReason, "comment")
   }
 
   @Test
   fun `end referral endpoint does not find referral`() {
-    val endReferralDTO = EndReferralDTO("AAA", "comment")
+    val endReferralDTO = EndReferralRequestDTO("AAA", "comment")
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
