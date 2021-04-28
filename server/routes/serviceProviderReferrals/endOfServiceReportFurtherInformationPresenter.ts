@@ -1,11 +1,11 @@
-import { EndOfServiceReport, SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
+import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import PresenterUtils from '../../utils/presenterUtils'
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
 
 export default class EndOfServiceReportFurtherInformationPresenter {
   constructor(
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     private readonly referral: SentReferral,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}

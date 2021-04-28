@@ -1,5 +1,5 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
+import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
@@ -7,7 +7,7 @@ import utils from '../../utils/utils'
 export default class AssignmentConfirmationPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     private readonly assignee: AuthUser
   ) {}
 

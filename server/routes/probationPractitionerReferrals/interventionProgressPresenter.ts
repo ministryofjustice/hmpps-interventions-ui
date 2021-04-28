@@ -1,4 +1,4 @@
-import { ActionPlanAppointment, SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
+import { ActionPlanAppointment, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import { DeliusServiceUser } from '../../services/communityApiService'
@@ -23,7 +23,7 @@ export default class InterventionProgressPresenter {
 
   constructor(
     private readonly referral: SentReferral,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     serviceUser: DeliusServiceUser,
     private readonly actionPlanAppointments: ActionPlanAppointment[]
   ) {

@@ -3,14 +3,14 @@ import {
   Activity,
   DesiredOutcome,
   SentReferral,
-  ServiceCategoryFull,
+  ServiceCategory,
 } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 
 export default class ReviewActionPlanPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     private readonly actionPlan: ActionPlan
   ) {}
 

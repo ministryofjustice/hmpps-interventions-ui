@@ -3,7 +3,7 @@ import {
   Activity,
   DesiredOutcome,
   SentReferral,
-  ServiceCategoryFull,
+  ServiceCategory,
 } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import utils from '../../utils/utils'
@@ -12,7 +12,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 export default class AddActionPlanActivitiesPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     private readonly actionPlan: ActionPlan,
     private readonly errors: { desiredOutcomeId: string; error: FormValidationError }[] = []
   ) {}

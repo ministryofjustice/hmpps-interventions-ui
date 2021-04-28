@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { Result, ValidationChain, ValidationError } from 'express-validator'
-import { DraftReferral, ServiceCategoryFull } from '../../services/interventionsService'
+import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
 import errorMessages from '../../utils/errorMessages'
 import FormUtils from '../../utils/formUtils'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -8,14 +8,14 @@ import { FormValidationError } from '../../utils/formValidationError'
 export default class RarDaysForm {
   private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
 
-  static async createForm(request: Request, serviceCategory: ServiceCategoryFull): Promise<RarDaysForm> {
+  static async createForm(request: Request, serviceCategory: ServiceCategory): Promise<RarDaysForm> {
     return new RarDaysForm(
       request,
       await FormUtils.runValidations({ request, validations: this.validations(serviceCategory) })
     )
   }
 
-  static validations(serviceCategory: ServiceCategoryFull): ValidationChain[] {
+  static validations(serviceCategory: ServiceCategory): ValidationChain[] {
     const firstName = serviceCategory.name
 
     return FormUtils.yesNoRadioWithConditionalInputValidationChain({

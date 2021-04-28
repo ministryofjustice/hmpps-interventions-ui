@@ -1,5 +1,5 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { ServiceCategoryFull } from '../../services/interventionsService'
+import { ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 
@@ -8,7 +8,7 @@ export default class CheckAssignmentPresenter {
     private readonly referralId: string,
     private readonly assignee: AuthUser,
     private readonly email: string,
-    private readonly serviceCategory: ServiceCategoryFull
+    private readonly serviceCategory: ServiceCategory
   ) {}
 
   readonly text = {
