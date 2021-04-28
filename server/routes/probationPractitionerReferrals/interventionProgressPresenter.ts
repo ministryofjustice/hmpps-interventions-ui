@@ -13,6 +13,11 @@ interface ProgressSessionTableRow {
   link: { text: string; href: string }
 }
 
+interface EndOfServiceTableRow {
+  caseworker: string
+  tagArgs: { text: string; classes: string }
+  link: { text: string; href: string }
+}
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -103,7 +108,7 @@ export default class InterventionProgressPresenter {
 
   readonly endOfServiceReportTableHeaders = ['Caseworker', 'Status', 'Action']
 
-  get endOfServiceReportTableRows(): Record<string, unknown>[] {
+  get endOfServiceReportTableRows(): EndOfServiceTableRow[] {
     return [
       {
         caseworker: this.referral.assignedTo?.username ?? '',
@@ -111,7 +116,10 @@ export default class InterventionProgressPresenter {
           text: this.endOfServiceReportTableParams.text,
           classes: this.endOfServiceReportTableParams.tagClass,
         },
-        linkHtml: this.endOfServiceReportTableParams.linkHTML,
+        link: {
+          href: this.endOfServiceReportTableParams.linkHref,
+          text: this.endOfServiceReportTableParams.linkText,
+        },
       },
     ]
   }
@@ -120,6 +128,7 @@ export default class InterventionProgressPresenter {
     // At the moment this method is only used by the template when the end of service report is submitted, hence the hardcoded "Completed"
     text: 'Completed',
     tagClass: 'govuk-tag--green',
-    linkHTML: `<a class="govuk-link" href="/probation-practitioner/end-of-service-report/${this.referral.endOfServiceReport?.id}">View</a>`,
+    linkHref: `/probation-practitioner/end-of-service-report/${this.referral.endOfServiceReport?.id}`,
+    linkText: 'View',
   }
 }

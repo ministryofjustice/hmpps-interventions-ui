@@ -35,7 +35,11 @@ export default class InterventionProgressView {
         return { text: header }
       }),
       rows: this.presenter.endOfServiceReportTableRows.map(row => {
-        return [{ text: `${row.caseworker}` }, { text: tagMacro(row.tagArgs as TagArgs) }, { html: `${row.linkHtml}` }]
+        return [
+          { text: `${row.caseworker}` },
+          { text: tagMacro(row.tagArgs as TagArgs) },
+          { html: `${this.linkHtml(row.link)}` },
+        ]
       }),
     }
   }

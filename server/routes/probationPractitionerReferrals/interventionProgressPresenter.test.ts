@@ -249,8 +249,11 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.endOfServiceReportTableRows).toEqual([
         {
           caseworker: 'john.bloggs',
-          linkHtml: `<a class="govuk-link" href="/probation-practitioner/end-of-service-report/${endOfServiceReport.id}">View</a>`,
           tagArgs: { classes: 'govuk-tag--green', text: 'Completed' },
+          link: {
+            href: `/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`,
+            text: 'View',
+          },
         },
       ])
     })
