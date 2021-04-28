@@ -51,7 +51,7 @@ describe(ReferralStartForm, () => {
           {
             formFields: ['service-user-crn'],
             errorSummaryLinkedField: 'service-user-crn',
-            message: 'A CRN is required',
+            message: 'A CRN is needed',
           },
         ],
       })
@@ -67,7 +67,7 @@ describe(ReferralStartForm, () => {
           {
             formFields: ['service-user-crn'],
             errorSummaryLinkedField: 'service-user-crn',
-            message: 'A CRN is required',
+            message: 'A CRN is needed',
           },
         ],
       })
@@ -83,7 +83,7 @@ describe(ReferralStartForm, () => {
           {
             formFields: ['service-user-crn'],
             errorSummaryLinkedField: 'service-user-crn',
-            message: 'A CRN is required',
+            message: 'A CRN is needed',
           },
         ],
       })

@@ -122,7 +122,7 @@ describe('POST /intervention/:id/refer', () => {
         .send({ 'service-user-crn': '' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('CRN is required')
+          expect(res.text).toContain('CRN is needed')
         })
 
       expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledTimes(0)
