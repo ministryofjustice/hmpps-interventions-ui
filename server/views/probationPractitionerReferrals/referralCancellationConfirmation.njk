@@ -1,0 +1,29 @@
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Inteventions - GOV.UK
+{% endblock %}
+
+{% block content %}
+ {% if serviceUserNotificationBannerArgs !== undefined and serviceUserNotificationBannerArgs !== null %}
+    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
+  {% endif %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({titleText: presenter.text.confirmationText }) }}
+
+      <h2 class="govuk-heading-m">Service user details</h2>
+      {{ govukSummaryList(summaryListArgs) }}
+
+      <h2 class="govuk-heading-m">What happens next?</h2>
+      <p class="govuk-body">{{presenter.text.whatHappensNextText}}</p>
+
+      <a href="{{ presenter.myCasesHref }}" class="govuk-button">Go back to My Cases</a>
+    </div>
+  </div>
+{% endblock %}
