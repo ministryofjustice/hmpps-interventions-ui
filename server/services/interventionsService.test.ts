@@ -17,6 +17,7 @@ import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import referralFactory from '../../testutils/factories/referral'
+import sentReferralFactory from '../../testutils/factories/sentReferral'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -1035,6 +1036,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     },
     assignedTo: null,
     actionPlanId: null,
+    endRequestedAt: null,
+    endRequestedReason: null,
+    endRequestedComments: null,
+    concludedAt: null,
     endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',
     referral: {
@@ -1194,6 +1199,32 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(await interventionsService.getSentReferral(token, id)).toMatchObject({
           endOfServiceReport,
         })
+      })
+    })
+
+    describe('for a sent referral that has had an end request', () => {
+      it('populates the endRequested properties', async () => {
+        const endRequestedReferral = sentReferralFactory.endRequested().build()
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685, and it has been requested to be ended',
+          uponReceiving: 'a request for the sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/c5554f8f-aac6-4eaf-ba70-63281de35685',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(endRequestedReferral),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const referral = await interventionsService.getSentReferral(token, 'c5554f8f-aac6-4eaf-ba70-63281de35685')
+        expect(referral.endRequestedAt).not.toBeNull()
+        expect(referral.endRequestedReason).not.toBeNull()
+        expect(referral.endRequestedComments).not.toBeNull()
       })
     })
   })

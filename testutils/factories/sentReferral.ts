@@ -64,6 +64,14 @@ class SentReferralFactory extends Factory<SentReferral> {
       },
     })
   }
+
+  endRequested() {
+    return this.assigned().params({
+      endRequestedAt: '2021-4-28T20:45:21.986389Z',
+      endRequestedReason: 'Service user was recalled',
+      endRequestedComments: "you'll be seeing alex again soon i'm sure!",
+    })
+  }
 }
 
 export default SentReferralFactory.define(({ sequence }) => ({
@@ -78,5 +86,9 @@ export default SentReferralFactory.define(({ sequence }) => ({
   referral: exampleReferralFields(),
   assignedTo: null,
   actionPlanId: null,
+  endRequestedAt: null,
+  endRequestedReason: null,
+  endRequestedComments: null,
   endOfServiceReport: null,
+  concludedAt: null,
 }))
