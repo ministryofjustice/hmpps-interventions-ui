@@ -101,16 +101,6 @@ export interface SentReferral {
   concludedAt: string | null
 }
 
-export interface EndedReferral {
-  id: string
-  referenceNumber: string
-  referral: ReferralFields
-  endedAt: string
-  endedBy: AuthUser
-  cancellationReason: string
-  cancellationComments: string | null
-}
-
 export interface ServiceCategory {
   id: string
   name: string
