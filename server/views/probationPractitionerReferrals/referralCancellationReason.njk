@@ -2,6 +2,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -10,6 +11,10 @@
   - GOV.UK{% endblock %}
 
 {% block content %}
+   {% if serviceUserNotificationBannerArgs !== undefined and serviceUserNotificationBannerArgs !== null %}
+    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-width">
       {% if errorSummaryArgs !== null %}
