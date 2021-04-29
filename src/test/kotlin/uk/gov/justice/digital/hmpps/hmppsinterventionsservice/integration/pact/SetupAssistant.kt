@@ -141,10 +141,10 @@ class SetupAssistant(
     )
   }
 
-  fun createEndedReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention(), cancellationReason: CancellationReason? = randomCancellationReason(), cancellationComments: String? = null): Referral {
+  fun createEndedReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention(), endRequestedReason: CancellationReason? = randomCancellationReason(), endRequestedComments: String? = null): Referral {
     val ppUser = createPPUser()
     val spUser = createSPUser()
-    return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endRequestedBy = ppUser, assignedTo = spUser, endRequestedReason = cancellationReason, endRequestedComments = cancellationComments))
+    return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endRequestedBy = ppUser, assignedTo = spUser, endRequestedReason = endRequestedReason, endRequestedComments = endRequestedComments))
   }
 
   fun createSentReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention()): Referral {
