@@ -1,6 +1,3 @@
-server:
-  port: 8070
-
 notify:
   enabled: false
 
