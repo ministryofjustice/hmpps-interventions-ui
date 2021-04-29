@@ -7,6 +7,47 @@ import actionPlanAppointmentFactory from '../../../testutils/factories/actionPla
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 
 describe(InterventionProgressPresenter, () => {
+  describe('referralEnded', () => {
+    it('returns true when the referral has ended', () => {
+      const referral = sentReferralFactory.endRequested().build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+      expect(presenter.referralEnded).toEqual(true)
+    })
+    it('returns false when the referral has not ended', () => {
+      const referral = sentReferralFactory.build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+      expect(presenter.referralEnded).toEqual(false)
+    })
+  })
+  describe('referralEndedFields', () => {
+    it('returns ended fields when the referral has ended', () => {
+      const referral = sentReferralFactory.endRequested().build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+      expect(presenter.referralEndedFields.endRequestedComments).toEqual(referral.endRequestedComments)
+      expect(presenter.referralEndedFields.endRequestedReason).toEqual(referral.endRequestedReason)
+      expect(presenter.referralEndedFields.endRequestedAt).toEqual(referral.endRequestedAt)
+    })
+    it('returns null values when the referral has not ended', () => {
+      const referral = sentReferralFactory.build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const serviceUser = serviceUserFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+
+      expect(presenter.referralEndedFields.endRequestedComments).toBeNull()
+      expect(presenter.referralEndedFields.endRequestedReason).toBeNull()
+      expect(presenter.referralEndedFields.endRequestedAt).toBeNull()
+    })
+  })
+
   describe('createActionPlanFormAction', () => {
     it('returns the relative URL for creating a draft action plan', () => {
       const referral = sentReferralFactory.build()

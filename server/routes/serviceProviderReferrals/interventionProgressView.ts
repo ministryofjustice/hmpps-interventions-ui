@@ -1,10 +1,44 @@
-import { TagArgs, SummaryListArgs, SummaryListArgsRow, TableArgs } from '../../utils/govukFrontendTypes'
+import {
+  NotificationBannerArgs,
+  SummaryListArgs,
+  SummaryListArgsRow,
+  TableArgs,
+  TagArgs,
+} from '../../utils/govukFrontendTypes'
 
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
+import DateUtils from '../../utils/dateUtils'
 
 export default class InterventionProgressView {
   constructor(private readonly presenter: InterventionProgressPresenter) {}
+
+  get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
+    let cancellationReasonHTML = ''
+    let cancellationCommentsHTML = ''
+    if (this.presenter.referralEndedFields.endRequestedAt && this.presenter.referralEndedFields.endRequestedReason) {
+      const formattedEndDate = DateUtils.getDateStringFromDateTimeString(
+        this.presenter.referralEndedFields.endRequestedAt
+      )
+      cancellationReasonHTML = `
+        <p>
+            The probation practitioner cancelled this intervention on ${formattedEndDate} 
+            with reason: ${ViewUtils.escape(this.presenter.referralEndedFields.endRequestedReason)}.
+        </p>`
+    }
+    if (this.presenter.referralEndedFields.endRequestedComments) {
+      cancellationCommentsHTML = `
+        <p>
+            Additional information: ${ViewUtils.escape(this.presenter.referralEndedFields.endRequestedComments)}
+        </p>`
+    }
+    const html = `<div>${cancellationReasonHTML}${cancellationCommentsHTML}</div>`
+    return {
+      titleText: 'Intervention cancelled',
+      html,
+      classes: 'govuk-notification-banner--warning',
+    }
+  }
 
   private initialAssessmentSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs {
     return {
@@ -133,6 +167,7 @@ export default class InterventionProgressView {
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
+        cancelledReferralNotificationBannerArgs: this.cancelledReferralNotificationBannerArgs,
       },
     ]
   }

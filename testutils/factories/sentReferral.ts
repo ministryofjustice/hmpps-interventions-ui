@@ -67,7 +67,7 @@ class SentReferralFactory extends Factory<SentReferral> {
 
   endRequested() {
     return this.assigned().params({
-      endRequestedAt: '2021-4-28T20:45:21.986389Z',
+      endRequestedAt: '2021-04-28T20:45:21.986389Z',
       endRequestedReason: 'Service user was recalled',
       endRequestedComments: "you'll be seeing alex again soon i'm sure!",
     })

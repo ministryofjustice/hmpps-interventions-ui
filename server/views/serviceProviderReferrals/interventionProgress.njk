@@ -1,10 +1,15 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/referralNavigationTemplate.njk" %}
 
 {% block referralPageSection %}
+
+  {% if presenter.referralEnded %}
+     {{ govukNotificationBanner(cancelledReferralNotificationBannerArgs) }}
+  {% endif %}
 
   <h2 class="govuk-heading-m">Initial assessment appointment</h2>
 
