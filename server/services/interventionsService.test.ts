@@ -1230,7 +1230,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('assignSentReferral', () => {
     it('returns the sent referral, with the assignedTo property populated', async () => {
       await provider.addInteraction({
-        state: 'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+        state:
+          'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf and it is unassigned',
         uponReceiving:
           'a request to assign the sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf to a caseworker',
         withRequest: {
@@ -2216,16 +2217,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('endReferral', () => {
-    const endedReferral = sentReferralFactory.endRequested().build()
+    const endedReferral = sentReferralFactory.endRequested().build({ concludedAt: '2020-12-07T20:45:21.986389Z' })
 
     beforeEach(async () => {
       await provider.addInteraction({
-        state: 'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+        state:
+          'There is an existing assigned referral with ID of 5f71c68f-3e43-46b6-8f25-027a88637ee1 with no attended sessions',
         uponReceiving:
-          'a POST request to end the referral with ID 400be4c6-1aa4-4f52-ae86-cbd5d23309bf because SU was recalled ',
+          'a POST request to end the referral with ID 5f71c68f-3e43-46b6-8f25-027a88637ee1 because SU was recalled ',
         withRequest: {
           method: 'POST',
-          path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/end',
+          path: '/sent-referral/5f71c68f-3e43-46b6-8f25-027a88637ee1/end',
           body: {
             reasonCode: 'REC',
             comments: 'Alex was arrested for driving without insurance and immediately recalled.',
@@ -2244,7 +2246,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(
         await interventionsService.endReferral(
           token,
-          '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+          '5f71c68f-3e43-46b6-8f25-027a88637ee1',
           'REC',
           'Alex was arrested for driving without insurance and immediately recalled.'
         )
