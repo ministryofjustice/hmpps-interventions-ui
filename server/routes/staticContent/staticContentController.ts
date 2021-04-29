@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import ControllerUtils from '../../utils/controllerUtils'
 import StaticContentIndexPresenter from './indexPresenter'
 import StaticContentIndexView from './indexView'
 
@@ -19,7 +20,7 @@ export default class StaticContentController {
     const presenter = new StaticContentIndexPresenter(StaticContentController.pages)
     const view = new StaticContentIndexView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view)
   }
 
   async renderStaticPage(req: Request, res: Response): Promise<void> {

@@ -20,6 +20,7 @@ import { FormValidationError } from '../../utils/formValidationError'
 import ReferralCancellationReasonForm from './referralCancellationReasonForm'
 import ReferralCancellationConfirmationView from './referralCancellationConfirmationView'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
+import ControllerUtils from '../../utils/controllerUtils'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -43,7 +44,7 @@ export default class ProbationPractitionerReferralsController {
 
     const presenter = new MyCasesPresenter(cases, serviceCategories)
     const view = new MyCasesView(presenter)
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view)
   }
 
   async showFindStartPage(req: Request, res: Response): Promise<void> {
@@ -53,7 +54,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new FindStartPresenter(existingDraftReferrals)
     const view = new FindStartView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view)
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
@@ -93,7 +94,7 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new InterventionProgressView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view)
   }
 
   async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
@@ -119,7 +120,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
     const view = new SubmittedPostSessionFeedbackView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view)
   }
 
   async showReferralCancellationReasonPage(req: Request, res: Response): Promise<void> {
@@ -142,7 +143,7 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new ReferralCancellationReasonView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view)
   }
 
   async submitFormAndShowCancellationCheckAnswersPage(req: Request, res: Response): Promise<void> {
@@ -174,7 +175,7 @@ export default class ProbationPractitionerReferralsController {
       )
       const view = new ReferralCancellationReasonView(presenter)
 
-      return res.render(...view.renderArgs)
+      return ControllerUtils.renderWithLayout(res, view)
     }
 
     const { cancellationReason, cancellationComments } = data.paramsForUpdate
@@ -188,7 +189,7 @@ export default class ProbationPractitionerReferralsController {
 
     const view = new ReferralCancellationCheckAnswersView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view)
   }
 
   async cancelReferral(req: Request, res: Response): Promise<void> {
@@ -218,7 +219,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
     const view = new ReferralCancellationConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view)
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -234,6 +235,6 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategory)
     const view = new EndOfServiceReportView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view)
   }
 }
