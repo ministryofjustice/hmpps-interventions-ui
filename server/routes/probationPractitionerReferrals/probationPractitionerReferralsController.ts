@@ -86,12 +86,7 @@ export default class ProbationPractitionerReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(
-      sentReferral,
-      serviceCategory,
-      serviceUser,
-      actionPlanAppointments
-    )
+    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlanAppointments)
     const view = new InterventionProgressView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -182,7 +177,6 @@ export default class ProbationPractitionerReferralsController {
 
     const presenter = new ReferralCancellationCheckAnswersPresenter(
       req.params.id,
-      serviceUser,
       cancellationReason,
       cancellationComments
     )
@@ -216,7 +210,7 @@ export default class ProbationPractitionerReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
+    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
     const view = new ReferralCancellationConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

@@ -3,7 +3,6 @@ import utils from '../../utils/utils'
 import { DeliusServiceUser } from '../../services/communityApiService'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class ActionPlanNumberOfSessionsPresenter {
   constructor(
@@ -13,8 +12,6 @@ export default class ActionPlanNumberOfSessionsPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 

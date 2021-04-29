@@ -2,7 +2,6 @@ import { DeliusServiceUser } from '../../services/communityApiService'
 import { ActionPlanAppointment } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class PostSessionBehaviourFeedbackPresenter {
   constructor(
@@ -32,8 +31,6 @@ export default class PostSessionBehaviourFeedbackPresenter {
       hint: 'Select one option',
     },
   }
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   private readonly utils = new PresenterUtils(this.userInputData)
 

@@ -54,15 +54,4 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
       ])
     })
   })
-
-  describe('serviceUserBannerPresenter', () => {
-    it('is instantiated with the service user', () => {
-      const appointment = actionPlanAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-      const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
-
-      expect(presenter.serviceUserBannerPresenter).toBeDefined()
-    })
-  })
 })

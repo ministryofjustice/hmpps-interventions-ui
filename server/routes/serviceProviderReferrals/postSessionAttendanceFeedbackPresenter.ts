@@ -4,7 +4,6 @@ import DateUtils from '../../utils/dateUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class PostSessionAttendanceFeedbackPresenter {
   constructor(
@@ -23,8 +22,6 @@ export default class PostSessionAttendanceFeedbackPresenter {
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly sessionDetailsSummary: SummaryListItem[] = [
     {

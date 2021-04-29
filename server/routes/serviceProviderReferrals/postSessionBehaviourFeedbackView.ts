@@ -1,6 +1,5 @@
 import { TextareaArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import ServiceUserBannerView from '../shared/serviceUserBannerView'
 import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbackPresenter'
 
 export default class PostSessionBehaviourFeedbackView {
@@ -59,8 +58,6 @@ export default class PostSessionBehaviourFeedbackView {
     }
   }
 
-  private readonly serviceUserBannerView = new ServiceUserBannerView(this.presenter.serviceUserBannerPresenter)
-
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/postSessionBehaviourFeedback',
@@ -69,7 +66,6 @@ export default class PostSessionBehaviourFeedbackView {
         textAreaArgs: this.textAreaArgs,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,
-        ...this.serviceUserBannerView.locals,
       },
     ]
   }

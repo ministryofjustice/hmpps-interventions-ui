@@ -1,7 +1,6 @@
 import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { InputArgs } from '../../utils/govukFrontendTypes'
-import ServiceUserBannerView from '../shared/serviceUserBannerView'
 
 export default class ShowReferralView {
   constructor(private readonly presenter: ShowReferralPresenter) {}
@@ -34,10 +33,6 @@ export default class ShowReferralView {
     href: '/service-provider/dashboard',
   }
 
-  private readonly serviceUserBannerView = new ServiceUserBannerView(
-    this.presenter.referralOverviewPagePresenter.serviceUserBannerPresenter
-  )
-
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/referralDetails',
@@ -51,7 +46,6 @@ export default class ShowReferralView {
         serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
         emailInputArgs: this.emailInputArgs,
         backLinkArgs: this.backLinkArgs,
-        ...this.serviceUserBannerView.locals,
       },
     ]
   }

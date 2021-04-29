@@ -3,7 +3,6 @@ import { ActionPlanAppointment, AuthUser } from '../../services/interventionsSer
 import DateUtils from '../../utils/dateUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
-import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
 
 export default class SubmittedPostSessionFeedbackPresenter {
   readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
@@ -15,8 +14,6 @@ export default class SubmittedPostSessionFeedbackPresenter {
   ) {
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(this.appointment, this.serviceUser)
   }
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly text = {
     title: `View feedback`,

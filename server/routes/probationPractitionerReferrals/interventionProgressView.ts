@@ -1,5 +1,4 @@
 import { TagArgs, TableArgs } from '../../utils/govukFrontendTypes'
-import ServiceUserBannerView from '../shared/serviceUserBannerView'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
 
@@ -50,10 +49,6 @@ export default class InterventionProgressView {
     href: '/probation-practitioner/dashboard',
   }
 
-  private readonly serviceUserBannerView = new ServiceUserBannerView(
-    this.presenter.referralOverviewPagePresenter.serviceUserBannerPresenter
-  )
-
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'probationPractitionerReferrals/interventionProgress',
@@ -63,7 +58,6 @@ export default class InterventionProgressView {
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
-        ...this.serviceUserBannerView.locals,
       },
     ]
   }

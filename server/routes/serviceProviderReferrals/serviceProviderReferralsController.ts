@@ -122,7 +122,7 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee, formError)
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, assignee, formError)
     const view = new ShowReferralView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -161,7 +161,6 @@ export default class ServiceProviderReferralsController {
       sentReferral,
       serviceCategory,
       actionPlan,
-      serviceUser,
       actionPlanAppointments
     )
     const view = new InterventionProgressView(presenter)

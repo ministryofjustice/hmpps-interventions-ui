@@ -3,7 +3,6 @@ import { ActionPlanAppointment } from '../../services/interventionsService'
 import DateUtils from '../../utils/dateUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import FeedbackAnswersPresenter from '../shared/feedbackAnswersPresenter'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class PostSessionFeedbackCheckAnswersPresenter {
   readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
@@ -15,8 +14,6 @@ export default class PostSessionFeedbackCheckAnswersPresenter {
   ) {
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(this.appointment, this.serviceUser)
   }
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly submitHref = `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/submit`
 

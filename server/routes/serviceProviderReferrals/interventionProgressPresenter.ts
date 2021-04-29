@@ -1,7 +1,6 @@
 import { ActionPlan, ActionPlanAppointment, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
-import { DeliusServiceUser } from '../../services/communityApiService'
 import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
@@ -13,13 +12,11 @@ export default class InterventionProgressPresenter {
     private readonly referral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly actionPlan: ActionPlan | null,
-    serviceUser: DeliusServiceUser,
     private readonly actionPlanAppointments: ActionPlanAppointment[]
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
       referral.id,
-      serviceUser,
       'service-provider'
     )
   }

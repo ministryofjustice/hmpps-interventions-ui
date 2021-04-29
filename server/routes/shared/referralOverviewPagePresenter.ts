@@ -1,6 +1,3 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
-import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
-
 export enum ReferralOverviewPageSection {
   Progress = 1,
   CaseNotes,
@@ -11,13 +8,8 @@ export default class ReferralOverviewPagePresenter {
   constructor(
     private readonly section: ReferralOverviewPageSection,
     private readonly referralId: string,
-    private readonly serviceUser: DeliusServiceUser,
     private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
-  ) {
-    this.serviceUserBannerPresenter = new ServiceUserBannerPresenter(serviceUser)
-  }
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
+  ) {}
 
   readonly subNavArgs = {
     items: [
