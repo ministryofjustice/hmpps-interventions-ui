@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
@@ -32,6 +33,7 @@ class ReferralService(
   val eventPublisher: ReferralEventPublisher,
   val referenceGenerator: ReferralReferenceGenerator,
   val cancellationReasonRepository: CancellationReasonRepository,
+  val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -76,11 +78,17 @@ class ReferralService(
     return referralRepository.findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(serviceProviderID)
   }
 
-  fun endSentReferral(referral: Referral, user: AuthUser, cancellationReason: CancellationReason, cancellationComments: String?): Referral {
-    referral.endedAt = OffsetDateTime.now()
-    referral.endedBy = authUserRepository.save(user)
-    referral.cancellationReason = cancellationReason
-    cancellationComments?.let { referral.cancellationComments = it }
+  fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {
+    val now = OffsetDateTime.now()
+    referral.endRequestedAt = now
+    referral.endRequestedBy = authUserRepository.save(user)
+    referral.endRequestedReason = reason
+    comments?.let { referral.endRequestedComments = it }
+
+    if (canBeConcluded(referral)) {
+      concludeReferral(referral)
+    }
+
     return referralRepository.save(referral)
   }
 
@@ -259,5 +267,23 @@ class ReferralService(
 
     logger.error("Unable to generate a referral number {} {}", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
+  }
+
+  fun concludeReferral(referral: Referral) {
+    referral.concludedAt = OffsetDateTime.now()
+    referralRepository.save(referral)
+  }
+
+  private fun canBeConcluded(referral: Referral): Boolean {
+    val actionPlan = referral.actionPlan
+      ?: return true // no action plan means no sessions have been delivered
+
+    val numberOfAttendedSessions = actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)
+    if (numberOfAttendedSessions == 0) {
+      // there is an action plan but no sessions have recorded attendance
+      return true
+    }
+
+    return false
   }
 }

@@ -8,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.boot.test.json.JacksonTester
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 @JsonTest
 class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferralDTO>) {
+  private val referralFactory = ReferralFactory()
+
   @Test
   fun `sent referral requires reference number, sent timestamp, sentBy`() {
     val referral = SampleData.sampleReferral("X123456", "Provider")
@@ -190,6 +194,28 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "progressionComments" : null,
           "additionalTaskComments" : null
         }]
+      }
+    }
+    """
+    )
+  }
+
+  @Test
+  fun `sent referral DTO includes ended request fields`() {
+    val referral = referralFactory.createEnded()
+    referral.endRequestedAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
+    referral.endRequestedBy = AuthUser("id", "source", "username")
+    referral.endRequestedReason = CancellationReason("TOM", "service user turned into a tomato")
+    referral.concludedAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
+
+    val out = json.write(SentReferralDTO.from(referral))
+    Assertions.assertThat(out).isEqualToJson(
+      """
+      {
+        "endRequestedAt": "2021-01-13T21:57:13Z",
+        "endRequestedReason": "service user turned into a tomato",
+        "endRequestedComments": null,
+        "concludedAt": "2021-01-13T21:57:13Z"
       }
     }
     """

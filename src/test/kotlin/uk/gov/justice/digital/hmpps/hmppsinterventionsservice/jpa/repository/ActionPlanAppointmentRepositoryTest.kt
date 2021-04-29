@@ -5,11 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanAppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -28,6 +24,7 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
   private val authUserFactory = AuthUserFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
   private val actionPlanFactory = ActionPlanFactory(entityManager)
+  private val actionPlanAppointmentFactory = ActionPlanAppointmentFactory(entityManager)
 
   @BeforeEach
   fun setup() {
@@ -44,7 +41,7 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
     val user = authUserFactory.create(id = "referral_repository_test_user_id")
     val referral = referralFactory.createDraft(createdBy = user)
     val actionPlan = actionPlanFactory.create(referral = referral)
-    val actionPlanAppointment = buildAndPersistActionPlanAppointment(user, actionPlan)
+    val actionPlanAppointment = actionPlanAppointmentFactory.create(actionPlan = actionPlan)
 
     entityManager.flush()
     entityManager.clear()
@@ -54,33 +51,16 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
     assertThat(savedAppointment.id).isEqualTo(actionPlanAppointment.id)
   }
 
-  private fun buildAndPersistReferral(user: AuthUser): Referral {
+  @Test
+  fun `count number of attended appointments`() {
+    val actionPlan1 = actionPlanFactory.create()
+    (1..4).forEach {
+      actionPlanAppointmentFactory.createAttended(actionPlan = actionPlan1, sessionNumber = it)
+    }
+    val actionPlan2 = actionPlanFactory.create()
+    actionPlanAppointmentFactory.createAttended(actionPlan = actionPlan2)
 
-    val referral = SampleData.sampleReferral("X123456", "Harmony Living", createdBy = user)
-    SampleData.persistReferral(entityManager, referral)
-
-    return referral
-  }
-
-  private fun buildAndPersistActionPlan(user: AuthUser, referral: Referral): ActionPlan {
-
-    val serviceCategory = SampleData.sampleServiceCategory()
-    entityManager.persist(serviceCategory)
-
-    val desiredOutcome = SampleData.sampleDesiredOutcome(description = "Removing Barriers", serviceCategoryId = serviceCategory.id)
-    entityManager.persist(desiredOutcome)
-
-    val actionPlan = SampleData.sampleActionPlan(referral = referral, desiredOutcome = desiredOutcome, createdBy = user)
-    entityManager.persist(actionPlan)
-
-    return actionPlan
-  }
-
-  private fun buildAndPersistActionPlanAppointment(user: AuthUser, actionPlan: ActionPlan): ActionPlanAppointment {
-
-    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = user)
-    actionPlanAppointmentRepository.save(actionPlanAppointment)
-
-    return actionPlanAppointment
+    assertThat(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan1.id)).isEqualTo(4)
+    assertThat(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan2.id)).isEqualTo(1)
   }
 }

@@ -30,12 +30,14 @@ class EndOfServiceReportServiceTest {
   private val referralRepository: ReferralRepository = mock()
   private val endOfServiceReportRepository: EndOfServiceReportRepository = mock()
   private val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher = mock()
+  private val referralService: ReferralService = mock()
+
   private val referralFactory = ReferralFactory()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
 
   private val endOfServiceReportService = EndOfServiceReportService(
     authUserRepository, referralRepository,
-    endOfServiceReportRepository, endOfServiceReportEventPublisher
+    endOfServiceReportRepository, endOfServiceReportEventPublisher, referralService,
   )
 
   @Test

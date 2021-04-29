@@ -89,12 +89,12 @@ data class ReferralDTO(
         )
       }
 
-      referral.endedAt?.let {
+      referral.endRequestedAt?.let {
         referralDTO.endedFields = EndedFields(
           endedAt = it,
-          endedBy = AuthUserDTO.from(referral.endedBy!!),
-          cancellationReason = referral.cancellationReason!!.description,
-          cancellationComments = referral.cancellationComments,
+          endedBy = AuthUserDTO.from(referral.endRequestedBy!!),
+          cancellationReason = referral.endRequestedReason!!.description,
+          cancellationComments = referral.endRequestedComments,
         )
       }
 

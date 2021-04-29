@@ -35,13 +35,11 @@ class Referral(
   @ManyToOne @Fetch(FetchMode.JOIN) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
 
-  // ended referral fields
-  var endedAt: OffsetDateTime? = null,
-  @ManyToOne @Fetch(FetchMode.JOIN) var endedBy: AuthUser? = null,
-
-  @ManyToOne @JoinColumn(name = "cancellation_reason_code")
-  var cancellationReason: CancellationReason? = null,
-  var cancellationComments: String? = null,
+  var endRequestedAt: OffsetDateTime? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var endRequestedBy: AuthUser? = null,
+  @ManyToOne @JoinColumn(name = "end_requested_reason_code") var endRequestedReason: CancellationReason? = null,
+  var endRequestedComments: String? = null,
+  var concludedAt: OffsetDateTime? = null,
 
   // draft referral fields
   @OneToOne(mappedBy = "referral", cascade = arrayOf(CascadeType.ALL)) @PrimaryKeyJoinColumn var serviceUserData: ServiceUserData? = null,
@@ -67,9 +65,7 @@ class Referral(
 
   var relevantSentenceId: Long? = null,
 
-  // This can't be set directly and hence it's a 'val'. Once an action plan has been persisted on retrieval
-  // of the associated referral this field will be automatically set by hibernate.
-  @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) val actionPlan: ActionPlan? = null,
+  @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) var actionPlan: ActionPlan? = null,
 
   // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,

@@ -16,7 +16,7 @@ class ReferralDTOTest {
       val endedReferral = referralFactory.createEnded()
       val referralDTO = ReferralDTO.from(endedReferral)
       assertThat(referralDTO.endedFields).isNotNull()
-      assertThat(referralDTO.endedFields!!.endedAt).isEqualTo(endedReferral.endedAt)
+      assertThat(referralDTO.endedFields!!.endedAt).isEqualTo(endedReferral.endRequestedAt)
     }
 
     @Test
@@ -28,12 +28,12 @@ class ReferralDTOTest {
     @Test
     fun `an ended referral must always have certain fields populated`() {
       var endedReferral = referralFactory.createEnded()
-      endedReferral.endedBy = null
+      endedReferral.endRequestedBy = null
       assertThrows<RuntimeException> {
         ReferralDTO.from(endedReferral)
       }
       endedReferral = referralFactory.createEnded()
-      endedReferral.cancellationReason = null
+      endedReferral.endRequestedReason = null
       assertThrows<RuntimeException> {
         ReferralDTO.from(endedReferral)
       }

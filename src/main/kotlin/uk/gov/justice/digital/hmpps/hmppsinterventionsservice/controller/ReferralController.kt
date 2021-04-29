@@ -17,8 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndedReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
@@ -118,16 +117,14 @@ class ReferralController(
   }
 
   @PostMapping("/sent-referral/{id}/end")
-  fun endSentReferral(@PathVariable id: UUID, @RequestBody endReferral: EndReferralDTO, authentication: JwtAuthenticationToken): EndedReferralDTO {
+  fun endSentReferral(@PathVariable id: UUID, @RequestBody endReferralRequest: EndReferralRequestDTO, authentication: JwtAuthenticationToken): SentReferralDTO {
     val sentReferral = referralService.getSentReferral(id)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
     val user = jwtAuthUserMapper.map(authentication)
-    val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferral.cancellationReasonCode)
+    val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferralRequest.reasonCode)
 
-    val endedReferral = referralService.endSentReferral(sentReferral, user, cancellationReason, endReferral.cancellationComments)
-
-    return EndedReferralDTO.from(endedReferral)
+    return SentReferralDTO.from(referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments))
   }
 
   @PostMapping("/draft-referral")
