@@ -249,7 +249,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('Service user has moved out of delivery area').click()
       cy.contains('Additional comments (optional)').type('Some additional comments')
 
-      cy.stubCancelReferral(assignedReferral.id, assignedReferral)
+      cy.stubEndReferral(assignedReferral.id, assignedReferral)
 
       cy.contains('Continue').click()
 

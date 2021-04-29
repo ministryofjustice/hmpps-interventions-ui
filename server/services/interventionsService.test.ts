@@ -16,7 +16,7 @@ import { DeliusServiceUser } from './communityApiService'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
-import referralFactory from '../../testutils/factories/referral'
+import sentReferralFactory from '../../testutils/factories/sentReferral'
 
 jest.mock('../data/hmppsAuthClient')
 
@@ -28,57 +28,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
     token = oauth2TokenFactory.deliusToken().build()
-  })
-
-  describe('getReferral', () => {
-    it('returns a sent referral for the given ID', async () => {
-      const sentReferral = referralFactory.sent().build({ id: '81d754aa-d868-4347-9c0f-50690773014e' })
-
-      await provider.addInteraction({
-        state: `There is an existing sent referral with ID of ${sentReferral.id}`,
-        uponReceiving: `a request for the referral with ID ${sentReferral.id}`,
-        withRequest: {
-          method: 'GET',
-          path: `/referral/${sentReferral.id}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like(sentReferral),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      })
-
-      const referral = await interventionsService.getReferral(token, sentReferral.id)
-      expect(referral.id).toBe(sentReferral.id)
-      expect(referral.sentFields).not.toBeNull()
-    })
-
-    it('returns an ended referral for the given ID', async () => {
-      const endedReferral = referralFactory.ended().build({ id: '351e7f35-6399-43df-b615-cb41d5ba3e14' })
-
-      await provider.addInteraction({
-        state: `There is an existing referral with ID of ${endedReferral.id} which has been ended containing a cancellation reason and comment`,
-        uponReceiving: `a request for the referral with ID ${endedReferral.id}`,
-        withRequest: {
-          method: 'GET',
-          path: `/referral/${endedReferral.id}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like(endedReferral),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      })
-
-      const referral = await interventionsService.getReferral(token, endedReferral.id)
-      expect(referral.id).toBe(endedReferral.id)
-      expect(referral.sentFields).not.toBeNull()
-      expect(referral.endedFields).not.toBeNull()
-      expect(referral.endedFields?.cancellationComments).toEqual(endedReferral.endedFields?.cancellationComments)
-      expect(referral.endedFields?.cancellationReason).toEqual(endedReferral.endedFields?.cancellationReason)
-    })
   })
 
   describe('getDraftReferral', () => {
@@ -1035,6 +984,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     },
     assignedTo: null,
     actionPlanId: null,
+    endRequestedAt: null,
+    endRequestedReason: null,
+    endRequestedComments: null,
+    concludedAt: null,
     endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',
     referral: {
@@ -1194,6 +1147,32 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(await interventionsService.getSentReferral(token, id)).toMatchObject({
           endOfServiceReport,
         })
+      })
+    })
+
+    describe('for a sent referral that has had an end request', () => {
+      it('populates the endRequested properties', async () => {
+        const endRequestedReferral = sentReferralFactory.endRequested().build()
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685, and it has been requested to be ended',
+          uponReceiving: 'a request for the sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/c5554f8f-aac6-4eaf-ba70-63281de35685',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(endRequestedReferral),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const referral = await interventionsService.getSentReferral(token, 'c5554f8f-aac6-4eaf-ba70-63281de35685')
+        expect(referral.endRequestedAt).not.toBeNull()
+        expect(referral.endRequestedReason).not.toBeNull()
+        expect(referral.endRequestedComments).not.toBeNull()
       })
     })
   })
@@ -2236,19 +2215,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('cancelReferral', () => {
-    const cancelledReferral = {
-      id: '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
-      referenceNumber: 'SJ12345AC',
-      endedAt: '2021-05-13T12:30:00Z',
-      endedBy: {
-        username: 'BERNARD.BEAKS',
-        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-        authSource: 'delius',
-      },
-      cancellationReason: 'Service user has been recalled',
-      cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled.',
-    }
+  describe('endReferral', () => {
+    const endedReferral = sentReferralFactory.endRequested().build()
 
     beforeEach(async () => {
       await provider.addInteraction({
@@ -2259,14 +2227,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'POST',
           path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/end',
           body: {
-            cancellationReasonCode: 'REC',
-            cancellationComments: 'Alex was arrested for driving without insurance and immediately recalled.',
+            reasonCode: 'REC',
+            comments: 'Alex was arrested for driving without insurance and immediately recalled.',
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(cancelledReferral),
+          body: Matchers.like(endedReferral),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2274,13 +2242,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns an ended referral', async () => {
       expect(
-        await interventionsService.cancelReferral(
+        await interventionsService.endReferral(
           token,
           '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
           'REC',
           'Alex was arrested for driving without insurance and immediately recalled.'
         )
-      ).toMatchObject(cancelledReferral)
+      ).toMatchObject(endedReferral)
     })
   })
 

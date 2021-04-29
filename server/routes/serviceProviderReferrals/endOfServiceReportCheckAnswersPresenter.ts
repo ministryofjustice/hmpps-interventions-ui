@@ -1,4 +1,4 @@
-import { EndOfServiceReport, SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
+import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import EndOfServiceReportAnswersPresenter from '../shared/endOfServiceReportAnswersPresenter'
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
 
@@ -6,7 +6,7 @@ export default class EndOfServiceReportCheckAnswersPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategoryFull
+    private readonly serviceCategory: ServiceCategory
   ) {}
 
   readonly formAction = `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/submit`

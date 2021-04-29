@@ -2,7 +2,7 @@ import {
   EndOfServiceReport,
   EndOfServiceReportOutcome,
   SentReferral,
-  ServiceCategoryFull,
+  ServiceCategory,
 } from '../../services/interventionsService'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
@@ -23,7 +23,7 @@ export default class EndOfServiceReportAnswersPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     private readonly allowChange: boolean = true
   ) {}
 

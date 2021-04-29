@@ -1,4 +1,4 @@
-import { EndOfServiceReport, SentReferral, ServiceCategoryFull } from '../../services/interventionsService'
+import { EndOfServiceReport, SentReferral, ServiceCategory } from '../../services/interventionsService'
 import EndOfServiceReportAnswersPresenter from '../shared/endOfServiceReportAnswersPresenter'
 import PresenterUtils from '../../utils/presenterUtils'
 
@@ -6,7 +6,7 @@ export default class EndOfServiceReportPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategoryFull
+    private readonly serviceCategory: ServiceCategory
   ) {}
 
   readonly text = {

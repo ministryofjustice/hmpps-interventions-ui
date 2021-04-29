@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
-import { ServiceCategoryFull } from '../../server/services/interventionsService'
+import { ServiceCategory } from '../../server/services/interventionsService'
 
-export default Factory.define<ServiceCategoryFull>(({ sequence }) => ({
+export default Factory.define<ServiceCategory>(({ sequence }) => ({
   id: sequence.toString(),
   name: 'accommodation',
   complexityLevels: [

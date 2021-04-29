@@ -3,7 +3,7 @@ import {
   EndOfServiceReport,
   EndOfServiceReportOutcome,
   SentReferral,
-  ServiceCategoryFull,
+  ServiceCategory,
 } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -13,7 +13,7 @@ export default class EndOfServiceReportOutcomePresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategoryFull,
+    private readonly serviceCategory: ServiceCategory,
     private readonly desiredOutcome: DesiredOutcome,
     private readonly desiredOutcomeNumber: number,
     private readonly outcome: EndOfServiceReportOutcome | null,

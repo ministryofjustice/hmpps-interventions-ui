@@ -149,16 +149,12 @@ module.exports = on => {
       return interventionsService.stubSubmitEndOfServiceReport(arg.id, arg.responseJson)
     },
 
-    stubCancelReferral: arg => {
-      return interventionsService.stubCancelReferral(arg.referralId, arg.responseJson)
+    stubEndReferral: arg => {
+      return interventionsService.stubEndReferral(arg.referralId, arg.responseJson)
     },
 
     stubGetReferralCancellationReasons: arg => {
       return interventionsService.stubGetReferralCancellationReasons(arg.responseJson)
-    },
-
-    stubGetReferral: arg => {
-      return interventionsService.stubGetReferral(arg.id, arg.responseJson)
     },
   })
 }
