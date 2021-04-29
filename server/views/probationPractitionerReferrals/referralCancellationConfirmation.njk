@@ -1,6 +1,5 @@
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -8,11 +7,7 @@
   HMPPS Inteventions - GOV.UK
 {% endblock %}
 
-{% block content %}
- {% if serviceUserNotificationBannerArgs !== undefined and serviceUserNotificationBannerArgs !== null %}
-    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
-  {% endif %}
-
+{% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({titleText: presenter.text.confirmationText }) }}

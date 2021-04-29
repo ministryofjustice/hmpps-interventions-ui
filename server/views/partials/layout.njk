@@ -1,5 +1,6 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
@@ -20,6 +21,15 @@
 {% endblock %}
 
 {% block pageTitle %}HMPPS Interventions{% endblock %}
+
+{% block content %} 
+  {% if serviceUserNotificationBannerArgs %}
+    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
+  {% endif %}
+
+  {% block pageContent %}
+  {% endblock %}
+{% endblock %}
 
 {% block header %}
   {% include "./header.njk" %}

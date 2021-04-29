@@ -1,5 +1,4 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -7,11 +6,7 @@
 {% block pageTitle %}{{ pageTitle }}
   - GOV.UK{% endblock %}
 
-{% block content %}
- {% if serviceUserNotificationBannerArgs !== undefined and serviceUserNotificationBannerArgs !== null %}
-    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
-  {% endif %}
-
+{% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-width">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
