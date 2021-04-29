@@ -89,7 +89,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       surname: 'Beaks',
       email: 'bernard.beaks@justice.gov.uk',
     })
-    const serviceUser = deliusServiceUserFactory.build({
+    const deliusServiceUser = deliusServiceUserFactory.build({
       firstName: 'Alex',
       surname: 'River',
       contactDetails: {
@@ -106,7 +106,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -126,13 +126,13 @@ describe('GET /service-provider/referrals/:id/details', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const sentReferral = sentReferralFactory.assigned().build()
       const deliusUser = deliusUserFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       hmppsAuthClient.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
       await request(app)
@@ -149,14 +149,14 @@ describe('GET /service-provider/referrals/:id/details', () => {
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const serviceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { serviceCategoryId: serviceCategory.id },
     })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)
@@ -424,7 +424,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
 
 describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', () => {
   it('displays a page to set the number of sessions on an action plan', async () => {
-    const serviceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = sentReferralFactory.assigned().build({
       referral: {
@@ -434,7 +434,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', (
     })
     const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
 
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -465,7 +465,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
 
   describe('when an invalid number of sessions is given', () => {
     it('does not try to update the action plan on the interventions service, and renders an error message', async () => {
-      const serviceUser = deliusServiceUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const referral = sentReferralFactory.assigned().build({
         referral: {
@@ -475,7 +475,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
       })
       const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -650,14 +650,14 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
 
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
   it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
-    const serviceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
     const appointment = actionPlanAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
 
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
@@ -747,14 +747,14 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', () => {
   it('renders a page with which the Service Provider can record the Service User‘s behaviour', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const serviceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
     const appointment = actionPlanAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
 
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -807,14 +807,14 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 describe('GET /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers', () => {
   it('renders a page with answers the user has so far selected', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const serviceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
     const appointment = actionPlanAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
 
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -935,7 +935,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
   it('renders a page displaying feedback answers', async () => {
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id, numberOfSessions: 1 })
-    const serviceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
 
     const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
@@ -952,7 +952,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
       },
     })
 
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
