@@ -11,14 +11,14 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 
-class CommunityAPIServiceTest {
+class CommunityAPIReferralServiceTest {
 
   private val communityAPIClient = mock<CommunityAPIClient>()
 
   @Test
   fun `got service successfully`() {
 
-    val communityAPIService = CommunityAPIService(
+    val communityAPIService = CommunityAPIReferralEventService(
       "http://testUrl",
       "secure/offenders/crn/{id}/referral/sent",
       "secure/offenders/crn/{id}/referral/sent",

@@ -62,7 +62,9 @@ class AppointmentsService(
   ): ActionPlanAppointment {
 
     val appointment = getActionPlanAppointmentOrThrowException(actionPlanId, sessionNumber)
-    communityAPIBookingService.book(appointment, appointmentTime, durationInMinutes)
+    communityAPIBookingService.book(appointment, appointmentTime, durationInMinutes)?.let {
+      appointment.deliusAppointmentId = it
+    }
 
     mergeAppointment(appointment, appointmentTime, durationInMinutes)
     return actionPlanAppointmentRepository.save(appointment)
@@ -116,6 +118,7 @@ class AppointmentsService(
 
     appointmentEventPublisher.attendanceRecordedEvent(appointment, appointment.attended == Attended.NO)
     appointmentEventPublisher.behaviourRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour!!)
+    appointmentEventPublisher.sessionFeedbackRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour!!)
     return appointment
   }
 

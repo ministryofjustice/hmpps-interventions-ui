@@ -21,20 +21,22 @@ class CommunityAPIBookingService(
 ) {
   companion object : KLogging()
 
-  fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?) {
+  fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Long? {
     if (!bookingsEnabled) {
-      return
+      return null
     }
 
     when {
       isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
-        makeInitialBooking(existingAppointment, appointmentTime!!, durationInMinutes!!)
+        return makeInitialBooking(existingAppointment, appointmentTime!!, durationInMinutes!!)
       }
       else -> {}
     }
+
+    return null
   }
 
-  private fun makeInitialBooking(appointment: ActionPlanAppointment, appointmentTime: OffsetDateTime, durationInMinutes: Int) {
+  private fun makeInitialBooking(appointment: ActionPlanAppointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Long {
     val resourceUrl = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
       .path(interventionsUIViewAppointment)
       .buildAndExpand(appointment.actionPlan.referral.id)
@@ -54,6 +56,8 @@ class CommunityAPIBookingService(
 
     val response = communityAPIClient.makeSyncPostRequest(communityApiBookAppointmentPath, appointmentCreateRequestDTO, AppointmentCreateResponseDTO::class.java)
     logger.debug("Requested booking for appointment. Returned appointment id: $response")
+
+    return response.appointmentId
   }
 
   fun isInitialBooking(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Boolean =

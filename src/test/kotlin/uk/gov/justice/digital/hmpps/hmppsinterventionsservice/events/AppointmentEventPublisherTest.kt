@@ -10,8 +10,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.net.URI
+import java.time.OffsetDateTime
 
 class AppointmentEventPublisherTest {
   private val eventPublisher = mock<ApplicationEventPublisher>()
@@ -62,6 +64,30 @@ class AppointmentEventPublisherTest {
 
     Assertions.assertThat(event.source).isSameAs(publisher)
     Assertions.assertThat(event.type).isSameAs(AppointmentEventType.BEHAVIOUR_RECORDED)
+    Assertions.assertThat(event.appointment).isSameAs(appointment)
+    Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
+    Assertions.assertThat(event.notifyPP).isTrue
+  }
+
+  @Test
+  fun `builds an appointment session feedback event and publishes it`() {
+    val actionPlan = SampleData.sampleActionPlan()
+    val appointment = SampleData.sampleActionPlanAppointment(
+      actionPlan = actionPlan,
+      createdBy = actionPlan.createdBy,
+      attended = LATE,
+      additionalAttendanceInformation = "Behaviour was fine",
+      attendanceSubmittedAt = OffsetDateTime.now()
+    )
+
+    publisher.sessionFeedbackRecordedEvent(appointment, true)
+
+    val eventCaptor = argumentCaptor<AppointmentEvent>()
+    verify(eventPublisher).publishEvent(eventCaptor.capture())
+    val event = eventCaptor.firstValue
+
+    Assertions.assertThat(event.source).isSameAs(publisher)
+    Assertions.assertThat(event.type).isSameAs(AppointmentEventType.SESSION_FEEDBACK_RECORDED)
     Assertions.assertThat(event.appointment).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isTrue

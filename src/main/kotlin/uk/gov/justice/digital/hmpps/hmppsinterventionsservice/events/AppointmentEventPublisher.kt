@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 enum class AppointmentEventType {
   ATTENDANCE_RECORDED,
   BEHAVIOUR_RECORDED,
+  SESSION_FEEDBACK_RECORDED,
 }
 
 class AppointmentEvent(source: Any, val type: AppointmentEventType, val appointment: ActionPlanAppointment, val detailUrl: String, val notifyPP: Boolean) : ApplicationEvent(source) {
@@ -32,6 +33,12 @@ class AppointmentEventPublisher(
   fun behaviourRecordedEvent(appointment: ActionPlanAppointment, notifyPP: Boolean) {
     applicationEventPublisher.publishEvent(
       AppointmentEvent(this, AppointmentEventType.BEHAVIOUR_RECORDED, appointment, getAppointmentURL(appointment), notifyPP)
+    )
+  }
+
+  fun sessionFeedbackRecordedEvent(appointment: ActionPlanAppointment, notifyPP: Boolean) {
+    applicationEventPublisher.publishEvent(
+      AppointmentEvent(this, AppointmentEventType.SESSION_FEEDBACK_RECORDED, appointment, getAppointmentURL(appointment), notifyPP)
     )
   }
 

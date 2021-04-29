@@ -63,6 +63,9 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql")
 
+  // json
+  implementation("com.github.java-json-tools:json-patch:1.13")
+
   testImplementation("au.com.dius.pact.provider:junit5spring:4.2.0")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")

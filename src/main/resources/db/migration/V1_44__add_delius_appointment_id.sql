@@ -1,0 +1,1 @@
+alter table action_plan_appointment add column delius_appointment_id bigint;

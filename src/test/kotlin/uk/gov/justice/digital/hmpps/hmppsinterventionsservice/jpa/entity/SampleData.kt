@@ -221,7 +221,9 @@ class SampleData {
       createdBy: AuthUser,
       attended: Attended? = null,
       additionalAttendanceInformation: String? = null,
-      attendanceSubmittedAt: OffsetDateTime? = null
+      attendanceSubmittedAt: OffsetDateTime? = null,
+      notifyPPOfAttendanceBehaviour: Boolean? = null,
+      deliusAppointmentId: Long? = null
     ): ActionPlanAppointment {
       return ActionPlanAppointment(
         id = id,
@@ -233,7 +235,9 @@ class SampleData {
         createdBy = createdBy,
         attended = attended,
         additionalAttendanceInformation = additionalAttendanceInformation,
-        attendanceSubmittedAt = attendanceSubmittedAt
+        notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
+        attendanceSubmittedAt = attendanceSubmittedAt,
+        deliusAppointmentId = deliusAppointmentId
       )
     }
 
