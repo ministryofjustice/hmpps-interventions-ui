@@ -257,6 +257,19 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.contains('Cancel referral').click()
       cy.contains('This referral has been cancelled')
+
+      const referralWithEndRequested = sentReferralFactory.endRequested().build({
+        ...referralParams,
+        assignedTo: { username: probationPractitioner.username },
+        actionPlanId: actionPlan.id,
+        endRequestedAt: '2021-04-04T20:45:21.986389Z',
+      })
+
+      cy.stubGetSentReferral(referralWithEndRequested.id, referralWithEndRequested)
+
+      cy.visit(`/probation-practitioner/referrals/${referralWithEndRequested.id}/progress`)
+
+      cy.contains('You requested to end this service on 04 Apr 2021')
     })
   })
 })
