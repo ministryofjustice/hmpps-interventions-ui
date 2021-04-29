@@ -990,10 +990,12 @@ describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () 
     const desiredOutcome = serviceCategory.desiredOutcomes[0]
     const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: [desiredOutcome.id, '2', '3'] } })
     const endOfServiceReport = endOfServiceReportFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
@@ -1127,11 +1129,13 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
         referral: { serviceUser: { firstName: 'Alex' }, desiredOutcomesIds: [desiredOutcome.id, '2', '3'] },
       })
       const endOfServiceReport = endOfServiceReportFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
 
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
       interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
       await request(app)
         .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
@@ -1152,10 +1156,12 @@ describe('GET /service-provider/end-of-service-report/:id/further-information', 
     const endOfServiceReport = endOfServiceReportFactory.build()
     const referral = sentReferralFactory.build()
     const serviceCategory = serviceCategoryFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
 
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
@@ -1204,10 +1210,12 @@ describe('GET /service-provider/end-of-service-report/:id/check-answers', () => 
       ],
       furtherInformation: 'Some further information',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
 
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/check-answers`)

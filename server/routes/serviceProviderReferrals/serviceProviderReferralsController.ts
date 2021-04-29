@@ -698,6 +698,8 @@ export default class ServiceProviderReferralsController {
       }
     }
 
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const presenter = new EndOfServiceReportOutcomePresenter(
       referral,
       endOfServiceReport,
@@ -710,7 +712,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportOutcomeView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async editEndOfServiceReportFurtherInformation(req: Request, res: Response): Promise<void> {
@@ -730,6 +732,8 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const presenter = new EndOfServiceReportFurtherInformationPresenter(
       endOfServiceReport,
       serviceCategory,
@@ -738,7 +742,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportFurtherInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async endOfServiceReportCheckAnswers(req: Request, res: Response): Promise<void> {
@@ -750,11 +754,12 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategory)
     const view = new EndOfServiceReportCheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -771,10 +776,11 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategory)
     const view = new EndOfServiceReportConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }
