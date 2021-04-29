@@ -45,6 +45,17 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
+      - run:
+          name: Setup for SQL validation
+          command: |
+            sudo apt update
+            sudo apt install postgresql-client
+      - run:
+          name: Validate report SQLs
+          command: |
+            for sqlfile in helm_deploy/hmpps-interventions-service/reports/*.sql; do
+              PGPASSWORD="$POSTGRES_PASSWORD" psql -U"postgres" "postgresql://localhost:5432/$POSTGRES_DB" < "$sqlfile"
+            done
 
   publish_data:
     executor: hmpps/java

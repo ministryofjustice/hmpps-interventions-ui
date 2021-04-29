@@ -1,3 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-extractor-reports
+data:
+{{ (.Files.Glob "reports/*.sql").AsConfig | indent 2 }}
+
+---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -9,14 +18,24 @@ spec:
       template:
         spec:
           restartPolicy: "Never"
+          volumes:
+          - name: data-extractor-reports
+            configMap:
+              name: data-extractor-reports
+              defaultMode: 0755
           containers:
           - name: data-extractor-reporting
             image: ministryofjustice/data-engineering-data-extractor:develop
             {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
             command: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
             {{ else }}
-            command: ["sh", "-c", "extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
+            command: ["sh", "-c", "mkdir -p 'export/csv/reports' && psql --file=/reports/crs_performance_report.sql > 'export/csv/reports/crs_performance_report.csv' && extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
             {{ end }}
+            volumeMounts:
+            - name: data-extractor-reports
+              mountPath: /reports/crs_performance_report.sql
+              readOnly: true
+              subPath: crs_performance_report.sql
             env:
               - name: LOCAL_EXPORT_DESTINATION
                 value: export
