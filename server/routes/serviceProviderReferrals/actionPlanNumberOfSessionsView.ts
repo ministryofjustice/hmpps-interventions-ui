@@ -1,6 +1,7 @@
 import { InputArgs } from '../../utils/govukFrontendTypes'
 import ActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessionsPresenter'
 import ViewUtils from '../../utils/viewUtils'
+import ServiceUserBannerView from '../shared/serviceUserBannerView'
 
 export default class ActionPlanNumberOfSessionsView {
   constructor(private readonly presenter: ActionPlanNumberOfSessionsPresenter) {}
@@ -21,14 +22,16 @@ export default class ActionPlanNumberOfSessionsView {
     }
   }
 
+  private readonly serviceUserBannerView = new ServiceUserBannerView(this.presenter.serviceUserBannerPresenter)
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/actionPlan/numberOfSessions',
       {
         presenter: this.presenter,
         errorSummaryArgs: ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary),
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         numberOfSessionsInputArgs: this.numberOfSessionsInputArgs,
+        ...this.serviceUserBannerView.locals,
       },
     ]
   }

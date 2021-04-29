@@ -1,6 +1,7 @@
 import { TagArgs, SummaryListArgs, SummaryListArgsRow, TableArgs } from '../../utils/govukFrontendTypes'
 
 import ViewUtils from '../../utils/viewUtils'
+import ServiceUserBannerView from '../shared/serviceUserBannerView'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 
 export default class InterventionProgressView {
@@ -121,18 +122,22 @@ export default class InterventionProgressView {
   private readonly endOfServiceReportTagClass =
     this.presenter.endOfServiceReportStatusStyle === 'active' ? '' : 'govuk-tag--grey'
 
+  private readonly serviceUserBannerView = new ServiceUserBannerView(
+    this.presenter.referralOverviewPagePresenter.serviceUserBannerPresenter
+  )
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/interventionProgress',
       {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
-        serviceUserBannerArgs: this.presenter.referralOverviewPagePresenter.serviceUserBannerArgs,
         initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
         actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
+        ...this.serviceUserBannerView.locals,
       },
     ]
   }

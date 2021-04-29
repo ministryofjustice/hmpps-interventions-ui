@@ -8,20 +8,16 @@ export enum ReferralOverviewPageSection {
 }
 
 export default class ReferralOverviewPagePresenter {
-  private serviceUserBannerPresenter: ServiceUserBannerPresenter
-
   constructor(
     private readonly section: ReferralOverviewPageSection,
     private readonly referralId: string,
-    serviceUser: DeliusServiceUser,
+    private readonly serviceUser: DeliusServiceUser,
     private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
   ) {
     this.serviceUserBannerPresenter = new ServiceUserBannerPresenter(serviceUser)
   }
 
-  get serviceUserBannerArgs(): Record<string, string> {
-    return this.serviceUserBannerPresenter.serviceUserBannerArgs
-  }
+  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly subNavArgs = {
     items: [

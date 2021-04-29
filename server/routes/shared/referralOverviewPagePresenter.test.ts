@@ -4,8 +4,8 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
 
 describe(ReferralOverviewPagePresenter, () => {
-  describe('serviceUserBannerArgs', () => {
-    it('returns the embedded serviceUserBannerArgs', () => {
+  describe('serviceUserBannerPresenter', () => {
+    it('returns the embedded serviceUserBannerPresenter', () => {
       const serviceUser = serviceUserFactory.build()
       const sentReferral = sentReferralFactory.build()
       const presenter = new ReferralOverviewPagePresenter(
@@ -14,7 +14,7 @@ describe(ReferralOverviewPagePresenter, () => {
         serviceUser,
         'service-provider'
       )
-      expect(presenter.serviceUserBannerArgs).toBeDefined()
+      expect(presenter.serviceUserBannerPresenter).toBeDefined()
     })
   })
 

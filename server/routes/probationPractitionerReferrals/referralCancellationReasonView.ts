@@ -1,5 +1,6 @@
 import { RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
+import ServiceUserBannerView from '../shared/serviceUserBannerView'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 
 export default class ReferralCancellationReasonView {
@@ -7,7 +8,7 @@ export default class ReferralCancellationReasonView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private readonly serviceUserBannerArgs = this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs
+  private readonly serviceUserBannerView = new ServiceUserBannerView(this.presenter.serviceUserBannerPresenter)
 
   private get referralCancellationRadiosArgs(): RadiosArgs {
     return {
@@ -40,9 +41,9 @@ export default class ReferralCancellationReasonView {
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
-        serviceUserNotificationBannerArgs: this.serviceUserBannerArgs,
         referralCancellationRadiosArgs: this.referralCancellationRadiosArgs,
         additionalCommentsTextareaArgs: this.additionalCommentsTextareaArgs,
+        ...this.serviceUserBannerView.locals,
       },
     ]
   }

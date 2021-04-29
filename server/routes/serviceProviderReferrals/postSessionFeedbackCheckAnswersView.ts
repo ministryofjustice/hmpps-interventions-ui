@@ -1,4 +1,5 @@
 import ViewUtils from '../../utils/viewUtils'
+import ServiceUserBannerView from '../shared/serviceUserBannerView'
 import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
 
 export default class PostSessionFeedbackCheckAnswersView {
@@ -6,13 +7,15 @@ export default class PostSessionFeedbackCheckAnswersView {
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
 
+  private readonly serviceUserBannerView = new ServiceUserBannerView(this.presenter.serviceUserBannerPresenter)
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/postSessionFeedbackCheckAnswers',
       {
         presenter: this.presenter,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         summaryListArgs: this.summaryListArgs,
+        ...this.serviceUserBannerView.locals,
       },
     ]
   }
