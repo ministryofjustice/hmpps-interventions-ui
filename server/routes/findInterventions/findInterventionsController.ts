@@ -21,7 +21,7 @@ export default class FindInterventionsController {
     const presenter = new SearchResultsPresenter(interventions, filter, pccRegions)
     const view = new SearchResultsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async viewInterventionDetails(req: Request, res: Response): Promise<void> {
@@ -33,6 +33,6 @@ export default class FindInterventionsController {
     const presenter = new InterventionDetailsPresenter(intervention)
     const view = new InterventionDetailsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 }

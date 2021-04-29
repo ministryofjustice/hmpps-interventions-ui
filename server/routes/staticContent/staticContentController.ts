@@ -20,7 +20,7 @@ export default class StaticContentController {
     const presenter = new StaticContentIndexPresenter(StaticContentController.pages)
     const view = new StaticContentIndexView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async renderStaticPage(req: Request, res: Response): Promise<void> {
