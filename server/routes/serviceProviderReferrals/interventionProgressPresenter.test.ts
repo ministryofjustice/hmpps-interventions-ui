@@ -86,8 +86,12 @@ describe(InterventionProgressPresenter, () => {
               text: 'not scheduled',
               classes: 'govuk-tag--grey',
             },
-            linkHtml:
-              '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit">Edit session details</a>',
+            links: [
+              {
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
+                text: 'Edit session details',
+              },
+            ],
           },
         ])
       })
@@ -114,7 +118,17 @@ describe(InterventionProgressPresenter, () => {
               text: 'scheduled',
               classes: 'govuk-tag--blue',
             },
-            linkHtml: `<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance">Give feedback</a>`,
+            links: [
+              {
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
+                text: 'Reschedule session',
+              },
+              {
+                href:
+                  '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance',
+                text: 'Give feedback',
+              },
+            ],
           },
         ])
       })
@@ -140,8 +154,13 @@ describe(InterventionProgressPresenter, () => {
                 text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml:
-                '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback">View feedback form</a>',
+              links: [
+                {
+                  href:
+                    '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
+                  text: 'View feedback form',
+                },
+              ],
             },
             {
               sessionNumber: 2,
@@ -150,8 +169,13 @@ describe(InterventionProgressPresenter, () => {
                 text: 'completed',
                 classes: 'govuk-tag--green',
               },
-              linkHtml:
-                '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback">View feedback form</a>',
+              links: [
+                {
+                  href:
+                    '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback',
+                  text: 'View feedback form',
+                },
+              ],
             },
           ])
         })
@@ -175,8 +199,13 @@ describe(InterventionProgressPresenter, () => {
                 text: 'did not attend',
                 classes: 'govuk-tag--purple',
               },
-              linkHtml:
-                '<a class="govuk-link" href="/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback">View feedback form</a>',
+              links: [
+                {
+                  href:
+                    '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
+                  text: 'View feedback form',
+                },
+              ],
             },
           ])
         })
