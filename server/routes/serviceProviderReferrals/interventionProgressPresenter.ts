@@ -6,6 +6,11 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
+interface EndedFields {
+  endRequestedAt: string | null
+  endRequestedComments: string | null
+  endRequestedReason: string | null
+}
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -44,6 +49,18 @@ export default class InterventionProgressPresenter {
 
   get allowActionPlanCreation(): boolean {
     return this.actionPlan === null
+  }
+
+  get referralEnded(): boolean {
+    return this.referral.endRequestedAt !== null
+  }
+
+  get referralEndedFields(): EndedFields {
+    return {
+      endRequestedAt: this.referral.endRequestedAt,
+      endRequestedComments: this.referral.endRequestedComments,
+      endRequestedReason: this.referral.endRequestedReason,
+    }
   }
 
   readonly hasSessions = this.actionPlanAppointments.length !== 0

@@ -648,62 +648,72 @@ describe('Service provider referrals dashboard', () => {
   })
 
   describe('Viewing session feedback', () => {
+    const crn = 'X123456'
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const referralParams = {
+      id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
+      referral: { serviceCategoryId: serviceCategory.id, serviceUser: { crn } },
+    }
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const probationPractitioner = deliusUserFactory.build({
+      firstName: 'John',
+      surname: 'Smith',
+      username: 'john.smith',
+    })
+    const actionPlan = actionPlanFactory.submitted().build({
+      referralId: referralParams.id,
+      numberOfSessions: 4,
+    })
+    const appointmentsWithSubmittedFeedback = [
+      actionPlanAppointmentFactory.scheduled().build({
+        sessionNumber: 1,
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex attended the session',
+          },
+          behaviour: {
+            behaviourDescription: 'Alex was well-behaved',
+            notifyProbationPractitioner: false,
+          },
+          submitted: true,
+        },
+      }),
+    ]
+    beforeEach(() => {
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetActionPlanAppointments(actionPlan.id, appointmentsWithSubmittedFeedback)
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
+      cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
+    })
+    it('allows users to know if, when and why an intervention was cancelled', () => {
+      const endedReferral = sentReferralFactory.endRequested().build({
+        ...referralParams,
+      })
+      cy.stubGetSentReferral(endedReferral.id, endedReferral)
+      cy.stubGetSentReferrals([endedReferral])
+      cy.login()
+      cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
+      cy.contains('Intervention cancelled')
+      cy.contains(
+        'The probation practitioner cancelled this intervention on 28 Apr 2021 with reason: Service user was recalled'
+      )
+      cy.contains("Additional information: you'll be seeing alex again soon i'm sure!")
+    })
     it('allows users to click through to a page to view session feedback', () => {
-      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-      const referralParams = {
-        id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-        referral: { serviceCategoryId: serviceCategory.id },
-      }
-      const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
-        username: 'john.smith',
-      })
-      const actionPlan = actionPlanFactory.submitted().build({
-        referralId: referralParams.id,
-        numberOfSessions: 4,
-      })
-
       const assignedReferral = sentReferralFactory.assigned().build({
         ...referralParams,
         assignedTo: { username: probationPractitioner.username },
         actionPlanId: actionPlan.id,
       })
-
-      cy.stubGetSentReferrals([assignedReferral])
-      cy.stubGetActionPlan(actionPlan.id, actionPlan)
-      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
-      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
-
-      const appointmentsWithSubmittedFeedback = [
-        actionPlanAppointmentFactory.scheduled().build({
-          sessionNumber: 1,
-          sessionFeedback: {
-            attendance: {
-              attended: 'yes',
-              additionalAttendanceInformation: 'Alex attended the session',
-            },
-            behaviour: {
-              behaviourDescription: 'Alex was well-behaved',
-              notifyProbationPractitioner: false,
-            },
-            submitted: true,
-          },
-        }),
-      ]
-
-      cy.stubGetActionPlanAppointments(actionPlan.id, appointmentsWithSubmittedFeedback)
-      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
-
+      cy.stubGetSentReferrals([assignedReferral])
       cy.login()
-
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
-
+      cy.contains('Intervention cancelled').should('not.exist')
       cy.contains('View feedback form').click()
-
       cy.contains('Alex attended the session')
       cy.contains('Yes, they were on time')
       cy.contains('Alex was well-behaved')
