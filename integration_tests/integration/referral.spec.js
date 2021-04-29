@@ -129,7 +129,7 @@ describe('Referral form', () => {
 
     cy.visit(`/intervention/${randomInterventionId}/refer`)
 
-    cy.contains('Service User CRN').type('X320741')
+    cy.contains('Service user CRN').type('X320741')
 
     cy.contains('Continue').click()
 
