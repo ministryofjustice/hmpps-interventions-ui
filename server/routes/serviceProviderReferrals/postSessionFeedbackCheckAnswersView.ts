@@ -11,7 +11,6 @@ export default class PostSessionFeedbackCheckAnswersView {
       'serviceProviderReferrals/postSessionFeedbackCheckAnswers',
       {
         presenter: this.presenter,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         summaryListArgs: this.summaryListArgs,
       },
     ]

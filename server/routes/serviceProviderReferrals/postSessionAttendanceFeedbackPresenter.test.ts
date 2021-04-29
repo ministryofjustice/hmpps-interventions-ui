@@ -19,16 +19,6 @@ describe(PostSessionAttendanceFeedbackPresenter, () => {
     })
   })
 
-  describe('serviceUserBannerPresenter', () => {
-    it('is instantiated with the service user', () => {
-      const appointment = actionPlanAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-      const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser)
-
-      expect(presenter.serviceUserBannerPresenter).toBeDefined()
-    })
-  })
-
   describe('sessionDetailsSummary', () => {
     it('extracts the date and time from the appointmentTime and puts it in a SummaryList format', () => {
       const serviceUser = deliusServiceUserFactory.build()

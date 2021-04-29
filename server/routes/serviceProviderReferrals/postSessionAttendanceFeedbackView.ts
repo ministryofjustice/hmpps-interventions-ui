@@ -53,7 +53,6 @@ export default class PostSessionAttendanceFeedbackView {
       'serviceProviderReferrals/postSessionAttendanceFeedback',
       {
         presenter: this.presenter,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         summaryListArgs: this.summaryListArgs,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,

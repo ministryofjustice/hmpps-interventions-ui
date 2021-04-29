@@ -2,7 +2,6 @@ import ShowReferralPresenter from './showReferralPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
-import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 
 describe(ShowReferralPresenter, () => {
@@ -57,26 +56,12 @@ describe(ShowReferralPresenter, () => {
     surname: 'Beaks',
     email: 'bernard.beaks@justice.gov.uk',
   })
-  const serviceUser = deliusServiceUser.build({
-    firstName: 'Alex',
-    surname: 'River',
-    dateOfBirth: '1980-01-01',
-    contactDetails: {
-      emailAddresses: ['alex.river@example.com'],
-      phoneNumbers: [
-        {
-          number: '07123456789',
-          type: 'MOBILE',
-        },
-      ],
-    },
-  })
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the check assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)
-      const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser, null, null)
+      const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
     })
@@ -86,7 +71,7 @@ describe(ShowReferralPresenter, () => {
     describe('interventionDetailsSummaryHeading', () => {
       it('returns text to be displayed including service category name', () => {
         const sentReferral = sentReferralFactory.assigned().build(referralParams)
-        const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser, null, null)
+        const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
         expect(presenter.text.interventionDetailsSummaryHeading).toEqual('Accommodation intervention details')
       })
@@ -96,7 +81,7 @@ describe(ShowReferralPresenter, () => {
       describe('when the referral doesn’t have an assigned caseworker', () => {
         it('returns null', () => {
           const referral = sentReferralFactory.unassigned().build()
-          const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, serviceUser, null, null)
+          const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, null, null)
 
           expect(presenter.text.assignedTo).toBeNull()
         })
@@ -105,14 +90,7 @@ describe(ShowReferralPresenter, () => {
       describe('when the referral has an assigned caseworker', () => {
         it('returns the name of the assignee', () => {
           const referral = sentReferralFactory.unassigned().build()
-          const presenter = new ShowReferralPresenter(
-            referral,
-            serviceCategory,
-            deliusUser,
-            serviceUser,
-            hmppsAuthUser,
-            null
-          )
+          const presenter = new ShowReferralPresenter(referral, serviceCategory, deliusUser, hmppsAuthUser, null)
 
           expect(presenter.text.assignedTo).toEqual('John Smith')
         })
@@ -123,7 +101,7 @@ describe(ShowReferralPresenter, () => {
   describe('probationPractitionerDetails', () => {
     it('returns a summary list of probation practitioner details', () => {
       const sentReferral = sentReferralFactory.build(referralParams)
-      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser, null, null)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.probationPractitionerDetails).toEqual([
         { isList: false, key: 'Name', lines: ['Bernard Beaks'] },
@@ -174,7 +152,6 @@ describe(ShowReferralPresenter, () => {
           referralWithAllOptionalFields,
           serviceCategory,
           deliusUser,
-          serviceUser,
           null,
           null
         )
@@ -253,7 +230,6 @@ describe(ShowReferralPresenter, () => {
           referralWithNoOptionalFields,
           serviceCategory,
           deliusUser,
-          serviceUser,
           null,
           null
         )
@@ -295,7 +271,7 @@ describe(ShowReferralPresenter, () => {
   describe('serviceUserPersonalDetails', () => {
     it("returns a summary list of the service user's personal details", () => {
       const sentReferral = sentReferralFactory.build(referralParams)
-      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser, null, null)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.serviceUserDetails).toEqual([
         { key: 'CRN', lines: [sentReferral.referral.serviceUser.crn], isList: false },
@@ -315,7 +291,7 @@ describe(ShowReferralPresenter, () => {
   describe('serviceUserRisks', () => {
     it("returns a summary list of the service user's risk information", () => {
       const sentReferral = sentReferralFactory.build(referralParams)
-      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, serviceUser, null, null)
+      const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.serviceUserRisks).toEqual([
         { key: 'Risk to known adult', lines: ['Medium'], isList: false },
@@ -369,7 +345,6 @@ describe(ShowReferralPresenter, () => {
           referralWithAllConditionalFields,
           serviceCategory,
           deliusUser,
-          serviceUser,
           null,
           null
         )
@@ -448,7 +423,6 @@ describe(ShowReferralPresenter, () => {
           referralWithNoConditionalFields,
           serviceCategory,
           deliusUser,
-          serviceUser,
           null,
           null
         )

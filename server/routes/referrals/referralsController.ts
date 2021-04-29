@@ -38,6 +38,7 @@ import ReferralStartForm from './referralStartForm'
 import RelevantSentencePresenter from './relevantSentencePresenter'
 import RelevantSentenceView from './relevantSentenceView'
 import RelevantSentenceForm from './relevantSentenceForm'
+import ControllerUtils from '../../utils/controllerUtils'
 
 export default class ReferralsController {
   constructor(
@@ -51,7 +52,7 @@ export default class ReferralsController {
     const presenter = new ReferralStartPresenter(interventionId)
     const view = new ReferralStartView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async createReferral(req: Request, res: Response): Promise<void> {
@@ -112,7 +113,7 @@ export default class ReferralsController {
       const view = new ReferralStartView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -122,7 +123,7 @@ export default class ReferralsController {
     const presenter = new ServiceUserDetailsPresenter(referral.serviceUser)
     const view = new ServiceUserDetailsView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async confirmServiceUserDetails(req: Request, res: Response): Promise<void> {
@@ -144,7 +145,7 @@ export default class ReferralsController {
     const presenter = new ReferralFormPresenter(referral, serviceCategory.name)
     const view = new ReferralFormView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -168,7 +169,7 @@ export default class ReferralsController {
     const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions)
     const view = new RelevantSentenceView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -217,7 +218,7 @@ export default class ReferralsController {
       const view = new RelevantSentenceView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -236,7 +237,7 @@ export default class ReferralsController {
     const presenter = new ComplexityLevelPresenter(referral, serviceCategory)
     const view = new ComplexityLevelView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
@@ -279,7 +280,7 @@ export default class ReferralsController {
       const view = new ComplexityLevelView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -299,7 +300,7 @@ export default class ReferralsController {
 
     const view = new CompletionDeadlineView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
@@ -342,7 +343,7 @@ export default class ReferralsController {
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -362,7 +363,7 @@ export default class ReferralsController {
 
     const view = new FurtherInformationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateFurtherInformation(req: Request, res: Response): Promise<void> {
@@ -403,7 +404,7 @@ export default class ReferralsController {
       const view = new FurtherInformationView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -422,7 +423,7 @@ export default class ReferralsController {
     const presenter = new DesiredOutcomesPresenter(referral, serviceCategory)
     const view = new DesiredOutcomesView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
@@ -465,7 +466,7 @@ export default class ReferralsController {
       const view = new DesiredOutcomesView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -475,7 +476,7 @@ export default class ReferralsController {
     const presenter = new NeedsAndRequirementsPresenter(referral)
     const view = new NeedsAndRequirementsView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateNeedsAndRequirements(req: Request, res: Response): Promise<void> {
@@ -505,7 +506,7 @@ export default class ReferralsController {
       const view = new NeedsAndRequirementsView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -514,7 +515,7 @@ export default class ReferralsController {
     const presenter = new RiskInformationPresenter(referral)
     const view = new RiskInformationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateRiskInformation(req: Request, res: Response): Promise<void> {
@@ -546,7 +547,7 @@ export default class ReferralsController {
       const view = new RiskInformationView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -565,7 +566,7 @@ export default class ReferralsController {
     const presenter = new RarDaysPresenter(referral, serviceCategory)
     const view = new RarDaysView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async updateRarDays(req: Request, res: Response): Promise<void> {
@@ -605,7 +606,7 @@ export default class ReferralsController {
       const view = new RarDaysView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -622,7 +623,7 @@ export default class ReferralsController {
     const presenter = new CheckAnswersPresenter(referral, serviceCategory)
     const view = new CheckAnswersView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {
@@ -637,6 +638,6 @@ export default class ReferralsController {
     const presenter = new ConfirmationPresenter(referral)
     const view = new ConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 }

@@ -17,17 +17,6 @@ describe(SubmittedPostSessionFeedbackPresenter, () => {
     })
   })
 
-  describe('serviceUserBannerPresenter', () => {
-    it('is instantiated with the service user', () => {
-      const appointment = actionPlanAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-
-      const presenter = new SubmittedPostSessionFeedbackPresenter(appointment, serviceUser)
-
-      expect(presenter.serviceUserBannerPresenter).toBeDefined()
-    })
-  })
-
   describe('sessionDetailsSummary', () => {
     describe('when a caseworker is passed in', () => {
       it('extracts the date and time from the appointmentTime and puts it in a SummaryList format alongside the caseworker name', () => {

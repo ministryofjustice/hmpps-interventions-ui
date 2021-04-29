@@ -5,17 +5,15 @@ import PresenterUtils from '../../utils/presenterUtils'
 export default class ServiceUserBannerPresenter {
   constructor(private readonly serviceUser: DeliusServiceUser) {}
 
-  readonly serviceUserBannerArgs = {
-    titleText: 'Service user details',
-    html:
-      `<p class="govuk-notification-banner__heading">${utils.convertToTitleCase(
-        `${this.serviceUser.firstName} ${this.serviceUser.surname}`
-      )}<p>` +
-      `<p>Date of birth: ${PresenterUtils.govukFormattedDateFromStringOrNull(this.serviceUser.dateOfBirth)}</p>` +
-      `<p class="govuk-body">${this.serviceUserMobile} | ${this.serviceUserEmail}</p>`,
+  get name(): string {
+    return utils.convertToTitleCase(`${this.serviceUser.firstName} ${this.serviceUser.surname}`)
   }
 
-  private get serviceUserEmail(): string {
+  get dateOfBirth(): string {
+    return `Date of birth: ${PresenterUtils.govukFormattedDateFromStringOrNull(this.serviceUser.dateOfBirth)}`
+  }
+
+  get serviceUserEmail(): string {
     const { emailAddresses } = this.serviceUser.contactDetails
 
     if (emailAddresses && emailAddresses.length > 0) {
@@ -25,7 +23,7 @@ export default class ServiceUserBannerPresenter {
     return 'Email address not found'
   }
 
-  private get serviceUserMobile(): string {
+  get serviceUserMobile(): string {
     const { phoneNumbers } = this.serviceUser.contactDetails
     const notFoundMessage = 'Mobile number not found'
 

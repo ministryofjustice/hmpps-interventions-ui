@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import InterventionsService from '../../services/interventionsService'
+import ControllerUtils from '../../utils/controllerUtils'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import InterventionDetailsView from './interventionDetailsView'
 import InterventionsFilter from './interventionsFilter'
@@ -20,7 +21,7 @@ export default class FindInterventionsController {
     const presenter = new SearchResultsPresenter(interventions, filter, pccRegions)
     const view = new SearchResultsView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async viewInterventionDetails(req: Request, res: Response): Promise<void> {
@@ -32,6 +33,6 @@ export default class FindInterventionsController {
     const presenter = new InterventionDetailsPresenter(intervention)
     const view = new InterventionDetailsView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 }

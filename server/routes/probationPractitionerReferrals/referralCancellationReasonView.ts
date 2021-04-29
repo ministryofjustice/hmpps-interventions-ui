@@ -7,8 +7,6 @@ export default class ReferralCancellationReasonView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private readonly serviceUserBannerArgs = this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs
-
   private get referralCancellationRadiosArgs(): RadiosArgs {
     return {
       fieldset: {
@@ -40,7 +38,6 @@ export default class ReferralCancellationReasonView {
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
-        serviceUserNotificationBannerArgs: this.serviceUserBannerArgs,
         referralCancellationRadiosArgs: this.referralCancellationRadiosArgs,
         additionalCommentsTextareaArgs: this.additionalCommentsTextareaArgs,
       },

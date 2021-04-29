@@ -145,10 +145,12 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
         ],
         furtherInformation: 'Some further information',
       })
+      const deliusServiceUser = deliusServiceUserFactory.build()
 
       interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
       await request(app)
         .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)

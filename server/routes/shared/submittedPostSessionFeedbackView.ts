@@ -11,7 +11,6 @@ export default class SubmittedPostSessionFeedbackView {
       'shared/viewSubmittedPostSessionFeedback',
       {
         presenter: this.presenter,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         summaryListArgs: this.summaryListArgs,
       },
     ]

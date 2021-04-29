@@ -27,7 +27,6 @@ export default class ActionPlanNumberOfSessionsView {
       {
         presenter: this.presenter,
         errorSummaryArgs: ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary),
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         numberOfSessionsInputArgs: this.numberOfSessionsInputArgs,
       },
     ]

@@ -1,6 +1,7 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
+import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -77,8 +78,13 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.login()
 
     const serviceCategory = serviceCategoryFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.build({
-      referral: { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
+      referral: {
+        serviceCategoryId: serviceCategory.id,
+        desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id],
+        serviceUser: { crn: deliusServiceUser.otherIds.crn },
+      },
     })
     const endOfServiceReport = endOfServiceReportFactory.build({
       referralId: referral.id,
@@ -96,6 +102,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetEndOfServiceReport(endOfServiceReport.id, endOfServiceReport)
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetServiceUserByCRN(deliusServiceUser.otherIds.crn, deliusServiceUser)
 
     cy.visit(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
 

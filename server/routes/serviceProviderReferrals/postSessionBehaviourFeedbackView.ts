@@ -63,7 +63,6 @@ export default class PostSessionBehaviourFeedbackView {
       'serviceProviderReferrals/postSessionBehaviourFeedback',
       {
         presenter: this.presenter,
-        serviceUserNotificationBannerArgs: this.presenter.serviceUserBannerPresenter.serviceUserBannerArgs,
         textAreaArgs: this.textAreaArgs,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,

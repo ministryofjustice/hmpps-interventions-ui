@@ -53,6 +53,7 @@ import EndOfServiceReportCheckAnswersPresenter from './endOfServiceReportCheckAn
 import EndOfServiceReportCheckAnswersView from './endOfServiceReportCheckAnswersView'
 import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
 import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
+import ControllerUtils from '../../utils/controllerUtils'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -80,7 +81,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new DashboardPresenter(referrals, serviceCategories)
     const view = new DashboardView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async showReferral(req: Request, res: Response): Promise<void> {
@@ -121,10 +122,10 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, serviceUser, assignee, formError)
+    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, assignee, formError)
     const view = new ShowReferralView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
@@ -160,12 +161,11 @@ export default class ServiceProviderReferralsController {
       sentReferral,
       serviceCategory,
       actionPlan,
-      serviceUser,
       actionPlanAppointments
     )
     const view = new InterventionProgressView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async checkAssignment(req: Request, res: Response): Promise<void> {
@@ -201,7 +201,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, serviceCategory)
     const view = new CheckAssignmentView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async assignReferral(req: Request, res: Response): Promise<void> {
@@ -240,7 +240,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new AssignmentConfirmationPresenter(referral, serviceCategory, assignee)
     const view = new AssignmentConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async createDraftActionPlan(req: Request, res: Response): Promise<void> {
@@ -267,7 +267,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new AddActionPlanActivitiesView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
@@ -299,7 +299,7 @@ export default class ServiceProviderReferralsController {
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.status(400)
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
@@ -323,7 +323,7 @@ export default class ServiceProviderReferralsController {
       const view = new AddActionPlanActivitiesView(presenter)
 
       res.status(400)
-      res.render(...view.renderArgs)
+      ControllerUtils.renderWithLayout(res, view, null)
     }
   }
 
@@ -342,7 +342,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new ReviewActionPlanView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async submitActionPlan(req: Request, res: Response): Promise<void> {
@@ -370,7 +370,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanConfirmationPresenter(sentReferral, serviceCategory)
     const view = new ActionPlanConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async addNumberOfSessionsToActionPlan(req: Request, res: Response): Promise<void> {
@@ -408,7 +408,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new AddActionPlanNumberOfSessionsView(presenter)
     res.status(formError === null ? 200 : 400)
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async editSession(req: Request, res: Response): Promise<void> {
@@ -450,7 +450,7 @@ export default class ServiceProviderReferralsController {
 
     const presenter = new EditSessionPresenter(appointment, formError, userInputData)
     const view = new EditSessionView(presenter)
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
@@ -499,7 +499,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, userInputData)
     const view = new PostSessionAttendanceFeedbackView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
@@ -545,7 +545,7 @@ export default class ServiceProviderReferralsController {
     const view = new PostSessionBehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async checkPostSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
@@ -567,7 +567,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser, actionPlanId)
     const view = new PostSessionFeedbackCheckAnswersView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitPostSessionFeedback(req: Request, res: Response): Promise<void> {
@@ -601,7 +601,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser)
     const view = new SubmittedPostSessionFeedbackView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {
@@ -629,7 +629,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new PostSessionFeedbackConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async createDraftEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -698,6 +698,8 @@ export default class ServiceProviderReferralsController {
       }
     }
 
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const presenter = new EndOfServiceReportOutcomePresenter(
       referral,
       endOfServiceReport,
@@ -710,7 +712,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportOutcomeView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async editEndOfServiceReportFurtherInformation(req: Request, res: Response): Promise<void> {
@@ -730,6 +732,8 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const presenter = new EndOfServiceReportFurtherInformationPresenter(
       endOfServiceReport,
       serviceCategory,
@@ -738,7 +742,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportFurtherInformationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async endOfServiceReportCheckAnswers(req: Request, res: Response): Promise<void> {
@@ -750,11 +754,12 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategory)
     const view = new EndOfServiceReportCheckAnswersView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -771,10 +776,11 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategory)
     const view = new EndOfServiceReportConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }

@@ -137,22 +137,4 @@ describe(ReferralCancellationReasonPresenter, () => {
       })
     })
   })
-
-  describe('serviceUserBanner', () => {
-    it('is defined', () => {
-      const sentReferral = sentReferralFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
-      const cancellationReasons: CancellationReason[] = []
-
-      const presenter = new ReferralCancellationReasonPresenter(
-        sentReferral,
-        serviceCategory,
-        serviceUser,
-        cancellationReasons
-      )
-
-      expect(presenter.serviceUserBannerPresenter).toBeDefined()
-    })
-  })
 })

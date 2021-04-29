@@ -1,32 +1,15 @@
-import serviceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
 
 describe(ReferralOverviewPagePresenter, () => {
-  describe('serviceUserBannerArgs', () => {
-    it('returns the embedded serviceUserBannerArgs', () => {
-      const serviceUser = serviceUserFactory.build()
-      const sentReferral = sentReferralFactory.build()
-      const presenter = new ReferralOverviewPagePresenter(
-        ReferralOverviewPageSection.Details,
-        sentReferral.id,
-        serviceUser,
-        'service-provider'
-      )
-      expect(presenter.serviceUserBannerArgs).toBeDefined()
-    })
-  })
-
   describe('subNavArgs', () => {
     it('has the correct tab selected', () => {
-      const serviceUser = serviceUserFactory.build()
       const sentReferral = sentReferralFactory.build()
 
       const detailsPresenter = new ReferralOverviewPagePresenter(
         ReferralOverviewPageSection.Details,
         sentReferral.id,
-        serviceUser,
         'service-provider'
       )
       let activeTabs = detailsPresenter.subNavArgs.items.filter(x => x.active === true)
@@ -36,7 +19,6 @@ describe(ReferralOverviewPagePresenter, () => {
       const progressPresenter = new ReferralOverviewPagePresenter(
         ReferralOverviewPageSection.Progress,
         sentReferral.id,
-        serviceUser,
         'service-provider'
       )
       activeTabs = progressPresenter.subNavArgs.items.filter(x => x.active === true)
@@ -46,13 +28,11 @@ describe(ReferralOverviewPagePresenter, () => {
   })
 
   it('adds the correct url prefix to the subnav links', () => {
-    const serviceUser = serviceUserFactory.build()
     const sentReferral = sentReferralFactory.build()
 
     const presenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      serviceUser,
       'service-provider'
     )
 

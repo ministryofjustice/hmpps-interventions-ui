@@ -86,16 +86,6 @@ describe(PostSessionBehaviourFeedbackPresenter, () => {
     })
   })
 
-  describe('serviceUserBannerPresenter', () => {
-    it('is instantiated with the service user', () => {
-      const appointment = actionPlanAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-      const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser)
-
-      expect(presenter.serviceUserBannerPresenter).toBeDefined()
-    })
-  })
-
   describe('fields', () => {
     describe('behaviourDescriptionValue', () => {
       describe('when there is no user input data', () => {

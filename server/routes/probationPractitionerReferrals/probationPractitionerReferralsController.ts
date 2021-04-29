@@ -20,6 +20,7 @@ import { FormValidationError } from '../../utils/formValidationError'
 import ReferralCancellationReasonForm from './referralCancellationReasonForm'
 import ReferralCancellationConfirmationView from './referralCancellationConfirmationView'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
+import ControllerUtils from '../../utils/controllerUtils'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -43,7 +44,7 @@ export default class ProbationPractitionerReferralsController {
 
     const presenter = new MyCasesPresenter(cases, serviceCategories)
     const view = new MyCasesView(presenter)
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async showFindStartPage(req: Request, res: Response): Promise<void> {
@@ -53,7 +54,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new FindStartPresenter(existingDraftReferrals)
     const view = new FindStartView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
@@ -85,15 +86,10 @@ export default class ProbationPractitionerReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(
-      sentReferral,
-      serviceCategory,
-      serviceUser,
-      actionPlanAppointments
-    )
+    const presenter = new InterventionProgressPresenter(sentReferral, serviceCategory, actionPlanAppointments)
     const view = new InterventionProgressView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
@@ -119,7 +115,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
     const view = new SubmittedPostSessionFeedbackView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async showReferralCancellationReasonPage(req: Request, res: Response): Promise<void> {
@@ -142,7 +138,7 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new ReferralCancellationReasonView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitFormAndShowCancellationCheckAnswersPage(req: Request, res: Response): Promise<void> {
@@ -174,21 +170,20 @@ export default class ProbationPractitionerReferralsController {
       )
       const view = new ReferralCancellationReasonView(presenter)
 
-      return res.render(...view.renderArgs)
+      return ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
 
     const { cancellationReason, cancellationComments } = data.paramsForUpdate
 
     const presenter = new ReferralCancellationCheckAnswersPresenter(
       req.params.id,
-      serviceUser,
       cancellationReason,
       cancellationComments
     )
 
     const view = new ReferralCancellationCheckAnswersView(presenter)
 
-    return res.render(...view.renderArgs)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async cancelReferral(req: Request, res: Response): Promise<void> {
@@ -215,10 +210,10 @@ export default class ProbationPractitionerReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
+    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
     const view = new ReferralCancellationConfirmationView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -230,10 +225,11 @@ export default class ProbationPractitionerReferralsController {
       accessToken,
       referral.referral.serviceCategoryId
     )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategory)
     const view = new EndOfServiceReportView(presenter)
 
-    res.render(...view.renderArgs)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }

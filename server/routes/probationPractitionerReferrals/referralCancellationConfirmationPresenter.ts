@@ -1,16 +1,10 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import ServiceUserBannerPresenter from '../shared/serviceUserBannerPresenter'
 
 export default class ReferralCancellationConfirmationPresenter {
-  constructor(
-    private readonly referral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
-    private readonly serviceUser: DeliusServiceUser
-  ) {}
+  constructor(private readonly referral: SentReferral, private readonly serviceCategory: ServiceCategory) {}
 
   readonly text = {
     confirmationText: 'This referral has been cancelled',
@@ -19,8 +13,6 @@ export default class ReferralCancellationConfirmationPresenter {
   }
 
   readonly myCasesHref = '/probation-practitioner/dashboard'
-
-  readonly serviceUserBannerPresenter = new ServiceUserBannerPresenter(this.serviceUser)
 
   readonly serviceUserSummary: SummaryListItem[] = [
     {

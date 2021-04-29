@@ -1,4 +1,3 @@
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
@@ -6,10 +5,9 @@ import ReferralCancellationConfirmationPresenter from './referralCancellationCon
 describe(ReferralCancellationConfirmationPresenter, () => {
   describe('text', () => {
     it('contains a panel title and what happens next text', () => {
-      const serviceUser = deliusServiceUserFactory.build()
       const sentReferral = sentReferralFactory.build()
       const serviceCategory = serviceCategoryFactory.build()
-      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
+      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
 
       expect(presenter.text).toMatchObject({
         confirmationText: 'This referral has been cancelled',
@@ -19,23 +17,11 @@ describe(ReferralCancellationConfirmationPresenter, () => {
     })
   })
 
-  describe('serviceUserBannerPresenter', () => {
-    it('is defined', () => {
-      const serviceUser = deliusServiceUserFactory.build()
-      const sentReferral = sentReferralFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
-      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
-
-      expect(presenter.serviceUserBannerPresenter).toBeDefined()
-    })
-  })
-
   describe('serviceUserSummary', () => {
     it('displays information about the referral and service user', () => {
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex', surname: 'River' })
       const sentReferral = sentReferralFactory.build({ referenceNumber: 'AB1234' })
       const serviceCategory = serviceCategoryFactory.build({ name: 'Accommodation' })
-      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory, serviceUser)
+      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
 
       expect(presenter.serviceUserSummary).toEqual([
         {

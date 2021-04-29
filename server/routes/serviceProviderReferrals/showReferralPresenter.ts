@@ -1,5 +1,5 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { DeliusServiceUser, DeliusUser } from '../../services/communityApiService'
+import { DeliusUser } from '../../services/communityApiService'
 import { SentReferral, ServiceCategory } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
@@ -15,14 +15,12 @@ export default class ShowReferralPresenter {
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
-    serviceUser: DeliusServiceUser,
     private readonly assignee: AuthUser | null,
     private readonly assignEmailError: FormValidationError | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      serviceUser,
       'service-provider'
     )
   }

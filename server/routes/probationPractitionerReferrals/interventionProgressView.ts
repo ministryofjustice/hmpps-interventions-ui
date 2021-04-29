@@ -56,7 +56,6 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
-        serviceUserBannerArgs: this.presenter.referralOverviewPagePresenter.serviceUserBannerArgs,
         sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
       },

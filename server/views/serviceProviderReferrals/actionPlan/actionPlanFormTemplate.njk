@@ -1,15 +1,10 @@
-{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends "../../partials/layout.njk" %}
 
 {% block pageTitle %}HMPPS Interventions - GOV.UK{% endblock %}
 
-{% block content %}
-  {% if serviceUserNotificationBannerArgs !== undefined and serviceUserNotificationBannerArgs !== null %}
-    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
-  {% endif %}
-
+{% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
