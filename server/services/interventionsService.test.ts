@@ -1,18 +1,16 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 
-import InterventionsService, {
-  SentReferral,
-  ServiceUser,
-  UpdateDraftEndOfServiceReportParams,
-} from './interventionsService'
+import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
+import SentReferral from '../models/sentReferral'
+import ServiceUser from '../models/serviceUser'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import serviceProviderFactory from '../../testutils/factories/serviceProvider'
 import eligibilityFactory from '../../testutils/factories/eligibility'
 import interventionFactory from '../../testutils/factories/intervention'
-import { DeliusServiceUser } from './communityApiService'
+import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'

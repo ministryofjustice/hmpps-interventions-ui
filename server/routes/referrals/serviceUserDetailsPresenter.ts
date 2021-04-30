@@ -1,4 +1,4 @@
-import { ServiceUser } from '../../services/interventionsService'
+import ServiceUser from '../../models/serviceUser'
 import { SummaryListItem } from '../../utils/summaryList'
 
 export default class ServiceUserDetailsPresenter {

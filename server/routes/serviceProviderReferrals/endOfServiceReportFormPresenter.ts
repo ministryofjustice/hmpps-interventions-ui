@@ -1,4 +1,5 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import utils from '../../utils/utils'
 
 interface EndOfServiceReportFormPagePresenter {

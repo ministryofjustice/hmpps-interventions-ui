@@ -1,5 +1,6 @@
 import { Factory } from 'fishery'
-import { ReferralFields, SentReferral } from '../../server/services/interventionsService'
+import SentReferral from '../../server/models/sentReferral'
+import { ReferralFields } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 
 const exampleReferralFields = () => {

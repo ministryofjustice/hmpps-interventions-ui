@@ -1,4 +1,5 @@
-import { Intervention, PCCRegion } from '../../services/interventionsService'
+import Intervention from '../../models/intervention'
+import PCCRegion from '../../models/pccRegion'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import InterventionsFilter from './interventionsFilter'
 import SearchSummaryPresenter from './searchSummaryPresenter'

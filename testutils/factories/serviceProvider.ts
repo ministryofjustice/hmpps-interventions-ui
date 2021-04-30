@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { ServiceProvider } from '../../server/services/interventionsService'
+import ServiceProvider from '../../server/models/serviceProvider'
 
 export default Factory.define<ServiceProvider>(({ sequence }) => ({
   id: sequence.toString(),

@@ -1,5 +1,6 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'

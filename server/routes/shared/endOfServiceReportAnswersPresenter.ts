@@ -1,9 +1,6 @@
-import {
-  EndOfServiceReport,
-  EndOfServiceReportOutcome,
-  SentReferral,
-  ServiceCategory,
-} from '../../services/interventionsService'
+import EndOfServiceReport, { EndOfServiceReportOutcome } from '../../models/endOfServiceReport'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 

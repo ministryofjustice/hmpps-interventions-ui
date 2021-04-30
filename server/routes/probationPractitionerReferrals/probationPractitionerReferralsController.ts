@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService, { ActionPlanAppointment } from '../../services/interventionsService'
+import InterventionsService from '../../services/interventionsService'
+import { ActionPlanAppointment } from '../../models/actionPlan'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import InterventionProgressView from './interventionProgressView'
 import FindStartPresenter from './findStartPresenter'

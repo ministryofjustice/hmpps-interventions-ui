@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { Express } from 'express'
-import InterventionsService, { ServiceUser } from '../../services/interventionsService'
+import InterventionsService from '../../services/interventionsService'
+import ServiceUser from '../../models/serviceUser'
 import CommunityApiService from '../../services/communityApiService'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'

@@ -1,4 +1,4 @@
-import { Eligibility, Intervention } from '../../services/interventionsService'
+import Intervention, { Eligibility } from '../../models/intervention'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 

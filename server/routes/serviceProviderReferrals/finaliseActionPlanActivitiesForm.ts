@@ -1,4 +1,6 @@
-import { ActionPlan, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import ActionPlan from '../../models/actionPlan'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import errorMessages from '../../utils/errorMessages'
 

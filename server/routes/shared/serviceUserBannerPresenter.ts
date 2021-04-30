@@ -1,4 +1,4 @@
-import { DeliusServiceUser } from '../../services/communityApiService'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
 

@@ -1,5 +1,5 @@
 import { AuthUser } from '../../data/hmppsAuthClient'
-import { ServiceCategory } from '../../services/interventionsService'
+import ServiceCategory from '../../models/serviceCategory'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 

@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { DeliusConviction } from '../../server/services/communityApiService'
+import DeliusConviction from '../../server/models/delius/deliusConviction'
 
 export default Factory.define<DeliusConviction>(({ sequence }) => ({
   id: sequence,

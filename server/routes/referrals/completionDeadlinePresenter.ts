@@ -1,4 +1,5 @@
-import { DraftReferral, ServiceCategory } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import CalendarDay from '../../utils/calendarDay'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'

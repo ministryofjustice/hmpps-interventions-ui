@@ -1,10 +1,7 @@
-import {
-  ActionPlan,
-  Activity,
-  DesiredOutcome,
-  SentReferral,
-  ServiceCategory,
-} from '../../services/interventionsService'
+import ActionPlan, { Activity } from '../../models/actionPlan'
+import DesiredOutcome from '../../models/desiredOutcome'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'

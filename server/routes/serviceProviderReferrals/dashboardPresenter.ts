@@ -1,4 +1,5 @@
-import { SentReferral, ServiceCategory } from '../../services/interventionsService'
+import SentReferral from '../../models/sentReferral'
+import ServiceCategory from '../../models/serviceCategory'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'

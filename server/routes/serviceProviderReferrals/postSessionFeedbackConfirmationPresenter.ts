@@ -1,4 +1,4 @@
-import { ActionPlan, ActionPlanAppointment } from '../../services/interventionsService'
+import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
 import DateUtils from '../../utils/dateUtils'
 
 export default class PostSessionFeedbackConfirmationPresenter {

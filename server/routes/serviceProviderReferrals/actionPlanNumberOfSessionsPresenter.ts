@@ -1,6 +1,7 @@
-import { ActionPlan, ServiceCategory } from '../../services/interventionsService'
+import ActionPlan from '../../models/actionPlan'
+import ServiceCategory from '../../models/serviceCategory'
 import utils from '../../utils/utils'
-import { DeliusServiceUser } from '../../services/communityApiService'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 

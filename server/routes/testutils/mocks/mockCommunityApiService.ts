@@ -1,4 +1,5 @@
-import CommunityApiService, { DeliusUser } from '../../../services/communityApiService'
+import CommunityApiService from '../../../services/communityApiService'
+import DeliusUser from '../../../models/delius/deliusUser'
 import MockedHmppsAuthClient from '../../../data/testutils/hmppsAuthClientSetup'
 
 export = class MockCommunityApiService extends CommunityApiService {

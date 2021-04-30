@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { DraftReferral } from '../../services/interventionsService'
+import DraftReferral from '../../models/draftReferral'
 import errorMessages from '../../utils/errorMessages'
 import CalendarDayInput from '../../utils/forms/inputs/calendarDayInput'
 import { FormData } from '../../utils/forms/formData'

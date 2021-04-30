@@ -2,7 +2,7 @@ import EndOfServiceReportOutcomePresenter from './endOfServiceReportOutcomePrese
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import { EndOfServiceReportOutcome } from '../../services/interventionsService'
+import { EndOfServiceReportOutcome } from '../../models/endOfServiceReport'
 
 describe(EndOfServiceReportOutcomePresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })

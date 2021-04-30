@@ -1,6 +1,6 @@
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
-import { AuthUser } from '../../services/interventionsService'
+import AuthUser from '../../models/authUser'
 import SubmittedPostSessionFeedbackPresenter from './submittedPostSessionFeedbackPresenter'
 
 describe(SubmittedPostSessionFeedbackPresenter, () => {

@@ -2,91 +2,9 @@ import type HmppsAuthClient from '../data/hmppsAuthClient'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../log'
-
-export interface DeliusUser {
-  userId: string
-  username: string
-  firstName: string
-  surname: string
-  email: string
-  enabled: boolean
-  roles: Array<DeliusRole>
-}
-
-export interface DeliusServiceUser {
-  // TODO IC-620 validate this data properly
-  otherIds: OtherIds
-  offenderProfile: OffenderProfile
-  title: string | null
-  firstName: string | null
-  surname: string | null
-  dateOfBirth: string | null
-  gender: string | null
-  contactDetails: ContactDetails
-}
-
-interface DeliusRole {
-  name: string
-}
-
-interface Disability {
-  disabilityType: {
-    description: string
-  }
-  endDate: string
-  notes: string
-  startDate: string
-}
-interface OtherIds {
-  crn: string
-}
-
-interface OffenderProfile {
-  offenderLanguages: OffenderLanguages
-  ethnicity: string
-  religion: string
-  disabilities: Disability[] | null
-}
-
-interface OffenderLanguages {
-  primaryLanguage: string
-}
-
-interface ContactDetails {
-  emailAddresses?: string[] | null
-  phoneNumbers?: PhoneNumber[] | null
-}
-
-interface PhoneNumber {
-  number: string | null
-  type: string | null
-}
-
-export interface DeliusConviction {
-  active: boolean
-  convictionDate: string
-  convictionId: number
-  sentence: Sentence
-  offences: Offence[]
-}
-
-interface Sentence {
-  description: string
-  sentenceId: number
-  expectedSentenceEndDate: string
-  sentenceType: {
-    code: string
-    description: string
-  }
-}
-
-interface Offence {
-  detail: {
-    mainCategoryDescription: string
-    subCategoryDescription: string
-  }
-  mainOffence: boolean
-}
+import DeliusUser from '../models/delius/deliusUser'
+import DeliusServiceUser from '../models/delius/deliusServiceUser'
+import DeliusConviction from '../models/delius/deliusConviction'
 
 export default class CommunityApiService {
   constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}

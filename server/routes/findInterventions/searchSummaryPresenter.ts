@@ -1,7 +1,7 @@
-import { PCCRegion } from '../../services/interventionsService'
 import { SummaryListItem } from '../../utils/summaryList'
 import InterventionsFilter from './interventionsFilter'
 import utils from '../../utils/utils'
+import PCCRegion from '../../models/pccRegion'
 
 export default class SearchSummaryPresenter {
   constructor(private readonly filter: InterventionsFilter, private readonly pccRegions: PCCRegion[]) {}

@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../../services/interventionsService'
+import { ActionPlanAppointment } from '../../models/actionPlan'
 import CalendarDay from '../../utils/calendarDay'
 import Duration from '../../utils/duration'
 import PresenterUtils from '../../utils/presenterUtils'

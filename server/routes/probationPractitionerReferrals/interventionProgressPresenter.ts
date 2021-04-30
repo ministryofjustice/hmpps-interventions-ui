@@ -1,4 +1,6 @@
-import { ActionPlanAppointment, SentReferral, ServiceCategory } from '../../services/interventionsService'
+import SentReferral from '../../models/sentReferral'
+import { ActionPlanAppointment } from '../../models/actionPlan'
+import ServiceCategory from '../../models/serviceCategory'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import DateUtils from '../../utils/dateUtils'

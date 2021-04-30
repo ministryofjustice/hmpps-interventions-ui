@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import { AppointmentBehaviour } from '../../services/interventionsService'
+import { AppointmentBehaviour } from '../../models/actionPlan'
 import errorMessages from '../../utils/errorMessages'
 import FormUtils from '../../utils/formUtils'
 import { FormValidationError } from '../../utils/formValidationError'
