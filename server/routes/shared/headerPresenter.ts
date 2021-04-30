@@ -11,7 +11,7 @@ export default class HeaderPresenter {
 
     let result = this.displayName
 
-    if (this.loggedInUser.organizations?.length ?? 0 > 0) {
+    if (this.loggedInUser.organizations?.length) {
       // fixme: it's possible that a user belongs to multiple organizations
       result += ` (${this.loggedInUser.organizations![0].name})`
     }

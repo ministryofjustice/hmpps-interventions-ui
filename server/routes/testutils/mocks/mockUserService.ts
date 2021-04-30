@@ -5,7 +5,6 @@ import { User } from '../../../authentication/passport'
 export const user: User = {
   name: 'john smith',
   username: 'user1',
-  displayName: 'J. Smith',
   token: {
     accessToken: 'token',
     expiry: 7265674811, // tests will fail in ~180 years
@@ -23,7 +22,6 @@ export class MockUserService extends UserService {
   async getUserDetails(_token: string): Promise<UserDetails> {
     return {
       name: user.name,
-      displayName: user.displayName,
     }
   }
 }

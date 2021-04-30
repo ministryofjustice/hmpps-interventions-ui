@@ -1,5 +1,4 @@
 import HeaderPresenter from './headerPresenter'
-import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import { User } from '../../authentication/passport'
 import { ServiceProviderOrg } from '../../services/userService'
 
