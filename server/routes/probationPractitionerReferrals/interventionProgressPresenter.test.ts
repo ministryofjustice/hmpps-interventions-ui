@@ -174,6 +174,44 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
+  describe('referralEndRequested', () => {
+    it('returns true when the referral has ended', () => {
+      const referral = sentReferralFactory.endRequested().build()
+      const serviceCategory = serviceCategoryFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, [])
+
+      expect(presenter.referralEndRequested).toEqual(true)
+    })
+
+    it('returns false when the referral has not ended', () => {
+      const referral = sentReferralFactory.build()
+      const serviceCategory = serviceCategoryFactory.build()
+
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, [])
+
+      expect(presenter.referralEndRequested).toEqual(false)
+    })
+  })
+
+  describe('referralEndRequestedText', () => {
+    it('returns the requested end date when an end has been requested', () => {
+      const referral = sentReferralFactory.endRequested().build({ endRequestedAt: '2021-04-28T20:45:21.986389Z' })
+      const serviceCategory = serviceCategoryFactory.build()
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, [])
+
+      expect(presenter.referralEndRequestedText).toEqual('You requested to end this service on 28 Apr 2021.')
+    })
+
+    it('returns an empty string when an end has not been requested', () => {
+      const referral = sentReferralFactory.build()
+      const serviceCategory = serviceCategoryFactory.build()
+
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, [])
+
+      expect(presenter.referralEndRequestedText).toEqual('')
+    })
+  })
+
   describe('hasEndOfServiceReport', () => {
     describe('when the referral has no end of service report', () => {
       it('returns false', () => {

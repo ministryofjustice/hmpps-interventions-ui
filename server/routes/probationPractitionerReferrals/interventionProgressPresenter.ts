@@ -38,6 +38,20 @@ export default class InterventionProgressPresenter {
     return this.referral.assignedTo !== null
   }
 
+  get referralEndRequested(): boolean {
+    return this.referral.endRequestedAt !== null
+  }
+
+  get referralEndRequestedText(): string {
+    const shortenedDateString = DateUtils.getDateStringFromDateTimeString(this.referral.endRequestedAt)
+
+    if (!shortenedDateString) {
+      return ''
+    }
+
+    return `You requested to end this service on ${shortenedDateString}.`
+  }
+
   readonly text = {
     title: `${utils.convertToTitleCase(this.serviceCategory.name)} progress`,
   }
