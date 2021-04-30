@@ -34,8 +34,8 @@ describe(InterventionProgressPresenter, () => {
               classes: 'govuk-tag--grey',
             },
             link: {
-              text: '',
-              href: '',
+              text: null,
+              href: null,
             },
           },
         ])
@@ -63,8 +63,8 @@ describe(InterventionProgressPresenter, () => {
               classes: 'govuk-tag--blue',
             },
             link: {
-              text: '',
-              href: '',
+              text: null,
+              href: null,
             },
           },
         ])

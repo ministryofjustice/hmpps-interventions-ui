@@ -10,7 +10,7 @@ interface ProgressSessionTableRow {
   sessionNumber: number
   appointmentTime: string
   tagArgs: { text: string; classes: string }
-  link: { text: string; href: string }
+  link: { text: string | null; href: string | null }
 }
 
 interface EndOfServiceTableRow {
@@ -68,7 +68,7 @@ export default class InterventionProgressPresenter {
 
   private sessionTableParams(
     appointment: ActionPlanAppointment
-  ): { text: string; tagClass: string; linkText: string; linkHref: string } {
+  ): { text: string; tagClass: string; linkText: string | null; linkHref: string | null } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
 
@@ -91,15 +91,15 @@ export default class InterventionProgressPresenter {
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: '',
-          linkHref: '',
+          linkText: null,
+          linkHref: null,
         }
       default:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: '',
-          linkHref: '',
+          linkText: null,
+          linkHref: null,
         }
     }
   }
