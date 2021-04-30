@@ -10,16 +10,14 @@ describe(InterventionProgressPresenter, () => {
     it('returns true when the referral has ended', () => {
       const referral = sentReferralFactory.endRequested().build()
       const serviceCategory = serviceCategoryFactory.build()
-      const serviceUser = serviceUserFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, [])
 
       expect(presenter.referralEnded).toEqual(true)
     })
     it('returns false when the referral has not ended', () => {
       const referral = sentReferralFactory.build()
       const serviceCategory = serviceCategoryFactory.build()
-      const serviceUser = serviceUserFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, [])
 
       expect(presenter.referralEnded).toEqual(false)
     })
@@ -28,8 +26,7 @@ describe(InterventionProgressPresenter, () => {
     it('returns ended fields when the referral has ended', () => {
       const referral = sentReferralFactory.endRequested().build()
       const serviceCategory = serviceCategoryFactory.build()
-      const serviceUser = serviceUserFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, [])
 
       expect(presenter.referralEndedFields.endRequestedComments).toEqual(referral.endRequestedComments)
       expect(presenter.referralEndedFields.endRequestedReason).toEqual(referral.endRequestedReason)
@@ -38,8 +35,7 @@ describe(InterventionProgressPresenter, () => {
     it('returns null values when the referral has not ended', () => {
       const referral = sentReferralFactory.build()
       const serviceCategory = serviceCategoryFactory.build()
-      const serviceUser = serviceUserFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, serviceUser, [])
+      const presenter = new InterventionProgressPresenter(referral, serviceCategory, null, [])
 
       expect(presenter.referralEndedFields.endRequestedComments).toBeNull()
       expect(presenter.referralEndedFields.endRequestedReason).toBeNull()
