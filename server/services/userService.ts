@@ -1,9 +1,7 @@
-import utils from '../utils/utils'
 import type HmppsAuthClient from '../data/hmppsAuthClient'
 
 export interface UserDetails {
   name: string
-  displayName: string
   organizations?: ServiceProviderOrg[]
 }
 
@@ -17,8 +15,6 @@ export default class UserService {
 
   async getUserDetails(token: string): Promise<UserDetails> {
     const user = await this.hmppsAuthClient.getCurrentUser(token)
-    const nameParts = utils.convertToTitleCase(user.name).split(' ')
-    const displayName = `${nameParts[0][0]}. ${nameParts.reverse()[0]}`
 
     const organizations =
       user.authSource === 'auth'
@@ -30,6 +26,6 @@ export default class UserService {
             }))
         : undefined
 
-    return { name: user.name, displayName, organizations }
+    return { name: user.name, organizations }
   }
 }

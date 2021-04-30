@@ -5,20 +5,24 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 describe(ControllerUtils, () => {
   describe('.renderWithLayout', () => {
     describe('with null serviceUser', () => {
-      it('calls render on the response, passing the content view’s renderArgs', () => {
-        const res = ({ render: jest.fn() } as unknown) as Response
+      it('calls render on the response, passing the content view’s renderArgs augmented with a headerPresenter object in the locals', () => {
+        const res = ({ render: jest.fn(), locals: { user: null } } as unknown) as Response
         const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
         const contentView = { renderArgs }
 
         ControllerUtils.renderWithLayout(res, contentView, null)
 
-        expect(res.render).toHaveBeenCalledWith('myTemplate', { foo: '1', bar: '2' })
+        expect(res.render).toHaveBeenCalledWith('myTemplate', {
+          foo: '1',
+          bar: '2',
+          headerPresenter: expect.anything(),
+        })
       })
     })
 
     describe('with non-null serviceUser', () => {
-      it('calls render on the response, passing the content view’s renderArgs, augmented with a serviceUserNotificationBannerArgs object in the locals', () => {
-        const res = ({ render: jest.fn() } as unknown) as Response
+      it('calls render on the response, passing the content view’s renderArgs, augmented with headerPresenter and serviceUserNotificationBannerArgs objects in the locals', () => {
+        const res = ({ render: jest.fn(), locals: { user: null } } as unknown) as Response
         const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
         const contentView = { renderArgs }
         const serviceUser = deliusServiceUserFactory.build()
@@ -28,6 +32,7 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
+          headerPresenter: expect.anything(),
           serviceUserNotificationBannerArgs: expect.anything(),
         })
       })

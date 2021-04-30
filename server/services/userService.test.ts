@@ -41,12 +41,6 @@ describe('User service', () => {
       ])
       userService = new UserService(hmppsAuthClient)
     })
-    it('Retrieves and formats user name', async () => {
-      hmppsAuthClient.getCurrentUser.mockResolvedValue(deliusUser)
-      const result = await userService.getUserDetails(token)
-      expect(result.name).toEqual('john percy smith')
-      expect(result.displayName).toEqual('J. Smith')
-    })
     it('filters auth user groups', async () => {
       hmppsAuthClient.getCurrentUser.mockResolvedValue(authUser)
       const result = await userService.getUserDetails(token)

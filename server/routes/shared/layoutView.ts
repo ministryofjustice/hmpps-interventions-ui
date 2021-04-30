@@ -17,6 +17,7 @@ export default class LayoutView {
       this.content.renderArgs[0],
       {
         ...(this.serviceUserBannerView?.locals ?? {}),
+        headerPresenter: this.presenter.headerPresenter,
         ...this.content.renderArgs[1],
       },
     ]
