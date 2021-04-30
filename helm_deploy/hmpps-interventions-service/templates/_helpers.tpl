@@ -60,6 +60,6 @@ app: {{ include "app.name" . }}
 release: {{ .Release.Name }}
 {{- end }}
 {{- define "dataDictionary.selectorLabels" -}}
-app: {{ include "app.name" . }}-data-dictionary
+app: data-dictionary
 release: {{ .Release.Name }}
 {{- end }}
