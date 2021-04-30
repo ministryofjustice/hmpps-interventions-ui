@@ -21,7 +21,7 @@ export default class InterventionProgressView {
     }
   }
 
-  private linkHtml(link: { text: string; href: string }): string {
+  private linkHtml(link: { text: string | null; href: string | null }): string {
     if (link.text && link.href) {
       return `<a class="govuk-link" href="${link.href}">${link.text}</a>`
     }

@@ -12,6 +12,14 @@ interface EndedFields {
   endRequestedComments: string | null
   endRequestedReason: string | null
 }
+
+interface ProgressSessionTableRow {
+  sessionNumber: number
+  appointmentTime: string
+  tagArgs: { text: string; classes: string }
+  links: { text: string; href: string }[]
+}
+
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -66,7 +74,7 @@ export default class InterventionProgressPresenter {
 
   readonly sessionTableHeaders = ['Session details', 'Date and time', 'Status', 'Action']
 
-  get sessionTableRows(): Record<string, unknown>[] {
+  get sessionTableRows(): ProgressSessionTableRow[] {
     if (!this.hasSessions) {
       return []
     }
@@ -78,45 +86,75 @@ export default class InterventionProgressPresenter {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
-        linkHtml: sessionTableParams.linkHTML,
+        links: sessionTableParams.links.map(link => ({ text: link.text, href: link.href })),
       }
     })
   }
 
-  private sessionTableParams(appointment: ActionPlanAppointment): { text: string; tagClass: string; linkHTML: string } {
+  private sessionTableParams(
+    appointment: ActionPlanAppointment
+  ): {
+    text: string
+    tagClass: string
+    links: { text: string; href: string }[]
+  } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
 
-    const editUrl = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+    const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/appointment/${
+      appointment.sessionNumber
+    }/post-session-feedback`
+    const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+    const giveFeedbackHref = `/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance`
 
     switch (status) {
       case SessionStatus.didNotAttend:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan!.id}/appointment/${
-            appointment.sessionNumber
-          }/post-session-feedback">View feedback form</a>`,
+          links: [
+            {
+              text: 'View feedback form',
+              href: viewHref,
+            },
+          ],
         }
       case SessionStatus.completed:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan!.id}/appointment/${
-            appointment.sessionNumber
-          }/post-session-feedback">View feedback form</a>`,
+          links: [
+            {
+              text: 'View feedback form',
+              href: viewHref,
+            },
+          ],
         }
       case SessionStatus.scheduled:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="${editUrl}">Reschedule session</a><br><a class="govuk-link" href="/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance">Give feedback</a>`,
+          links: [
+            {
+              text: 'Reschedule session',
+              href: editHref,
+            },
+            {
+              text: 'Give feedback',
+              href: giveFeedbackHref,
+            },
+          ],
         }
       default:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkHTML: `<a class="govuk-link" href="${editUrl}">Edit session details</a>`,
+          links: [
+            {
+              text: 'Edit session details',
+              href: editHref,
+            },
+          ],
         }
     }
   }

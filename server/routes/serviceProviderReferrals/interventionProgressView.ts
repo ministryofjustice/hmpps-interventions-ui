@@ -110,10 +110,16 @@ export default class InterventionProgressView {
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
           { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: `${row.linkHtml}` },
+          { html: this.linkHtml(row.links) },
         ]
       }),
     }
+  }
+
+  private linkHtml(links: { text: string; href: string }[]): string {
+    return links
+      .map(link => `<a class="govuk-link" href="${ViewUtils.escape(link.href)}">${ViewUtils.escape(link.text)}</a>`)
+      .join('<br>')
   }
 
   private readonly backLinkArgs = {
