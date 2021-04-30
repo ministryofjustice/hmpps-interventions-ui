@@ -13,7 +13,7 @@ describe('Referral form', () => {
   })
 
   it('User starts a referral, fills in the form, and submits it', () => {
-    const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Geoffrey' })
+    const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
     const serviceCategory = serviceCategoryFactory.build({
       name: 'accommodation',
@@ -41,27 +41,22 @@ describe('Referral form', () => {
       ],
     })
 
-    const draftReferral = draftReferralFactory.build({
+    const draftReferral = draftReferralFactory.serviceUserSelected().build({
       serviceCategoryId: serviceCategory.id,
       serviceProvider: {
         name: 'Harmony Living',
       },
-      serviceUser: {
-        crn: 'X320741',
-        title: 'Mr',
-        firstName: 'Geoffrey',
-        lastName: 'River',
-        dateOfBirth: '1980-01-01',
-        gender: 'Male',
-        preferredLanguage: 'English',
-        ethnicity: 'British',
-        religionOrBelief: 'Agnostic',
-        disabilities: ['Autism'],
+    })
+
+    const completedServiceUserDetailsDraftReferral = draftReferralFactory.serviceUserDetailsSet().build({
+      serviceCategoryId: serviceCategory.id,
+      serviceProvider: {
+        name: 'Harmony Living',
       },
     })
 
     const completedDraftReferral = {
-      ...draftReferral,
+      ...completedServiceUserDetailsDraftReferral,
       completionDeadline: '2021-04-01',
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       furtherInformation: 'Some information about the service user',
@@ -112,7 +107,7 @@ describe('Referral form', () => {
 
     const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
 
-    cy.stubGetServiceUserByCRN('X320741', deliusServiceUser)
+    cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
     cy.stubCreateDraftReferral(draftReferral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferrals([])
@@ -121,7 +116,7 @@ describe('Referral form', () => {
     cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
     cy.stubSendDraftReferral(draftReferral.id, sentReferral)
     cy.stubGetSentReferral(sentReferral.id, sentReferral)
-    cy.stubGetActiveConvictionsByCRN('X320741', convictions)
+    cy.stubGetActiveConvictionsByCRN('X123456', convictions)
 
     cy.login()
 
@@ -129,17 +124,22 @@ describe('Referral form', () => {
 
     cy.visit(`/intervention/${randomInterventionId}/refer`)
 
-    cy.contains('Service user CRN').type('X320741')
+    cy.contains('Service user CRN').type('X123456')
 
     cy.contains('Continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
+    cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
+    cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
+    cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
+
     cy.contains('Confirm service user’s personal details').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
-    cy.get('h1').contains("Geoffrey's information")
-    cy.contains('X320741')
+    cy.get('h1').contains("Alex's information")
+    cy.contains('X123456')
     cy.contains('Mr')
     cy.contains('River')
     cy.contains('1980-01-01')
@@ -155,28 +155,29 @@ describe('Referral form', () => {
     cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
-    cy.get('h1').contains('Geoffrey’s needs and requirements')
+    cy.get('h1').contains('Alex’s needs and requirements')
 
-    cy.contains('Additional information about Geoffrey’s needs').type(
-      'Geoffrey is currently sleeping on his aunt’s sofa'
-    )
-    cy.contains('Does Geoffrey have any other mobility, disability or accessibility needs?').type(
-      'He uses a wheelchair'
-    )
-    cy.withinFieldsetThatContains('Does Geoffrey need an interpreter?', () => {
+    cy.contains('Additional information about Alex’s needs').type('Alex is currently sleeping on his aunt’s sofa')
+    cy.contains('Does Alex have any other mobility, disability or accessibility needs?').type('He uses a wheelchair')
+    cy.withinFieldsetThatContains('Does Alex need an interpreter?', () => {
       cy.contains('Yes').click()
     })
     cy.contains('What language?').type('Spanish')
-    cy.withinFieldsetThatContains('Does Geoffrey have caring or employment responsibilities?', () => {
+    cy.withinFieldsetThatContains('Does Alex have caring or employment responsibilities?', () => {
       cy.contains('Yes').click()
     })
-    cy.contains('Provide details of when Geoffrey will not be able to attend sessions').type(
+    cy.contains('Provide details of when Alex will not be able to attend sessions').type(
       'He works Mondays 9am - midday'
     )
-
+    cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
     cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
+
+    cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(1).contains('NOT STARTED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
+    cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
 
     cy.contains('Select the relevant sentence for the accommodation referral').click()
 
@@ -218,7 +219,7 @@ describe('Referral form', () => {
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
     cy.get('h1').contains('Do you have further information for the accommodation service provider? (optional)')
-    cy.get('textarea').type('Some information about Geoffrey')
+    cy.get('textarea').type('Some information about Alex')
 
     // stub completed draft referral to mark section as completed
     cy.stubGetDraftReferral(draftReferral.id, completedDraftReferral)
@@ -226,6 +227,11 @@ describe('Referral form', () => {
     cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
+
+    cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(2).contains('COMPLETED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(3).contains('COMPLETED', { matchCase: false })
 
     cy.get('a').contains('Check your answers').click()
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)

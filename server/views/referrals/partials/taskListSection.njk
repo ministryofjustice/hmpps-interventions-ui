@@ -4,7 +4,7 @@ it to get a right-floated tag. There’s a broader question of whether
 we’ve mis-implemented the MoJ task list pattern, in which tags are
 only used on individual completed tasks. Needs some design review.
 #}
-<strong class="{{ classForStatus(taskListSection.status) }} moj-task-list__task-completed">
+<strong data-cy="status" class="{{ classForStatus(taskListSection.status) }} moj-task-list__task-completed">
   {{ taskListSection.status }}
 </strong>
 
