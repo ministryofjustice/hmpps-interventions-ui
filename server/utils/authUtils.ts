@@ -1,10 +1,11 @@
-import { ServiceProviderOrg } from '../services/userService'
+import ServiceProviderOrganization from '../models/hmppsAuth/serviceProviderOrganization'
 import { AuthError, ErrorType } from '../authentication/authErrorHandler'
-import { User } from '../authentication/passport'
+import LoggedInUser from '../models/loggedInUser'
 
-function getServiceProviderUserOrganization(user: User): ServiceProviderOrg {
-  const { organizations } = user
-  if (organizations === undefined) {
+function getServiceProviderUserOrganization(user: LoggedInUser): ServiceProviderOrganization {
+  const { authSource, organizations } = user
+
+  if (authSource !== 'auth') {
     throw new AuthError(ErrorType.REQUIRES_SP_USER)
   }
 
@@ -17,7 +18,7 @@ function getServiceProviderUserOrganization(user: User): ServiceProviderOrg {
   return organizations[0]
 }
 
-function getProbationPractitionerUserId(user: User): string {
+function getProbationPractitionerUserId(user: LoggedInUser): string {
   const { userId, authSource } = user
   if (authSource !== 'delius') {
     throw new AuthError(ErrorType.REQUIRES_PP_USER)

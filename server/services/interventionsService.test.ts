@@ -16,7 +16,7 @@ import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAp
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 
-jest.mock('../data/hmppsAuthClient')
+jest.mock('../services/hmppsAuthService')
 
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService

@@ -8,11 +8,11 @@ import allRoutes, { Services } from '../index'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
-import { user } from './mocks/mockUserService'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
 import MockOffenderAssessmentsApiService from './mocks/mockOffenderAssessmentsApiService'
-import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
+import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
+import LoggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -26,6 +26,7 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
 
   nunjucksSetup(app, path)
 
+  const user = LoggedInUserFactory.build()
   user.authSource = userType
   if (userType === AppSetupUserType.serviceProvider) {
     user.organizations = [{ id: 'HARMONY_LIVING', name: 'Harmony Living' }]
@@ -66,7 +67,7 @@ export default function appWithAllRoutes({
       communityApiService: new MockCommunityApiService(),
       offenderAssessmentsApiService: new MockOffenderAssessmentsApiService(),
       interventionsService: {} as InterventionsService,
-      hmppsAuthClient: new MockedHmppsAuthClient(),
+      hmppsAuthService: new MockedHmppsAuthService(),
       ...overrides,
     }),
     production,

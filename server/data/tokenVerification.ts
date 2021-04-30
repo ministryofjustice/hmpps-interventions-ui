@@ -2,7 +2,7 @@ import superagent from 'superagent'
 import { Request } from 'express'
 import config from '../config'
 import logger from '../../log'
-import { User } from '../authentication/passport'
+import LoggedInUser from '../models/loggedInUser'
 
 function verifyAccessToken(token: string) {
   return superagent
@@ -17,7 +17,7 @@ function verifyAccessToken(token: string) {
 
 export interface VerifiableRequest extends Request {
   verified?: boolean
-  user: User
+  user: LoggedInUser
 }
 
 export type TokenVerifier = (request: VerifiableRequest) => Promise<boolean | void>

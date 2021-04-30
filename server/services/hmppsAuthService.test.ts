@@ -2,10 +2,11 @@ import nock from 'nock'
 import redis from 'redis'
 
 import config from '../config'
-import HmppsAuthClient from './hmppsAuthClient'
+import HmppsAuthService from './hmppsAuthService'
 
-const username = 'Bob'
 const token = { access_token: 'token-1', expires_in: 300 }
+const authUser = { username: 'AUTH_ADM', authSource: 'auth', userId: '123456' }
+const deliusUser = { username: 'bernard.beaks', authSource: 'delius', userId: '123456' }
 
 jest.mock('redis', () => ({
   createClient: jest.fn().mockReturnThis(),
@@ -26,13 +27,13 @@ function givenRedisResponse(storedToken: string | null) {
   mockRedis.get.mockImplementation((key, callback) => callback(null, storedToken))
 }
 
-describe('hmppsAuthClient', () => {
+describe('hmppsAuthService', () => {
   let fakeHmppsAuthApi: nock.Scope
-  let hmppsAuthClient: HmppsAuthClient
+  let hmppsAuthService: HmppsAuthService
 
   beforeEach(() => {
     fakeHmppsAuthApi = nock(config.apis.hmppsAuth.url)
-    hmppsAuthClient = new HmppsAuthClient()
+    hmppsAuthService = new HmppsAuthService()
   })
 
   afterEach(() => {
@@ -48,7 +49,7 @@ describe('hmppsAuthClient', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
-      const output = await hmppsAuthClient.getCurrentUser(token.access_token)
+      const output = await hmppsAuthService.getUserDetails(token.access_token)
       expect(output).toEqual(response)
     })
   })
@@ -87,7 +88,7 @@ describe('hmppsAuthClient', () => {
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(200, response)
 
-        const output = await hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')
+        const output = await hmppsAuthService.getSPUserByEmailAddress(token.access_token, 'user@example.com')
         expect(output).toEqual(response[1])
       })
     })
@@ -101,7 +102,7 @@ describe('hmppsAuthClient', () => {
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(204, noUserResponse)
 
-        await expect(hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
+        await expect(hmppsAuthService.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
           'Email not found'
         )
       })
@@ -150,7 +151,7 @@ describe('hmppsAuthClient', () => {
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(200, invalidUserResponse)
 
-        await expect(hmppsAuthClient.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
+        await expect(hmppsAuthService.getSPUserByEmailAddress(token.access_token, 'user@example.com')).rejects.toThrow(
           'No verified and active accounts found for this email address'
         )
       })
@@ -176,7 +177,7 @@ describe('hmppsAuthClient', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
-      const output = await hmppsAuthClient.getSPUserByUsername(token.access_token, 'AUTH_ADM')
+      const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'AUTH_ADM')
       expect(output).toEqual(response)
     })
   })
@@ -188,7 +189,7 @@ describe('hmppsAuthClient', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, [{ roleCode: 'role1' }, { roleCode: 'role2' }])
 
-      const output = await hmppsAuthClient.getUserRoles(token.access_token)
+      const output = await hmppsAuthService.getUserRoles(token.access_token)
       expect(output).toEqual(['role1', 'role2'])
     })
   })
@@ -196,32 +197,17 @@ describe('hmppsAuthClient', () => {
   describe('getApiClientToken', () => {
     it('should instantiate the redis client', async () => {
       givenRedisResponse(token.access_token)
-      await hmppsAuthClient.getApiClientToken(username)
+      await hmppsAuthService.getApiClientToken()
       expect(redis.createClient).toBeCalledTimes(1)
     })
 
     it('should return token from redis if one exists', async () => {
       givenRedisResponse(token.access_token)
-      const output = await hmppsAuthClient.getApiClientToken(username)
+      const output = await hmppsAuthService.getApiClientToken()
       expect(output).toEqual(token.access_token)
     })
 
-    it('should return token from HMPPS Auth with username', async () => {
-      givenRedisResponse(null)
-
-      fakeHmppsAuthApi
-        .post(`/oauth/token`, 'grant_type=client_credentials&username=Bob')
-        .basicAuth({ user: config.apis.hmppsAuth.apiClientId, pass: config.apis.hmppsAuth.apiClientSecret })
-        .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
-        .reply(200, token)
-
-      const output = await hmppsAuthClient.getApiClientToken(username)
-
-      expect(output).toEqual(token.access_token)
-      expect(mockRedis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
-    })
-
-    it('should return token from HMPPS Auth without username', async () => {
+    it('should return token from HMPPS Auth', async () => {
       givenRedisResponse(null)
 
       fakeHmppsAuthApi
@@ -230,10 +216,46 @@ describe('hmppsAuthClient', () => {
         .matchHeader('Content-Type', 'application/x-www-form-urlencoded')
         .reply(200, token)
 
-      const output = await hmppsAuthClient.getApiClientToken()
+      const output = await hmppsAuthService.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
-      expect(mockRedis.set).toBeCalledWith('Bob', token.access_token, 'EX', 240, expect.any(Function))
+      expect(mockRedis.set).toBeCalledWith('%ANONYMOUS%', token.access_token, 'EX', 240, expect.any(Function))
+    })
+  })
+
+  describe('getUserOrganizations', () => {
+    beforeEach(() => {
+      const groups = [
+        {
+          groupCode: 'RANDOM_GROUP',
+          groupName: 'NPS West Yorks Staff',
+        },
+        {
+          groupCode: 'INT_SP_HARMONY_LIVING',
+          groupName: 'Int SP Harmony Living',
+        },
+        {
+          groupCode: 'INT_SP_BETTER_LTD',
+          groupName: 'Better Ltd.',
+        },
+      ]
+      fakeHmppsAuthApi
+        .get(`/api/authuser/${authUser.username}/groups`)
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(200, groups)
+    })
+
+    it('filters auth user groups', async () => {
+      const result = await hmppsAuthService.getUserOrganizations(token.access_token, authUser)
+      expect(result).toEqual([
+        { id: 'HARMONY_LIVING', name: 'Harmony Living' },
+        { id: 'BETTER_LTD', name: 'Better Ltd.' },
+      ])
+    })
+
+    it('does not include auth user groups for delius users', async () => {
+      const result = await hmppsAuthService.getUserOrganizations(token.access_token, deliusUser)
+      expect(result).toEqual([])
     })
   })
 })

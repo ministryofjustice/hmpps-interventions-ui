@@ -2,10 +2,11 @@ import nock from 'nock'
 
 import verifyToken, { VerifiableRequest } from './tokenVerification'
 import config from '../config'
-import { user } from '../routes/testutils/mocks/mockUserService'
+import LoggedInUserFactory from '../../testutils/factories/loggedInUser'
 
 describe('token verification api tests', () => {
   let fakeApi: nock.Scope
+  const user = LoggedInUserFactory.build()
   const verifiedRequest = (verified: boolean) => {
     return ({
       user,

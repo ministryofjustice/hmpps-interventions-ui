@@ -1,4 +1,3 @@
-import { AuthUser } from '../../data/hmppsAuthClient'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import DeliusUser from '../../models/delius/deliusUser'
@@ -8,6 +7,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -16,7 +16,7 @@ export default class ShowReferralPresenter {
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly sentBy: DeliusUser,
-    private readonly assignee: AuthUser | null,
+    private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(

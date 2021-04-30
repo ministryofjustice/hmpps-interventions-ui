@@ -1,9 +1,9 @@
-import MockedHmppsAuthClient from '../../../data/testutils/hmppsAuthClientSetup'
+import MockedHmppsAuthService from '../../../services/testutils/hmppsAuthServiceSetup'
 import OffenderAssessmentsApiService, { OasysAssessment } from '../../../services/offenderAssessmentsApiService'
 
 export = class MockOffenderAssessmentsApiService extends OffenderAssessmentsApiService {
   constructor() {
-    super(new MockedHmppsAuthClient())
+    super(new MockedHmppsAuthService())
   }
 
   async getAssessmentSummaryByCRN(_crn: string): Promise<OasysAssessment> {

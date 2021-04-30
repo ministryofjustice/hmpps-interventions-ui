@@ -1,4 +1,4 @@
-import AuthUser from './authUser'
+import User from './hmppsAuth/user'
 import DesiredOutcome from './desiredOutcome'
 
 export interface Activity {
@@ -36,6 +36,6 @@ export default interface ActionPlan {
   referralId: string
   numberOfSessions: number | null
   activities: Activity[]
-  submittedBy: AuthUser | null
+  submittedBy: User | null
   submittedAt: string | null
 }

@@ -1,12 +1,12 @@
-import { AuthUser } from '../../data/hmppsAuthClient'
 import ServiceCategory from '../../models/serviceCategory'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export default class CheckAssignmentPresenter {
   constructor(
     private readonly referralId: string,
-    private readonly assignee: AuthUser,
+    private readonly assignee: AuthUserDetails,
     private readonly email: string,
     private readonly serviceCategory: ServiceCategory
   ) {}

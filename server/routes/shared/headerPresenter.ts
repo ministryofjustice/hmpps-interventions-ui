@@ -1,8 +1,8 @@
-import { User } from '../../authentication/passport'
+import LoggedInUser from '../../models/loggedInUser'
 import utils from '../../utils/utils'
 
 export default class HeaderPresenter {
-  constructor(private readonly loggedInUser: User | null) {}
+  constructor(private readonly loggedInUser: LoggedInUser | null) {}
 
   get userDescription(): string {
     if (!this.loggedInUser) {

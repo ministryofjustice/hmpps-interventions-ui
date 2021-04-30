@@ -1,10 +1,10 @@
-import { AuthUser } from '../data/hmppsAuthClient'
 import ServiceUser from '../models/serviceUser'
 import CalendarDay from './calendarDay'
 import ClockTime from './clockTime'
 import { FormValidationError } from './formValidationError'
 import Duration from './duration'
 import utils from './utils'
+import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 
 interface DateTimeComponentInputPresenter {
   value: string
@@ -265,7 +265,7 @@ export default class PresenterUtils {
     return format.format(date)
   }
 
-  static fullName(user: ServiceUser | AuthUser): string {
+  static fullName(user: ServiceUser | AuthUserDetails): string {
     return utils.convertToTitleCase(`${user.firstName ?? ''} ${user.lastName ?? ''}`)
   }
 

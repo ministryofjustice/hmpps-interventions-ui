@@ -1,10 +1,10 @@
 import CommunityApiService from '../../../services/communityApiService'
 import DeliusUser from '../../../models/delius/deliusUser'
-import MockedHmppsAuthClient from '../../../data/testutils/hmppsAuthClientSetup'
+import MockedHmppsAuthService from '../../../services/testutils/hmppsAuthServiceSetup'
 
 export = class MockCommunityApiService extends CommunityApiService {
   constructor() {
-    super(new MockedHmppsAuthClient())
+    super(new MockedHmppsAuthService())
   }
 
   async getUserByUsername(_username: string): Promise<DeliusUser> {

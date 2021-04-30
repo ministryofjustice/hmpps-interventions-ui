@@ -1,10 +1,11 @@
 import HeaderPresenter from './headerPresenter'
-import { User } from '../../authentication/passport'
-import { ServiceProviderOrg } from '../../services/userService'
+import LoggedInUser from '../../models/loggedInUser'
+import ServiceProviderOrganization from '../../models/hmppsAuth/serviceProviderOrganization'
+import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 describe(HeaderPresenter, () => {
-  const createUser = (organizations: ServiceProviderOrg[]): User => {
-    return { name: 'john percy smith', organizations } as User
+  const createUser = (organizations: ServiceProviderOrganization[]): LoggedInUser => {
+    return loggedInUserFactory.build({ name: 'john percy smith', organizations })
   }
 
   describe('userDescription', () => {

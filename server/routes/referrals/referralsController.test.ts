@@ -8,7 +8,7 @@ import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import apiConfig from '../../config'
-import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
+import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 
@@ -18,7 +18,7 @@ jest.mock('../../services/communityApiService')
 const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
   InterventionsService
 >
-const communityApiService = new CommunityApiService(new MockedHmppsAuthClient()) as jest.Mocked<CommunityApiService>
+const communityApiService = new CommunityApiService(new MockedHmppsAuthService()) as jest.Mocked<CommunityApiService>
 
 const serviceUser = {
   crn: 'X123456',

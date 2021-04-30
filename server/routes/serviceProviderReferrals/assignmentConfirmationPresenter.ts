@@ -1,15 +1,15 @@
-import { AuthUser } from '../../data/hmppsAuthClient'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export default class AssignmentConfirmationPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
-    private readonly assignee: AuthUser
+    private readonly assignee: AuthUserDetails
   ) {}
 
   readonly dashboardHref = '/service-provider/dashboard'
