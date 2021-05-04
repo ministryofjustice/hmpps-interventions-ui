@@ -27,6 +27,7 @@ export default class SearchResultsView {
           text: legend,
           classes: 'govuk-fieldset__legend--s',
         },
+        classes: 'find-filters--scrollable',
       },
       items: checkboxes.map(checkbox => ({
         value: checkbox.value,
