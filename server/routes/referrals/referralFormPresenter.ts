@@ -4,12 +4,26 @@ export default class ReferralFormPresenter {
   constructor(private readonly referral: DraftReferral, private readonly serviceCategoryName: string) {}
 
   get sections(): ReferralFormSectionPresenter[] {
+    const serviceUserSectionFormStatus = this.referralFormStatus(this.requiredServiceUserFormValues)
+    const interventionDetailsSectionFormStatus = this.referralFormStatus(
+      this.requiredInterventionFormValues,
+      serviceUserSectionFormStatus
+    )
+    const responsibleOfficerDetailsSectionFormStatus = this.referralFormStatus(
+      this.requiredResponsibleOfficerFormValues,
+      interventionDetailsSectionFormStatus
+    )
+    const checkAnswersSectionFormStatus = this.referralFormStatus(
+      this.requiredCheckAnswersFormValues,
+      responsibleOfficerDetailsSectionFormStatus
+    )
+
     return [
       {
         type: 'single',
         title: 'Review service user’s information',
         number: '1',
-        status: ReferralFormStatus.Completed,
+        status: serviceUserSectionFormStatus,
         tasks: [
           {
             title: 'Confirm service user’s personal details',
@@ -29,7 +43,7 @@ export default class ReferralFormPresenter {
         type: 'single',
         title: `Add ${this.serviceCategoryName} referral details`,
         number: '2',
-        status: this.determineInterventionDetailsSectionStatus(),
+        status: interventionDetailsSectionFormStatus,
         tasks: [
           {
             title: `Select the relevant sentence for the ${this.serviceCategoryName} referral`,
@@ -61,7 +75,7 @@ export default class ReferralFormPresenter {
         type: 'single',
         title: 'Review responsible officer’s information',
         number: '3',
-        status: ReferralFormStatus.NotStarted,
+        status: responsibleOfficerDetailsSectionFormStatus,
         tasks: [
           {
             title: 'Responsible officer information',
@@ -73,41 +87,82 @@ export default class ReferralFormPresenter {
         type: 'single',
         title: 'Check your answers',
         number: '4',
-        status: this.canSubmitReferral ? ReferralFormStatus.NotStarted : ReferralFormStatus.CannotStartYet,
+        status: checkAnswersSectionFormStatus,
         tasks: [
           {
             title: 'Check your answers',
-            url: this.canSubmitReferral ? 'check-answers' : null,
+            url: checkAnswersSectionFormStatus !== ReferralFormStatus.CannotStartYet ? 'check-answers' : null,
           },
         ],
       },
     ]
   }
 
-  private determineInterventionDetailsSectionStatus(): ReferralFormStatus {
-    const hasCompletedSection = [
+  private referralFormStatus(
+    draftReferralValues: DraftReferralValues,
+    previousFormStatus: ReferralFormStatus = ReferralFormStatus.Completed
+  ): ReferralFormStatus {
+    if (previousFormStatus !== ReferralFormStatus.Completed) {
+      return ReferralFormStatus.CannotStartYet
+    }
+    const hasCompleted = draftReferralValues.every(field => {
+      if (field === null) {
+        return false
+      }
+      return Array.isArray(field) ? field.length !== 0 : true
+    })
+    if (hasCompleted) {
+      return ReferralFormStatus.Completed
+    }
+    return ReferralFormStatus.NotStarted
+  }
+
+  private get requiredServiceUserFormValues(): DraftReferralValues {
+    return [
+      this.referral.serviceUser.crn,
+      this.referral.serviceUser.title,
+      this.referral.serviceUser.firstName,
+      this.referral.serviceUser.lastName,
+      this.referral.serviceUser.dateOfBirth,
+      this.referral.serviceUser.gender,
+      this.referral.serviceUser.ethnicity,
+      this.referral.serviceUser.preferredLanguage,
+      this.referral.serviceUser.religionOrBelief,
+      this.referral.needsInterpreter,
+      this.referral.hasAdditionalResponsibilities,
+    ]
+  }
+
+  private get requiredInterventionFormValues(): DraftReferralValues {
+    return [
       this.referral.relevantSentenceId,
       this.referral.desiredOutcomesIds,
       this.referral.complexityLevelId,
       this.referral.completionDeadline,
       this.referral.usingRarDays,
-    ].every(field => field !== null)
-
-    return hasCompletedSection ? ReferralFormStatus.Completed : ReferralFormStatus.NotStarted
+    ]
   }
 
-  private get canSubmitReferral(): boolean {
-    return this.determineInterventionDetailsSectionStatus() === ReferralFormStatus.Completed
+  /* TODO: Page form values need to be defined */
+  private get requiredResponsibleOfficerFormValues(): DraftReferralValues {
+    return []
+  }
+
+  /* TODO: Page form values need to be defined */
+  private get requiredCheckAnswersFormValues(): DraftReferralValues {
+    return []
   }
 }
 
-type ReferralFormSectionPresenter = ReferralFormSingleListSectionPresenter | ReferralFormMultiListSectionPresenter
+export type ReferralFormSectionPresenter =
+  | ReferralFormSingleListSectionPresenter
+  | ReferralFormMultiListSectionPresenter
 
-interface ReferralFormSingleListSectionPresenter extends ReferralFormTaskListSectionPresenter {
+export interface ReferralFormSingleListSectionPresenter extends ReferralFormTaskListSectionPresenter {
   type: 'single'
 }
 
-interface ReferralFormMultiListSectionPresenter {
+export interface ReferralFormMultiListSectionPresenter {
   type: 'multi'
   title: string
   number: string
@@ -122,8 +177,8 @@ interface ReferralFormTaskListSectionPresenter {
 }
 
 export enum ReferralFormStatus {
-  NotStarted = 'Not started',
   CannotStartYet = 'Cannot start yet',
+  NotStarted = 'Not started',
   InProgress = 'In progress',
   Completed = 'Completed',
 }
@@ -132,3 +187,5 @@ interface ReferralFormTaskPresenter {
   title: string
   url: string | null
 }
+
+type DraftReferralValues = (string | string[] | boolean | number | null)[]

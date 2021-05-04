@@ -1,139 +1,81 @@
 import ReferralFormPresenter, { ReferralFormStatus } from './referralFormPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import referralFormSectionFactory from '../../../testutils/factories/referralFormSection'
 
 describe('ReferralFormPresenter', () => {
   describe('sections', () => {
-    describe('when the intervention details section has not been completed', () => {
-      it('returns an array of section presenters, with a "not started" label for the intervention details', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory
-          .serviceCategorySelected(serviceCategory.id)
-          .completionDeadlineSet()
-          .build()
-        const presenter = new ReferralFormPresenter(referral, 'social inclusion')
-
-        const expected = [
-          {
-            type: 'single',
-            title: 'Review service user’s information',
-            number: '1',
-            status: ReferralFormStatus.Completed,
-            tasks: [
-              { title: 'Confirm service user’s personal details', url: 'service-user-details' },
-              { title: 'Service user’s risk information', url: 'risk-information' },
-              { title: 'Service user’s needs and requirements', url: 'needs-and-requirements' },
-            ],
-          },
-          {
-            type: 'single',
-            title: `Add social inclusion referral details`,
-            number: '2',
-            status: ReferralFormStatus.NotStarted,
-            tasks: [
-              { title: 'Select the relevant sentence for the social inclusion referral', url: 'relevant-sentence' },
-              { title: 'Select desired outcomes', url: 'desired-outcomes' },
-              { title: 'Select required complexity level', url: 'complexity-level' },
-              {
-                title: 'What date does the social inclusion service need to be completed by?',
-                url: 'completion-deadline',
-              },
-              { title: 'Enter RAR days used', url: 'rar-days' },
-              { title: 'Further information for service provider', url: 'further-information' },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Review responsible officer’s information',
-            number: '3',
-            status: ReferralFormStatus.NotStarted,
-            tasks: [{ title: 'Responsible officer information', url: null }],
-          },
-          {
-            type: 'single',
-            title: 'Check your answers',
-            number: '4',
-            status: ReferralFormStatus.CannotStartYet,
-            tasks: [{ title: 'Check your answers', url: null }],
-          },
-        ]
-
-        expect(presenter.sections).toEqual(expected)
+    describe('review service user information section', () => {
+      describe('when no required values have been set', () => {
+        it('should contain a "Not started" label', () => {
+          const referral = draftReferralFactory.build()
+          const presenter = new ReferralFormPresenter(referral, 'social inclusion')
+          const expected = [
+            referralFormSectionFactory.reviewServiceUser().status(ReferralFormStatus.NotStarted).build(),
+            referralFormSectionFactory
+              .interventionDetails('social inclusion')
+              .status(ReferralFormStatus.CannotStartYet)
+              .build(),
+            referralFormSectionFactory.responsibleOfficerDetails().status(ReferralFormStatus.CannotStartYet).build(),
+            referralFormSectionFactory.checkAnswers().status(ReferralFormStatus.CannotStartYet).build(),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
+      })
+      describe('when all required values have been set', () => {
+        it('should contain a "Completed" label and interventions details section can be started', () => {
+          const referral = draftReferralFactory.serviceUserDetailsSet().build()
+          const presenter = new ReferralFormPresenter(referral, 'social inclusion')
+          const expected = [
+            referralFormSectionFactory.reviewServiceUser().status(ReferralFormStatus.Completed).build(),
+            referralFormSectionFactory
+              .interventionDetails('social inclusion')
+              .status(ReferralFormStatus.NotStarted)
+              .build(),
+            referralFormSectionFactory.responsibleOfficerDetails().status(ReferralFormStatus.CannotStartYet).build(),
+            referralFormSectionFactory.checkAnswers().status(ReferralFormStatus.CannotStartYet).build(),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
       })
     })
-
-    describe('when the intervention details section has all required fields filled in', () => {
-      it('returns an array of section presenters, with a "completed" label for the intervention details, and allows the user to submit the referral', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({
-          createdAt: '2021-01-11T10:32:12.382884Z',
-          completionDeadline: '2021-04-01',
-          serviceProvider: {
-            name: 'Harmony Living',
-          },
-          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-          furtherInformation: 'Some information about the service user',
-          relevantSentenceId: 123456789,
-          desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
-          additionalNeedsInformation: null,
-          accessibilityNeeds: null,
-          needsInterpreter: null,
-          interpreterLanguage: null,
-          hasAdditionalResponsibilities: null,
-          whenUnavailable: null,
-          additionalRiskInformation: null,
-          usingRarDays: false,
-          maximumRarDays: null,
+    describe('intervention details section', () => {
+      describe('when no desired Outcomes have been set', () => {
+        it('should contain a "Not Started" label', () => {
+          const referral = draftReferralFactory
+            .serviceUserDetailsSet()
+            .interventionDetailsSet()
+            .build({ desiredOutcomesIds: [] })
+          const presenter = new ReferralFormPresenter(referral, 'social inclusion')
+          const expected = [
+            referralFormSectionFactory.reviewServiceUser().status(ReferralFormStatus.Completed).build(),
+            referralFormSectionFactory
+              .interventionDetails('social inclusion')
+              .status(ReferralFormStatus.NotStarted)
+              .build(),
+            referralFormSectionFactory.responsibleOfficerDetails().status(ReferralFormStatus.CannotStartYet).build(),
+            referralFormSectionFactory.checkAnswers().status(ReferralFormStatus.CannotStartYet).build(),
+          ]
+          expect(presenter.sections).toEqual(expected)
         })
-        const presenter = new ReferralFormPresenter(referral, 'accommodation')
-
-        const expected = [
-          {
-            type: 'single',
-            title: 'Review service user’s information',
-            number: '1',
-            status: ReferralFormStatus.Completed,
-            tasks: [
-              { title: 'Confirm service user’s personal details', url: 'service-user-details' },
-              { title: 'Service user’s risk information', url: 'risk-information' },
-              { title: 'Service user’s needs and requirements', url: 'needs-and-requirements' },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Add accommodation referral details',
-            number: '2',
-            status: ReferralFormStatus.Completed,
-            tasks: [
-              { title: 'Select the relevant sentence for the accommodation referral', url: 'relevant-sentence' },
-              { title: 'Select desired outcomes', url: 'desired-outcomes' },
-              { title: 'Select required complexity level', url: 'complexity-level' },
-              {
-                title: 'What date does the accommodation service need to be completed by?',
-                url: 'completion-deadline',
-              },
-              { title: 'Enter RAR days used', url: 'rar-days' },
-              { title: 'Further information for service provider', url: 'further-information' },
-            ],
-          },
-          {
-            type: 'single',
-            title: 'Review responsible officer’s information',
-            number: '3',
-            status: ReferralFormStatus.NotStarted,
-            tasks: [{ title: 'Responsible officer information', url: null }],
-          },
-          {
-            type: 'single',
-            title: 'Check your answers',
-            number: '4',
-            status: ReferralFormStatus.NotStarted,
-            tasks: [{ title: 'Check your answers', url: 'check-answers' }],
-          },
-        ]
-
-        expect(presenter.sections).toEqual(expected)
+      })
+      describe('when all required values have been set', () => {
+        it('should contain a "Completed" label and allow user to submit answers', () => {
+          const referral = draftReferralFactory.serviceUserDetailsSet().interventionDetailsSet().build()
+          const presenter = new ReferralFormPresenter(referral, 'social inclusion')
+          const expected = [
+            referralFormSectionFactory.reviewServiceUser().status(ReferralFormStatus.Completed).build(),
+            referralFormSectionFactory
+              .interventionDetails('social inclusion')
+              .status(ReferralFormStatus.Completed)
+              .build(),
+            referralFormSectionFactory.responsibleOfficerDetails().status(ReferralFormStatus.Completed).build(),
+            referralFormSectionFactory
+              .checkAnswers()
+              .status(ReferralFormStatus.Completed)
+              .build({ tasks: [{ title: 'Check your answers', url: 'check-answers' }] }),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
       })
     })
   })
