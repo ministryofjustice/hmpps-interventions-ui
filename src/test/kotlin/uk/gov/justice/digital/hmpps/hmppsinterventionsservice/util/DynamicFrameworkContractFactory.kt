@@ -25,6 +25,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
     allowsFemale: Boolean = true,
     npsRegion: NPSRegion? = null,
     pccRegion: PCCRegion? = null,
+    contractReference: String? = null,
   ): DynamicFrameworkContract {
     return save(
       DynamicFrameworkContract(
@@ -39,6 +40,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
         allowsFemale = allowsFemale,
         npsRegion = npsRegion,
         pccRegion = pccRegion,
+        contractReference = contractReference,
       )
     )
   }

@@ -122,6 +122,7 @@ class SampleData {
       serviceProvider: ServiceProvider,
       npsRegion: NPSRegion? = null,
       pccRegion: PCCRegion? = null,
+      contractReference: String? = null,
     ): DynamicFrameworkContract {
       return DynamicFrameworkContract(
         id = id ?: UUID.randomUUID(),
@@ -134,7 +135,8 @@ class SampleData {
         allowsMale = true,
         allowsFemale = true,
         npsRegion = npsRegion,
-        pccRegion = pccRegion
+        pccRegion = pccRegion,
+        contractReference = contractReference,
       )
     }
     fun sampleEndOfServiceReport(

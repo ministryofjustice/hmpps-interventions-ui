@@ -31,4 +31,6 @@ data class DynamicFrameworkContract(
   val maximumAge: Int?,
   @NotNull val allowsFemale: Boolean,
   @NotNull val allowsMale: Boolean,
+
+  var contractReference: String?,
 )
