@@ -194,15 +194,18 @@ export default class ServiceProviderReferralsController {
     }
 
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        referral.referral.serviceCategoryId
+      ),
+      this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
+    ])
 
     const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, serviceCategory)
     const view = new CheckAssignmentView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, null)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async assignReferral(req: Request, res: Response): Promise<void> {
@@ -230,18 +233,19 @@ export default class ServiceProviderReferralsController {
       throw new Error('Can’t view confirmation of assignment, as referral isn’t assigned.')
     }
 
-    const [assignee, serviceCategory] = await Promise.all([
+    const [assignee, serviceCategory, serviceUser] = await Promise.all([
       this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
       this.interventionsService.getServiceCategory(
         res.locals.user.token.accessToken,
         referral.referral.serviceCategoryId
       ),
+      this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])
 
     const presenter = new AssignmentConfirmationPresenter(referral, serviceCategory, assignee)
     const view = new AssignmentConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async createDraftActionPlan(req: Request, res: Response): Promise<void> {
@@ -260,15 +264,18 @@ export default class ServiceProviderReferralsController {
       actionPlan.referralId
     )
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        sentReferral.referral.serviceCategoryId
+      ),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
 
     const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new AddActionPlanActivitiesView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
@@ -291,16 +298,19 @@ export default class ServiceProviderReferralsController {
       actionPlan.referralId
     )
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        sentReferral.referral.serviceCategoryId
+      ),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
 
     const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.status(400)
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
@@ -321,10 +331,11 @@ export default class ServiceProviderReferralsController {
       res.redirect(`/service-provider/action-plan/${actionPlan.id}/number-of-sessions`)
     } else {
       const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, form.errors)
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
       const view = new AddActionPlanActivitiesView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -335,15 +346,18 @@ export default class ServiceProviderReferralsController {
       actionPlan.referralId
     )
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        sentReferral.referral.serviceCategoryId
+      ),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
 
     const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
     const view = new ReviewActionPlanView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitActionPlan(req: Request, res: Response): Promise<void> {
@@ -363,15 +377,18 @@ export default class ServiceProviderReferralsController {
       actionPlan.referralId
     )
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(
+        res.locals.user.token.accessToken,
+        sentReferral.referral.serviceCategoryId
+      ),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
 
     const presenter = new ActionPlanConfirmationPresenter(sentReferral, serviceCategory)
     const view = new ActionPlanConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addNumberOfSessionsToActionPlan(req: Request, res: Response): Promise<void> {
@@ -418,6 +435,8 @@ export default class ServiceProviderReferralsController {
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
 
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+
     if (req.method === 'POST') {
       const data = await new EditSessionForm(req).data()
 
@@ -433,11 +452,6 @@ export default class ServiceProviderReferralsController {
           data.paramsForUpdate
         )
 
-        const actionPlan = await this.interventionsService.getActionPlan(
-          res.locals.user.token.accessToken,
-          req.params.id
-        )
-
         res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
         return
       }
@@ -448,10 +462,15 @@ export default class ServiceProviderReferralsController {
       req.params.id,
       sessionNumber
     )
+    const referral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EditSessionPresenter(appointment, formError, userInputData)
     const view = new EditSessionView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
@@ -623,6 +642,9 @@ export default class ServiceProviderReferralsController {
       currentAppointment
     )
 
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const presenter = new PostSessionFeedbackConfirmationPresenter(
       actionPlan,
       currentAppointment,
@@ -630,7 +652,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new PostSessionFeedbackConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async createDraftEndOfServiceReport(req: Request, res: Response): Promise<void> {
