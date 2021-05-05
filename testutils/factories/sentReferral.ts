@@ -2,6 +2,7 @@ import { Factory } from 'fishery'
 import SentReferral from '../../server/models/sentReferral'
 import { ReferralFields } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
+import interventionFactory from './intervention'
 
 const exampleReferralFields = () => {
   const serviceCategoryId = serviceCategoryFactory.build().id
@@ -12,6 +13,7 @@ const exampleReferralFields = () => {
     serviceProvider: {
       name: 'Harmony Living',
     },
+    interventionId: interventionFactory.build().id,
     serviceCategoryId,
     serviceCategoryIds: [serviceCategoryId],
     complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',

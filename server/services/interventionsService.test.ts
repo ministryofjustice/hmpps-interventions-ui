@@ -223,6 +223,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
             createdAt: '2020-12-07T20:45:21.986389Z',
             serviceUser: { crn: serviceUserCrn },
+            interventionId,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -236,6 +237,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const referral = await interventionsService.createDraftReferral(token, serviceUserCrn, interventionId)
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.serviceUser.crn).toBe(serviceUserCrn)
+      expect(referral.interventionId).toBe(interventionId)
     })
   })
 
@@ -1032,6 +1034,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       serviceProvider: {
         name: 'Harmony Living',
       },
+      interventionId: '000b2538-914b-4641-a1cc-a293409536bf',
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
