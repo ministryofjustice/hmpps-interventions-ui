@@ -16,6 +16,10 @@ ingress:
 env_details:
   contains_live_data: false
 
+appointments:
+  bookings:
+    enabled: false
+
 env:
   SPRING_PROFILES_ACTIVE: research
   JAVA_OPTS: "-Xmx512m"
