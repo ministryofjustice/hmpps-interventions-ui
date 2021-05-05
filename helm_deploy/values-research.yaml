@@ -23,3 +23,4 @@ env:
   INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
   SENTRY_ENVIRONMENT: "research"
+  APPOINTMENTS_BOOKINGS_ENABLED: false
