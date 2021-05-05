@@ -570,6 +570,8 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
     const appointment = actionPlanAppointmentFactory.build()
 
     interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+    interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
 
     await request(app)
       .get(`/service-provider/action-plan/1/sessions/1/edit`)
@@ -624,6 +626,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
 
       interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
 
       await request(app)
         .post(`/service-provider/action-plan/1/sessions/1/edit`)
@@ -864,6 +867,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
       interventionsService.getActionPlanAppointment.mockResolvedValue(finalAppointment)
       interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
 
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
       await request(app)
         .get(`/service-provider/action-plan/${submittedActionPlan.id}/appointment/2/post-session-feedback/confirmation`)
         .expect(200)
@@ -893,6 +898,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
       interventionsService.getActionPlanAppointment.mockResolvedValue(penultimateAppointment)
       interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(nextAppointment)
 
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
       await request(app)
         .get(
           `/service-provider/action-plan/${submittedActionPlan.id}/appointment/${penultimateAppointment.sessionNumber}/post-session-feedback/confirmation`
@@ -918,6 +925,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 
       interventionsService.getActionPlanAppointment.mockResolvedValue(penultimateAppointment)
       interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
+
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
 
       await request(app)
         .get(

@@ -120,11 +120,12 @@ export default class ReferralsController {
 
   async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
     const presenter = new ServiceUserDetailsPresenter(referral.serviceUser)
     const view = new ServiceUserDetailsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async confirmServiceUserDetails(req: Request, res: Response): Promise<void> {
@@ -138,15 +139,15 @@ export default class ReferralsController {
       throw new Error('No service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new ReferralFormPresenter(referral, serviceCategory.name)
     const view = new ReferralFormView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -156,12 +157,11 @@ export default class ReferralsController {
       throw new Error('Attempting to view relevant sentence without service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
-
-    const convictions = await this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn)
+    const [serviceCategory, serviceUser, convictions] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
+    ])
 
     if (convictions.length < 1) {
       throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
@@ -170,7 +170,7 @@ export default class ReferralsController {
     const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions)
     const view = new RelevantSentenceView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -204,12 +204,11 @@ export default class ReferralsController {
         throw new Error('Attempting to view relevant sentence without service category selected')
       }
 
-      const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.serviceCategoryId
-      )
-
-      const convictions = await this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn)
+      const [serviceCategory, serviceUser, convictions] = await Promise.all([
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+        this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
+      ])
 
       if (convictions.length < 1) {
         throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
@@ -219,7 +218,7 @@ export default class ReferralsController {
       const view = new RelevantSentenceView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -230,15 +229,15 @@ export default class ReferralsController {
       throw new Error('Attempting to view complexity level without service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new ComplexityLevelPresenter(referral, serviceCategory)
     const view = new ComplexityLevelView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
@@ -272,16 +271,16 @@ export default class ReferralsController {
         throw new Error('Attempting to view complexity level without service category selected')
       }
 
-      const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.serviceCategoryId
-      )
+      const [serviceCategory, serviceUser] = await Promise.all([
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      ])
 
       const presenter = new ComplexityLevelPresenter(referral, serviceCategory, error, req.body)
       const view = new ComplexityLevelView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -292,16 +291,16 @@ export default class ReferralsController {
       throw new Error('Attempting to view completion deadline without service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
 
     const view = new CompletionDeadlineView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
@@ -335,16 +334,16 @@ export default class ReferralsController {
         throw new Error('Attempting to view completion deadline without service category selected')
       }
 
-      const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.serviceCategoryId
-      )
+      const [serviceCategory, serviceUser] = await Promise.all([
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      ])
 
       const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, error, req.body)
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -355,16 +354,16 @@ export default class ReferralsController {
       throw new Error('Attempting to view further information without service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new FurtherInformationPresenter(referral, serviceCategory)
 
     const view = new FurtherInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateFurtherInformation(req: Request, res: Response): Promise<void> {
@@ -396,16 +395,16 @@ export default class ReferralsController {
         throw new Error('Attempting to view complexity level without service category selected')
       }
 
-      const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.serviceCategoryId
-      )
+      const [serviceCategory, serviceUser] = await Promise.all([
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      ])
 
       const presenter = new FurtherInformationPresenter(referral, serviceCategory, error, req.body)
       const view = new FurtherInformationView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -416,15 +415,15 @@ export default class ReferralsController {
       throw new Error('Attempting to view desired outcomes without service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new DesiredOutcomesPresenter(referral, serviceCategory)
     const view = new DesiredOutcomesView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
@@ -458,26 +457,28 @@ export default class ReferralsController {
         throw new Error('Attempting to view desired outcomes without service category selected')
       }
 
-      const serviceCategory = await this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.serviceCategoryId
-      )
+      const [serviceCategory, serviceUser] = await Promise.all([
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      ])
 
       const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, error, req.body)
       const view = new DesiredOutcomesView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
   async viewNeedsAndRequirements(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
     const presenter = new NeedsAndRequirementsPresenter(referral)
     const view = new NeedsAndRequirementsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateNeedsAndRequirements(req: Request, res: Response): Promise<void> {
@@ -503,20 +504,23 @@ export default class ReferralsController {
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
       const presenter = new NeedsAndRequirementsPresenter(referral, error, req.body)
       const view = new NeedsAndRequirementsView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
     const presenter = new RiskInformationPresenter(referral)
     const view = new RiskInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateRiskInformation(req: Request, res: Response): Promise<void> {
@@ -543,12 +547,13 @@ export default class ReferralsController {
         res.locals.user.token.accessToken,
         req.params.id
       )
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
       const presenter = new RiskInformationPresenter(referral, error, req.body)
       const view = new RiskInformationView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -559,15 +564,15 @@ export default class ReferralsController {
       throw new Error('Attempting to view RAR days without service category selected')
     }
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new RarDaysPresenter(referral, serviceCategory)
     const view = new RarDaysView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async updateRarDays(req: Request, res: Response): Promise<void> {
@@ -603,11 +608,12 @@ export default class ReferralsController {
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/further-information`)
     } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
       const presenter = new RarDaysPresenter(referral, serviceCategory, error, req.body)
       const view = new RarDaysView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, null)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -616,15 +622,15 @@ export default class ReferralsController {
     if (referral.serviceCategoryId === null) {
       throw new Error('Attempting to check answers without service category selected')
     }
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      res.locals.user.token.accessToken,
-      referral.serviceCategoryId
-    )
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
 
     const presenter = new CheckAnswersPresenter(referral, serviceCategory)
     const view = new CheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {
@@ -635,10 +641,11 @@ export default class ReferralsController {
 
   async viewConfirmation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new ConfirmationPresenter(referral)
     const view = new ConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }
