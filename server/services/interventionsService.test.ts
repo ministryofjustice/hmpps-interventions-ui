@@ -995,6 +995,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         name: 'Harmony Living',
       },
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+      serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       furtherInformation: 'Some information about the service user',
       relevantSentenceId: 2600295124,

@@ -4,13 +4,16 @@ import { ReferralFields } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 
 const exampleReferralFields = () => {
+  const serviceCategoryId = serviceCategoryFactory.build().id
+
   return {
     createdAt: '2020-12-07T20:45:21.986389Z',
     completionDeadline: '2021-04-01',
     serviceProvider: {
       name: 'Harmony Living',
     },
-    serviceCategoryId: serviceCategoryFactory.build().id,
+    serviceCategoryId,
+    serviceCategoryIds: [serviceCategoryId],
     complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
     furtherInformation: 'Some information about the service user',
     relevantSentenceId: 2600295124,

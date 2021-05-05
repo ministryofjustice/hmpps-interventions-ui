@@ -8,6 +8,7 @@ export interface ReferralFields {
   completionDeadline: string
   serviceProvider: ServiceProvider
   serviceCategoryId: string
+  serviceCategoryIds: string[]
   complexityLevelId: string
   furtherInformation: string
   relevantSentenceId: number
