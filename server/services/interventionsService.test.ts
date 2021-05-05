@@ -799,6 +799,44 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.usingRarDays).toBe(false)
       expect(referral.maximumRarDays).toBeNull()
     })
+
+    it('returns the updated referral when setting serviceCategoryIds', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962',
+        uponReceiving: 'a PATCH request to update serviceCategoryIds',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceCategoryIds: ['c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f', 'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12'],
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+            serviceCategoryIds: ['c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f', 'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12'],
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
+        serviceCategoryIds: ['c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f', 'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12'],
+      })
+      expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
+      expect(referral.serviceCategoryIds).toEqual([
+        'c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f',
+        'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12',
+      ])
+    })
   })
 
   describe('getServiceCategory', () => {
