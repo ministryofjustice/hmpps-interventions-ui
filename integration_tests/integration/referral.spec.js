@@ -133,7 +133,6 @@ describe('Referral form', () => {
     cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
     cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
     cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
-    cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
 
     cy.contains('Confirm service user’s personal details').click()
 
@@ -177,7 +176,6 @@ describe('Referral form', () => {
     cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
     cy.get('[data-cy=status]').eq(1).contains('NOT STARTED', { matchCase: false })
     cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
-    cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
 
     cy.contains('Select the relevant sentence for the accommodation referral').click()
 
@@ -230,8 +228,7 @@ describe('Referral form', () => {
 
     cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
     cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
-    cy.get('[data-cy=status]').eq(2).contains('COMPLETED', { matchCase: false })
-    cy.get('[data-cy=status]').eq(3).contains('COMPLETED', { matchCase: false })
+    cy.get('[data-cy=status]').eq(2).contains('NOT STARTED', { matchCase: false })
 
     cy.get('a').contains('Check your answers').click()
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)

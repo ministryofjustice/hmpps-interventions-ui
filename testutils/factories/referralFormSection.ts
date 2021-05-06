@@ -1,62 +1,64 @@
 import { Factory } from 'fishery'
-import { ReferralFormStatus, ReferralFormSectionPresenter } from '../../server/routes/referrals/referralFormPresenter'
+import { ReferralFormSectionPresenter, ReferralFormStatus } from '../../server/routes/referrals/referralFormPresenter'
 
 class ReferralFormSectionFactory extends Factory<ReferralFormSectionPresenter> {
-  status(referralFormStatus: ReferralFormStatus) {
-    return this.params({ status: referralFormStatus })
-  }
-
-  reviewServiceUser() {
+  reviewServiceUser(
+    referralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    riskInformationUrl: string | null = null,
+    needsAndRequirementsUrl: string | null = null
+  ) {
     return this.params({
       type: 'single',
       title: 'Review service user’s information',
       number: '1',
-      status: ReferralFormStatus.NotStarted,
+      status: referralFormStatus,
       tasks: [
         { title: 'Confirm service user’s personal details', url: 'service-user-details' },
-        { title: 'Service user’s risk information', url: 'risk-information' },
-        { title: 'Service user’s needs and requirements', url: 'needs-and-requirements' },
+        { title: 'Service user’s risk information', url: riskInformationUrl },
+        { title: 'Service user’s needs and requirements', url: needsAndRequirementsUrl },
       ],
     })
   }
 
-  interventionDetails(serviceCategoryName: string) {
+  interventionDetails(
+    serviceCategoryName: string,
+    referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
+    relevantSentenceUrl: string | null = null,
+    desiredOutcomesUrl: string | null = null,
+    complexityLevelUrl: string | null = null,
+    completionDateUrl: string | null = null,
+    rarDaysUrl: string | null = null,
+    furtherInformationUrl: string | null = null
+  ) {
     return this.params({
       type: 'single',
       title: `Add ${serviceCategoryName} referral details`,
       number: '2',
-      status: ReferralFormStatus.CannotStartYet,
+      status: referralFormStatus,
       tasks: [
-        { title: 'Select the relevant sentence for the social inclusion referral', url: 'relevant-sentence' },
-        { title: 'Select desired outcomes', url: 'desired-outcomes' },
-        { title: 'Select required complexity level', url: 'complexity-level' },
+        { title: 'Select the relevant sentence for the social inclusion referral', url: relevantSentenceUrl },
+        { title: 'Select desired outcomes', url: desiredOutcomesUrl },
+        { title: 'Select required complexity level', url: complexityLevelUrl },
         {
           title: 'What date does the social inclusion service need to be completed by?',
-          url: 'completion-deadline',
+          url: completionDateUrl,
         },
-        { title: 'Enter RAR days used', url: 'rar-days' },
-        { title: 'Further information for service provider', url: 'further-information' },
+        { title: 'Enter RAR days used', url: rarDaysUrl },
+        { title: 'Further information for service provider', url: furtherInformationUrl },
       ],
     })
   }
 
-  responsibleOfficerDetails() {
-    return this.params({
-      type: 'single',
-      title: 'Review responsible officer’s information',
-      number: '3',
-      status: ReferralFormStatus.CannotStartYet,
-      tasks: [{ title: 'Responsible officer information', url: null }],
-    })
-  }
-
-  checkAnswers() {
+  checkAnswers(
+    referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
+    checkAnswersUrl: string | null = null
+  ) {
     return this.params({
       type: 'single',
       title: 'Check your answers',
-      number: '4',
-      status: ReferralFormStatus.CannotStartYet,
-      tasks: [{ title: 'Check your answers', url: null }],
+      number: '3',
+      status: referralFormStatus,
+      tasks: [{ title: 'Check your answers', url: checkAnswersUrl }],
     })
   }
 }

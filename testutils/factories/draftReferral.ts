@@ -20,21 +20,8 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     return this.params({ completionDeadline: '2021-08-24' })
   }
 
-  interventionDetailsSet() {
-    return this.params({
-      relevantSentenceId: 123456789,
-      desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
-      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-      completionDeadline: '2021-08-24',
-      usingRarDays: false,
-    })
-  }
-
   serviceUserDetailsSet() {
-    return this.serviceUserSelected().params({
-      needsInterpreter: false,
-      hasAdditionalResponsibilities: false,
-    })
+    return this.serviceUserSelected().riskInformation().needsAndRequirements()
   }
 
   serviceUserSelected() {
@@ -51,6 +38,57 @@ class DraftReferralFactory extends Factory<DraftReferral> {
         religionOrBelief: 'Agnostic',
         disabilities: ['Autism spectrum condition', 'sciatica'],
       },
+    })
+  }
+
+  riskInformation() {
+    return this.params({
+      additionalRiskInformation: '',
+    })
+  }
+
+  needsAndRequirements() {
+    return this.params({
+      additionalNeedsInformation: '',
+      accessibilityNeeds: '',
+      needsInterpreter: false,
+      hasAdditionalResponsibilities: false,
+    })
+  }
+
+  relevantSentence() {
+    return this.params({
+      relevantSentenceId: 123456789,
+    })
+  }
+
+  desiredOutcomes() {
+    return this.params({
+      desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+    })
+  }
+
+  complexityLevel() {
+    return this.params({
+      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+    })
+  }
+
+  completionDate() {
+    return this.params({
+      completionDeadline: '2021-08-24',
+    })
+  }
+
+  rarDays() {
+    return this.params({
+      usingRarDays: false,
+    })
+  }
+
+  furtherInformation() {
+    return this.params({
+      furtherInformation: '',
     })
   }
 }
