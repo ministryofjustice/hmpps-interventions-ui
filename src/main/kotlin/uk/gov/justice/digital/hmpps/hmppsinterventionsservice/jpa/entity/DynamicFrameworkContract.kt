@@ -32,5 +32,5 @@ data class DynamicFrameworkContract(
   @NotNull val allowsFemale: Boolean,
   @NotNull val allowsMale: Boolean,
 
-  var contractReference: String?,
+  val contractReference: String,
 )

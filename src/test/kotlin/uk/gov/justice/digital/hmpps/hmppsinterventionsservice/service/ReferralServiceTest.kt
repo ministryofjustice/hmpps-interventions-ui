@@ -20,8 +20,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Interve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
@@ -44,6 +46,8 @@ class ReferralServiceTest @Autowired constructor(
   val interventionRepository: InterventionRepository,
   val cancellationReasonRepository: CancellationReasonRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val actionPlanRepository: ActionPlanRepository,
+  val endOfServiceReportRepository: EndOfServiceReportRepository,
 ) {
 
   private val userFactory = AuthUserFactory(entityManager)
@@ -366,19 +370,21 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `get all sent referrals returns referrals for multiple service providers`() {
+    actionPlanAppointmentRepository.deleteAll()
+    actionPlanRepository.deleteAll()
+    endOfServiceReportRepository.deleteAll()
+    referralRepository.deleteAll()
     listOf("PROVIDER1", "PROVIDER2").forEach {
-      SampleData.persistReferral(
-        entityManager,
-        SampleData.sampleReferral(
-          "X123456",
-          it,
-          sentAt = OffsetDateTime.now(),
-          sentBy = AuthUser("123456", "user_id", "user_name"),
-          referenceNumber = "REF123"
+      referralFactory.createSent(
+        intervention = interventionFactory.create(
+          contract = contractFactory.create(
+            serviceProvider = serviceProviderFactory.create(
+              name = it
+            )
+          )
         )
       )
     }
-
     assertThat(referralService.getAllSentReferrals().size).isEqualTo(2)
   }
 
@@ -401,7 +407,11 @@ class ReferralServiceTest @Autowired constructor(
   fun `get sent referrals sent to SP org returns filtered referrals`() {
     val spOrgs = listOf(serviceProviderFactory.create("sp_org_1"), serviceProviderFactory.create("sp_org_2"))
     spOrgs.forEach {
-      val intervention = interventionFactory.create(contract = contractFactory.create(serviceProvider = it))
+      val intervention = interventionFactory.create(
+        contract = contractFactory.create(
+          serviceProvider = it
+        )
+      )
       referralFactory.createSent(intervention = intervention)
     }
 
