@@ -81,6 +81,24 @@ class CommunityAPIClientTest {
   }
 
   @Test
+  fun `makes async patch request successfully`() {
+
+    communityAPIClient = CommunityAPIClient(
+      WebClient.builder().exchangeFunction(exchangeFunction).build()
+    )
+    whenever(exchangeFunction.exchange(any())).thenReturn(Mono.empty())
+
+    communityAPIClient.makeAsyncPatchRequest("/uriValue", referralSentEvent)
+
+    verify(exchangeFunction, times(1)).exchange(any())
+    val requestCaptor = argumentCaptor<ClientRequest>()
+    verify(exchangeFunction).exchange(requestCaptor.capture())
+    val requestDetails = requestCaptor.firstValue
+
+    assertThat("/uriValue").isEqualTo(requestDetails.url().toString())
+  }
+
+  @Test
   fun `error was logged on exception during async post request`() {
 
     communityAPIClient = CommunityAPIClient(
@@ -110,7 +128,7 @@ class CommunityAPIClientTest {
 
     val response = communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
 
-    assertThat(response?.appointmentId).isEqualTo(1234L)
+    assertThat(response.appointmentId).isEqualTo(1234L)
 
     verify(exchangeFunction, times(1)).exchange(any())
     val requestCaptor = argumentCaptor<ClientRequest>()

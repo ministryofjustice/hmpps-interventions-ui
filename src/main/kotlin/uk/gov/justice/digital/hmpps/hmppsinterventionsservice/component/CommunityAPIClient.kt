@@ -25,7 +25,19 @@ class CommunityAPIClient(
       .subscribe()
   }
 
-  fun <T : Any> makeSyncPostRequest(uri: String, requestBody: Any, responseBodyClass: Class<T>): T? {
+  fun makeAsyncPatchRequest(uri: String, requestBody: Any) {
+    communityApiWebClient.patch().uri(uri)
+      .body(Mono.just(requestBody), requestBody::class.java)
+      .retrieve()
+      .bodyToMono(Unit::class.java)
+      .onErrorResume { e ->
+        handleResponse(e, requestBody)
+        Mono.empty()
+      }
+      .subscribe()
+  }
+
+  fun <T : Any> makeSyncPostRequest(uri: String, requestBody: Any, responseBodyClass: Class<T>): T {
     return communityApiWebClient.post().uri(uri)
       .body(Mono.just(requestBody), requestBody::class.java)
       .retrieve()

@@ -36,6 +36,7 @@ data class ActionPlanAppointment(
   // Activities
   var appointmentTime: OffsetDateTime? = null,
   var durationInMinutes: Int? = null,
+  var deliusAppointmentId: Long? = null,
 
   // Status
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,

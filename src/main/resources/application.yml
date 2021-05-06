@@ -88,11 +88,13 @@ interventions-ui:
     view-appointment: "/probation-practitioner/referrals/{id}/progress"
     pp-referral-progress: "/probation-practitioner/referrals/{id}/progress"
     submit-end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
+    session-feedback: "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback"
 
 community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
     book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments/context/{contextName}"
+    appointment-outcome-request: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}"
   appointments:
     office-location: CRSSHEF
   integration-context: commissioned-rehabilitation-services

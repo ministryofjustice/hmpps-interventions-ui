@@ -48,14 +48,17 @@ internal class CommunityAPIBookingServiceTest {
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))
       .thenReturn(response)
 
-    communityAPIBookingService.book(appointment, now, 60)
+    val deliusAppointmentId = communityAPIBookingService.book(appointment, now, 60)
 
+    assertThat(deliusAppointmentId).isEqualTo(1234L)
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java)
   }
 
   @Test
   fun `does nothing if not initial booking`() {
-    communityAPIBookingService.book(makeAppointment(null, null), now(), null)
+    val deliusAppointmentId = communityAPIBookingService.book(makeAppointment(null, null), now(), null)
+
+    assertThat(deliusAppointmentId).isNull()
     verifyZeroInteractions(communityAPIClient)
   }
 

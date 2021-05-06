@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class ActionPlanAppointmentFactory(em: TestEntityManager?) : EntityFactory(em) {
+class ActionPlanAppointmentFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val actionPlanFactory = ActionPlanFactory(em)
 
   fun create(
@@ -18,6 +18,7 @@ class ActionPlanAppointmentFactory(em: TestEntityManager?) : EntityFactory(em) {
     createdAt: OffsetDateTime = OffsetDateTime.now(),
     createdBy: AuthUser = actionPlan.createdBy,
     attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
     attendanceSubmittedAt: OffsetDateTime? = null,
     notifyPPOfAttendanceBehaviour: Boolean? = null,
     sessionFeedbackSubmittedAt: OffsetDateTime? = null,
@@ -30,6 +31,7 @@ class ActionPlanAppointmentFactory(em: TestEntityManager?) : EntityFactory(em) {
         createdAt = createdAt,
         createdBy = createdBy,
         attended = attended,
+        additionalAttendanceInformation = additionalAttendanceInformation,
         attendanceSubmittedAt = attendanceSubmittedAt,
         notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
         sessionFeedbackSubmittedAt = sessionFeedbackSubmittedAt,

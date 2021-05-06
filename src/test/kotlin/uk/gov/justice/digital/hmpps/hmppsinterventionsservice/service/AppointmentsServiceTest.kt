@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
@@ -93,7 +94,6 @@ internal class AppointmentsServiceTest {
 
   @Test
   fun `updates an appointment`() {
-    val startTimeOfTest = OffsetDateTime.now()
     val actionPlanId = UUID.randomUUID()
     val sessionNumber = 1
     val appointmentTime = OffsetDateTime.now()
@@ -126,6 +126,7 @@ internal class AppointmentsServiceTest {
     val actionPlan = SampleData.sampleActionPlan()
     val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
 
+    whenever(communityAPIBookingService.book(actionPlanAppointment, appointmentTime, durationInMinutes)).thenReturn(999L)
     whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(actionPlanAppointment)
     whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
     whenever(actionPlanAppointmentRepository.save(any())).thenReturn(actionPlanAppointment)
@@ -139,6 +140,48 @@ internal class AppointmentsServiceTest {
 
     assertThat(updatedAppointment).isEqualTo(actionPlanAppointment)
     verify(communityAPIBookingService).book(actionPlanAppointment, appointmentTime, durationInMinutes)
+    verify(actionPlanAppointmentRepository).save(
+      ArgumentMatchers.argThat { (
+        _, _, _, _, _, _, _, _, _, _, deliusAppointmentIdArg
+      ) ->
+        (
+          deliusAppointmentIdArg == 999L
+          )
+      }
+    )
+  }
+
+  @Test
+  fun `does not make a booking when an appointment is updated because timings aren't present`() {
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = 1
+    val appointmentTime = OffsetDateTime.now()
+    val durationInMinutes = 15
+    val createdByUser = SampleData.sampleAuthUser()
+    val actionPlan = SampleData.sampleActionPlan()
+    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+
+    whenever(communityAPIBookingService.book(actionPlanAppointment, appointmentTime, durationInMinutes)).thenReturn(null)
+    whenever(actionPlanAppointmentRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(actionPlanAppointment)
+    whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
+    whenever(actionPlanAppointmentRepository.save(any())).thenReturn(actionPlanAppointment)
+
+    appointmentsService.updateAppointment(
+      actionPlanId,
+      sessionNumber,
+      appointmentTime,
+      durationInMinutes
+    )
+
+    verify(actionPlanAppointmentRepository).save(
+      ArgumentMatchers.argThat { (
+        _, _, _, _, _, _, _, _, _, _, deliusAppointmentIdArg
+      ) ->
+        (
+          deliusAppointmentIdArg == null
+          )
+      }
+    )
   }
 
   @Test
@@ -329,6 +372,7 @@ internal class AppointmentsServiceTest {
 
     verify(appointmentEventPublisher).attendanceRecordedEvent(appointment, false)
     verify(appointmentEventPublisher).behaviourRecordedEvent(appointment, true)
+    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(appointment, true)
   }
 
   @Test
