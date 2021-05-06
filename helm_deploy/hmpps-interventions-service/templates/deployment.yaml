@@ -43,14 +43,14 @@ spec:
             httpGet:
               path: /health/liveness
               port: {{ .Values.image.ports.app }}
-            initialDelaySeconds: 10
+            initialDelaySeconds: 45
             timeoutSeconds: 5
             failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /health/readiness
               port: {{ .Values.image.ports.app }}
-            initialDelaySeconds: 10
+            initialDelaySeconds: 45
             timeoutSeconds: 5
             failureThreshold: 5
   {{ include "deployment.envs" . | nindent 10 }}
