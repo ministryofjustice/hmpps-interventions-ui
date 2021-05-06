@@ -1,10 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.fasterxml.jackson.databind.node.BooleanNode.valueOf
-import com.fasterxml.jackson.databind.node.TextNode.valueOf
-import com.github.fge.jackson.jsonpointer.JsonPointer.of
-import com.github.fge.jsonpatch.JsonPatch
-import com.github.fge.jsonpatch.ReplaceOperation
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
@@ -61,7 +56,7 @@ class CommunityAPIReferralEventService(
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
-  @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIPatchAppointmentLocation: String,
+  @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
 ) : ApplicationListener<AppointmentEvent>, CommunityAPIService {
@@ -81,7 +76,7 @@ class CommunityAPIAppointmentEventService(
           event.appointment.notifyPPOfAttendanceBehaviour ?: false
         )
 
-        val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIPatchAppointmentLocation)
+        val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
           .buildAndExpand(event.appointment.actionPlan.referral.serviceUserCRN, event.appointment.deliusAppointmentId, integrationContext)
           .toString()
 
