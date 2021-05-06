@@ -21,6 +21,8 @@ spec:
             env:
               - name: LOCAL_EXPORT_DESTINATION
                 value: export
+              - name: PGPORT
+                value: 5432
               - name: PGHOST
                 valueFrom:
                   secretKeyRef:
