@@ -61,7 +61,7 @@ class CommunityAPIReferralEventService(
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
-  @Value("\${community-api.locations.patch-appointment}") private val communityAPIPatchAppointmentLocation: String,
+  @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIPatchAppointmentLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
 ) : ApplicationListener<AppointmentEvent>, CommunityAPIService {
@@ -75,19 +75,17 @@ class CommunityAPIAppointmentEventService(
           .buildAndExpand(event.appointment.actionPlan.referral.id, event.appointment.sessionNumber)
           .toString()
 
-        val jsonPatch = JsonPatch(
-          listOf(
-            ReplaceOperation(of("notes"), valueOf(url)),
-            ReplaceOperation(of("attended"), valueOf(event.appointment.attended!!.name)),
-            ReplaceOperation(of("notifyPPOfAttendanceBehaviour"), valueOf(event.appointment.notifyPPOfAttendanceBehaviour ?: false))
-          )
+        val request = AppointmentOutcomeRequest(
+          url,
+          event.appointment.attended!!.name,
+          event.appointment.notifyPPOfAttendanceBehaviour ?: false
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIPatchAppointmentLocation)
           .buildAndExpand(event.appointment.actionPlan.referral.serviceUserCRN, event.appointment.deliusAppointmentId, integrationContext)
           .toString()
 
-        communityAPIClient.makeAsyncPatchRequest(communityApiSentReferralPath, jsonPatch)
+        communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
       }
       else -> {}
     }
@@ -100,4 +98,10 @@ data class ReferRequest(
   val sentenceId: Long,
   val notes: String,
   val context: String,
+)
+
+data class AppointmentOutcomeRequest(
+  val notes: String,
+  val attended: String,
+  val notifyPPOfAttendanceBehaviour: Boolean,
 )

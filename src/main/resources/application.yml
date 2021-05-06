@@ -94,7 +94,7 @@ community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/sent"
     book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments/context/{contextName}"
-    patch-appointment: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/context/{contextName}"
+    appointment-outcome-request: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}"
   appointments:
     office-location: CRSSHEF
   integration-context: commissioned-rehabilitation-services
