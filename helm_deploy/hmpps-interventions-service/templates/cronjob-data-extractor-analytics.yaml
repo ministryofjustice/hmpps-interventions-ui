@@ -12,6 +12,7 @@ spec:
           containers:
           - name: data-extractor-analytics
             image: ministryofjustice/data-engineering-data-extractor:develop
+            imagePullPolicy: Always
             {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
             command: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
             {{ else }}
