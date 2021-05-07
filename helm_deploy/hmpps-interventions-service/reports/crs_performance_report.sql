@@ -2,7 +2,7 @@ COPY (
   SELECT
     r.reference_number      AS referral_ref,
     r.id                    AS referral_id,
-    'coming-later'          AS crs_contract_reference,
+    c.contract_reference    AS crs_contract_reference,
     'coming-later'          AS crs_contract_type,
     prime.id                AS crs_provider_id,
     r.sent_by_id            AS referring_officer_id,
