@@ -17,6 +17,13 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     return this.params({ serviceCategoryId: resolvedServiceCategoryId })
   }
 
+  serviceCategoriesSelected(serviceCategoryIds?: string[]) {
+    const resolvedServiceCategoryIds =
+      serviceCategoryIds ?? serviceCategoryFactory.buildList(3).map(category => category.id)
+
+    return this.params({ serviceCategoryIds: resolvedServiceCategoryIds })
+  }
+
   completionDeadlineSet() {
     return this.params({ completionDeadline: '2021-08-24' })
   }

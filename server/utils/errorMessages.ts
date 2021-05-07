@@ -15,6 +15,9 @@ export default {
     invalidDate: 'The date by which the service needs to be completed must be a real date',
     mustBeInFuture: 'The date by which the service needs to be completed must be in the future',
   },
+  serviceCategories: {
+    empty: 'At least one service type must be selected',
+  },
   complexityLevel: {
     empty: 'Select a complexity level',
   },

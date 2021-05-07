@@ -11,6 +11,7 @@ import apiConfig from '../../config'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -782,6 +783,62 @@ describe('POST /referrals/:id/relevant-sentence', () => {
 
     expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
       relevantSentenceId: 2500284169,
+    })
+  })
+})
+
+describe('GET /referrals/:id/service-categories', () => {
+  it('renders a form page', async () => {
+    const serviceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+
+    const intervention = interventionFactory.build({
+      serviceCategories: [serviceCategory],
+    })
+
+    const referral = draftReferralFactory.serviceUserSelected().serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+
+    await request(app)
+      .get('/referrals/1/service-categories')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What service types are you referring Alex to?')
+      })
+  })
+})
+
+describe('POST /referrals/:id/service-categories', () => {
+  fit('updates the referral on the backend and redirects to the next question', async () => {
+    const serviceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+
+    const intervention = interventionFactory.build({
+      serviceCategories: [serviceCategory],
+    })
+
+    const referral = draftReferralFactory.serviceUserSelected().serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+
+    await request(app)
+      .post('/referrals/1/service-categories')
+      .type('form')
+      .send({ 'service-category-ids[]': [serviceCategory.id] })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+      serviceCategoryIds: [serviceCategory.id],
     })
   })
 })
