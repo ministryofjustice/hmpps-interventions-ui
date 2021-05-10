@@ -13,6 +13,7 @@ orbs:
   kubernetes: circleci/kubernetes@0.11.2
   mem: circleci/rememborb@0.0.1
   snyk: snyk/snyk@0.0.12
+  veracode: orb-01scan/sast-orb@0.0.9
 
 _snyk_options: &snyk_options
   snyk-scan: true
@@ -155,6 +156,30 @@ jobs:
           fail-on-issues: << parameters.snyk-fail-build >>
           additional-arguments: << parameters.snyk-args >>
 
+  assemble:
+    executor: hmpps/java
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run: ./gradlew assemble --console=plain
+      - persist_to_workspace:
+          root: build/libs
+          paths:
+            - hmpps-interventions-service-*.jar
+
+  appsec_scan:
+    executor: veracode/default
+    steps:
+      - attach_workspace:
+          at: ./build
+      - run: mv -v ./build/hmpps-interventions-service-*.jar ./build/hmpps-interventions-service.jar
+      - veracode/policy-scan:
+          filepath: ./build/hmpps-interventions-service.jar
+          teams: hmpps-interventions
+
   reset_research_db:
     docker:
       - image: 'cimg/base:stable'
@@ -289,6 +314,10 @@ workflows:
           name: vulnerability_scan_and_monitor
           monitor: true
           <<: *snyk_options
+      - assemble
+      - appsec_scan:
+          requires: [assemble]
+          context: [veracode-credentials]
       - hmpps/build_docker:
           publish: false
           <<: *snyk_options
