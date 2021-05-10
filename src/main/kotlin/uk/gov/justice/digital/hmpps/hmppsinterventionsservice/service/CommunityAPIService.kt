@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import java.time.OffsetDateTime
-import java.util.UUID
 
 interface CommunityAPIService
 
@@ -34,15 +33,14 @@ class CommunityAPIReferralEventService(
           .toString()
 
         val referRequest = ReferRequest(
+          "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
           event.referral.sentAt!!,
-          event.referral.intervention.dynamicFrameworkContract.serviceCategory.id,
           event.referral.relevantSentenceId!!,
           url,
-          integrationContext
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPISentReferralLocation)
-          .buildAndExpand(event.referral.serviceUserCRN)
+          .buildAndExpand(event.referral.serviceUserCRN, integrationContext)
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, referRequest)
@@ -88,11 +86,10 @@ class CommunityAPIAppointmentEventService(
 }
 
 data class ReferRequest(
-  val sentAt: OffsetDateTime,
-  val serviceCategoryId: UUID,
+  val contractType: String,
+  val startedAt: OffsetDateTime,
   val sentenceId: Long,
   val notes: String,
-  val context: String,
 )
 
 data class AppointmentOutcomeRequest(
