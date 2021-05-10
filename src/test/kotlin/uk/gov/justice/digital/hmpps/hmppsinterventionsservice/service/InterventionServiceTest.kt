@@ -44,9 +44,9 @@ class InterventionServiceTest @Autowired constructor(
   fun setup() {
     actionPlanAppointmentRepository.deleteAll()
     actionPlanRepository.deleteAll()
+    endOfServiceReportRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
-    endOfServiceReportRepository.deleteAll()
     authUserRepository.deleteAll()
   }
 

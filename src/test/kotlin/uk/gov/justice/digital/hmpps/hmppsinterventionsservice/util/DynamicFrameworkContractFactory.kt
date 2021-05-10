@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.NPSRegion
@@ -25,6 +26,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
     allowsFemale: Boolean = true,
     npsRegion: NPSRegion? = null,
     pccRegion: PCCRegion? = null,
+    contractReference: String = RandomStringUtils.randomAlphanumeric(8),
   ): DynamicFrameworkContract {
     return save(
       DynamicFrameworkContract(
@@ -39,6 +41,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
         allowsFemale = allowsFemale,
         npsRegion = npsRegion,
         pccRegion = pccRegion,
+        contractReference = contractReference,
       )
     )
   }

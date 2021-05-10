@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
@@ -69,7 +70,7 @@ class SampleData {
       assignedTo: AuthUser? = null,
       assignedAt: OffsetDateTime = OffsetDateTime.now(),
       actionPlan: ActionPlan? = null,
-      endOfServiceReport: EndOfServiceReport? = null
+      endOfServiceReport: EndOfServiceReport? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -122,6 +123,7 @@ class SampleData {
       serviceProvider: ServiceProvider,
       npsRegion: NPSRegion? = null,
       pccRegion: PCCRegion? = null,
+      contractReference: String = RandomStringUtils.randomAlphanumeric(8),
     ): DynamicFrameworkContract {
       return DynamicFrameworkContract(
         id = id ?: UUID.randomUUID(),
@@ -134,7 +136,8 @@ class SampleData {
         allowsMale = true,
         allowsFemale = true,
         npsRegion = npsRegion,
-        pccRegion = pccRegion
+        pccRegion = pccRegion,
+        contractReference = contractReference,
       )
     }
     fun sampleEndOfServiceReport(
