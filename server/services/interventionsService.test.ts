@@ -521,7 +521,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.relevantSentenceId).toEqual(2600295124)
     })
 
-    it('returns the updated referral when selecting desired outcomes', async () => {
+    it('returns the updated referral when selecting desired outcomes on a single-service referral', async () => {
       await provider.addInteraction({
         state:
           'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected',
@@ -555,6 +555,63 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
       expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
       expect(referral.desiredOutcomesIds).toEqual([
+        '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        '65924ac6-9724-455b-ad30-906936291421',
+      ])
+    })
+
+    it('returns the updated referral when selecting desired outcomes on a cohort referral', async () => {
+      const cohortReferralId = '06716f8e-f507-42d4-bdcc-44c90e18dbd7'
+
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of ${cohortReferralId}, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to update desired outcomes IDs',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/${cohortReferralId}`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            cohortDesiredOutcomes: [
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              },
+            ],
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: cohortReferralId,
+            cohortDesiredOutcomes: [
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              },
+            ],
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, cohortReferralId, {
+        cohortDesiredOutcomes: [
+          {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+        ],
+      })
+
+      expect(referral.id).toBe(cohortReferralId)
+      expect(referral.cohortDesiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.cohortDesiredOutcomes![0].desiredOutcomesIds).toEqual([
         '301ead30-30a4-4c7c-8296-2768abfb59b5',
         '65924ac6-9724-455b-ad30-906936291421',
       ])
