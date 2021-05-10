@@ -1,3 +1,4 @@
+import CohortDesiredOutcomes from './cohortDesiredOutcomes'
 import ServiceProvider from './serviceProvider'
 import ServiceUser from './serviceUser'
 
@@ -14,6 +15,7 @@ export interface ReferralFields {
   furtherInformation: string
   relevantSentenceId: number
   desiredOutcomesIds: string[]
+  cohortDesiredOutcomes: CohortDesiredOutcomes[]
   additionalNeedsInformation: string
   accessibilityNeeds: string
   needsInterpreter: boolean
