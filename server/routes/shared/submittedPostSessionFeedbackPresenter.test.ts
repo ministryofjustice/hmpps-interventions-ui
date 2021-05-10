@@ -1,6 +1,6 @@
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
-import AuthUser from '../../models/authUser'
+import User from '../../models/hmppsAuth/user'
 import SubmittedPostSessionFeedbackPresenter from './submittedPostSessionFeedbackPresenter'
 
 describe(SubmittedPostSessionFeedbackPresenter, () => {
@@ -20,7 +20,7 @@ describe(SubmittedPostSessionFeedbackPresenter, () => {
   describe('sessionDetailsSummary', () => {
     describe('when a caseworker is passed in', () => {
       it('extracts the date and time from the appointmentTime and puts it in a SummaryList format alongside the caseworker name', () => {
-        const caseworker: AuthUser = {
+        const caseworker: User = {
           username: 'Kay.Swerker',
           authSource: 'Delius',
           userId: '91229a16-b5f4-4784-942e-a484a97ac865',

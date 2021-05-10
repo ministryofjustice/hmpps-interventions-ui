@@ -1,4 +1,4 @@
-import type HmppsAuthClient from '../data/hmppsAuthClient'
+import type HmppsAuthService from './hmppsAuthService'
 import RestClient from '../data/restClient'
 import config from '../config'
 import logger from '../../log'
@@ -75,14 +75,14 @@ interface OrderType {
 }
 
 export default class OffenderAssessmentsApiService {
-  constructor(private readonly hmppsAuthClient: HmppsAuthClient) {}
+  constructor(private readonly hmppsAuthService: HmppsAuthService) {}
 
   private restClient(token: string): RestClient {
     return new RestClient('Offender Assessments Api Client', config.apis.offenderAssessmentsApi, token)
   }
 
   async getAssessmentByCRN(crn: string): Promise<OasysAssessment> {
-    const token = await this.hmppsAuthClient.getApiClientToken()
+    const token = await this.hmppsAuthService.getApiClientToken()
 
     logger.info({ crn }, 'getting user details')
     return (await this.restClient(token).get({

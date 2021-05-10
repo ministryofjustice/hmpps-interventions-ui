@@ -4,7 +4,7 @@ import asyncMiddleware from '../middleware/asyncMiddleware'
 import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
 import OffenderAssessmentsApiService from '../services/offenderAssessmentsApiService'
-import HmppsAuthClient from '../data/hmppsAuthClient'
+import HmppsAuthService from '../services/hmppsAuthService'
 import IntegrationSamplesRoutes from './integrationSamples'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import ReferralsController from './referrals/referralsController'
@@ -20,7 +20,7 @@ export interface Services {
   communityApiService: CommunityApiService
   offenderAssessmentsApiService: OffenderAssessmentsApiService
   interventionsService: InterventionsService
-  hmppsAuthClient: HmppsAuthClient
+  hmppsAuthService: HmppsAuthService
 }
 
 export default function routes(router: Router, services: Services): Router {
@@ -41,7 +41,7 @@ export default function routes(router: Router, services: Services): Router {
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
     services.communityApiService,
-    services.hmppsAuthClient
+    services.hmppsAuthService
   )
   const findInterventionsController = new FindInterventionsController(services.interventionsService)
 

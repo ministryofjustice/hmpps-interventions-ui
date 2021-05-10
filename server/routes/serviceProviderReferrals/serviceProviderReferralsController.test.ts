@@ -9,8 +9,8 @@ import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
-import HmppsAuthClient from '../../data/hmppsAuthClient'
-import MockedHmppsAuthClient from '../../data/testutils/hmppsAuthClientSetup'
+import HmppsAuthService from '../../services/hmppsAuthService'
+import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
@@ -18,20 +18,20 @@ import endOfServiceReportFactory from '../../../testutils/factories/endOfService
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
-jest.mock('../../data/hmppsAuthClient')
+jest.mock('../../services/hmppsAuthService')
 
 const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
   InterventionsService
 >
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
-const hmppsAuthClient = new MockedHmppsAuthClient() as jest.Mocked<HmppsAuthClient>
+const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService, hmppsAuthClient },
+    overrides: { interventionsService, communityApiService, hmppsAuthService },
     userType: AppSetupUserType.serviceProvider,
   })
 })
@@ -133,7 +133,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-      hmppsAuthClient.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+      hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -175,7 +175,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthClient.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${referral.id}/assignment/check`)
@@ -194,7 +194,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
       .expect('Location', '/service-provider/referrals/123456/details?error=An%20email%20address%20is%20required')
   })
   it('redirects to referral details page with an error if the assignee email address is not found in hmpps auth', async () => {
-    hmppsAuthClient.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
+    hmppsAuthService.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
 
     await request(app)
       .get(`/service-provider/referrals/123456/assignment/check?email=tom@tom.com`)
@@ -213,7 +213,7 @@ describe('POST /service-provider/referrals/:id/assignment', () => {
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthClient.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
     interventionsService.assignSentReferral.mockResolvedValue(referral)
 
     await request(app)
@@ -248,7 +248,7 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthClient.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${referral.id}/assignment/confirmation`)

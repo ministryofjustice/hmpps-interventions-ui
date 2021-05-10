@@ -4,7 +4,7 @@ import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService from '../../services/interventionsService'
 import { ActionPlanAppointment } from '../../models/actionPlan'
-import HmppsAuthClient, { AuthUser } from '../../data/hmppsAuthClient'
+import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
 import DashboardPresenter from './dashboardPresenter'
@@ -55,12 +55,13 @@ import EndOfServiceReportCheckAnswersView from './endOfServiceReportCheckAnswers
 import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
 import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
 import ControllerUtils from '../../utils/controllerUtils'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export default class ServiceProviderReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
-    private readonly hmppsAuthClient: HmppsAuthClient
+    private readonly hmppsAuthService: HmppsAuthService
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
@@ -102,7 +103,7 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthClient.getSPUserByUsername(
+        : await this.hmppsAuthService.getSPUserByUsername(
             res.locals.user.token.accessToken,
             sentReferral.assignedTo.username
           )
@@ -180,11 +181,11 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    let assignee: AuthUser
-    const token = await this.hmppsAuthClient.getApiClientToken()
+    let assignee: AuthUserDetails
+    const token = await this.hmppsAuthService.getApiClientToken()
 
     try {
-      assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(token, email)
+      assignee = await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
     } catch (e) {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
@@ -215,7 +216,7 @@ export default class ServiceProviderReferralsController {
       return
     }
 
-    const assignee = await this.hmppsAuthClient.getSPUserByEmailAddress(res.locals.user.token.accessToken, email)
+    const assignee = await this.hmppsAuthService.getSPUserByEmailAddress(res.locals.user.token.accessToken, email)
 
     await this.interventionsService.assignSentReferral(res.locals.user.token.accessToken, req.params.id, {
       username: assignee.username,
@@ -234,7 +235,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const [assignee, serviceCategory, serviceUser] = await Promise.all([
-      this.hmppsAuthClient.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
+      this.hmppsAuthService.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
       this.interventionsService.getServiceCategory(
         res.locals.user.token.accessToken,
         referral.referral.serviceCategoryId

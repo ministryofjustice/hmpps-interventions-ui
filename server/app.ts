@@ -20,22 +20,20 @@ import nunjucksSetup from './utils/nunjucksSetup'
 import config from './config'
 import errorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
-import type UserService from './services/userService'
 import CommunityApiService from './services/communityApiService'
 import InterventionsService from './services/interventionsService'
 import OffenderAssessmentsApiService from './services/offenderAssessmentsApiService'
-import HmppsAuthClient from './data/hmppsAuthClient'
+import HmppsAuthService from './services/hmppsAuthService'
 import passportSetup from './authentication/passport'
 import authErrorHandler from './authentication/authErrorHandler'
 
 const RedisStore = connectRedis(session)
 
 export default function createApp(
-  userService: UserService,
   communityApiService: CommunityApiService,
   offenderAssessmentsApiService: OffenderAssessmentsApiService,
   interventionsService: InterventionsService,
-  hmppsAuthClient: HmppsAuthClient
+  hmppsAuthService: HmppsAuthService
 ): express.Application {
   const app = express()
 
@@ -101,7 +99,7 @@ export default function createApp(
   app.use(bodyParser.urlencoded({ extended: true }))
 
   // authentication configuration
-  passportSetup(app, userService)
+  passportSetup(app, hmppsAuthService)
 
   app.use(flash())
 
@@ -175,7 +173,7 @@ export default function createApp(
       communityApiService,
       offenderAssessmentsApiService,
       interventionsService,
-      hmppsAuthClient,
+      hmppsAuthService,
     })
   )
 

@@ -1,5 +1,5 @@
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
-import AuthUser from '../../models/authUser'
+import User from '../../models/hmppsAuth/user'
 import { ActionPlanAppointment } from '../../models/actionPlan'
 import DateUtils from '../../utils/dateUtils'
 import { SummaryListItem } from '../../utils/summaryList'
@@ -11,7 +11,7 @@ export default class SubmittedPostSessionFeedbackPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly assignedCaseworker: AuthUser | null = null
+    private readonly assignedCaseworker: User | null = null
   ) {
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(this.appointment, this.serviceUser)
   }

@@ -1,10 +1,10 @@
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import HeaderPresenter from './headerPresenter'
 import ServiceUserBannerPresenter from './serviceUserBannerPresenter'
-import { User } from '../../authentication/passport'
+import LoggedInUser from '../../models/loggedInUser'
 
 export default class LayoutPresenter {
-  constructor(private readonly loggedInUser: User | null, readonly serviceUser: DeliusServiceUser | null) {}
+  constructor(private readonly loggedInUser: LoggedInUser | null, readonly serviceUser: DeliusServiceUser | null) {}
 
   readonly serviceUserBannerPresenter = this.serviceUser ? new ServiceUserBannerPresenter(this.serviceUser) : null
 

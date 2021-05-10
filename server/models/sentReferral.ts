@@ -1,4 +1,4 @@
-import AuthUser from './authUser'
+import User from './hmppsAuth/user'
 import EndOfServiceReport from './endOfServiceReport'
 import { ReferralFields } from './draftReferral'
 
@@ -7,8 +7,8 @@ export default interface SentReferral {
   sentAt: string
   referenceNumber: string
   referral: ReferralFields
-  sentBy: AuthUser
-  assignedTo: AuthUser | null
+  sentBy: User
+  assignedTo: User | null
   actionPlanId: string | null
   endRequestedAt: string | null
   endRequestedReason: string | null

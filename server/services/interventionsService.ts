@@ -4,7 +4,7 @@ import { ApiConfig } from '../config'
 import { SanitisedError } from '../sanitisedError'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import CalendarDay from '../utils/calendarDay'
-import AuthUser from '../models/authUser'
+import User from '../models/hmppsAuth/user'
 import EndOfServiceReport, { AchievementLevel } from '../models/endOfServiceReport'
 import ServiceUser from '../models/serviceUser'
 import Intervention from '../models/intervention'
@@ -214,7 +214,7 @@ export default class InterventionsService {
     })) as SentReferral[]
   }
 
-  async assignSentReferral(token: string, id: string, assignee: AuthUser): Promise<SentReferral> {
+  async assignSentReferral(token: string, id: string, assignee: User): Promise<SentReferral> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
