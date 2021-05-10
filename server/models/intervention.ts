@@ -17,6 +17,7 @@ export default interface Intervention {
   npsRegion: NPSRegion | null
   pccRegions: PCCRegion[]
   serviceCategory: ServiceCategory
+  serviceCategories: ServiceCategory[]
   serviceProvider: ServiceProvider
   eligibility: Eligibility
 }

@@ -1,6 +1,7 @@
 import { Factory } from 'fishery'
 import DraftReferral from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
+import interventionFactory from './intervention'
 
 class DraftReferralFactory extends Factory<DraftReferral> {
   justCreated() {
@@ -110,7 +111,9 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   },
   completionDeadline: null,
   serviceProvider: null,
+  interventionId: interventionFactory.build().id,
   serviceCategoryId: null,
+  serviceCategoryIds: [],
   complexityLevelId: null,
   furtherInformation: null,
   relevantSentenceId: null,

@@ -7,7 +7,9 @@ export interface ReferralFields {
   createdAt: string
   completionDeadline: string
   serviceProvider: ServiceProvider
+  interventionId: string
   serviceCategoryId: string
+  serviceCategoryIds: string[]
   complexityLevelId: string
   furtherInformation: string
   relevantSentenceId: number
@@ -28,4 +30,5 @@ export default interface DraftReferral extends WithNullableValues<ReferralFields
   id: string
   createdAt: string
   serviceUser: ServiceUser
+  interventionId: string
 }
