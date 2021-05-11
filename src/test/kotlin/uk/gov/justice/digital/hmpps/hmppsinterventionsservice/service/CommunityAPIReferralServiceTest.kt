@@ -21,7 +21,7 @@ class CommunityAPIReferralServiceTest {
     val communityAPIService = CommunityAPIReferralEventService(
       "http://testUrl",
       "secure/offenders/crn/{id}/referral/sent",
-      "secure/offenders/crn/{id}/referral/sent",
+      "secure/offenders/crn/{crn}/referral/start/context/{contextName}",
       "commissioned-rehabilitation-services",
       communityAPIClient
     )
@@ -29,13 +29,12 @@ class CommunityAPIReferralServiceTest {
     communityAPIService.onApplicationEvent(referralSentEvent)
 
     verify(communityAPIClient).makeAsyncPostRequest(
-      "secure/offenders/crn/X123456/referral/sent",
+      "secure/offenders/crn/X123456/referral/start/context/commissioned-rehabilitation-services",
       ReferRequest(
+        "ACC",
         OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC),
-        referralSentEvent.referral.intervention.dynamicFrameworkContract.serviceCategory.id,
         123456789,
         "http://testUrl/secure/offenders/crn/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/referral/sent",
-        "commissioned-rehabilitation-services",
       )
     )
   }
