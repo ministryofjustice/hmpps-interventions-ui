@@ -9,6 +9,7 @@ import FormUtils from '../../utils/formUtils'
 export default class DesiredOutcomesForm {
   constructor(private readonly request: Request) {}
 
+  // TODO: return Partial<ReferralDesiredOutcomes> when we update the code for single-service referrals to use the new PATCH function.
   async data(): Promise<FormData<Partial<DraftReferral>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
