@@ -26,6 +26,10 @@ Cypress.Commands.add('stubGetSentReferral', (id, responseJson) => {
   cy.task('stubGetSentReferral', { id, responseJson })
 })
 
+Cypress.Commands.add('stubGetSentReferralUnauthorized', id => {
+  cy.task('stubGetSentReferralUnauthorized', { id })
+})
+
 Cypress.Commands.add('stubGetSentReferrals', responseJson => {
   cy.task('stubGetSentReferrals', { responseJson })
 })

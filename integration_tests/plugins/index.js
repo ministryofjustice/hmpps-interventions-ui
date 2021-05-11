@@ -73,6 +73,10 @@ module.exports = on => {
       return interventionsService.stubGetSentReferral(arg.id, arg.responseJson)
     },
 
+    stubGetSentReferralUnauthorized: arg => {
+      return interventionsService.stubGetSentReferralUnauthorized(arg.id)
+    },
+
     stubGetSentReferrals: arg => {
       return interventionsService.stubGetSentReferrals(arg.responseJson)
     },

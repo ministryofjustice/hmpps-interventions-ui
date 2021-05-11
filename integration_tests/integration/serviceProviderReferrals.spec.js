@@ -15,6 +15,31 @@ describe('Service provider referrals dashboard', () => {
     cy.task('stubServiceProviderAuthUser')
   })
 
+  describe('User access referral restrictions', () => {
+    it('user should be restricted access to referral if they referral is a different service provider from their organization', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
+      const referral = sentReferralFactory.build(referralParams)
+      const deliusUser = deliusUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSentReferralUnauthorized(referral.id)
+      cy.stubGetSentReferrals([referral])
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
+      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubAssignSentReferral(referral.id, referral)
+
+      cy.login()
+
+      cy.visit({ url: `/service-provider/referrals/${referral.id}/details`, failOnStatusCode: false })
+      cy.contains('Forbidden')
+    })
+  })
+
   it('User views a list of sent referrals and the referral details page', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })

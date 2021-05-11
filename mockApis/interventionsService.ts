@@ -116,6 +116,21 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetSentReferralUnauthorized = async (id: string): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/sent-referral/${id}`,
+      },
+      response: {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    })
+  }
+
   stubGetSentReferrals = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
