@@ -195,9 +195,11 @@ class CommunityAPIClientTest {
   )
 
   private val appointmentCreateRequest = AppointmentCreateRequestDTO(
+    contractType = "ACC",
+    referralStart = OffsetDateTime.now(),
     appointmentStart = OffsetDateTime.now(),
     appointmentEnd = OffsetDateTime.now(),
-    officeLocationCode = "CRSSHEF",
-    notes = "http://backLink"
+    notes = "http://backLink",
+    countsTowardsRarDays = true,
   )
 }
