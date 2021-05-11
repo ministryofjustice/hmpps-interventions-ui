@@ -430,25 +430,25 @@ export default class ReferralsController {
   }
 
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
-    const form = await DesiredOutcomesForm.createForm(req)
+    const data = await new DesiredOutcomesForm(req).data()
 
-    let error: FormValidationError | null = null
+    let formError: FormValidationError | null = null
 
-    if (form.isValid) {
+    if (!data.error) {
       try {
         await this.interventionsService.patchDraftReferral(
           res.locals.user.token.accessToken,
           req.params.id,
-          form.paramsForUpdate
+          data.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        formError = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      error = form.error
+      formError = data.error
     }
 
-    if (!error) {
+    if (!formError) {
       res.redirect(`/referrals/${req.params.id}/complexity-level`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(
@@ -465,7 +465,7 @@ export default class ReferralsController {
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       ])
 
-      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, error, req.body)
+      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, formError, req.body)
       const view = new DesiredOutcomesView(presenter)
 
       res.status(400)

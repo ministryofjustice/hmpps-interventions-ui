@@ -1,38 +1,52 @@
 import { Request } from 'express'
+import { ValidationChain, body, Result, ValidationError } from 'express-validator'
 import DraftReferral from '../../models/draftReferral'
 import errorMessages from '../../utils/errorMessages'
 import { FormValidationError } from '../../utils/formValidationError'
+import { FormData } from '../../utils/forms/formData'
+import FormUtils from '../../utils/formUtils'
 
 export default class DesiredOutcomesForm {
-  private constructor(private readonly request: Request) {}
+  constructor(private readonly request: Request) {}
 
-  static async createForm(request: Request): Promise<DesiredOutcomesForm> {
-    return new DesiredOutcomesForm(request)
-  }
+  async data(): Promise<FormData<Partial<DraftReferral>>> {
+    const validationResult = await FormUtils.runValidations({
+      request: this.request,
+      validations: DesiredOutcomesForm.validations,
+    })
 
-  get paramsForUpdate(): Partial<DraftReferral> {
+    const error = this.error(validationResult)
+
+    if (error) {
+      return {
+        paramsForUpdate: null,
+        error,
+      }
+    }
+
     return {
-      desiredOutcomesIds: this.request.body['desired-outcomes-ids'],
+      paramsForUpdate: {
+        desiredOutcomesIds: this.request.body['desired-outcomes-ids'],
+      },
+      error: null,
     }
   }
 
-  get isValid(): boolean {
-    return this.request.body['desired-outcomes-ids'] !== null && this.request.body['desired-outcomes-ids'] !== undefined
+  static get validations(): ValidationChain[] {
+    return [body('desired-outcomes-ids').notEmpty().withMessage(errorMessages.desiredOutcomes.empty)]
   }
 
-  get error(): FormValidationError | null {
-    if (this.isValid) {
+  private error(validationResult: Result<ValidationError>): FormValidationError | null {
+    if (validationResult.isEmpty()) {
       return null
     }
 
     return {
-      errors: [
-        {
-          errorSummaryLinkedField: 'desired-outcomes-ids',
-          formFields: ['desired-outcomes-ids'],
-          message: errorMessages.desiredOutcomes.empty,
-        },
-      ],
+      errors: validationResult.array().map(validationError => ({
+        formFields: [validationError.param],
+        errorSummaryLinkedField: validationError.param,
+        message: validationError.msg,
+      })),
     }
   }
 }
