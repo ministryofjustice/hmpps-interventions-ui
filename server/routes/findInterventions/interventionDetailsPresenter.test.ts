@@ -167,10 +167,10 @@ three lines.`,
       })
     })
 
-    describe('Criminogenic needs', () => {
+    describe('Service type', () => {
       it('is the service category name', () => {
         expect(
-          linesForKey('Criminogenic needs', {
+          linesForKey('Service type', {
             serviceCategory: { name: 'accommodation' },
           })
         ).toEqual(['Accommodation'])

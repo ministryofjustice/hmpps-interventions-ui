@@ -50,7 +50,7 @@ export default class InterventionDetailsPresenter {
         isList: false,
       },
       {
-        key: 'Criminogenic needs',
+        key: 'Service type',
         lines: [utils.convertToProperCase(this.intervention.serviceCategory.name)],
         isList: false,
       },
