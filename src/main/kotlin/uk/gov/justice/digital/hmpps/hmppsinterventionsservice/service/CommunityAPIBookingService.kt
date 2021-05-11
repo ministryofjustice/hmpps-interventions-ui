@@ -15,6 +15,7 @@ class CommunityAPIBookingService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.view-appointment}") private val interventionsUIViewAppointment: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
+  @Value("\${community-api.appointments.office-location}") private val officeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   val communityAPIClient: CommunityAPIClient,
 ) {
@@ -46,7 +47,7 @@ class CommunityAPIBookingService(
       referralStart = appointment.actionPlan.referral.sentAt!!,
       appointmentStart = appointmentTime,
       appointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
-      officeLocationCode = null,
+      officeLocationCode = officeLocation,
       notes = resourceUrl,
       countsTowardsRarDays = true, // Fixme: For assessment booking this should be false and will pass in when assessment booking is done
     )
@@ -75,7 +76,7 @@ data class AppointmentCreateRequestDTO(
   val referralStart: OffsetDateTime,
   val appointmentStart: OffsetDateTime,
   val appointmentEnd: OffsetDateTime,
-  val officeLocationCode: String?,
+  val officeLocationCode: String,
   val notes: String,
   val countsTowardsRarDays: Boolean,
 )
