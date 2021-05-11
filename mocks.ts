@@ -2,12 +2,13 @@ import Wiremock from './mockApis/wiremock'
 import InterventionsServiceMocks from './mockApis/interventionsService'
 /*
 import sentReferralFactory from './testutils/factories/sentReferral'
-import serviceCategoryFactory from './testutils/factories/serviceCategory'
-import interventionFactory from './testutils/factories/intervention'
 import deliusUserFactory from './testutils/factories/deliusUser'
 import actionPlanFactory from './testutils/factories/actionPlan'
 */
+import interventionFactory from './testutils/factories/intervention'
 import actionPlanAppointmentFactory from './testutils/factories/actionPlanAppointment'
+import draftReferralFactory from './testutils/factories/draftReferral'
+import serviceCategoryFactory from './testutils/factories/serviceCategory'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -111,6 +112,32 @@ export default async function setUpMocks(): Promise<void> {
     interventionsMocks.stubGetActionPlan(actionPlan.id, actionPlan),
   ])
   */
+
+  const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+  const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+  const intervention = interventionFactory.build({
+    serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+  })
+
+  const draftReferral = draftReferralFactory
+    .serviceCategorySelected()
+    .serviceUserDetailsSet()
+    .build({
+      id: '98a42c61-c30f-4beb-8062-04033c376e2d',
+      serviceUser: {
+        crn: 'CRN11',
+        title: 'Mr',
+        firstName: 'Ken',
+        lastName: 'River',
+        dateOfBirth: '1980-01-01',
+        gender: 'Male',
+        ethnicity: 'British',
+        preferredLanguage: 'English',
+        religionOrBelief: 'Agnostic',
+        disabilities: ['Autism spectrum condition', 'sciatica'],
+      },
+    })
+
   await Promise.all([
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
@@ -121,5 +148,8 @@ export default async function setUpMocks(): Promise<void> {
         durationInMinutes: 75,
       })
     ),
+
+    interventionsMocks.stubGetIntervention(draftReferral.interventionId, intervention),
+    interventionsMocks.stubGetDraftReferral(draftReferral.id, draftReferral),
   ])
 }

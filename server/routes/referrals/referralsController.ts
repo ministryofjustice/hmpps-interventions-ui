@@ -40,6 +40,9 @@ import RelevantSentencePresenter from './relevantSentencePresenter'
 import RelevantSentenceView from './relevantSentenceView'
 import RelevantSentenceForm from './relevantSentenceForm'
 import ControllerUtils from '../../utils/controllerUtils'
+import UpdateServiceCategoriesPresenter from './updateServiceCategoriesPresenter'
+import UpdateServiceCategoriesView from './updateServiceCategoriesView'
+import UpdateServiceCategoriesForm from './updateServiceCategoriesForm'
 
 export default class ReferralsController {
   constructor(
@@ -637,6 +640,34 @@ export default class ReferralsController {
     const referral = await this.interventionsService.sendDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     res.redirect(303, `/referrals/${referral.id}/confirmation`)
+  }
+
+  async updateServiceCategories(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    let formError: FormValidationError | null = null
+
+    const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+    if (req.method === 'POST') {
+      const data = await new UpdateServiceCategoriesForm(req).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+      } else {
+        await this.interventionsService.patchDraftReferral(accessToken, req.params.id, data.paramsForUpdate)
+
+        return res.redirect(`/referrals/${req.params.id}/form`)
+      }
+    }
+
+    const intervention = await this.interventionsService.getIntervention(accessToken, referral.interventionId)
+
+    const presenter = new UpdateServiceCategoriesPresenter(referral, intervention.serviceCategories, formError)
+    const view = new UpdateServiceCategoriesView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewConfirmation(req: Request, res: Response): Promise<void> {
