@@ -18,7 +18,7 @@ data class DynamicFrameworkContract(
   val serviceCategory: ServiceCategory,
 
   @NotNull @ManyToOne @JoinColumn(name = "prime_provider_id")
-  val serviceProvider: ServiceProvider,
+  val primeProvider: ServiceProvider,
 
   @NotNull val startDate: LocalDate,
   @NotNull val endDate: LocalDate,
@@ -40,7 +40,7 @@ data class DynamicFrameworkContract(
   @JoinTable(
     name = "dynamic_framework_contract_sub_contractor",
     joinColumns = [JoinColumn(name = "dynamic_framework_contract_id")],
-    inverseJoinColumns = [JoinColumn(name = "sub_contractor_id")]
+    inverseJoinColumns = [JoinColumn(name = "subcontractor_provider_id")]
   )
-  val subContractors: Set<ServiceProvider> = setOf(),
+  val subcontractorProviders: Set<ServiceProvider> = setOf(),
 )

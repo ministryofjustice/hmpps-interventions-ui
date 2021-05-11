@@ -10,7 +10,7 @@ interface ReferralRepository : JpaRepository<Referral, UUID> {
   // queries for sent referrals
   fun findByIdAndSentAtIsNotNull(id: UUID): Referral?
   fun findBySentAtIsNotNull(): List<Referral>
-  fun findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(id: AuthGroupID): List<Referral>
+  fun findByInterventionDynamicFrameworkContractPrimeProviderIdAndSentAtIsNotNull(id: AuthGroupID): List<Referral>
   fun existsByReferenceNumber(reference: String): Boolean
   fun findBySentBy(user: AuthUser): List<Referral>
   fun findBySentById(userId: String): List<Referral>

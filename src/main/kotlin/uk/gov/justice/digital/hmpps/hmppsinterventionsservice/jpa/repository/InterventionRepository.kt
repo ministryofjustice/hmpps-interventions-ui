@@ -5,5 +5,5 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Interve
 import java.util.UUID
 
 interface InterventionRepository : JpaRepository<Intervention, UUID>, InterventionFilterRepository {
-  fun findByDynamicFrameworkContractServiceProviderId(id: String): List<Intervention>
+  fun findByDynamicFrameworkContractPrimeProviderId(id: String): List<Intervention>
 }

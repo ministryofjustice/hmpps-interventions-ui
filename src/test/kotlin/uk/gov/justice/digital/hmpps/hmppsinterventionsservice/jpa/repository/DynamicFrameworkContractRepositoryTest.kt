@@ -36,10 +36,10 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
   @Test
   fun `can store and retrieve a contract with a subcontractor`() {
     val serviceProvider = serviceProviderFactory.create()
-    val contract = dynamicFrameworkContractFactory.create(subcontractor = setOf(serviceProvider))
+    val contract = dynamicFrameworkContractFactory.create(subcontractorProviders = setOf(serviceProvider))
 
     val savedContract = dynamicFrameworkContractRepository.findById(contract.id).get()
     assertThat(savedContract.id).isEqualTo(contract.id)
-    assertThat(savedContract.subContractors.size).isEqualTo(1)
+    assertThat(savedContract.subcontractorProviders.size).isEqualTo(1)
   }
 }

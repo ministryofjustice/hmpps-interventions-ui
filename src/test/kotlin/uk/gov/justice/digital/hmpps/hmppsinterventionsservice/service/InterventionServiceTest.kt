@@ -63,7 +63,7 @@ class InterventionServiceTest @Autowired constructor(
         dynamicFrameworkContract = sampleContract(
           npsRegion = npsRegion,
           serviceCategory = serviceCategoryFactory.create(),
-          serviceProvider = serviceProviderFactory.create(),
+          primeProvider = serviceProviderFactory.create(),
         )
       )
     )
@@ -84,7 +84,7 @@ class InterventionServiceTest @Autowired constructor(
         dynamicFrameworkContract = sampleContract(
           pccRegion = pccRegionFactory.create(),
           serviceCategory = serviceCategoryFactory.create(),
-          serviceProvider = serviceProviderFactory.create(),
+          primeProvider = serviceProviderFactory.create(),
         )
       )
     )
@@ -167,19 +167,19 @@ class InterventionServiceTest @Autowired constructor(
     val contracts = mapOf(
       "harmonyLiving1" to sampleContract(
         serviceCategory = accommodationSC,
-        serviceProvider = serviceProviders["harmonyLiving"]!!,
+        primeProvider = serviceProviders["harmonyLiving"]!!,
         npsRegion = npsRegion,
       ),
       "harmonyLiving2" to sampleContract(
         serviceCategory = accommodationSC,
-        serviceProvider = serviceProviders["harmonyLiving"]!!,
+        primeProvider = serviceProviders["harmonyLiving"]!!,
         startDate = LocalDate.of(2020, 11, 5),
         endDate = LocalDate.of(2022, 10, 7),
         npsRegion = npsRegion,
       ),
       "homeTrust" to sampleContract(
         serviceCategory = accommodationSC,
-        serviceProvider = serviceProviders["homeTrust"]!!,
+        primeProvider = serviceProviders["homeTrust"]!!,
         startDate = LocalDate.of(2019, 5, 12),
         endDate = LocalDate.of(2022, 5, 12),
         pccRegion = pccRegionAvon,

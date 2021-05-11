@@ -24,7 +24,7 @@ data class InterventionDTO(
         npsRegion = contract.npsRegion?.let { NPSRegionDTO.from(it) },
         pccRegions = pccRegions.map { PCCRegionDTO.from(it) },
         serviceCategory = ServiceCategoryFullDTO.from(contract.serviceCategory),
-        serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
+        serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
         eligibility = ContractEligibilityDTO(
           contract.minimumAge,
           contract.maximumAge,

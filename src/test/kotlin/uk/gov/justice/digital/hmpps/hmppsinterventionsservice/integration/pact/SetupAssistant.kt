@@ -110,12 +110,12 @@ class SetupAssistant(
     val accommodationServiceCategory = serviceCategories["Accommodation"]!!
     val region = npsRegions['C']!!
 
-    val serviceProvider = serviceProviderRepository.save(serviceProviderFactory.create())
+    val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create())
 
     val contract = dynamicFrameworkContractRepository.save(
       dynamicFrameworkContractFactory.create(
         serviceCategory = accommodationServiceCategory,
-        serviceProvider = serviceProvider,
+        primeProvider = primeProvider,
         npsRegion = region,
       )
     )

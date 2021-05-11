@@ -21,7 +21,7 @@ class InterventionService(
   }
 
   fun getInterventionsForServiceProvider(id: AuthGroupID): List<Intervention> {
-    return interventionRepository.findByDynamicFrameworkContractServiceProviderId(id)
+    return interventionRepository.findByDynamicFrameworkContractPrimeProviderId(id)
   }
 
   fun getAllInterventions(): List<Intervention> {

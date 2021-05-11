@@ -47,7 +47,7 @@ data class DraftReferralDTO(
         maximumRarDays = referral.maximumRarDays,
         desiredOutcomesIds = referral.desiredOutcomesIDs,
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
-        serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
+        serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
         relevantSentenceId = referral.relevantSentenceId,
         serviceCategoryId = contract.serviceCategory.id,
       )

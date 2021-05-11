@@ -145,7 +145,7 @@ class NotifyReferralService(
 
       ReferralEventType.SENT -> {
         val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
-        val serviceProvider = event.referral.intervention.dynamicFrameworkContract.serviceProvider
+        val serviceProvider = event.referral.intervention.dynamicFrameworkContract.primeProvider
         emailSender.sendEmail(
           referralSentTemplateID,
           serviceProvider.incomingReferralDistributionEmail,

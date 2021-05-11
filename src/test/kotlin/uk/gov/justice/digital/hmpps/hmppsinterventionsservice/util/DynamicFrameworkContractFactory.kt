@@ -17,7 +17,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
   fun create(
     id: UUID = UUID.randomUUID(),
     serviceCategory: ServiceCategory? = null,
-    serviceProvider: ServiceProvider? = null,
+    primeProvider: ServiceProvider? = null,
     startDate: LocalDate = LocalDate.of(2021, 6, 1),
     endDate: LocalDate = LocalDate.of(2026, 6, 1),
     minimumAge: Int = 18,
@@ -27,13 +27,13 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
     npsRegion: NPSRegion? = null,
     pccRegion: PCCRegion? = null,
     contractReference: String = RandomStringUtils.randomAlphanumeric(8),
-    subcontractor: Set<ServiceProvider>? = null,
+    subcontractorProviders: Set<ServiceProvider> = setOf(),
   ): DynamicFrameworkContract {
     return save(
       DynamicFrameworkContract(
         id = id,
         serviceCategory = serviceCategory ?: serviceCategoryFactory.create(),
-        serviceProvider = serviceProvider ?: serviceProviderFactory.create(),
+        primeProvider = primeProvider ?: serviceProviderFactory.create(),
         startDate = startDate,
         endDate = endDate,
         minimumAge = minimumAge,
@@ -43,7 +43,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
         npsRegion = npsRegion,
         pccRegion = pccRegion,
         contractReference = contractReference,
-        subContractors = subcontractor ?: setOf()
+        subcontractorProviders = subcontractorProviders
       )
     )
   }
