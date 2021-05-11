@@ -180,10 +180,10 @@ three lines.`,
     describe('Provider', () => {
       it('is the service provider’s name', () => {
         expect(
-          linesForKey('Criminogenic needs', {
-            serviceCategory: { name: 'accommodation' },
+          linesForKey('Provider', {
+            serviceProvider: { name: 'Harmony Living' },
           })
-        ).toEqual(['Accommodation'])
+        ).toEqual(['Harmony Living'])
       })
     })
 
