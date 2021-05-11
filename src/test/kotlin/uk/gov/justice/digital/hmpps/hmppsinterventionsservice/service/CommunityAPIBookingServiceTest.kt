@@ -40,7 +40,7 @@ internal class CommunityAPIBookingServiceTest {
 
     val uri = "/appt/X1/123/CRS"
     val link = "http://url/view/${appointment.actionPlan.referral.id}"
-    val request = AppointmentCreateRequestDTO("ACC", now, now.plusMinutes(60), now.plusMinutes(120), notes = link, true)
+    val request = AppointmentCreateRequestDTO("ACC", now, now.plusMinutes(60), now.plusMinutes(120), null, notes = link, true)
     val response = AppointmentCreateResponseDTO(1234L)
 
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))

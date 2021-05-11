@@ -46,6 +46,7 @@ class CommunityAPIBookingService(
       referralStart = appointment.actionPlan.referral.sentAt!!,
       appointmentStart = appointmentTime,
       appointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
+      officeLocationCode = null,
       notes = resourceUrl,
       countsTowardsRarDays = true, // Fixme: For assessment booking this should be false and will pass in when assessment booking is done
     )
@@ -74,6 +75,7 @@ data class AppointmentCreateRequestDTO(
   val referralStart: OffsetDateTime,
   val appointmentStart: OffsetDateTime,
   val appointmentEnd: OffsetDateTime,
+  val officeLocationCode: String?,
   val notes: String,
   val countsTowardsRarDays: Boolean,
 )

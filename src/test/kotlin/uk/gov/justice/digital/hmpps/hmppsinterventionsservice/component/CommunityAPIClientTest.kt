@@ -199,6 +199,7 @@ class CommunityAPIClientTest {
     referralStart = OffsetDateTime.now(),
     appointmentStart = OffsetDateTime.now(),
     appointmentEnd = OffsetDateTime.now(),
+    officeLocationCode = null,
     notes = "http://backLink",
     countsTowardsRarDays = true,
   )
