@@ -75,7 +75,7 @@ class ReferralService(
   }
 
   fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<Referral> {
-    return referralRepository.findByInterventionDynamicFrameworkContractServiceProviderIdAndSentAtIsNotNull(serviceProviderID)
+    return referralRepository.findByInterventionDynamicFrameworkContractPrimeProviderIdAndSentAtIsNotNull(serviceProviderID)
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {

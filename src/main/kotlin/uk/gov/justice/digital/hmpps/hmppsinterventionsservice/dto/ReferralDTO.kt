@@ -58,7 +58,7 @@ data class ReferralDTO(
         createdAt = referral.createdAt,
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceCategory = ServiceCategoryDTO.from(contract.serviceCategory),
-        serviceProvider = ServiceProviderDTO.from(contract.serviceProvider),
+        serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
 
         formFields = FormFields(
           completionDeadline = referral.completionDeadline,

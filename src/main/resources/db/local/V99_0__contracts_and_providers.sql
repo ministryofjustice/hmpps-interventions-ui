@@ -1,7 +1,9 @@
 insert into service_provider(id, name, incoming_referral_distribution_email)
-values ('HARMONY_LIVING', 'Harmony Living', 'contact@harmonyliving.com');
+values ('HARMONY_LIVING', 'Harmony Living', 'contact@harmonyliving.com'),
+       ('HOME_TRUST', 'Home Trust', 'contact@hometrust.com'),
+       ('PROB_HELPING_HANDS', 'Helping Hands', 'contact@helpinghands.com');
 
-insert into dynamic_framework_contract (id, service_category_id, service_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age, contract_reference)
+insert into dynamic_framework_contract (id, service_category_id, prime_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age, contract_reference)
 values ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', TO_DATE('2020-12-15', 'YYYY-MM-DD'), TO_DATE('2023-12-15', 'YYYY-MM-DD'), 'G', null, true, true, 18, 25, 'Ref1'),
        ('f9d24b4a-390d-4cc1-a7ee-3e6f022e1599', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', TO_DATE('2020-01-01', 'YYYY-MM-DD'), TO_DATE('2022-12-31', 'YYYY-MM-DD'), 'G', null, true, false, 18, 25, 'ref2'),
        ('24f7a423-15a6-438d-9d28-063e92b25a9b', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', TO_DATE('2021-12-11', 'YYYY-MM-DD'), TO_DATE('2025-12-11', 'YYYY-MM-DD'), null, 'avon-and-somerset', true, true, 25, null, 'ref3'),
@@ -17,3 +19,7 @@ values ('98a42c61-c30f-4beb-8062-04033c376e2d', '1d7f8fcc-aa12-4705-a6a5-0d40467
 • This programme is aimed at males who have offended.
 • This is some more text about the intervention'),
        ('15237ae5-a017-4de6-a033-abf350f14d99', '0b60d842-9c08-408e-8c8d-f6dbf8e5c3f4', TO_DATE('2020-11-11', 'YYYY-MM-DD'), 'Begins at Home', 'This service is dedicated for handling challenging situations at home.');
+
+insert into dynamic_framework_contract_sub_contractor(dynamic_framework_contract_id, subcontractor_provider_id)
+values('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'HOME_TRUST'),
+      ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'PROB_HELPING_HANDS');

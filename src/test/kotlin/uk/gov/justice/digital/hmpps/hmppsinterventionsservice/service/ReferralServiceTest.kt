@@ -378,7 +378,7 @@ class ReferralServiceTest @Autowired constructor(
       referralFactory.createSent(
         intervention = interventionFactory.create(
           contract = contractFactory.create(
-            serviceProvider = serviceProviderFactory.create(
+            primeProvider = serviceProviderFactory.create(
               name = it
             )
           )
@@ -409,7 +409,7 @@ class ReferralServiceTest @Autowired constructor(
     spOrgs.forEach {
       val intervention = interventionFactory.create(
         contract = contractFactory.create(
-          serviceProvider = it
+          primeProvider = it
         )
       )
       referralFactory.createSent(intervention = intervention)
@@ -417,7 +417,7 @@ class ReferralServiceTest @Autowired constructor(
 
     val referrals = referralService.getSentReferralsForServiceProviderID(spOrgs[0].id)
     assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].intervention.dynamicFrameworkContract.serviceProvider).isEqualTo(spOrgs[0])
+    assertThat(referrals[0].intervention.dynamicFrameworkContract.primeProvider).isEqualTo(spOrgs[0])
 
     assertThat(referralService.getSentReferralsForServiceProviderID("missing")).isEmpty()
   }

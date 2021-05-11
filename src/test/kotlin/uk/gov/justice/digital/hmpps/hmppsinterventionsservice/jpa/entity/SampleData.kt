@@ -25,7 +25,7 @@ class SampleData {
         )
       }
 
-      intervention.dynamicFrameworkContract.serviceProvider.let {
+      intervention.dynamicFrameworkContract.primeProvider.let {
         ServiceProviderFactory(em).create(
           id = it.id,
           name = it.name,
@@ -87,7 +87,7 @@ class SampleData {
         intervention = sampleIntervention(
           dynamicFrameworkContract = sampleContract(
             serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
-            serviceProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
+            primeProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
           )
         ),
         actionPlan = actionPlan,
@@ -120,7 +120,7 @@ class SampleData {
       startDate: LocalDate = LocalDate.of(2020, 12, 1),
       endDate: LocalDate = LocalDate.of(2021, 12, 1),
       serviceCategory: ServiceCategory,
-      serviceProvider: ServiceProvider,
+      primeProvider: ServiceProvider,
       npsRegion: NPSRegion? = null,
       pccRegion: PCCRegion? = null,
       contractReference: String = RandomStringUtils.randomAlphanumeric(8),
@@ -128,7 +128,7 @@ class SampleData {
       return DynamicFrameworkContract(
         id = id ?: UUID.randomUUID(),
         serviceCategory = serviceCategory,
-        serviceProvider = serviceProvider,
+        primeProvider = primeProvider,
         startDate = startDate,
         endDate = endDate,
         minimumAge = 18,

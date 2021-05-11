@@ -5,6 +5,8 @@ import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 
@@ -15,8 +17,8 @@ data class DynamicFrameworkContract(
   @NotNull @ManyToOne @JoinColumn(name = "service_category_id")
   val serviceCategory: ServiceCategory,
 
-  @NotNull @ManyToOne @JoinColumn(name = "service_provider_id")
-  val serviceProvider: ServiceProvider,
+  @NotNull @ManyToOne @JoinColumn(name = "prime_provider_id")
+  val primeProvider: ServiceProvider,
 
   @NotNull val startDate: LocalDate,
   @NotNull val endDate: LocalDate,
@@ -33,4 +35,12 @@ data class DynamicFrameworkContract(
   @NotNull val allowsMale: Boolean,
 
   val contractReference: String,
+
+  @ManyToMany
+  @JoinTable(
+    name = "dynamic_framework_contract_sub_contractor",
+    joinColumns = [JoinColumn(name = "dynamic_framework_contract_id")],
+    inverseJoinColumns = [JoinColumn(name = "subcontractor_provider_id")]
+  )
+  val subcontractorProviders: Set<ServiceProvider> = setOf(),
 )
