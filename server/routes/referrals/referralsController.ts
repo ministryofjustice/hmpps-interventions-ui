@@ -429,6 +429,31 @@ export default class ReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async viewCohortDesiredOutcomes(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.id)
+
+    if (!referral.serviceCategoryIds) {
+      throw new Error('Attempting to view desired outcomes without service categories selected')
+    }
+
+    const serviceCategoryId = referral.serviceCategoryIds.find(id => id === req.params.serviceCategoryId)
+
+    if (!serviceCategoryId) {
+      throw new Error('Requested service category not set on the referral')
+    }
+
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
+
+    const presenter = new DesiredOutcomesPresenter(referral, serviceCategory)
+    const view = new DesiredOutcomesView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
     const data = await new DesiredOutcomesForm(req).data()
 
