@@ -30,22 +30,18 @@ describe(AssignmentConfirmationPresenter, () => {
           {
             key: 'Name',
             lines: ['Johnny Davis'],
-            isList: false,
           },
           {
             key: 'Referral number',
             lines: ['CEF345'],
-            isList: false,
           },
           {
             key: 'Service type',
             lines: ['Social inclusion'],
-            isList: false,
           },
           {
             key: 'Assigned to',
             lines: ['Bernard Beaks'],
-            isList: false,
           },
         ])
       })
@@ -65,22 +61,18 @@ describe(AssignmentConfirmationPresenter, () => {
           {
             key: 'Name',
             lines: ['Johnny Davis'],
-            isList: false,
           },
           {
             key: 'Referral number',
             lines: ['CEF345'],
-            isList: false,
           },
           {
             key: 'Service type',
             lines: ['Social inclusion'],
-            isList: false,
           },
           {
             key: 'Assigned to',
             lines: ['Bernard '],
-            isList: false,
           },
         ])
       })
@@ -100,22 +92,18 @@ describe(AssignmentConfirmationPresenter, () => {
           {
             key: 'Name',
             lines: ['Johnny Davis'],
-            isList: false,
           },
           {
             key: 'Referral number',
             lines: ['CEF345'],
-            isList: false,
           },
           {
             key: 'Service type',
             lines: ['Social inclusion'],
-            isList: false,
           },
           {
             key: 'Assigned to',
             lines: [' Beaks'],
-            isList: false,
           },
         ])
       })
@@ -135,22 +123,18 @@ describe(AssignmentConfirmationPresenter, () => {
           {
             key: 'Name',
             lines: ['Johnny Davis'],
-            isList: false,
           },
           {
             key: 'Referral number',
             lines: ['CEF345'],
-            isList: false,
           },
           {
             key: 'Service type',
             lines: ['Social inclusion'],
-            isList: false,
           },
           {
             key: 'Assigned to',
             lines: [''],
-            isList: false,
           },
         ])
       })

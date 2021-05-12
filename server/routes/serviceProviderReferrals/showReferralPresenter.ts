@@ -1,7 +1,7 @@
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import DeliusUser from '../../models/delius/deliusUser'
-import { SummaryListItem } from '../../utils/summaryList'
+import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
@@ -35,8 +35,8 @@ export default class ShowReferralPresenter {
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [
-    { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`], isList: false },
-    { key: 'Email address', lines: [this.sentBy.email ?? ''], isList: false },
+    { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
+    { key: 'Email address', lines: [this.sentBy.email ?? ''] },
   ]
 
   get interventionDetails(): SummaryListItem[] {
@@ -54,23 +54,20 @@ export default class ShowReferralPresenter {
     }
 
     return [
-      { key: 'Sentence information', lines: ['Not currently set'], isList: false },
-      { key: 'Desired outcomes', lines: selectedDesiredOutcomes, isList: true },
-      { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text], isList: false },
+      { key: 'Sentence information', lines: ['Not currently set'] },
+      { key: 'Desired outcomes', lines: selectedDesiredOutcomes, listStyle: ListStyle.noMarkers },
+      { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text] },
       {
         key: 'Date to be completed by',
         lines: [PresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],
-        isList: false,
       },
       {
         key: 'Maximum number of enforceable days',
         lines: [this.sentReferral.referral.usingRarDays ? String(this.sentReferral.referral.maximumRarDays) : 'N/A'],
-        isList: false,
       },
       {
         key: 'Further information for the provider',
         lines: [this.sentReferral.referral.furtherInformation || 'N/A'],
-        isList: false,
       },
     ]
   }
@@ -81,51 +78,44 @@ export default class ShowReferralPresenter {
 
   get serviceUserRisks(): SummaryListItem[] {
     return [
-      { key: 'Risk to known adult', lines: ['Medium'], isList: false },
-      { key: 'Risk to public', lines: ['Low'], isList: false },
-      { key: 'Risk to children', lines: ['Low'], isList: false },
-      { key: 'Risk to staff', lines: ['Low'], isList: false },
+      { key: 'Risk to known adult', lines: ['Medium'] },
+      { key: 'Risk to public', lines: ['Low'] },
+      { key: 'Risk to children', lines: ['Low'] },
+      { key: 'Risk to staff', lines: ['Low'] },
       {
         key: 'Additional risk information',
         lines: [this.sentReferral.referral.additionalRiskInformation],
-        isList: false,
       },
     ]
   }
 
   get serviceUserNeeds(): SummaryListItem[] {
     return [
-      { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
+      { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], listStyle: ListStyle.noMarkers },
       {
         key: 'Identify needs',
         lines: [this.sentReferral.referral.additionalNeedsInformation || 'N/A'],
-        isList: false,
       },
       {
         key: 'Other mobility, disability or accessibility needs',
         lines: [this.sentReferral.referral.accessibilityNeeds || 'N/A'],
-        isList: false,
       },
       {
         key: 'Interpreter required',
         lines: [this.sentReferral.referral.needsInterpreter ? 'Yes' : 'No'],
-        isList: false,
       },
-      { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'], isList: false },
+      { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'] },
       {
         key: 'Primary language',
         lines: [this.sentReferral.referral.serviceUser.preferredLanguage || 'N/A'],
-        isList: false,
       },
       {
         key: 'Caring or employment responsibilities',
         lines: [this.sentReferral.referral.hasAdditionalResponsibilities ? 'Yes' : 'No'],
-        isList: false,
       },
       {
         key: `Provide details of when ${this.sentReferral.referral.serviceUser.firstName} will not be able to attend sessions`,
         lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
-        isList: false,
       },
     ]
   }

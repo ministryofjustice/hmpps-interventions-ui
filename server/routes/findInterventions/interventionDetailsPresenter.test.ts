@@ -6,7 +6,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import Intervention from '../../models/intervention'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import TestUtils from '../../../testutils/testUtils'
-import { SummaryListItem } from '../../utils/summaryList'
+import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 
 describe(InterventionDetailsPresenter, () => {
   describe('title', () => {
@@ -112,7 +112,6 @@ three lines.`,
             {
               key: 'Name',
               lines: ['Harmony Living'],
-              isList: false,
             },
           ],
         },
@@ -190,7 +189,7 @@ three lines.`,
             ],
           })
           const item = summary.find(anItem => anItem.key === 'Service types')
-          expect(item).toMatchObject({ lines: ['Accommodation', 'Emotional wellbeing'], isList: true })
+          expect(item).toMatchObject({ lines: ['Accommodation', 'Emotional wellbeing'], listStyle: ListStyle.bulleted })
         })
       })
     })

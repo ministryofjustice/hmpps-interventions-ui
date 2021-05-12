@@ -26,7 +26,7 @@ export default class EndOfServiceReportAnswersPresenter {
 
   readonly interventionSummary: SummaryListItem[] = [
     // TODO IC-1322 Populate this fully
-    { key: 'Service user’s name', lines: [PresenterUtils.fullName(this.referral.referral.serviceUser)], isList: false },
+    { key: 'Service user’s name', lines: [PresenterUtils.fullName(this.referral.referral.serviceUser)] },
   ]
 
   readonly outcomes: OutcomePresenter[] = this.referral.referral.desiredOutcomesIds.map((desiredOutcomeId, index) => {

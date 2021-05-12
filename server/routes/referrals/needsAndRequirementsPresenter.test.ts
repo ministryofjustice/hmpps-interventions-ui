@@ -1,5 +1,6 @@
 import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import { ListStyle } from '../../utils/summaryList'
 
 describe('NeedsAndRequirementsPresenter', () => {
   describe('summary', () => {
@@ -8,8 +9,8 @@ describe('NeedsAndRequirementsPresenter', () => {
       const presenter = new NeedsAndRequirementsPresenter(referral)
 
       expect(presenter.summary).toEqual([
-        { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], isList: true },
-        { key: 'Gender', lines: ['Male'], isList: false },
+        { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
+        { key: 'Gender', lines: ['Male'] },
       ])
     })
   })

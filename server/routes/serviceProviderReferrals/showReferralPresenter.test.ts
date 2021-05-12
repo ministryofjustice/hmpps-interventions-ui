@@ -3,6 +3,7 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
+import { ListStyle } from '../../utils/summaryList'
 
 describe(ShowReferralPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({
@@ -104,8 +105,8 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.probationPractitionerDetails).toEqual([
-        { isList: false, key: 'Name', lines: ['Bernard Beaks'] },
-        { isList: false, key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Name', lines: ['Bernard Beaks'] },
+        { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
       ])
     })
   })
@@ -157,14 +158,14 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.interventionDetails).toEqual([
-          { key: 'Sentence information', lines: ['Not currently set'], isList: false },
+          { key: 'Sentence information', lines: ['Not currently set'] },
           {
             key: 'Desired outcomes',
             lines: [
               'Service User makes progress in obtaining accommodation',
               'Service User is helped to secure social or supported housing',
             ],
-            isList: true,
+            listStyle: ListStyle.noMarkers,
           },
           {
             key: 'Complexity level',
@@ -172,18 +173,15 @@ describe(ShowReferralPresenter, () => {
               'Low complexity',
               'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
             ],
-            isList: false,
           },
-          { key: 'Date to be completed by', lines: ['1 April 2021'], isList: false },
+          { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
-            isList: false,
           },
           {
             key: 'Further information for the provider',
             lines: ['Some information about the service user'],
-            isList: false,
           },
         ])
       })
@@ -235,14 +233,14 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.interventionDetails).toEqual([
-          { key: 'Sentence information', lines: ['Not currently set'], isList: false },
+          { key: 'Sentence information', lines: ['Not currently set'] },
           {
             key: 'Desired outcomes',
             lines: [
               'Service User makes progress in obtaining accommodation',
               'Service User is helped to secure social or supported housing',
             ],
-            isList: true,
+            listStyle: ListStyle.noMarkers,
           },
           {
             key: 'Complexity level',
@@ -250,18 +248,15 @@ describe(ShowReferralPresenter, () => {
               'Low complexity',
               'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
             ],
-            isList: false,
           },
-          { key: 'Date to be completed by', lines: ['1 April 2021'], isList: false },
+          { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',
             lines: ['N/A'],
-            isList: false,
           },
           {
             key: 'Further information for the provider',
             lines: ['N/A'],
-            isList: false,
           },
         ])
       })
@@ -274,16 +269,20 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.serviceUserDetails).toEqual([
-        { key: 'CRN', lines: [sentReferral.referral.serviceUser.crn], isList: false },
-        { key: 'Title', lines: [sentReferral.referral.serviceUser.title], isList: false },
-        { key: 'First name', lines: [sentReferral.referral.serviceUser.firstName], isList: false },
-        { key: 'Last name', lines: [sentReferral.referral.serviceUser.lastName], isList: false },
-        { key: 'Date of birth', lines: [sentReferral.referral.serviceUser.dateOfBirth], isList: false },
-        { key: 'Gender', lines: [sentReferral.referral.serviceUser.gender], isList: false },
-        { key: 'Ethnicity', lines: [sentReferral.referral.serviceUser.ethnicity], isList: false },
-        { key: 'Preferred language', lines: [sentReferral.referral.serviceUser.preferredLanguage], isList: false },
-        { key: 'Religion or belief', lines: [sentReferral.referral.serviceUser.religionOrBelief], isList: false },
-        { key: 'Disabilities', lines: sentReferral.referral.serviceUser.disabilities || [], isList: true },
+        { key: 'CRN', lines: [sentReferral.referral.serviceUser.crn] },
+        { key: 'Title', lines: [sentReferral.referral.serviceUser.title] },
+        { key: 'First name', lines: [sentReferral.referral.serviceUser.firstName] },
+        { key: 'Last name', lines: [sentReferral.referral.serviceUser.lastName] },
+        { key: 'Date of birth', lines: [sentReferral.referral.serviceUser.dateOfBirth] },
+        { key: 'Gender', lines: [sentReferral.referral.serviceUser.gender] },
+        { key: 'Ethnicity', lines: [sentReferral.referral.serviceUser.ethnicity] },
+        { key: 'Preferred language', lines: [sentReferral.referral.serviceUser.preferredLanguage] },
+        { key: 'Religion or belief', lines: [sentReferral.referral.serviceUser.religionOrBelief] },
+        {
+          key: 'Disabilities',
+          lines: sentReferral.referral.serviceUser.disabilities || [],
+          listStyle: ListStyle.noMarkers,
+        },
       ])
     })
   })
@@ -294,11 +293,11 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, deliusUser, null, null)
 
       expect(presenter.serviceUserRisks).toEqual([
-        { key: 'Risk to known adult', lines: ['Medium'], isList: false },
-        { key: 'Risk to public', lines: ['Low'], isList: false },
-        { key: 'Risk to children', lines: ['Low'], isList: false },
-        { key: 'Risk to staff', lines: ['Low'], isList: false },
-        { key: 'Additional risk information', lines: [sentReferral.referral.additionalRiskInformation], isList: false },
+        { key: 'Risk to known adult', lines: ['Medium'] },
+        { key: 'Risk to public', lines: ['Low'] },
+        { key: 'Risk to children', lines: ['Low'] },
+        { key: 'Risk to staff', lines: ['Low'] },
+        { key: 'Additional risk information', lines: [sentReferral.referral.additionalRiskInformation] },
       ])
     })
   })
@@ -350,33 +349,32 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
-          { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
+          {
+            key: 'Criminogenic needs',
+            lines: ['Thinking and attitudes', 'Accommodation'],
+            listStyle: ListStyle.noMarkers,
+          },
           {
             key: 'Identify needs',
             lines: ["Alex is currently sleeping on her aunt's sofa"],
-            isList: false,
           },
           {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
-            isList: false,
           },
-          { key: 'Interpreter required', lines: ['Yes'], isList: false },
-          { key: 'Interpreter language', lines: ['Spanish'], isList: false },
+          { key: 'Interpreter required', lines: ['Yes'] },
+          { key: 'Interpreter language', lines: ['Spanish'] },
           {
             key: 'Primary language',
             lines: ['Catalan'],
-            isList: false,
           },
           {
             key: 'Caring or employment responsibilities',
             lines: ['Yes'],
-            isList: false,
           },
           {
             key: `Provide details of when Alex will not be able to attend sessions`,
             lines: ['She works Mondays 9am - midday'],
-            isList: false,
           },
         ])
       })
@@ -428,33 +426,32 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
-          { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], isList: true },
+          {
+            key: 'Criminogenic needs',
+            lines: ['Thinking and attitudes', 'Accommodation'],
+            listStyle: ListStyle.noMarkers,
+          },
           {
             key: 'Identify needs',
             lines: ['N/A'],
-            isList: false,
           },
           {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['N/A'],
-            isList: false,
           },
-          { key: 'Interpreter required', lines: ['No'], isList: false },
-          { key: 'Interpreter language', lines: ['N/A'], isList: false },
+          { key: 'Interpreter required', lines: ['No'] },
+          { key: 'Interpreter language', lines: ['N/A'] },
           {
             key: 'Primary language',
             lines: ['English'],
-            isList: false,
           },
           {
             key: 'Caring or employment responsibilities',
             lines: ['No'],
-            isList: false,
           },
           {
             key: `Provide details of when Alex will not be able to attend sessions`,
             lines: ['N/A'],
-            isList: false,
           },
         ])
       })

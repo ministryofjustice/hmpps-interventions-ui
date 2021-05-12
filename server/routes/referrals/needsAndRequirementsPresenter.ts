@@ -1,6 +1,6 @@
 import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
-import { SummaryListItem } from '../../utils/summaryList'
+import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 
 export default class NeedsAndRequirementsPresenter {
@@ -11,8 +11,8 @@ export default class NeedsAndRequirementsPresenter {
   ) {}
 
   readonly summary: SummaryListItem[] = [
-    { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], isList: true },
-    { key: 'Gender', lines: ['Male'], isList: false },
+    { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
+    { key: 'Gender', lines: ['Male'] },
     // TODO IC-746 populate with service user data once we have it
   ]
 

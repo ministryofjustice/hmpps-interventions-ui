@@ -16,8 +16,8 @@ export default class CheckAssignmentPresenter {
   }
 
   readonly summary: SummaryListItem[] = [
-    { key: 'Name', lines: [PresenterUtils.fullName(this.assignee)], isList: false },
-    { key: 'Email address', lines: [this.email], isList: false },
+    { key: 'Name', lines: [PresenterUtils.fullName(this.assignee)] },
+    { key: 'Email address', lines: [this.email] },
   ]
 
   readonly hiddenFields = {

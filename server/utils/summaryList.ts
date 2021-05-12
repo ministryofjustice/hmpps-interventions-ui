@@ -1,5 +1,10 @@
+export enum ListStyle {
+  noMarkers,
+  bulleted,
+}
+
 export interface SummaryListItem {
   key: string
   lines: string[]
-  isList: boolean
+  listStyle?: ListStyle
 }

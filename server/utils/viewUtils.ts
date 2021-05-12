@@ -1,5 +1,5 @@
 import * as nunjucks from 'nunjucks'
-import { SummaryListItem } from './summaryList'
+import { ListStyle, SummaryListItem } from './summaryList'
 import { ErrorSummaryArgs, SummaryListArgs, TableArgs } from './govukFrontendTypes'
 
 export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none' }[]
@@ -40,8 +40,9 @@ export default class ViewUtils {
             text: item.key,
           },
           value: (() => {
-            if (item.isList) {
-              const html = `<ul class="govuk-list">${item.lines
+            if (item.listStyle !== undefined) {
+              const itemClass = `govuk-list${item.listStyle === ListStyle.bulleted ? ' govuk-list--bullet' : ''}`
+              const html = `<ul class="${itemClass}">${item.lines
                 .map(line => `<li>${ViewUtils.escape(line)}</li>`)
                 .join('\n')}</ul>`
               return { html }

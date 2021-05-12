@@ -1,5 +1,5 @@
 import Intervention, { Eligibility } from '../../models/intervention'
-import { SummaryListItem } from '../../utils/summaryList'
+import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 
 export default class InterventionDetailsPresenter {
@@ -42,34 +42,29 @@ export default class InterventionDetailsPresenter {
       {
         key: 'Type',
         lines: ['Dynamic Framework'],
-        isList: false,
       },
       {
         key: 'Location',
         lines: [this.intervention.pccRegions.map(region => region.name).join(', ')],
-        isList: false,
       },
       {
         key: this.intervention.serviceCategories.length > 1 ? 'Service types' : 'Service type',
         lines: this.intervention.serviceCategories.map(serviceCategory =>
           utils.convertToProperCase(serviceCategory.name)
         ),
-        isList: this.intervention.serviceCategories.length > 1,
+        listStyle: this.intervention.serviceCategories.length > 1 ? ListStyle.bulleted : undefined,
       },
       {
         key: 'Provider',
         lines: [this.intervention.serviceProvider.name],
-        isList: false,
       },
       {
         key: 'Age group',
         lines: [InterventionDetailsPresenter.ageGroupDescription(this.intervention.eligibility)],
-        isList: false,
       },
       {
         key: 'Gender',
         lines: [InterventionDetailsPresenter.genderDescription(this.intervention.eligibility)],
-        isList: false,
       },
     ]
 
@@ -77,7 +72,6 @@ export default class InterventionDetailsPresenter {
       summary.splice(1, 0, {
         key: 'Region',
         lines: [utils.convertToTitleCase(this.intervention.npsRegion.name)],
-        isList: false,
       })
     }
 
@@ -110,7 +104,6 @@ export default class InterventionDetailsPresenter {
       {
         key: 'Name',
         lines: [this.intervention.serviceProvider.name],
-        isList: false,
       },
     ]
   }

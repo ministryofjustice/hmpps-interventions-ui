@@ -1,3 +1,4 @@
+import { ListStyle } from '../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 
 describe(ServiceUserDetailsPresenter, () => {
@@ -46,16 +47,16 @@ describe(ServiceUserDetailsPresenter, () => {
       const presenter = new ServiceUserDetailsPresenter(serviceUser)
 
       expect(presenter.summary).toEqual([
-        { key: 'CRN', lines: [serviceUser.crn], isList: false },
-        { key: 'Title', lines: [serviceUser.title], isList: false },
-        { key: 'First name', lines: [serviceUser.firstName], isList: false },
-        { key: 'Last name', lines: [serviceUser.lastName], isList: false },
-        { key: 'Date of birth', lines: [serviceUser.dateOfBirth], isList: false },
-        { key: 'Gender', lines: [serviceUser.gender], isList: false },
-        { key: 'Ethnicity', lines: [serviceUser.ethnicity], isList: false },
-        { key: 'Preferred language', lines: [serviceUser.preferredLanguage], isList: false },
-        { key: 'Religion or belief', lines: [serviceUser.religionOrBelief], isList: false },
-        { key: 'Disabilities', lines: serviceUser.disabilities || [], isList: true },
+        { key: 'CRN', lines: [serviceUser.crn] },
+        { key: 'Title', lines: [serviceUser.title] },
+        { key: 'First name', lines: [serviceUser.firstName] },
+        { key: 'Last name', lines: [serviceUser.lastName] },
+        { key: 'Date of birth', lines: [serviceUser.dateOfBirth] },
+        { key: 'Gender', lines: [serviceUser.gender] },
+        { key: 'Ethnicity', lines: [serviceUser.ethnicity] },
+        { key: 'Preferred language', lines: [serviceUser.preferredLanguage] },
+        { key: 'Religion or belief', lines: [serviceUser.religionOrBelief] },
+        { key: 'Disabilities', lines: serviceUser.disabilities || [], listStyle: ListStyle.noMarkers },
       ])
     })
 
@@ -63,16 +64,16 @@ describe(ServiceUserDetailsPresenter, () => {
       const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser)
 
       expect(presenter.summary).toEqual([
-        { key: 'CRN', lines: ['X862134'], isList: false },
-        { key: 'Title', lines: [''], isList: false },
-        { key: 'First name', lines: [''], isList: false },
-        { key: 'Last name', lines: [''], isList: false },
-        { key: 'Date of birth', lines: [''], isList: false },
-        { key: 'Gender', lines: [''], isList: false },
-        { key: 'Ethnicity', lines: [''], isList: false },
-        { key: 'Preferred language', lines: [''], isList: false },
-        { key: 'Religion or belief', lines: [''], isList: false },
-        { key: 'Disabilities', lines: [], isList: true },
+        { key: 'CRN', lines: ['X862134'] },
+        { key: 'Title', lines: [''] },
+        { key: 'First name', lines: [''] },
+        { key: 'Last name', lines: [''] },
+        { key: 'Date of birth', lines: [''] },
+        { key: 'Gender', lines: [''] },
+        { key: 'Ethnicity', lines: [''] },
+        { key: 'Preferred language', lines: [''] },
+        { key: 'Religion or belief', lines: [''] },
+        { key: 'Disabilities', lines: [], listStyle: ListStyle.noMarkers },
       ])
     })
   })

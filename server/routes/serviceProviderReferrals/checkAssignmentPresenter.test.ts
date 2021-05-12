@@ -21,8 +21,8 @@ describe(CheckAssignmentPresenter, () => {
         const presenter = new CheckAssignmentPresenter('', user, 'john@harmonyliving.org.uk', serviceCategory)
 
         expect(presenter.summary).toEqual([
-          { key: 'Name', lines: ['John Smith'], isList: false },
-          { key: 'Email address', lines: ['john@harmonyliving.org.uk'], isList: false },
+          { key: 'Name', lines: ['John Smith'] },
+          { key: 'Email address', lines: ['john@harmonyliving.org.uk'] },
         ])
       })
     })
@@ -34,8 +34,8 @@ describe(CheckAssignmentPresenter, () => {
         const presenter = new CheckAssignmentPresenter('', user, 'john@harmonyliving.org.uk', serviceCategory)
 
         expect(presenter.summary).toEqual([
-          { key: 'Name', lines: ['John '], isList: false },
-          { key: 'Email address', lines: ['john@harmonyliving.org.uk'], isList: false },
+          { key: 'Name', lines: ['John '] },
+          { key: 'Email address', lines: ['john@harmonyliving.org.uk'] },
         ])
       })
     })
@@ -47,8 +47,8 @@ describe(CheckAssignmentPresenter, () => {
         const presenter = new CheckAssignmentPresenter('', user, 'smith@harmonyliving.org.uk', serviceCategory)
 
         expect(presenter.summary).toEqual([
-          { key: 'Name', lines: [' Smith'], isList: false },
-          { key: 'Email address', lines: ['smith@harmonyliving.org.uk'], isList: false },
+          { key: 'Name', lines: [' Smith'] },
+          { key: 'Email address', lines: ['smith@harmonyliving.org.uk'] },
         ])
       })
     })
@@ -60,8 +60,8 @@ describe(CheckAssignmentPresenter, () => {
         const presenter = new CheckAssignmentPresenter('', user, 'unknown@harmonyliving.org.uk', serviceCategory)
 
         expect(presenter.summary).toEqual([
-          { key: 'Name', lines: [''], isList: false },
-          { key: 'Email address', lines: ['unknown@harmonyliving.org.uk'], isList: false },
+          { key: 'Name', lines: [''] },
+          { key: 'Email address', lines: ['unknown@harmonyliving.org.uk'] },
         ])
       })
     })

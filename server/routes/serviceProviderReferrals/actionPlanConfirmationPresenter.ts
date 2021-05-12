@@ -18,17 +18,14 @@ export default class ActionPlanConfirmationPresenter {
     {
       key: 'Name',
       lines: [PresenterUtils.fullName(this.sentReferral.referral.serviceUser)],
-      isList: false,
     },
     {
       key: 'Referral number',
       lines: [this.sentReferral.referenceNumber],
-      isList: false,
     },
     {
       key: 'Service type',
       lines: [utils.convertToProperCase(this.serviceCategory.name)],
-      isList: false,
     },
   ]
 }

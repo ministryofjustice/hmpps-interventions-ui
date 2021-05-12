@@ -36,17 +36,14 @@ describe(SubmittedPostSessionFeedbackPresenter, () => {
           {
             key: 'Caseworker',
             lines: ['Kay.Swerker'],
-            isList: false,
           },
           {
             key: 'Date',
             lines: ['01 Feb 2021'],
-            isList: false,
           },
           {
             key: 'Time',
             lines: ['13:00'],
-            isList: false,
           },
         ])
       })
@@ -64,12 +61,10 @@ describe(SubmittedPostSessionFeedbackPresenter, () => {
           {
             key: 'Date',
             lines: ['01 Feb 2021'],
-            isList: false,
           },
           {
             key: 'Time',
             lines: ['13:00'],
-            isList: false,
           },
         ])
       })
