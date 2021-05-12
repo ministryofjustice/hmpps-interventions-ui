@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config
 
 import com.nimbusds.jwt.JWTParser
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -8,26 +9,39 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.config.web.servlet.invoke
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.JwtDecoders
+import org.springframework.security.oauth2.jwt.JwtValidators
 import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.TokenVerifier
 
 @Configuration
 @EnableWebSecurity
-class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
-  // todo: add custom token validator which calls token verification service
+class ResourceServerConfiguration(private val tokenVerifier: TokenVerifier) : WebSecurityConfigurerAdapter() {
   override fun configure(http: HttpSecurity) {
-    http
-      .sessionManagement()
-      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and().csrf().disable()
-      .authorizeRequests {
-        it.antMatchers("/health/**", "/info", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-        it.anyRequest().authenticated()
+    http {
+      csrf { disable() }
+      sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+      authorizeRequests {
+        authorize("/health/**", permitAll)
+        authorize("/info", permitAll)
+        authorize("/v3/api-docs/**", permitAll)
+        authorize("/swagger-ui/**", permitAll)
+        authorize("/swagger-ui.html", permitAll)
+        authorize(anyRequest, authenticated)
       }
-      .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
+      oauth2ResourceServer {
+        jwt {
+          jwtAuthenticationConverter = jwtAuthenticationConverter()
+        }
+      }
+    }
   }
 
   @Bean
@@ -41,6 +55,16 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
     val jwtAuthenticationConverter = JwtAuthenticationConverter()
     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter)
     return jwtAuthenticationConverter
+  }
+
+  @Bean
+  @Profile("!test")
+  fun jwtDecoder(properties: OAuth2ResourceServerProperties): JwtDecoder {
+    val issuerUri = properties.jwt.issuerUri
+    val jwtDecoder: NimbusJwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri) as NimbusJwtDecoder
+    val validator = DelegatingOAuth2TokenValidator(JwtValidators.createDefaultWithIssuer(issuerUri), tokenVerifier)
+    jwtDecoder.setJwtValidator(validator)
+    return jwtDecoder
   }
 
   @Bean
