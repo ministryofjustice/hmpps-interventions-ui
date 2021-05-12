@@ -1317,6 +1317,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           { id: 'merseyside', name: 'Merseyside' },
         ],
         serviceCategory: serviceCategoryFactory.build(),
+        serviceCategories: [serviceCategoryFactory.build()],
         serviceProvider: serviceProviderFactory.build(),
         eligibility: eligibilityFactory.allAdults().build(),
       }
