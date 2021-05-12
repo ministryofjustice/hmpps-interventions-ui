@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanActivityDTO
@@ -22,7 +22,7 @@ import java.util.UUID
 @RestController
 class ActionPlanController(
   val actionPlanMapper: ActionPlanMapper,
-  val jwtAuthUserMapper: JwtAuthUserMapper,
+  val userMapper: UserMapper,
   val actionPlanService: ActionPlanService,
   val locationMapper: LocationMapper
 ) {
@@ -33,7 +33,7 @@ class ActionPlanController(
     authentication: JwtAuthenticationToken
   ): ResponseEntity<ActionPlanDTO> {
 
-    val createdByUser = jwtAuthUserMapper.map(authentication)
+    val createdByUser = userMapper.fromToken(authentication)
     val createActionPlanActivities = actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(createActionPlanDTO.activities)
 
     val draftActionPlan = actionPlanService.createDraftActionPlan(
@@ -53,7 +53,7 @@ class ActionPlanController(
     @PathVariable id: UUID,
     authentication: JwtAuthenticationToken,
   ): ResponseEntity<ActionPlanDTO> {
-    val submittedByUser = jwtAuthUserMapper.map(authentication)
+    val submittedByUser = userMapper.fromToken(authentication)
     val submittedActionPlan = actionPlanService.submitDraftActionPlan(id, submittedByUser)
 
     val actionPlanDTO = ActionPlanDTO.from(submittedActionPlan)

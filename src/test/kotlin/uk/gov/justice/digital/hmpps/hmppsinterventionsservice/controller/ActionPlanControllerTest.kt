@@ -7,9 +7,9 @@ import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
@@ -27,11 +27,11 @@ import java.util.UUID
 internal class ActionPlanControllerTest {
 
   private val actionPlanMapper = mock<ActionPlanMapper>()
-  private val jwtAuthUserMapper = mock<JwtAuthUserMapper>()
+  private val userMapper = mock<UserMapper>()
   private val actionPlanService = mock<ActionPlanService>()
   private val locationMapper = mock<LocationMapper>()
 
-  private val actionPlanController = ActionPlanController(actionPlanMapper, jwtAuthUserMapper, actionPlanService, locationMapper)
+  private val actionPlanController = ActionPlanController(actionPlanMapper, userMapper, actionPlanService, locationMapper)
 
   @Test
   fun `saves draft action plan`() {
@@ -46,7 +46,7 @@ internal class ActionPlanControllerTest {
     val actionPlanDTO = ActionPlanDTO.from(actionPlan)
     val uri = URI.create("http://localhost/1234")
 
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", actionPlanDTO.id)).thenReturn(uri)
@@ -95,7 +95,7 @@ internal class ActionPlanControllerTest {
     val actionPlanId = UUID.randomUUID()
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val authUser = AuthUser("CRN123", "auth", "user")
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
 
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
     whenever(actionPlanService.submitDraftActionPlan(actionPlanId, authUser)).thenReturn(actionPlan)

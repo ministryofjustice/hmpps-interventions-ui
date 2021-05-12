@@ -6,9 +6,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.EndOfServiceReportOutcomeMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportOutcomeDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndOfServiceReportDTO
@@ -22,14 +22,14 @@ import java.net.URI
 import java.util.UUID
 
 class EndOfServiceReportControllerTest {
-  private val jwtAuthUserMapper = mock<JwtAuthUserMapper>()
+  private val userMapper = mock<UserMapper>()
   private val endOfServiceReportService = mock<EndOfServiceReportService>()
   private val locationMapper = mock<LocationMapper>()
   private val endOfServiceReportOutcomeMapper = mock<EndOfServiceReportOutcomeMapper>()
   private val referralFactory = ReferralFactory()
 
   private val endOfServiceReportController =
-    EndOfServiceReportController(jwtAuthUserMapper, locationMapper, endOfServiceReportService, endOfServiceReportOutcomeMapper)
+    EndOfServiceReportController(userMapper, locationMapper, endOfServiceReportService, endOfServiceReportOutcomeMapper)
 
   @Test
   fun `create end of service report successfully`() {
@@ -41,7 +41,7 @@ class EndOfServiceReportControllerTest {
     val uri = URI.create("http://localhost/1234")
     val createEndOfServiceReportDTO = CreateEndOfServiceReportDTO(referral.id)
 
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(endOfServiceReportService.createEndOfServiceReport(referral.id, authUser)).thenReturn(endOfServiceReport)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", endOfServiceReportDTO.id)).thenReturn(uri)
 
@@ -121,7 +121,7 @@ class EndOfServiceReportControllerTest {
     val endOfServiceReport = SampleData.sampleEndOfServiceReport(id = endOfServiceReportId, referral = referral)
     val uri = URI.create("http://localhost/end-of-service-report/1234")
 
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uri)
     whenever(endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)).thenReturn(endOfServiceReport)
 

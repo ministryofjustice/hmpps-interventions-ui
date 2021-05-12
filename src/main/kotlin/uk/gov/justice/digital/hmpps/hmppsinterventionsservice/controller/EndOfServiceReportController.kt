@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.EndOfServiceReportOutcomeMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateEndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndOfServiceReportDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateEndOfServiceReportDTO
@@ -20,7 +20,7 @@ import java.util.UUID
 
 @RestController
 class EndOfServiceReportController(
-  val jwtAuthUserMapper: JwtAuthUserMapper,
+  val userMapper: UserMapper,
   val locationMapper: LocationMapper,
   val endOfServiceReportService: EndOfServiceReportService,
   val endOfServiceReportOutcomeMapper: EndOfServiceReportOutcomeMapper,
@@ -32,7 +32,7 @@ class EndOfServiceReportController(
     authentication: JwtAuthenticationToken
   ): ResponseEntity<EndOfServiceReportDTO> {
 
-    val createdByUser = jwtAuthUserMapper.map(authentication)
+    val createdByUser = userMapper.fromToken(authentication)
     val endOfServiceReport = endOfServiceReportService.createEndOfServiceReport(createEndOfServiceReportDTO.referralId, createdByUser)
 
     val endOfServiceReportDTO = EndOfServiceReportDTO.from(endOfServiceReport)
@@ -72,7 +72,7 @@ class EndOfServiceReportController(
     @PathVariable id: UUID,
     authentication: JwtAuthenticationToken
   ): EndOfServiceReportDTO {
-    val submittedByUser = jwtAuthUserMapper.map(authentication)
+    val submittedByUser = userMapper.fromToken(authentication)
     val submittedEndOfServiceReport = endOfServiceReportService.submitEndOfServiceReport(id, submittedByUser)
 
     return EndOfServiceReportDTO.from(submittedEndOfServiceReport)
