@@ -2,9 +2,11 @@ import { DeepPartial } from 'fishery'
 import interventionFactory from '../../../testutils/factories/intervention'
 import eligibilityFactory from '../../../testutils/factories/eligibility'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import Intervention from '../../models/intervention'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import TestUtils from '../../../testutils/testUtils'
+import { SummaryListItem } from '../../utils/summaryList'
 
 describe(InterventionDetailsPresenter, () => {
   describe('title', () => {
@@ -119,11 +121,12 @@ three lines.`,
   })
 
   describe('summary', () => {
+    function summaryForParams(params: DeepPartial<Intervention>): SummaryListItem[] {
+      return new InterventionDetailsPresenter(interventionFactory.build(params)).summary
+    }
+
     function linesForKey(key: string, params: DeepPartial<Intervention>): string[] | null {
-      return TestUtils.linesForKey(
-        key,
-        () => new InterventionDetailsPresenter(interventionFactory.build(params)).summary
-      )
+      return TestUtils.linesForKey(key, () => summaryForParams(params))
     }
 
     describe('Type', () => {
@@ -168,12 +171,27 @@ three lines.`,
     })
 
     describe('Service type', () => {
-      it('is the service category name', () => {
-        expect(
-          linesForKey('Service type', {
-            serviceCategory: { name: 'accommodation' },
+      describe('for a single-service intervention', () => {
+        it('is the service category name', () => {
+          expect(
+            linesForKey('Service type', {
+              serviceCategories: [serviceCategoryFactory.build({ name: 'accommodation' })],
+            })
+          ).toEqual(['Accommodation'])
+        })
+      })
+
+      describe('for a cohort intervention', () => {
+        it('has a pluralised key, and is a list of service category names', () => {
+          const summary = summaryForParams({
+            serviceCategories: [
+              serviceCategoryFactory.build({ name: 'accommodation' }),
+              serviceCategoryFactory.build({ name: 'emotional wellbeing' }),
+            ],
           })
-        ).toEqual(['Accommodation'])
+          const item = summary.find(anItem => anItem.key === 'Service types')
+          expect(item).toMatchObject({ lines: ['Accommodation', 'Emotional wellbeing'], isList: true })
+        })
       })
     })
 

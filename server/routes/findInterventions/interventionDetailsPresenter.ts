@@ -50,9 +50,11 @@ export default class InterventionDetailsPresenter {
         isList: false,
       },
       {
-        key: 'Service type',
-        lines: [utils.convertToProperCase(this.intervention.serviceCategory.name)],
-        isList: false,
+        key: this.intervention.serviceCategories.length > 1 ? 'Service types' : 'Service type',
+        lines: this.intervention.serviceCategories.map(serviceCategory =>
+          utils.convertToProperCase(serviceCategory.name)
+        ),
+        isList: this.intervention.serviceCategories.length > 1,
       },
       {
         key: 'Provider',
