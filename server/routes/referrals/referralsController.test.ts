@@ -814,7 +814,7 @@ describe('GET /referrals/:id/service-categories', () => {
 })
 
 describe('POST /referrals/:id/service-categories', () => {
-  fit('updates the referral on the backend and redirects to the next question', async () => {
+  it('updates the referral on the backend and redirects to the next question', async () => {
     const serviceCategory = serviceCategoryFactory.build({
       id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
       name: 'social inclusion',
