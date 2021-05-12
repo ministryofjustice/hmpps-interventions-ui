@@ -1,14 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
 class ReferralAccessChecker(
   private val userTypeChecker: UserTypeChecker,
   private val eligibleProviderMapper: EligibleProviderMapper,
   private val userAccessScopeMapper: UserAccessScopeMapper,
+  private val userMapper: UserMapper,
 ) {
-  fun forServiceProviderUser(referral: Referral, user: AuthUser): Boolean {
+  fun forServiceProviderUser(token: JwtAuthenticationToken, referral: Referral): Boolean {
+    val user = userMapper.fromToken(token)
+
     if (!userTypeChecker.isServiceProviderUser(user)) {
       return false
     }
