@@ -53,7 +53,7 @@ jobs:
       - node/install-npm:
           version: 7.5.4
       - node/install-packages
-      - run: npm run build
+      - run: npm run build:prod
       - run: npm prune --production --no-audit
       - run:
           # copies what the Dockerfile does, without build-info
