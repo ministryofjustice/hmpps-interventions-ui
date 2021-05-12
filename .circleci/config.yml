@@ -4,6 +4,7 @@ orbs:
   hmpps: ministryofjustice/hmpps@2.3.2
   snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
+  veracode: orb-01scan/sast-orb@0.0.9
 
 executors:
   integration:
@@ -27,7 +28,7 @@ jobs:
     steps:
       - checkout
       - node/install-npm:
-        version: 7.5.4
+          version: 7.5.4
       - node/install-packages
       - run: npm run test
       - store_artifacts:
@@ -43,12 +44,41 @@ jobs:
       - run: npm run scripts:typecheck
       - run: npm run lint
 
+  assemble:
+    executor:
+      name: hmpps/node
+      tag: 14.16.0-browsers
+    steps:
+      - checkout
+      - node/install-npm:
+          version: 7.5.4
+      - node/install-packages
+      - run: npm run build:prod
+      - run: npm prune --production --no-audit
+      - run:
+          # copies what the Dockerfile does, without build-info
+          name: Package production code for scanning
+          command: tar czf hmpps-interventions-ui.tar.gz package*.json assets/ dist/ node_modules/
+      - persist_to_workspace:
+          root: .
+          paths:
+            - hmpps-interventions-ui.tar.gz
+
+  appsec_scan:
+    executor: veracode/default
+    steps:
+      - attach_workspace:
+          at: ./build
+      - veracode/policy-scan:
+          filepath: ./build/hmpps-interventions-ui.tar.gz
+          teams: hmpps-interventions
+
   integration_test:
     executor: integration
     steps:
       - checkout
       - node/install-npm:
-        version: 7.5.4
+          version: 7.5.4
       - node/install-packages
       - run: npm run build
       - run: # Run linter after build because the integration test code depends on compiled typescript...
@@ -87,6 +117,10 @@ workflows:
       - build
       - integration_test
       - hmpps/helm_lint
+      - assemble
+      - appsec_scan:
+          requires: [assemble]
+          context: [veracode-credentials]
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
           monitor: true
