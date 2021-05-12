@@ -10,6 +10,10 @@ Cypress.Commands.add('stubPatchDraftReferral', (id, responseJson) => {
   cy.task('stubPatchDraftReferral', { id, responseJson })
 })
 
+Cypress.Commands.add('setDesiredOutcomesForServiceCategory', (referralId, serviceCategoryId, responseJson) => {
+  cy.task('stubPatchDraftReferral', { referralId, serviceCategoryId, responseJson })
+})
+
 Cypress.Commands.add('stubGetServiceCategory', (id, responseJson) => {
   cy.task('stubGetServiceCategory', { id, responseJson })
 })

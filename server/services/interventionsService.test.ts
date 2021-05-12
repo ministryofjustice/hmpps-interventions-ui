@@ -520,7 +520,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.relevantSentenceId).toEqual(2600295124)
     })
 
-    it('returns the updated referral when selecting desired outcomes', async () => {
+    it('returns the updated referral when selecting desired outcomes on a single-service referral', async () => {
       await provider.addInteraction({
         state:
           'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected',
@@ -882,6 +882,59 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.serviceCategoryIds).toEqual([
         'c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f',
         'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12',
+      ])
+    })
+  })
+
+  describe('setDesiredOutcomesForServiceCategory', () => {
+    it('returns the updated referral when selecting desired outcomes on a cohort referral', async () => {
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to set the desired outcomes for a service category on a referral',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/desired-outcomes`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            desiredOutcomes: Matchers.like([
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              },
+            ]),
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
+        token,
+        '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        }
+      )
+
+      expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+      expect(referral.desiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
+        '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        '65924ac6-9724-455b-ad30-906936291421',
       ])
     })
   })
