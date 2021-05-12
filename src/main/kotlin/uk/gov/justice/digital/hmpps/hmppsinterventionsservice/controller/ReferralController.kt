@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
@@ -26,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceProviderService
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -36,7 +38,23 @@ class ReferralController(
   private val hmppsAuthService: HMPPSAuthService,
   private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
+  private val serviceProviderService: ServiceProviderService
 ) {
+  companion object : KLogging()
+
+  private fun validateReferralAccess(authentication: JwtAuthenticationToken, referralId: UUID) {
+    val authUser = parseAuthUserToken(authentication)
+    val hmppsAuthGroupId = hmppsAuthService.getServiceProviderOrganizationForUser(authUser)
+    val serviceProvider = serviceProviderService.getServiceProviderByReferralId(referralId)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    serviceProvider.let {
+      if (it.id != hmppsAuthGroupId) {
+        logger.error("AuthUser [id=${authUser.id}] does not have access to referral [id=$referralId]")
+        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized to access referral [id=$referralId]")
+      }
+    }
+  }
+
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
     @PathVariable id: UUID,
@@ -77,7 +95,8 @@ class ReferralController(
   }
 
   @GetMapping("/sent-referral/{id}")
-  fun getSentReferral(@PathVariable id: UUID): SentReferralDTO {
+  fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
+    validateReferralAccess(authentication, id)
     return referralService.getSentReferral(id)
       ?.let { SentReferralDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")

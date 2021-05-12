@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceProviderService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -33,13 +35,14 @@ import javax.persistence.EntityNotFoundException
 
 internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
+  private val serviceProviderService = mock<ServiceProviderService>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val userMapper = UserMapper()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
     referralService, serviceCategoryService, hmppsAuthService,
-    userMapper, cancellationReasonMapper
+    userMapper, cancellationReasonMapper, serviceProviderService
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
@@ -50,6 +53,59 @@ internal class ReferralControllerTest {
     whenever(referralService.createDraftReferral(any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())).thenThrow(EntityNotFoundException::class.java)
     assertThrows<ServerWebInputException> {
       referralController.createDraftReferral(CreateReferralRequestDTO("CRN20", UUID.randomUUID()), tokenFactory.create())
+    }
+  }
+
+  @Nested
+  inner class GetSentReferral {
+    val referral = referralFactory.createSent()
+    val serviceProvider = referral.intervention.dynamicFrameworkContract.primeProvider
+    val userID = "userID"
+    @Test
+    fun `getSentReferral returns not found if serviceProvider does not exist`() {
+      whenever(serviceProviderService.getServiceProviderByReferralId(eq(referral.id))).thenReturn(null)
+      val e = assertThrows<ResponseStatusException> {
+        referralController.getSentReferral(
+          referral.id,
+          tokenFactory.create(userID = userID)
+        )
+      }
+      assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+    @Test
+    fun `getSentReferral returns unauthorized if user does not have a service provider`() {
+      whenever(serviceProviderService.getServiceProviderByReferralId(eq(referral.id))).thenReturn(serviceProvider)
+      whenever(hmppsAuthService.getServiceProviderOrganizationForUser(any())).thenReturn(null)
+      val e = assertThrows<ResponseStatusException> {
+        referralController.getSentReferral(
+          referral.id,
+          tokenFactory.create(userID = userID)
+        )
+      }
+      assertThat(e.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+    @Test
+    fun `getSentReferral returns unauthorized if user is not same service provider as referral`() {
+      whenever(serviceProviderService.getServiceProviderByReferralId(eq(referral.id))).thenReturn(serviceProvider)
+      whenever(hmppsAuthService.getServiceProviderOrganizationForUser(any())).thenReturn("someOtherServiceProvider")
+      val e = assertThrows<ResponseStatusException> {
+        referralController.getSentReferral(
+          referral.id,
+          tokenFactory.create(userID = userID)
+        )
+      }
+      assertThat(e.status).isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+    @Test
+    fun `getSentReferral returns a sent referral if user has correct permissions`() {
+      whenever(serviceProviderService.getServiceProviderByReferralId(eq(referral.id))).thenReturn(serviceProvider)
+      whenever(referralService.getSentReferral(any())).thenReturn(referral)
+      whenever(hmppsAuthService.getServiceProviderOrganizationForUser(any())).thenReturn(serviceProvider.id)
+      val sentReferral = referralController.getSentReferral(
+        referral.id,
+        tokenFactory.create(userID = userID)
+      )
+      assertThat(sentReferral.id).isEqualTo(referral.id)
     }
   }
 
