@@ -45,6 +45,19 @@ class HMPPSAuthService(
   @Value("\${hmppsauth.api.locations.user-detail}") private val userDetailLocation: String,
   private val hmppsAuthApiWebClient: WebClient,
 ) {
+  fun getUserGroups(user: AuthUser): List<AuthGroupID>? {
+    val url = UriComponentsBuilder.fromPath(authUserGroupsLocation)
+      .buildAndExpand(user.userName)
+      .toString()
+
+    return hmppsAuthApiWebClient.get().uri(url)
+      .retrieve()
+      .onStatus({ HttpStatus.NOT_FOUND == it }, { Mono.just(null) })
+      .bodyToFlux(AuthGroupResponse::class.java)
+      .map { it.groupCode }
+      .collectList().block()
+  }
+
   fun getServiceProviderOrganizationForUser(user: AuthUser): AuthGroupID? {
     if (user.authSource != "auth") {
       return null
