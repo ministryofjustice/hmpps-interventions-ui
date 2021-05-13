@@ -194,6 +194,36 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
+    describe('for a single-service referral that has had a complexity level selected', () => {
+      beforeEach(async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had a complexity level selected',
+          uponReceiving: 'a request for that referral',
+          withRequest: {
+            method: 'GET',
+            path: '/draft-referral/037cc90b-beaa-4a32-9ab7-7f79136e1d27',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              id: '037cc90b-beaa-4a32-9ab7-7f79136e1d27',
+              complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+      })
+
+      it('returns a referral for the given ID, with the desired outcomes selected', async () => {
+        const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+
+        expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+        expect(referral.complexityLevelId).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+      })
+    })
+
     describe('for a referral that has had a service user selected', () => {
       beforeEach(async () => {
         await provider.addInteraction({
