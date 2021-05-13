@@ -2,20 +2,32 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Component
-import org.springframework.web.server.ServerWebInputException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
 @Component
 class UserMapper {
   fun fromToken(authentication: JwtAuthenticationToken): AuthUser {
+    val errors = mutableListOf<String>()
+
     val userID = authentication.token.getClaimAsString("user_id")
-      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
+    if (userID == null) {
+      errors.add("no 'user_id' claim in token")
+    }
 
     val userName = authentication.token.getClaimAsString("user_name")
-      ?: throw ServerWebInputException("no 'user_name' claim in authentication token")
+    if (userName == null) {
+      errors.add("no 'user_name' claim in token")
+    }
 
     val authSource = authentication.token.getClaimAsString("auth_source")
-      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
+    if (authSource == null) {
+      errors.add("no 'auth_source' claim in token")
+    }
+
+    if (errors.isNotEmpty()) {
+      throw AccessError("could not map auth token to user", errors)
+    }
 
     return AuthUser(id = userID, authSource = authSource, userName = userName)
   }
