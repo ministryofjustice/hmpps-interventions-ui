@@ -20,7 +20,7 @@ internal class CommunityAPIBookingServiceTest {
   private val httpBaseUrl = "http://url"
   private val viewUrl = "/view/{referralId}"
   private val apiUrl = "/appt/{CRN}/{sentenceId}/{contextName}"
-  private val crsOfficeLocation = "CRSSHEF"
+  private val crsOfficeLocation = "CRSEXTL"
   private val crsBookingsContext = "CRS"
 
   private val communityAPIClient: CommunityAPIClient = mock()
@@ -38,17 +38,17 @@ internal class CommunityAPIBookingServiceTest {
   @Test
   fun `requests booking for an appointment when timings specified`() {
     val now = OffsetDateTime.now()
-    val appointment = makeAppointment(null, null)
+    val appointment = makeAppointment(now, null, null)
 
     val uri = "/appt/X1/123/CRS"
     val link = "http://url/view/${appointment.actionPlan.referral.id}"
-    val request = AppointmentCreateRequestDTO(now, now.plusMinutes(60), "CRSSHEF", notes = link)
+    val request = AppointmentCreateRequestDTO("ACC", now, now.plusMinutes(60), now.plusMinutes(120), "CRSEXTL", notes = link, true)
     val response = AppointmentCreateResponseDTO(1234L)
 
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))
       .thenReturn(response)
 
-    val deliusAppointmentId = communityAPIBookingService.book(appointment, now, 60)
+    val deliusAppointmentId = communityAPIBookingService.book(appointment, now.plusMinutes(60), 60)
 
     assertThat(deliusAppointmentId).isEqualTo(1234L)
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java)
@@ -56,7 +56,7 @@ internal class CommunityAPIBookingServiceTest {
 
   @Test
   fun `does nothing if not initial booking`() {
-    val deliusAppointmentId = communityAPIBookingService.book(makeAppointment(null, null), now(), null)
+    val deliusAppointmentId = communityAPIBookingService.book(makeAppointment(now(), null, null), now(), null)
 
     assertThat(deliusAppointmentId).isNull()
     verifyZeroInteractions(communityAPIClient)
@@ -72,17 +72,17 @@ internal class CommunityAPIBookingServiceTest {
 
   @Test
   fun `is initial booking`() {
-    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(null, null), null, null)).isFalse()
-    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), null), null, null)).isFalse()
-    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(null, 60), null, null)).isFalse()
-    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), 60), null, null)).isFalse()
-    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(null, null), now(), null)).isFalse()
-    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(null, null), now(), 60)).isTrue()
+    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), null, null), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), now(), null), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), null, 60), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), now(), 60), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), null, null), now(), null)).isFalse()
+    assertThat(communityAPIBookingService.isInitialBooking(makeAppointment(now(), null, null), now(), 60)).isTrue()
   }
 
   @Test
   fun `does nothing if not enabled`() {
-    val appointment = makeAppointment(null, null)
+    val appointment = makeAppointment(now(), null, null)
 
     val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(
       false,
@@ -98,8 +98,8 @@ internal class CommunityAPIBookingServiceTest {
     verifyZeroInteractions(communityAPIClient)
   }
 
-  private fun makeAppointment(appointmentTime: OffsetDateTime?, durationInMinutes: Int?): ActionPlanAppointment {
-    val referral = SampleData.sampleReferral(crn = crn, relevantSentenceId = sentenceId, serviceProviderName = "SPN")
+  private fun makeAppointment(sentAt: OffsetDateTime, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): ActionPlanAppointment {
+    val referral = SampleData.sampleReferral(crn = crn, relevantSentenceId = sentenceId, sentAt = sentAt, serviceProviderName = "SPN")
     return SampleData.sampleActionPlanAppointment(
       actionPlan = SampleData.sampleActionPlan(referral = referral),
       createdBy = SampleData.sampleAuthUser(),
