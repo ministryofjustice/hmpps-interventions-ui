@@ -117,10 +117,6 @@ workflows:
       - build
       - integration_test
       - hmpps/helm_lint
-      - assemble
-      - appsec_scan:
-          requires: [assemble]
-          context: [veracode-credentials]
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
           monitor: true
@@ -206,6 +202,10 @@ workflows:
                 - main
     jobs:
       - hmpps/npm_security_audit
+      - assemble
+      - appsec_scan:
+          requires: [assemble]
+          context: [veracode-credentials]
       - vulnerability_scan:
           name: vulnerability_scan_and_monitor
           monitor: true
