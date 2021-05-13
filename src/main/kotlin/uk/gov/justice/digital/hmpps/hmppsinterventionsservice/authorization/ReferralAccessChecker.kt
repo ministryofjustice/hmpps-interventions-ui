@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
+@Component
 class ReferralAccessChecker(
   private val userTypeChecker: UserTypeChecker,
   private val eligibleProviderMapper: EligibleProviderMapper,
