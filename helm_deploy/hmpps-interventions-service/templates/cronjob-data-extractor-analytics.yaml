@@ -12,14 +12,17 @@ spec:
           containers:
           - name: data-extractor-analytics
             image: ministryofjustice/data-engineering-data-extractor:develop
+            imagePullPolicy: Always
             {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
             command: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
             {{ else }}
-            command: ["sh", "-c", "extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
+            command: ["sh", "-c", "python3 /data-engineering-data-extractor/modules/extract_table_names.py && python3 /data-engineering-data-extractor/modules/extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
             {{ end }}
             env:
               - name: LOCAL_EXPORT_DESTINATION
                 value: export
+              - name: PGPORT
+                value: 5432
               - name: PGHOST
                 valueFrom:
                   secretKeyRef:
