@@ -6,16 +6,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 
 @Component
 class ReferralAccessFilter(
-  private val userTypeChecker: UserTypeChecker,
-  private val userAccessScopeMapper: UserAccessScopeMapper,
+  private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
 ) {
   fun serviceProviderReferrals(referrals: List<Referral>, user: AuthUser): List<Referral> {
-    if (!userTypeChecker.isServiceProviderUser(user)) {
-      // fixme: is this correct? what do we do here?
-      return referrals
-    }
-
-    val userScope = userAccessScopeMapper.forServiceProviderUser(user)
+    val userScope = serviceProviderAccessScopeMapper.fromUser(user)
 
     // fixme: how do equality operators work for these types of comparisons - should we write a custom equals override
     //        that compares contract reference numbers?

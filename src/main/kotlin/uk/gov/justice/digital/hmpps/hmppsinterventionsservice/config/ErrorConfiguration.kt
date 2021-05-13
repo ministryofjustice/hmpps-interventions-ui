@@ -30,17 +30,25 @@ data class FieldError(
 
 class ValidationError(override val message: String, val errors: List<FieldError>) : RuntimeException(message)
 
+class AccessError(override val message: String, val errors: List<String>) : RuntimeException(message)
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrorResponse(
   val status: Int,
   val error: String,
   val message: String?,
   val validationErrors: List<FieldError>? = null,
+  val accessErrors: List<String>? = null,
 )
 
 @RestControllerAdvice
 class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
   companion object : KLogging()
+
+  @ExceptionHandler(AccessError::class)
+  fun handleAccessError(e: AccessError): ResponseEntity<ErrorResponse> {
+    return errorResponse(HttpStatus.FORBIDDEN, "access error", e.message, accessErrors = e.errors)
+  }
 
   @ExceptionHandler(AccessDeniedException::class)
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> {
@@ -57,7 +65,7 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
   @ExceptionHandler(ValidationError::class)
   fun handleValidationException(e: ValidationError): ResponseEntity<ErrorResponse> {
     logger.info("validation exception", e)
-    return errorResponse(HttpStatus.BAD_REQUEST, "validation error", e.message, e.errors)
+    return errorResponse(HttpStatus.BAD_REQUEST, "validation error", e.message, validationErrors = e.errors)
   }
 
   @ExceptionHandler(ResponseStatusException::class)
@@ -91,7 +99,13 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
     return errorResponse(e.statusCode, "web client exception", e.responseBodyAsString)
   }
 
-  private fun errorResponse(status: HttpStatus, summary: String, description: String?, validationErrors: List<FieldError>? = null): ResponseEntity<ErrorResponse> {
+  private fun errorResponse(
+    status: HttpStatus,
+    summary: String,
+    description: String?,
+    validationErrors: List<FieldError>? = null,
+    accessErrors: List<String>? = null,
+  ): ResponseEntity<ErrorResponse> {
     return ResponseEntity
       .status(status)
       .body(
@@ -100,6 +114,7 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
           error = summary,
           message = description,
           validationErrors = validationErrors,
+          accessErrors = accessErrors,
         )
       )
   }

@@ -17,7 +17,6 @@ class UserMapper {
     val authSource = authentication.token.getClaimAsString("auth_source")
       ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
 
-    // should we persist the user here??
     return AuthUser(id = userID, authSource = authSource, userName = userName)
   }
 }

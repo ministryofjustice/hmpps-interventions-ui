@@ -8,14 +8,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 class ReferralAccessChecker(
   private val userTypeChecker: UserTypeChecker,
   private val eligibleProviderMapper: EligibleProviderMapper,
-  private val userAccessScopeMapper: UserAccessScopeMapper,
+  private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
 ) {
   fun forServiceProviderUser(referral: Referral, user: AuthUser): Boolean {
     if (!userTypeChecker.isServiceProviderUser(user)) {
       return false
     }
 
-    val userScope = userAccessScopeMapper.forServiceProviderUser(user)
+    val userScope = serviceProviderAccessScopeMapper.fromUser(user)
     val eligibleServiceProviders = eligibleProviderMapper.fromReferral(referral)
 
     if (!eligibleServiceProviders.contains(userScope.serviceProvider)) {
