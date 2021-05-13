@@ -1,38 +1,52 @@
 import { Request } from 'express'
+import { ValidationChain, body, Result, ValidationError } from 'express-validator'
 import DraftReferral from '../../models/draftReferral'
 import errorMessages from '../../utils/errorMessages'
+import FormUtils from '../../utils/formUtils'
 import { FormValidationError } from '../../utils/formValidationError'
+import { FormData } from '../../utils/forms/formData'
 
 export default class ComplexityLevelForm {
-  private constructor(private readonly request: Request) {}
+  constructor(private readonly request: Request) {}
 
-  static async createForm(request: Request): Promise<ComplexityLevelForm> {
-    return new ComplexityLevelForm(request)
-  }
+  async data(): Promise<FormData<Partial<DraftReferral>>> {
+    const validationResult = await FormUtils.runValidations({
+      request: this.request,
+      validations: ComplexityLevelForm.validations,
+    })
 
-  get paramsForUpdate(): Partial<DraftReferral> {
+    const error = this.error(validationResult)
+
+    if (error) {
+      return {
+        paramsForUpdate: null,
+        error,
+      }
+    }
+
     return {
-      complexityLevelId: this.request.body['complexity-level-id'],
+      paramsForUpdate: {
+        complexityLevelId: this.request.body['complexity-level-id'],
+      },
+      error: null,
     }
   }
 
-  get isValid(): boolean {
-    return this.request.body['complexity-level-id'] !== null && this.request.body['complexity-level-id'] !== undefined
+  static get validations(): ValidationChain[] {
+    return [body('complexity-level-id').notEmpty().withMessage(errorMessages.complexityLevel.empty)]
   }
 
-  get error(): FormValidationError | null {
-    if (this.isValid) {
+  private error(validationResult: Result<ValidationError>): FormValidationError | null {
+    if (validationResult.isEmpty()) {
       return null
     }
 
     return {
-      errors: [
-        {
-          formFields: ['complexity-level-id'],
-          errorSummaryLinkedField: 'complexity-level-id',
-          message: errorMessages.complexityLevel.empty,
-        },
-      ],
+      errors: validationResult.array().map(validationError => ({
+        formFields: [validationError.param],
+        errorSummaryLinkedField: validationError.param,
+        message: validationError.msg,
+      })),
     }
   }
 }

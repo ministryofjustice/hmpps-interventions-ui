@@ -244,25 +244,25 @@ export default class ReferralsController {
   }
 
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
-    const form = await ComplexityLevelForm.createForm(req)
+    const data = await new ComplexityLevelForm(req).data()
 
-    let error: FormValidationError | null = null
+    let formError: FormValidationError | null = null
 
-    if (form.isValid) {
+    if (!data.error) {
       try {
         await this.interventionsService.patchDraftReferral(
           res.locals.user.token.accessToken,
           req.params.id,
-          form.paramsForUpdate
+          data.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        formError = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      error = form.error
+      formError = data.error
     }
 
-    if (!error) {
+    if (!formError) {
       res.redirect(`/referrals/${req.params.id}/completion-deadline`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(
@@ -279,7 +279,7 @@ export default class ReferralsController {
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       ])
 
-      const presenter = new ComplexityLevelPresenter(referral, serviceCategory, error, req.body)
+      const presenter = new ComplexityLevelPresenter(referral, serviceCategory, formError, req.body)
       const view = new ComplexityLevelView(presenter)
 
       res.status(400)
