@@ -243,6 +243,26 @@ export default class ReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async viewCohortComplexityLevel(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { serviceCategoryId } = req.params
+    const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.referralId)
+
+    if (!referral.serviceCategoryIds || !referral.serviceCategoryIds.includes(serviceCategoryId)) {
+      throw new Error('Attempting to view complexity level without service categories set on the referral')
+    }
+
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
+
+    const presenter = new ComplexityLevelPresenter(referral, serviceCategory)
+    const view = new ComplexityLevelView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
     const data = await new ComplexityLevelForm(req).data()
 

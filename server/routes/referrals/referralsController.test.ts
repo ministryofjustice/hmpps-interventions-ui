@@ -629,6 +629,51 @@ describe('POST /referrals/:id/complexity-level', () => {
   })
 })
 
+describe('GET /referrals/:referralId/service-category/:service-category-id/complexity-level', () => {
+  beforeEach(() => {
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+    const accommodationServiceCategory = serviceCategoryFactory.build({
+      id: 'd69b80d5-0005-4f08-b5d8-404999c9e843',
+      name: 'accommodation',
+    })
+
+    const referral = draftReferralFactory
+      .serviceCategoriesSelected([socialInclusionServiceCategory.id, accommodationServiceCategory.id])
+      .build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What is the complexity level for the social inclusion service?')
+      })
+
+    expect(interventionsService.getServiceCategory).toHaveBeenCalledWith(
+      'token',
+      'b33c19d1-7414-4014-b543-e543e59c5b39'
+    )
+  })
+
+  it('renders an error when the request for a service category fails', async () => {
+    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+
+    await request(app)
+      .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get service category')
+      })
+  })
+})
+
 describe('GET /referrals/:id/further-information', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build()
