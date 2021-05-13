@@ -122,6 +122,7 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   serviceCategoryId: null,
   serviceCategoryIds: [],
   complexityLevelId: null,
+  complexityLevels: null,
   furtherInformation: null,
   relevantSentenceId: null,
   desiredOutcomesIds: null,

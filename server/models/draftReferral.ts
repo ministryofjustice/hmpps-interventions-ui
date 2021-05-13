@@ -1,3 +1,4 @@
+import ReferralComplexityLevel from './referralComplexityLevel'
 import ReferralDesiredOutcomes from './referralDesiredOutcomes'
 import ServiceProvider from './serviceProvider'
 import ServiceUser from './serviceUser'
@@ -11,7 +12,8 @@ export interface ReferralFields {
   interventionId: string
   serviceCategoryId: string
   serviceCategoryIds: string[]
-  complexityLevelId: string
+  complexityLevelId: string // deprecated in favour of complexityLevels
+  complexityLevels: ReferralComplexityLevel[]
   furtherInformation: string
   relevantSentenceId: number
   desiredOutcomesIds: string[] // deprecated in favour of desiredOutcomes
