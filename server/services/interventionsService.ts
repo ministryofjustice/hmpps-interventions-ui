@@ -14,7 +14,6 @@ import ServiceCategory from '../models/serviceCategory'
 import ActionPlan, { ActionPlanAppointment, AppointmentAttendance, AppointmentBehaviour } from '../models/actionPlan'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
-import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 
 export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
@@ -157,7 +156,8 @@ export default class InterventionsService {
   async setDesiredOutcomesForServiceCategory(
     token: string,
     referralId: string,
-    desiredOutcomes: Partial<ReferralDesiredOutcomes>
+    // TODO: switch below to Partial<ReferralDesiredOutcomes> when we update the code for single-service referrals to use the new PATCH function.
+    desiredOutcomes: Partial<DraftReferral>
   ): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 

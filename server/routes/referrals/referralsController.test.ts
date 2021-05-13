@@ -947,6 +947,115 @@ describe('POST /referrals/:id/desired-outcomes', () => {
   })
 })
 
+describe('GET /referrals/:referralId/service-category/:service-category-id/desired-outcomes', () => {
+  beforeEach(() => {
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
+    const accommodationServiceCategory = serviceCategoryFactory.build({
+      id: 'd69b80d5-0005-4f08-b5d8-404999c9e843',
+      name: 'accommodation',
+    })
+
+    const referral = draftReferralFactory
+      .serviceCategoriesSelected([socialInclusionServiceCategory.id, accommodationServiceCategory.id])
+      .build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What are the desired outcomes for the social inclusion service?')
+      })
+
+    expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
+      'token',
+      'b33c19d1-7414-4014-b543-e543e59c5b39',
+    ])
+  })
+
+  it('renders an error when the request for a service category fails', async () => {
+    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+
+    await request(app)
+      .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get service category')
+      })
+  })
+})
+
+describe('POST /referrals/:referralId/service-category/:service-category-id/desired-outcomes/', () => {
+  const desiredOutcomes = [
+    {
+      id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+      description:
+        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+    },
+    {
+      id: '65924ac6-9724-455b-ad30-906936291421',
+      description: 'Service User makes progress in obtaining accommodation',
+    },
+    {
+      id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
+      description: 'Service User is helped to secure social or supported housing',
+    },
+    {
+      id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
+      description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+    },
+  ]
+
+  beforeEach(() => {
+    const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes, name: 'social inclusion' })
+    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('updates the referral on the backend and redirects to back to the form page', async () => {
+    await request(app)
+      .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+      .type('form')
+      .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
+      serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+    })
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.setDesiredOutcomesForServiceCategory.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+
+    await request(app)
+      .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+      .type('form')
+      .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+
+    expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
+      serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+    })
+  })
+})
+
 describe('GET /referrals/:id/rar-days', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })

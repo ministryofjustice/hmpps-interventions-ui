@@ -113,14 +113,21 @@ export default async function setUpMocks(): Promise<void> {
   ])
   */
 
-  const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-  const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+  const accommodationServiceCategory = serviceCategoryFactory.build({
+    name: 'accommodation',
+    id: '5fd9e664-0a73-4476-9f05-a330f556f34a',
+  })
+  const socialInclusionServiceCategory = serviceCategoryFactory.build({
+    name: 'social inclusion',
+    id: '62e042a7-c44f-4d82-a679-4f435167e44a',
+  })
   const intervention = interventionFactory.build({
     serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
   })
 
   const draftReferral = draftReferralFactory
-    .serviceCategorySelected()
+    .serviceCategorySelected(accommodationServiceCategory.id)
+    .serviceCategoriesSelected([accommodationServiceCategory.id, socialInclusionServiceCategory.id])
     .serviceUserDetailsSet()
     .build({
       id: '98a42c61-c30f-4beb-8062-04033c376e2d',
@@ -151,5 +158,11 @@ export default async function setUpMocks(): Promise<void> {
 
     interventionsMocks.stubGetIntervention(draftReferral.interventionId, intervention),
     interventionsMocks.stubGetDraftReferral(draftReferral.id, draftReferral),
+    [accommodationServiceCategory, socialInclusionServiceCategory].forEach(async serviceCategory => {
+      await interventionsMocks.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      await interventionsMocks.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, serviceCategory.id, {
+        ...draftReferral,
+      })
+    }),
   ])
 }

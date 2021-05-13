@@ -429,26 +429,70 @@ export default class ReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async selectCohortDesiredOutcomes(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId, serviceCategoryId } = req.params
+    let formError: FormValidationError | null = null
+
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+
+    if (req.method === 'POST') {
+      const data = await new DesiredOutcomesForm(req).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+      } else {
+        await this.interventionsService.setDesiredOutcomesForServiceCategory(accessToken, referralId, {
+          serviceCategoryId,
+          ...data.paramsForUpdate,
+        })
+
+        return res.redirect(`/referrals/${referralId}/form`)
+      }
+    }
+
+    if (!referral.serviceCategoryIds) {
+      throw new Error('Attempting to view desired outcomes without service categories selected')
+    }
+
+    const selectedServiceCategoryId = referral.serviceCategoryIds.find(id => id === serviceCategoryId)
+
+    if (!selectedServiceCategoryId) {
+      throw new Error('Requested service category not set on the referral')
+    }
+
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(accessToken, selectedServiceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
+
+    const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, formError)
+    const view = new DesiredOutcomesView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
-    const form = await DesiredOutcomesForm.createForm(req)
+    const data = await new DesiredOutcomesForm(req).data()
 
-    let error: FormValidationError | null = null
+    let formError: FormValidationError | null = null
 
-    if (form.isValid) {
+    if (!data.error) {
       try {
         await this.interventionsService.patchDraftReferral(
           res.locals.user.token.accessToken,
           req.params.id,
-          form.paramsForUpdate
+          data.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        formError = createFormValidationErrorOrRethrow(e)
       }
     } else {
-      error = form.error
+      formError = data.error
     }
 
-    if (!error) {
+    if (!formError) {
       res.redirect(`/referrals/${req.params.id}/complexity-level`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(
@@ -465,7 +509,7 @@ export default class ReferralsController {
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       ])
 
-      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, error, req.body)
+      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, formError, req.body)
       const view = new DesiredOutcomesView(presenter)
 
       res.status(400)
