@@ -1009,6 +1009,56 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('setComplexityLevelForServiceCategory', () => {
+    it('returns the updated referral when selecting a complexity level on a cohort referral', async () => {
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to set the complexity level for a service category on a referral',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/complexity-level`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            complexityLevels: Matchers.like([
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+              },
+            ]),
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.setComplexityLevelForServiceCategory(
+        token,
+        '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        }
+      )
+
+      expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+      expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.complexityLevels![0].complexityLevelId).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+    })
+  })
+
   describe('getServiceCategory', () => {
     const complexityLevels = [
       {
