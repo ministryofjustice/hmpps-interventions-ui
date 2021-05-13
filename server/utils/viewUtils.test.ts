@@ -1,3 +1,4 @@
+import { ListStyle } from './summaryList'
 import ViewUtils from './viewUtils'
 
 describe('ViewUtils', () => {
@@ -66,9 +67,10 @@ describe('ViewUtils', () => {
     it('returns a summary list args object for passing to the govukSummaryList macro', () => {
       expect(
         ViewUtils.summaryListArgs([
-          { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], isList: true },
-          { key: 'Gender', lines: ['Male'], isList: false },
-          { key: 'Address', lines: ['Flat 2', '27 Test Walk', 'SY16 1AQ'], isList: false },
+          { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
+          { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.bulleted },
+          { key: 'Gender', lines: ['Male'] },
+          { key: 'Address', lines: ['Flat 2', '27 Test Walk', 'SY16 1AQ'] },
         ])
       ).toEqual({
         rows: [
@@ -78,6 +80,14 @@ describe('ViewUtils', () => {
             },
             value: {
               html: `<ul class="govuk-list"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
+            },
+          },
+          {
+            key: {
+              text: 'Needs',
+            },
+            value: {
+              html: `<ul class="govuk-list govuk-list--bullet"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
             },
           },
           {
@@ -105,8 +115,8 @@ describe('ViewUtils', () => {
   it('escapes special characters passed iin', () => {
     expect(
       ViewUtils.summaryListArgs([
-        { key: 'Needs', lines: ['Accommodation&', 'Social inclusion'], isList: true },
-        { key: 'Address', lines: ['Flat 2', "27 St James's Road", 'SY16 1AQ'], isList: false },
+        { key: 'Needs', lines: ['Accommodation&', 'Social inclusion'], listStyle: ListStyle.noMarkers },
+        { key: 'Address', lines: ['Flat 2', "27 St James's Road", 'SY16 1AQ'] },
       ])
     ).toEqual({
       rows: [

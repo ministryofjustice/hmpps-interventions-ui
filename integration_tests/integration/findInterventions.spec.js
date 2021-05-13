@@ -1,5 +1,6 @@
 import interventionFactory from '../../testutils/factories/intervention'
 import pccRegionFactory from '../../testutils/factories/pccRegion'
+import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 
 context('Find an intervention', () => {
   beforeEach(() => {
@@ -19,18 +20,18 @@ context('Find an intervention', () => {
     const interventions = [
       {
         title: 'Better solutions (anger management)',
-        categoryName: 'thinking and behaviour',
+        categoryNames: ['thinking and behaviour'],
         id: thinkingAndBehaviourInterventionId,
       },
       {
         title: 'HELP (domestic violence for males)',
-        categoryName: 'relationships',
+        categoryNames: ['relationships', 'emotional wellbeing'],
         id: 'bf3eb0df-2ef4-4aa9-9d98-bb0078be5042',
       },
     ].map(params => {
       return interventionFactory.build({
         title: params.title,
-        serviceCategory: { name: params.categoryName },
+        serviceCategories: params.categoryNames.map(name => serviceCategoryFactory.build({ name })),
         id: params.id,
         serviceProvider: { name: 'Harmony Living' },
       })

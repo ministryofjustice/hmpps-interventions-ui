@@ -19,17 +19,14 @@ export default class ReferralCancellationConfirmationPresenter {
     {
       key: 'Name',
       lines: [PresenterUtils.fullName(this.referral.referral.serviceUser)],
-      isList: false,
     },
     {
       key: 'Referral number',
       lines: [this.referral.referenceNumber],
-      isList: false,
     },
     {
       key: 'Type of referral',
       lines: [utils.convertToProperCase(this.serviceCategory.name)],
-      isList: false,
     },
   ]
 }

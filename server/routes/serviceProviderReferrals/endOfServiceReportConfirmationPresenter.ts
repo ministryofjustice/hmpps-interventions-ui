@@ -13,17 +13,14 @@ export default class EndOfServiceReportConfirmationPresenter {
     {
       key: 'Name',
       lines: [PresenterUtils.fullName(this.referral.referral.serviceUser)],
-      isList: false,
     },
     {
       key: 'Referral number',
       lines: [this.referral.referenceNumber],
-      isList: false,
     },
     {
       key: 'Service type',
       lines: [utils.convertToProperCase(this.serviceCategory.name)],
-      isList: false,
     },
   ]
 }

@@ -23,16 +23,14 @@ describe(ActionPlanConfirmationPresenter, () => {
       const presenter = new ActionPlanConfirmationPresenter(sentReferral, serviceCategory)
 
       expect(presenter.summary).toEqual([
-        { key: 'Name', lines: ['Johnny Davis'], isList: false },
+        { key: 'Name', lines: ['Johnny Davis'] },
         {
           key: 'Referral number',
           lines: ['CEF345'],
-          isList: false,
         },
         {
           key: 'Service type',
           lines: ['Social inclusion'],
-          isList: false,
         },
       ])
     })

@@ -39,7 +39,7 @@ export default class SearchSummaryPresenter {
 
     names.sort()
 
-    return { key: 'In', lines: [names.join(', ')], isList: false }
+    return { key: 'In', lines: [names.join(', ')] }
   }
 
   private get genderItem(): SummaryListItem | null {
@@ -47,7 +47,7 @@ export default class SearchSummaryPresenter {
       return null
     }
 
-    return { key: 'For', lines: [this.filter.gender.map(utils.convertToProperCase).join(', ')], isList: false }
+    return { key: 'For', lines: [this.filter.gender.map(utils.convertToProperCase).join(', ')] }
   }
 
   private get ageItem(): SummaryListItem | null {
@@ -64,6 +64,6 @@ export default class SearchSummaryPresenter {
       }
     })
 
-    return { key: 'Aged', lines: [names.join(', ')], isList: false }
+    return { key: 'Aged', lines: [names.join(', ')] }
   }
 }

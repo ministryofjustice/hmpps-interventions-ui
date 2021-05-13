@@ -27,12 +27,10 @@ export default class PostSessionAttendanceFeedbackPresenter {
     {
       key: 'Date',
       lines: [DateUtils.getDateStringFromDateTimeString(this.appointment.appointmentTime)],
-      isList: false,
     },
     {
       key: 'Time',
       lines: [DateUtils.getTimeStringFromDateTimeString(this.appointment.appointmentTime)],
-      isList: false,
     },
   ]
 

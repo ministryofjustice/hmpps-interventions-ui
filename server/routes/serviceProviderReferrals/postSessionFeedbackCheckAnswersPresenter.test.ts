@@ -44,12 +44,10 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
         {
           key: 'Date',
           lines: ['01 Feb 2021'],
-          isList: false,
         },
         {
           key: 'Time',
           lines: ['13:00'],
-          isList: false,
         },
       ])
     })

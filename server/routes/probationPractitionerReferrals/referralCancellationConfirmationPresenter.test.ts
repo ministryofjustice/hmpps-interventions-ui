@@ -27,17 +27,14 @@ describe(ReferralCancellationConfirmationPresenter, () => {
         {
           key: 'Name',
           lines: ['Alex River'],
-          isList: false,
         },
         {
           key: 'Referral number',
           lines: ['AB1234'],
-          isList: false,
         },
         {
           key: 'Type of referral',
           lines: ['Accommodation'],
-          isList: false,
         },
       ])
     })
