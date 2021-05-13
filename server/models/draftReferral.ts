@@ -1,3 +1,4 @@
+import ReferralDesiredOutcomes from './referralDesiredOutcomes'
 import ServiceProvider from './serviceProvider'
 import ServiceUser from './serviceUser'
 
@@ -13,7 +14,8 @@ export interface ReferralFields {
   complexityLevelId: string
   furtherInformation: string
   relevantSentenceId: number
-  desiredOutcomesIds: string[]
+  desiredOutcomesIds: string[] // deprecated in favour of desiredOutcomes
+  desiredOutcomes: ReferralDesiredOutcomes[]
   additionalNeedsInformation: string
   accessibilityNeeds: string
   needsInterpreter: boolean

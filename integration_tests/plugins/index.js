@@ -57,6 +57,10 @@ module.exports = on => {
       return interventionsService.stubPatchDraftReferral(arg.id, arg.responseJson)
     },
 
+    stubSetDesiredOutcomesForServiceCategory: arg => {
+      return interventionsService.stubPatchDraftReferral(arg.referralId, arg.serviceCategoryId, arg.responseJson)
+    },
+
     stubGetServiceCategory: arg => {
       return interventionsService.stubGetServiceCategory(arg.id, arg.responseJson)
     },

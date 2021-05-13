@@ -14,6 +14,7 @@ import ServiceCategory from '../models/serviceCategory'
 import ActionPlan, { ActionPlanAppointment, AppointmentAttendance, AppointmentBehaviour } from '../models/actionPlan'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
+import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 
 export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
@@ -147,6 +148,24 @@ export default class InterventionsService {
         path: `/draft-referral/${id}`,
         headers: { Accept: 'application/json' },
         data: patch,
+      })) as DraftReferral
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
+  }
+
+  async setDesiredOutcomesForServiceCategory(
+    token: string,
+    referralId: string,
+    desiredOutcomes: Partial<ReferralDesiredOutcomes>
+  ): Promise<DraftReferral> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.patch({
+        path: `/draft-referral/${referralId}/desired-outcomes`,
+        headers: { Accept: 'application/json' },
+        data: desiredOutcomes,
       })) as DraftReferral
     } catch (e) {
       throw this.createServiceError(e)

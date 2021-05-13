@@ -20,6 +20,12 @@ const exampleReferralFields = () => {
     furtherInformation: 'Some information about the service user',
     relevantSentenceId: 2600295124,
     desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+    desiredOutcomes: [
+      {
+        serviceCategoryId,
+        desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+      },
+    ],
     additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
     accessibilityNeeds: 'She uses a wheelchair',
     needsInterpreter: true,

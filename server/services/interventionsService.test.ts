@@ -115,7 +115,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
-    describe('for a referral that has had desired outcomes selected', () => {
+    describe('for a single-service referral that has had desired outcomes selected', () => {
       beforeEach(async () => {
         await provider.addInteraction({
           state:
@@ -145,6 +145,51 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(referral.desiredOutcomesIds).toEqual([
           '301ead30-30a4-4c7c-8296-2768abfb59b5',
           '65924ac6-9724-455b-ad30-906936291421',
+        ])
+      })
+    })
+
+    describe('for a cohort referral that has had desired outcomes selected', () => {
+      it('returns a referral for the given ID, with the desired outcomes selected', async () => {
+        await provider.addInteraction({
+          state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had desired outcomes selected for multiple service categories`,
+          uponReceiving: 'a request for that referral',
+          withRequest: {
+            method: 'GET',
+            path: '/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+              desiredOutcomes: [
+                {
+                  serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                  desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+                },
+                {
+                  serviceCategoryId: '3c7d6bc9-540a-4aef-a3fe-dfdff7a3c124',
+                  desiredOutcomesIds: ['263821e1-3ad1-44ee-8ec5-c1a925f7a828', '0694fcc9-833f-4756-8d93-28199c0ec58a'],
+                },
+              ],
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const referral = await interventionsService.getDraftReferral(token, '06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+
+        expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+        expect(referral.desiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+        expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
+          '301ead30-30a4-4c7c-8296-2768abfb59b5',
+          '65924ac6-9724-455b-ad30-906936291421',
+        ])
+        expect(referral.desiredOutcomes![1].serviceCategoryId).toEqual('3c7d6bc9-540a-4aef-a3fe-dfdff7a3c124')
+        expect(referral.desiredOutcomes![1].desiredOutcomesIds).toEqual([
+          '263821e1-3ad1-44ee-8ec5-c1a925f7a828',
+          '0694fcc9-833f-4756-8d93-28199c0ec58a',
         ])
       })
     })
@@ -475,7 +520,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.relevantSentenceId).toEqual(2600295124)
     })
 
-    it('returns the updated referral when selecting desired outcomes', async () => {
+    it('returns the updated referral when selecting desired outcomes on a single-service referral', async () => {
       await provider.addInteraction({
         state:
           'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected',
@@ -841,6 +886,59 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('setDesiredOutcomesForServiceCategory', () => {
+    it('returns the updated referral when selecting desired outcomes on a cohort referral', async () => {
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to set the desired outcomes for a service category on a referral',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/desired-outcomes`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            desiredOutcomes: Matchers.like([
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              },
+            ]),
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
+        token,
+        '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        }
+      )
+
+      expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+      expect(referral.desiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
+        '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        '65924ac6-9724-455b-ad30-906936291421',
+      ])
+    })
+  })
+
   describe('getServiceCategory', () => {
     const complexityLevels = [
       {
@@ -1041,6 +1139,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       furtherInformation: 'Some information about the service user',
       relevantSentenceId: 2600295124,
       desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+      desiredOutcomes: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        },
+        {
+          serviceCategoryId: '3c7d6bc9-540a-4aef-a3fe-dfdff7a3c124',
+          desiredOutcomesIds: ['263821e1-3ad1-44ee-8ec5-c1a925f7a828', '0694fcc9-833f-4756-8d93-28199c0ec58a'],
+        },
+      ],
       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
       accessibilityNeeds: 'She uses a wheelchair',
       needsInterpreter: true,
