@@ -27,31 +27,29 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceProviderService
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.EligibleProviderMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
 @RestController
 class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService,
-  private val hmppsAuthService: HMPPSAuthService,
   private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
-  private val serviceProviderService: ServiceProviderService
+  private val referralAccessChecker: ReferralAccessChecker,
 ) {
   companion object : KLogging()
 
   private fun validateReferralAccess(authentication: JwtAuthenticationToken, referralId: UUID) {
-    val authUser = parseAuthUserToken(authentication)
-    val hmppsAuthGroupId = hmppsAuthService.getServiceProviderOrganizationForUser(authUser)
-    val serviceProvider = serviceProviderService.getServiceProviderByReferralId(referralId)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
-    serviceProvider.let {
-      if (it.id != hmppsAuthGroupId) {
-        logger.error("AuthUser [id=${authUser.id}] does not have access to referral [id=$referralId]")
-        throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized to access referral [id=$referralId]")
-      }
+    val authUser = userMapper.fromToken(authentication)
+    val referral = referralService.getReferral(referralId)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$referralId]")
+    if(!referralAccessChecker.forServiceProviderUser(referral, authUser)){
+      logger.error("AuthUser [id=${authUser.id}] does not have access to referral [id=$referralId]")
+      throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized to access referral [id=$referralId]")
     }
   }
 
