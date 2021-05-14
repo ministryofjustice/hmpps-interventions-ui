@@ -70,6 +70,10 @@ export default class InterventionProgressPresenter {
     }
   }
 
+  get isConcluded(): boolean {
+    return this.referral.concludedAt !== null
+  }
+
   readonly hasSessions = this.actionPlanAppointments.length !== 0
 
   readonly sessionTableHeaders = ['Session details', 'Date and time', 'Status', 'Action']

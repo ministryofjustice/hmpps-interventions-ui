@@ -16,13 +16,14 @@ export default class InterventionProgressView {
   get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
     let cancellationReasonHTML = ''
     let cancellationCommentsHTML = ''
+    let notConcludedWarningHTML = ''
     if (this.presenter.referralEndedFields.endRequestedAt && this.presenter.referralEndedFields.endRequestedReason) {
       const formattedEndDate = DateUtils.getDateStringFromDateTimeString(
         this.presenter.referralEndedFields.endRequestedAt
       )
       cancellationReasonHTML = `
         <p>
-            The probation practitioner cancelled this intervention on ${formattedEndDate} 
+            The probation practitioner ended this intervention on ${formattedEndDate} 
             with reason: ${ViewUtils.escape(this.presenter.referralEndedFields.endRequestedReason)}.
         </p>`
     }
@@ -32,9 +33,15 @@ export default class InterventionProgressView {
             Additional information: ${ViewUtils.escape(this.presenter.referralEndedFields.endRequestedComments)}
         </p>`
     }
-    const html = `<div>${cancellationReasonHTML}${cancellationCommentsHTML}</div>`
+    if (!this.presenter.isConcluded) {
+      notConcludedWarningHTML = `
+            <p>
+                Please note that an end of service report must still be submitted within 10 working days.
+            </p>`
+    }
+    const html = `<div>${cancellationReasonHTML}${notConcludedWarningHTML}${cancellationCommentsHTML}</div>`
     return {
-      titleText: 'Intervention cancelled',
+      titleText: 'Intervention ended',
       html,
       classes: 'govuk-notification-banner--warning',
     }
