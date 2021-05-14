@@ -54,7 +54,6 @@ export default class InterventionsServiceMocks {
 
   stubSetDesiredOutcomesForServiceCategory = async (
     referralId: string,
-    serviceCategoryId: string,
     responseJson: Record<string, unknown>
   ): Promise<unknown> => {
     return this.wiremock.stubFor({
