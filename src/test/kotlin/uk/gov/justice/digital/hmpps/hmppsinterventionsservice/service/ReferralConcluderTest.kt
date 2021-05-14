@@ -49,7 +49,8 @@ internal class ReferralConcluderTest {
   fun `concludes referral as cancelled when ending a referral with no appointments attended`() {
 
     val timeAtStart = OffsetDateTime.now()
-    val referralWithActionPlanAndNoAttendedAppointments = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
+    val referralWithActionPlanAndNoAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     whenever(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(referralWithActionPlanAndNoAttendedAppointments.id)).thenReturn(0)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndNoAttendedAppointments)

@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.ReferralController
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType.ASSIGNED
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType.COMPLETED
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType.SENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.net.URI
 
@@ -32,7 +35,7 @@ class ReferralEventPublisherTest {
     val event = eventCaptor.firstValue
 
     assertThat(event.source).isSameAs(publisher)
-    assertThat(event.type).isSameAs(ReferralEventType.SENT)
+    assertThat(event.type).isSameAs(SENT)
     assertThat(event.referral).isSameAs(referral)
     assertThat(event.detailUrl).isEqualTo(uri.toString())
   }
@@ -52,7 +55,27 @@ class ReferralEventPublisherTest {
     val event = eventCaptor.firstValue
 
     assertThat(event.source).isSameAs(publisher)
-    assertThat(event.type).isSameAs(ReferralEventType.ASSIGNED)
+    assertThat(event.type).isSameAs(ASSIGNED)
+    assertThat(event.referral).isSameAs(referral)
+    assertThat(event.detailUrl).isEqualTo(uri.toString())
+  }
+
+  @Test
+  fun `builds an referral conclude event and publishes it`() {
+    val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
+    val uri = URI.create("http://localhost/sent-referral/" + referral.id)
+    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
+    whenever(locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)).thenReturn("/sent-referral/{id}")
+    val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
+
+    publisher.referralConcludedEvent(referral, COMPLETED)
+
+    val eventCaptor = argumentCaptor<ReferralEvent>()
+    verify(eventPublisher).publishEvent(eventCaptor.capture())
+    val event = eventCaptor.firstValue
+
+    assertThat(event.source).isSameAs(publisher)
+    assertThat(event.type).isSameAs(COMPLETED)
     assertThat(event.referral).isSameAs(referral)
     assertThat(event.detailUrl).isEqualTo(uri.toString())
   }
