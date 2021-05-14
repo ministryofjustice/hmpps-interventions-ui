@@ -61,6 +61,10 @@ module.exports = on => {
       return interventionsService.stubSetDesiredOutcomesForServiceCategory(arg.referralId, arg.responseJson)
     },
 
+    stubSetComplexityLevelForServiceCategory: arg => {
+      return interventionsService.stubSetComplexityLevelForServiceCategory(arg.referralId, arg.responseJson)
+    },
+
     stubGetServiceCategory: arg => {
       return interventionsService.stubGetServiceCategory(arg.id, arg.responseJson)
     },
