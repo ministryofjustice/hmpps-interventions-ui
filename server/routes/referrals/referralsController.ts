@@ -263,6 +263,46 @@ export default class ReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async updateCohortComplexityLevel(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId, serviceCategoryId } = req.params
+    let formError: FormValidationError | null = null
+
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+
+    const data = await new ComplexityLevelForm(req).data()
+
+    if (data.error) {
+      res.status(400)
+      formError = data.error
+    } else {
+      try {
+        await this.interventionsService.setComplexityLevelForServiceCategory(accessToken, referralId, {
+          serviceCategoryId,
+          ...data.paramsForUpdate,
+        })
+
+        return res.redirect(`/referrals/${referralId}/form`)
+      } catch (e) {
+        formError = createFormValidationErrorOrRethrow(e)
+      }
+    }
+
+    if (!referral.serviceCategoryIds || !referral.serviceCategoryIds.includes(serviceCategoryId)) {
+      throw new Error('Attempting to view complexity level without service categories set on the referral')
+    }
+
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
+
+    const presenter = new ComplexityLevelPresenter(referral, serviceCategory, formError)
+    const view = new ComplexityLevelView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
     const data = await new ComplexityLevelForm(req).data()
 
@@ -463,12 +503,16 @@ export default class ReferralsController {
         res.status(400)
         formError = data.error
       } else {
-        await this.interventionsService.setDesiredOutcomesForServiceCategory(accessToken, referralId, {
-          serviceCategoryId,
-          ...data.paramsForUpdate,
-        })
+        try {
+          await this.interventionsService.setDesiredOutcomesForServiceCategory(accessToken, referralId, {
+            serviceCategoryId,
+            ...data.paramsForUpdate,
+          })
 
-        return res.redirect(`/referrals/${referralId}/form`)
+          return res.redirect(`/referrals/${referralId}/form`)
+        } catch (e) {
+          formError = createFormValidationErrorOrRethrow(e)
+        }
       }
     }
 
