@@ -22,6 +22,7 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.referralEnded).toEqual(false)
     })
   })
+
   describe('referralEndedFields', () => {
     it('returns ended fields when the referral has ended', () => {
       const referral = sentReferralFactory.endRequested().build()

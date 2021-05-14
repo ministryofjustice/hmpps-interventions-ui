@@ -689,6 +689,26 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
     })
     it('allows users to know if, when and why an intervention was cancelled', () => {
+      const endedReferral = sentReferralFactory
+        .endRequested()
+        .concluded()
+        .build({
+          ...referralParams,
+        })
+      cy.stubGetSentReferral(endedReferral.id, endedReferral)
+      cy.stubGetSentReferrals([endedReferral])
+      cy.login()
+      cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
+      cy.contains('Intervention ended')
+      cy.contains(
+        'The probation practitioner ended this intervention on 28 Apr 2021 with reason: Service user was recalled'
+      )
+      cy.contains('Please note that an end of service report must still be submitted within 10 working days.').should(
+        'not.exist'
+      )
+      cy.contains("Additional information: you'll be seeing alex again soon i'm sure!")
+    })
+    it('allows users to know that they should still concluded non concluded but ended referrals', () => {
       const endedReferral = sentReferralFactory.endRequested().build({
         ...referralParams,
       })
@@ -696,11 +716,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferrals([endedReferral])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
-      cy.contains('Intervention cancelled')
-      cy.contains(
-        'The probation practitioner cancelled this intervention on 28 Apr 2021 with reason: Service user was recalled'
-      )
-      cy.contains("Additional information: you'll be seeing alex again soon i'm sure!")
+      cy.contains('Please note that an end of service report must still be submitted within 10 working days.')
     })
     it('allows users to click through to a page to view session feedback', () => {
       const assignedReferral = sentReferralFactory.assigned().build({
