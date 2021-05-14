@@ -83,6 +83,7 @@ notify:
 interventions-ui:
   locations:
     sent-referral: "/service-provider/referrals/{id}/details"
+    cancelled-referral: "/service-provider/referrals/{id}/details"
     submit-action-plan: "/service-provider/referrals/{id}/progress" # fixme
     appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
     view-appointment: "/probation-practitioner/referrals/{id}/progress"
@@ -93,6 +94,7 @@ interventions-ui:
 community-api:
   locations:
     sent-referral: "/secure/offenders/crn/{crn}/referral/start/context/{contextName}"
+    ended-referral: "/secure/offenders/crn/{crn}/referral/end/context/{contextName}"
     book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments/context/{contextName}"
     appointment-outcome-request: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}"
   appointments:

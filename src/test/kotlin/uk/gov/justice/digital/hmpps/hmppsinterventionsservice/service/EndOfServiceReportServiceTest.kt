@@ -30,14 +30,14 @@ class EndOfServiceReportServiceTest {
   private val referralRepository: ReferralRepository = mock()
   private val endOfServiceReportRepository: EndOfServiceReportRepository = mock()
   private val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher = mock()
-  private val referralService: ReferralService = mock()
+  private val referralConcluder: ReferralConcluder = mock()
 
   private val referralFactory = ReferralFactory()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
 
   private val endOfServiceReportService = EndOfServiceReportService(
     authUserRepository, referralRepository,
-    endOfServiceReportRepository, endOfServiceReportEventPublisher, referralService,
+    endOfServiceReportRepository, endOfServiceReportEventPublisher, referralConcluder,
   )
 
   @Test
@@ -185,6 +185,7 @@ class EndOfServiceReportServiceTest {
     endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)
 
     verify(endOfServiceReportRepository).save(argumentCaptor.capture())
+    verify(referralConcluder).concludeIfEligible(endOfServiceReport.referral)
     assertThat(argumentCaptor.firstValue.furtherInformation).isEqualTo(endOfServiceReport.furtherInformation)
     assertThat(argumentCaptor.firstValue.submittedAt).isNotNull
     assertThat(argumentCaptor.firstValue.submittedBy).isEqualTo(authUser)

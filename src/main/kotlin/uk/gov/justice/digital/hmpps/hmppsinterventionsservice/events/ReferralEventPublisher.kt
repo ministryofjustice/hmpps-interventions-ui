@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
 enum class ReferralEventType {
-  SENT, ASSIGNED,
+  SENT, ASSIGNED, CANCELLED, PREMATURELY_ENDED, COMPLETED
 }
 
 class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Referral, val detailUrl: String) : ApplicationEvent(source) {
@@ -29,6 +29,10 @@ class ReferralEventPublisher(
 
   fun referralAssignedEvent(referral: Referral) {
     applicationEventPublisher.publishEvent(ReferralEvent(this, ReferralEventType.ASSIGNED, referral, getSentReferralURL(referral)))
+  }
+
+  fun referralConcludedEvent(referral: Referral, eventType: ReferralEventType) {
+    applicationEventPublisher.publishEvent(ReferralEvent(this, eventType, referral, getSentReferralURL(referral)))
   }
 
   private fun getSentReferralURL(referral: Referral): String {

@@ -18,7 +18,10 @@ interface CommunityAPIService
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
+  @Value("\${interventions-ui.locations.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
+  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
+  @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
 ) : ApplicationListener<ReferralEvent>, CommunityAPIService {
@@ -44,6 +47,51 @@ class CommunityAPIReferralEventService(
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, referRequest)
+      }
+      ReferralEventType.CANCELLED,
+      -> {
+        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(interventionsUICancelledReferralLocation)
+          .buildAndExpand(event.referral.id)
+          .toString()
+
+        val referralEndRequest = ReferralEndRequest(
+          "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
+          event.referral.sentAt!!,
+          event.referral.concludedAt!!,
+          event.referral.relevantSentenceId!!,
+          event.type.name,
+          url,
+        )
+
+        val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIEndedReferralLocation)
+          .buildAndExpand(event.referral.serviceUserCRN, integrationContext)
+          .toString()
+
+        communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, referralEndRequest)
+      }
+      ReferralEventType.PREMATURELY_ENDED,
+      ReferralEventType.COMPLETED,
+      -> {
+        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(interventionsUIEndOfServiceReportLocation)
+          .buildAndExpand(event.referral.endOfServiceReport!!.id)
+          .toString()
+
+        val referralEndRequest = ReferralEndRequest(
+          "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
+          event.referral.sentAt!!,
+          event.referral.concludedAt!!,
+          event.referral.relevantSentenceId!!,
+          event.type.name,
+          url,
+        )
+
+        val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIEndedReferralLocation)
+          .buildAndExpand(event.referral.serviceUserCRN, integrationContext)
+          .toString()
+
+        communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, referralEndRequest)
       }
       else -> {}
     }
@@ -89,6 +137,15 @@ data class ReferRequest(
   val contractType: String,
   val startedAt: OffsetDateTime,
   val sentenceId: Long,
+  val notes: String,
+)
+
+data class ReferralEndRequest(
+  val contractType: String,
+  val startedAt: OffsetDateTime,
+  val endedAt: OffsetDateTime,
+  val sentenceId: Long,
+  val endType: String,
   val notes: String,
 )
 

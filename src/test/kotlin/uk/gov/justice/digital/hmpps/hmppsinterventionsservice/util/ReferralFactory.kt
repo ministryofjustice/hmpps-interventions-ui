@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
@@ -45,6 +46,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     serviceUserCRN: String = "X123456",
     intervention: Intervention = interventionFactory.create(),
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
+    actionPlan: ActionPlan? = null,
 
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
@@ -61,6 +63,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       serviceUserCRN = serviceUserCRN,
       intervention = intervention,
       desiredOutcomes = desiredOutcomes,
+      actionPlan = actionPlan,
 
       sentAt = sentAt,
       sentBy = sentBy,
@@ -128,6 +131,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     completionDeadline: LocalDate? = null,
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     serviceUserData: ServiceUserData? = null,
+    actionPlan: ActionPlan? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
@@ -154,6 +158,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         completionDeadline = completionDeadline,
         desiredOutcomesIDs = desiredOutcomes.map { it.id },
         serviceUserData = serviceUserData,
+        actionPlan = actionPlan,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,
