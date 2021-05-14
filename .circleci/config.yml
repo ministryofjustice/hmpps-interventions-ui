@@ -164,7 +164,7 @@ jobs:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
-      - run: ./gradlew assemble --console=plain
+      - run: ./gradlew assemble
       - persist_to_workspace:
           root: build/libs
           paths:
