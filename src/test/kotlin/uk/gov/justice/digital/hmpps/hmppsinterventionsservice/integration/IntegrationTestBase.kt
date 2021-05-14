@@ -45,7 +45,7 @@ abstract class IntegrationTestBase {
   protected lateinit var setupAssistant: SetupAssistant
 
   @BeforeEach
-  fun setup(){
+  fun setup() {
     setupAssistant = SetupAssistant(
       authUserRepository,
       referralRepository,
@@ -62,5 +62,4 @@ abstract class IntegrationTestBase {
     )
     setupAssistant.cleanAll()
   }
-
 }

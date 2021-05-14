@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
 
-//import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
@@ -14,7 +13,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfSe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
@@ -118,16 +116,16 @@ class SetupAssistant(
 
     val contract: DynamicFrameworkContract
 
-    if(dynamicFrameworkContract == null) {
-       contract = dynamicFrameworkContractRepository.save(
+    if (dynamicFrameworkContract == null) {
+      contract = dynamicFrameworkContractRepository.save(
         dynamicFrameworkContractFactory.create(
           serviceCategory = accommodationServiceCategory,
           primeProvider = primeProvider,
           npsRegion = region,
         )
       )
-    } else{
-        contract = dynamicFrameworkContract
+    } else {
+      contract = dynamicFrameworkContract
     }
 
     return interventionRepository.save(interventionFactory.create(id = id, contract = contract))
@@ -162,8 +160,12 @@ class SetupAssistant(
     return referralRepository.save(referralFactory.createSent(id = id, intervention = intervention, createdBy = user, sentBy = user))
   }
 
-  fun createDynamicFrameworkContract(id: UUID = UUID.randomUUID(), contractReference: String = RandomStringUtils.randomAlphanumeric(8),
-                                     primeProviderId: String, subContractorServiceProviderIds: Set<String>): DynamicFrameworkContract{
+  fun createDynamicFrameworkContract(
+    id: UUID = UUID.randomUUID(),
+    contractReference: String = RandomStringUtils.randomAlphanumeric(8),
+    primeProviderId: String,
+    subContractorServiceProviderIds: Set<String>
+  ): DynamicFrameworkContract {
     val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create(id = primeProviderId, name = primeProviderId))
     val serviceProviders = subContractorServiceProviderIds.mapTo(HashSet()) { serviceProviderRepository.save(serviceProviderFactory.create(id = it, name = it)) }
 
@@ -171,8 +173,6 @@ class SetupAssistant(
     serviceCategoryRepository.save(contract.serviceCategory)
     return dynamicFrameworkContractRepository.save(contract)
   }
-
-
 
   fun createAssignedReferral(id: UUID = UUID.randomUUID(), intervention: Intervention? = null): Referral {
     val intervention = intervention ?: createIntervention()

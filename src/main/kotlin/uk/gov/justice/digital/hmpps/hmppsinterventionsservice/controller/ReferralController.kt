@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
@@ -24,14 +25,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.EligibleProviderMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
 @RestController
 class ReferralController(
@@ -47,7 +44,7 @@ class ReferralController(
     val authUser = userMapper.fromToken(authentication)
     val referral = referralService.getReferral(referralId)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$referralId]")
-    if(!referralAccessChecker.forServiceProviderUser(referral, authUser)){
+    if (!referralAccessChecker.forServiceProviderUser(referral, authUser)) {
       logger.error("AuthUser [id=${authUser.id}] does not have access to referral [id=$referralId]")
       throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized to access referral [id=$referralId]")
     }
