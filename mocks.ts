@@ -160,7 +160,7 @@ export default async function setUpMocks(): Promise<void> {
     interventionsMocks.stubGetDraftReferral(draftReferral.id, draftReferral),
     [accommodationServiceCategory, socialInclusionServiceCategory].forEach(async serviceCategory => {
       await interventionsMocks.stubGetServiceCategory(serviceCategory.id, serviceCategory)
-      await interventionsMocks.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, serviceCategory.id, {
+      await interventionsMocks.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, {
         ...draftReferral,
       })
     }),

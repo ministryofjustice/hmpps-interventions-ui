@@ -194,6 +194,76 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
+    describe('for a single-service referral that has had a complexity level selected', () => {
+      beforeEach(async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had a complexity level selected',
+          uponReceiving: 'a request for that referral',
+          withRequest: {
+            method: 'GET',
+            path: '/draft-referral/037cc90b-beaa-4a32-9ab7-7f79136e1d27',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              id: '037cc90b-beaa-4a32-9ab7-7f79136e1d27',
+              complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+      })
+
+      it('returns a referral for the given ID, with the desired outcomes selected', async () => {
+        const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+
+        expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+        expect(referral.complexityLevelId).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+      })
+    })
+
+    describe('for a cohort referral that has had a complexity level selected', () => {
+      it('returns a referral for the given ID, with the a complexity level selected', async () => {
+        await provider.addInteraction({
+          state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had a complexity level selected for multiple service categories`,
+          uponReceiving: 'a request for that referral',
+          withRequest: {
+            method: 'GET',
+            path: '/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+              complexityLevels: [
+                {
+                  serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                  complexityLevelId: 'c9a7744a-8e6f-45ac-b7be-a88fea39efc0',
+                },
+                {
+                  serviceCategoryId: '3c7d6bc9-540a-4aef-a3fe-dfdff7a3c124',
+                  complexityLevelId: 'c6943b29-45e4-413d-9c5a-e8c84bcf29ec',
+                },
+              ],
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const referral = await interventionsService.getDraftReferral(token, '06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+
+        expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+        expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+        expect(referral.complexityLevels![0].complexityLevelId).toEqual('c9a7744a-8e6f-45ac-b7be-a88fea39efc0')
+
+        expect(referral.complexityLevels![1].serviceCategoryId).toEqual('3c7d6bc9-540a-4aef-a3fe-dfdff7a3c124')
+        expect(referral.complexityLevels![1].complexityLevelId).toEqual('c6943b29-45e4-413d-9c5a-e8c84bcf29ec')
+      })
+    })
+
     describe('for a referral that has had a service user selected', () => {
       beforeEach(async () => {
         await provider.addInteraction({
@@ -939,6 +1009,56 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('setComplexityLevelForServiceCategory', () => {
+    it('returns the updated referral when selecting a complexity level on a cohort referral', async () => {
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to set the complexity level for a service category on a referral',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/complexity-level`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            complexityLevels: Matchers.like([
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+              },
+            ]),
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.setComplexityLevelForServiceCategory(
+        token,
+        '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        }
+      )
+
+      expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+      expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.complexityLevels![0].complexityLevelId).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+    })
+  })
+
   describe('getServiceCategory', () => {
     const complexityLevels = [
       {
@@ -1136,6 +1256,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
       complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      complexityLevels: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        },
+      ],
       furtherInformation: 'Some information about the service user',
       relevantSentenceId: 2600295124,
       desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
@@ -1143,10 +1269,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
           desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-        },
-        {
-          serviceCategoryId: '3c7d6bc9-540a-4aef-a3fe-dfdff7a3c124',
-          desiredOutcomesIds: ['263821e1-3ad1-44ee-8ec5-c1a925f7a828', '0694fcc9-833f-4756-8d93-28199c0ec58a'],
         },
       ],
       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',

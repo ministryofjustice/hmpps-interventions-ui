@@ -54,13 +54,31 @@ export default class InterventionsServiceMocks {
 
   stubSetDesiredOutcomesForServiceCategory = async (
     referralId: string,
-    serviceCategoryId: string,
     responseJson: Record<string, unknown>
   ): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'PATCH',
         urlPattern: `${this.mockPrefix}/draft-referral/${referralId}/desired-outcomes`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  stubSetComplexityLevelForServiceCategory = async (
+    referralId: string,
+    responseJson: Record<string, unknown>
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'PATCH',
+        urlPattern: `${this.mockPrefix}/draft-referral/${referralId}/complexity-levels`,
       },
       response: {
         status: 200,

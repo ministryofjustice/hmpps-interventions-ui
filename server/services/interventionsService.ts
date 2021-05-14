@@ -172,6 +172,25 @@ export default class InterventionsService {
     }
   }
 
+  async setComplexityLevelForServiceCategory(
+    token: string,
+    referralId: string,
+    // TODO: switch below to Partial<ReferralComplexityLevel> when we update the code for single-service referrals to use the new PATCH function.
+    complexityLevel: Partial<DraftReferral>
+  ): Promise<DraftReferral> {
+    const restClient = this.createRestClient(token)
+
+    try {
+      return (await restClient.patch({
+        path: `/draft-referral/${referralId}/complexity-level`,
+        headers: { Accept: 'application/json' },
+        data: complexityLevel,
+      })) as DraftReferral
+    } catch (e) {
+      throw this.createServiceError(e)
+    }
+  }
+
   async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 

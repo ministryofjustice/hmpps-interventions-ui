@@ -17,6 +17,12 @@ const exampleReferralFields = () => {
     serviceCategoryId,
     serviceCategoryIds: [serviceCategoryId],
     complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+    complexityLevels: [
+      {
+        serviceCategoryId,
+        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      },
+    ],
     furtherInformation: 'Some information about the service user',
     relevantSentenceId: 2600295124,
     desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
