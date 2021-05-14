@@ -1,82 +1,34 @@
-import { Request } from 'express'
+import TestUtils from '../../../testutils/testUtils'
 import ComplexityLevelForm from './complexityLevelForm'
 
 describe(ComplexityLevelForm, () => {
-  describe('isValid', () => {
-    it('returns true when the complexity-level-id property is present in the body', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: { 'complexity-level-id': '43557c7a-c286-49c2-a994-d0a821295c7a' },
-      } as Request)
+  describe('data', () => {
+    describe('when a complexity level id is passed', () => {
+      it('returns params for update', async () => {
+        const request = TestUtils.createRequest({
+          'complexity-level-id': '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
+        })
+        const data = await new ComplexityLevelForm(request).data()
 
-      expect(form.isValid).toBe(true)
-    })
-
-    it('returns false when the complexity-level-id property is absent in the body', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: {},
-      } as Request)
-
-      expect(form.isValid).toBe(false)
-    })
-
-    it('returns false when the complexity-level-id property is null in the body', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: { 'complexity-level-id': null },
-      } as Request)
-
-      expect(form.isValid).toBe(false)
-    })
-  })
-
-  describe('error', () => {
-    it('returns null when the complexity-level-id property is present in the body', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: { 'complexity-level-id': '43557c7a-c286-49c2-a994-d0a821295c7a' },
-      } as Request)
-
-      expect(form.error).toBe(null)
-    })
-
-    it('returns an error object when the complexity-level-id property is absent in the body', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: {},
-      } as Request)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'complexity-level-id',
-            formFields: ['complexity-level-id'],
-            message: 'Select a complexity level',
-          },
-        ],
+        expect(data.paramsForUpdate?.complexityLevelId).toEqual('29843fdf-8b88-4b08-a0f9-dfbd3208fd2e')
       })
     })
 
-    it('returns an error object when the complexity-level-id property is null in the body', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: { 'complexity-level-id': null },
-      } as Request)
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            errorSummaryLinkedField: 'complexity-level-id',
-            formFields: ['complexity-level-id'],
-            message: 'Select a complexity level',
+    describe('when complexity level id is empty', () => {
+      it('returns an error', async () => {
+        const request = TestUtils.createRequest({
+          body: {
+            complexityLevelId: '',
           },
-        ],
+        })
+        const data = await new ComplexityLevelForm(request).data()
+
+        expect(data.error?.errors).toContainEqual({
+          errorSummaryLinkedField: 'complexity-level-id',
+          formFields: ['complexity-level-id'],
+          message: 'Select a complexity level',
+        })
       })
-    })
-  })
-
-  describe('paramsForUpdate', () => {
-    it('returns the params to be sent to the backend, when the data in the body is valid', async () => {
-      const form = await ComplexityLevelForm.createForm({
-        body: { 'complexity-level-id': '43557c7a-c286-49c2-a994-d0a821295c7a' },
-      } as Request)
-
-      expect(form.paramsForUpdate).toEqual({ complexityLevelId: '43557c7a-c286-49c2-a994-d0a821295c7a' })
     })
   })
 })

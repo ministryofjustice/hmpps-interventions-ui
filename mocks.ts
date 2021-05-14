@@ -163,6 +163,9 @@ export default async function setUpMocks(): Promise<void> {
       await interventionsMocks.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, {
         ...draftReferral,
       })
+      await interventionsMocks.stubSetComplexityLevelForServiceCategory(draftReferral.id, {
+        ...draftReferral,
+      })
     }),
   ])
 }
