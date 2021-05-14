@@ -71,6 +71,7 @@ class SampleData {
       assignedAt: OffsetDateTime = OffsetDateTime.now(),
       actionPlan: ActionPlan? = null,
       endOfServiceReport: EndOfServiceReport? = null,
+      concludedAt: OffsetDateTime? = null,
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -92,6 +93,7 @@ class SampleData {
         ),
         actionPlan = actionPlan,
         endOfServiceReport = endOfServiceReport,
+        concludedAt = concludedAt,
       )
     }
 

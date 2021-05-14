@@ -58,10 +58,12 @@ class ReferralServiceTest @Autowired constructor(
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
+  private val referralConcluder: ReferralConcluder = mock()
   private val referralService = ReferralService(
     referralRepository,
     authUserRepository,
     interventionRepository,
+    referralConcluder,
     referralEventPublisher,
     referenceGenerator,
     cancellationReasonRepository,

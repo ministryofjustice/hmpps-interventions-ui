@@ -26,6 +26,7 @@ class ReferralServiceUnitTest {
   private val referralRepository: ReferralRepository = mock()
   private val interventionRepository: InterventionRepository = mock()
   private val referralEventPublisher: ReferralEventPublisher = mock()
+  private val referralConcluder: ReferralConcluder = mock()
   private val referralReferenceGenerator: ReferralReferenceGenerator = mock()
   private val cancellationReasonRepository: CancellationReasonRepository = mock()
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
@@ -36,7 +37,7 @@ class ReferralServiceUnitTest {
   private val actionPlanFactory = ActionPlanFactory()
 
   private val referralService = ReferralService(
-    referralRepository, authUserRepository, interventionRepository,
+    referralRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
     actionPlanAppointmentRepository,
   )
@@ -59,40 +60,18 @@ class ReferralServiceUnitTest {
   }
 
   @Test
-  fun `concludedAt is set when there is no action plan`() {
+  fun `referral is concluded if eligible on a sent referral`() {
     val referral = referralFactory.createSent()
-    whenever(referralRepository.save(referral)).thenReturn(referral)
+    val authUser = authUserFactory.create()
+    val cancellationReason = cancellationReasonFactory.create()
+    val cancellationComments = "comment"
 
-    val endedReferral = referralService.requestReferralEnd(referral, referral.createdBy, cancellationReasonFactory.create(), null)
-    assertThat(endedReferral.concludedAt).isNotNull
-  }
+    whenever(authUserRepository.save(authUser)).thenReturn(authUser)
+    whenever(referralRepository.save(any())).thenReturn(referralFactory.createEnded(endRequestedComments = cancellationComments))
 
-  @Test
-  fun `concludedAt is set when there are no attended appointments`() {
-    val referral = referralFactory.createSent()
-    referral.actionPlan = actionPlanFactory.create()
-    referralFactory.save(referral)
+    referralService.requestReferralEnd(referral, authUser, cancellationReason, cancellationComments)
 
-    whenever(referralRepository.save(referral)).thenReturn(referral)
-    whenever(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(any())).thenReturn(0)
-
-    val endedReferral =
-      referralService.requestReferralEnd(referral, referral.createdBy, cancellationReasonFactory.create(), null)
-    assertThat(endedReferral.concludedAt).isNotNull
-  }
-
-  @Test
-  fun `concludedAt is not set when there are attended appointments`() {
-    val referral = referralFactory.createSent()
-    referral.actionPlan = actionPlanFactory.create()
-    referralFactory.save(referral)
-
-    whenever(referralRepository.save(referral)).thenReturn(referral)
-    whenever(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(any())).thenReturn(2)
-
-    val endedReferral =
-      referralService.requestReferralEnd(referral, referral.createdBy, cancellationReasonFactory.create(), null)
-    assertThat(endedReferral.concludedAt).isNull()
+    verify(referralConcluder).concludeIfEligible(referral)
   }
 
   @Test

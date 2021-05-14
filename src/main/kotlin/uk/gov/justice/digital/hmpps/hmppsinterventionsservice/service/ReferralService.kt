@@ -30,6 +30,7 @@ class ReferralService(
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
   val interventionRepository: InterventionRepository,
+  val referralConcluder: ReferralConcluder,
   val eventPublisher: ReferralEventPublisher,
   val referenceGenerator: ReferralReferenceGenerator,
   val cancellationReasonRepository: CancellationReasonRepository,
@@ -85,11 +86,10 @@ class ReferralService(
     referral.endRequestedReason = reason
     comments?.let { referral.endRequestedComments = it }
 
-    if (canBeConcluded(referral)) {
-      concludeReferral(referral)
-    }
+    val savedReferral = referralRepository.save(referral)
+    referralConcluder.concludeIfEligible(referral)
 
-    return referralRepository.save(referral)
+    return savedReferral
   }
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
@@ -267,23 +267,5 @@ class ReferralService(
 
     logger.error("Unable to generate a referral number {} {}", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
-  }
-
-  fun concludeReferral(referral: Referral) {
-    referral.concludedAt = OffsetDateTime.now()
-    referralRepository.save(referral)
-  }
-
-  private fun canBeConcluded(referral: Referral): Boolean {
-    val actionPlan = referral.actionPlan
-      ?: return true // no action plan means no sessions have been delivered
-
-    val numberOfAttendedSessions = actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)
-    if (numberOfAttendedSessions == 0) {
-      // there is an action plan but no sessions have recorded attendance
-      return true
-    }
-
-    return false
   }
 }

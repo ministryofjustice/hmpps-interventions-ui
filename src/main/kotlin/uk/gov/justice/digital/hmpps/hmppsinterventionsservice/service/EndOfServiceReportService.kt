@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -20,7 +19,7 @@ class EndOfServiceReportService(
   val referralRepository: ReferralRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
   val endOfServiceReportEventPublisher: EndOfServiceReportEventPublisher,
-  val referralService: ReferralService,
+  val referralConcluder: ReferralConcluder,
 ) {
 
   fun createEndOfServiceReport(
@@ -64,11 +63,12 @@ class EndOfServiceReportService(
     val draftEndOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
     updateDraftEndOfServiceReportAsSubmitted(draftEndOfServiceReport, submittedByUser)
 
-    referralService.concludeReferral(draftEndOfServiceReport.referral)
-
     endOfServiceReportEventPublisher.endOfServiceReportSubmittedEvent(draftEndOfServiceReport)
 
-    return endOfServiceReportRepository.save(draftEndOfServiceReport)
+    val savedReport = endOfServiceReportRepository.save(draftEndOfServiceReport)
+    referralConcluder.concludeIfEligible(savedReport.referral)
+
+    return savedReport
   }
 
   private fun updateDraftEndOfServiceReportAsSubmitted(endOfServiceReport: EndOfServiceReport, submittedByUser: AuthUser) {
