@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
@@ -36,11 +36,11 @@ internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
-  private val jwtAuthUserMapper = mock<JwtAuthUserMapper>()
+  private val userMapper = UserMapper()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
     referralService, serviceCategoryService, hmppsAuthService,
-    jwtAuthUserMapper, cancellationReasonMapper
+    userMapper, cancellationReasonMapper
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
@@ -144,13 +144,12 @@ internal class ReferralControllerTest {
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
     whenever(referralService.getSentReferral(any())).thenReturn(referral)
 
-    val authUser = AuthUser("CRN123", "auth", "user")
-    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
-    whenever(jwtAuthUserMapper.map(jwtAuthenticationToken)).thenReturn(authUser)
+    val user = AuthUser("CRN123", "auth", "user")
+    val token = tokenFactory.create(user.id, user.authSource, user.userName)
     whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(endRequestedComments = "comment"))
 
-    referralController.endSentReferral(referral.id, endReferralDTO, jwtAuthenticationToken)
-    verify(referralService).requestReferralEnd(referral, authUser, cancellationReason, "comment")
+    referralController.endSentReferral(referral.id, endReferralDTO, token)
+    verify(referralService).requestReferralEnd(referral, user, cancellationReason, "comment")
   }
 
   @Test

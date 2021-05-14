@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.JwtAuthUserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
@@ -35,7 +35,7 @@ class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService,
   private val hmppsAuthService: HMPPSAuthService,
-  private val jwtAuthUserMapper: JwtAuthUserMapper,
+  private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
 ) {
   @GetMapping("/referral/{id}")
@@ -54,7 +54,7 @@ class ReferralController(
     val sentReferral = referralService.getSentReferral(id)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
 
-    val assignedBy = parseAuthUserToken(authentication)
+    val assignedBy = userMapper.fromToken(authentication)
     val assignedTo = AuthUser(
       id = referralAssignment.assignedTo.userId,
       authSource = referralAssignment.assignedTo.authSource,
@@ -70,7 +70,7 @@ class ReferralController(
     val draftReferral = referralService.getDraftReferral(id)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
 
-    val user = parseAuthUserToken(authentication)
+    val user = userMapper.fromToken(authentication)
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
 
     val location = ServletUriComponentsBuilder
@@ -121,7 +121,7 @@ class ReferralController(
     val sentReferral = referralService.getSentReferral(id)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
-    val user = jwtAuthUserMapper.map(authentication)
+    val user = userMapper.fromToken(authentication)
     val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferralRequest.reasonCode)
 
     return SentReferralDTO.from(referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments))
@@ -129,7 +129,7 @@ class ReferralController(
 
   @PostMapping("/draft-referral")
   fun createDraftReferral(@RequestBody createReferralRequestDTO: CreateReferralRequestDTO, authentication: JwtAuthenticationToken): ResponseEntity<DraftReferralDTO> {
-    val user = parseAuthUserToken(authentication)
+    val user = userMapper.fromToken(authentication)
 
     val referral = try {
       referralService.createDraftReferral(
@@ -183,19 +183,5 @@ class ReferralController(
   @GetMapping("/referral-cancellation-reasons")
   fun getCancellationReasons(): List<CancellationReason> {
     return referralService.getCancellationReasons()
-  }
-
-  private fun parseAuthUserToken(authentication: JwtAuthenticationToken): AuthUser {
-//     note: this does not allow tokens for client_credentials grant types use this API
-    val userID = authentication.token.getClaimAsString("user_id")
-      ?: throw ServerWebInputException("no 'user_id' claim in authentication token")
-
-    val userName = authentication.token.getClaimAsString("user_name")
-      ?: throw ServerWebInputException("no 'user_name' claim in authentication token")
-
-    val authSource = authentication.token.getClaimAsString("auth_source")
-      ?: throw ServerWebInputException("no 'auth_source' claim in authentication token")
-
-    return AuthUser(id = userID, authSource = authSource, userName = userName)
   }
 }
