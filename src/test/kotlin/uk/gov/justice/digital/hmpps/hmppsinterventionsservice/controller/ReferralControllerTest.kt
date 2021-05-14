@@ -8,7 +8,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
@@ -45,26 +44,6 @@ internal class ReferralControllerTest {
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
   private val userFactory = AuthUserFactory()
-
-  @Nested
-  inner class GetReferral {
-    @Test
-    fun `getReferral returns Referral response if referral exists`() {
-      val referral = referralFactory.createDraft()
-      whenever(referralService.getReferral(eq(referral.id))).thenReturn(referral)
-      val referralDTO = referralController.getReferral(referral.id)
-      assertThat(referralDTO).isNotNull()
-    }
-
-    @Test
-    fun `getReferral throws NotFound response if referral doesn't exist`() {
-      whenever(referralService.getReferral(any())).thenReturn(null)
-      val e = assertThrows<ResponseStatusException> {
-        referralController.getReferral(UUID.randomUUID())
-      }
-      assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
-    }
-  }
 
   @Test
   fun `createDraftReferral handles EntityNotFound exceptions from InterventionsService`() {
