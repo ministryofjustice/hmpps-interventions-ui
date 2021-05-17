@@ -10,6 +10,7 @@ parameters:
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.0.4
+  gradle: circleci/gradle@2.2.0
   kubernetes: circleci/kubernetes@0.11.2
   mem: circleci/rememborb@0.0.1
   snyk: snyk/snyk@0.0.12
@@ -32,16 +33,10 @@ jobs:
           POSTGRES_PASSWORD: password
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          command: ./gradlew check
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
+      - gradle/with_cache:
+          cache_checksum_file: "build.gradle.kts"
+          steps:
+            - run: ./gradlew check
       - store_test_results:
           path: build/test-results
       - store_artifacts:
@@ -114,21 +109,16 @@ jobs:
           POSTGRES_PASSWORD: password
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          command: |
-            PACT_PROVIDER_VERSION="$CIRCLE_SHA1" \
-              PACT_PROVIDER_TAG="$CIRCLE_BRANCH" \
-              PACTBROKER_CONSUMERVERSIONSELECTORS_TAGS="<< parameters.consumer_tags >>" \
-              PACT_PUBLISH_RESULTS="true" \
-              ./gradlew pactTestPublish
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
+      - gradle/with_cache:
+          cache_checksum_file: "build.gradle.kts"
+          steps:
+            - run:
+                command: |
+                  PACT_PROVIDER_VERSION="$CIRCLE_SHA1" \
+                    PACT_PROVIDER_TAG="$CIRCLE_BRANCH" \
+                    PACTBROKER_CONSUMERVERSIONSELECTORS_TAGS="<< parameters.consumer_tags >>" \
+                    PACT_PUBLISH_RESULTS="true" \
+                    ./gradlew pactTestPublish
       - store_test_results:
           path: build/test-results
       - store_artifacts:
@@ -176,11 +166,10 @@ jobs:
     executor: hmpps/java
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run: ./gradlew assemble
+      - gradle/with_cache:
+          cache_checksum_file: "build.gradle.kts"
+          steps:
+            - run: ./gradlew assemble
       - persist_to_workspace:
           root: build/libs
           paths:
