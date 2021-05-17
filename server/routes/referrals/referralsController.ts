@@ -181,6 +181,12 @@ export default class ReferralsController {
 
     let error: FormValidationError | null = null
 
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    if (!referral.serviceCategoryIds || referral.serviceCategoryIds.length < 1) {
+      throw new Error('Attempting to update relevant sentence without service category selected')
+    }
+
     if (form.isValid) {
       try {
         await this.interventionsService.patchDraftReferral(
@@ -196,13 +202,8 @@ export default class ReferralsController {
     }
 
     if (!error) {
-      res.redirect(`/referrals/${req.params.id}/desired-outcomes`)
+      res.redirect(`/referrals/${req.params.id}/service-category/${referral.serviceCategoryIds[0]}/desired-outcomes`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(
-        res.locals.user.token.accessToken,
-        req.params.id
-      )
-
       if (!referral.serviceCategoryId) {
         throw new Error('Attempting to view relevant sentence without service category selected')
       }
@@ -489,7 +490,7 @@ export default class ReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async selectCohortDesiredOutcomes(req: Request, res: Response): Promise<void> {
+  async viewOrUpdateDesiredOutcomes(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { referralId, serviceCategoryId } = req.params
     let formError: FormValidationError | null = null
@@ -509,7 +510,12 @@ export default class ReferralsController {
             ...data.paramsForUpdate,
           })
 
-          return res.redirect(`/referrals/${referralId}/form`)
+          if (referral.serviceCategoryIds && referral.serviceCategoryIds.length > 1) {
+            return res.redirect(`/referrals/${referralId}/form`)
+          }
+
+          // TODO: IC-1717 replace this with the new complexity-level endpoint once implemented
+          return res.redirect(`/referrals/${referralId}/complexity-level`)
         } catch (e) {
           formError = createFormValidationErrorOrRethrow(e)
         }

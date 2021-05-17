@@ -43,6 +43,7 @@ describe('Referral form', () => {
 
     const draftReferral = draftReferralFactory.serviceUserSelected().build({
       serviceCategoryId: serviceCategory.id,
+      serviceCategoryIds: [serviceCategory.id],
       serviceProvider: {
         name: 'Harmony Living',
       },
@@ -50,6 +51,7 @@ describe('Referral form', () => {
 
     const completedServiceUserDetailsDraftReferral = draftReferralFactory.serviceUserDetailsSet().build({
       serviceCategoryId: serviceCategory.id,
+      serviceCategoryIds: [serviceCategory.id],
       serviceProvider: {
         name: 'Harmony Living',
       },
@@ -117,6 +119,7 @@ describe('Referral form', () => {
     cy.stubSendDraftReferral(draftReferral.id, sentReferral)
     cy.stubGetSentReferral(sentReferral.id, sentReferral)
     cy.stubGetActiveConvictionsByCRN('X123456', convictions)
+    cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
 
     cy.login()
 
@@ -186,7 +189,10 @@ describe('Referral form', () => {
 
     cy.contains('Save and continue').click()
 
-    cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/desired-outcomes`)
+    cy.location('pathname').should(
+      'equal',
+      `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[0]}/desired-outcomes`
+    )
     cy.get('h1').contains('What are the desired outcomes for the accommodation service?')
 
     cy.contains('Service User makes progress in obtaining accommodation').click()

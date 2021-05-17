@@ -846,8 +846,11 @@ describe('GET /referrals/:id/relevant-sentence', () => {
 
 describe('POST /referrals/:id/relevant-sentence', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const serviceCategory = serviceCategoryFactory.build({ id: 'b33c19d1-7414-4014-b543-e543e59c5b39' })
+    const referral = draftReferralFactory
+      .serviceCategorySelected(serviceCategory.id)
+      .serviceCategoriesSelected([serviceCategory.id])
+      .build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -859,7 +862,7 @@ describe('POST /referrals/:id/relevant-sentence', () => {
       .type('form')
       .send({ 'relevant-sentence-id': 2500284169 })
       .expect(302)
-      .expect('Location', '/referrals/1/desired-outcomes')
+      .expect('Location', `/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes`)
 
     expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
       relevantSentenceId: 2500284169,
@@ -1112,45 +1115,95 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/desi
     },
   ]
 
-  beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes, name: 'social inclusion' })
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+  describe('for a single-service referral', () => {
+    beforeEach(() => {
+      const serviceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        desiredOutcomes,
+        name: 'social inclusion',
+      })
+      const referral = draftReferralFactory.serviceCategoriesSelected([serviceCategory.id]).build()
 
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
-  })
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    })
 
-  it('updates the referral on the backend and redirects to back to the form page', async () => {
-    await request(app)
-      .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
-      .type('form')
-      .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
-      .expect(302)
-      .expect('Location', '/referrals/1/form')
+    it('updates the referral on the backend and redirects to the complexity level page', async () => {
+      await request(app)
+        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+        .type('form')
+        .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+        .expect(302)
+        .expect('Location', '/referrals/1/complexity-level')
 
-    expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
-      serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+      expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+      })
     })
   })
 
-  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
-    interventionsService.setDesiredOutcomesForServiceCategory.mockRejectedValue({
-      message: 'Some backend error message',
+  describe('for a cohort referral', () => {
+    beforeEach(() => {
+      const serviceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        desiredOutcomes,
+        name: 'social inclusion',
+      })
+      const referral = draftReferralFactory
+        .serviceCategoriesSelected([serviceCategory.id, serviceCategoryFactory.build().id])
+        .build()
+
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     })
 
-    await request(app)
-      .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
-      .type('form')
-      .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Some backend error message')
+    it('updates the referral on the backend and redirects to back to the form page', async () => {
+      await request(app)
+        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+        .type('form')
+        .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+        .expect(302)
+        .expect('Location', '/referrals/1/form')
+
+      expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+      })
+    })
+  })
+
+  describe('when the API call fails with a non-validation error', () => {
+    beforeEach(() => {
+      const serviceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        desiredOutcomes,
+        name: 'social inclusion',
+      })
+      const referral = draftReferralFactory.serviceCategoriesSelected([serviceCategory.id]).build()
+
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    })
+
+    it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+      interventionsService.setDesiredOutcomesForServiceCategory.mockRejectedValue({
+        message: 'Some backend error message',
       })
 
-    expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
-      serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+      await request(app)
+        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+        .type('form')
+        .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Some backend error message')
+        })
+
+      expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+      })
     })
   })
 })
