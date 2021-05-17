@@ -40,36 +40,51 @@ class ServiceProviderAccessScopeMapper(
       .filter { it.startsWith(serviceProviderGroupPrefix) }
       .map { it.removePrefix(serviceProviderGroupPrefix) }
 
-    if (serviceProviderGroups.isEmpty()) {
-      configErrors.add("no service provider groups associated with user")
-    } else if (serviceProviderGroups.size > 1) {
-      configErrors.add("more than one service provider groups associated with user")
-    }
-
-    val serviceProvider = serviceProviderRepository.findByIdOrNull(serviceProviderGroups[0])
-
-    if (serviceProvider == null) {
-      configErrors.add("service provider id does not exist in the interventions database")
-    }
+    val serviceProvider = getServiceProvider(serviceProviderGroups, configErrors)
 
     val contractGroups = groups
       .filter { it.startsWith(contractGroupPrefix) }
       .map { it.removePrefix(contractGroupPrefix) }
 
-    if (contractGroups.isEmpty()) {
-      configErrors.add("no contract groups associated with user")
-    }
-
-    val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
-
-    if (contracts.size != contractGroups.size) {
-      configErrors.add("at least one contract group does not exist in the interventions database")
-    }
+    val contracts = getContracts(contractGroups, configErrors)
 
     if (configErrors.isNotEmpty()) {
       throw AccessError(errorMessage, configErrors)
     }
 
     return ServiceProviderAccessScope(serviceProvider = serviceProvider, contracts = contracts)
+  }
+
+  private fun getServiceProvider(serviceProviderGroups: List<String>, configErrors: MutableList<String>): ServiceProvider? {
+    return when {
+      serviceProviderGroups.isEmpty() -> {
+        configErrors.add("no service provider groups associated with user")
+        null
+      }
+      serviceProviderGroups.size > 1 -> {
+        configErrors.add("more than one service provider group associated with user")
+        null
+      }
+      else -> {
+        val provider = serviceProviderRepository.findByIdOrNull(serviceProviderGroups[0])
+        if (provider == null) {
+          configErrors.add("service provider id does not exist in the interventions database")
+        }
+        provider
+      }
+    }
+  }
+
+  private fun getContracts(contractGroups: List<String>, configErrors: MutableList<String>): List<DynamicFrameworkContract> {
+    return if (contractGroups.isEmpty()) {
+      configErrors.add("no contract groups associated with user")
+      emptyList()
+    } else {
+      val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
+      if (contracts.isEmpty()) {
+        configErrors.add("user has no valid contract groups configured")
+      }
+      contracts
+    }
   }
 }
