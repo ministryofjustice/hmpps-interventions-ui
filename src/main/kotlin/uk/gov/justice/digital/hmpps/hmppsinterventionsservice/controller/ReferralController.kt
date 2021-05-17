@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
@@ -23,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
@@ -33,10 +34,22 @@ import javax.persistence.EntityNotFoundException
 class ReferralController(
   private val referralService: ReferralService,
   private val serviceCategoryService: ServiceCategoryService,
-  private val hmppsAuthService: HMPPSAuthService,
   private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
+  private val referralAccessChecker: ReferralAccessChecker,
 ) {
+  companion object : KLogging()
+
+  private fun validateReferralAccess(authentication: JwtAuthenticationToken, referralId: UUID) {
+    val authUser = userMapper.fromToken(authentication)
+    val referral = referralService.getReferral(referralId)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$referralId]")
+    if (!referralAccessChecker.forServiceProviderUser(referral, authUser)) {
+      logger.error("AuthUser [id=${authUser.id}] does not have access to referral [id=$referralId]")
+      throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized to access referral [id=$referralId]")
+    }
+  }
+
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
     @PathVariable id: UUID,
@@ -77,7 +90,8 @@ class ReferralController(
   }
 
   @GetMapping("/sent-referral/{id}")
-  fun getSentReferral(@PathVariable id: UUID): SentReferralDTO {
+  fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
+    validateReferralAccess(authentication, id)
     return referralService.getSentReferral(id)
       ?.let { SentReferralDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
