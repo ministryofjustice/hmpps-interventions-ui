@@ -49,7 +49,7 @@ data class DraftReferralDTO(
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
         relevantSentenceId = referral.relevantSentenceId,
-        serviceCategoryId = contract.serviceCategory.id,
+        serviceCategoryId = contract.contractType.serviceCategories.elementAt(0).id,
       )
     }
   }

@@ -14,9 +14,6 @@ import javax.validation.constraints.NotNull
 data class DynamicFrameworkContract(
   @Id val id: UUID,
 
-  @NotNull @ManyToOne @JoinColumn(name = "service_category_id")
-  val serviceCategory: ServiceCategory,
-
   @NotNull @ManyToOne @JoinColumn(name = "prime_provider_id")
   val primeProvider: ServiceProvider,
 
@@ -43,6 +40,10 @@ data class DynamicFrameworkContract(
     inverseJoinColumns = [JoinColumn(name = "subcontractor_provider_id")]
   )
   val subcontractorProviders: Set<ServiceProvider> = setOf(),
+
+  @NotNull @ManyToOne @JoinColumn(name = "contract_type_id")
+  val contractType: ContractType,
+
 ) {
   // using contract_reference for hashCode and equals because
   // it's guaranteed to have a unique hash (UUID isn't).
