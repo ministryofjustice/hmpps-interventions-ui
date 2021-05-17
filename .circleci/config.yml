@@ -134,6 +134,22 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
 
+  tag_pact_version:
+    environment:
+      PACT_BROKER_BASE_URL: "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
+      PACT_BROKER_USERNAME: "interventions"
+    executor: hmpps/node
+    parameters:
+      tag:
+        type: string
+    steps:
+      - run:
+          name: Tag contract version with deployment
+          command: |
+            npx --package='@pact-foundation/pact-node' pact-broker create-version-tag \
+              --pacticipant="Interventions Service" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
+              --broker-base-url="$PACT_BROKER_BASE_URL" --broker-username="$PACT_BROKER_USERNAME" --broker-password="$PACT_BROKER_PASSWORD"
+
   vulnerability_scan:
     executor: hmpps/java
     parameters:
@@ -243,6 +259,11 @@ workflows:
             - vulnerability_scan_and_monitor
           context:
             - hmpps-common-vars
+      - tag_pact_version:
+          name: "tag_pact_version_dev"
+          tag: "deployed:dev"
+          requires: [deploy_dev]
+          context: [hmpps-common-vars]
       - approve_research:
           type: approval
           requires:
@@ -271,6 +292,11 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-interventions-service-preprod
+      - tag_pact_version:
+          name: "tag_pact_version_preprod"
+          tag: "deployed:preprod"
+          requires: [deploy_preprod]
+          context: [hmpps-common-vars]
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
@@ -281,6 +307,11 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-interventions-service-prod
+      - tag_pact_version:
+          name: "tag_pact_version_prod"
+          tag: "deployed:prod"
+          requires: [deploy_prod]
+          context: [hmpps-common-vars]
 
   nightly:
     triggers:
