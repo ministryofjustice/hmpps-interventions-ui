@@ -472,24 +472,6 @@ export default class ReferralsController {
     }
   }
 
-  async viewDesiredOutcomes(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-
-    if (!referral.serviceCategoryId) {
-      throw new Error('Attempting to view desired outcomes without service category selected')
-    }
-
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-    ])
-
-    const presenter = new DesiredOutcomesPresenter(referral, serviceCategory)
-    const view = new DesiredOutcomesView(presenter)
-
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
   async viewOrUpdateDesiredOutcomes(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { referralId, serviceCategoryId } = req.params
@@ -541,50 +523,6 @@ export default class ReferralsController {
     const view = new DesiredOutcomesView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
-    const data = await new DesiredOutcomesForm(req).data()
-
-    let formError: FormValidationError | null = null
-
-    if (!data.error) {
-      try {
-        await this.interventionsService.patchDraftReferral(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          data.paramsForUpdate
-        )
-      } catch (e) {
-        formError = createFormValidationErrorOrRethrow(e)
-      }
-    } else {
-      formError = data.error
-    }
-
-    if (!formError) {
-      res.redirect(`/referrals/${req.params.id}/complexity-level`)
-    } else {
-      const referral = await this.interventionsService.getDraftReferral(
-        res.locals.user.token.accessToken,
-        req.params.id
-      )
-
-      if (!referral.serviceCategoryId) {
-        throw new Error('Attempting to view desired outcomes without service category selected')
-      }
-
-      const [serviceCategory, serviceUser] = await Promise.all([
-        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
-        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      ])
-
-      const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, formError, req.body)
-      const view = new DesiredOutcomesView(presenter)
-
-      res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
-    }
   }
 
   async viewNeedsAndRequirements(req: Request, res: Response): Promise<void> {
