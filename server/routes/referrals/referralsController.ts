@@ -101,21 +101,20 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      const referral = await this.interventionsService.createDraftReferral(
-        res.locals.user.token.accessToken,
-        crn,
-        interventionId
-      )
-
+      const [referral, intervention] = await Promise.all([
+        this.interventionsService.createDraftReferral(res.locals.user.token.accessToken, crn, interventionId),
+        this.interventionsService.getIntervention(res.locals.user.token.accessToken, interventionId),
+      ])
+      const serviceCategoryIds =
+        intervention.serviceCategories.length === 1 ? [intervention.serviceCategories[0].id] : null
       await this.interventionsService.patchDraftReferral(res.locals.user.token.accessToken, referral.id, {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
+        serviceCategoryIds,
       })
-
       res.redirect(303, `/referrals/${referral.id}/form`)
     } else {
       const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
-
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)
     }

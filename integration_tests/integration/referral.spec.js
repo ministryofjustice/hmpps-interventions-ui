@@ -3,6 +3,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
+import interventionFactory from '../../testutils/factories/intervention'
 
 describe('Referral form', () => {
   beforeEach(() => {
@@ -14,7 +15,13 @@ describe('Referral form', () => {
 
   it('User starts a referral, fills in the form, and submits it', () => {
     const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-
+    const randomInterventionId = '99ee16d3-130a-4d8f-97c5-f1a42119a382'
+    const intervention = interventionFactory.build({
+      title: 'Better solutions (anger management)',
+      serviceCategories: ['accommodation'].map(name => serviceCategoryFactory.build({ name })),
+      id: randomInterventionId,
+      serviceProvider: { name: 'Harmony Living' },
+    })
     const serviceCategory = serviceCategoryFactory.build({
       name: 'accommodation',
       desiredOutcomes: [
@@ -108,6 +115,7 @@ describe('Referral form', () => {
     const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
 
     cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
+    cy.stubGetIntervention(intervention.id, intervention)
     cy.stubCreateDraftReferral(draftReferral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
     cy.stubGetSentReferrals([])
@@ -119,8 +127,6 @@ describe('Referral form', () => {
     cy.stubGetActiveConvictionsByCRN('X123456', convictions)
 
     cy.login()
-
-    const randomInterventionId = '99ee16d3-130a-4d8f-97c5-f1a42119a382'
 
     cy.visit(`/intervention/${randomInterventionId}/refer`)
 

@@ -69,31 +69,65 @@ describe('GET /intervention/:id/refer', () => {
 })
 
 describe('POST /intervention/:id/refer', () => {
+  const serviceUserCRN = 'X123456'
+  const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
   describe('when searching for a CRN found in Delius and an intervention has been selected', () => {
     beforeEach(() => {
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     })
-
-    it('creates a referral on the interventions service and redirects to the referral form', async () => {
-      const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
-      const serviceUserCRN = 'X123456'
-
-      await request(app)
-        .post(`/intervention/${interventionId}/refer`)
-        .send({ 'service-user-crn': serviceUserCRN })
-        .expect(303)
-        .expect('Location', '/referrals/1/form')
-
-      expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
+    describe('For a Single Referral', () => {
+      const serviceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        name: 'social inclusion',
+      })
+      const intervention = interventionFactory.build({
+        serviceCategories: [serviceCategory],
+      })
+      beforeEach(() => {
+        interventionsService.getIntervention.mockResolvedValue(intervention)
+      })
+      it('creates a referral on the interventions service and redirects to the referral form', async () => {
+        await request(app)
+          .post(`/intervention/${interventionId}/refer`)
+          .send({ 'service-user-crn': serviceUserCRN })
+          .expect(303)
+          .expect('Location', '/referrals/1/form')
+        expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
+      })
+      it('should update referral with service user and service Category', async () => {
+        await request(app).post(`/intervention/${interventionId}/refer`).send({ 'service-user-crn': 'X123456' })
+        expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+          serviceUser,
+          serviceCategoryIds: [serviceCategory.id],
+        })
+      })
     })
-
-    it('updates the newly-created referral on the interventions service with the found service user', async () => {
-      await request(app)
-        .post('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
-        .send({ 'service-user-crn': 'X123456' })
-
-      expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
-        serviceUser,
+    describe('For a Cohort Referral', () => {
+      const serviceCategory1 = serviceCategoryFactory.build({
+        id: 'cb0a3633-4367-49ad-94a7-2274839b216e',
+        name: 'accommodation',
+      })
+      const serviceCategory2 = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        name: 'social inclusion',
+      })
+      const intervention = interventionFactory.build({
+        serviceCategories: [serviceCategory1, serviceCategory2],
+      })
+      beforeEach(() => {
+        interventionsService.getIntervention.mockResolvedValue(intervention)
+      })
+      it('should update referral with service user only', async () => {
+        await request(app)
+          .post(`/intervention/${interventionId}/refer`)
+          .send({ 'service-user-crn': serviceUserCRN })
+          .expect(303)
+          .expect('Location', '/referrals/1/form')
+        expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+          serviceUser,
+          serviceCategoryIds: null,
+        })
+        expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
       })
     })
   })
