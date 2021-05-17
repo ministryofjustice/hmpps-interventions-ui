@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
@@ -35,14 +37,35 @@ class ReferralService(
   val referenceGenerator: ReferralReferenceGenerator,
   val cancellationReasonRepository: CancellationReasonRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val referralAccessChecker: ReferralAccessChecker,
+  val userTypeChecker: UserTypeChecker,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
     private const val maxReferenceNumberTries = 10
   }
 
-  fun getReferral(id: UUID): Referral? {
-    return referralRepository.findByIdOrNull(id)
+  fun getSentReferralForUser(id: UUID, user: AuthUser): Referral? {
+    val referral = referralRepository.findByIdAndSentAtIsNotNull(id)
+
+    referral?.let {
+      referralAccessChecker.forUser(it, user)
+    }
+
+    return referral
+  }
+
+  fun getDraftReferralForUser(id: UUID, user: AuthUser): Referral? {
+    val referral = referralRepository.findByIdAndSentAtIsNull(id)
+
+    referral?.let {
+      if (!userTypeChecker.isProbationPractitionerUser(user)) {
+        throw AccessError("user does not have access to referral", listOf("only probation practitioners can access draft referrals"))
+      }
+      referralAccessChecker.forUser(it, user)
+    }
+
+    return referral
   }
 
   fun assignSentReferral(referral: Referral, assignedBy: AuthUser, assignedTo: AuthUser): Referral {
@@ -53,10 +76,6 @@ class ReferralService(
     val assignedReferral = referralRepository.save(referral)
     eventPublisher.referralAssignedEvent(assignedReferral)
     return assignedReferral
-  }
-
-  fun getSentReferral(id: UUID): Referral? {
-    return referralRepository.findByIdAndSentAtIsNotNull(id)
   }
 
   fun getAllSentReferrals(): List<SentReferralDTO> {
@@ -120,10 +139,6 @@ class ReferralService(
         endOfServiceReport = endOfServiceReport
       )
     )
-  }
-
-  fun getDraftReferral(id: UUID): Referral? {
-    return referralRepository.findByIdAndSentAtIsNull(id)
   }
 
   private fun validateDraftReferralUpdate(referral: Referral, update: DraftReferralDTO) {
