@@ -244,7 +244,7 @@ export default class ReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewOrUpdateCohortComplexityLevel(req: Request, res: Response): Promise<void> {
+  async viewOrUpdateComplexityLevel(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { referralId, serviceCategoryId } = req.params
     let formError: FormValidationError | null = null
@@ -264,7 +264,12 @@ export default class ReferralsController {
             ...data.paramsForUpdate,
           })
 
-          return res.redirect(`/referrals/${referralId}/form`)
+          if (referral.serviceCategoryIds && referral.serviceCategoryIds.length > 1) {
+            // TODO IC-1686: take to next service category desired outcome or completion deadline if this is the last service category
+            return res.redirect(`/referrals/${referralId}/form`)
+          }
+
+          return res.redirect(`/referrals/${referralId}/completion-deadline`)
         } catch (e) {
           formError = createFormValidationErrorOrRethrow(e)
         }
@@ -478,8 +483,7 @@ export default class ReferralsController {
             return res.redirect(`/referrals/${referralId}/form`)
           }
 
-          // TODO: IC-1717 replace this with the new complexity-level endpoint once implemented
-          return res.redirect(`/referrals/${referralId}/complexity-level`)
+          return res.redirect(`/referrals/${referralId}/service-category/${serviceCategoryId}/complexity-level`)
         } catch (e) {
           formError = createFormValidationErrorOrRethrow(e)
         }

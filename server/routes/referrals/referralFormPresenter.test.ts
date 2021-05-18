@@ -120,7 +120,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
                 `service-category/${serviceCategory.id}/desired-outcomes`,
-                'complexity-level'
+                `service-category/${serviceCategory.id}/complexity-level`
               )
               .build(),
             referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
@@ -152,7 +152,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
                 `service-category/${serviceCategory.id}/desired-outcomes`,
-                'complexity-level',
+                `service-category/${serviceCategory.id}/complexity-level`,
                 'completion-deadline'
               )
               .build(),
@@ -186,7 +186,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
                 `service-category/${serviceCategory.id}/desired-outcomes`,
-                'complexity-level',
+                `service-category/${serviceCategory.id}/complexity-level`,
                 'completion-deadline',
                 'rar-days'
               )
@@ -222,7 +222,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
                 `service-category/${serviceCategory.id}/desired-outcomes`,
-                'complexity-level',
+                `service-category/${serviceCategory.id}/complexity-level`,
                 'completion-deadline',
                 'rar-days',
                 'further-information'
@@ -260,7 +260,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.Completed,
                 'relevant-sentence',
                 `service-category/${serviceCategory.id}/desired-outcomes`,
-                'complexity-level',
+                `service-category/${serviceCategory.id}/complexity-level`,
                 'completion-deadline',
                 'rar-days',
                 'further-information'

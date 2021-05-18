@@ -120,6 +120,7 @@ describe('Referral form', () => {
     cy.stubGetSentReferral(sentReferral.id, sentReferral)
     cy.stubGetActiveConvictionsByCRN('X123456', convictions)
     cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
+    cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
 
     cy.login()
 
@@ -200,7 +201,10 @@ describe('Referral form', () => {
 
     cy.contains('Save and continue').click()
 
-    cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/complexity-level`)
+    cy.location('pathname').should(
+      'equal',
+      `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[0]}/complexity-level`
+    )
     cy.get('h1').contains('What is the complexity level for the accommodation service?')
     cy.contains('Low complexity').click()
 

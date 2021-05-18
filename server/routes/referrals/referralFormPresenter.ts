@@ -56,7 +56,12 @@ export default class ReferralFormPresenter {
         },
         {
           title: 'Select required complexity level',
-          url: this.calculateTaskUrl('complexity-level', this.taskValues.desiredOutcomes),
+          url: this.calculateTaskUrl(
+            this.referral.serviceCategoryIds && this.referral.serviceCategoryIds.length > 0
+              ? `service-category/${this.referral.serviceCategoryIds[0]}/complexity-level`
+              : null,
+            this.taskValues.desiredOutcomes
+          ),
         },
         {
           title: `What date does the ${this.serviceCategoryName} service need to be completed by?`,
