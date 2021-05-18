@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany
 data class ContractType(
   @Id val id: UUID,
   val name: String,
+  val code: String,
 
   @ManyToMany
   @JoinTable(

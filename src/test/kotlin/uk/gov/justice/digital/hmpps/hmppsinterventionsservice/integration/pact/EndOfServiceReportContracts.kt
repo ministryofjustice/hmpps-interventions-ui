@@ -27,7 +27,7 @@ class EndOfServiceReportContracts(private val setupAssistant: SetupAssistant) {
       setupAssistant.createDesiredOutcome(
         UUID.fromString("dc4894fa-4088-4999-bf58-5f05495979df"),
         "",
-        referral.intervention.dynamicFrameworkContract.serviceCategory.id
+        referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).id
       )
     )
     setupAssistant.fillReferralFields(referral, desiredOutcomes = outcomes)

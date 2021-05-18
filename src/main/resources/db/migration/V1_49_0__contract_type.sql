@@ -1,7 +1,7 @@
 create table contract_type(
   id uuid not null,
   name text not null,
-
+  code varchar(10) not null,
   primary key (id)
 );
 

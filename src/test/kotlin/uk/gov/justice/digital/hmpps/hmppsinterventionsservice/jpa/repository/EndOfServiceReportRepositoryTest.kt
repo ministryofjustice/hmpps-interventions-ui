@@ -25,7 +25,7 @@ class EndOfServiceReportRepositoryTest @Autowired constructor(
   @Test
   fun `can retrieve an end of service report`() {
     val intervention = interventionFactory.create()
-    val outcomes = desiredOutcomesFactory.create(intervention.dynamicFrameworkContract.serviceCategory, 1)
+    val outcomes = desiredOutcomesFactory.create(intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0), 1)
     val referral = referralFactory.createSent(desiredOutcomes = outcomes)
     val endOfServiceReport = endOfServiceReportFactory.create(
       referral = referral,

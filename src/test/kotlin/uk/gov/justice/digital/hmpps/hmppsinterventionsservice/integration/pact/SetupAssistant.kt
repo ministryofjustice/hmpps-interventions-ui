@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPS
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
@@ -60,6 +61,7 @@ class SetupAssistant(
   private val referralFactory = ReferralFactory()
   private val serviceProviderFactory = ServiceProviderFactory()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
+  private val contractTypeFactory = ContractTypeFactory()
 
   private val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   private val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -119,7 +121,7 @@ class SetupAssistant(
     if (dynamicFrameworkContract == null) {
       contract = dynamicFrameworkContractRepository.save(
         dynamicFrameworkContractFactory.create(
-          serviceCategory = accommodationServiceCategory,
+          contractType = contractTypeFactory.create(serviceCategories = setOf(accommodationServiceCategory)),
           primeProvider = primeProvider,
           npsRegion = region,
         )

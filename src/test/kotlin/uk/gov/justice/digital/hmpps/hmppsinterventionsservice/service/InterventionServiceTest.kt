@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ContractType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.persistIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.End
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.NPSRegionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.PCCRegionFactory
@@ -34,6 +36,7 @@ class InterventionServiceTest @Autowired constructor(
   val endOfServiceReportRepository: EndOfServiceReportRepository,
 ) {
   private val interventionService = InterventionService(pccRegionRepository, interventionRepository)
+  private val contractTypeFactory = ContractTypeFactory(entityManager)
   private val serviceCategoryFactory = ServiceCategoryFactory(entityManager)
   private val npsRegionFactory = NPSRegionFactory(entityManager)
   private val pccRegionFactory = PCCRegionFactory(entityManager)
@@ -62,7 +65,7 @@ class InterventionServiceTest @Autowired constructor(
       sampleIntervention(
         dynamicFrameworkContract = sampleContract(
           npsRegion = npsRegion,
-          serviceCategory = serviceCategoryFactory.create(),
+          contractType = contractTypeFactory.create(),
           primeProvider = serviceProviderFactory.create(),
         )
       )
@@ -83,7 +86,7 @@ class InterventionServiceTest @Autowired constructor(
       sampleIntervention(
         dynamicFrameworkContract = sampleContract(
           pccRegion = pccRegionFactory.create(),
-          serviceCategory = serviceCategoryFactory.create(),
+          contractType = contractTypeFactory.create(),
           primeProvider = serviceProviderFactory.create(),
         )
       )
@@ -151,7 +154,8 @@ class InterventionServiceTest @Autowired constructor(
   }
 
   private fun saveMultipleInterventions() {
-    val accommodationSC = serviceCategoryFactory.create(name = "accommodation")
+    val accommodationSC = serviceCategoryFactory.create()
+    entityManager.persist(accommodationSC)
 
     // build map of service providers
     val serviceProviders = mapOf(
@@ -166,26 +170,28 @@ class InterventionServiceTest @Autowired constructor(
     // build map of contracts
     val contracts = mapOf(
       "harmonyLiving1" to sampleContract(
-        serviceCategory = accommodationSC,
+        contractType = contractTypeFactory.create(serviceCategories = setOf(accommodationSC)),
         primeProvider = serviceProviders["harmonyLiving"]!!,
         npsRegion = npsRegion,
       ),
       "harmonyLiving2" to sampleContract(
-        serviceCategory = accommodationSC,
+        contractType = contractTypeFactory.create(serviceCategories = setOf(accommodationSC)),
         primeProvider = serviceProviders["harmonyLiving"]!!,
         startDate = LocalDate.of(2020, 11, 5),
         endDate = LocalDate.of(2022, 10, 7),
         npsRegion = npsRegion,
       ),
       "homeTrust" to sampleContract(
-        serviceCategory = accommodationSC,
+        contractType = contractTypeFactory.create(serviceCategories = setOf(accommodationSC)),
         primeProvider = serviceProviders["homeTrust"]!!,
         startDate = LocalDate.of(2019, 5, 12),
         endDate = LocalDate.of(2022, 5, 12),
         pccRegion = pccRegionAvon,
       )
     )
-    contracts.values.forEach { entityManager.persist(it) }
+    contracts.values.forEach {
+      entityManager.persist(it.contractType)
+      entityManager.persist(it) }
     entityManager.flush()
 
     // Create and save interventions
