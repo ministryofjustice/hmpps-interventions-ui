@@ -274,8 +274,13 @@ class ReferralService(
     return referralRepository.save(referral)
   }
 
-  fun getDraftReferralsCreatedByUserID(userID: String): List<DraftReferralDTO> {
-    return referralRepository.findByCreatedByIdAndSentAtIsNull(userID).map { DraftReferralDTO.from(it) }
+  fun getDraftReferralsForUser(user: AuthUser): List<Referral> {
+    if (!userTypeChecker.isProbationPractitionerUser(user)) {
+      throw AccessError("user does not have access to referrals", listOf("only probation practitioners can access draft referrals"))
+    }
+
+    val referrals = referralRepository.findByCreatedByIdAndSentAtIsNull(user.id)
+    return referralAccessFilter.probationPractitionerReferrals(referrals, user)
   }
 
   fun getCancellationReasons(): List<CancellationReason> {

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
@@ -151,8 +150,9 @@ class ReferralController(
   }
 
   @GetMapping("/draft-referrals")
-  fun getDraftReferralsCreatedByUserID(@RequestParam userID: String): List<DraftReferralDTO> {
-    return referralService.getDraftReferralsCreatedByUserID(userID)
+  fun getDraftReferrals(authentication: JwtAuthenticationToken): List<DraftReferralDTO> {
+    val user = userMapper.fromToken(authentication)
+    return referralService.getDraftReferralsForUser(user).map { DraftReferralDTO.from(it) }
   }
 
   @GetMapping("/service-category/{id}")
