@@ -1,24 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -33,17 +31,19 @@ class ReferralServiceUnitTest {
   private val cancellationReasonRepository: CancellationReasonRepository = mock()
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
   private val referralAccessChecker: ReferralAccessChecker = mock()
+  private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper = mock()
+  private val referralAccessFilter: ReferralAccessFilter = mock()
   private val userTypeChecker: UserTypeChecker = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
   private val cancellationReasonFactory = CancellationReasonFactory()
-  private val actionPlanFactory = ActionPlanFactory()
 
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
-    actionPlanAppointmentRepository, referralAccessChecker, userTypeChecker,
+    actionPlanAppointmentRepository, referralAccessChecker, userTypeChecker, serviceProviderAccessScopeMapper,
+    referralAccessFilter,
   )
 
   @Test
@@ -76,21 +76,6 @@ class ReferralServiceUnitTest {
     referralService.requestReferralEnd(referral, authUser, cancellationReason, cancellationComments)
 
     verify(referralConcluder).concludeIfEligible(referral)
-  }
-
-  @Test
-  fun `get sent referrals sent by current user`() {
-    val referral = SampleData.sampleReferral("CRN123", "Service Provider")
-    val authUser = SampleData.sampleAuthUser()
-
-    whenever(referralRepository.findBySentBy(any())).thenReturn(listOf(referral))
-    val argumentCaptor = argumentCaptor<AuthUser>()
-
-    val result = referralService.getSentReferralsSentBy(authUser)
-
-    assertThat(result).isEqualTo(listOf(referral))
-    verify(referralRepository).findBySentBy(argumentCaptor.capture())
-    assertThat(argumentCaptor.firstValue).isEqualTo(authUser)
   }
 
   @Test

@@ -4,15 +4,15 @@ import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -39,6 +39,8 @@ class ReferralService(
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
   val referralAccessChecker: ReferralAccessChecker,
   val userTypeChecker: UserTypeChecker,
+  val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
+  val referralAccessFilter: ReferralAccessFilter,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -78,24 +80,35 @@ class ReferralService(
     return assignedReferral
   }
 
-  fun getAllSentReferrals(): List<SentReferralDTO> {
-    return referralRepository.findBySentAtIsNotNull().map { SentReferralDTO.from(it) }
+  fun getSentReferralsForUser(user: AuthUser): List<Referral> {
+    if (userTypeChecker.isServiceProviderUser(user)) {
+      return getSentReferralsForServiceProviderUser(user)
+    }
+
+    if (userTypeChecker.isProbationPractitionerUser(user)) {
+      return getSentReferralsForProbationPractitionerUser(user)
+    }
+
+    throw AccessError("user does not have access to referrals", listOf("invalid user type"))
   }
 
-  fun getSentReferralsSentBy(user: AuthUser): List<Referral> {
+  private fun getSentReferralsForServiceProviderUser(user: AuthUser): List<Referral> {
+    val serviceProvider = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProvider
+
+    val referrals = referralRepository.findAllByInterventionDynamicFrameworkContractPrimeProviderAndSentAtIsNotNull(serviceProvider) +
+      // todo: query for referrals where the service provider has been granted nominated access only
+      referralRepository.findAllByInterventionDynamicFrameworkContractSubcontractorProvidersAndSentAtIsNotNull(serviceProvider)
+
+    return referralAccessFilter.serviceProviderReferrals(referrals, user)
+  }
+
+  private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
+    val referrals = getSentReferralsSentBy(user)
+    return referralAccessFilter.probationPractitionerReferrals(referrals, user)
+  }
+
+  private fun getSentReferralsSentBy(user: AuthUser): List<Referral> {
     return referralRepository.findBySentBy(user)
-  }
-
-  fun getSentReferralsSentBy(userId: String): List<Referral> {
-    return referralRepository.findBySentById(userId)
-  }
-
-  fun getSentReferralsAssignedTo(userId: String): List<Referral> {
-    return referralRepository.findByAssignedToId(userId)
-  }
-
-  fun getSentReferralsForServiceProviderID(serviceProviderID: AuthGroupID): List<Referral> {
-    return referralRepository.findByInterventionDynamicFrameworkContractPrimeProviderIdAndSentAtIsNotNull(serviceProviderID)
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {

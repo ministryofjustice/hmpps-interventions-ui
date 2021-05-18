@@ -82,35 +82,6 @@ internal class ReferralControllerTest {
   }
 
   @Test
-  fun `getSentReferrals filters by service provider organization from query param`() {
-    referralController.getSentReferrals(sentTo = "HARMONY_LIVING")
-    verify(referralService).getSentReferralsForServiceProviderID("HARMONY_LIVING")
-  }
-
-  @Test
-  fun `getSentReferrals filters by PP from query param`() {
-    referralController.getSentReferrals(sentBy = "bernard.beaks")
-    verify(referralService).getSentReferralsSentBy("bernard.beaks")
-  }
-
-  @Test
-  fun `getSentReferrals filters by assignee from query param`() {
-    referralController.getSentReferrals(assignedTo = "someone@provider.com")
-    verify(referralService).getSentReferralsAssignedTo("someone@provider.com")
-  }
-
-  @Test
-  fun `getSentReferrals throws error unless a single query param is passed`() {
-    assertThrows<ServerWebInputException> {
-      referralController.getSentReferrals()
-    }
-
-    assertThrows<ServerWebInputException> {
-      referralController.getSentReferrals(sentBy = "bernard.beaks", sentTo = "HARMONY_LIVING")
-    }
-  }
-
-  @Test
   fun `assignSentReferral returns 404 if referral does not exist`() {
     whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
     val e = assertThrows<ResponseStatusException> {

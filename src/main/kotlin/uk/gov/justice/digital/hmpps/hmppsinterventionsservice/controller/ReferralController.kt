@@ -89,27 +89,10 @@ class ReferralController(
 
   @GetMapping("/sent-referrals")
   fun getSentReferrals(
-    @RequestParam sentBy: String? = null,
-    @RequestParam sentTo: String? = null,
-    @RequestParam assignedTo: String? = null,
+    authentication: JwtAuthenticationToken,
   ): List<SentReferralDTO> {
-    if (listOfNotNull(sentBy, sentTo, assignedTo).size != 1) {
-      throw ServerWebInputException("a single search parameter must be supplied")
-    }
-
-    sentBy?.let {
-      return referralService.getSentReferralsSentBy(it).map { referral -> SentReferralDTO.from(referral) }
-    }
-
-    sentTo?.let {
-      return referralService.getSentReferralsForServiceProviderID(it).map { referral -> SentReferralDTO.from(referral) }
-    }
-
-    assignedTo?.let {
-      return referralService.getSentReferralsAssignedTo(it).map { referral -> SentReferralDTO.from(referral) }
-    }
-
-    return emptyList()
+    val user = userMapper.fromToken(authentication)
+    return referralService.getSentReferralsForUser(user).map { SentReferralDTO.from(it) }
   }
 
   @PostMapping("/sent-referral/{id}/end")
