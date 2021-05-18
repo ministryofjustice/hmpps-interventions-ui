@@ -38,8 +38,7 @@ class CommunityAPIEndOfServiceReportServiceTest {
         "ACC",
         sentAtDefault,
         submittedAtDefault,
-        "End of Service Report for Referral null has been submitted\n" +
-          "Prime Provider is Harmony Living for Contract Type Accommodation\n" +
+        "End of Service Report has been submitted for Accommodation Referral XX1234\n" +
           "http://testUrl/probation-practitioner/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
       )
     )
@@ -59,6 +58,7 @@ class CommunityAPIEndOfServiceReportServiceTest {
           relevantSentenceId = 1234L,
           serviceProviderName = "Harmony Living",
           sentAt = sentAtDefault,
+          referenceNumber = "XX1234"
         ),
       ),
       "http://localhost:8080/end-of-service-report/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
