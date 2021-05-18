@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
@@ -20,18 +22,30 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.net.URI
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.EntityExistsException
 
 internal class ActionPlanControllerTest {
 
+  private val tokenFactory = JwtTokenFactory()
   private val actionPlanMapper = mock<ActionPlanMapper>()
   private val userMapper = mock<UserMapper>()
   private val actionPlanService = mock<ActionPlanService>()
   private val locationMapper = mock<LocationMapper>()
 
   private val actionPlanController = ActionPlanController(actionPlanMapper, userMapper, actionPlanService, locationMapper)
+
+  @Test
+  fun `throws error if an action plan already exists for the referral`() {
+    whenever(actionPlanService.checkActionPlanExistsForReferral(any())).thenReturn(true)
+    val request = CreateActionPlanDTO(UUID.randomUUID(), 3, emptyList())
+    assertThrows<EntityExistsException> {
+      actionPlanController.createDraftActionPlan(request, tokenFactory.create())
+    }
+  }
 
   @Test
   fun `saves draft action plan`() {

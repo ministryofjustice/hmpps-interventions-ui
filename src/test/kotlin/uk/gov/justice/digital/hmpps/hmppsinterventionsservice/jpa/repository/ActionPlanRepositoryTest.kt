@@ -6,15 +6,28 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
+import java.util.UUID
 
 @RepositoryTest
 class ActionPlanRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val actionPlanRepository: ActionPlanRepository,
 ) {
+  private val actionPlanFactory = ActionPlanFactory(entityManager)
   private val authUserFactory = AuthUserFactory(entityManager)
+  private val referralFactory = ReferralFactory(entityManager)
+
+  @Test
+  fun `existsByReferralId returns true for duplicate action plans`() {
+    val id = UUID.randomUUID()
+    actionPlanFactory.create(referral = referralFactory.createSent(id))
+    assertThat(actionPlanRepository.existsByReferralId(id)).isTrue
+    assertThat(actionPlanRepository.existsByReferralId(UUID.randomUUID())).isFalse
+  }
 
   @Test
   fun `can retrieve an action plan`() {
