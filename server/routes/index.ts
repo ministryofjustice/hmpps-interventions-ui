@@ -209,8 +209,6 @@ export default function routes(router: Router, services: Services): Router {
   post('/referrals/:id/service-user-details', (req, res) => referralsController.confirmServiceUserDetails(req, res))
   get('/referrals/:id/service-categories', (req, res) => referralsController.updateServiceCategories(req, res))
   post('/referrals/:id/service-categories', (req, res) => referralsController.updateServiceCategories(req, res))
-  get('/referrals/:id/complexity-level', (req, res) => referralsController.viewComplexityLevel(req, res))
-  post('/referrals/:id/complexity-level', (req, res) => referralsController.updateComplexityLevel(req, res))
   get('/referrals/:referralId/service-category/:serviceCategoryId/complexity-level', (req, res) =>
     referralsController.viewOrUpdateComplexityLevel(req, res)
   )

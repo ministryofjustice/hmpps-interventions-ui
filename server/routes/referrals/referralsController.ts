@@ -226,24 +226,6 @@ export default class ReferralsController {
     }
   }
 
-  async viewComplexityLevel(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-
-    if (referral.serviceCategoryId === null) {
-      throw new Error('Attempting to view complexity level without service category selected')
-    }
-
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-    ])
-
-    const presenter = new ComplexityLevelPresenter(referral, serviceCategory)
-    const view = new ComplexityLevelView(presenter)
-
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
   async viewOrUpdateComplexityLevel(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { referralId, serviceCategoryId } = req.params
@@ -289,50 +271,6 @@ export default class ReferralsController {
     const view = new ComplexityLevelView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  async updateComplexityLevel(req: Request, res: Response): Promise<void> {
-    const data = await new ComplexityLevelForm(req).data()
-
-    let formError: FormValidationError | null = null
-
-    if (!data.error) {
-      try {
-        await this.interventionsService.patchDraftReferral(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          data.paramsForUpdate
-        )
-      } catch (e) {
-        formError = createFormValidationErrorOrRethrow(e)
-      }
-    } else {
-      formError = data.error
-    }
-
-    if (!formError) {
-      res.redirect(`/referrals/${req.params.id}/completion-deadline`)
-    } else {
-      const referral = await this.interventionsService.getDraftReferral(
-        res.locals.user.token.accessToken,
-        req.params.id
-      )
-
-      if (referral.serviceCategoryId === null) {
-        throw new Error('Attempting to view complexity level without service category selected')
-      }
-
-      const [serviceCategory, serviceUser] = await Promise.all([
-        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
-        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      ])
-
-      const presenter = new ComplexityLevelPresenter(referral, serviceCategory, formError, req.body)
-      const view = new ComplexityLevelView(presenter)
-
-      res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
-    }
   }
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
