@@ -7,4 +7,5 @@ import java.util.UUID
 interface ActionPlanRepository : JpaRepository<ActionPlan, UUID> {
   fun findByIdAndSubmittedAtIsNull(id: UUID): ActionPlan?
   fun findByReferralId(referralId: UUID): ActionPlan?
+  fun existsByReferralId(referralId: UUID): Boolean
 }
