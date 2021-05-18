@@ -60,7 +60,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       user,
       listOf(
         "INT_SP_HARMONY_LIVING",
-        "INT_CG_0001",
+        "INT_CR_0001",
       )
     )
 
@@ -87,7 +87,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       user,
       listOf(
         "INT_SP_BETTER_LTD",
-        "INT_CG_0001",
+        "INT_CR_0001",
       )
     )
 
@@ -114,7 +114,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       user,
       listOf(
         "INT_SP_BETTER_LTD",
-        "INT_CG_0002",
+        "INT_CR_0002",
       )
     )
 
@@ -147,7 +147,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       user,
       listOf(
         "INT_SP_BETTER_LTD",
-        "INT_CG_0002",
+        "INT_CR_0002",
       )
     )
 
@@ -187,7 +187,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       user,
       listOf(
         "INT_SP_BETTER_LTD",
-        "INT_CG_0002",
+        "INT_CR_0002",
       )
     )
 
@@ -245,7 +245,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       listOf(
         "INT_SP_HARMONY_LIVING",
         "INT_SP_BETTER_LTD",
-        "INT_CG_0001"
+        "INT_CR_0001"
       )
     )
 

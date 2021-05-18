@@ -23,7 +23,7 @@ class ServiceProviderAccessScopeMapper(
   private val userTypeChecker: UserTypeChecker,
 ) {
   private val serviceProviderGroupPrefix = "INT_SP_"
-  private val contractGroupPrefix = "INT_CG_"
+  private val contractGroupPrefix = "INT_CR_"
   private val errorMessage = "could not map service provider user to access scope"
 
   fun fromUser(user: AuthUser): ServiceProviderAccessScope {
