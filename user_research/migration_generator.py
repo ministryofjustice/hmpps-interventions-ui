@@ -26,13 +26,13 @@ service_providers = [
 
 contracts = [
    # emotional wellbeing service in cleveland
-   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
+   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '0001','8221a81c-08b2-4262-9c1a-0ab3c82cec8c', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
    # ETE service for all of yorkshire
-   ('21ef4732-73e6-486b-832c-9f49165d40ab', 'ca374ac3-84eb-4b91-bea7-9005398f426f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
+   ('21ef4732-73e6-486b-832c-9f49165d40ab', '0002','ca374ac3-84eb-4b91-bea7-9005398f426f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
    # accommodation service for the midlands
-   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '0003','428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
    # ETE service for the midlands
-   ('9653676a-a51f-48cf-8541-444af11fe18b', 'ca374ac3-84eb-4b91-bea7-9005398f426f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   ('9653676a-a51f-48cf-8541-444af11fe18b', '0004','ca374ac3-84eb-4b91-bea7-9005398f426f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
 ]
 
 interventions = [
@@ -434,7 +434,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_1__df_contracts.sql'), 'w') as f:
         f.write("""insert into dynamic_framework_contract
-            (id, service_category_id, service_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
+            (id, contract_reference, service_category_id, prime_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
         values
         """)
 
