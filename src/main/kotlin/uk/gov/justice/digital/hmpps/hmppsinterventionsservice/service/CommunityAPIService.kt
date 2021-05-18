@@ -140,7 +140,7 @@ class CommunityAPIEndOfServiceReportEventService(
 
   private fun getNotes(referral: Referral, url: String): String {
     val contractTypeDescription = "Accommodation" // Fixme: Using only contract type Accommodation til contract type changes are in
-    return "End of Service Report has been submitted for ${contractTypeDescription} Referral ${referral.referenceNumber}\n" +
+    return "End of Service Report has been submitted for $contractTypeDescription Referral ${referral.referenceNumber}\n" +
       "$url"
   }
 }
