@@ -1,17 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
@@ -59,6 +61,9 @@ class ReferralServiceTest @Autowired constructor(
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
   private val referralConcluder: ReferralConcluder = mock()
+  private val referralAccessChecker: ReferralAccessChecker = mock()
+  private val userTypeChecker: UserTypeChecker = mock()
+
   private val referralService = ReferralService(
     referralRepository,
     authUserRepository,
@@ -68,6 +73,8 @@ class ReferralServiceTest @Autowired constructor(
     referenceGenerator,
     cancellationReasonRepository,
     actionPlanAppointmentRepository,
+    referralAccessChecker,
+    userTypeChecker,
   )
 
   // reset before each test
@@ -81,20 +88,7 @@ class ReferralServiceTest @Autowired constructor(
       SampleData.sampleReferral("X123456", "Harmony Living")
     )
     sampleIntervention = sampleReferral.intervention
-  }
-
-  @Nested
-  inner class GetReferral {
-    @Test
-    fun `non persisted referral returns null`() {
-      val referral = referralService.getReferral(UUID.randomUUID())
-      assertThat(referral).isNull()
-    }
-    @Test
-    fun `persisted referral is returned`() {
-      val referral = referralService.getReferral(sampleReferral.id)
-      assertThat(referral).isNotNull
-    }
+    whenever(userTypeChecker.isProbationPractitionerUser(any())).thenReturn(true)
   }
 
   @Test
@@ -152,8 +146,7 @@ class ReferralServiceTest @Autowired constructor(
     val today = LocalDate.now()
     val draftReferral = DraftReferralDTO(completionDeadline = today)
     referralService.updateDraftReferral(sampleReferral, draftReferral)
-
-    val savedDraftReferral = referralService.getDraftReferral(sampleReferral.id)
+    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())
     assertThat(savedDraftReferral!!.id).isEqualTo(sampleReferral.id)
     assertThat(savedDraftReferral.createdAt).isEqualTo(sampleReferral.createdAt)
     assertThat(savedDraftReferral.completionDeadline).isEqualTo(draftReferral.completionDeadline)
@@ -165,7 +158,7 @@ class ReferralServiceTest @Autowired constructor(
     val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleIntervention.id)
     entityManager.flush()
 
-    val savedDraftReferral = referralService.getDraftReferral(draftReferral.id)
+    val savedDraftReferral = referralService.getDraftReferralForUser(draftReferral.id, authUser)
     assertThat(savedDraftReferral!!.id).isNotNull
     assertThat(savedDraftReferral.createdAt).isNotNull
     assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
@@ -177,7 +170,7 @@ class ReferralServiceTest @Autowired constructor(
     sampleReferral.completionDeadline = LocalDate.of(2021, 6, 26)
     entityManager.persistAndFlush(sampleReferral)
 
-    val savedDraftReferral = referralService.getDraftReferral(sampleReferral.id)
+    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())
     assertThat(savedDraftReferral!!.id).isEqualTo(sampleReferral.id)
     assertThat(savedDraftReferral.createdAt).isEqualTo(sampleReferral.createdAt)
     assertThat(savedDraftReferral.completionDeadline).isEqualTo(sampleReferral.completionDeadline)
@@ -283,7 +276,7 @@ class ReferralServiceTest @Autowired constructor(
     referralService.updateDraftReferral(sampleReferral, DraftReferralDTO(desiredOutcomesIds = null))
 
     // Ensure no changes
-    sampleReferral = referralService.getDraftReferral(sampleReferral.id)!!
+    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())
     assertThat(sampleReferral.desiredOutcomesIDs).size().isEqualTo(2)
   }
 
@@ -310,7 +303,7 @@ class ReferralServiceTest @Autowired constructor(
     }
 
     entityManager.flush()
-    assertThat(referralService.getDraftReferral(sampleReferral.id)!!.additionalNeedsInformation).isNull()
+    assertThat(referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())!!.additionalNeedsInformation).isNull()
   }
 
   @Test
@@ -318,12 +311,12 @@ class ReferralServiceTest @Autowired constructor(
     val user = AuthUser("user_id", "auth_source", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
-    assertThat(referralService.getDraftReferral(draftReferral.id)).isNotNull()
+    assertThat(referralService.getDraftReferralForUser(draftReferral.id, user)).isNotNull()
 
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
 
-    assertThat(referralService.getDraftReferral(draftReferral.id)).isNull()
-    assertThat(referralService.getSentReferral(sentReferral.id)).isNotNull()
+    assertThat(referralService.getDraftReferralForUser(draftReferral.id, user)).isNull()
+    assertThat(referralService.getSentReferralForUser(draftReferral.id, user)).isNotNull()
   }
 
   @Test

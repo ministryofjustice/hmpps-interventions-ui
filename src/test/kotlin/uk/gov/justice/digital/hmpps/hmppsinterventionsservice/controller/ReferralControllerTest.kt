@@ -12,10 +12,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
@@ -34,12 +32,11 @@ import javax.persistence.EntityNotFoundException
 
 internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
-  private val referralAccessChecker = mock<ReferralAccessChecker>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
   private val userMapper = UserMapper()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
-    referralService, serviceCategoryService, userMapper, cancellationReasonMapper, referralAccessChecker
+    referralService, serviceCategoryService, userMapper, cancellationReasonMapper
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
@@ -61,36 +58,8 @@ internal class ReferralControllerTest {
     private val token = tokenFactory.create(userID = user.id, userName = user.userName, authSource = user.authSource)
 
     @Test
-    fun `getSentReferral returns not found if referral does not exist`() {
-      whenever(referralService.getReferral(referral.id)).thenReturn(null)
-      val e = assertThrows<ResponseStatusException> {
-        referralController.getSentReferral(
-          referral.id,
-          token,
-        )
-      }
-      assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
-      assertThat(e.message).contains("\"referral not found")
-    }
-
-    @Test
-    fun `getSentReferral returns unauthorized if user does not have access permission to referral`() {
-      whenever(referralService.getReferral(any())).thenReturn(referral)
-      whenever(referralAccessChecker.forServiceProviderUser(any(), eq(user))).thenReturn(false)
-      val e = assertThrows<ResponseStatusException> {
-        referralController.getSentReferral(
-          referral.id,
-          token,
-        )
-      }
-      assertThat(e.status).isEqualTo(HttpStatus.UNAUTHORIZED)
-    }
-
-    @Test
     fun `getSentReferral returns not found if sent referral does not exist`() {
-      whenever(referralService.getReferral(any())).thenReturn(referral)
-      whenever(referralAccessChecker.forServiceProviderUser(any(), eq(user))).thenReturn(true)
-      whenever(referralService.getSentReferral(any())).thenReturn(null)
+      whenever(referralService.getSentReferralForUser(eq(referral.id), any())).thenReturn(null)
       val e = assertThrows<ResponseStatusException> {
         referralController.getSentReferral(
           referral.id,
@@ -102,10 +71,8 @@ internal class ReferralControllerTest {
     }
 
     @Test
-    fun `getSentReferral returns a sent referral if user has correct permissions`() {
-      whenever(referralService.getReferral(any())).thenReturn(referral)
-      whenever(referralAccessChecker.forServiceProviderUser(any(), eq(user))).thenReturn(true)
-      whenever(referralService.getSentReferral(any())).thenReturn(referral)
+    fun `getSentReferral returns a sent referral if it exists`() {
+      whenever(referralService.getSentReferralForUser(eq(referral.id), any())).thenReturn(referral)
       val sentReferral = referralController.getSentReferral(
         referral.id,
         token,
@@ -145,7 +112,7 @@ internal class ReferralControllerTest {
 
   @Test
   fun `assignSentReferral returns 404 if referral does not exist`() {
-    whenever(referralService.getSentReferral(any())).thenReturn(null)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
     val e = assertThrows<ResponseStatusException> {
       referralController.assignSentReferral(
         UUID.randomUUID(),
@@ -160,7 +127,7 @@ internal class ReferralControllerTest {
   fun `assignSentReferral uses incoming jwt for 'assignedBy' argument, and request body for 'assignedTo'`() {
     val referral = referralFactory.createSent()
     val assignedToUser = authUserFactory.create(id = "to")
-    whenever(referralService.getSentReferral(any())).thenReturn(referral)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
     whenever(referralService.assignSentReferral(any(), any(), any())).thenReturn(referral)
     referralController.assignSentReferral(
       UUID.randomUUID(),
@@ -182,7 +149,7 @@ internal class ReferralControllerTest {
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
-    whenever(referralService.getSentReferral(any())).thenReturn(referral)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
 
     val user = AuthUser("CRN123", "auth", "user")
     val token = tokenFactory.create(user.id, user.authSource, user.userName)
@@ -198,11 +165,11 @@ internal class ReferralControllerTest {
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
 
-    whenever(referralService.getSentReferral(any())).thenReturn(null)
-    val jwtAuthenticationToken = JwtAuthenticationToken(mock())
+    val token = tokenFactory.create()
     val e = assertThrows<ResponseStatusException> {
-      referralController.endSentReferral(UUID.randomUUID(), endReferralDTO, jwtAuthenticationToken)
+      referralController.endSentReferral(UUID.randomUUID(), endReferralDTO, token)
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
   }

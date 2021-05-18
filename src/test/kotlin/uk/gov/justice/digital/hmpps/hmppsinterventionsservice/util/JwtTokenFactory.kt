@@ -30,16 +30,16 @@ class JwtTokenFactory {
   }
 
   fun createEncodedToken(
-    userID: String = "user",
-    authSource: String = "authSource",
-    userName: String = "username"
+    userID: String? = "user",
+    authSource: String? = "authSource",
+    userName: String? = "username"
   ): String {
     val jwk = RSAKeyGenerator(2048).keyID("123").generate()
-    val claims = JWTClaimsSet.Builder()
-      .claim("user_id", userID)
-      .claim("auth_source", authSource)
-      .claim("user_name", userName)
-      .build()
+    val claimsBuilder = JWTClaimsSet.Builder()
+    userID?.let { claimsBuilder.claim("user_id", it) }
+    authSource?.let { claimsBuilder.claim("auth_source", it) }
+    userName?.let { claimsBuilder.claim("user_name", userName) }
+    val claims = claimsBuilder.build()
     val jwsHeader: JWSHeader = JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build()
     val jwt = SignedJWT(jwsHeader, claims)
     jwt.sign(RSASSASigner(jwk))

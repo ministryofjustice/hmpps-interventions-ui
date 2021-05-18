@@ -7,6 +7,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -30,6 +32,8 @@ class ReferralServiceUnitTest {
   private val referralReferenceGenerator: ReferralReferenceGenerator = mock()
   private val cancellationReasonRepository: CancellationReasonRepository = mock()
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
+  private val referralAccessChecker: ReferralAccessChecker = mock()
+  private val userTypeChecker: UserTypeChecker = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
@@ -39,7 +43,7 @@ class ReferralServiceUnitTest {
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
-    actionPlanAppointmentRepository,
+    actionPlanAppointmentRepository, referralAccessChecker, userTypeChecker,
   )
 
   @Test

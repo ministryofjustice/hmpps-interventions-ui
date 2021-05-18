@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
@@ -36,19 +35,8 @@ class ReferralController(
   private val serviceCategoryService: ServiceCategoryService,
   private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
-  private val referralAccessChecker: ReferralAccessChecker,
 ) {
   companion object : KLogging()
-
-  private fun validateReferralAccess(authentication: JwtAuthenticationToken, referralId: UUID) {
-    val authUser = userMapper.fromToken(authentication)
-    val referral = referralService.getReferral(referralId)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$referralId]")
-    if (!referralAccessChecker.forServiceProviderUser(referral, authUser)) {
-      logger.error("AuthUser [id=${authUser.id}] does not have access to referral [id=$referralId]")
-      throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized to access referral [id=$referralId]")
-    }
-  }
 
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
@@ -56,10 +44,11 @@ class ReferralController(
     @RequestBody referralAssignment: ReferralAssignmentDTO,
     authentication: JwtAuthenticationToken,
   ): SentReferralDTO {
-    val sentReferral = referralService.getSentReferral(id)
+    val assignedBy = userMapper.fromToken(authentication)
+
+    val sentReferral = referralService.getSentReferralForUser(id, assignedBy)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
 
-    val assignedBy = userMapper.fromToken(authentication)
     val assignedTo = AuthUser(
       id = referralAssignment.assignedTo.userId,
       authSource = referralAssignment.assignedTo.authSource,
@@ -72,10 +61,11 @@ class ReferralController(
 
   @PostMapping("/draft-referral/{id}/send")
   fun sendDraftReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
-    val draftReferral = referralService.getDraftReferral(id)
+    val user = userMapper.fromToken(authentication)
+
+    val draftReferral = referralService.getDraftReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
 
-    val user = userMapper.fromToken(authentication)
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
 
     val location = ServletUriComponentsBuilder
@@ -91,8 +81,8 @@ class ReferralController(
 
   @GetMapping("/sent-referral/{id}")
   fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
-    validateReferralAccess(authentication, id)
-    return referralService.getSentReferral(id)
+    val user = userMapper.fromToken(authentication)
+    return referralService.getSentReferralForUser(id, user)
       ?.let { SentReferralDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
   }
@@ -124,10 +114,11 @@ class ReferralController(
 
   @PostMapping("/sent-referral/{id}/end")
   fun endSentReferral(@PathVariable id: UUID, @RequestBody endReferralRequest: EndReferralRequestDTO, authentication: JwtAuthenticationToken): SentReferralDTO {
-    val sentReferral = referralService.getSentReferral(id)
+    val user = userMapper.fromToken(authentication)
+
+    val sentReferral = referralService.getSentReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
 
-    val user = userMapper.fromToken(authentication)
     val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferralRequest.reasonCode)
 
     return SentReferralDTO.from(referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments))
@@ -159,15 +150,17 @@ class ReferralController(
   }
 
   @GetMapping("/draft-referral/{id}")
-  fun getDraftReferralByID(@PathVariable id: UUID): DraftReferralDTO {
-    return referralService.getDraftReferral(id)
+  fun getDraftReferralByID(@PathVariable id: UUID, authentication: JwtAuthenticationToken): DraftReferralDTO {
+    val user = userMapper.fromToken(authentication)
+    return referralService.getDraftReferralForUser(id, user)
       ?.let { DraftReferralDTO.from(it) }
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
   }
 
   @PatchMapping("/draft-referral/{id}")
-  fun patchDraftReferralByID(@PathVariable id: UUID, @RequestBody partialUpdate: DraftReferralDTO): DraftReferralDTO {
-    val referralToUpdate = referralService.getDraftReferral(id)
+  fun patchDraftReferralByID(@PathVariable id: UUID, @RequestBody partialUpdate: DraftReferralDTO, authentication: JwtAuthenticationToken): DraftReferralDTO {
+    val user = userMapper.fromToken(authentication)
+    val referralToUpdate = referralService.getDraftReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
 
     val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
