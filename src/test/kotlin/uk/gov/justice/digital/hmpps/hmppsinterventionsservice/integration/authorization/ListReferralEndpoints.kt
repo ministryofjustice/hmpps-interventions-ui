@@ -170,7 +170,7 @@ class ListReferralEndpoints : IntegrationTestBase() {
   }
 
   @Test
-  fun `pp user can only see referrals they sent`() {
+  fun `pp users can only see sent referrals they sent`() {
     val user1 = setupAssistant.createPPUser("987623874568234")
     val user2 = setupAssistant.createPPUser("875234765234233")
     setupAssistant.createSentReferral(ppUser = user1)
@@ -180,6 +180,37 @@ class ListReferralEndpoints : IntegrationTestBase() {
     val response = requestFactory.create(Request.GetSentReferrals, token).exchange()
     response.expectStatus().is2xxSuccessful
     response.expectBody().jsonPath("$.length()").isEqualTo(1)
+  }
+
+  @Test
+  fun `pp users can only see draft referrals they created`() {
+    val user1 = setupAssistant.createPPUser("762143487465")
+    val user2 = setupAssistant.createPPUser("651287231123")
+    setupAssistant.createDraftReferral(createdBy = user1)
+    setupAssistant.createDraftReferral(createdBy = user2)
+
+    val token = createEncodedTokenForUser(user1)
+    val response = requestFactory.create(Request.GetDraftReferrals, token).exchange()
+    response.expectStatus().is2xxSuccessful
+    response.expectBody().jsonPath("$.length()").isEqualTo(1)
+  }
+
+  @Test
+  fun `sp users can't access draft referrals`() {
+    val user = setupAssistant.createSPUser()
+
+    val referral = setupAssistant.createDraftReferral()
+    val token = createEncodedTokenForUser(user)
+
+    val response = requestFactory.create(Request.GetDraftReferrals, token).exchange()
+    response.expectStatus().isForbidden
+    response.expectBody().json(
+      """
+      {"accessErrors": [
+      "only probation practitioners can access draft referrals"
+      ]}
+      """.trimIndent()
+    )
   }
 
   @Test
