@@ -43,4 +43,19 @@ data class DynamicFrameworkContract(
     inverseJoinColumns = [JoinColumn(name = "subcontractor_provider_id")]
   )
   val subcontractorProviders: Set<ServiceProvider> = setOf(),
-)
+) {
+  // using contract_reference for hashCode and equals because
+  // it's guaranteed to have a unique hash (UUID isn't).
+  // the field is enforced as unique at the database level.
+  override fun hashCode(): Int {
+    return contractReference.hashCode()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is DynamicFrameworkContract) {
+      return false
+    }
+
+    return contractReference == other.contractReference
+  }
+}
