@@ -58,15 +58,14 @@ class ReferralService(
   }
 
   fun getDraftReferralForUser(id: UUID, user: AuthUser): Referral? {
-    val referral = referralRepository.findByIdAndSentAtIsNull(id)
-
-    referral?.let {
-      if (!userTypeChecker.isProbationPractitionerUser(user)) {
-        throw AccessError("user does not have access to referral", listOf("only probation practitioners can access draft referrals"))
-      }
-      referralAccessChecker.forUser(it, user)
+    if (!userTypeChecker.isProbationPractitionerUser(user)) {
+      throw AccessError("user does not have access to referral", listOf("only probation practitioners can access draft referrals"))
     }
 
+    val referral = referralRepository.findByIdAndSentAtIsNull(id)
+    referral?.let {
+      referralAccessChecker.forUser(it, user)
+    }
     return referral
   }
 
