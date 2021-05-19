@@ -435,6 +435,7 @@ export default class ServiceProviderReferralsController {
 
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
+    let serverError: FormValidationError | null = null
 
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
 
@@ -446,15 +447,28 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        await this.interventionsService.updateActionPlanAppointment(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          sessionNumber,
-          data.paramsForUpdate
-        )
-
-        res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
-        return
+        try {
+          await this.interventionsService.updateActionPlanAppointment(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            sessionNumber,
+            data.paramsForUpdate
+          )
+          return res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
+        } catch (e) {
+          if (e.status === 409) {
+            serverError = {
+              errors: [
+                {
+                  formFields: ['session-input'],
+                  errorSummaryLinkedField: 'session-input',
+                  message:
+                    'The proposed date and time you selected clashes with another appointment. Please select a different date and time.',
+                },
+              ],
+            }
+          }
+        }
       }
     }
 
@@ -469,9 +483,9 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EditSessionPresenter(appointment, formError, userInputData)
+    const presenter = new EditSessionPresenter(appointment, formError, userInputData, serverError)
     const view = new EditSessionView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
