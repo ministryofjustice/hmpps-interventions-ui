@@ -16,13 +16,13 @@ import java.util.UUID
 class SingleReferralEndpoints : IntegrationTestBase() {
   @MockBean lateinit var mockHmppsAuthService: HMPPSAuthService
 
-  private lateinit var requestBuilder: RequestBuilder
+  private lateinit var requestFactory: RequestFactory
 
   private val tokenFactory = JwtTokenFactory()
 
   @BeforeEach
   fun initRequestBuilder() {
-    requestBuilder = RequestBuilder(webTestClient, setupAssistant)
+    requestFactory = RequestFactory(webTestClient, setupAssistant)
   }
 
   companion object {
@@ -72,7 +72,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    requestBuilder.referralRequest(request, referral.id, token)
+    requestFactory.create(request, token, referral.id.toString())
       .exchange()
       .expectStatus()
       .is2xxSuccessful
@@ -99,7 +99,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    requestBuilder.referralRequest(request, referral.id, token)
+    requestFactory.create(request, token, referral.id.toString())
       .exchange()
       .expectStatus()
       .is2xxSuccessful
@@ -126,7 +126,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -166,7 +166,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -199,7 +199,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -224,7 +224,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -257,7 +257,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = createSentReferral(contract)
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -276,7 +276,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = setupAssistant.createDraftReferral()
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -293,7 +293,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = setupAssistant.createSentReferral()
     val token = tokenFactory.createEncodedToken("123456", "nomis", "tom")
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -313,7 +313,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral = setupAssistant.createSentReferral()
     val token = createEncodedTokenForUser(user)
 
-    val response = requestBuilder.referralRequest(request, referral.id, token).exchange()
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -328,7 +328,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @MethodSource("allReferralRequests")
   fun `auth tokens with missing claims can never access anything`(request: Request) {
     val token = tokenFactory.createEncodedToken("123456", null, null)
-    val response = requestBuilder.referralRequest(request, UUID.randomUUID(), token).exchange()
+    val response = requestFactory.create(request, token, UUID.randomUUID().toString()).exchange()
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
@@ -343,7 +343,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @ParameterizedTest
   @MethodSource("allReferralRequests")
   fun `requests with no auth token can never access anything`(request: Request) {
-    val response = requestBuilder.referralRequest(request, UUID.randomUUID(), null).exchange()
+    val response = requestFactory.create(request, null, UUID.randomUUID().toString()).exchange()
     response.expectStatus().isUnauthorized
   }
 }
