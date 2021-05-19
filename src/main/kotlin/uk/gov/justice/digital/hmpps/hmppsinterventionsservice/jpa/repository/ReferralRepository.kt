@@ -4,9 +4,14 @@ import org.springframework.data.jpa.repository.JpaRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import java.util.UUID
 
 interface ReferralRepository : JpaRepository<Referral, UUID> {
+  // queries for service providers
+  fun findAllByInterventionDynamicFrameworkContractPrimeProviderAndSentAtIsNotNull(provider: ServiceProvider): List<Referral>
+  fun findAllByInterventionDynamicFrameworkContractSubcontractorProvidersAndSentAtIsNotNull(provider: ServiceProvider): List<Referral>
+
   // queries for sent referrals
   fun findByIdAndSentAtIsNotNull(id: UUID): Referral?
   fun findBySentAtIsNotNull(): List<Referral>

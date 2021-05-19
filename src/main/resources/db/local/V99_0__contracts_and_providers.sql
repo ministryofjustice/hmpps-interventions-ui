@@ -19,8 +19,10 @@ values ('98a42c61-c30f-4beb-8062-04033c376e2d', '1d7f8fcc-aa12-4705-a6a5-0d40467
 
 • This programme is aimed at males who have offended.
 • This is some more text about the intervention'),
-       ('15237ae5-a017-4de6-a033-abf350f14d99', '0b60d842-9c08-408e-8c8d-f6dbf8e5c3f4', TO_DATE('2020-11-11', 'YYYY-MM-DD'), 'Begins at Home', 'This service is dedicated for handling challenging situations at home.');
+       ('15237ae5-a017-4de6-a033-abf350f14d99', '0b60d842-9c08-408e-8c8d-f6dbf8e5c3f4', TO_DATE('2020-11-11', 'YYYY-MM-DD'), 'Begins at Home', 'This service is dedicated for handling challenging situations at home.'),
+       ('3ccb511b-89b2-42f7-803b-304f54d85a24', '1435d1c5-0c22-459a-bd1a-ce593fba6c05', TO_DATE('2020-11-11', 'YYYY-MM-DD'), 'Kick your Habit', 'Drug and alcohol rehab.');
 
 insert into dynamic_framework_contract_sub_contractor(dynamic_framework_contract_id, subcontractor_provider_id)
 values('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'HOME_TRUST'),
-      ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'HELPING_HANDS');
+      ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'HELPING_HANDS'),
+      ('1435d1c5-0c22-459a-bd1a-ce593fba6c05', 'HARMONY_LIVING');

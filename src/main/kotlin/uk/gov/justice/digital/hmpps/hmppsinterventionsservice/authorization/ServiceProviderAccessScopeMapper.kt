@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 
 data class ServiceProviderAccessScope(
-  val serviceProvider: ServiceProvider?,
+  val serviceProvider: ServiceProvider,
   val contracts: List<DynamicFrameworkContract>,
 )
 
@@ -52,7 +52,9 @@ class ServiceProviderAccessScopeMapper(
       throw AccessError(errorMessage, configErrors)
     }
 
-    return ServiceProviderAccessScope(serviceProvider = serviceProvider, contracts = contracts)
+    // this not null assertion on serviceProvider is ugly, but it's the only way i could think
+    // of to allow all the errors to be processed in a sensible way above.
+    return ServiceProviderAccessScope(serviceProvider = serviceProvider!!, contracts = contracts)
   }
 
   private fun getServiceProvider(serviceProviderGroups: List<String>, configErrors: MutableList<String>): ServiceProvider? {

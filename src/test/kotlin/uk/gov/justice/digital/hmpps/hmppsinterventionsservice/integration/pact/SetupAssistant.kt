@@ -98,8 +98,8 @@ class SetupAssistant(
     return desiredOutcomeRepository.save(DesiredOutcome(id, description, serviceCategoryId))
   }
 
-  fun createPPUser(): AuthUser {
-    val user = AuthUser("8751622134", "delius", "BERNARD.BEAKS")
+  fun createPPUser(id: String = "8751622134"): AuthUser {
+    val user = AuthUser(id, "delius", "BERNARD.BEAKS")
     return authUserRepository.save(user)
   }
 
@@ -155,9 +155,8 @@ class SetupAssistant(
     return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endRequestedBy = ppUser, assignedTo = spUser, endRequestedReason = endRequestedReason, endRequestedComments = endRequestedComments))
   }
 
-  fun createSentReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention()): Referral {
-    val user = createPPUser()
-    return referralRepository.save(referralFactory.createSent(id = id, intervention = intervention, createdBy = user, sentBy = user))
+  fun createSentReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention(), ppUser: AuthUser = createPPUser()): Referral {
+    return referralRepository.save(referralFactory.createSent(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser))
   }
 
   fun createDynamicFrameworkContract(

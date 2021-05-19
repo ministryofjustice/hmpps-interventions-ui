@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
@@ -89,27 +88,10 @@ class ReferralController(
 
   @GetMapping("/sent-referrals")
   fun getSentReferrals(
-    @RequestParam sentBy: String? = null,
-    @RequestParam sentTo: String? = null,
-    @RequestParam assignedTo: String? = null,
+    authentication: JwtAuthenticationToken,
   ): List<SentReferralDTO> {
-    if (listOfNotNull(sentBy, sentTo, assignedTo).size != 1) {
-      throw ServerWebInputException("a single search parameter must be supplied")
-    }
-
-    sentBy?.let {
-      return referralService.getSentReferralsSentBy(it).map { referral -> SentReferralDTO.from(referral) }
-    }
-
-    sentTo?.let {
-      return referralService.getSentReferralsForServiceProviderID(it).map { referral -> SentReferralDTO.from(referral) }
-    }
-
-    assignedTo?.let {
-      return referralService.getSentReferralsAssignedTo(it).map { referral -> SentReferralDTO.from(referral) }
-    }
-
-    return emptyList()
+    val user = userMapper.fromToken(authentication)
+    return referralService.getSentReferralsForUser(user).map { SentReferralDTO.from(it) }
   }
 
   @PostMapping("/sent-referral/{id}/end")
@@ -168,8 +150,9 @@ class ReferralController(
   }
 
   @GetMapping("/draft-referrals")
-  fun getDraftReferralsCreatedByUserID(@RequestParam userID: String): List<DraftReferralDTO> {
-    return referralService.getDraftReferralsCreatedByUserID(userID)
+  fun getDraftReferrals(authentication: JwtAuthenticationToken): List<DraftReferralDTO> {
+    val user = userMapper.fromToken(authentication)
+    return referralService.getDraftReferralsForUser(user).map { DraftReferralDTO.from(it) }
   }
 
   @GetMapping("/service-category/{id}")

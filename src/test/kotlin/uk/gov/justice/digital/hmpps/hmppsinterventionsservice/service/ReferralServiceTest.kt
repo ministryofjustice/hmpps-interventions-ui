@@ -10,9 +10,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.mockito.AdditionalAnswers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
@@ -62,7 +66,9 @@ class ReferralServiceTest @Autowired constructor(
   private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
   private val referralConcluder: ReferralConcluder = mock()
   private val referralAccessChecker: ReferralAccessChecker = mock()
-  private val userTypeChecker: UserTypeChecker = mock()
+  private val userTypeChecker = UserTypeChecker()
+  private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper = mock()
+  private val referralAccessFilter: ReferralAccessFilter = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -75,6 +81,8 @@ class ReferralServiceTest @Autowired constructor(
     actionPlanAppointmentRepository,
     referralAccessChecker,
     userTypeChecker,
+    serviceProviderAccessScopeMapper,
+    referralAccessFilter,
   )
 
   // reset before each test
@@ -88,7 +96,6 @@ class ReferralServiceTest @Autowired constructor(
       SampleData.sampleReferral("X123456", "Harmony Living")
     )
     sampleIntervention = sampleReferral.intervention
-    whenever(userTypeChecker.isProbationPractitionerUser(any())).thenReturn(true)
   }
 
   @Test
@@ -154,7 +161,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `create and persist draft referral`() {
-    val authUser = AuthUser("user_id", "auth_source", "user_name")
+    val authUser = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleIntervention.id)
     entityManager.flush()
 
@@ -180,18 +187,21 @@ class ReferralServiceTest @Autowired constructor(
   fun `find by userID returns list of draft referrals`() {
     val user1 = AuthUser("123", "delius", "bernie.b")
     val user2 = AuthUser("456", "delius", "sheila.h")
+    val user3 = AuthUser("789", "delius", "tom.myers")
     referralService.createDraftReferral(user1, "X123456", sampleIntervention.id)
     referralService.createDraftReferral(user1, "X123456", sampleIntervention.id)
     referralService.createDraftReferral(user2, "X123456", sampleIntervention.id)
     entityManager.flush()
 
-    val single = referralService.getDraftReferralsCreatedByUserID("456")
+    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+
+    val single = referralService.getDraftReferralsForUser(user2)
     assertThat(single).hasSize(1)
 
-    val multiple = referralService.getDraftReferralsCreatedByUserID("123")
+    val multiple = referralService.getDraftReferralsForUser(user1)
     assertThat(multiple).hasSize(2)
 
-    val none = referralService.getDraftReferralsCreatedByUserID("789")
+    val none = referralService.getDraftReferralsForUser(user3)
     assertThat(none).hasSize(0)
   }
 
@@ -308,7 +318,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `once a draft referral is sent it's id is no longer is a valid draft referral`() {
-    val user = AuthUser("user_id", "auth_source", "user_name")
+    val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
     assertThat(referralService.getDraftReferralForUser(draftReferral.id, user)).isNotNull()
@@ -321,7 +331,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `sending a draft referral generates a referral reference number`() {
-    val user = AuthUser("user_id", "auth_source", "user_name")
+    val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
     assertThat(draftReferral.referenceNumber).isNull()
@@ -332,7 +342,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `sending a draft referral generates a unique reference, even if the previous reference already exists`() {
-    val user = AuthUser("user_id", "auth_source", "user_name")
+    val user = AuthUser("user_id", "delius", "user_name")
     val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
     val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
@@ -348,7 +358,7 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `sending a draft referral triggers an event`() {
-    val user = AuthUser("user_id", "auth_source", "user_name")
+    val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
     referralService.sendDraftReferral(draftReferral, user)
     verify(referralEventPublisher).referralSentEvent(draftReferral)
@@ -356,31 +366,13 @@ class ReferralServiceTest @Autowired constructor(
 
   @Test
   fun `multiple draft referrals can be started by the same user`() {
+    val user = AuthUser("multi_user_id", "delius", "user_name")
+    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+
     for (i in 1..3) {
-      val user = AuthUser("multi_user_id", "auth_source", "user_name")
       assertDoesNotThrow { referralService.createDraftReferral(user, "X123456", sampleIntervention.id) }
     }
-    assertThat(referralService.getDraftReferralsCreatedByUserID("multi_user_id")).hasSize(3)
-  }
-
-  @Test
-  fun `get all sent referrals returns referrals for multiple service providers`() {
-    actionPlanAppointmentRepository.deleteAll()
-    actionPlanRepository.deleteAll()
-    endOfServiceReportRepository.deleteAll()
-    referralRepository.deleteAll()
-    listOf("PROVIDER1", "PROVIDER2").forEach {
-      referralFactory.createSent(
-        intervention = interventionFactory.create(
-          contract = contractFactory.create(
-            primeProvider = serviceProviderFactory.create(
-              name = it
-            )
-          )
-        )
-      )
-    }
-    assertThat(referralService.getAllSentReferrals().size).isEqualTo(2)
+    assertThat(referralService.getDraftReferralsForUser(user)).hasSize(3)
   }
 
   @Test
@@ -390,16 +382,19 @@ class ReferralServiceTest @Autowired constructor(
       referralFactory.createSent(sentBy = it)
     }
 
-    val referrals = referralService.getSentReferralsSentBy(users[0])
-    assertThat(referralService.getSentReferralsSentBy(users[0].id)).isEqualTo(referrals)
+    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+
+    val referrals = referralService.getSentReferralsForUser(users[0])
     assertThat(referrals.size).isEqualTo(1)
     assertThat(referrals[0].sentBy).isEqualTo(users[0])
 
-    assertThat(referralService.getSentReferralsAssignedTo("missing")).isEmpty()
+    assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
   }
 
   @Test
-  fun `get sent referrals sent to SP org returns filtered referrals`() {
+  fun `get sent referrals for prime provider returns filtered referrals`() {
+    // setup 2 users and 2 providers with a contract and referral for each provider
+    val users = listOf(userFactory.create("sp_user_1", "auth"), userFactory.create("sp_user_2", "auth"))
     val spOrgs = listOf(serviceProviderFactory.create("sp_org_1"), serviceProviderFactory.create("sp_org_2"))
     spOrgs.forEach {
       val intervention = interventionFactory.create(
@@ -410,24 +405,55 @@ class ReferralServiceTest @Autowired constructor(
       referralFactory.createSent(intervention = intervention)
     }
 
-    val referrals = referralService.getSentReferralsForServiceProviderID(spOrgs[0].id)
+    // the first user works for the first provider
+    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(ServiceProviderAccessScope(spOrgs[0], listOf()))
+    // the second user works for a different provider entirely
+    whenever(serviceProviderAccessScopeMapper.fromUser(users[1])).thenReturn(
+      ServiceProviderAccessScope(serviceProviderFactory.create("missing"), listOf())
+    )
+    // no access restrictions for the purpose of this test
+    whenever(referralAccessFilter.serviceProviderReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+
+    // the first user sees referrals for their provider
+    val referrals = referralService.getSentReferralsForUser(users[0])
     assertThat(referrals.size).isEqualTo(1)
     assertThat(referrals[0].intervention.dynamicFrameworkContract.primeProvider).isEqualTo(spOrgs[0])
 
-    assertThat(referralService.getSentReferralsForServiceProviderID("missing")).isEmpty()
+    // the second user doesn't see any referrals (because there aren't any for their provider)
+    assertThat(referralService.getSentReferralsForUser(users[1])).isEmpty()
   }
 
   @Test
-  fun `get sent referrals assigned to SP user returns filtered referrals`() {
-    val spUsers = listOf(userFactory.create("sp_user_1"), userFactory.create("sp_user_2"))
-    spUsers.forEach {
-      referralFactory.createSent(assignedTo = it)
+  fun `get sent referrals for subcontractor provider returns filtered referrals`() {
+    // setup 2 users and 2 subcontractor providers with a contract and referral for each provider
+    val users = listOf(userFactory.create("sp_user_1", "auth"), userFactory.create("sp_user_2", "auth"))
+    val spPrimeOrg = serviceProviderFactory.create("prime_org")
+    val spSubOrgs = listOf(serviceProviderFactory.create("sub_org_1"), serviceProviderFactory.create("sub_org_2"))
+    spSubOrgs.forEach {
+      val intervention = interventionFactory.create(
+        contract = contractFactory.create(
+          primeProvider = spPrimeOrg,
+          subcontractorProviders = setOf(it)
+        )
+      )
+      referralFactory.createSent(intervention = intervention)
     }
 
-    val referrals = referralService.getSentReferralsAssignedTo(spUsers[0].id)
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].assignedTo).isEqualTo(spUsers[0])
+    // the first user works for the first provider
+    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(ServiceProviderAccessScope(spSubOrgs[0], listOf()))
+    // the second user works for a different provider entirely
+    whenever(serviceProviderAccessScopeMapper.fromUser(users[1])).thenReturn(
+      ServiceProviderAccessScope(serviceProviderFactory.create("missing"), listOf())
+    )
+    // no access restrictions for the purpose of this test
+    whenever(referralAccessFilter.serviceProviderReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
-    assertThat(referralService.getSentReferralsAssignedTo("missing")).isEmpty()
+    // the first user sees referrals for their provider
+    val referrals = referralService.getSentReferralsForUser(users[0])
+    assertThat(referrals.size).isEqualTo(1)
+    assertThat(referrals[0].intervention.dynamicFrameworkContract.subcontractorProviders).contains(spSubOrgs[0])
+
+    // the second user doesn't see any referrals (because there aren't any for their provider)
+    assertThat(referralService.getSentReferralsForUser(users[1])).isEmpty()
   }
 }
