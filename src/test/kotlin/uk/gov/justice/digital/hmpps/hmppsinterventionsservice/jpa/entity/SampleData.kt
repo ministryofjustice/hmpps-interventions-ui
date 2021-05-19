@@ -148,7 +148,7 @@ class SampleData {
       name: String? = null,
       code: String? = null,
       serviceCategories: Set<ServiceCategory>? = null
-    ) : ContractType {
+    ): ContractType {
       return ContractType(
         id = id ?: UUID.randomUUID(),
         name = name ?: "Accommodation",

@@ -5,7 +5,6 @@ Values  ('72e60faf-b8e5-4699-9d7c-aef631cca71b', 'Accomodation', 'ACC'),
         ('e46e76e1-38da-46a4-afc0-d5e7283ebb03', 'Dependency and recovery', 'D&R'),
         ('f9b59d2c-c60b-4eb0-8469-04c975d2e2ee', 'Personal Wellbeing', 'PWB'),
         ('ab0ddafa-619a-47c1-89ca-3709b2833761', 'Lifestyle, associates and social inclusion', 'LSI');
---         ('08fb8af5-b8d9-47cf-981a-90adaffd0c20', 'Structured Interventions');
 
 insert into contract_type_service_category(contract_type_id, service_category_id)
 Values ('72e60faf-b8e5-4699-9d7c-aef631cca71b', '428ee70f-3001-4399-95a6-ad25eaaede16'),

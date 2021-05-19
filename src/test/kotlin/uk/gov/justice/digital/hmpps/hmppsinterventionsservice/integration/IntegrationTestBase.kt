@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
@@ -42,6 +43,7 @@ abstract class IntegrationTestBase {
   @Autowired protected lateinit var desiredOutcomeRepository: DesiredOutcomeRepository
   @Autowired protected lateinit var endOfServiceReportRepository: EndOfServiceReportRepository
   @Autowired protected lateinit var cancellationReasonRepository: CancellationReasonRepository
+  @Autowired protected lateinit var contractTypeRepository: ContractTypeRepository
   protected lateinit var setupAssistant: SetupAssistant
 
   @BeforeEach
@@ -59,6 +61,7 @@ abstract class IntegrationTestBase {
       desiredOutcomeRepository,
       endOfServiceReportRepository,
       cancellationReasonRepository,
+      contractTypeRepository,
     )
     setupAssistant.cleanAll()
   }

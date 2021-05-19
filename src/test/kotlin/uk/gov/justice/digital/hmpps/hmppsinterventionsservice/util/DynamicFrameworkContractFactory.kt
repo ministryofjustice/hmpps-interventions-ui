@@ -6,13 +6,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Contrac
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.NPSRegion
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegion
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import java.time.LocalDate
 import java.util.UUID
 
 class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFactory(em) {
-  private val serviceCategoryFactory = ServiceCategoryFactory(em)
   private val serviceProviderFactory = ServiceProviderFactory(em)
   private val contractTypeFactory = ContractTypeFactory(em)
 

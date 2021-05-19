@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
@@ -55,6 +56,7 @@ class SetupAssistant(
   private val desiredOutcomeRepository: DesiredOutcomeRepository,
   private val endOfServiceReportRepository: EndOfServiceReportRepository,
   private val cancellationReasonRepository: CancellationReasonRepository,
+  private val contractTypeRepository: ContractTypeRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -121,7 +123,7 @@ class SetupAssistant(
     if (dynamicFrameworkContract == null) {
       contract = dynamicFrameworkContractRepository.save(
         dynamicFrameworkContractFactory.create(
-          contractType = contractTypeFactory.create(serviceCategories = setOf(accommodationServiceCategory)),
+          contractType = contractTypeRepository.save(contractTypeFactory.create(serviceCategories = setOf(accommodationServiceCategory))),
           primeProvider = primeProvider,
           npsRegion = region,
         )
@@ -171,7 +173,8 @@ class SetupAssistant(
     val serviceProviders = subContractorServiceProviderIds.mapTo(HashSet()) { serviceProviderRepository.save(serviceProviderFactory.create(id = it, name = it)) }
 
     val contract = dynamicFrameworkContractFactory.create(id = id, contractReference = contractReference, primeProvider = primeProvider, subcontractorProviders = serviceProviders)
-    serviceCategoryRepository.save(contract.serviceCategory)
+    serviceCategoryRepository.save(contract.contractType.serviceCategories.elementAt(0))
+    contractTypeRepository.save(contract.contractType)
     return dynamicFrameworkContractRepository.save(contract)
   }
 

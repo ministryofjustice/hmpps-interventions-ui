@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Contrac
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import java.util.UUID
 
-class ContractTypeFactory (em: TestEntityManager? = null) : EntityFactory(em)  {
+class ContractTypeFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val serviceCategoryFactory = ServiceCategoryFactory(em)
 
   fun create(
