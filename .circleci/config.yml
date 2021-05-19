@@ -180,17 +180,6 @@ jobs:
           filepath: ./build/hmpps-interventions-service.jar
           teams: hmpps-interventions
 
-  reset_research_db:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - checkout
-      - hmpps/k8s_setup
-      - kubernetes/create-or-update-resource:
-          # this cleans the database - do not change this namespace!!
-          namespace: hmpps-interventions-research
-          resource-file-path: user_research/reset_env.yaml
-
 workflows:
   version: 2
   pact:
@@ -265,24 +254,6 @@ workflows:
           slack_channel_name: "interventions-dev-notifications"
           requires:
             - approve_research
-          context:
-            - hmpps-common-vars
-            - hmpps-interventions-service-research
-      - approve_reset_research_db:
-          type: approval
-          filters:
-            branches:
-              only: [main]
-      - reset_research_db:
-          requires:
-            - approve_reset_research_db
-      - hmpps/deploy_env:
-          name: deploy_research_manually
-          env: "research"
-          slack_notification: true
-          slack_channel_name: "interventions-dev-notifications"
-          requires:
-            - reset_research_db
           context:
             - hmpps-common-vars
             - hmpps-interventions-service-research
