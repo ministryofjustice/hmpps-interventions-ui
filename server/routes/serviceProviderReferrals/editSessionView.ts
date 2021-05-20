@@ -14,11 +14,23 @@ export default class EditSessionView {
         timeInputArgs: this.timeInputArgs,
         durationDateInputArgs: this.durationDateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        serverError: this.serverError,
       },
     ]
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
+
+  get serverError(): { message: string; classes: string } | null {
+    if (this.presenter.serverErrorMessage === null) {
+      return null
+    }
+
+    return {
+      message: this.presenter.serverErrorMessage,
+      classes: 'govuk-form-group--error',
+    }
+  }
 
   get dateInputArgs(): DateInputArgs {
     return {

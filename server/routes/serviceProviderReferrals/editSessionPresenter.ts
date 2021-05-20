@@ -8,8 +8,9 @@ import { FormValidationError } from '../../utils/formValidationError'
 export default class EditSessionPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
-    private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, unknown> | null = null
+    private readonly validationError: FormValidationError | null = null,
+    private readonly userInputData: Record<string, unknown> | null = null,
+    private readonly serverError: FormValidationError | null = null
   ) {}
 
   readonly text = {
@@ -18,7 +19,11 @@ export default class EditSessionPresenter {
 
   private readonly utils = new PresenterUtils(this.userInputData)
 
-  readonly errorSummary = PresenterUtils.errorSummary(this.error)
+  readonly errorSummary = this.serverError
+    ? PresenterUtils.errorSummary(this.serverError)
+    : PresenterUtils.errorSummary(this.validationError)
+
+  readonly serverErrorMessage = PresenterUtils.errorMessage(this.serverError, 'session-input')
 
   readonly fields = {
     date: this.utils.dateValue(
@@ -26,19 +31,19 @@ export default class EditSessionPresenter {
         ? null
         : CalendarDay.britishDayForDate(new Date(this.appointment.appointmentTime)),
       'date',
-      this.error
+      this.validationError
     ),
     time: this.utils.twelveHourTimeValue(
       this.appointment.appointmentTime === null
         ? null
         : ClockTime.britishTimeForDate(new Date(this.appointment.appointmentTime)),
       'time',
-      this.error
+      this.validationError
     ),
     duration: this.utils.durationValue(
       this.appointment.durationInMinutes === null ? null : Duration.fromUnits(0, this.appointment.durationInMinutes, 0),
       'duration',
-      this.error
+      this.validationError
     ),
   }
 }

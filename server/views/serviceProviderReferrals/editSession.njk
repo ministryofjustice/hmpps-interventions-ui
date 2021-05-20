@@ -12,18 +12,28 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="post" novalidate>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
 
-        {% if errorSummaryArgs !== null %}
-          {{ govukErrorSummary(errorSummaryArgs) }}
-        {% endif %}
+      <form method="post" novalidate="novalidate">
+
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
         <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
-        {{ govukDateInput(dateInputArgs) }}
-        {{ appTimeInput(timeInputArgs) }}
-        {{ govukDateInput(durationDateInputArgs) }}
+        <div id='session-input' {% if serverError != null %}class="{{serverError.classes}}"{% endif %}>
+          {% if serverError !== null %}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+                {{ serverError.message }}
+              </span>
+            {% endif %}
+
+          {{ govukDateInput(dateInputArgs) }}
+          {{ appTimeInput(timeInputArgs) }}
+          {{ govukDateInput(durationDateInputArgs) }}
+        </div>
 
         {{ govukButton({ text: "Save and continue" }) }}
       </form>

@@ -11,6 +11,76 @@ describe(EditSessionPresenter, () => {
     })
   })
 
+  describe('errorSummary', () => {
+    describe('when a server error is passed in', () => {
+      it('displays the message from the server error', () => {
+        const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+        const presenter = new EditSessionPresenter(
+          appointment,
+          {
+            errors: [
+              {
+                errorSummaryLinkedField: 'date-day',
+                formFields: ['date-day'],
+                message: 'The session date must be a real date',
+              },
+            ],
+          },
+          null,
+          {
+            errors: [
+              {
+                formFields: ['session-input'],
+                errorSummaryLinkedField: 'session-input',
+                message:
+                  'The proposed date and time you selected clashes with another appointment. Please select a different date and time.',
+              },
+            ],
+          }
+        )
+
+        expect(presenter.errorSummary).toEqual([
+          {
+            field: 'session-input',
+            message:
+              'The proposed date and time you selected clashes with another appointment. Please select a different date and time.',
+          },
+        ])
+      })
+    })
+
+    describe('when a standard validation error is passed in', () => {
+      it('displays the message from the server error', () => {
+        const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+        const presenter = new EditSessionPresenter(
+          appointment,
+          {
+            errors: [
+              {
+                errorSummaryLinkedField: 'date-day',
+                formFields: ['date-day'],
+                message: 'The session date must be a real date',
+              },
+            ],
+          },
+          null,
+          null
+        )
+
+        expect(presenter.errorSummary).toEqual([{ field: 'date-day', message: 'The session date must be a real date' }])
+      })
+    })
+
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
+        const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+        const presenter = new EditSessionPresenter(appointment)
+
+        expect(presenter.errorSummary).toEqual(null)
+      })
+    })
+  })
+
   describe('fields', () => {
     describe('with a newly-created appointment', () => {
       it('returns empty fields', () => {
