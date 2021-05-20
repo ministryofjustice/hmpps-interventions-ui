@@ -27,3 +27,4 @@ insert into dynamic_framework_contract_sub_contractor(dynamic_framework_contract
 values('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'HOME_TRUST'),
       ('1d7f8fcc-aa12-4705-a6a5-0d40467e03e9', 'HELPING_HANDS'),
       ('1435d1c5-0c22-459a-bd1a-ce593fba6c05', 'HARMONY_LIVING');
+
