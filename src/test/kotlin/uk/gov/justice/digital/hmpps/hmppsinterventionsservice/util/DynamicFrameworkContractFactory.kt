@@ -2,21 +2,21 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ContractType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.NPSRegion
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegion
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import java.time.LocalDate
 import java.util.UUID
 
 class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFactory(em) {
-  private val serviceCategoryFactory = ServiceCategoryFactory(em)
   private val serviceProviderFactory = ServiceProviderFactory(em)
+  private val contractTypeFactory = ContractTypeFactory(em)
 
   fun create(
     id: UUID = UUID.randomUUID(),
-    serviceCategory: ServiceCategory? = null,
+    contractType: ContractType? = null,
     primeProvider: ServiceProvider? = null,
     startDate: LocalDate = LocalDate.of(2021, 6, 1),
     endDate: LocalDate = LocalDate.of(2026, 6, 1),
@@ -32,7 +32,7 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
     return save(
       DynamicFrameworkContract(
         id = id,
-        serviceCategory = serviceCategory ?: serviceCategoryFactory.create(),
+        contractType = contractType ?: contractTypeFactory.create(),
         primeProvider = primeProvider ?: serviceProviderFactory.create(),
         startDate = startDate,
         endDate = endDate,

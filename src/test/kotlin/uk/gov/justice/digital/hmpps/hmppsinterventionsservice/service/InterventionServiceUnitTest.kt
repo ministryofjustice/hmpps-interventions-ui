@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleNPSRegion
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.samplePCCRegion
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleServiceProvider
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
@@ -37,7 +36,7 @@ class InterventionServiceUnitTest {
   @Test
   fun `should not look up regions for intervention containing contract with pcc region`() {
     val locations = emptyList<String>()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), primeProvider = sampleServiceProvider(), npsRegion = sampleNPSRegion(), pccRegion = samplePCCRegion())
+    val contract = sampleContract(primeProvider = sampleServiceProvider(), npsRegion = sampleNPSRegion(), pccRegion = samplePCCRegion())
     val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
     val interventions = listOf(intervention)
     whenever(interventionRepository.findByCriteria(locations, null, null, null, null)).thenReturn(interventions)
@@ -52,7 +51,7 @@ class InterventionServiceUnitTest {
     val locations = emptyList<String>()
     val npsRegion = sampleNPSRegion()
     val pccRegion = samplePCCRegion()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
+    val contract = sampleContract(primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
     val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
     val interventions = listOf(intervention)
     whenever(interventionRepository.findByCriteria(locations, null, null, null, null)).thenReturn(interventions)
@@ -67,7 +66,7 @@ class InterventionServiceUnitTest {
   fun `should return an intervention with allowsFemale parameter`() {
     val npsRegion = sampleNPSRegion()
     val pccRegion = samplePCCRegion()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
+    val contract = sampleContract(primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
     val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
     val interventions = listOf(intervention)
     whenever(interventionRepository.findByCriteria(listOf(), true, null, null, null)).thenReturn(interventions)
@@ -82,7 +81,7 @@ class InterventionServiceUnitTest {
   fun `should return an intervention with allowsMale parameter`() {
     val npsRegion = sampleNPSRegion()
     val pccRegion = samplePCCRegion()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
+    val contract = sampleContract(primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
     val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
     val interventions = listOf(intervention)
     whenever(interventionRepository.findByCriteria(listOf(), null, true, null, null)).thenReturn(interventions)
@@ -97,7 +96,7 @@ class InterventionServiceUnitTest {
   fun `should return an intervention with minimum age parameter`() {
     val npsRegion = sampleNPSRegion()
     val pccRegion = samplePCCRegion()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
+    val contract = sampleContract(primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
     val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
     val interventions = listOf(intervention)
     whenever(interventionRepository.findByCriteria(listOf(), null, null, 18, null)).thenReturn(interventions)
@@ -112,7 +111,7 @@ class InterventionServiceUnitTest {
   fun `should return an intervention with maximum age parameter`() {
     val npsRegion = sampleNPSRegion()
     val pccRegion = samplePCCRegion()
-    val contract = sampleContract(serviceCategory = sampleServiceCategory(), primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
+    val contract = sampleContract(primeProvider = sampleServiceProvider(), npsRegion = npsRegion)
     val intervention = sampleIntervention(id = UUID.randomUUID(), dynamicFrameworkContract = contract)
     val interventions = listOf(intervention)
     whenever(interventionRepository.findByCriteria(listOf(), null, null, null, 25)).thenReturn(interventions)

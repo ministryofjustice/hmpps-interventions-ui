@@ -73,7 +73,7 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
   @State("There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had desired outcomes selected")
   fun `create a new draft referral and with desired outcomes`() {
     val intervention = setupAssistant.createIntervention()
-    val desiredOutcomes = setupAssistant.desiredOutcomesForServiceCategory(intervention.dynamicFrameworkContract.serviceCategory.id)
+    val desiredOutcomes = setupAssistant.desiredOutcomesForServiceCategory(intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).id)
     val referral = setupAssistant.createDraftReferral(id = UUID.fromString("037cc90b-beaa-4a32-9ab7-7f79136e1d27"))
     setupAssistant.fillReferralFields(referral, desiredOutcomes = desiredOutcomes)
   }

@@ -15,7 +15,7 @@ class SampleData {
     // there are tonnes of related tables that need to exist to successfully persist an intervention,
     // this is a helper method that persists them all
     fun persistIntervention(em: TestEntityManager, intervention: Intervention): Intervention {
-      intervention.dynamicFrameworkContract.serviceCategory.let {
+      intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).let {
         ServiceCategoryFactory(em).create(
           id = it.id,
           name = it.name,
@@ -34,6 +34,7 @@ class SampleData {
       }
 
 //      em.persist(intervention.dynamicFrameworkContract.contractEligibility)
+      em.persist(intervention.dynamicFrameworkContract.contractType)
       em.persist(intervention.dynamicFrameworkContract)
       return em.persistAndFlush(intervention)
     }
@@ -87,7 +88,6 @@ class SampleData {
         assignedAt = assignedAt,
         intervention = sampleIntervention(
           dynamicFrameworkContract = sampleContract(
-            serviceCategory = sampleServiceCategory(desiredOutcomes = emptyList()),
             primeProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
           )
         ),
@@ -121,7 +121,7 @@ class SampleData {
       id: UUID? = null,
       startDate: LocalDate = LocalDate.of(2020, 12, 1),
       endDate: LocalDate = LocalDate.of(2021, 12, 1),
-      serviceCategory: ServiceCategory,
+      contractType: ContractType? = null,
       primeProvider: ServiceProvider,
       npsRegion: NPSRegion? = null,
       pccRegion: PCCRegion? = null,
@@ -129,7 +129,7 @@ class SampleData {
     ): DynamicFrameworkContract {
       return DynamicFrameworkContract(
         id = id ?: UUID.randomUUID(),
-        serviceCategory = serviceCategory,
+        contractType = contractType ?: sampleContractType(),
         primeProvider = primeProvider,
         startDate = startDate,
         endDate = endDate,
@@ -140,6 +140,20 @@ class SampleData {
         npsRegion = npsRegion,
         pccRegion = pccRegion,
         contractReference = contractReference,
+      )
+    }
+
+    fun sampleContractType(
+      id: UUID? = null,
+      name: String? = null,
+      code: String? = null,
+      serviceCategories: Set<ServiceCategory>? = null
+    ): ContractType {
+      return ContractType(
+        id = id ?: UUID.randomUUID(),
+        name = name ?: "Accommodation",
+        code = code ?: "ACC",
+        serviceCategories = serviceCategories ?: setOf(sampleServiceCategory())
       )
     }
     fun sampleEndOfServiceReport(

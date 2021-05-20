@@ -46,10 +46,7 @@ class ActionPlanRepositoryTest @Autowired constructor(
 
   private fun buildAndPersistActionPlan(): ActionPlan {
     val user = authUserFactory.create(id = "referral_repository_test_user_id")
-
-    val referral = SampleData.sampleReferral("X123456", "Harmony Living", createdBy = user)
-    SampleData.persistReferral(entityManager, referral)
-
+    val referral = referralFactory.createSent()
     val serviceCategory = SampleData.sampleServiceCategory()
     entityManager.persist(serviceCategory)
 
