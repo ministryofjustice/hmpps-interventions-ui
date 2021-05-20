@@ -346,7 +346,7 @@ class ReferralServiceTest @Autowired constructor(
     val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
     val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
 
-    whenever(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).name))
+    whenever(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.contractType.name))
       .thenReturn("AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "BB0000ZZ")
 
     val sent1 = referralService.sendDraftReferral(draft1, user)
