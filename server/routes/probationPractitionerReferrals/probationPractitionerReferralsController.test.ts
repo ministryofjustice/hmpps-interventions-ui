@@ -13,6 +13,7 @@ import endOfServiceReportFactory from '../../../testutils/factories/endOfService
 
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
+import authUtils from '../../utils/authUtils'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -38,16 +39,6 @@ afterEach(() => {
 describe('GET /probation-practitioner/find', () => {
   interventionsService.getDraftReferralsForUser.mockResolvedValue([])
 
-  it('displays a dashboard page', async () => {
-    await request(app)
-      .get('/probation-practitioner/find')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Refer and monitor an intervention')
-        expect(res.text).toContain('Find interventions')
-      })
-  })
-
   it('displays a list in-progress referrals', async () => {
     const referral = draftReferralFactory.serviceUserSelected().build()
 
@@ -57,7 +48,34 @@ describe('GET /probation-practitioner/find', () => {
       .get('/probation-practitioner/find')
       .expect(200)
       .expect(res => {
+        expect(res.text).toContain('Refer and monitor an intervention')
+        expect(res.text).toContain('Find interventions')
         expect(res.text).toContain('Alex River')
+      })
+  })
+})
+
+describe('GET /probation-practitioner/dashboard', () => {
+  it('displays a dashboard page', async () => {
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({
+      name: 'Social inclusion',
+      id: '62e042a7-c44f-4d82-a679-4f435167e44a',
+    })
+
+    const sentSocialInclusionReferral = sentReferralFactory.build({
+      referral: { serviceCategoryId: socialInclusionServiceCategory.id },
+    })
+
+    authUtils.getProbationPractitionerUserId = jest.fn()
+    interventionsService.getReferralsSentByProbationPractitioner.mockResolvedValue([sentSocialInclusionReferral])
+    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+
+    await request(app)
+      .get('/probation-practitioner/dashboard')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Social inclusion')
       })
   })
 })
