@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -72,6 +73,17 @@ internal class CommunityAPIBookingServiceTest {
     communityAPIBookingService.book(appointment, now, 45)
 
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+  }
+
+  @Test
+  fun `does not reschedule an appointment when timings are same`() {
+    val now = now()
+    val deliusAppointmentId = 999L
+    val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+
+    communityAPIBookingService.book(appointment, now.plusDays(1), 60)
+
+    verifyNoMoreInteractions(communityAPIClient)
   }
 
   @Test

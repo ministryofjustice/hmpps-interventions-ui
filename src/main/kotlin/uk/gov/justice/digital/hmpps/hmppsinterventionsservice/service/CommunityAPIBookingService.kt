@@ -106,7 +106,7 @@ class CommunityAPIBookingService(
     appointmentTime != null && durationInMinutes != null
 
   fun isDifferentTimings(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
-    !(existingAppointment.appointmentTime!!.isEqual(appointmentTime) && existingAppointment!!.durationInMinutes == durationInMinutes)
+    !existingAppointment.appointmentTime!!.isEqual(appointmentTime) || existingAppointment.durationInMinutes != durationInMinutes
 }
 
 abstract class AppointmentRequestDTO
