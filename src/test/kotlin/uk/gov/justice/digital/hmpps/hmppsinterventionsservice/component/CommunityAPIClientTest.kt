@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateRequestDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateResponseDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentResponseDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -126,7 +126,7 @@ class CommunityAPIClientTest {
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    val response = communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
+    val response = communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
 
     assertThat(response.appointmentId).isEqualTo(1234L)
 
@@ -147,7 +147,7 @@ class CommunityAPIClientTest {
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException("A problem"))
 
     val exception = Assertions.assertThrows(RuntimeException::class.java) {
-      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
     assertThat(exception.localizedMessage).isEqualTo("A problem")
 
@@ -170,7 +170,7 @@ class CommunityAPIClientTest {
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
     val exception = Assertions.assertThrows(WebClientResponseException::class.java) {
-      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentCreateResponseDTO::class.java)
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
     assertThat(exception.localizedMessage).isEqualTo("400 Bad Request from UNKNOWN ")
     assertThat(exception.responseBodyAsString).isEqualTo("There was a problem Houston")
