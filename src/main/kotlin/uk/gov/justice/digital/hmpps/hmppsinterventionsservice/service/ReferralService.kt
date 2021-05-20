@@ -287,10 +287,10 @@ class ReferralService(
   }
 
   private fun generateReferenceNumber(referral: Referral): String? {
-    val category = referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).name
+    val type = referral.intervention.dynamicFrameworkContract.contractType.name
 
     for (i in 1..maxReferenceNumberTries) {
-      val candidate = referenceGenerator.generate(category)
+      val candidate = referenceGenerator.generate(type)
       if (!referralRepository.existsByReferenceNumber(candidate))
         return candidate
       else
