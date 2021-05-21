@@ -14,8 +14,16 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.OffsetDateTime
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 
-interface CommunityAPIService
+interface CommunityAPIService {
+  fun getNotes(referral: Referral, url: String, description: String): String {
+    val contractTypeName = referral.intervention.dynamicFrameworkContract.contractType.name
+    val primeProviderName = referral.intervention.dynamicFrameworkContract.primeProvider.name
+    return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
+  }
+}
 
 @Service
 class CommunityAPIReferralEventService(
@@ -65,10 +73,10 @@ class CommunityAPIReferralEventService(
 
   private fun postReferralStartRequest(event: ReferralEvent, url: String) {
     val referRequest = ReferRequest(
-      "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
+      event.referral.intervention.dynamicFrameworkContract.contractType.code,
       event.referral.sentAt!!,
       event.referral.relevantSentenceId!!,
-      url,
+      getNotes(event.referral, url, "Referral Sent"),
     )
 
     val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPISentReferralLocation)
@@ -80,12 +88,12 @@ class CommunityAPIReferralEventService(
 
   private fun postReferralEndRequest(event: ReferralEvent, url: String) {
     val referralEndRequest = ReferralEndRequest(
-      "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
+      event.referral.intervention.dynamicFrameworkContract.contractType.code,
       event.referral.sentAt!!,
       event.referral.concludedAt!!,
       event.referral.relevantSentenceId!!,
       event.type.name,
-      url,
+      getNotes(event.referral, url, "Referral Ended"),
     )
 
     val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIEndedReferralLocation)
@@ -125,10 +133,10 @@ class CommunityAPIEndOfServiceReportEventService(
     val referral = event.endOfServiceReport.referral
 
     val request = NotificationCreateRequestDTO(
-      "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
+      event.endOfServiceReport.referral.intervention.dynamicFrameworkContract.contractType.code,
       referral.sentAt!!,
       event.endOfServiceReport.submittedAt!!,
-      getNotes(referral, url),
+      getNotes(referral, url, "End of Service Report Submitted"),
     )
 
     val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPINotificationLocation)
@@ -137,14 +145,50 @@ class CommunityAPIEndOfServiceReportEventService(
 
     communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
   }
-
-  private fun getNotes(referral: Referral, url: String): String {
-    val contractTypeDescription = "Accommodation" // Fixme: Using only contract type Accommodation til contract type changes are in
-    return "End of Service Report has been submitted for $contractTypeDescription Referral ${referral.referenceNumber}\n" +
-      "$url"
-  }
 }
 
+@Service
+class CommunityAPIActionPlanEventService(
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUIActionPlanLocation: String,
+  @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
+  @Value("\${community-api.integration-context}") private val integrationContext: String,
+  private val communityAPIClient: CommunityAPIClient,
+) : ApplicationListener<ActionPlanEvent>, CommunityAPIService {
+  companion object : KLogging()
+
+  override fun onApplicationEvent(event: ActionPlanEvent) {
+    when (event.type) {
+      ActionPlanEventType.SUBMITTED,
+      -> {
+        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(interventionsUIActionPlanLocation)
+          .buildAndExpand(event.actionPlan.id)
+          .toString()
+
+        postNotificationRequest(event, url)
+      }
+    }
+  }
+
+  private fun postNotificationRequest(event: ActionPlanEvent, url: String) {
+
+    val referral = event.actionPlan.referral
+
+    val request = NotificationCreateRequestDTO(
+      referral.intervention.dynamicFrameworkContract.contractType.code,
+      referral.sentAt!!,
+      event.actionPlan.submittedAt!!,
+      getNotes(referral, url, "Action Plan Submitted"),
+    )
+
+    val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPINotificationLocation)
+      .buildAndExpand(referral.serviceUserCRN, referral.relevantSentenceId!!, integrationContext)
+      .toString()
+
+    communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
+  }
+}
 @Service
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
@@ -164,7 +208,7 @@ class CommunityAPIAppointmentEventService(
           .toString()
 
         val request = AppointmentOutcomeRequest(
-          url,
+          getNotes(event.appointment.actionPlan.referral, url, "Session Feedback Recorded"),
           event.appointment.attended!!.name,
           event.appointment.notifyPPOfAttendanceBehaviour ?: false
         )

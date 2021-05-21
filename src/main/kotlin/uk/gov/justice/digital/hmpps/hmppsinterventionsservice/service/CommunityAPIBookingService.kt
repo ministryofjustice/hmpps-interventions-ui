@@ -19,7 +19,7 @@ class CommunityAPIBookingService(
   @Value("\${community-api.appointments.office-location}") private val officeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   val communityAPIClient: CommunityAPIClient,
-) {
+) : CommunityAPIService {
   companion object : KLogging()
 
   fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Long? {
@@ -67,12 +67,12 @@ class CommunityAPIBookingService(
     val resourceUrl = buildReferralResourceUrl(appointment)
 
     return AppointmentCreateRequestDTO(
-      contractType = "ACC", // Fixme: Using only contract type Accommodation til contract type changes are in
+      contractType = appointment.actionPlan.referral.intervention.dynamicFrameworkContract.contractType.code,
       referralStart = appointment.actionPlan.referral.sentAt!!,
       appointmentStart = appointmentTime,
       appointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
       officeLocationCode = officeLocation,
-      notes = resourceUrl,
+      notes = getNotes(appointment.actionPlan.referral, resourceUrl, "Appointment"),
       countsTowardsRarDays = true, // Fixme: For assessment booking this should be false and will pass in when assessment booking is done
     )
   }

@@ -44,8 +44,9 @@ internal class CommunityAPIBookingServiceTest {
     val appointment = makeAppointment(now, null, null)
 
     val uri = "/appt/X1/123/CRS"
-    val link = "http://url/view/${appointment.actionPlan.referral.id}"
-    val request = AppointmentCreateRequestDTO("ACC", now, now.plusMinutes(60), now.plusMinutes(120), "CRSEXTL", notes = link, true)
+    val notes = "Appointment for Accommodation Referral XX123456 with Prime Provider SPN\n" +
+      "http://url/view/${appointment.actionPlan.referral.id}"
+    val request = AppointmentCreateRequestDTO("ACC", now, now.plusMinutes(60), now.plusMinutes(120), "CRSEXTL", notes = notes, true)
     val response = AppointmentResponseDTO(1234L)
 
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
@@ -147,7 +148,7 @@ internal class CommunityAPIBookingServiceTest {
   }
 
   private fun makeAppointment(sentAt: OffsetDateTime, appointmentTime: OffsetDateTime?, durationInMinutes: Int?, deliusAppointmentId: Long? = null): ActionPlanAppointment {
-    val referral = SampleData.sampleReferral(crn = crn, relevantSentenceId = sentenceId, sentAt = sentAt, serviceProviderName = "SPN")
+    val referral = SampleData.sampleReferral(crn = crn, relevantSentenceId = sentenceId, sentAt = sentAt, serviceProviderName = "SPN", referenceNumber = "XX123456")
     return SampleData.sampleActionPlanAppointment(
       actionPlan = SampleData.sampleActionPlan(referral = referral),
       createdBy = SampleData.sampleAuthUser(),
