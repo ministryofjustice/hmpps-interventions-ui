@@ -141,6 +141,9 @@ class ReferralService(
     overrideCreatedAt: OffsetDateTime? = null,
     endOfServiceReport: EndOfServiceReport? = null,
   ): Referral {
+    val intervention = interventionRepository.getOne(interventionId)
+    val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
+    val selectedServiceCategories = if (serviceCategories.size == 1) serviceCategories.toMutableSet() else null
     return referralRepository.save(
       Referral(
         id = overrideID ?: UUID.randomUUID(),
@@ -148,7 +151,8 @@ class ReferralService(
         createdBy = authUserRepository.save(user),
         serviceUserCRN = crn,
         intervention = interventionRepository.getOne(interventionId),
-        endOfServiceReport = endOfServiceReport
+        endOfServiceReport = endOfServiceReport,
+        selectedServiceCategories = selectedServiceCategories,
       )
     )
   }

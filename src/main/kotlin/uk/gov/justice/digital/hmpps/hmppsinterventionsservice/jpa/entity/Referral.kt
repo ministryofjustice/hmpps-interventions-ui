@@ -15,6 +15,8 @@ import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
@@ -67,6 +69,13 @@ class Referral(
 
   @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) var actionPlan: ActionPlan? = null,
 
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+    name = "referral_selected_service_category",
+    joinColumns = [JoinColumn(name = "referral_id")],
+    inverseJoinColumns = [JoinColumn(name = "service_category_id")]
+  )
+  var selectedServiceCategories: Set<ServiceCategory>? = null,
   // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
   @NotNull val serviceUserCRN: String,

@@ -51,7 +51,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     return tokenFactory.createEncodedToken(userID = user.id, userName = user.userName, authSource = user.authSource)
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user works for prime provider and has required contract group`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -78,7 +78,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       .is2xxSuccessful
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user works for subcontractor provider and has required contract group`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -105,7 +105,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       .is2xxSuccessful
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user works for a provider that does not exist and has a non existent contract group`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -138,7 +138,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user works for the wrong provider and has wrong contract group`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -178,7 +178,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user works for subcontractor provider but is missing required contract group`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -210,7 +210,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user does not have any groups in hmpps auth`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -236,7 +236,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user has more than one service provider group in hmpps auth`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -268,7 +268,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("draftReferralRequests")
   fun `sp users can never access any draft referrals`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -287,7 +287,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `nomis users can never access anything`(request: Request) {
     val referral = setupAssistant.createSentReferral()
@@ -304,7 +304,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `users not found in hmpps auth can never access anything`(request: Request) {
     val user = setupAssistant.createSPUser()
@@ -324,7 +324,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("allReferralRequests")
   fun `auth tokens with missing claims can never access anything`(request: Request) {
     val token = tokenFactory.createEncodedToken("123456", null, null)
@@ -340,7 +340,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     )
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("allReferralRequests")
   fun `requests with no auth token can never access anything`(request: Request) {
     val response = requestFactory.create(request, null, UUID.randomUUID().toString()).exchange()

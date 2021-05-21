@@ -3,6 +3,12 @@ values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '08524319-7d5b-4b56-862a-bfe2c9a
        ('B59D3599-0681-466A-82B2-F6F957E46190', '90e35306-5d65-4901-bb36-c4c44c7d19f9', '2021-03-10 16:49:34.235464+00', '2021-03-10 16:50:34.235464+00', '11', 'CRN25', '2022-01-01', '11', '', '', '', false, null, false, null, '', true, 5, 'd0db50b0-4a50-4fc7-a006-9c97530e38b2', 'GH3927AC', '2021-03-10 17:50:34.235464+00', '6c4036b7-e87d-44fb-864f-5a06c1c492f3', '608955ae-52ed-44cc-884c-011597a77949'),
        ('a2a551aa-3d11-44b1-907b-42a028852bc1', 'f803445f-326c-4ef8-aee2-f7716d417832', '2021-04-22 09:00:00.000000+00', '2021-04-22 09:00:00.000000+00', '2500099998', 'CRN21', '2021-06-21', '2500099998', '', '', '', false, null, false, null, '', false, null, '64eb3c83-c562-4a63-9182-68a3a7725463', 'FH12376SO', '2021-04-22 09:00:00.000000+00', '6c4036b7-e87d-44fb-864f-5a06c1c492f3', '608955ae-52ed-44cc-884c-011597a77949');
 
+insert into referral_selected_service_category(referral_id, service_category_id)
+values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '428ee70f-3001-4399-95a6-ad25eaaede16'),
+       ('B59D3599-0681-466A-82B2-F6F957E46190', '428ee70f-3001-4399-95a6-ad25eaaede16'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1', '9556a399-3529-4993-8030-41db2090555e'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c');
+
 insert into referral_service_user_data (referral_id, disabilities, dob, ethnicity, title, first_name, last_name, preferred_language, religion_or_belief, gender)
 values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Sir', 'ANDREW', 'DAVIES', 'Yupik', 'None', 'Male'),
        ('B59D3599-0681-466A-82B2-F6F957E46190', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Ms', 'JUNAID', 'KHAN', 'English', 'None', 'Female'),

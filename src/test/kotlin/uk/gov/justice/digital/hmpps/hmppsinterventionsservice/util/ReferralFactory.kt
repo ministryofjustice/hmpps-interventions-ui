@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -23,6 +24,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     intervention: Intervention = interventionFactory.create(),
+    selectedServiceCategories: Set<ServiceCategory>? = null,
     completionDeadline: LocalDate? = null,
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     serviceUserData: ServiceUserData? = null,
@@ -33,9 +35,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       createdBy = createdBy,
       serviceUserCRN = serviceUserCRN,
       intervention = intervention,
+      selectedServiceCategories = selectedServiceCategories,
       completionDeadline = completionDeadline,
       desiredOutcomes = desiredOutcomes,
-      serviceUserData = serviceUserData,
+      serviceUserData = serviceUserData
     )
   }
 
@@ -45,6 +48,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     intervention: Intervention = interventionFactory.create(),
+    selectedServiceCategories: Set<ServiceCategory>? = null,
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     actionPlan: ActionPlan? = null,
 
@@ -62,6 +66,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       createdBy = createdBy,
       serviceUserCRN = serviceUserCRN,
       intervention = intervention,
+      selectedServiceCategories = selectedServiceCategories,
       desiredOutcomes = desiredOutcomes,
       actionPlan = actionPlan,
 
@@ -81,7 +86,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     intervention: Intervention = interventionFactory.create(),
-
+    selectedServiceCategories: Set<ServiceCategory>? = null,
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
     referenceNumber: String? = "JS18726AC",
@@ -103,6 +108,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       createdBy = createdBy,
       serviceUserCRN = serviceUserCRN,
       intervention = intervention,
+      selectedServiceCategories = selectedServiceCategories,
 
       sentAt = sentAt,
       sentBy = sentBy,
@@ -132,6 +138,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     serviceUserData: ServiceUserData? = null,
     actionPlan: ActionPlan? = null,
+    selectedServiceCategories: Set<ServiceCategory>? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
@@ -159,6 +166,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         desiredOutcomesIDs = desiredOutcomes.map { it.id },
         serviceUserData = serviceUserData,
         actionPlan = actionPlan,
+        selectedServiceCategories = selectedServiceCategories,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,

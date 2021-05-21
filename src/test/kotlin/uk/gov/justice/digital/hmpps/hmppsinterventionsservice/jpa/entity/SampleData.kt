@@ -15,7 +15,7 @@ class SampleData {
     // there are tonnes of related tables that need to exist to successfully persist an intervention,
     // this is a helper method that persists them all
     fun persistIntervention(em: TestEntityManager, intervention: Intervention): Intervention {
-      intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).let {
+      intervention.dynamicFrameworkContract.contractType.serviceCategories.forEach {
         ServiceCategoryFactory(em).create(
           id = it.id,
           name = it.name,
@@ -73,6 +73,11 @@ class SampleData {
       actionPlan: ActionPlan? = null,
       endOfServiceReport: EndOfServiceReport? = null,
       concludedAt: OffsetDateTime? = null,
+      intervention: Intervention = sampleIntervention(
+        dynamicFrameworkContract = sampleContract(
+          primeProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
+        )
+      ),
     ): Referral {
       return Referral(
         serviceUserCRN = crn,
@@ -86,11 +91,8 @@ class SampleData {
         sentBy = sentBy,
         assignedTo = assignedTo,
         assignedAt = assignedAt,
-        intervention = sampleIntervention(
-          dynamicFrameworkContract = sampleContract(
-            primeProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
-          )
-        ),
+        intervention = intervention,
+        selectedServiceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories.toMutableSet(),
         actionPlan = actionPlan,
         endOfServiceReport = endOfServiceReport,
         concludedAt = concludedAt,
@@ -156,6 +158,7 @@ class SampleData {
         serviceCategories = serviceCategories ?: setOf(sampleServiceCategory())
       )
     }
+
     fun sampleEndOfServiceReport(
       id: UUID? = null,
       referral: Referral,
