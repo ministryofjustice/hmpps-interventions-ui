@@ -17,6 +17,7 @@ class ActionPlanFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     numberOfSessions: Int? = null,
     createdAt: OffsetDateTime? = null,
     createdBy: AuthUser? = null,
+    submittedAt: OffsetDateTime? = null,
   ): ActionPlan {
     return save(
       ActionPlan(
@@ -25,6 +26,7 @@ class ActionPlanFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         numberOfSessions = numberOfSessions,
         createdAt = createdAt ?: OffsetDateTime.now(),
         createdBy = createdBy ?: authUserFactory.create(),
+        submittedAt = submittedAt ?: OffsetDateTime.now(),
         activities = mutableListOf()
       )
     )

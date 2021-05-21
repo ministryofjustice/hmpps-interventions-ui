@@ -7,7 +7,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Communit
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
@@ -18,6 +19,9 @@ class CommunityAPIActionPlanServiceTest {
 
   private val sentAtDefault = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
   private val submittedAtDefault = OffsetDateTime.of(2020, 2, 2, 2, 2, 2, 2, ZoneOffset.UTC)
+
+  private val actionPlanFactory = ActionPlanFactory()
+  private val referralFactory = ReferralFactory()
 
   val communityAPIService = CommunityAPIActionPlanEventService(
     "http://testUrl",
@@ -50,13 +54,12 @@ class CommunityAPIActionPlanServiceTest {
     ActionPlanEvent(
       "source",
       ActionPlanEventType,
-      SampleData.sampleActionPlan(
+      actionPlanFactory.create(
         id = UUID.fromString("120b1a45-8ac7-4920-b05b-acecccf4734b"),
         submittedAt = submittedAtDefault,
-        referral = SampleData.sampleReferral(
-          crn = "X123456",
+        referral = referralFactory.createSent(
+          serviceUserCRN = "X123456",
           relevantSentenceId = 1234L,
-          serviceProviderName = "Harmony Living",
           sentAt = sentAtDefault,
           referenceNumber = "XX1234"
         ),
