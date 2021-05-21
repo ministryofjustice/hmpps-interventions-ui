@@ -111,11 +111,10 @@ export default class NeedsAndRequirementsView {
     }
   }
 
-  private get whenUnavailableInputArgs(): InputArgs {
+  private get whenUnavailableTextareaArgs(): InputArgs {
     return {
       id: 'when-unavailable',
       name: 'when-unavailable',
-      classes: 'govuk-!-width-one-third',
       label: {
         text: this.presenter.text.whenUnavailable.label,
       },
@@ -136,7 +135,7 @@ export default class NeedsAndRequirementsView {
         interpreterRadiosArgs: this.interpreterRadiosArgs.bind(this),
         interpreterLanguageInputArgs: this.interpreterLanguageInputArgs,
         responsibilitiesRadiosArgs: this.responsibilitiesRadiosArgs.bind(this),
-        whenUnavailableInputArgs: this.whenUnavailableInputArgs,
+        whenUnavailableTextareaArgs: this.whenUnavailableTextareaArgs,
       },
     ]
   }

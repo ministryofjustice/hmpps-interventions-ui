@@ -42,7 +42,7 @@
         {{ govukRadios(interpreterRadiosArgs(interpreterLanguageHtml)) }}
 
         {% set whenUnavailableHtml %}
-        {{ govukInput(whenUnavailableInputArgs) }}
+        {{ govukTextarea(whenUnavailableTextareaArgs) }}
         {% endset -%}
         {{ govukRadios(responsibilitiesRadiosArgs(whenUnavailableHtml)) }}
 
