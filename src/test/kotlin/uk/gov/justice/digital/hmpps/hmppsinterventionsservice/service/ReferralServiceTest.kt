@@ -81,6 +81,7 @@ class ReferralServiceTest @Autowired constructor(
     referenceGenerator,
     cancellationReasonRepository,
     actionPlanAppointmentRepository,
+    serviceCategoryRepository,
     referralAccessChecker,
     userTypeChecker,
     serviceProviderAccessScopeMapper,

@@ -40,11 +40,11 @@ class ReferralService(
   val referenceGenerator: ReferralReferenceGenerator,
   val cancellationReasonRepository: CancellationReasonRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val serviceCategoryRepository: ServiceCategoryRepository,
   val referralAccessChecker: ReferralAccessChecker,
   val userTypeChecker: UserTypeChecker,
   val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
   val referralAccessFilter: ReferralAccessFilter,
-  val serviceCategoryRepository: ServiceCategoryRepository,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -205,6 +205,13 @@ class ReferralService(
       }
     }
 
+    update.serviceCategoryIds?.let {
+      val serviceCategories = serviceCategoryRepository.findByIdIn(it)
+      if (!referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.containsAll(serviceCategories)) {
+        errors.add(FieldError(field = "serviceCategories", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
+      }
+    }
+
     if (errors.isNotEmpty()) {
       throw ValidationError("draft referral update invalid", errors)
     }
@@ -269,6 +276,10 @@ class ReferralService(
         religionOrBelief = it.religionOrBelief,
         disabilities = it.disabilities,
       )
+    }
+
+    update.serviceCategoryIds?.let {
+      referral.selectedServiceCategories = serviceCategoryRepository.findByIdIn(it)
     }
 
     return referralRepository.save(referral)

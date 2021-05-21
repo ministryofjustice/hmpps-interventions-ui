@@ -9,13 +9,20 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ServerWebInputException
+import org.junit.jupiter.api.Assertions
+import org.mockito.ArgumentCaptor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
@@ -24,6 +31,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ref
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
 import java.util.Optional
@@ -38,22 +48,25 @@ class ReferralServiceUnitTest {
   private val referralReferenceGenerator: ReferralReferenceGenerator = mock()
   private val cancellationReasonRepository: CancellationReasonRepository = mock()
   private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
+  private val serviceCategoryRepository: ServiceCategoryRepository = mock()
   private val referralAccessChecker: ReferralAccessChecker = mock()
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper = mock()
   private val referralAccessFilter: ReferralAccessFilter = mock()
   private val userTypeChecker: UserTypeChecker = mock()
-  private val serviceCategoryRepository: ServiceCategoryRepository = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
   private val cancellationReasonFactory = CancellationReasonFactory()
   private val serviceCategoryFactory = ServiceCategoryFactory()
+  private val contractTypeFactory = ContractTypeFactory()
+  private val interventionFactory = InterventionFactory()
+  private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
 
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
-    actionPlanAppointmentRepository, referralAccessChecker, userTypeChecker, serviceProviderAccessScopeMapper,
-    referralAccessFilter, serviceCategoryRepository,
+    actionPlanAppointmentRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
+    serviceProviderAccessScopeMapper, referralAccessFilter,
   )
 
   @Test
@@ -206,6 +219,77 @@ class ReferralServiceUnitTest {
       )
 
       assertThat(updatedReferral.complexityLevelIds!![serviceCategory.id]).isEqualTo(complexityLevel2.id)
+    }
+  }
+
+  @Nested
+  inner class UpdateServiceCategories {
+
+    private val serviceCategoryIds = listOf(
+      UUID.fromString("8221a81c-08b2-4262-9c1a-0ab3c82cec8c"),
+      UUID.fromString("9556a399-3529-4993-8030-41db2090555e"),
+      UUID.fromString("b84f4eb7-4db0-477e-8c59-21027b3262c5"),
+      UUID.fromString("c036826e-f077-49a5-8b33-601dca7ad479")
+    )
+
+    private val serviceCategories = setOf(
+      serviceCategoryFactory.create(id = UUID.fromString("8221a81c-08b2-4262-9c1a-0ab3c82cec8c"), name = "aaa"),
+      serviceCategoryFactory.create(id = UUID.fromString("9556a399-3529-4993-8030-41db2090555e"), name = "bbb"),
+      serviceCategoryFactory.create(id = UUID.fromString("b84f4eb7-4db0-477e-8c59-21027b3262c5"), name = "ccc"),
+      serviceCategoryFactory.create(id = UUID.fromString("c036826e-f077-49a5-8b33-601dca7ad479"), name = "ddd")
+    )
+
+    @Test
+    fun `successfully update service categories`() {
+      val contractType = contractTypeFactory.create(serviceCategories = serviceCategories.toSet())
+      val referral = referralFactory.createDraft(
+        intervention = interventionFactory.create(
+          contract = dynamicFrameworkContractFactory.create(
+            contractType = contractType
+          )
+        )
+      )
+
+      val update = DraftReferralDTO(serviceCategoryIds = serviceCategoryIds)
+
+      whenever(serviceCategoryRepository.findByIdIn(serviceCategoryIds)).thenReturn(serviceCategories)
+      whenever(referralRepository.save(any())).thenReturn(referral)
+
+      referralService.updateDraftReferral(referral, update)
+
+      val argument: ArgumentCaptor<Referral> = ArgumentCaptor.forClass(Referral::class.java)
+      verify(referralRepository).save(argument.capture())
+      val savedActionPlan = argument.value
+      assertThat(savedActionPlan.selectedServiceCategories == serviceCategories)
+    }
+
+    @Test
+    fun `fail to update referral with service category not part of contract type`() {
+      val contractTypeServiceCategories = setOf(
+        serviceCategoryFactory.create(id = UUID.fromString("8221a81c-08b2-4262-9c1a-0ab3c82cec8c"), name = "aaa"),
+        serviceCategoryFactory.create(id = UUID.fromString("9556a399-3529-4993-8030-41db2090555e"), name = "bbb"),
+        serviceCategoryFactory.create(id = UUID.fromString("b84f4eb7-4db0-477e-8c59-21027b3262c5"), name = "ccc")
+      )
+
+      val contractType = contractTypeFactory.create(serviceCategories = contractTypeServiceCategories)
+      val referral = referralFactory.createDraft(
+        intervention = interventionFactory.create(
+          contract = dynamicFrameworkContractFactory.create(
+            contractType = contractType
+          )
+        )
+      )
+
+      val update = DraftReferralDTO(serviceCategoryIds = serviceCategoryIds)
+
+      whenever(serviceCategoryRepository.findByIdIn(serviceCategoryIds)).thenReturn(serviceCategories)
+      whenever(referralRepository.save(any())).thenReturn(referral)
+
+      val exception = Assertions.assertThrows(ValidationError::class.java) {
+        referralService.updateDraftReferral(referral, update)
+      }
+      assertThat(exception.message).isEqualTo("draft referral update invalid")
+      assertThat(exception.errors[0]).isEqualTo(FieldError(field = "serviceCategories", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
     }
   }
 }
