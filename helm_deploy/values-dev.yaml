@@ -14,6 +14,9 @@ ingress:
   host: hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk
   path: /
 
+env_details:
+  contains_live_data: false
+
 env:
   DEPLOYMENT_ENV: dev
   HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
