@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -19,7 +20,8 @@ internal class CommunityAPIBookingServiceTest {
 
   private val httpBaseUrl = "http://url"
   private val viewUrl = "/view/{referralId}"
-  private val apiUrl = "/appt/{CRN}/{sentenceId}/{contextName}"
+  private val bookingApiUrl = "/appt/{CRN}/{sentenceId}/{contextName}"
+  private val rescheduleApiUrl = "/appt/{CRN}/{sentenceId}/{contextName}/reschedule"
   private val crsOfficeLocation = "CRSEXTL"
   private val crsBookingsContext = "CRS"
 
@@ -29,7 +31,8 @@ internal class CommunityAPIBookingServiceTest {
     true,
     httpBaseUrl,
     viewUrl,
-    apiUrl,
+    bookingApiUrl,
+    rescheduleApiUrl,
     crsOfficeLocation,
     crsBookingsContext,
     communityAPIClient
@@ -43,15 +46,44 @@ internal class CommunityAPIBookingServiceTest {
     val uri = "/appt/X1/123/CRS"
     val link = "http://url/view/${appointment.actionPlan.referral.id}"
     val request = AppointmentCreateRequestDTO("ACC", now, now.plusMinutes(60), now.plusMinutes(120), "CRSEXTL", notes = link, true)
-    val response = AppointmentCreateResponseDTO(1234L)
+    val response = AppointmentResponseDTO(1234L)
 
-    whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java))
+    whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
       .thenReturn(response)
 
     val deliusAppointmentId = communityAPIBookingService.book(appointment, now.plusMinutes(60), 60)
 
     assertThat(deliusAppointmentId).isEqualTo(1234L)
-    verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentCreateResponseDTO::class.java)
+    verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+  }
+
+  @Test
+  fun `requests rescheduling an appointment when timings are different`() {
+    val now = now()
+    val deliusAppointmentId = 999L
+    val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+
+    val uri = "/appt/X1/999/CRS/reschedule"
+    val request = AppointmentRescheduleRequestDTO(now, now.plusMinutes(45), true)
+    val response = AppointmentResponseDTO(1234L)
+
+    whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
+      .thenReturn(response)
+
+    communityAPIBookingService.book(appointment, now, 45)
+
+    verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+  }
+
+  @Test
+  fun `does not reschedule an appointment when timings are same`() {
+    val now = now()
+    val deliusAppointmentId = 999L
+    val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+
+    communityAPIBookingService.book(appointment, now.plusDays(1), 60)
+
+    verifyNoMoreInteractions(communityAPIClient)
   }
 
   @Test
@@ -81,6 +113,21 @@ internal class CommunityAPIBookingServiceTest {
   }
 
   @Test
+  fun `is reschedule`() {
+    val referralStart = now()
+    val appointmentStart = referralStart.plusDays(1)
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, null, null), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, null), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, null, 60), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), null, null)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, null, null), appointmentStart, null)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, null, null), appointmentStart, 60)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), appointmentStart, 60)).isFalse()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 59), appointmentStart, 60)).isTrue()
+    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), appointmentStart.plusNanos(1), 60)).isTrue()
+  }
+
+  @Test
   fun `does nothing if not enabled`() {
     val appointment = makeAppointment(now(), null, null)
 
@@ -88,7 +135,8 @@ internal class CommunityAPIBookingServiceTest {
       false,
       httpBaseUrl,
       viewUrl,
-      apiUrl,
+      bookingApiUrl,
+      rescheduleApiUrl,
       crsOfficeLocation,
       crsBookingsContext,
       communityAPIClient
@@ -98,13 +146,14 @@ internal class CommunityAPIBookingServiceTest {
     verifyZeroInteractions(communityAPIClient)
   }
 
-  private fun makeAppointment(sentAt: OffsetDateTime, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): ActionPlanAppointment {
+  private fun makeAppointment(sentAt: OffsetDateTime, appointmentTime: OffsetDateTime?, durationInMinutes: Int?, deliusAppointmentId: Long? = null): ActionPlanAppointment {
     val referral = SampleData.sampleReferral(crn = crn, relevantSentenceId = sentenceId, sentAt = sentAt, serviceProviderName = "SPN")
     return SampleData.sampleActionPlanAppointment(
       actionPlan = SampleData.sampleActionPlan(referral = referral),
       createdBy = SampleData.sampleAuthUser(),
       appointmentTime = appointmentTime,
-      durationInMinutes = durationInMinutes
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = deliusAppointmentId
     )
   }
 }
