@@ -28,6 +28,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     completionDeadline: LocalDate? = null,
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     serviceUserData: ServiceUserData? = null,
+    complexityLevelIds: MutableMap<UUID, UUID>? = null,
   ): Referral {
     return create(
       id = id,
@@ -38,7 +39,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       selectedServiceCategories = selectedServiceCategories,
       completionDeadline = completionDeadline,
       desiredOutcomes = desiredOutcomes,
-      serviceUserData = serviceUserData
+      serviceUserData = serviceUserData,
+      complexityLevelIds = complexityLevelIds,
     )
   }
 
@@ -139,6 +141,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     serviceUserData: ServiceUserData? = null,
     actionPlan: ActionPlan? = null,
     selectedServiceCategories: Set<ServiceCategory>? = null,
+    complexityLevelIds: MutableMap<UUID, UUID>? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
@@ -167,6 +170,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         serviceUserData = serviceUserData,
         actionPlan = actionPlan,
         selectedServiceCategories = selectedServiceCategories,
+        complexityLevelIds = complexityLevelIds,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,

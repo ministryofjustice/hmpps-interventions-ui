@@ -278,7 +278,7 @@ class ReferralService(
       throw ServerWebInputException("complexity level cannot be updated: no service categories selected for this referral")
     }
 
-    if (!referral.selectedServiceCategories!!.contains(serviceCategoryId)) {
+    if (!referral.selectedServiceCategories!!.map { it.id }.contains(serviceCategoryId)) {
       throw ServerWebInputException("complexity level cannot be updated: specified service category not selected for this referral")
     }
 
