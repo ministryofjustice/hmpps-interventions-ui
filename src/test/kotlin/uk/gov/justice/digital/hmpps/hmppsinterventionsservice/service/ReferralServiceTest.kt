@@ -88,6 +88,7 @@ class ReferralServiceTest @Autowired constructor(
   // reset before each test
   private lateinit var sampleReferral: Referral
   private lateinit var sampleIntervention: Intervention
+  private lateinit var sampleCohortIntervention: Intervention
 
   @BeforeEach
   fun beforeEach() {
@@ -96,6 +97,23 @@ class ReferralServiceTest @Autowired constructor(
       SampleData.sampleReferral("X123456", "Harmony Living")
     )
     sampleIntervention = sampleReferral.intervention
+
+    sampleCohortIntervention = SampleData.persistIntervention(
+      entityManager,
+      SampleData.sampleIntervention(
+        dynamicFrameworkContract = SampleData.sampleContract(
+          primeProvider = sampleReferral.intervention.dynamicFrameworkContract.primeProvider,
+          contractType = SampleData.sampleContractType(
+            name = "Personal Wellbeing",
+            code = "PWB",
+            serviceCategories = mutableSetOf(
+              SampleData.sampleServiceCategory(),
+              SampleData.sampleServiceCategory(name = "Social inclusion")
+            )
+          )
+        )
+      )
+    )
   }
 
   @Test
@@ -160,7 +178,7 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
-  fun `create and persist draft referral`() {
+  fun `create and persist non-cohort draft referral`() {
     val authUser = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleIntervention.id)
     entityManager.flush()
@@ -170,6 +188,22 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(savedDraftReferral.createdAt).isNotNull
     assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
     assertThat(savedDraftReferral.serviceUserCRN).isEqualTo("X123456")
+    assertThat(savedDraftReferral.selectedServiceCategories).hasSize(1)
+    assertThat(savedDraftReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(sampleIntervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).id)
+  }
+
+  @Test
+  fun `create and persist cohort draft referral`() {
+    val authUser = AuthUser("user_id", "delius", "user_name")
+    val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleCohortIntervention.id)
+    entityManager.flush()
+
+    val savedDraftReferral = referralService.getDraftReferralForUser(draftReferral.id, authUser)
+    assertThat(savedDraftReferral!!.id).isNotNull
+    assertThat(savedDraftReferral.createdAt).isNotNull
+    assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
+    assertThat(savedDraftReferral.serviceUserCRN).isEqualTo("X123456")
+    assertThat(savedDraftReferral.selectedServiceCategories).isNull()
   }
 
   @Test

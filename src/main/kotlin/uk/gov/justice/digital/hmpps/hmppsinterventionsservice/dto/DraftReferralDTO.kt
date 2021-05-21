@@ -10,6 +10,7 @@ data class DraftReferralDTO(
   val createdAt: OffsetDateTime? = null,
   val completionDeadline: LocalDate? = null,
   val serviceCategoryId: UUID? = null,
+  val serviceCategoryIds: List<UUID>? = null,
   val complexityLevelId: UUID? = null,
   val furtherInformation: String? = null,
   val additionalNeedsInformation: String? = null,
@@ -29,7 +30,6 @@ data class DraftReferralDTO(
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
       val contract = referral.intervention.dynamicFrameworkContract
-
       return DraftReferralDTO(
         id = referral.id,
         createdAt = referral.createdAt,
@@ -49,7 +49,9 @@ data class DraftReferralDTO(
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
         relevantSentenceId = referral.relevantSentenceId,
-        serviceCategoryId = contract.contractType.serviceCategories.elementAt(0).id,
+        // TODO: remove this once cohort referrals changes are complete
+        serviceCategoryId = if (referral.selectedServiceCategories?.isNotEmpty() == true) referral.selectedServiceCategories!!.elementAt(0).id else null,
+        serviceCategoryIds = referral.selectedServiceCategories?.map { it.id }
       )
     }
   }
