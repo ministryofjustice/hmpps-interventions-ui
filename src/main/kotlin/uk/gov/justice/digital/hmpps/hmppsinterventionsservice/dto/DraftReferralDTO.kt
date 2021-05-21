@@ -5,13 +5,18 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
+data class ReferralComplexityLevel(
+  val serviceCategoryId: UUID,
+  val complexityLevelId: UUID,
+)
+
 data class DraftReferralDTO(
   val id: UUID? = null,
   val createdAt: OffsetDateTime? = null,
   val completionDeadline: LocalDate? = null,
   val serviceCategoryId: UUID? = null,
   val serviceCategoryIds: List<UUID>? = null,
-  val complexityLevelId: UUID? = null,
+  val complexityLevels: List<ReferralComplexityLevel>? = null,
   val furtherInformation: String? = null,
   val additionalNeedsInformation: String? = null,
   val accessibilityNeeds: String? = null,
@@ -34,7 +39,7 @@ data class DraftReferralDTO(
         id = referral.id,
         createdAt = referral.createdAt,
         completionDeadline = referral.completionDeadline,
-        complexityLevelId = referral.complexityLevelID,
+        complexityLevels = referral.complexityLevelIds?.map { ReferralComplexityLevel(it.key, it.value) },
         furtherInformation = referral.furtherInformation,
         additionalNeedsInformation = referral.additionalNeedsInformation,
         accessibilityNeeds = referral.accessibilityNeeds,

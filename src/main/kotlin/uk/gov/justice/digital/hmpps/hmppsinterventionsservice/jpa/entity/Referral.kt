@@ -53,7 +53,6 @@ class Referral(
   var interpreterLanguage: String? = null,
   var hasAdditionalResponsibilities: Boolean? = null,
   var whenUnavailable: String? = null,
-  var complexityLevelID: UUID? = null,
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
   @ElementCollection
@@ -76,6 +75,9 @@ class Referral(
     inverseJoinColumns = [JoinColumn(name = "service_category_id")]
   )
   var selectedServiceCategories: Set<ServiceCategory>? = null,
+
+  @ElementCollection var complexityLevelIds: MutableMap<UUID, UUID>? = null,
+
   // required fields
   @NotNull @ManyToOne(fetch = FetchType.LAZY) val intervention: Intervention,
   @NotNull val serviceUserCRN: String,
