@@ -148,6 +148,7 @@ class ReferralService(
     val intervention = interventionRepository.getOne(interventionId)
     val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
     val selectedServiceCategories = if (serviceCategories.size == 1) serviceCategories.toMutableSet() else null
+
     return referralRepository.save(
       Referral(
         id = overrideID ?: UUID.randomUUID(),

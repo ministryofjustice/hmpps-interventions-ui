@@ -74,6 +74,7 @@ class Referral(
     joinColumns = [JoinColumn(name = "referral_id")],
     inverseJoinColumns = [JoinColumn(name = "service_category_id")]
   )
+
   var selectedServiceCategories: Set<ServiceCategory>? = null,
 
   @ElementCollection var complexityLevelIds: MutableMap<UUID, UUID>? = null,

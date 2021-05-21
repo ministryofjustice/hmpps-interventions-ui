@@ -54,7 +54,15 @@ To see where this service fits in the broader interventions (and probation) arch
 
 Run `./gradlew ktlintFormat` to fix formatting errors in your code before commit.
 
-### OpenAPI
+### Intervention Database
+If you want to connect to your local interventions service database, first exec onto the postgres container with:
+```
+docker exec -it ${containerId} /bin/sh
+```
+and then run:
+```
+psql -h localhost -d interventions -U postgres
+```
 
 OpenAPI documentation is auto-generated. To view it start the application and visit /swagger-ui.html in your browser.
 
@@ -67,6 +75,7 @@ and then run:
 ```
 psql -h localhost -d interventions -U postgres
 ```
+
 
 If you want to populate your local database with seeded values from [local data setup](/src/main/resources/db/local) then run:
 ```
