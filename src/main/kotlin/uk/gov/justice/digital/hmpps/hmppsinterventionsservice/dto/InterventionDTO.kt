@@ -13,6 +13,7 @@ data class InterventionDTO(
   val serviceCategories: List<ServiceCategoryFullDTO>,
   val serviceProvider: ServiceProviderDTO,
   val eligibility: ContractEligibilityDTO,
+  val contractType: ContractTypeDTO,
 ) {
   companion object {
     fun from(intervention: Intervention, pccRegions: List<PCCRegion>): InterventionDTO {
@@ -31,6 +32,7 @@ data class InterventionDTO(
           contract.allowsFemale,
           contract.allowsMale,
         ),
+        contractType = ContractTypeDTO(intervention.dynamicFrameworkContract.contractType.code, intervention.dynamicFrameworkContract.contractType.name),
       )
     }
   }
