@@ -10,6 +10,11 @@ export interface Eligibility {
   allowsMale: boolean
 }
 
+interface ContractType {
+  code: string
+  name: string
+}
+
 export default interface Intervention {
   id: string
   title: string
@@ -20,4 +25,5 @@ export default interface Intervention {
   serviceCategories: ServiceCategory[]
   serviceProvider: ServiceProvider
   eligibility: Eligibility
+  contractType: ContractType
 }
