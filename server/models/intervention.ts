@@ -10,7 +10,7 @@ export interface Eligibility {
   allowsMale: boolean
 }
 
-interface ContractType {
+export interface ContractType {
   code: string
   name: string
 }

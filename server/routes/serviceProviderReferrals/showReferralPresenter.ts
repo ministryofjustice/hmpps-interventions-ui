@@ -1,5 +1,4 @@
 import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import DeliusUser from '../../models/delius/deliusUser'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
@@ -8,13 +7,17 @@ import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresente
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import Intervention from '../../models/intervention'
+import ServiceCategory from '../../models/serviceCategory'
+import ComplexityLevel from '../../models/complexityLevel'
+import { TagArgs } from '../../utils/govukFrontendTypes'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null
@@ -29,7 +32,6 @@ export default class ShowReferralPresenter {
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
 
   readonly text = {
-    interventionDetailsSummaryHeading: `${utils.convertToProperCase(this.serviceCategory.name)} intervention details`,
     assignedTo: this.assigneeFullNameOrUnassigned,
     errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
   }
@@ -39,24 +41,43 @@ export default class ShowReferralPresenter {
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
   ]
 
-  get interventionDetails(): SummaryListItem[] {
-    // const selectedDesiredOutcomes = this.serviceCategory.desiredOutcomes
-    //   .filter(desiredOutcome => this.sentReferral.referral.desiredOutcomesIds.includes(desiredOutcome.id))
-    //   .map(desiredOutcome => desiredOutcome.description)
-    //
-    // const selectedComplexityLevel = this.serviceCategory.complexityLevels.find(
-    //   complexityLevel => complexityLevel.id === this.sentReferral.referral.complexityLevelId
-    // )
-    //
-    // const complexityLevelText = {
-    //   level: selectedComplexityLevel?.title || 'Level not found',
-    //   text: selectedComplexityLevel?.description || 'Description not found',
-    // }
+  get referralServiceCategories(): ServiceCategory[] {
+    const { serviceCategoryIds } = this.sentReferral.referral
+    return this.intervention.serviceCategories.filter(it => serviceCategoryIds.includes(it.id))
+  }
 
+  serviceCategorySection(serviceCategory: ServiceCategory, tagMacro: (args: TagArgs) => string): SummaryListItem[] {
+    const items: SummaryListItem[] = []
+
+    const complexityLevel = this.getReferralComplexityLevelForServiceCategory(serviceCategory)
+    if (complexityLevel === null) {
+      items.push({ key: 'Complexity level', lines: ['Level not found'] })
+    } else {
+      items.push({
+        key: 'Complexity level',
+        lines: [tagMacro(PresenterUtils.complexityLevelTagArgs(complexityLevel)), complexityLevel.description],
+      })
+    }
+
+    items.push({ key: 'Desired outcomes', lines: ['Outcomes not found'] })
+
+    return items
+  }
+
+  private getReferralComplexityLevelForServiceCategory(serviceCategory: ServiceCategory): ComplexityLevel | null {
+    const complexityLevelId = this.sentReferral.referral.complexityLevels.find(
+      it => it.serviceCategoryId === serviceCategory.id
+    )?.complexityLevelId
+
+    // fixme: both cases here, the complexity level missing from the referral and the complexity level
+    // missing from the service category are error conditions. should i actually just error out here??
+    return serviceCategory.complexityLevels.find(it => it.id === complexityLevelId) || null
+  }
+
+  get interventionDetails(): SummaryListItem[] {
     return [
+      { key: 'Service type', lines: [utils.convertToProperCase(this.intervention.contractType.name)] },
       { key: 'Sentence information', lines: ['Not currently set'] },
-      // { key: 'Desired outcomes', lines: selectedDesiredOutcomes, listStyle: ListStyle.noMarkers },
-      // { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text] },
       {
         key: 'Date to be completed by',
         lines: [PresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],
