@@ -36,14 +36,12 @@ export default class ProbationPractitionerReferralsController {
       userId
     )
 
-    const dedupedServiceCategoryIds = Array.from(new Set(cases.map(referral => referral.referral.serviceCategoryId)))
-    const serviceCategories = await Promise.all(
-      dedupedServiceCategoryIds.map(id =>
-        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
-      )
+    const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
+    const interventions = await Promise.all(
+      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
 
-    const presenter = new MyCasesPresenter(cases, serviceCategories)
+    const presenter = new MyCasesPresenter(cases, interventions)
     const view = new MyCasesView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }

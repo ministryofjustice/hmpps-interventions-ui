@@ -4,6 +4,7 @@ import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
+import interventionFactory from '../../testutils/factories/intervention'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -16,9 +17,10 @@ describe('Probation Practitioner monitor journey', () => {
   describe('viewing the progress of an intervention', () => {
     it('displays the referral progress page with the status of each session', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const referralParams = {
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-        referral: { serviceCategoryId: serviceCategory.id },
+        referral: { interventionId: intervention.id, serviceCategoryId: serviceCategory.id },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
       const probationPractitioner = deliusUserFactory.build({
@@ -59,9 +61,7 @@ describe('Probation Practitioner monitor journey', () => {
         actionPlanId: actionPlan.id,
       })
 
-      // Necessary until we add the Monitor dashboard
-      cy.stubGetDraftReferralsForUser([])
-
+      cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
       cy.stubGetSentReferrals([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
@@ -113,10 +113,12 @@ describe('Probation Practitioner monitor journey', () => {
   describe('Viewing session feedback', () => {
     it('allows users to click through to a page to view session feedback', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const referralParams = {
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-        referral: { serviceCategoryId: serviceCategory.id },
+        referral: { interventionId: intervention.id, serviceCategoryId: serviceCategory.id },
       }
+
       const deliusServiceUser = deliusServiceUserFactory.build()
       const probationPractitioner = deliusUserFactory.build({
         firstName: 'John',
@@ -134,8 +136,7 @@ describe('Probation Practitioner monitor journey', () => {
         actionPlanId: actionPlan.id,
       })
 
-      cy.stubGetDraftReferralsForUser([])
-
+      cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
       cy.stubGetSentReferrals([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
@@ -180,9 +181,10 @@ describe('Probation Practitioner monitor journey', () => {
   describe('cancelling a referral', () => {
     it('displays a form to allow users to submit comments and cancel a referral', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const referralParams = {
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-        referral: { serviceCategoryId: serviceCategory.id },
+        referral: { interventionId: intervention.id, serviceCategoryId: serviceCategory.id },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
       const probationPractitioner = deliusUserFactory.build({
@@ -223,9 +225,7 @@ describe('Probation Practitioner monitor journey', () => {
         actionPlanId: actionPlan.id,
       })
 
-      // Necessary until we add the Monitor dashboard
-      cy.stubGetDraftReferralsForUser([])
-
+      cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
       cy.stubGetSentReferrals([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)

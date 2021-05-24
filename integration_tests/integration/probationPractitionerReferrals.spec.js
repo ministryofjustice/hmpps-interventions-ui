@@ -2,6 +2,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import interventionFactory from '../../testutils/factories/intervention'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -12,15 +13,15 @@ describe('Probation practitioner referrals dashboard', () => {
   })
 
   it("user logs in and sees 'My cases' screen with list of sent referrals", () => {
-    const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+    const accommodationIntervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const womensServicesIntervention = interventionFactory.build({ contractType: { name: "womens' services" } })
 
     const sentReferrals = [
       sentReferralFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
         referral: {
-          serviceCategoryId: accommodationServiceCategory.id,
+          interventionId: accommodationIntervention.id,
           serviceUser: { firstName: 'George', lastName: 'Michael' },
           desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
           complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
@@ -35,7 +36,7 @@ describe('Probation practitioner referrals dashboard', () => {
         },
         referenceNumber: 'ABCABCA2',
         referral: {
-          serviceCategoryId: socialInclusionServiceCategory.id,
+          interventionId: womensServicesIntervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
           desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
           complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
@@ -43,8 +44,8 @@ describe('Probation practitioner referrals dashboard', () => {
       }),
     ]
 
-    cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-    cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+    cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
+    cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
     cy.stubGetSentReferrals(sentReferrals)
 
     cy.login()
@@ -57,7 +58,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
-          'Service Category': 'accommodation',
+          'Service Category': 'Accommodation',
           Provider: 'Harmony Living',
           Caseworker: 'Unassigned',
           Action: 'View',
@@ -65,7 +66,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
-          'Service Category': 'social inclusion',
+          'Service Category': "Womens' services",
           Provider: 'Harmony Living',
           Caseworker: 'A. Caseworker',
           Action: 'View',

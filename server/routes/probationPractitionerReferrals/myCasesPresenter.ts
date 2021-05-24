@@ -1,11 +1,12 @@
+import Intervention from '../../models/intervention'
 import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import PresenterUtils from '../../utils/presenterUtils'
+import utils from '../../utils/utils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
 
 export default class MyCasesPresenter {
-  constructor(private readonly sentReferrals: SentReferral[], private readonly serviceCategories: ServiceCategory[]) {}
+  constructor(private readonly sentReferrals: SentReferral[], private readonly interventions: Intervention[]) {}
 
   readonly navItemsPresenter = new DashboardNavPresenter('My cases')
 
@@ -19,10 +20,11 @@ export default class MyCasesPresenter {
   ]
 
   readonly tableRows: SortableTableRow[] = this.sentReferrals.map(referral => {
-    const { serviceCategoryId } = referral.referral
-    const serviceCategory = this.serviceCategories.find(aServiceCategory => aServiceCategory.id === serviceCategoryId)
-    if (serviceCategory === undefined) {
-      throw new Error(`Expected serviceCategories to contain service category with ID ${serviceCategoryId}`)
+    const interventionForReferral = this.interventions.find(
+      intervention => intervention.id === referral.referral.interventionId
+    )
+    if (interventionForReferral === undefined) {
+      throw new Error(`Expected referral to be linked to an intervention with ID ${referral.referral.interventionId}`)
     }
 
     // i really want the actual names here, but that's an API call for each row - how can we improve this?
@@ -40,8 +42,8 @@ export default class MyCasesPresenter {
         href: null,
       },
       {
-        text: serviceCategory.name,
-        sortValue: serviceCategory.name,
+        text: utils.convertToProperCase(interventionForReferral.contractType.name),
+        sortValue: interventionForReferral.contractType.name,
         href: null,
       },
       {

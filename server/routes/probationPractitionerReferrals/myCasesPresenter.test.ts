@@ -1,13 +1,16 @@
+import interventionFactory from '../../../testutils/factories/intervention'
 import SentReferralFactory from '../../../testutils/factories/sentReferral'
-import ServiceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import MyCasesPresenter from './myCasesPresenter'
 
 describe('MyCasesPresenter', () => {
-  const serviceCategories = [ServiceCategoryFactory.build({ id: '1' }), ServiceCategoryFactory.build({ id: '2' })]
+  const interventions = [
+    interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } }),
+    interventionFactory.build({ id: '2', contractType: { name: "womens' services" } }),
+  ]
   const referrals = [
     SentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: '1',
+        interventionId: '1',
         serviceUser: {
           firstName: 'rob',
           lastName: 'shah-brookes',
@@ -16,7 +19,7 @@ describe('MyCasesPresenter', () => {
     }),
     SentReferralFactory.unassigned().build({
       referral: {
-        serviceCategoryId: '2',
+        interventionId: '2',
         serviceUser: {
           firstName: 'HARDIP',
           lastName: 'fraiser',
@@ -25,7 +28,7 @@ describe('MyCasesPresenter', () => {
     }),
     SentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: '1',
+        interventionId: '1',
         serviceUser: {
           firstName: 'Jenny',
           lastName: 'Catherine',
@@ -36,23 +39,23 @@ describe('MyCasesPresenter', () => {
 
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const presenter = new MyCasesPresenter(referrals, serviceCategories)
+      const presenter = new MyCasesPresenter(referrals, interventions)
 
       expect(presenter.tableRows).toEqual([
         expect.arrayContaining([
           { text: 'Rob Shah-Brookes', sortValue: 'shah-brookes, rob', href: null },
           { text: 'UserABC', sortValue: 'AUserABC', href: null },
-          { text: 'accommodation', sortValue: 'accommodation', href: null },
+          { text: 'Accommodation', sortValue: 'accommodation', href: null },
         ]),
         expect.arrayContaining([
           { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
           { text: 'Unassigned', sortValue: 'Unassigned', href: null },
-          { text: 'accommodation', sortValue: 'accommodation', href: null },
+          { text: "Womens' services", sortValue: "womens' services", href: null },
         ]),
         expect.arrayContaining([
           { text: 'Jenny Catherine', sortValue: 'catherine, jenny', href: null },
           { text: 'UserABC', sortValue: 'AUserABC', href: null },
-          { text: 'accommodation', sortValue: 'accommodation', href: null },
+          { text: 'Accommodation', sortValue: 'accommodation', href: null },
         ]),
       ])
     })

@@ -14,6 +14,7 @@ import endOfServiceReportFactory from '../../../testutils/factories/endOfService
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
 import authUtils from '../../utils/authUtils'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -57,25 +58,29 @@ describe('GET /probation-practitioner/find', () => {
 
 describe('GET /probation-practitioner/dashboard', () => {
   it('displays a dashboard page', async () => {
-    const socialInclusionServiceCategory = serviceCategoryFactory.build({
-      name: 'Social inclusion',
-      id: '62e042a7-c44f-4d82-a679-4f435167e44a',
-    })
-
-    const sentSocialInclusionReferral = sentReferralFactory.build({
-      referral: { serviceCategoryId: socialInclusionServiceCategory.id },
-    })
+    const intervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
+    const referrals = [
+      sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: '1',
+          serviceUser: {
+            firstName: 'Alex',
+            lastName: 'River',
+          },
+        },
+      }),
+    ]
 
     authUtils.getProbationPractitionerUserId = jest.fn()
-    interventionsService.getReferralsSentByProbationPractitioner.mockResolvedValue([sentSocialInclusionReferral])
-    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getReferralsSentByProbationPractitioner.mockResolvedValue(referrals)
 
     await request(app)
       .get('/probation-practitioner/dashboard')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Alex River')
-        expect(res.text).toContain('Social inclusion')
+        expect(res.text).toContain('Accommodation')
       })
   })
 })
