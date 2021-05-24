@@ -1,6 +1,6 @@
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import CancellationReason from '../../models/cancellationReason'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
@@ -11,12 +11,12 @@ describe(ReferralCancellationReasonPresenter, () => {
       const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
       const sentReferral = sentReferralFactory.build({ referral: { serviceProvider } })
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex', surname: 'River' })
-      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const cancellationReasons: CancellationReason[] = []
 
       const presenter = new ReferralCancellationReasonPresenter(
         sentReferral,
-        serviceCategory,
+        intervention,
         serviceUser,
         cancellationReasons
       )
@@ -32,7 +32,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     it('returns an array of fields to be passed as radio button args', () => {
       const sentReferral = sentReferralFactory.build()
       const serviceUser = deliusServiceUserFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
       const cancellationReasons: CancellationReason[] = [
         { code: 'MIS', description: 'Referral was made by mistake' },
         { code: 'MOV', description: 'Service user has moved out of delivery area' },
@@ -40,7 +40,7 @@ describe(ReferralCancellationReasonPresenter, () => {
 
       const presenter = new ReferralCancellationReasonPresenter(
         sentReferral,
-        serviceCategory,
+        intervention,
         serviceUser,
         cancellationReasons
       )
@@ -55,14 +55,14 @@ describe(ReferralCancellationReasonPresenter, () => {
   describe('errorSummary', () => {
     const sentReferral = sentReferralFactory.build()
     const serviceUser = deliusServiceUserFactory.build()
-    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build()
     const cancellationReasons: CancellationReason[] = []
 
     describe('when there is an error', () => {
       it('returns a summary of the error', () => {
         const presenter = new ReferralCancellationReasonPresenter(
           sentReferral,
-          serviceCategory,
+          intervention,
           serviceUser,
           cancellationReasons,
           {
@@ -86,7 +86,7 @@ describe(ReferralCancellationReasonPresenter, () => {
       it('returns null', () => {
         const presenter = new ReferralCancellationReasonPresenter(
           sentReferral,
-          serviceCategory,
+          intervention,
           serviceUser,
           cancellationReasons
         )
@@ -99,14 +99,14 @@ describe(ReferralCancellationReasonPresenter, () => {
   describe('errorMessage', () => {
     const sentReferral = sentReferralFactory.build()
     const serviceUser = deliusServiceUserFactory.build()
-    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build()
     const cancellationReasons: CancellationReason[] = []
 
     describe('when there is an error', () => {
       it('returns the error message', () => {
         const presenter = new ReferralCancellationReasonPresenter(
           sentReferral,
-          serviceCategory,
+          intervention,
           serviceUser,
           cancellationReasons,
           {
@@ -128,7 +128,7 @@ describe(ReferralCancellationReasonPresenter, () => {
       it('returns null', () => {
         const presenter = new ReferralCancellationReasonPresenter(
           sentReferral,
-          serviceCategory,
+          intervention,
           serviceUser,
           cancellationReasons
         )

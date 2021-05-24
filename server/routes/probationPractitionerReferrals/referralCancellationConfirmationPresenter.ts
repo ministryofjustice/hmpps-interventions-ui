@@ -1,11 +1,11 @@
-import ServiceCategory from '../../models/serviceCategory'
 import SentReferral from '../../models/sentReferral'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
+import Intervention from '../../models/intervention'
 
 export default class ReferralCancellationConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly serviceCategory: ServiceCategory) {}
+  constructor(private readonly referral: SentReferral, private readonly intervention: Intervention) {}
 
   readonly text = {
     confirmationText: 'This referral has been cancelled',
@@ -26,7 +26,7 @@ export default class ReferralCancellationConfirmationPresenter {
     },
     {
       key: 'Type of referral',
-      lines: [utils.convertToProperCase(this.serviceCategory.name)],
+      lines: [utils.convertToProperCase(this.intervention.contractType.name)],
     },
   ]
 }

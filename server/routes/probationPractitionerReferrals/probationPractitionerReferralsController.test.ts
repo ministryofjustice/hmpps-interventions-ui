@@ -192,12 +192,12 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
 describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => {
   it('renders a page where the PP can add comments and cancel a referral', async () => {
     const referral = sentReferralFactory.assigned().build()
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build()
     const serviceUser = deliusServiceUserFactory.build()
 
     interventionsService.getSentReferral.mockResolvedValue(referral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getReferralCancellationReasons.mockResolvedValue([
       { code: 'MIS', description: 'Referral was made by mistake' },
       { code: 'MOV', description: 'Service user has moved out of delivery area' },
@@ -219,12 +219,12 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => 
 describe('POST /probation-practitioner/referrals/:id/cancellation/check-your-answers', () => {
   it('passes through params to a page where the PP can confirm whether or not to cancel a referral', async () => {
     const referral = sentReferralFactory.assigned().build()
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build()
     const serviceUser = deliusServiceUserFactory.build()
 
     interventionsService.getSentReferral.mockResolvedValue(referral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
 
     await request(app)
       .post(`/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/check-your-answers`)
