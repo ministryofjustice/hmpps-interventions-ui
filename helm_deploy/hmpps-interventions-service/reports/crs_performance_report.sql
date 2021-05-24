@@ -37,7 +37,7 @@ COPY (
     referral r
     JOIN intervention i ON (r.intervention_id = i.id)
     JOIN dynamic_framework_contract c ON (i.dynamic_framework_contract_id = c.id)
-    JOIN service_provider prime ON (c.service_provider_id = prime.id)
+    JOIN service_provider prime ON (c.prime_provider_id = prime.id)
     LEFT JOIN action_plan ap ON (ap.referral_id = r.id) --❗️assumes a SINGLE action plan
     LEFT JOIN end_of_service_report eosr ON (eosr.referral_id = r.id)
   WHERE
