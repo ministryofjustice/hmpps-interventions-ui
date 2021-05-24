@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SelectedDesiredOutcomesDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
@@ -153,6 +154,17 @@ class ReferralController(
   fun setDraftReferralComplexityLevel(authentication: JwtAuthenticationToken, @PathVariable id: UUID, @RequestBody request: SetComplexityLevelRequestDTO): DraftReferralDTO {
     val referral = getDraftReferralForAuthenticatedUser(authentication, id)
     val updatedReferral = referralService.updateDraftReferralComplexityLevel(referral, request.serviceCategoryId, request.complexityLevelId)
+    return DraftReferralDTO.from(updatedReferral)
+  }
+
+  @PatchMapping("/draft-referral/{id}/desired-outcomes")
+  fun setDraftReferralDesiredOutcomes(
+    authentication: JwtAuthenticationToken,
+    @PathVariable id: UUID,
+    @RequestBody request: SelectedDesiredOutcomesDTO
+  ): DraftReferralDTO {
+    val referral = getDraftReferralForAuthenticatedUser(authentication, id)
+    val updatedReferral = referralService.updateDraftReferralDesiredOutcomes(referral, request.serviceCategoryId, request.desiredOutcomesIds)
     return DraftReferralDTO.from(updatedReferral)
   }
 

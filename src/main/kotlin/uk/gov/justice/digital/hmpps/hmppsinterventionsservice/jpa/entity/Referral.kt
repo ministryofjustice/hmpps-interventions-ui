@@ -10,6 +10,7 @@ import javax.persistence.CascadeType
 import javax.persistence.CollectionTable
 import javax.persistence.Column
 import javax.persistence.ElementCollection
+import javax.persistence.Embeddable
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.Id
@@ -21,8 +22,15 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
 import javax.persistence.Table
-import javax.persistence.UniqueConstraint
 import javax.validation.constraints.NotNull
+
+@Embeddable
+class SelectedDesiredOutcomesMapping(
+  @Column(name = "service_category_id")
+  var serviceCategoryId: UUID,
+  @Column(name = "desired_outcome_id")
+  var desiredOutcomeId: UUID
+)
 
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_id")))
@@ -56,12 +64,8 @@ class Referral(
   var usingRarDays: Boolean? = null,
   var maximumRarDays: Int? = null,
   @ElementCollection
-  @CollectionTable(
-    name = "referral_desired_outcome",
-    uniqueConstraints = [UniqueConstraint(columnNames = arrayOf("referral_id", "desired_outcome_id"))]
-  )
-  @Column(name = "desired_outcome_id")
-  var desiredOutcomesIDs: List<UUID>? = null,
+  @CollectionTable(name = "referral_desired_outcome", joinColumns = [JoinColumn(name = "referral_id")])
+  var selectedDesiredOutcomes: MutableList<SelectedDesiredOutcomesMapping>? = null,
   var completionDeadline: LocalDate? = null,
 
   var relevantSentenceId: Long? = null,

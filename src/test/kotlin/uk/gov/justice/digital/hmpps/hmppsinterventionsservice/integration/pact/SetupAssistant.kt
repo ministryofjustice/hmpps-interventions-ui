@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Dynamic
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
@@ -282,7 +283,7 @@ class SetupAssistant(
     whenUnavailable: String = "She works Mondays 9am - midday",
   ): Referral {
     referral.serviceUserData = serviceUserData
-    referral.desiredOutcomesIDs = desiredOutcomes.map { it.id }
+    referral.selectedDesiredOutcomes = desiredOutcomes.map { SelectedDesiredOutcomesMapping(it.serviceCategoryId, it.id) }.toMutableList()
     referral.accessibilityNeeds = accessibilityNeeds
     referral.additionalNeedsInformation = additionalNeedsInformation
     referral.additionalRiskInformation = additionalRiskInformation
