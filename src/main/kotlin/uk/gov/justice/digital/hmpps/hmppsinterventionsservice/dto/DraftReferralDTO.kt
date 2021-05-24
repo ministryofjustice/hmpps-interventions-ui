@@ -31,6 +31,7 @@ data class DraftReferralDTO(
   val serviceUser: ServiceUserDTO? = null,
   val serviceProvider: ServiceProviderDTO? = null,
   val relevantSentenceId: Long? = null,
+  val interventionId: UUID? = null,
 ) {
   companion object {
     fun from(referral: Referral): DraftReferralDTO {
@@ -56,7 +57,8 @@ data class DraftReferralDTO(
         relevantSentenceId = referral.relevantSentenceId,
         // TODO: remove this once cohort referrals changes are complete
         serviceCategoryId = if (referral.selectedServiceCategories?.isNotEmpty() == true) referral.selectedServiceCategories!!.elementAt(0).id else null,
-        serviceCategoryIds = referral.selectedServiceCategories?.map { it.id }
+        serviceCategoryIds = referral.selectedServiceCategories?.map { it.id },
+        interventionId = referral.intervention.id,
       )
     }
   }
