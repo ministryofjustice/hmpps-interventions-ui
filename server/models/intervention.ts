@@ -10,14 +10,20 @@ export interface Eligibility {
   allowsMale: boolean
 }
 
+interface ContractType {
+  code: string
+  name: string
+}
+
 export default interface Intervention {
   id: string
   title: string
   description: string
   npsRegion: NPSRegion | null
   pccRegions: PCCRegion[]
-  serviceCategory: ServiceCategory
+  serviceCategory: ServiceCategory // deprecated
   serviceCategories: ServiceCategory[]
   serviceProvider: ServiceProvider
   eligibility: Eligibility
+  contractType: ContractType
 }

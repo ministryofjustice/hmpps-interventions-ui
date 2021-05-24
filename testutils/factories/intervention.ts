@@ -30,5 +30,9 @@ The service will use the following methods:
     serviceCategories: [serviceCategory],
     serviceProvider: serviceProviderFactory.build(),
     eligibility: eligibilityFactory.allAdults().build(),
+    contractType: {
+      code: 'ACC',
+      name: 'Accommodation',
+    },
   }
 })
