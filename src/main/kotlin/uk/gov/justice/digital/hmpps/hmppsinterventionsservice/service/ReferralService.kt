@@ -2,7 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -41,6 +44,7 @@ class ReferralService(
   val userTypeChecker: UserTypeChecker,
   val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
   val referralAccessFilter: ReferralAccessFilter,
+  val serviceCategoryRepository: ServiceCategoryRepository,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -168,10 +172,6 @@ class ReferralService(
       // fixme: error if completion deadline is after sentence end date
     }
 
-    update.complexityLevelId?.let {
-      // fixme: error if complexity level not valid for service category
-    }
-
     update.needsInterpreter?.let {
       if (it && update.interpreterLanguage == null) {
         errors.add(FieldError(field = "needsInterpreter", error = Code.CONDITIONAL_FIELD_MUST_BE_SET))
@@ -214,10 +214,6 @@ class ReferralService(
 
     update.completionDeadline?.let {
       referral.completionDeadline = it
-    }
-
-    update.complexityLevelId?.let {
-      referral.complexityLevelID = it
     }
 
     update.furtherInformation?.let {
@@ -274,6 +270,30 @@ class ReferralService(
       )
     }
 
+    return referralRepository.save(referral)
+  }
+
+  fun updateDraftReferralComplexityLevel(referral: Referral, serviceCategoryId: UUID, complexityLevelId: UUID): Referral {
+    if (referral.selectedServiceCategories.isNullOrEmpty()) {
+      throw ServerWebInputException("complexity level cannot be updated: no service categories selected for this referral")
+    }
+
+    if (!referral.selectedServiceCategories!!.map { it.id }.contains(serviceCategoryId)) {
+      throw ServerWebInputException("complexity level cannot be updated: specified service category not selected for this referral")
+    }
+
+    val validComplexityLevelIds = serviceCategoryRepository.findByIdOrNull(serviceCategoryId)?.complexityLevels?.map { it.id }
+      ?: throw ServerWebInputException("complexity level cannot be updated: specified service category not found")
+
+    if (!validComplexityLevelIds.contains(complexityLevelId)) {
+      throw ServerWebInputException("complexity level cannot be updated: complexity level not valid for this service category")
+    }
+
+    if (referral.complexityLevelIds == null) {
+      referral.complexityLevelIds = mutableMapOf()
+    }
+
+    referral.complexityLevelIds!![serviceCategoryId] = complexityLevelId
     return referralRepository.save(referral)
   }
 

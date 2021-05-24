@@ -46,7 +46,6 @@ COMMENT ON COLUMN referral.intervention_id IS 'intervention unique identifier';
 COMMENT ON COLUMN referral.created_at IS 'when the referral was started';
 COMMENT ON COLUMN referral.created_by_id IS 'ID of the person who started the referral';
 COMMENT ON COLUMN referral.service_usercrn IS 'the referred person''s probation Case Reference Number';
-COMMENT ON COLUMN referral.complexity_levelid IS 'complexity level unique identifier';
 COMMENT ON COLUMN referral.completion_deadline IS 'when the intervention should be completed by';
 COMMENT ON COLUMN referral.further_information IS 'further information about the service user';
 COMMENT ON COLUMN referral.accessibility_needs IS 'accessibility needs of the service user';

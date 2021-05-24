@@ -1,12 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
+import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -92,6 +94,10 @@ class SetupAssistant(
 
   fun randomDesiredOutcome(): DesiredOutcome {
     return desiredOutcomeRepository.findAll().random()
+  }
+
+  fun randomComplexityLevel(serviceCategory: ServiceCategory): ComplexityLevel {
+    return serviceCategoryRepository.findByIdOrNull(serviceCategory.id)!!.complexityLevels.random()
   }
 
   fun desiredOutcomesForServiceCategory(serviceCategoryId: UUID): List<DesiredOutcome> {
@@ -247,6 +253,8 @@ class SetupAssistant(
 
   fun fillReferralFields(
     referral: Referral,
+    selectedServiceCategories: List<ServiceCategory> = referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.toList(),
+    complexityLevelIds: MutableMap<UUID, UUID>? = mutableMapOf(selectedServiceCategories[0].id to randomComplexityLevel(selectedServiceCategories[0]).id),
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     serviceUserData: ServiceUserData = ServiceUserData(
       referral = referral,
@@ -264,7 +272,6 @@ class SetupAssistant(
     additionalNeedsInformation: String = "Alex is currently sleeping on her aunt's sofa",
     additionalRiskInformation: String = "A danger to the elderly",
     completionDeadline: LocalDate = LocalDate.of(2021, 4, 1),
-    complexityLevelId: UUID = UUID.fromString("c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6"),
     furtherInformation: String = "Some information about the service user",
     hasAdditionalResponsibilities: Boolean = true,
     interpreterLanguage: String = "Spanish",
@@ -280,7 +287,7 @@ class SetupAssistant(
     referral.additionalNeedsInformation = additionalNeedsInformation
     referral.additionalRiskInformation = additionalRiskInformation
     referral.completionDeadline = completionDeadline
-    referral.complexityLevelID = complexityLevelId
+    referral.complexityLevelIds = complexityLevelIds
     referral.furtherInformation = furtherInformation
     referral.hasAdditionalResponsibilities = hasAdditionalResponsibilities
     referral.interpreterLanguage = interpreterLanguage

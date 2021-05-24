@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Can
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
@@ -54,6 +55,7 @@ class ReferralServiceTest @Autowired constructor(
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
   val actionPlanRepository: ActionPlanRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
+  val serviceCategoryRepository: ServiceCategoryRepository,
 ) {
 
   private val userFactory = AuthUserFactory(entityManager)
@@ -83,6 +85,7 @@ class ReferralServiceTest @Autowired constructor(
     userTypeChecker,
     serviceProviderAccessScopeMapper,
     referralAccessFilter,
+    serviceCategoryRepository,
   )
 
   // reset before each test

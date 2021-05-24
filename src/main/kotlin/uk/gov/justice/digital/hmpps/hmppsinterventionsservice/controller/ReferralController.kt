@@ -21,8 +21,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralReq
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
@@ -141,11 +143,16 @@ class ReferralController(
 
   @PatchMapping("/draft-referral/{id}")
   fun patchDraftReferralByID(@PathVariable id: UUID, @RequestBody partialUpdate: DraftReferralDTO, authentication: JwtAuthenticationToken): DraftReferralDTO {
-    val user = userMapper.fromToken(authentication)
-    val referralToUpdate = referralService.getDraftReferralForUser(id, user)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
+    val referralToUpdate = getDraftReferralForAuthenticatedUser(authentication, id)
 
     val updatedReferral = referralService.updateDraftReferral(referralToUpdate, partialUpdate)
+    return DraftReferralDTO.from(updatedReferral)
+  }
+
+  @PatchMapping("/draft-referral/{id}/complexity-level")
+  fun setDraftReferralComplexityLevel(authentication: JwtAuthenticationToken, @PathVariable id: UUID, @RequestBody request: SetComplexityLevelRequestDTO): DraftReferralDTO {
+    val referral = getDraftReferralForAuthenticatedUser(authentication, id)
+    val updatedReferral = referralService.updateDraftReferralComplexityLevel(referral, request.serviceCategoryId, request.complexityLevelId)
     return DraftReferralDTO.from(updatedReferral)
   }
 
@@ -165,5 +172,11 @@ class ReferralController(
   @GetMapping("/referral-cancellation-reasons")
   fun getCancellationReasons(): List<CancellationReason> {
     return referralService.getCancellationReasons()
+  }
+
+  private fun getDraftReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
+    val user = userMapper.fromToken(authentication)
+    return referralService.getDraftReferralForUser(id, user)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
   }
 }
