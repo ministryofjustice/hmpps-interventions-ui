@@ -81,11 +81,11 @@ class ReferralServiceTest @Autowired constructor(
     referenceGenerator,
     cancellationReasonRepository,
     actionPlanAppointmentRepository,
+    serviceCategoryRepository,
     referralAccessChecker,
     userTypeChecker,
     serviceProviderAccessScopeMapper,
     referralAccessFilter,
-    serviceCategoryRepository,
   )
 
   // reset before each test

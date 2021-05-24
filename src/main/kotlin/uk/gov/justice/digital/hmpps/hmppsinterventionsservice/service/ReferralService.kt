@@ -40,11 +40,11 @@ class ReferralService(
   val referenceGenerator: ReferralReferenceGenerator,
   val cancellationReasonRepository: CancellationReasonRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val serviceCategoryRepository: ServiceCategoryRepository,
   val referralAccessChecker: ReferralAccessChecker,
   val userTypeChecker: UserTypeChecker,
   val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
   val referralAccessFilter: ReferralAccessFilter,
-  val serviceCategoryRepository: ServiceCategoryRepository,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -148,6 +148,7 @@ class ReferralService(
     val intervention = interventionRepository.getOne(interventionId)
     val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
     val selectedServiceCategories = if (serviceCategories.size == 1) serviceCategories.toMutableSet() else null
+
     return referralRepository.save(
       Referral(
         id = overrideID ?: UUID.randomUUID(),
@@ -201,6 +202,16 @@ class ReferralService(
     update.serviceUser?.let {
       if (it.crn != null && it.crn != referral.serviceUserCRN) {
         errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
+      }
+    }
+
+    update.serviceCategoryIds?.let {
+      if (!referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.map {
+        serviceCategory ->
+        serviceCategory.id
+      }.containsAll(it)
+      ) {
+        errors.add(FieldError(field = "serviceCategoryIds", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
       }
     }
 
@@ -268,6 +279,10 @@ class ReferralService(
         religionOrBelief = it.religionOrBelief,
         disabilities = it.disabilities,
       )
+    }
+
+    update.serviceCategoryIds?.let {
+      referral.selectedServiceCategories = serviceCategoryRepository.findByIdIn(it)
     }
 
     return referralRepository.save(referral)

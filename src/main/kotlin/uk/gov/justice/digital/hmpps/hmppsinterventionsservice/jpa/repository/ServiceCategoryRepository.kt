@@ -4,4 +4,6 @@ import org.springframework.data.repository.CrudRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import java.util.UUID
 
-interface ServiceCategoryRepository : CrudRepository<ServiceCategory, UUID>
+interface ServiceCategoryRepository : CrudRepository<ServiceCategory, UUID> {
+  fun findByIdIn(serviceCategoryIds: List<UUID>): Set<ServiceCategory>
+}
