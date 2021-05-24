@@ -34,7 +34,8 @@ class CommunityAPIActionPlanServiceTest {
   @Test
   fun `notify submitted action plan`() {
 
-    communityAPIService.onApplicationEvent(getEvent(SUBMITTED))
+    val event = getEvent(SUBMITTED)
+    communityAPIService.onApplicationEvent(event)
 
     verify(communityAPIClient).makeAsyncPostRequest(
       "/secure/offenders/crn/X123456/sentence/1234/notifications/context/commissioned-rehabilitation-services",
@@ -43,7 +44,7 @@ class CommunityAPIActionPlanServiceTest {
         sentAtDefault,
         submittedAtDefault,
         "Action Plan Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
-          "http://testUrl/probation-practitioner/submit-action-plan/120b1a45-8ac7-4920-b05b-acecccf4734b",
+          "http://testUrl/probation-practitioner/submit-action-plan/${event.actionPlan.referral.id}",
       )
     )
   }

@@ -163,7 +163,7 @@ class CommunityAPIActionPlanEventService(
       -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(interventionsUIActionPlanLocation)
-          .buildAndExpand(event.actionPlan.id)
+          .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
         postNotificationRequest(event, url)
