@@ -86,7 +86,6 @@ class ReferralServiceTest @Autowired constructor(
     userTypeChecker,
     serviceProviderAccessScopeMapper,
     referralAccessFilter,
-    serviceCategoryRepository,
   )
 
   // reset before each test

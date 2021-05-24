@@ -206,9 +206,12 @@ class ReferralService(
     }
 
     update.serviceCategoryIds?.let {
-      val serviceCategories = serviceCategoryRepository.findByIdIn(it)
-      if (!referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.containsAll(serviceCategories)) {
-        errors.add(FieldError(field = "serviceCategories", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
+      if (!referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.map {
+        serviceCategory ->
+        serviceCategory.id
+      }.containsAll(it)
+      ) {
+        errors.add(FieldError(field = "serviceCategoryIds", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
       }
     }
 

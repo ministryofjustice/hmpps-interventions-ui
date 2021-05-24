@@ -5,12 +5,12 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.web.server.ServerWebInputException
-import org.junit.jupiter.api.Assertions
 import org.mockito.ArgumentCaptor
+import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
@@ -232,15 +232,15 @@ class ReferralServiceUnitTest {
       UUID.fromString("c036826e-f077-49a5-8b33-601dca7ad479")
     )
 
-    private val serviceCategories = setOf(
-      serviceCategoryFactory.create(id = UUID.fromString("8221a81c-08b2-4262-9c1a-0ab3c82cec8c"), name = "aaa"),
-      serviceCategoryFactory.create(id = UUID.fromString("9556a399-3529-4993-8030-41db2090555e"), name = "bbb"),
-      serviceCategoryFactory.create(id = UUID.fromString("b84f4eb7-4db0-477e-8c59-21027b3262c5"), name = "ccc"),
-      serviceCategoryFactory.create(id = UUID.fromString("c036826e-f077-49a5-8b33-601dca7ad479"), name = "ddd")
-    )
-
     @Test
     fun `successfully update service categories`() {
+      val serviceCategories = setOf(
+        serviceCategoryFactory.create(id = UUID.fromString("8221a81c-08b2-4262-9c1a-0ab3c82cec8c"), name = "aaa"),
+        serviceCategoryFactory.create(id = UUID.fromString("9556a399-3529-4993-8030-41db2090555e"), name = "bbb"),
+        serviceCategoryFactory.create(id = UUID.fromString("b84f4eb7-4db0-477e-8c59-21027b3262c5"), name = "ccc"),
+        serviceCategoryFactory.create(id = UUID.fromString("c036826e-f077-49a5-8b33-601dca7ad479"), name = "ddd")
+      )
+
       val contractType = contractTypeFactory.create(serviceCategories = serviceCategories.toSet())
       val referral = referralFactory.createDraft(
         intervention = interventionFactory.create(
@@ -251,8 +251,6 @@ class ReferralServiceUnitTest {
       )
 
       val update = DraftReferralDTO(serviceCategoryIds = serviceCategoryIds)
-
-      whenever(serviceCategoryRepository.findByIdIn(serviceCategoryIds)).thenReturn(serviceCategories)
       whenever(referralRepository.save(any())).thenReturn(referral)
 
       referralService.updateDraftReferral(referral, update)
@@ -265,13 +263,13 @@ class ReferralServiceUnitTest {
 
     @Test
     fun `fail to update referral with service category not part of contract type`() {
-      val contractTypeServiceCategories = setOf(
+      val serviceCategories = setOf(
         serviceCategoryFactory.create(id = UUID.fromString("8221a81c-08b2-4262-9c1a-0ab3c82cec8c"), name = "aaa"),
         serviceCategoryFactory.create(id = UUID.fromString("9556a399-3529-4993-8030-41db2090555e"), name = "bbb"),
         serviceCategoryFactory.create(id = UUID.fromString("b84f4eb7-4db0-477e-8c59-21027b3262c5"), name = "ccc")
       )
 
-      val contractType = contractTypeFactory.create(serviceCategories = contractTypeServiceCategories)
+      val contractType = contractTypeFactory.create(serviceCategories = serviceCategories)
       val referral = referralFactory.createDraft(
         intervention = interventionFactory.create(
           contract = dynamicFrameworkContractFactory.create(
@@ -281,15 +279,13 @@ class ReferralServiceUnitTest {
       )
 
       val update = DraftReferralDTO(serviceCategoryIds = serviceCategoryIds)
-
-      whenever(serviceCategoryRepository.findByIdIn(serviceCategoryIds)).thenReturn(serviceCategories)
       whenever(referralRepository.save(any())).thenReturn(referral)
 
       val exception = Assertions.assertThrows(ValidationError::class.java) {
         referralService.updateDraftReferral(referral, update)
       }
       assertThat(exception.message).isEqualTo("draft referral update invalid")
-      assertThat(exception.errors[0]).isEqualTo(FieldError(field = "serviceCategories", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
+      assertThat(exception.errors[0]).isEqualTo(FieldError(field = "serviceCategoryIds", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
     }
   }
 }
