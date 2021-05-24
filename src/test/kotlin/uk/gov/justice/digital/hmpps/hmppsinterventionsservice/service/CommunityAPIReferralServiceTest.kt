@@ -41,7 +41,8 @@ class CommunityAPIReferralServiceTest {
         "ACC",
         sentAtDefault,
         123456789,
-        "http://testUrl/referral/sent/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
+        "Referral Sent for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
+          "http://testUrl/referral/sent/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
       )
     )
   }
@@ -59,7 +60,8 @@ class CommunityAPIReferralServiceTest {
         concludedAtDefault,
         123456789,
         "CANCELLED",
-        "http://testUrl/referral/progress/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
+        "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
+          "http://testUrl/referral/progress/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
       )
     )
   }
@@ -77,7 +79,8 @@ class CommunityAPIReferralServiceTest {
         concludedAtDefault,
         123456789,
         "PREMATURELY_ENDED",
-        "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
+        "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
+          "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
       )
     )
   }
@@ -95,7 +98,8 @@ class CommunityAPIReferralServiceTest {
         concludedAtDefault,
         123456789,
         "COMPLETED",
-        "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
+        "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
+          "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
       )
     )
   }
