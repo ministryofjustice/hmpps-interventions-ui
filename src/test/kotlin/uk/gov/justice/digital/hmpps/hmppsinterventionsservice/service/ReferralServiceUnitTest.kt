@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -286,6 +287,167 @@ class ReferralServiceUnitTest {
       }
       assertThat(exception.message).isEqualTo("draft referral update invalid")
       assertThat(exception.errors[0]).isEqualTo(FieldError(field = "serviceCategoryIds", error = Code.INVALID_SERVICE_CATEGORY_FOR_CONTRACT))
+    }
+  }
+
+  @Nested
+  inner class UpdateDraftReferralDesiredOutcomes() {
+
+    @Test
+    fun `cant set desired outcomes to an empty list`() {
+      val referral = referralFactory.createDraft()
+      val e = assertThrows<ServerWebInputException> {
+        referralService.updateDraftReferralDesiredOutcomes(
+          referral,
+          referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.first().id,
+          listOf()
+        )
+      }
+
+      assertThat(e.message.equals("desired outcomes cannot be empty"))
+    }
+
+    @Test
+    fun `cant set desired outcomes when no service categories have been selected`() {
+      val referral = referralFactory.createDraft()
+      val e = assertThrows<ServerWebInputException> {
+        referralService.updateDraftReferralDesiredOutcomes(
+          referral,
+          referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.first().id,
+          listOf(UUID.randomUUID())
+        )
+      }
+
+      assertThat(e.message.equals("desired outcomes cannot be updated: no service categories selected for this referral"))
+    }
+
+    @Test
+    fun `cant set desired outcomes for an invalid service category`() {
+      val serviceCategory1 = serviceCategoryFactory.create()
+      val serviceCategory2 = serviceCategoryFactory.create()
+      val referral = referralFactory.createDraft(selectedServiceCategories = setOf(serviceCategory1))
+      val e = assertThrows<ServerWebInputException> {
+        referralService.updateDraftReferralDesiredOutcomes(
+          referral,
+          serviceCategory2.id,
+          listOf(UUID.randomUUID())
+        )
+      }
+
+      assertThat(e.message.equals("desired outcomes cannot be updated: specified service category not selected for this referral"))
+    }
+
+    @Test
+    fun `cant set desired outcome when service category is not found`() {
+      whenever(serviceCategoryRepository.findById(any())).thenReturn(Optional.empty())
+      val serviceCategory = serviceCategoryFactory.create()
+      val referral = referralFactory.createDraft(selectedServiceCategories = setOf(serviceCategory))
+      val e = assertThrows<ServerWebInputException> {
+        referralService.updateDraftReferralDesiredOutcomes(
+          referral,
+          serviceCategory.id,
+          listOf(UUID.randomUUID())
+        )
+      }
+
+      assertThat(e.message.equals("desired outcomes cannot be updated: specified service category not found"))
+    }
+
+    @Test
+    fun `cant set desired outcomes when its invalid for the service category`() {
+      val serviceCategoryId = UUID.randomUUID()
+      val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId)
+      val serviceCategory = serviceCategoryFactory.create(id = serviceCategoryId, desiredOutcomes = listOf(desiredOutcome))
+      val referral = referralFactory.createDraft(selectedServiceCategories = setOf(serviceCategory))
+
+      whenever(serviceCategoryRepository.findById(any())).thenReturn(Optional.of(serviceCategory))
+
+      val e = assertThrows<ServerWebInputException> {
+        referralService.updateDraftReferralDesiredOutcomes(
+          referral,
+          serviceCategory.id,
+          listOf(UUID.randomUUID())
+        )
+      }
+
+      assertThat(e.message.equals("desired outcomes cannot be updated: at least one desired outcome is not valid for this service category"))
+    }
+
+    @Test
+    fun `can set desired outcomes for the first time`() {
+      val serviceCategoryId = UUID.randomUUID()
+      val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId)
+      val serviceCategory = serviceCategoryFactory.create(id = serviceCategoryId, desiredOutcomes = listOf(desiredOutcome))
+      val referral = referralFactory.createDraft(selectedServiceCategories = setOf(serviceCategory))
+
+      assertThat(referral.selectedDesiredOutcomes).isEmpty()
+
+      whenever(serviceCategoryRepository.findById(any())).thenReturn(Optional.of(serviceCategory))
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+
+      val updatedReferral = referralService.updateDraftReferralDesiredOutcomes(
+        referral,
+        serviceCategory.id,
+        listOf(desiredOutcome.id),
+      )
+
+      assertThat(updatedReferral.selectedDesiredOutcomes!!.size).isEqualTo(1)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![0].serviceCategoryId).isEqualTo(serviceCategory.id)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![0].desiredOutcomeId).isEqualTo(desiredOutcome.id)
+    }
+
+    @Test
+    fun `can update an already selected desired outcome for service category`() {
+      val serviceCategoryId = UUID.randomUUID()
+      val desiredOutcome1 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId)
+      val desiredOutcome2 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId)
+      val serviceCategory = serviceCategoryFactory.create(id = serviceCategoryId, desiredOutcomes = listOf(desiredOutcome1, desiredOutcome2))
+      val referral = referralFactory.createDraft(
+        selectedServiceCategories = setOf(serviceCategory),
+        desiredOutcomes = mutableListOf(desiredOutcome1)
+      )
+
+      whenever(serviceCategoryRepository.findById(any())).thenReturn(Optional.of(serviceCategory))
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+
+      val updatedReferral = referralService.updateDraftReferralDesiredOutcomes(
+        referral,
+        serviceCategory.id,
+        listOf(desiredOutcome2.id),
+      )
+
+      assertThat(updatedReferral.selectedDesiredOutcomes!!.size).isEqualTo(1)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![0].serviceCategoryId).isEqualTo(serviceCategory.id)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![0].desiredOutcomeId).isEqualTo(desiredOutcome2.id)
+    }
+
+    @Test
+    fun `can update an different selected desired outcome for a different service category`() {
+      val serviceCategoryId1 = UUID.randomUUID()
+      val serviceCategoryId2 = UUID.randomUUID()
+      val desiredOutcome1 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId1)
+      val desiredOutcome2 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId2)
+      val serviceCategory1 = serviceCategoryFactory.create(id = serviceCategoryId1, desiredOutcomes = listOf(desiredOutcome2))
+      val serviceCategory2 = serviceCategoryFactory.create(id = serviceCategoryId2, desiredOutcomes = listOf(desiredOutcome1, desiredOutcome2))
+      val referral = referralFactory.createDraft(
+        selectedServiceCategories = setOf(serviceCategory1, serviceCategory2),
+        desiredOutcomes = mutableListOf(desiredOutcome1)
+      )
+
+      whenever(serviceCategoryRepository.findById(any())).thenReturn(Optional.of(serviceCategory2))
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+
+      val updatedReferral = referralService.updateDraftReferralDesiredOutcomes(
+        referral,
+        serviceCategory2.id,
+        listOf(desiredOutcome2.id),
+      )
+
+      assertThat(updatedReferral.selectedDesiredOutcomes!!.size).isEqualTo(2)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![0].serviceCategoryId).isEqualTo(serviceCategory1.id)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![0].desiredOutcomeId).isEqualTo(desiredOutcome1.id)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![1].serviceCategoryId).isEqualTo(serviceCategory2.id)
+      assertThat(updatedReferral.selectedDesiredOutcomes!![1].desiredOutcomeId).isEqualTo(desiredOutcome2.id)
     }
   }
 }

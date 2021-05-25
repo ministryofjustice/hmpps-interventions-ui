@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import java.time.LocalDate
@@ -161,7 +162,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
 
     concludedAt: OffsetDateTime? = null,
   ): Referral {
-    return save(
+    val referral = save(
       Referral(
         id = id,
         createdAt = createdAt,
@@ -170,7 +171,6 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         intervention = intervention,
         relevantSentenceId = relevantSentenceId,
         completionDeadline = completionDeadline,
-        desiredOutcomesIDs = desiredOutcomes.map { it.id },
         serviceUserData = serviceUserData,
         actionPlan = actionPlan,
         selectedServiceCategories = selectedServiceCategories,
@@ -188,5 +188,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         concludedAt = concludedAt,
       )
     )
+    referral.selectedDesiredOutcomes = desiredOutcomes.map { SelectedDesiredOutcomesMapping(it.serviceCategoryId, it.id) }.toMutableList()
+    save(referral)
+    return referral
   }
 }

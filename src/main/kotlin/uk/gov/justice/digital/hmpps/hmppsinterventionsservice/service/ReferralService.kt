@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -191,14 +192,6 @@ class ReferralService(
       }
     }
 
-    update.desiredOutcomesIds?.let {
-      if (it.isEmpty()) {
-        errors.add(FieldError(field = "desiredOutcomesIds", error = Code.CANNOT_BE_EMPTY))
-      }
-
-      // fixme: error if desiredOutcomesIds not valid for service category
-    }
-
     update.serviceUser?.let {
       if (it.crn != null && it.crn != referral.serviceUserCRN) {
         errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
@@ -258,10 +251,6 @@ class ReferralService(
       referral.maximumRarDays = if (it) update.maximumRarDays else null
     }
 
-    update.desiredOutcomesIds?.let {
-      referral.desiredOutcomesIDs = it
-    }
-
     update.relevantSentenceId?.let {
       referral.relevantSentenceId = it
     }
@@ -309,6 +298,35 @@ class ReferralService(
     }
 
     referral.complexityLevelIds!![serviceCategoryId] = complexityLevelId
+    return referralRepository.save(referral)
+  }
+
+  fun updateDraftReferralDesiredOutcomes(referral: Referral, serviceCategoryId: UUID, desiredOutcomeIds: List<UUID>): Referral {
+    if (desiredOutcomeIds.isEmpty()) {
+      throw ServerWebInputException("desired outcomes cannot be empty")
+    }
+
+    if (referral.selectedServiceCategories.isNullOrEmpty()) {
+      throw ServerWebInputException("desired outcomes cannot be updated: no service categories selected for this referral")
+    }
+
+    if (!referral.selectedServiceCategories!!.map { it.id }.contains(serviceCategoryId)) {
+      throw ServerWebInputException("desired outcomes cannot be updated: specified service category not selected for this referral")
+    }
+
+    val validDesiredOutcomeIds = serviceCategoryRepository.findByIdOrNull(serviceCategoryId)?.desiredOutcomes?.map { it.id }
+      ?: throw ServerWebInputException("desired outcomes cannot be updated: specified service category not found")
+
+    if (!validDesiredOutcomeIds.containsAll(desiredOutcomeIds)) {
+      throw ServerWebInputException("desired outcomes cannot be updated: at least one desired outcome is not valid for this service category")
+    }
+
+    if (referral.selectedDesiredOutcomes == null) {
+      referral.selectedDesiredOutcomes = mutableListOf()
+    }
+
+    referral.selectedDesiredOutcomes!!.removeIf { desiredOutcome -> desiredOutcome.serviceCategoryId == serviceCategoryId }
+    desiredOutcomeIds.forEach { desiredOutcomeId -> referral.selectedDesiredOutcomes!!.add(SelectedDesiredOutcomesMapping(serviceCategoryId, desiredOutcomeId)) }
     return referralRepository.save(referral)
   }
 

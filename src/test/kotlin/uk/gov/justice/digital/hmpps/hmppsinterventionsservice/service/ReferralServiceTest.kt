@@ -301,33 +301,6 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
-  fun `desired outcomes, once set, can not be reset back to null or empty`() {
-    val updateWithServiceCategory = DraftReferralDTO(
-      desiredOutcomesIds = mutableListOf(
-        UUID.fromString("301ead30-30a4-4c7c-8296-2768abfb59b5"),
-        UUID.fromString("9b30ffad-dfcb-44ce-bdca-0ea49239a21a")
-      ),
-      serviceCategoryId = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")
-    )
-    sampleReferral = referralService.updateDraftReferral(sampleReferral, updateWithServiceCategory)
-    assertThat(sampleReferral.desiredOutcomesIDs).size().isEqualTo(2)
-
-    var error = assertThrows<ValidationError> {
-      // this throws ValidationError
-      referralService.updateDraftReferral(sampleReferral, DraftReferralDTO(desiredOutcomesIds = mutableListOf()))
-    }
-    assertThat(error.errors.size).isEqualTo(1)
-    assertThat(error.errors[0].field).isEqualTo("desiredOutcomesIds")
-
-    // update with null is ignored
-    referralService.updateDraftReferral(sampleReferral, DraftReferralDTO(desiredOutcomesIds = null))
-
-    // Ensure no changes
-    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())
-    assertThat(sampleReferral.desiredOutcomesIDs).size().isEqualTo(2)
-  }
-
-  @Test
   fun `multiple errors at once`() {
     val update = DraftReferralDTO(completionDeadline = LocalDate.of(2020, 1, 1), needsInterpreter = true)
     val error = assertThrows<ValidationError> {

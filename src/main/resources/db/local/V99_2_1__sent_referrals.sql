@@ -15,6 +15,6 @@ insert into referral_service_user_data (referral_id, disabilities, dob, ethnicit
 values ('81d754aa-d868-4347-9c0f-50690773014e', '{Autism spectrum condition, sciatica}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'British', 'Mrs', 'STEVE', 'MCDONALD', 'English', 'Agnostic', 'Female'),
        ('f89bd739-b9a2-482e-9947-12a793abcfb1', '{Autism spectrum condition, sciatica}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'British', 'Mrs', 'STEVE', 'MCDONALD', 'English', 'Agnostic', 'Female');
 
-insert into referral_desired_outcome (referral_id, desired_outcome_id)
-values ('81d754aa-d868-4347-9c0f-50690773014e', '301ead30-30a4-4c7c-8296-2768abfb59b5'),
-       ('81d754aa-d868-4347-9c0f-50690773014e', '65924ac6-9724-455b-ad30-906936291421');
+insert into referral_desired_outcome (referral_id, desired_outcome_id, service_category_id)
+values ('81d754aa-d868-4347-9c0f-50690773014e', '301ead30-30a4-4c7c-8296-2768abfb59b5', '428ee70f-3001-4399-95a6-ad25eaaede16'),
+       ('81d754aa-d868-4347-9c0f-50690773014e', '65924ac6-9724-455b-ad30-906936291421', '428ee70f-3001-4399-95a6-ad25eaaede16');
