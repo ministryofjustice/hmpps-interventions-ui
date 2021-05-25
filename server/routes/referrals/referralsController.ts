@@ -138,16 +138,19 @@ export default class ReferralsController {
   async viewReferralForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    if (referral.serviceCategoryId === null) {
+    const [intervention, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
+    const { serviceCategories } = intervention
+    if (
+      serviceCategories.length === 1 &&
+      (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length === 0)
+    ) {
       throw new Error('No service category selected')
     }
 
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-    ])
-
-    const presenter = new ReferralFormPresenter(referral, serviceCategory.name)
+    const presenter = new ReferralFormPresenter(referral, serviceCategories)
     const view = new ReferralFormView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -246,9 +249,13 @@ export default class ReferralsController {
             ...data.paramsForUpdate,
           })
 
-          if (referral.serviceCategoryIds && referral.serviceCategoryIds.length > 1) {
-            // TODO IC-1686: take to next service category desired outcome or completion deadline if this is the last service category
-            return res.redirect(`/referrals/${referralId}/form`)
+          if (referral.serviceCategoryIds) {
+            const serviceCategoryIndex = referral.serviceCategoryIds.indexOf(serviceCategoryId)
+            const isLastSelectedServiceCategory = serviceCategoryIndex === referral.serviceCategoryIds.length - 1
+            if (!isLastSelectedServiceCategory) {
+              const nextServiceCategoryId = referral.serviceCategoryIds[serviceCategoryIndex + 1]
+              return res.redirect(`/referrals/${referralId}/service-category/${nextServiceCategoryId}/desired-outcomes`)
+            }
           }
 
           return res.redirect(`/referrals/${referralId}/completion-deadline`)
@@ -416,10 +423,6 @@ export default class ReferralsController {
             serviceCategoryId,
             ...data.paramsForUpdate,
           })
-
-          if (referral.serviceCategoryIds && referral.serviceCategoryIds.length > 1) {
-            return res.redirect(`/referrals/${referralId}/form`)
-          }
 
           return res.redirect(`/referrals/${referralId}/service-category/${serviceCategoryId}/complexity-level`)
         } catch (e) {

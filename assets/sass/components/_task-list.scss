@@ -1,0 +1,17 @@
+.moj-task-list__items-multi {
+  margin-bottom: 10px;
+}
+
+.moj-task-list__items-nested {
+  margin-bottom: 10px;
+  margin-left: 60px !important;
+  margin-top: 10px;
+}
+
+.moj-task-list__items-nested li:last-child {
+  border-bottom: 0;
+}
+
+.moj-task-list__items-last-of-section {
+  margin-bottom: 60px;
+}

@@ -1,14 +1,19 @@
 /* eslint max-classes-per-file: 0 */
 import DraftReferral from '../../models/draftReferral'
+import ServiceCategory from '../../models/serviceCategory'
 
 export default class ReferralFormPresenter {
   private readonly taskValues: typeof ReferralFormPresenter.TaskValues.prototype
 
   private readonly sectionValues: typeof ReferralFormPresenter.SectionValues.prototype
 
-  constructor(private readonly referral: DraftReferral, private readonly serviceCategoryName: string) {
+  constructor(private readonly referral: DraftReferral, private readonly serviceCategories: ServiceCategory[]) {
     this.taskValues = new ReferralFormPresenter.TaskValues(referral)
     this.sectionValues = new ReferralFormPresenter.SectionValues(this.taskValues)
+  }
+
+  get isCohortIntervention(): boolean {
+    return this.serviceCategories.length > 1
   }
 
   get sections(): ReferralFormSectionPresenter[] {
@@ -32,56 +37,122 @@ export default class ReferralFormPresenter {
         },
       ],
     }
-    const serviceCategoryReferralDetails: ReferralFormSingleListSectionPresenter = {
-      type: 'single',
-      title: `Add ${this.serviceCategoryName} referral details`,
-      number: '2',
-      status: this.calculateStatus(
-        this.sectionValues.serviceCategoryReferralDetails,
-        reviewServiceUserInformation.status
-      ),
-      tasks: [
-        {
-          title: `Select the relevant sentence for the ${this.serviceCategoryName} referral`,
-          url: this.calculateTaskUrl('relevant-sentence', this.taskValues.needsAndRequirements),
-        },
-        {
-          title: 'Select desired outcomes',
-          url: this.calculateTaskUrl(
-            this.referral.serviceCategoryIds && this.referral.serviceCategoryIds.length > 0
-              ? `service-category/${this.referral.serviceCategoryIds[0]}/desired-outcomes`
-              : null,
-            this.taskValues.relevantSentence
-          ),
-        },
-        {
-          title: 'Select required complexity level',
-          url: this.calculateTaskUrl(
-            this.referral.serviceCategoryIds && this.referral.serviceCategoryIds.length > 0
-              ? `service-category/${this.referral.serviceCategoryIds[0]}/complexity-level`
-              : null,
-            this.taskValues.desiredOutcomes
-          ),
-        },
-        {
-          title: `What date does the ${this.serviceCategoryName} service need to be completed by?`,
-          url: this.calculateTaskUrl('completion-deadline', this.taskValues.complexityLevel),
-        },
-        {
-          title: 'Enter RAR days used',
-          url: this.calculateTaskUrl('rar-days', this.taskValues.completionDeadline),
-        },
-        {
-          title: 'Further information for service provider',
-          url: this.calculateTaskUrl('further-information', this.taskValues.rarDays),
-        },
-      ],
+    let referralDetails: ReferralFormSectionPresenter
+    if (this.isCohortIntervention) {
+      referralDetails = {
+        type: 'multi',
+        title: 'Add intervention referral details',
+        number: '2',
+        status: this.calculateStatus(
+          this.sectionValues.serviceCategoryReferralDetails,
+          reviewServiceUserInformation.status!
+        ),
+        taskListSections: [
+          {
+            tasks: [
+              {
+                title: `Confirm the relevant sentence for the intervention referral`,
+                url: this.calculateTaskUrl('relevant-sentence', this.taskValues.needsAndRequirements),
+              },
+            ],
+          },
+        ]
+          .concat(
+            this.serviceCategories.map((serviceCategory, index) => {
+              return {
+                title: serviceCategory.name,
+                tasks: [
+                  {
+                    title: `Select desired outcomes`,
+                    url: this.calculateTaskUrl(
+                      `service-category/${serviceCategory.id}/desired-outcomes`,
+                      index === 0
+                        ? this.taskValues.relevantSentence
+                        : this.taskValues.complexityLevel(this.serviceCategories[index - 1].id)
+                    ),
+                  },
+                  {
+                    title: `Select required complexity level`,
+                    url: this.calculateTaskUrl(
+                      `service-category/${serviceCategory.id}/complexity-level`,
+                      this.taskValues.desiredOutcomes(serviceCategory.id)
+                    ),
+                  },
+                ],
+              }
+            })
+          )
+          .concat([
+            {
+              tasks: [
+                {
+                  title: `Enter when the intervention service need to be completed`,
+                  url: this.calculateTaskUrl('completion-deadline', this.taskValues.allComplexityLevels),
+                },
+                {
+                  title: 'Enter enforceable days used',
+                  url: this.calculateTaskUrl('rar-days', this.taskValues.completionDeadline),
+                },
+                {
+                  title: 'Further information for service provider',
+                  url: this.calculateTaskUrl('further-information', this.taskValues.rarDays),
+                },
+              ],
+            },
+          ]),
+      }
+    } else {
+      referralDetails = {
+        type: 'single',
+        title: `Add ${this.serviceCategories[0].name} referral details`,
+        number: '2',
+        status: this.calculateStatus(
+          this.sectionValues.serviceCategoryReferralDetails,
+          reviewServiceUserInformation.status!
+        ),
+        tasks: [
+          {
+            title: `Confirm the relevant sentence for the ${this.serviceCategories[0].name} referral`,
+            url: this.calculateTaskUrl('relevant-sentence', this.taskValues.needsAndRequirements),
+          },
+          {
+            title: 'Select desired outcomes',
+            url: this.calculateTaskUrl(
+              this.referral.serviceCategoryIds && this.referral.serviceCategoryIds.length > 0
+                ? `service-category/${this.referral.serviceCategoryIds[0]}/desired-outcomes`
+                : null,
+              this.taskValues.relevantSentence
+            ),
+          },
+          {
+            title: 'Select required complexity level',
+            url: this.calculateTaskUrl(
+              this.referral.serviceCategoryIds && this.referral.serviceCategoryIds.length > 0
+                ? `service-category/${this.referral.serviceCategoryIds[0]}/complexity-level`
+                : null,
+              this.taskValues.allDesiredOutcomes
+            ),
+          },
+          {
+            title: `Enter when the ${this.serviceCategories[0].name} service need to be completed`,
+            url: this.calculateTaskUrl('completion-deadline', this.taskValues.allComplexityLevels),
+          },
+          {
+            title: 'Enter enforceable days used',
+            url: this.calculateTaskUrl('rar-days', this.taskValues.completionDeadline),
+          },
+          {
+            title: 'Further information for service provider',
+            url: this.calculateTaskUrl('further-information', this.taskValues.rarDays),
+          },
+        ],
+      }
     }
     const checkYourAnswers: ReferralFormSingleListSectionPresenter = {
       type: 'single',
       title: 'Check your answers',
       number: '3',
-      status: this.calculateStatus(this.sectionValues.checkYourAnswers, serviceCategoryReferralDetails.status),
+      status: this.calculateStatus(this.sectionValues.checkYourAnswers, referralDetails.status),
       tasks: [
         {
           title: 'Check your answers',
@@ -89,7 +160,7 @@ export default class ReferralFormPresenter {
         },
       ],
     }
-    return [reviewServiceUserInformation, serviceCategoryReferralDetails, checkYourAnswers]
+    return [reviewServiceUserInformation, referralDetails, checkYourAnswers]
   }
 
   private calculateTaskUrl(url: string | null, displayCriteria: DraftReferralValues): string | null {
@@ -133,8 +204,8 @@ export default class ReferralFormPresenter {
     get serviceCategoryReferralDetails(): DraftReferralValues {
       return (
         this.taskValues.relevantSentence &&
-        this.taskValues.desiredOutcomes &&
-        this.taskValues.complexityLevel &&
+        this.taskValues.allDesiredOutcomes &&
+        this.taskValues.allComplexityLevels &&
         this.taskValues.completionDeadline &&
         this.taskValues.rarDays &&
         this.taskValues.furtherInformation
@@ -171,12 +242,44 @@ export default class ReferralFormPresenter {
       return [this.referral.relevantSentenceId]
     }
 
-    get desiredOutcomes(): DraftReferralValues {
-      return [this.referral.desiredOutcomesIds]
+    get allComplexityLevels(): DraftReferralValues {
+      if (this.referral.serviceCategoryIds === null || this.referral.serviceCategoryIds.length === 0) {
+        return [null]
+      }
+      const complexityLevelIds = this.referral.serviceCategoryIds.map(serviceCategoryId => {
+        return this.complexityLevel(serviceCategoryId)
+      })
+      return complexityLevelIds.reduce((acc, list) => acc.concat(list), [])
     }
 
-    get complexityLevel(): DraftReferralValues {
-      return [this.referral.complexityLevelId]
+    complexityLevel(serviceCategoryId: string): DraftReferralValues {
+      const complexityLevelId = this.referral.complexityLevels?.find(
+        complexityLevel => complexityLevel.serviceCategoryId === serviceCategoryId
+      )?.complexityLevelId
+      if (complexityLevelId === undefined) {
+        return [null]
+      }
+      return [complexityLevelId]
+    }
+
+    get allDesiredOutcomes(): DraftReferralValues {
+      if (this.referral.serviceCategoryIds === null || this.referral.serviceCategoryIds.length === 0) {
+        return [null]
+      }
+      const desiredOutcomesIds = this.referral.serviceCategoryIds.map(serviceCategoryId => {
+        return this.desiredOutcomes(serviceCategoryId)
+      })
+      return desiredOutcomesIds.reduce((acc, list) => acc.concat(list), [])
+    }
+
+    desiredOutcomes(serviceCategoryId: string): DraftReferralValues {
+      const desiredOutcomeIds = this.referral.desiredOutcomes?.find(
+        desiredOutcome => desiredOutcome.serviceCategoryId === serviceCategoryId
+      )?.desiredOutcomesIds
+      if (desiredOutcomeIds === undefined) {
+        return [null]
+      }
+      return desiredOutcomeIds
     }
 
     get completionDeadline(): DraftReferralValues {
@@ -209,14 +312,15 @@ export interface ReferralFormMultiListSectionPresenter {
   type: 'multi'
   title: string
   number: string
+  status: ReferralFormStatus
   taskListSections: ReferralFormTaskListSectionPresenter[]
 }
 
 interface ReferralFormTaskListSectionPresenter {
-  title: string
-  number: string
+  title?: string
+  number?: string
+  status?: ReferralFormStatus
   tasks: ReferralFormTaskPresenter[]
-  status: ReferralFormStatus
 }
 
 export enum ReferralFormStatus {

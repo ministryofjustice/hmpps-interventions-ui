@@ -17,20 +17,26 @@
         {% for section in presenter.sections %}
           {% if section.type === 'multi' %}
             <li>
+              <strong data-cy="status" class="{{ classForStatus(section.status) }} moj-task-list__task-completed">
+                  {{ section.status }}
+              </strong>
               <h2 class="moj-task-list__section">
                 <span class="moj-task-list__section-number">{{ section.number }}.</span>
                 {{ section.title }}
               </h2>
             </li>
-
             {% for taskListSection in section.taskListSections %}
-              <li class="govuk-!-margin-left-5">
-                {% set nested = true %}
+              <li>
+                {% set last = loop.last %}
+                {% set multi = true %}
+                {% set nested = (taskListSection.title !== undefined) %}
                 {% include "./partials/taskListSection.njk" %}
               </li>
             {% endfor %}
           {% elif section.type === 'single' %}
             <li>
+              {% set last = false %}
+              {% set multi = false %}
               {% set taskListSection = section %}
               {% set nested = false %}
               {% include "./partials/taskListSection.njk" %}

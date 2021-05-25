@@ -154,10 +154,17 @@ describe('POST /intervention/:id/refer', () => {
 describe('GET /referrals/:id/form', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build({ id: '1' })
+    const intervention = interventionFactory.build({
+      serviceCategories: [serviceCategory],
+      serviceCategory,
+    })
+    const referral = draftReferralFactory
+      .serviceCategorySelected(serviceCategory.id)
+      .build({ id: '1', interventionId: intervention.id })
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
   })
 
   it('fetches the referral from the interventions service displays its service category in the form', async () => {
@@ -186,7 +193,7 @@ describe('GET /referrals/:id/form', () => {
     })
   })
 
-  describe('if a service category has not been selected', () => {
+  describe('if a service category has not been selected for a single referral', () => {
     beforeEach(() => {
       const referral = draftReferralFactory.build({ id: '1' })
       interventionsService.getDraftReferral.mockResolvedValue(referral)
@@ -641,16 +648,29 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/comp
       interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
     })
 
-    it('updates the referral on the backend and redirects back to the form page', async () => {
+    it("updates the referral on the backend and redirects to the next desired outcome if it's not the last service category", async () => {
       await request(app)
         .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
         .type('form')
         .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
         .expect(302)
-        .expect('Location', '/referrals/1/form')
+        .expect('Location', '/referrals/1/service-category/d69b80d5-0005-4f08-b5d8-404999c9e843/desired-outcomes')
 
       expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
         serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      })
+    })
+    it("updates the referral on the backend and redirects to the completion deadline page if it's the last service category", async () => {
+      await request(app)
+        .post('/referrals/1/service-category/d69b80d5-0005-4f08-b5d8-404999c9e843/complexity-level')
+        .type('form')
+        .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
+        .expect(302)
+        .expect('Location', '/referrals/1/completion-deadline')
+
+      expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'd69b80d5-0005-4f08-b5d8-404999c9e843',
         complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       })
     })
@@ -1003,27 +1023,27 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/desi
   })
 
   describe('for a cohort referral', () => {
+    const serviceCategory1Id = 'b33c19d1-7414-4014-b543-e543e59c5b39'
+    const serviceCategory2Id = '83379e52-cf8f-4fbf-8a13-64c6f85ccf51'
     beforeEach(() => {
-      const serviceCategory = serviceCategoryFactory.build({
-        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      const serviceCategory1 = serviceCategoryFactory.build({
+        id: serviceCategory1Id,
         desiredOutcomes,
         name: 'social inclusion',
       })
-      const referral = draftReferralFactory
-        .serviceCategoriesSelected([serviceCategory.id, serviceCategoryFactory.build().id])
-        .build()
+      const referral = draftReferralFactory.serviceCategoriesSelected([serviceCategory1Id, serviceCategory2Id]).build()
 
       interventionsService.getDraftReferral.mockResolvedValue(referral)
-      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory1)
     })
 
-    it('updates the referral on the backend and redirects to back to the form page', async () => {
+    it('updates the referral on the backend and redirects to the complexity level page', async () => {
       await request(app)
-        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
+        .post(`/referrals/1/service-category/${serviceCategory1Id}/desired-outcomes`)
         .type('form')
         .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
         .expect(302)
-        .expect('Location', '/referrals/1/form')
+        .expect('Location', `/referrals/1/service-category/${serviceCategory1Id}/complexity-level`)
 
       expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
         serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',

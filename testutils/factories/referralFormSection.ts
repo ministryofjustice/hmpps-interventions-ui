@@ -1,7 +1,10 @@
 import { Factory } from 'fishery'
-import { ReferralFormSectionPresenter, ReferralFormStatus } from '../../server/routes/referrals/referralFormPresenter'
+import {
+  ReferralFormSingleListSectionPresenter,
+  ReferralFormStatus,
+} from '../../server/routes/referrals/referralFormPresenter'
 
-class ReferralFormSectionFactory extends Factory<ReferralFormSectionPresenter> {
+class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPresenter> {
   reviewServiceUser(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
     riskInformationUrl: string | null = null,
@@ -36,14 +39,14 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSectionPresenter> {
       number: '2',
       status: referralFormStatus,
       tasks: [
-        { title: 'Select the relevant sentence for the social inclusion referral', url: relevantSentenceUrl },
+        { title: `Confirm the relevant sentence for the ${serviceCategoryName} referral`, url: relevantSentenceUrl },
         { title: 'Select desired outcomes', url: desiredOutcomesUrl },
         { title: 'Select required complexity level', url: complexityLevelUrl },
         {
-          title: 'What date does the social inclusion service need to be completed by?',
+          title: `Enter when the ${serviceCategoryName} service need to be completed`,
           url: completionDateUrl,
         },
-        { title: 'Enter RAR days used', url: rarDaysUrl },
+        { title: 'Enter enforceable days used', url: rarDaysUrl },
         { title: 'Further information for service provider', url: furtherInformationUrl },
       ],
     })
@@ -62,12 +65,13 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSectionPresenter> {
     })
   }
 }
-type SectionFormType = 'single' | 'multi'
+type SectionFormType = 'single'
 const singleSectionForm: SectionFormType = 'single'
+
 export default ReferralFormSectionFactory.define(() => ({
   type: singleSectionForm,
   title: '',
   number: '1',
-  tasks: [],
   status: ReferralFormStatus.CannotStartYet,
+  tasks: [],
 }))
