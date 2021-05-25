@@ -47,16 +47,16 @@ describe(ServiceUserDetailsPresenter, () => {
       const presenter = new ServiceUserDetailsPresenter(serviceUser)
 
       expect(presenter.summary).toEqual([
-        { key: 'CRN', lines: [serviceUser.crn] },
-        { key: 'Title', lines: [serviceUser.title] },
-        { key: 'First name', lines: [serviceUser.firstName] },
-        { key: 'Last name', lines: [serviceUser.lastName] },
-        { key: 'Date of birth', lines: [serviceUser.dateOfBirth] },
-        { key: 'Gender', lines: [serviceUser.gender] },
-        { key: 'Ethnicity', lines: [serviceUser.ethnicity] },
-        { key: 'Preferred language', lines: [serviceUser.preferredLanguage] },
-        { key: 'Religion or belief', lines: [serviceUser.religionOrBelief] },
-        { key: 'Disabilities', lines: serviceUser.disabilities || [], listStyle: ListStyle.noMarkers },
+        { key: 'CRN', lines: ['X862134'] },
+        { key: 'Title', lines: ['Mr'] },
+        { key: 'First name', lines: ['Alex'] },
+        { key: 'Last name', lines: ['River'] },
+        { key: 'Date of birth', lines: ['1980-01-01'] },
+        { key: 'Gender', lines: ['Male'] },
+        { key: 'Ethnicity', lines: ['British'] },
+        { key: 'Preferred language', lines: ['English'] },
+        { key: 'Religion or belief', lines: ['Agnostic'] },
+        { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
       ])
     })
 
