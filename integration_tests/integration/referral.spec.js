@@ -141,7 +141,7 @@ describe('Referral form', () => {
     cy.contains('X123456')
     cy.contains('Mr')
     cy.contains('River')
-    cy.contains('1980-01-01')
+    cy.contains('1 January 1980')
     cy.contains('Male')
     cy.contains('British')
     cy.contains('English')

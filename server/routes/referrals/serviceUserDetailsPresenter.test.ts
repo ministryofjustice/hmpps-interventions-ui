@@ -51,7 +51,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Title', lines: ['Mr'] },
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
-        { key: 'Date of birth', lines: ['1980-01-01'] },
+        { key: 'Date of birth', lines: ['1 January 1980'] },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
