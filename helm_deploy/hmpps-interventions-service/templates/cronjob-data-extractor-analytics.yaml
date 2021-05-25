@@ -19,8 +19,6 @@ spec:
             args: ["sh", "-c", "python3 /data-engineering-data-extractor/modules/extract_table_names.py && python3 /data-engineering-data-extractor/modules/extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
             {{ end }}
             env:
-              - name: LOCAL_EXPORT_DESTINATION
-                value: export
               - name: PGPORT
                 value: "5432"
               - name: PGHOST
