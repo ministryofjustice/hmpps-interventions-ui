@@ -13,6 +13,8 @@ import endOfServiceReportFactory from '../../../testutils/factories/endOfService
 
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
+import authUtils from '../../utils/authUtils'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -38,16 +40,6 @@ afterEach(() => {
 describe('GET /probation-practitioner/find', () => {
   interventionsService.getDraftReferralsForUser.mockResolvedValue([])
 
-  it('displays a dashboard page', async () => {
-    await request(app)
-      .get('/probation-practitioner/find')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Refer and monitor an intervention')
-        expect(res.text).toContain('Find interventions')
-      })
-  })
-
   it('displays a list in-progress referrals', async () => {
     const referral = draftReferralFactory.serviceUserSelected().build()
 
@@ -57,7 +49,38 @@ describe('GET /probation-practitioner/find', () => {
       .get('/probation-practitioner/find')
       .expect(200)
       .expect(res => {
+        expect(res.text).toContain('Refer and monitor an intervention')
+        expect(res.text).toContain('Find interventions')
         expect(res.text).toContain('Alex River')
+      })
+  })
+})
+
+describe('GET /probation-practitioner/dashboard', () => {
+  it('displays a dashboard page', async () => {
+    const intervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
+    const referrals = [
+      sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: '1',
+          serviceUser: {
+            firstName: 'Alex',
+            lastName: 'River',
+          },
+        },
+      }),
+    ]
+
+    authUtils.getProbationPractitionerUserId = jest.fn()
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getReferralsSentByProbationPractitioner.mockResolvedValue(referrals)
+
+    await request(app)
+      .get('/probation-practitioner/dashboard')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation')
       })
   })
 })
