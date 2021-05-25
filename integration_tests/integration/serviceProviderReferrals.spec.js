@@ -35,8 +35,6 @@ describe('Service provider referrals dashboard', () => {
           serviceUser: { firstName: 'George', lastName: 'Michael' },
           serviceCategoryId: accommodationServiceCategory.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
-          // desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-          // complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
         },
       }),
       sentReferralFactory.build({
@@ -47,8 +45,16 @@ describe('Service provider referrals dashboard', () => {
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
           serviceCategoryId: socialInclusionServiceCategory.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
-          // desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-          // complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          complexityLevels: [
+            {
+              serviceCategoryId: accommodationServiceCategory.id,
+              complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+            },
+            {
+              serviceCategoryId: socialInclusionServiceCategory.id,
+              complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+            },
+          ],
         },
       }),
     ]
@@ -117,6 +123,15 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('07123456789 | jenny.jones@example.com')
     cy.contains('Intervention details')
     cy.contains('Personal wellbeing')
+
+    cy.contains('Accommodation service')
+    cy.contains('LOW COMPLEXITY')
+    cy.contains('Service User has some capacity and means to secure')
+
+    cy.contains('Social inclusion service')
+    cy.contains('MEDIUM COMPLEXITY')
+    cy.contains('Service User is at risk of homelessness/is homeless')
+
     cy.contains("Service user's personal details")
     cy.contains('English')
     cy.contains('Agnostic')
