@@ -4,10 +4,22 @@ import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import { ListStyle } from '../../utils/summaryList'
 import interventionFactory from '../../../testutils/factories/intervention'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import { TagArgs } from '../../utils/govukFrontendTypes'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
   const { serviceCategory } = intervention
+
+  const cohortServiceCategories = [
+    serviceCategoryFactory.build({ name: 'Lifestyle and associates' }),
+    serviceCategoryFactory.build({ name: 'Emotional wellbeing' }),
+  ]
+  const cohortIntervention = interventionFactory.build({
+    contractType: { code: 'PWB', name: 'Personal wellbeing' },
+    serviceCategories: cohortServiceCategories,
+    serviceCategory: cohortServiceCategories[0],
+  })
 
   const referralParams = {
     referral: {
@@ -175,6 +187,44 @@ describe(ShowReferralPresenter, () => {
           },
         ])
       })
+    })
+  })
+
+  describe('serviceCategorySection', () => {
+    const referral = sentReferralFactory.build({
+      referral: {
+        createdAt: '2020-12-07T20:45:21.986389Z',
+        completionDeadline: '2021-04-01',
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        serviceCategoryIds: cohortServiceCategories.map(it => it.id),
+        serviceCategoryId: cohortServiceCategories[0].id,
+        complexityLevels: cohortServiceCategories.map(it => {
+          return { serviceCategoryId: it.id, complexityLevelId: it.complexityLevels[0].id }
+        }),
+      },
+    })
+
+    it('returns a section for each selected service category on the referral', () => {
+      const presenter = new ShowReferralPresenter(referral, cohortIntervention, deliusUser, null, null)
+      expect(
+        presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+          return args.text!
+        })
+      ).toEqual([
+        {
+          key: 'Complexity level',
+          lines: [
+            'LOW COMPLEXITY',
+            'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+          ],
+        },
+        {
+          key: 'Desired outcomes',
+          lines: ['Outcomes not found'],
+        },
+      ])
     })
   })
 
