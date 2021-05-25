@@ -270,10 +270,18 @@ class ReferralService(
       )
     }
 
-    update.serviceCategoryIds?.let {
-      referral.selectedServiceCategories = serviceCategoryRepository.findByIdIn(it)
+    // The selected complexity levels and desired outcomes need to be removed if the user has unselected service categories that are linked to them
+    update.serviceCategoryIds?.let { serviceCategoryIds ->
+      referral.complexityLevelIds = referral.complexityLevelIds?.filterKeys { serviceCategoryId -> serviceCategoryIds.contains(serviceCategoryId) }?.toMutableMap()
+      referral.selectedDesiredOutcomes = referral.selectedDesiredOutcomes?.filter { desiredOutcome -> serviceCategoryIds.contains(desiredOutcome.serviceCategoryId) }?.toMutableList()
     }
 
+    // Need to save and flush the entity before removing selected service categories due to constraint violations being thrown from selected complexity levels and desired outcomes
+    referralRepository.saveAndFlush(referral)
+
+    update.serviceCategoryIds?.let { serviceCategoryIds ->
+      referral.selectedServiceCategories = serviceCategoryRepository.findByIdIn(serviceCategoryIds)
+    }
     return referralRepository.save(referral)
   }
 
