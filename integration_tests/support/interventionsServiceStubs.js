@@ -10,11 +10,11 @@ Cypress.Commands.add('stubPatchDraftReferral', (id, responseJson) => {
   cy.task('stubPatchDraftReferral', { id, responseJson })
 })
 
-Cypress.Commands.add('setDesiredOutcomesForServiceCategory', (referralId, responseJson) => {
+Cypress.Commands.add('stubSetDesiredOutcomesForServiceCategory', (referralId, responseJson) => {
   cy.task('stubSetDesiredOutcomesForServiceCategory', { referralId, responseJson })
 })
 
-Cypress.Commands.add('setComplexityLevelForServiceCategory', (referralId, responseJson) => {
+Cypress.Commands.add('stubSetComplexityLevelForServiceCategory', (referralId, responseJson) => {
   cy.task('stubSetComplexityLevelForServiceCategory', { referralId, responseJson })
 })
 

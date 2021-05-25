@@ -1,6 +1,7 @@
 import ReferralFormPresenter, { ReferralFormStatus } from './referralFormPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import referralFormSectionFactory from '../../../testutils/factories/referralFormSection'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 
 describe('ReferralFormPresenter', () => {
   describe('sections', () => {
@@ -69,10 +70,13 @@ describe('ReferralFormPresenter', () => {
     describe('service category referral details section', () => {
       describe('when "relevant sentence" has been set', () => {
         it('should contain a "Not Started" label and "relevant-sentence" url visible', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+
           const referral = draftReferralFactory
             .serviceUserSelected()
             .riskInformation()
             .needsAndRequirements()
+            .serviceCategoriesSelected([serviceCategory.id])
             .relevantSentence()
             .build()
           const presenter = new ReferralFormPresenter(referral, 'social inclusion')
@@ -85,7 +89,7 @@ describe('ReferralFormPresenter', () => {
                 'social inclusion',
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
-                'desired-outcomes'
+                `service-category/${serviceCategory.id}/desired-outcomes`
               )
               .build(),
             referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
@@ -95,10 +99,13 @@ describe('ReferralFormPresenter', () => {
       })
       describe('when "desired outcomes" has been set', () => {
         it('should contain a "Not Started" label and "complexity-level" url visible', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+
           const referral = draftReferralFactory
             .serviceUserSelected()
             .riskInformation()
             .needsAndRequirements()
+            .serviceCategoriesSelected([serviceCategory.id])
             .relevantSentence()
             .desiredOutcomes()
             .build()
@@ -112,7 +119,7 @@ describe('ReferralFormPresenter', () => {
                 'social inclusion',
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
-                'desired-outcomes',
+                `service-category/${serviceCategory.id}/desired-outcomes`,
                 'complexity-level'
               )
               .build(),
@@ -123,10 +130,13 @@ describe('ReferralFormPresenter', () => {
       })
       describe('when "complexity level" has been set', () => {
         it('should contain a "Not Started" label and "completion-deadline" url visible', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+
           const referral = draftReferralFactory
             .serviceUserSelected()
             .riskInformation()
             .needsAndRequirements()
+            .serviceCategoriesSelected([serviceCategory.id])
             .relevantSentence()
             .desiredOutcomes()
             .complexityLevel()
@@ -141,7 +151,7 @@ describe('ReferralFormPresenter', () => {
                 'social inclusion',
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
-                'desired-outcomes',
+                `service-category/${serviceCategory.id}/desired-outcomes`,
                 'complexity-level',
                 'completion-deadline'
               )
@@ -153,10 +163,13 @@ describe('ReferralFormPresenter', () => {
       })
       describe('when "date completed by" has been set', () => {
         it('should contain a "Not Started" label and "rar-days" url visible', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+
           const referral = draftReferralFactory
             .serviceUserSelected()
             .riskInformation()
             .needsAndRequirements()
+            .serviceCategoriesSelected([serviceCategory.id])
             .relevantSentence()
             .desiredOutcomes()
             .complexityLevel()
@@ -172,7 +185,7 @@ describe('ReferralFormPresenter', () => {
                 'social inclusion',
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
-                'desired-outcomes',
+                `service-category/${serviceCategory.id}/desired-outcomes`,
                 'complexity-level',
                 'completion-deadline',
                 'rar-days'
@@ -185,10 +198,13 @@ describe('ReferralFormPresenter', () => {
       })
       describe('when "rar days" has been set', () => {
         it('should contain a "Not Started" label and "further-information" url visible', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+
           const referral = draftReferralFactory
             .serviceUserSelected()
             .riskInformation()
             .needsAndRequirements()
+            .serviceCategoriesSelected([serviceCategory.id])
             .relevantSentence()
             .desiredOutcomes()
             .complexityLevel()
@@ -205,7 +221,7 @@ describe('ReferralFormPresenter', () => {
                 'social inclusion',
                 ReferralFormStatus.NotStarted,
                 'relevant-sentence',
-                'desired-outcomes',
+                `service-category/${serviceCategory.id}/desired-outcomes`,
                 'complexity-level',
                 'completion-deadline',
                 'rar-days',
@@ -219,10 +235,13 @@ describe('ReferralFormPresenter', () => {
       })
       describe('when all required values have been set', () => {
         it('should contain a "Completed" label and allow user to submit answers', () => {
+          const serviceCategory = serviceCategoryFactory.build()
+
           const referral = draftReferralFactory
             .serviceUserSelected()
             .riskInformation()
             .needsAndRequirements()
+            .serviceCategoriesSelected([serviceCategory.id])
             .relevantSentence()
             .desiredOutcomes()
             .complexityLevel()
@@ -240,7 +259,7 @@ describe('ReferralFormPresenter', () => {
                 'social inclusion',
                 ReferralFormStatus.Completed,
                 'relevant-sentence',
-                'desired-outcomes',
+                `service-category/${serviceCategory.id}/desired-outcomes`,
                 'complexity-level',
                 'completion-deadline',
                 'rar-days',
@@ -250,6 +269,25 @@ describe('ReferralFormPresenter', () => {
             referralFormSectionFactory
               .checkAnswers(ReferralFormStatus.NotStarted)
               .build({ tasks: [{ title: 'Check your answers', url: 'check-answers' }] }),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
+      })
+
+      describe('when "serviceCategoryIds" have not been set on the referral', () => {
+        // TODO IC-1686: add more detail when adding links for cohort services to referral form
+        it('should display an empty link for selecting desired outcomes and complexity level', () => {
+          const referral = draftReferralFactory.serviceUserSelected().riskInformation().needsAndRequirements().build()
+
+          const presenter = new ReferralFormPresenter(referral, 'social inclusion')
+          const expected = [
+            referralFormSectionFactory
+              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .build(),
+            referralFormSectionFactory
+              .interventionDetails('social inclusion', ReferralFormStatus.NotStarted, 'relevant-sentence', null, null)
+              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })

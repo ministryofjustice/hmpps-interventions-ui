@@ -47,7 +47,12 @@ export default class ReferralFormPresenter {
         },
         {
           title: 'Select desired outcomes',
-          url: this.calculateTaskUrl('desired-outcomes', this.taskValues.relevantSentence),
+          url: this.calculateTaskUrl(
+            this.referral.serviceCategoryIds && this.referral.serviceCategoryIds.length > 0
+              ? `service-category/${this.referral.serviceCategoryIds[0]}/desired-outcomes`
+              : null,
+            this.taskValues.relevantSentence
+          ),
         },
         {
           title: 'Select required complexity level',

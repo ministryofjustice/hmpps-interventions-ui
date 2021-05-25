@@ -223,13 +223,11 @@ export default function routes(router: Router, services: Services): Router {
   post('/referrals/:id/further-information', (req, res) => referralsController.updateFurtherInformation(req, res))
   get('/referrals/:id/relevant-sentence', (req, res) => referralsController.viewRelevantSentence(req, res))
   post('/referrals/:id/relevant-sentence', (req, res) => referralsController.updateRelevantSentence(req, res))
-  get('/referrals/:id/desired-outcomes', (req, res) => referralsController.viewDesiredOutcomes(req, res))
-  post('/referrals/:id/desired-outcomes', (req, res) => referralsController.updateDesiredOutcomes(req, res))
   get('/referrals/:referralId/service-category/:serviceCategoryId/desired-outcomes', (req, res) =>
-    referralsController.selectCohortDesiredOutcomes(req, res)
+    referralsController.viewOrUpdateDesiredOutcomes(req, res)
   )
   post('/referrals/:referralId/service-category/:serviceCategoryId/desired-outcomes', (req, res) =>
-    referralsController.selectCohortDesiredOutcomes(req, res)
+    referralsController.viewOrUpdateDesiredOutcomes(req, res)
   )
   get('/referrals/:id/needs-and-requirements', (req, res) => referralsController.viewNeedsAndRequirements(req, res))
   post('/referrals/:id/needs-and-requirements', (req, res) => referralsController.updateNeedsAndRequirements(req, res))
