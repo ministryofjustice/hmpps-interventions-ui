@@ -1277,7 +1277,7 @@ describe('GET /referrals/:id/check-answers', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = draftReferralFactory
       .serviceCategorySelected(serviceCategory.id)
-      .build({ serviceUser: { firstName: 'Johnny' } })
+      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
 
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
@@ -1290,6 +1290,8 @@ describe('GET /referrals/:id/check-answers', () => {
       .expect(res => {
         expect(res.text).toContain('Submit your referral')
         expect(res.text).toContain('Make sure you have checked your answers before submitting your referral')
+        expect(res.text).toContain('Johnny’s personal details')
+        expect(res.text).toContain('Agnostic')
       })
   })
 

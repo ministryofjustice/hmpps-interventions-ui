@@ -1,4 +1,5 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -14,6 +15,10 @@
       <h1 class="govuk-heading-xl">Submit your referral</h1>
 
       <p class="govuk-body-m">Make sure you have checked your answers before submitting your referral.</p>
+
+      <h2 class="govuk-heading-l">{{ presenter.serviceUserDetailsSection.title }}</h2>
+
+      {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

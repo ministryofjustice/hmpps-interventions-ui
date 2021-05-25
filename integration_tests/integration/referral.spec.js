@@ -233,6 +233,16 @@ describe('Referral form', () => {
     cy.get('a').contains('Check your answers').click()
     cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
 
+    cy.contains('X123456')
+    cy.contains('Mr')
+    cy.contains('River')
+    cy.contains('1 January 1980')
+    cy.contains('Male')
+    cy.contains('British')
+    cy.contains('English')
+    cy.contains('Agnostic')
+    cy.contains('Autism')
+
     cy.contains('Submit referral').click()
     cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 
