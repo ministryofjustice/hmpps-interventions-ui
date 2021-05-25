@@ -91,10 +91,10 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       req.params.id
     )
-    const [serviceCategory, sentBy, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(
+    const [intervention, sentBy, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(
         res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryId
+        sentReferral.referral.interventionId
       ),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
@@ -124,7 +124,7 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, serviceCategory, sentBy, assignee, formError)
+    const presenter = new ShowReferralPresenter(sentReferral, intervention, sentBy, assignee, formError)
     const view = new ShowReferralView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

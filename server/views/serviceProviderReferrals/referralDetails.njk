@@ -1,4 +1,5 @@
 {% extends "../partials/referralNavigationTemplate.njk" %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
 
 {% block referralPageSection %}
       {% if presenter.text.assignedTo == null %}
@@ -11,8 +12,14 @@
         <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
       {% endif %}
 
-      <h2 class="govuk-heading-m">{{ presenter.text.interventionDetailsSummaryHeading }}</h2>
+      <h2 class="govuk-heading-m">Intervention details</h2>
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}
+
+      {%  for section in serviceCategorySections %}
+        <h2 class="govuk-heading-m">{{ section.name | capitalize }} service</h2>
+        {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
+      {% endfor %}
+
       <h2 class="govuk-heading-m">Service user's personal details</h2>
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
       <h2 class="govuk-heading-m">Service user's risk information</h2>

@@ -5,6 +5,8 @@ import { FormValidationError } from './formValidationError'
 import Duration from './duration'
 import utils from './utils'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
+import ComplexityLevel from '../models/complexityLevel'
+import { TagArgs } from './govukFrontendTypes'
 
 interface DateTimeComponentInputPresenter {
   value: string
@@ -283,5 +285,35 @@ export default class PresenterUtils {
     }
 
     return notFoundMessage
+  }
+
+  static complexityLevelTagArgs(complexityLevel: ComplexityLevel): TagArgs {
+    const title = complexityLevel.title.toUpperCase()
+
+    if (title.includes('LOW')) {
+      return {
+        text: title,
+        classes: 'govuk-tag--green',
+      }
+    }
+
+    if (title.includes('MEDIUM')) {
+      return {
+        text: title,
+        classes: 'govuk-tag--blue',
+      }
+    }
+
+    if (title.includes('HIGH')) {
+      return {
+        text: title,
+        classes: 'govuk-tag--red',
+      }
+    }
+
+    return {
+      text: 'UNKNOWN',
+      classes: 'govuk-tag--grey',
+    }
   }
 }

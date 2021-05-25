@@ -1,6 +1,11 @@
 import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
-import { InputArgs } from '../../utils/govukFrontendTypes'
+import { InputArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
+
+interface ServiceCategorySection {
+  name: string
+  summaryListArgs: (tagMacro: (args: TagArgs) => string) => SummaryListArgs
+}
 
 export default class ShowReferralView {
   constructor(private readonly presenter: ShowReferralPresenter) {}
@@ -28,6 +33,17 @@ export default class ShowReferralView {
     }
   }
 
+  private get serviceCategorySections(): ServiceCategorySection[] {
+    return this.presenter.referralServiceCategories.map(serviceCategory => {
+      return {
+        name: serviceCategory.name,
+        summaryListArgs: (tagMacro: (args: TagArgs) => string) => {
+          return ViewUtils.summaryListArgs(this.presenter.serviceCategorySection(serviceCategory, tagMacro))
+        },
+      }
+    })
+  }
+
   private readonly backLinkArgs = {
     text: 'Back',
     href: '/service-provider/dashboard',
@@ -44,6 +60,7 @@ export default class ShowReferralView {
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
         serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
+        serviceCategorySections: this.serviceCategorySections,
         emailInputArgs: this.emailInputArgs,
         backLinkArgs: this.backLinkArgs,
       },

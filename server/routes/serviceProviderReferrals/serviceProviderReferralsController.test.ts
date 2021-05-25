@@ -15,6 +15,7 @@ import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -80,10 +81,8 @@ describe('GET /service-provider/dashboard', () => {
 
 describe('GET /service-provider/referrals/:id/details', () => {
   it('displays information about the referral and service user', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const sentReferral = sentReferralFactory.unassigned().build({
-      referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Jenny', lastName: 'Jones' } },
-    })
+    const intervention = interventionFactory.build()
+    const sentReferral = sentReferralFactory.unassigned().build()
     const deliusUser = deliusUserFactory.build({
       firstName: 'Bernard',
       surname: 'Beaks',
@@ -103,7 +102,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       },
     })
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
@@ -123,13 +122,13 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
   describe('when the referral has been assigned to a caseworker', () => {
     it('mentions the assigned caseworker', async () => {
-      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
       const sentReferral = sentReferralFactory.assigned().build()
       const deliusUser = deliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
-      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
