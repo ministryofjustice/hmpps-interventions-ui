@@ -548,87 +548,6 @@ describe('POST /referrals/:id/completion-deadline', () => {
   })
 })
 
-describe('GET /referrals/:id/complexity-level', () => {
-  beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ id: 'b33c19d1-7414-4014-b543-e543e59c5b39' })
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
-  })
-
-  it('renders a form page', async () => {
-    await request(app)
-      .get('/referrals/1/complexity-level')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('What is the complexity level for the accommodation service?')
-      })
-
-    expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
-      'token',
-      'b33c19d1-7414-4014-b543-e543e59c5b39',
-    ])
-  })
-
-  it('renders an error when the request for a service category fails', async () => {
-    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
-
-    await request(app)
-      .get('/referrals/1/complexity-level')
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Failed to get service category')
-      })
-  })
-})
-
-describe('POST /referrals/:id/complexity-level', () => {
-  beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
-  })
-
-  it('updates the referral on the backend and redirects to the next question', async () => {
-    await request(app)
-      .post('/referrals/1/complexity-level')
-      .type('form')
-      .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
-      .expect(302)
-      .expect('Location', '/referrals/1/completion-deadline')
-
-    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-      'token',
-      '1',
-      { complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
-    ])
-  })
-
-  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
-    interventionsService.patchDraftReferral.mockRejectedValue({
-      message: 'Some backend error message',
-    })
-
-    await request(app)
-      .post('/referrals/1/complexity-level')
-      .type('form')
-      .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Some backend error message')
-      })
-
-    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-      'token',
-      '1',
-      { complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
-    ])
-  })
-})
-
 describe('GET /referrals/:referralId/service-category/:service-category-id/complexity-level', () => {
   beforeEach(() => {
     const socialInclusionServiceCategory = serviceCategoryFactory.build({
@@ -675,55 +594,99 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/compl
 })
 
 describe('POST /referrals/:referralId/service-category/:service-category-id/complexity-level', () => {
-  beforeEach(() => {
-    const socialInclusionServiceCategory = serviceCategoryFactory.build({
-      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      name: 'social inclusion',
-    })
-    const accommodationServiceCategory = serviceCategoryFactory.build({
-      id: 'd69b80d5-0005-4f08-b5d8-404999c9e843',
-      name: 'accommodation',
-    })
-
-    const referral = draftReferralFactory
-      .serviceCategoriesSelected([socialInclusionServiceCategory.id, accommodationServiceCategory.id])
-      .build()
-
-    interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
-  })
-
-  it('updates the referral on the backend and redirects back to the form page', async () => {
-    await request(app)
-      .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
-      .type('form')
-      .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
-      .expect(302)
-      .expect('Location', '/referrals/1/form')
-
-    expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
-      serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-    })
-  })
-
-  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
-    interventionsService.setComplexityLevelForServiceCategory.mockRejectedValue({
-      message: 'Some backend error message',
-    })
-
-    await request(app)
-      .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
-      .type('form')
-      .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Some backend error message')
+  describe('for a single-service referral', () => {
+    beforeEach(() => {
+      const socialInclusionServiceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        name: 'social inclusion',
       })
 
-    expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
-      serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      const referral = draftReferralFactory.serviceCategoriesSelected([socialInclusionServiceCategory.id]).build()
+
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    })
+
+    it('updates the referral on the backend and redirects to the completion deadline page', async () => {
+      await request(app)
+        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
+        .type('form')
+        .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
+        .expect(302)
+        .expect('Location', '/referrals/1/completion-deadline')
+
+      expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      })
+    })
+  })
+
+  describe('for a cohort referral', () => {
+    beforeEach(() => {
+      const socialInclusionServiceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        name: 'social inclusion',
+      })
+      const accommodationServiceCategory = serviceCategoryFactory.build({
+        id: 'd69b80d5-0005-4f08-b5d8-404999c9e843',
+        name: 'accommodation',
+      })
+
+      const referral = draftReferralFactory
+        .serviceCategoriesSelected([socialInclusionServiceCategory.id, accommodationServiceCategory.id])
+        .build()
+
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    })
+
+    it('updates the referral on the backend and redirects back to the form page', async () => {
+      await request(app)
+        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
+        .type('form')
+        .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
+        .expect(302)
+        .expect('Location', '/referrals/1/form')
+
+      expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      })
+    })
+  })
+
+  describe('when the API call fails with a non-validation error', () => {
+    beforeEach(() => {
+      const socialInclusionServiceCategory = serviceCategoryFactory.build({
+        id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        name: 'social inclusion',
+      })
+
+      const referral = draftReferralFactory.serviceCategoriesSelected([socialInclusionServiceCategory.id]).build()
+
+      interventionsService.getDraftReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    })
+
+    it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+      interventionsService.setComplexityLevelForServiceCategory.mockRejectedValue({
+        message: 'Some backend error message',
+      })
+
+      await request(app)
+        .post('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
+        .type('form')
+        .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Some backend error message')
+        })
+
+      expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
+        serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      })
     })
   })
 })
@@ -1030,7 +993,7 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/desi
         .type('form')
         .send({ 'desired-outcomes-ids[]': [desiredOutcomes[0].id, desiredOutcomes[1].id] })
         .expect(302)
-        .expect('Location', '/referrals/1/complexity-level')
+        .expect('Location', '/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
 
       expect(interventionsService.setDesiredOutcomesForServiceCategory).toHaveBeenCalledWith('token', '1', {
         serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',

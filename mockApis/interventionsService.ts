@@ -78,7 +78,7 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'PATCH',
-        urlPattern: `${this.mockPrefix}/draft-referral/${referralId}/complexity-levels`,
+        urlPattern: `${this.mockPrefix}/draft-referral/${referralId}/complexity-level`,
       },
       response: {
         status: 200,
