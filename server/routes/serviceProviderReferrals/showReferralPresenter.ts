@@ -40,23 +40,23 @@ export default class ShowReferralPresenter {
   ]
 
   get interventionDetails(): SummaryListItem[] {
-    const selectedDesiredOutcomes = this.serviceCategory.desiredOutcomes
-      .filter(desiredOutcome => this.sentReferral.referral.desiredOutcomesIds.includes(desiredOutcome.id))
-      .map(desiredOutcome => desiredOutcome.description)
-
-    const selectedComplexityLevel = this.serviceCategory.complexityLevels.find(
-      complexityLevel => complexityLevel.id === this.sentReferral.referral.complexityLevelId
-    )
-
-    const complexityLevelText = {
-      level: selectedComplexityLevel?.title || 'Level not found',
-      text: selectedComplexityLevel?.description || 'Description not found',
-    }
+    // const selectedDesiredOutcomes = this.serviceCategory.desiredOutcomes
+    //   .filter(desiredOutcome => this.sentReferral.referral.desiredOutcomesIds.includes(desiredOutcome.id))
+    //   .map(desiredOutcome => desiredOutcome.description)
+    //
+    // const selectedComplexityLevel = this.serviceCategory.complexityLevels.find(
+    //   complexityLevel => complexityLevel.id === this.sentReferral.referral.complexityLevelId
+    // )
+    //
+    // const complexityLevelText = {
+    //   level: selectedComplexityLevel?.title || 'Level not found',
+    //   text: selectedComplexityLevel?.description || 'Description not found',
+    // }
 
     return [
       { key: 'Sentence information', lines: ['Not currently set'] },
-      { key: 'Desired outcomes', lines: selectedDesiredOutcomes, listStyle: ListStyle.noMarkers },
-      { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text] },
+      // { key: 'Desired outcomes', lines: selectedDesiredOutcomes, listStyle: ListStyle.noMarkers },
+      // { key: 'Complexity level', lines: [complexityLevelText.level, complexityLevelText.text] },
       {
         key: 'Date to be completed by',
         lines: [PresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],

@@ -159,21 +159,6 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.interventionDetails).toEqual([
           { key: 'Sentence information', lines: ['Not currently set'] },
-          {
-            key: 'Desired outcomes',
-            lines: [
-              'Service User makes progress in obtaining accommodation',
-              'Service User is helped to secure social or supported housing',
-            ],
-            listStyle: ListStyle.noMarkers,
-          },
-          {
-            key: 'Complexity level',
-            lines: [
-              'Low complexity',
-              'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
-            ],
-          },
           { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',
@@ -234,21 +219,6 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.interventionDetails).toEqual([
           { key: 'Sentence information', lines: ['Not currently set'] },
-          {
-            key: 'Desired outcomes',
-            lines: [
-              'Service User makes progress in obtaining accommodation',
-              'Service User is helped to secure social or supported housing',
-            ],
-            listStyle: ListStyle.noMarkers,
-          },
-          {
-            key: 'Complexity level',
-            lines: [
-              'Low complexity',
-              'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
-            ],
-          },
           { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',

@@ -104,18 +104,11 @@ describe('Service provider referrals dashboard', () => {
     cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('07123456789 | jenny.jones@example.com')
     cy.contains('Social inclusion intervention details')
-    cy.contains('Service User makes progress in obtaining accommodation')
-    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
-    cy.contains('Medium complexity')
-    cy.contains(
-      'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.'
-    )
     cy.contains("Service user's personal details")
     cy.contains('English')
     cy.contains('Agnostic')
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
-    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
     cy.contains("Service user's risk information")
     cy.contains('Risk to known adult')
     cy.contains('Medium')
