@@ -16,7 +16,7 @@
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}
 
       {%  for section in serviceCategorySections %}
-        <h2 class="govuk-heading-m">{{ section.name }} Service</h2>
+        <h2 class="govuk-heading-m">{{ section.name | capitalize }} service</h2>
         {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
       {% endfor %}
 
