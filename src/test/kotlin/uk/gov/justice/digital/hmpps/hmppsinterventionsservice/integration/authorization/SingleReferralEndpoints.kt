@@ -132,7 +132,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
       """
       {"accessErrors": [
       "service provider id 'BETTER_LTD' does not exist in the interventions database",
-      "user has no valid contract groups configured"
+      "contract '0002' does not exist in the interventions database"
       ]}
       """.trimIndent()
     )
@@ -204,7 +204,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "user has no valid contract groups configured"
+      "contract '0002' does not exist in the interventions database"
       ]}
       """.trimIndent()
     )

@@ -48,6 +48,8 @@ class ServiceProviderAccessScopeMapper(
 
     val contracts = getContracts(contractGroups, configErrors)
 
+    // FIXME we also need to remove contracts which do not belong to the user's provider
+
     if (configErrors.isNotEmpty()) {
       throw AccessError(errorMessage, configErrors)
     }
@@ -84,8 +86,9 @@ class ServiceProviderAccessScopeMapper(
       emptyList()
     } else {
       val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
-      if (contracts.isEmpty()) {
-        configErrors.add("user has no valid contract groups configured")
+      val removedContracts = contractGroups.subtract(contracts.map(DynamicFrameworkContract::contractReference))
+      for (removedContract in removedContracts) {
+        configErrors.add("contract '$removedContract' does not exist in the interventions database")
       }
       contracts
     }

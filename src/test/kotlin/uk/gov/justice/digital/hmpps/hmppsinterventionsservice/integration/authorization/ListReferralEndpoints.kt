@@ -163,7 +163,7 @@ class ListReferralEndpoints : IntegrationTestBase() {
       """
       {"accessErrors": [
       "service provider id 'HOME_TRUST' does not exist in the interventions database",
-      "user has no valid contract groups configured"
+      "contract '0999' does not exist in the interventions database"
       ]}
       """.trimIndent()
     )
