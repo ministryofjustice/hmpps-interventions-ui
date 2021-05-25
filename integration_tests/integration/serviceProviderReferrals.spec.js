@@ -6,6 +6,7 @@ import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
+import interventionFactory from '../../testutils/factories/intervention'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -19,25 +20,35 @@ describe('Service provider referrals dashboard', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
 
+    const intervention = interventionFactory.build({
+      contractType: { code: 'PWB', name: 'Personal wellbeing' },
+      serviceCategory: accommodationServiceCategory, // fixme: remove
+      serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+    })
+
     const sentReferrals = [
       sentReferralFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
         referral: {
-          serviceCategoryId: accommodationServiceCategory.id,
+          interventionId: intervention.id,
           serviceUser: { firstName: 'George', lastName: 'Michael' },
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-          complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          serviceCategoryId: accommodationServiceCategory.id,
+          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+          // desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          // complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
         },
       }),
       sentReferralFactory.build({
         sentAt: '2020-09-13T13:00:00.000000Z',
         referenceNumber: 'ABCABCA2',
         referral: {
-          serviceCategoryId: socialInclusionServiceCategory.id,
+          interventionId: intervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-          complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          serviceCategoryId: socialInclusionServiceCategory.id,
+          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+          // desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          // complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
         },
       }),
     ]
@@ -65,6 +76,7 @@ describe('Service provider referrals dashboard', () => {
 
     const referralToSelect = sentReferrals[1]
 
+    cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
     cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
@@ -103,7 +115,8 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
     cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('07123456789 | jenny.jones@example.com')
-    cy.contains('Social inclusion intervention details')
+    cy.contains('Intervention details')
+    cy.contains('Personal wellbeing')
     cy.contains("Service user's personal details")
     cy.contains('English')
     cy.contains('Agnostic')
@@ -123,14 +136,21 @@ describe('Service provider referrals dashboard', () => {
   })
 
   it('User assigns a referral to a caseworker', () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referralParams = { referral: { serviceCategoryId: serviceCategory.id } }
+    const intervention = interventionFactory.build()
+    const referralParams = {
+      referral: {
+        interventionId: intervention.id,
+        serviceCategoryId: intervention.serviceCategories[0].id,
+        serviceCategoryIds: [intervention.serviceCategories[0].id],
+      },
+    }
     const referral = sentReferralFactory.build(referralParams)
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
 
-    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetIntervention(intervention.id, intervention)
+    cy.stubGetServiceCategory(intervention.serviceCategories[0].id, intervention.serviceCategories[0])
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetSentReferrals([referral])
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
