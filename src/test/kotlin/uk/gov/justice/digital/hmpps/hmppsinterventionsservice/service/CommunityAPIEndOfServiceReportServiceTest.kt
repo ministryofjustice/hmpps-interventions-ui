@@ -30,13 +30,15 @@ class CommunityAPIEndOfServiceReportServiceTest {
   @Test
   fun `notify submitted end of service report`() {
 
-    communityAPIService.onApplicationEvent(getEvent(SUBMITTED))
+    val event = getEvent(SUBMITTED)
+    communityAPIService.onApplicationEvent(event)
 
     verify(communityAPIClient).makeAsyncPostRequest(
       "/secure/offenders/crn/X123456/sentence/1234/notifications/context/commissioned-rehabilitation-services",
       NotificationCreateRequestDTO(
         "ACC",
         sentAtDefault,
+        event.endOfServiceReport.referral.id,
         submittedAtDefault,
         "End of Service Report Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
           "http://testUrl/probation-practitioner/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",

@@ -33,7 +33,8 @@ class CommunityAPIReferralServiceTest {
   @Test
   fun `notify sent referral`() {
 
-    communityAPIService.onApplicationEvent(getEvent(ReferralEventType.SENT))
+    val event = getEvent(ReferralEventType.SENT)
+    communityAPIService.onApplicationEvent(event)
 
     verify(communityAPIClient).makeAsyncPostRequest(
       "secure/offenders/crn/X123456/referral/start/context/commissioned-rehabilitation-services",
@@ -41,6 +42,7 @@ class CommunityAPIReferralServiceTest {
         "ACC",
         sentAtDefault,
         123456789,
+        event.referral.id,
         "Referral Sent for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
           "http://testUrl/referral/sent/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
       )
@@ -50,7 +52,8 @@ class CommunityAPIReferralServiceTest {
   @Test
   fun `notify cancelled referral`() {
 
-    communityAPIService.onApplicationEvent(getEvent(ReferralEventType.CANCELLED, concludedAtDefault))
+    val event = getEvent(ReferralEventType.CANCELLED, concludedAtDefault)
+    communityAPIService.onApplicationEvent(event)
 
     verify(communityAPIClient).makeAsyncPostRequest(
       "secure/offenders/crn/X123456/referral/end/context/commissioned-rehabilitation-services",
@@ -59,6 +62,7 @@ class CommunityAPIReferralServiceTest {
         sentAtDefault,
         concludedAtDefault,
         123456789,
+        event.referral.id,
         "CANCELLED",
         "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
           "http://testUrl/referral/progress/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
@@ -69,7 +73,8 @@ class CommunityAPIReferralServiceTest {
   @Test
   fun `notify prematurely ended referral`() {
 
-    communityAPIService.onApplicationEvent(getEvent(ReferralEventType.PREMATURELY_ENDED, concludedAtDefault, endOfServiceReport))
+    val event = getEvent(ReferralEventType.PREMATURELY_ENDED, concludedAtDefault, endOfServiceReport)
+    communityAPIService.onApplicationEvent(event)
 
     verify(communityAPIClient).makeAsyncPostRequest(
       "secure/offenders/crn/X123456/referral/end/context/commissioned-rehabilitation-services",
@@ -78,6 +83,7 @@ class CommunityAPIReferralServiceTest {
         sentAtDefault,
         concludedAtDefault,
         123456789,
+        event.referral.id,
         "PREMATURELY_ENDED",
         "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
           "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
@@ -88,7 +94,8 @@ class CommunityAPIReferralServiceTest {
   @Test
   fun `notify completed referral`() {
 
-    communityAPIService.onApplicationEvent(getEvent(ReferralEventType.COMPLETED, concludedAtDefault, endOfServiceReport))
+    val event = getEvent(ReferralEventType.COMPLETED, concludedAtDefault, endOfServiceReport)
+    communityAPIService.onApplicationEvent(event)
 
     verify(communityAPIClient).makeAsyncPostRequest(
       "secure/offenders/crn/X123456/referral/end/context/commissioned-rehabilitation-services",
@@ -97,6 +104,7 @@ class CommunityAPIReferralServiceTest {
         sentAtDefault,
         concludedAtDefault,
         123456789,
+        event.referral.id,
         "COMPLETED",
         "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
           "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
