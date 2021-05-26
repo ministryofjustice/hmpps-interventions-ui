@@ -11,7 +11,6 @@ image:
     dataDictionary: 8080
 
 ingress:
-  enabled: true
   hosts:
     - host: hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk
 
