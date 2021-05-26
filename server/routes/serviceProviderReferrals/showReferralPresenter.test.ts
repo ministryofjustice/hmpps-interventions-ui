@@ -203,6 +203,12 @@ describe(ShowReferralPresenter, () => {
         complexityLevels: cohortServiceCategories.map(it => {
           return { serviceCategoryId: it.id, complexityLevelId: it.complexityLevels[0].id }
         }),
+        desiredOutcomes: cohortServiceCategories.map(it => {
+          return {
+            serviceCategoryId: it.id,
+            desiredOutcomesIds: it.desiredOutcomes.slice(0, 2).map(outcome => outcome.id),
+          }
+        }),
       },
     })
 
@@ -222,7 +228,10 @@ describe(ShowReferralPresenter, () => {
         },
         {
           key: 'Desired outcomes',
-          lines: ['Outcomes not found'],
+          lines: [
+            'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+            'Service User makes progress in obtaining accommodation',
+          ],
         },
       ])
     })
