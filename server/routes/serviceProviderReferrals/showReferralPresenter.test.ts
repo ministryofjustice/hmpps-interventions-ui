@@ -243,20 +243,16 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(sentReferral, intervention, deliusUser, null, null)
 
       expect(presenter.serviceUserDetails).toEqual([
-        { key: 'CRN', lines: [sentReferral.referral.serviceUser.crn] },
-        { key: 'Title', lines: [sentReferral.referral.serviceUser.title] },
-        { key: 'First name', lines: [sentReferral.referral.serviceUser.firstName] },
-        { key: 'Last name', lines: [sentReferral.referral.serviceUser.lastName] },
-        { key: 'Date of birth', lines: [sentReferral.referral.serviceUser.dateOfBirth] },
-        { key: 'Gender', lines: [sentReferral.referral.serviceUser.gender] },
-        { key: 'Ethnicity', lines: [sentReferral.referral.serviceUser.ethnicity] },
-        { key: 'Preferred language', lines: [sentReferral.referral.serviceUser.preferredLanguage] },
-        { key: 'Religion or belief', lines: [sentReferral.referral.serviceUser.religionOrBelief] },
-        {
-          key: 'Disabilities',
-          lines: sentReferral.referral.serviceUser.disabilities || [],
-          listStyle: ListStyle.noMarkers,
-        },
+        { key: 'CRN', lines: ['X123456'] },
+        { key: 'Title', lines: ['Mr'] },
+        { key: 'First name', lines: ['Jenny'] },
+        { key: 'Last name', lines: ['Jones'] },
+        { key: 'Date of birth', lines: ['1 January 1980'] },
+        { key: 'Gender', lines: ['Male'] },
+        { key: 'Ethnicity', lines: ['British'] },
+        { key: 'Preferred language', lines: ['English'] },
+        { key: 'Religion or belief', lines: ['Agnostic'] },
+        { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
       ])
     })
   })

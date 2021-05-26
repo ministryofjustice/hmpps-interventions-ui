@@ -1,12 +1,17 @@
 import DraftReferral from '../../models/draftReferral'
 import ServiceCategory from '../../models/serviceCategory'
+import { SummaryListItem } from '../../utils/summaryList'
+import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 
 export default class CheckAnswersPresenter {
   constructor(private readonly referral: DraftReferral, private readonly serviceCategory: ServiceCategory) {}
 
-  // TODO IC-679 build this page properly - this
-  // is just a placeholder to show the data’s coming in
-  readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''
+  get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
+    return {
+      title: `${this.serviceUserName}’s personal details`,
+      summary: new ServiceUserDetailsPresenter(this.referral.serviceUser).summary,
+    }
+  }
 
-  readonly referralSectionHeading = `Information for the ${this.serviceCategory.name} referral`
+  private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''
 }
