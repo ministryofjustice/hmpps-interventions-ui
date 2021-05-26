@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import org.springframework.data.repository.findByIdOrNull
