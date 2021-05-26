@@ -96,8 +96,6 @@ describe('Service provider referrals dashboard', () => {
 
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
-    cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-    cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
     cy.stubGetSentReferrals(sentReferrals)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)

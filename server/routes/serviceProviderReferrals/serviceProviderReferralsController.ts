@@ -133,17 +133,17 @@ export default class ServiceProviderReferralsController {
       req.params.id
     )
     const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
-    const serviceCategoryPromise = this.interventionsService.getServiceCategory(
+    const interventionPromise = this.interventionsService.getIntervention(
       res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
+      sentReferral.referral.interventionId
     )
     const actionPlanPromise =
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
         : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
 
-    const [serviceCategory, actionPlan, serviceUser] = await Promise.all([
-      serviceCategoryPromise,
+    const [intervention, actionPlan, serviceUser] = await Promise.all([
+      interventionPromise,
       actionPlanPromise,
       serviceUserPromise,
     ])
@@ -156,12 +156,7 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(
-      sentReferral,
-      serviceCategory,
-      actionPlan,
-      actionPlanAppointments
-    )
+    const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlan, actionPlanAppointments)
     const view = new InterventionProgressView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

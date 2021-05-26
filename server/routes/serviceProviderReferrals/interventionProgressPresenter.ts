@@ -1,11 +1,11 @@
 import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
 import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
+import Intervention from '../../models/intervention'
 
 interface EndedFields {
   endRequestedAt: string | null
@@ -25,7 +25,7 @@ export default class InterventionProgressPresenter {
 
   constructor(
     private readonly referral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly actionPlan: ActionPlan | null,
     private readonly actionPlanAppointments: ActionPlanAppointment[]
   ) {
@@ -43,7 +43,7 @@ export default class InterventionProgressPresenter {
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
 
   readonly text = {
-    title: utils.convertToTitleCase(this.serviceCategory.name),
+    title: utils.convertToTitleCase(this.intervention.contractType.name),
     actionPlanStatus: this.actionPlanSubmitted ? 'Submitted' : 'Not submitted',
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
   }

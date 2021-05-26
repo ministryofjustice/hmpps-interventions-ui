@@ -150,13 +150,13 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
     const deliusServiceUser = deliusServiceUserFactory.build()
     const sentReferral = sentReferralFactory.assigned().build({
-      referral: { serviceCategoryId: serviceCategory.id },
+      referral: { interventionId: intervention.id },
     })
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
