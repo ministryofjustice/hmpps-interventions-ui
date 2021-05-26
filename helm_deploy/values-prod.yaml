@@ -1,0 +1,24 @@
+replicaCount: 3
+
+image:
+  repository: quay.io/hmpps/hmpps-interventions-ui
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 3000
+
+ingress:
+  host: refer-monitor-intervention.service.justice.gov.uk
+  cert_secret: tls-certificate
+
+env_details:
+  contains_live_data: true
+
+env:
+  DEPLOYMENT_ENV: prod
+  HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
+  COMMUNITY_API_URL: https://community-api-secure.probation.service.justice.gov.uk
+  OFFENDER_ASSESSMENTS_API_URL: https://offender-prod.aks-live-1.studio-hosting.service.justice.gov.uk
+  INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
+  TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
+  TOKEN_VERIFICATION_ENABLED: true
+  REDIS_TLS_ENABLED: true

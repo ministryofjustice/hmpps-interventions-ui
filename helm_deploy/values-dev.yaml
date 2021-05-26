@@ -10,9 +10,7 @@ image:
   port: 3000
 
 ingress:
-  enabled: true
   host: hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk
-  path: /
 
 env_details:
   contains_live_data: false
