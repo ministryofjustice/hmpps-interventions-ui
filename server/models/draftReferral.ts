@@ -10,7 +10,7 @@ export interface ReferralFields {
   completionDeadline: string
   serviceProvider: ServiceProvider
   interventionId: string
-  serviceCategoryId: string
+  serviceCategoryId: string // deprecated
   serviceCategoryIds: string[]
   complexityLevelId: string // deprecated in favour of complexityLevels
   complexityLevels: ReferralComplexityLevel[]

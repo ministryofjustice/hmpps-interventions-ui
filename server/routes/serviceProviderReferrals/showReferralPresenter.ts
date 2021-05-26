@@ -11,6 +11,8 @@ import Intervention from '../../models/intervention'
 import ServiceCategory from '../../models/serviceCategory'
 import ComplexityLevel from '../../models/complexityLevel'
 import { TagArgs } from '../../utils/govukFrontendTypes'
+import DesiredOutcome from '../../models/desiredOutcome'
+import logger from '../../../log'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -50,18 +52,53 @@ export default class ShowReferralPresenter {
     const items: SummaryListItem[] = []
 
     const complexityLevel = this.getReferralComplexityLevelForServiceCategory(serviceCategory)
-    if (complexityLevel === null) {
-      items.push({ key: 'Complexity level', lines: ['Level not found'] })
-    } else {
-      items.push({
-        key: 'Complexity level',
-        lines: [tagMacro(PresenterUtils.complexityLevelTagArgs(complexityLevel)), complexityLevel.description],
-      })
-    }
+    items.push({
+      key: 'Complexity level',
+      lines:
+        complexityLevel !== null
+          ? [tagMacro(PresenterUtils.complexityLevelTagArgs(complexityLevel)), complexityLevel.description]
+          : ['No complexity level found for this service category'],
+    })
 
-    items.push({ key: 'Desired outcomes', lines: ['Outcomes not found'] })
+    const desiredOutcomes = this.getReferralDesiredOutcomesForServiceCategory(serviceCategory)
+    items.push({
+      key: 'Desired outcomes',
+      lines:
+        desiredOutcomes.length > 0
+          ? desiredOutcomes.map(it => it.description)
+          : ['No desired outcomes found for this service category'],
+    })
 
     return items
+  }
+
+  private getReferralDesiredOutcomesForServiceCategory(serviceCategory: ServiceCategory): DesiredOutcome[] {
+    const outcomes: DesiredOutcome[] = []
+    const desiredOutcomesIds = this.sentReferral.referral.desiredOutcomes.find(
+      it => it.serviceCategoryId === serviceCategory.id
+    )?.desiredOutcomesIds
+
+    if (desiredOutcomesIds === undefined) {
+      logger.error(
+        { referralId: this.sentReferral.id, serviceCategoryId: serviceCategory.id },
+        'no desired outcomes found for selected service category'
+      )
+      return []
+    }
+
+    desiredOutcomesIds.forEach(id => {
+      const outcome = serviceCategory.desiredOutcomes.find(it => it.id === id)
+      if (outcome === undefined) {
+        logger.error(
+          { referralId: this.sentReferral.id, serviceCategoryId: serviceCategory.id, desiredOutcomeId: id },
+          'invalid desired outcome for selected service category'
+        )
+      } else {
+        outcomes.push(outcome)
+      }
+    })
+
+    return outcomes
   }
 
   private getReferralComplexityLevelForServiceCategory(serviceCategory: ServiceCategory): ComplexityLevel | null {
@@ -69,9 +106,28 @@ export default class ShowReferralPresenter {
       it => it.serviceCategoryId === serviceCategory.id
     )?.complexityLevelId
 
-    // fixme: both cases here, the complexity level missing from the referral and the complexity level
-    // missing from the service category are error conditions. should i actually just error out here??
-    return serviceCategory.complexityLevels.find(it => it.id === complexityLevelId) || null
+    if (complexityLevelId === undefined) {
+      logger.error(
+        { referralId: this.sentReferral.id, serviceCategoryId: serviceCategory.id },
+        'no complexity level found found for selected service category'
+      )
+      return null
+    }
+
+    const complexityLevel = serviceCategory.complexityLevels.find(it => it.id === complexityLevelId)
+    if (complexityLevel === undefined) {
+      logger.error(
+        {
+          referralId: this.sentReferral.id,
+          serviceCategoryId: serviceCategory.id,
+          complexityLevelId,
+        },
+        'invalid complexity level for selected service category'
+      )
+      return null
+    }
+
+    return complexityLevel
   }
 
   get interventionDetails(): SummaryListItem[] {

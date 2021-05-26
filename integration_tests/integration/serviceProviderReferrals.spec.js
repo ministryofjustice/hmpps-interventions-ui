@@ -55,6 +55,16 @@ describe('Service provider referrals dashboard', () => {
               complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
             },
           ],
+          desiredOutcomes: [
+            {
+              serviceCategoryId: accommodationServiceCategory.id,
+              desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+            },
+            {
+              serviceCategoryId: socialInclusionServiceCategory.id,
+              desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+            },
+          ],
         },
       }),
     ]
@@ -127,10 +137,14 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Accommodation service')
     cy.contains('LOW COMPLEXITY')
     cy.contains('Service User has some capacity and means to secure')
+    cy.contains('All barriers, as identified in the Service User Action Plan')
+    cy.contains('Service User makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
     cy.contains('MEDIUM COMPLEXITY')
     cy.contains('Service User is at risk of homelessness/is homeless')
+    cy.contains('Service User is helped to secure social or supported housing')
+    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
 
     cy.contains("Service user's personal details")
     cy.contains('English')
