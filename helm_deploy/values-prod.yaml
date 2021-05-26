@@ -1,6 +1,3 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 replicaCount: 4
 
 image:
@@ -12,7 +9,7 @@ image:
 
 ingress:
   hosts:
-    - host: hmpps-interventions-service-prod.apps.live-1.cloud-platform.service.justice.gov.uk
+    - host: hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
 
 env_details:
   contains_live_data: true
@@ -20,4 +17,6 @@ env_details:
 env:
   JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
+  INTERVENTIONSUI_BASEURL: "https://refer-monitor-intervention.service.justice.gov.uk"
+  COMMUNITYAPI_BASEURL: "https://community-api-secure.probation.service.justice.gov.uk"
   SENTRY_ENVIRONMENT: "prod"
