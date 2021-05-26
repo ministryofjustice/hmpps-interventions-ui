@@ -13,7 +13,6 @@ COPY (
     'coming-later'          AS date_saa_attended,
     ap.submitted_at         AS date_first_action_plan_submitted,
     'coming-later'          AS date_of_first_action_plan_approval,
-    r.assigned_to_id        AS caseworker_id,
     (
       select min(app.appointment_time)
       from action_plan_appointment app
