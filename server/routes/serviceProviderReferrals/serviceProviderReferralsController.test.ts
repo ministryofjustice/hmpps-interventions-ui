@@ -43,27 +43,30 @@ afterEach(() => {
 
 describe('GET /service-provider/dashboard', () => {
   it('displays a list of all sent referrals', async () => {
-    const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+    const accommodationIntervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
+    const womensServicesIntervention = interventionFactory.build({
+      id: '2',
+      contractType: { name: "women's services" },
+    })
 
     const sentReferrals = [
       sentReferralFactory.build({
         referral: {
-          serviceCategoryId: accommodationServiceCategory.id,
+          interventionId: accommodationIntervention.id,
           serviceUser: { firstName: 'George', lastName: 'Michael' },
         },
       }),
       sentReferralFactory.build({
         referral: {
-          serviceCategoryId: socialInclusionServiceCategory.id,
+          interventionId: womensServicesIntervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
         },
       }),
     ]
 
     interventionsService.getReferralsSentToServiceProvider.mockResolvedValue(sentReferrals)
-    interventionsService.getServiceCategory.mockImplementation(async (token, id) => {
-      const result = [accommodationServiceCategory, socialInclusionServiceCategory].find(category => category.id === id)
+    interventionsService.getIntervention.mockImplementation(async (token, id) => {
+      const result = [accommodationIntervention, womensServicesIntervention].find(category => category.id === id)
       return result!
     })
 
@@ -74,7 +77,7 @@ describe('GET /service-provider/dashboard', () => {
         expect(res.text).toContain('George Michael')
         expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Jenny Jones')
-        expect(res.text).toContain('Social inclusion')
+        expect(res.text).toContain('Women&#39;s services')
       })
   })
 })
