@@ -1,11 +1,11 @@
 import SentReferral from '../../models/sentReferral'
 import { ActionPlanAppointment } from '../../models/actionPlan'
-import ServiceCategory from '../../models/serviceCategory'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
+import Intervention from '../../models/intervention'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
@@ -24,7 +24,7 @@ export default class InterventionProgressPresenter {
 
   constructor(
     private readonly referral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly actionPlanAppointments: ActionPlanAppointment[]
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -53,7 +53,7 @@ export default class InterventionProgressPresenter {
   }
 
   readonly text = {
-    title: `${utils.convertToTitleCase(this.serviceCategory.name)} progress`,
+    title: `${utils.convertToTitleCase(this.intervention.contractType.name)} progress`,
   }
 
   readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/reason`
