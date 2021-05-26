@@ -3,7 +3,7 @@ COPY (
     r.reference_number      AS referral_ref,
     r.id                    AS referral_id,
     c.contract_reference    AS crs_contract_reference,
-    'coming-later'          AS crs_contract_type,
+    ct.code                 AS crs_contract_type,
     prime.id                AS crs_provider_id,
     r.sent_by_id            AS referring_officer_id,
     r.relevant_sentence_id  AS relevant_sentence_id,
@@ -37,6 +37,7 @@ COPY (
     referral r
     JOIN intervention i ON (r.intervention_id = i.id)
     JOIN dynamic_framework_contract c ON (i.dynamic_framework_contract_id = c.id)
+    JOIN contract_type ct ON (c.contract_type_id = ct.id)
     JOIN service_provider prime ON (c.prime_provider_id = prime.id)
     LEFT JOIN action_plan ap ON (ap.referral_id = r.id) --❗️assumes a SINGLE action plan
     LEFT JOIN end_of_service_report eosr ON (eosr.referral_id = r.id)
