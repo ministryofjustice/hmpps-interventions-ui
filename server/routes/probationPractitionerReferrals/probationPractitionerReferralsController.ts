@@ -122,16 +122,16 @@ export default class ProbationPractitionerReferralsController {
     const { accessToken } = user.token
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const intervention = await this.interventionsService.getIntervention(
       accessToken,
-      sentReferral.referral.serviceCategoryId
+      sentReferral.referral.interventionId
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
     const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
 
     const presenter = new ReferralCancellationReasonPresenter(
       sentReferral,
-      serviceCategory,
+      intervention,
       serviceUser,
       cancellationReasons
     )
@@ -154,15 +154,15 @@ export default class ProbationPractitionerReferralsController {
       res.status(400)
       formError = data.error
 
-      const serviceCategory = await this.interventionsService.getServiceCategory(
+      const intervention = await this.interventionsService.getIntervention(
         accessToken,
-        sentReferral.referral.serviceCategoryId
+        sentReferral.referral.interventionId
       )
       const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
 
       const presenter = new ReferralCancellationReasonPresenter(
         sentReferral,
-        serviceCategory,
+        intervention,
         serviceUser,
         cancellationReasons,
         formError
@@ -203,13 +203,13 @@ export default class ProbationPractitionerReferralsController {
     const { accessToken } = user.token
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const intervention = await this.interventionsService.getIntervention(
       accessToken,
-      sentReferral.referral.serviceCategoryId
+      sentReferral.referral.interventionId
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
+    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, intervention)
     const view = new ReferralCancellationConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

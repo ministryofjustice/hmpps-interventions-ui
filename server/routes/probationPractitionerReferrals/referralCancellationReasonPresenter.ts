@@ -1,15 +1,15 @@
 import a from 'indefinite'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import CancellationReason from '../../models/cancellationReason'
-import ServiceCategory from '../../models/serviceCategory'
 import SentReferral from '../../models/sentReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import Intervention from '../../models/intervention'
 
 export default class ReferralCancellationReasonPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly serviceUser: DeliusServiceUser,
     private readonly cancellationReasons: CancellationReason[],
     private readonly error: FormValidationError | null = null
@@ -18,7 +18,7 @@ export default class ReferralCancellationReasonPresenter {
   readonly text = {
     title: 'Referral cancellation',
     information: `You are about to cancel ${this.serviceUser.firstName} ${this.serviceUser.surname}'s referral for ${a(
-      this.serviceCategory.name
+      this.intervention.contractType.name
     )} intervention with ${this.sentReferral.referral.serviceProvider.name}.`,
     additionalCommentsLabel: 'Additional comments (optional):',
   }

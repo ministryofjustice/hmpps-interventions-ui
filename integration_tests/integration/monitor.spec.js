@@ -180,6 +180,7 @@ describe('Probation Practitioner monitor journey', () => {
 
   describe('cancelling a referral', () => {
     it('displays a form to allow users to submit comments and cancel a referral', () => {
+      // TODO: Remove this when refactoring intervention progress view to not use serviceCategoryId
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const referralParams = {
@@ -228,6 +229,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
       cy.stubGetSentReferrals([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      // TODO: Remove this when refactoring intervention progress view to not use serviceCategoryId
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)

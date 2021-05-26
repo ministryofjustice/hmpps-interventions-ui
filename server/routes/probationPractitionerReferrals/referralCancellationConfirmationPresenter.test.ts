@@ -1,13 +1,13 @@
+import interventionFactory from '../../../testutils/factories/intervention'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
 
 describe(ReferralCancellationConfirmationPresenter, () => {
   describe('text', () => {
     it('contains a panel title and what happens next text', () => {
       const sentReferral = sentReferralFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
-      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
+      const intervention = interventionFactory.build()
+      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, intervention)
 
       expect(presenter.text).toMatchObject({
         confirmationText: 'This referral has been cancelled',
@@ -20,8 +20,8 @@ describe(ReferralCancellationConfirmationPresenter, () => {
   describe('serviceUserSummary', () => {
     it('displays information about the referral and service user', () => {
       const sentReferral = sentReferralFactory.build({ referenceNumber: 'AB1234' })
-      const serviceCategory = serviceCategoryFactory.build({ name: 'Accommodation' })
-      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, serviceCategory)
+      const intervention = interventionFactory.build({ contractType: { name: 'personal wellbeing' } })
+      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, intervention)
 
       expect(presenter.serviceUserSummary).toEqual([
         {
@@ -34,7 +34,7 @@ describe(ReferralCancellationConfirmationPresenter, () => {
         },
         {
           key: 'Type of referral',
-          lines: ['Accommodation'],
+          lines: ['Personal wellbeing'],
         },
       ])
     })
