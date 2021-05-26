@@ -12,14 +12,14 @@ class ContractTypeFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     id: UUID = UUID.randomUUID(),
     name: String = "Accommodation",
     code: String = "ACC",
-    serviceCategories: Set<ServiceCategory>? = null
+    serviceCategories: Set<ServiceCategory> = setOf(serviceCategoryFactory.create(name = "accommodation"))
   ): ContractType {
     return save(
       ContractType(
         id = id,
         name = name,
         code = code,
-        serviceCategories = serviceCategories ?: setOf(serviceCategoryFactory.create()),
+        serviceCategories = serviceCategories,
       )
     )
   }

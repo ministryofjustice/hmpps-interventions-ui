@@ -16,8 +16,8 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
 
   fun create(
     id: UUID = UUID.randomUUID(),
-    contractType: ContractType? = null,
-    primeProvider: ServiceProvider? = null,
+    contractType: ContractType = contractTypeFactory.create(),
+    primeProvider: ServiceProvider = serviceProviderFactory.create(),
     startDate: LocalDate = LocalDate.of(2021, 6, 1),
     endDate: LocalDate = LocalDate.of(2026, 6, 1),
     minimumAge: Int = 18,
@@ -32,8 +32,8 @@ class DynamicFrameworkContractFactory(em: TestEntityManager? = null) : EntityFac
     return save(
       DynamicFrameworkContract(
         id = id,
-        contractType = contractType ?: contractTypeFactory.create(),
-        primeProvider = primeProvider ?: serviceProviderFactory.create(),
+        contractType = contractType,
+        primeProvider = primeProvider,
         startDate = startDate,
         endDate = endDate,
         minimumAge = minimumAge,
