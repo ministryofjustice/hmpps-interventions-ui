@@ -128,7 +128,7 @@ export default async function setUpMocks(): Promise<void> {
   const draftReferral = draftReferralFactory
     .serviceCategorySelected(accommodationServiceCategory.id)
     .serviceCategoriesSelected([accommodationServiceCategory.id, socialInclusionServiceCategory.id])
-    .serviceUserDetailsSet()
+    .filledFormUpToNeedsAndRequirements()
     .build({
       id: '98a42c61-c30f-4beb-8062-04033c376e2d',
       serviceUser: {

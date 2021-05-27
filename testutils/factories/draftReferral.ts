@@ -2,6 +2,7 @@ import { Factory } from 'fishery'
 import DraftReferral from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'
+import ServiceCategory from '../../server/models/serviceCategory'
 
 class DraftReferralFactory extends Factory<DraftReferral> {
   justCreated() {
@@ -14,7 +15,10 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 
   serviceCategorySelected(serviceCategoryId?: string) {
     const resolvedServiceCategoryId = serviceCategoryId ?? serviceCategoryFactory.build().id
-    return this.params({ serviceCategoryId: resolvedServiceCategoryId })
+    return this.params({
+      serviceCategoryId: resolvedServiceCategoryId,
+      serviceCategoryIds: [resolvedServiceCategoryId],
+    })
   }
 
   serviceCategoriesSelected(serviceCategoryIds?: string[]) {
@@ -28,8 +32,8 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     return this.params({ completionDeadline: '2021-08-24' })
   }
 
-  serviceUserDetailsSet() {
-    return this.serviceUserSelected().riskInformation().needsAndRequirements()
+  unfilled() {
+    return this
   }
 
   serviceUserSelected() {
@@ -49,53 +53,81 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
-  riskInformation() {
-    return this.params({
-      additionalRiskInformation: '',
+  selectedServiceCategories(serviceCategories: ServiceCategory[]) {
+    const resolvedServiceCategoryIds = serviceCategories.map(serviceCategory => serviceCategory.id)
+    return this.serviceUserSelected().params({
+      serviceCategoryId: resolvedServiceCategoryIds[0],
+      serviceCategoryIds: resolvedServiceCategoryIds,
     })
   }
 
-  needsAndRequirements() {
-    return this.params({
-      additionalNeedsInformation: '',
-      accessibilityNeeds: '',
-      needsInterpreter: false,
-      hasAdditionalResponsibilities: false,
+  filledFormUpToRiskInformation(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.selectedServiceCategories(serviceCategories).params({
+      additionalRiskInformation: 'A danger to the elderly',
     })
   }
 
-  relevantSentence() {
-    return this.params({
+  filledFormUpToNeedsAndRequirements(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.filledFormUpToRiskInformation(serviceCategories).params({
+      additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      accessibilityNeeds: 'She uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'She works Mondays 9am - midday',
+    })
+  }
+
+  filledFormUpToRelevantSentence(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.filledFormUpToNeedsAndRequirements(serviceCategories).params({
       relevantSentenceId: 123456789,
     })
   }
 
-  desiredOutcomes() {
+  addSelectedDesiredOutcomes(serviceCategories: ServiceCategory[]) {
     return this.params({
-      desiredOutcomesIds: ['3415a6f2-38ef-4613-bb95-33355deff17e', '5352cfb6-c9ee-468c-b539-434a3e9b506e'],
+      desiredOutcomesIds: serviceCategories
+        .map(serviceCategory => serviceCategory.desiredOutcomes.map(desiredOutcome => desiredOutcome.id))
+        .reduce((acc, list) => acc.concat(list), []),
+      desiredOutcomes: serviceCategories.map(serviceCategory => {
+        return {
+          serviceCategoryId: serviceCategory.id,
+          desiredOutcomesIds: serviceCategory.desiredOutcomes.map(desiredOutcome => desiredOutcome.id),
+        }
+      }),
     })
   }
 
-  complexityLevel() {
+  addSelectedComplexityLevel(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
     return this.params({
-      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+      complexityLevelId: serviceCategories[0].complexityLevels[0].id,
+      complexityLevels: serviceCategories.map(serviceCategory => {
+        return {
+          serviceCategoryId: serviceCategory.id,
+          complexityLevelId: serviceCategory.complexityLevels[0].id,
+        }
+      }),
     })
   }
 
-  completionDate() {
-    return this.params({
-      completionDeadline: '2021-08-24',
+  filledFormUpToCompletionDate(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.filledFormUpToRelevantSentence(serviceCategories)
+      .addSelectedDesiredOutcomes(serviceCategories)
+      .addSelectedComplexityLevel(serviceCategories)
+      .params({
+        completionDeadline: '2021-08-24',
+      })
+  }
+
+  filledFormUpToRarDays(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.filledFormUpToCompletionDate(serviceCategories).params({
+      usingRarDays: true,
+      maximumRarDays: 10,
     })
   }
 
-  rarDays() {
-    return this.params({
-      usingRarDays: false,
-    })
-  }
-
-  furtherInformation() {
-    return this.params({
+  filledFormUpToFurtherInformation(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.filledFormUpToRarDays(serviceCategories).params({
       furtherInformation: '',
     })
   }

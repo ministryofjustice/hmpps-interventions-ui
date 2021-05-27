@@ -4,22 +4,28 @@ it to get a right-floated tag. There’s a broader question of whether
 we’ve mis-implemented the MoJ task list pattern, in which tags are
 only used on individual completed tasks. Needs some design review.
 #}
-<strong data-cy="status" class="{{ classForStatus(taskListSection.status) }} moj-task-list__task-completed">
-  {{ taskListSection.status }}
-</strong>
+{% if taskListSection.status !== undefined %}
+    <strong data-cy="status" class="{{ classForStatus(taskListSection.status) }} moj-task-list__task-completed">
+      {{ taskListSection.status }}
+    </strong>
+{% endif %}
 
-<h2 class="moj-task-list__section">
-  <span class="moj-task-list__section-number {{ "govuk-!-padding-right-2" if nested }}">{{ taskListSection.number }}.</span>
+{% if taskListSection.title !== undefined %}
+<h2 class="moj-task-list__section {{ "govuk-!-margin-left-9" if nested }}">
+    {% if taskListSection.number !== undefined %}
+      <span class="moj-task-list__section-number {{ "govuk-!-padding-right-2" if nested }}">{{ taskListSection.number }}.</span>
+    {% endif %}
   {{ taskListSection.title }}
 </h2>
+{% endif %}
 
-<ul class="moj-task-list__items">
+<ul class="moj-task-list__items {{"moj-task-list__items-multi " if multi}} {{"moj-task-list__items-last-of-section " if last}} {{ "moj-task-list__items-nested" if nested }}">
   {% for task in taskListSection.tasks %}
     <li class="moj-task-list__item">
       {% if task.url !== null %}
-        <a class="moj-task-list__task-name" href="{{ task.url }}">{{ task.title }}</a>
+        <a data-cy="url" class="moj-task-list__task-name" href="{{ task.url }}">{{ task.title }}</a>
       {% else %}
-        <span class="app-task-list__task-name">{{ task.title }}</span>
+        <span data-cy="url" class="app-task-list__task-name">{{ task.title }}</span>
       {% endif %}
     </li>
   {% endfor %}
