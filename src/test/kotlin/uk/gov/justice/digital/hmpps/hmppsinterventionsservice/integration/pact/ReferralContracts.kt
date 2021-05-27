@@ -37,8 +37,7 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
 
   @State(
     "There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf and it is unassigned",
-    "There are some existing sent referrals sent to HARMONY_LIVING",
-    "There are some existing sent referrals sent by user with id 'bernard.beaks'",
+    "There are some existing sent referrals sent by a probation practitioner user",
   )
   fun `create sent referral 400be4c6`() {
     val referral = setupAssistant.createSentReferral(id = UUID.fromString("400be4c6-1aa4-4f52-ae86-cbd5d23309bf"))
@@ -64,19 +63,23 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
 
   @State(
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962",
+    "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962 with contract type of womens services",
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service category selected",
     "There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962, and it has had a service provider selected",
   )
-  fun `create a new draft referral with accommodation service category and 'HARMONY_LIVING' service provider set (both defaults)`() {
-    setupAssistant.createDraftReferral(id = UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"))
+  fun `create a new draft referral with women's service type and 'HARMONY_LIVING' service provider`() {
+    val contract = setupAssistant.createDynamicFrameworkContract(contractType = setupAssistant.contractTypes["WOS"]!!, primeProviderId = "HARMONY_LIVING")
+    val intervention = setupAssistant.createIntervention(dynamicFrameworkContract = contract)
+    setupAssistant.createDraftReferral(id = UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"), intervention = intervention)
   }
 
-  @State("There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had desired outcomes selected")
-  fun `create a new draft referral and with desired outcomes`() {
-    val intervention = setupAssistant.createIntervention()
-    val desiredOutcomes = setupAssistant.desiredOutcomesForServiceCategory(intervention.dynamicFrameworkContract.contractType.serviceCategories.elementAt(0).id)
+  @State(
+    "There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had desired outcomes selected",
+    "There is an existing draft referral with ID of 037cc90b-beaa-4a32-9ab7-7f79136e1d27, and it has had a complexity level selected",
+  )
+  fun `create a new draft referral and with desired outcomes and complexity level`() {
     val referral = setupAssistant.createDraftReferral(id = UUID.fromString("037cc90b-beaa-4a32-9ab7-7f79136e1d27"))
-    setupAssistant.fillReferralFields(referral, desiredOutcomes = desiredOutcomes)
+    setupAssistant.fillReferralFields(referral)
   }
 
   @State("There is an existing draft referral with ID of 1219a064-709b-4b6c-a11e-10b8cb3966f6, and it has had a service user selected")
@@ -97,6 +100,18 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
   @State("a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent")
   fun `create referral with 2a67075a id`() {
     val referral = setupAssistant.createDraftReferral(id = UUID.fromString("2a67075a-9c77-4103-9de0-63c4cfe3e8d6"))
+    setupAssistant.fillReferralFields(referral)
+  }
+
+  @State(
+    "There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected",
+    "There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had desired outcomes selected for multiple service categories",
+    "There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had a complexity level selected for multiple service categories",
+  )
+  fun `create a draft referral with ID 06716f8e with desired outcomes and service categories`() {
+    val contract = setupAssistant.createDynamicFrameworkContract(contractType = setupAssistant.contractTypes["WOS"]!!, primeProviderId = "HARMONY_LIVING")
+    val intervention = setupAssistant.createIntervention(dynamicFrameworkContract = contract)
+    val referral = setupAssistant.createDraftReferral(id = UUID.fromString("06716f8e-f507-42d4-bdcc-44c90e18dbd7"), intervention = intervention)
     setupAssistant.fillReferralFields(referral)
   }
 }
