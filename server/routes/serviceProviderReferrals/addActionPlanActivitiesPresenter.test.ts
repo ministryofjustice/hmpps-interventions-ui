@@ -29,7 +29,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
     referral: {
       serviceCategoryIds: [serviceCategory.id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-      desiredOutcomesIds: selectedDesiredOutcomesIds,
+      desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
     },
   })
 

@@ -252,7 +252,7 @@ describe('Service provider referrals dashboard', () => {
       referral: {
         interventionId: accommodationIntervention.id,
         serviceCategoryIds: [serviceCategory.id],
-        desiredOutcomesIds: selectedDesiredOutcomesIds,
+        desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
       },
     }
     const deliusServiceUser = deliusServiceUserFactory.build()

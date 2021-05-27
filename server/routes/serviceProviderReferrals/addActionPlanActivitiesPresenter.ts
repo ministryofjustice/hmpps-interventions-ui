@@ -16,7 +16,9 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly saveAndContinueFormAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activities`
 
-  private readonly desiredOutcomesIds = this.sentReferral.referral.desiredOutcomesIds
+  private readonly desiredOutcomesIds = this.sentReferral.referral.desiredOutcomes.flatMap(
+    desiredOutcome => desiredOutcome.desiredOutcomesIds
+  )
 
   readonly errorSummary = (() => {
     const errorSummary = this.errors.reduce((accumIndexedSummary, error) => {

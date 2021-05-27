@@ -272,7 +272,12 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
       referral: {
         serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
-        desiredOutcomesIds: [desiredOutcome.id],
+        desiredOutcomes: [
+          {
+            serviceCategoryId: serviceCategory.id,
+            desiredOutcomesIds: [desiredOutcome.id],
+          },
+        ],
       },
     })
     const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
@@ -336,7 +341,12 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
         referral: {
           serviceCategoryIds: [serviceCategory.id],
           serviceUser: { firstName: 'Alex', lastName: 'River' },
-          desiredOutcomesIds: [desiredOutcome.id],
+          desiredOutcomes: [
+            {
+              serviceCategoryId: serviceCategory.id,
+              desiredOutcomesIds: [desiredOutcome.id],
+            },
+          ],
         },
       })
       const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
@@ -381,7 +391,12 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
   const referral = sentReferralFactory.build({
     referral: {
       serviceCategoryIds: [serviceCategory.id],
-      desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+      desiredOutcomes: [
+        {
+          serviceCategoryId: serviceCategory.id,
+          desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
+        },
+      ],
     },
   })
 
@@ -504,7 +519,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
       referral: {
         serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
-        desiredOutcomesIds: [desiredOutcome.id],
+        desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [desiredOutcome.id] }],
       },
     })
     const draftActionPlan = actionPlanFactory.readyToSubmit(referral.id).build({
