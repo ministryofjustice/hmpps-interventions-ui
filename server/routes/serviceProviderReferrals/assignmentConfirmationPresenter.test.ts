@@ -1,15 +1,15 @@
 import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 
 describe(AssignmentConfirmationPresenter, () => {
   describe('dashboardHref', () => {
     it('returns the relative URL of the service provider referrals dashboard', () => {
       const sentReferral = sentReferralFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
       const assignee = hmppsAuthUserFactory.build()
-      const presenter = new AssignmentConfirmationPresenter(sentReferral, serviceCategory, assignee)
+      const presenter = new AssignmentConfirmationPresenter(sentReferral, intervention, assignee)
 
       expect(presenter.dashboardHref).toEqual('/service-provider/dashboard')
     })
@@ -22,9 +22,9 @@ describe(AssignmentConfirmationPresenter, () => {
           referenceNumber: 'CEF345',
           referral: { serviceUser: { firstName: 'Johnny', lastName: 'Davis' } },
         })
-        const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+        const intervention = interventionFactory.build({ contractType: { name: 'social inclusion' } })
         const assignee = hmppsAuthUserFactory.build({ firstName: 'Bernard', lastName: 'Beaks' })
-        const presenter = new AssignmentConfirmationPresenter(sentReferral, serviceCategory, assignee)
+        const presenter = new AssignmentConfirmationPresenter(sentReferral, intervention, assignee)
 
         expect(presenter.summary).toEqual([
           {
@@ -53,9 +53,9 @@ describe(AssignmentConfirmationPresenter, () => {
           referenceNumber: 'CEF345',
           referral: { serviceUser: { firstName: 'Johnny', lastName: 'Davis' } },
         })
-        const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+        const intervention = interventionFactory.build({ contractType: { name: 'social inclusion' } })
         const assignee = hmppsAuthUserFactory.build({ firstName: 'Bernard', lastName: '' })
-        const presenter = new AssignmentConfirmationPresenter(sentReferral, serviceCategory, assignee)
+        const presenter = new AssignmentConfirmationPresenter(sentReferral, intervention, assignee)
 
         expect(presenter.summary).toEqual([
           {
@@ -84,9 +84,9 @@ describe(AssignmentConfirmationPresenter, () => {
           referenceNumber: 'CEF345',
           referral: { serviceUser: { firstName: 'Johnny', lastName: 'Davis' } },
         })
-        const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+        const intervention = interventionFactory.build({ contractType: { name: 'social inclusion' } })
         const assignee = hmppsAuthUserFactory.build({ firstName: '', lastName: 'Beaks' })
-        const presenter = new AssignmentConfirmationPresenter(sentReferral, serviceCategory, assignee)
+        const presenter = new AssignmentConfirmationPresenter(sentReferral, intervention, assignee)
 
         expect(presenter.summary).toEqual([
           {
@@ -115,9 +115,9 @@ describe(AssignmentConfirmationPresenter, () => {
           referenceNumber: 'CEF345',
           referral: { serviceUser: { firstName: 'Johnny', lastName: 'Davis' } },
         })
-        const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+        const intervention = interventionFactory.build({ contractType: { name: 'social inclusion' } })
         const assignee = hmppsAuthUserFactory.build({ firstName: '', lastName: '' })
-        const presenter = new AssignmentConfirmationPresenter(sentReferral, serviceCategory, assignee)
+        const presenter = new AssignmentConfirmationPresenter(sentReferral, intervention, assignee)
 
         expect(presenter.summary).toEqual([
           {

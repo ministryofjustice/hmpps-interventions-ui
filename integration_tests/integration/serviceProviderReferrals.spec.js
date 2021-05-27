@@ -170,7 +170,6 @@ describe('Service provider referrals dashboard', () => {
     const referralParams = {
       referral: {
         interventionId: intervention.id,
-        serviceCategoryId: intervention.serviceCategories[0].id,
         serviceCategoryIds: [intervention.serviceCategories[0].id],
       },
     }
@@ -180,7 +179,6 @@ describe('Service provider referrals dashboard', () => {
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
 
     cy.stubGetIntervention(intervention.id, intervention)
-    cy.stubGetServiceCategory(intervention.serviceCategories[0].id, intervention.serviceCategories[0])
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetSentReferrals([referral])
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
@@ -199,7 +197,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Save and continue').click()
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
-    cy.get('h1').contains('Confirm the accommodation referral assignment')
+    cy.get('h1').contains('Confirm the Accommodation referral assignment')
     cy.contains('John Smith')
 
     const assignedReferral = sentReferralFactory

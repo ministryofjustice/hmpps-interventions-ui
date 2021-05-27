@@ -187,15 +187,12 @@ export default class ServiceProviderReferralsController {
     }
 
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.referral.serviceCategoryId
-      ),
+    const [intervention, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])
 
-    const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, serviceCategory)
+    const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, intervention)
     const view = new CheckAssignmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -226,16 +223,13 @@ export default class ServiceProviderReferralsController {
       throw new Error('Can’t view confirmation of assignment, as referral isn’t assigned.')
     }
 
-    const [assignee, serviceCategory, serviceUser] = await Promise.all([
+    const [assignee, intervention, serviceUser] = await Promise.all([
       this.hmppsAuthService.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
-      this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        referral.referral.serviceCategoryId
-      ),
+      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])
 
-    const presenter = new AssignmentConfirmationPresenter(referral, serviceCategory, assignee)
+    const presenter = new AssignmentConfirmationPresenter(referral, intervention, assignee)
     const view = new AssignmentConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
