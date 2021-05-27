@@ -253,6 +253,11 @@ describe('Referral form', () => {
     cy.contains('Agnostic')
     cy.contains('Autism')
 
+    cy.contains('Alex is currently sleeping on her aunt’s sofa')
+    cy.contains('She uses a wheelchair')
+    cy.contains('Yes. Spanish')
+    cy.contains('Yes. She works Mondays 9am - midday')
+
     cy.contains('Submit referral').click()
     cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 
