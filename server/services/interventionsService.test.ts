@@ -1154,7 +1154,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getDraftReferralsForUser', () => {
+  describe('getDraftReferralsForUserToken', () => {
     it('returns a list of draft referrals for a given userID', async () => {
       await provider.addInteraction({
         state: 'a single referral for user with ID 8751622134 exists',
@@ -1162,7 +1162,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/draft-referrals',
-          query: 'userID=8751622134',
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
@@ -1182,7 +1181,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUser(token, '8751622134')
+      const referrals = await interventionsService.getDraftReferralsForUserToken(token)
       expect(referrals.length).toBe(1)
       expect(referrals[0].id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
@@ -1194,7 +1193,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/draft-referrals',
-          query: 'userID=123344556',
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
@@ -1209,7 +1207,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUser(token, '123344556')
+      const referrals = await interventionsService.getDraftReferralsForUserToken(token)
       expect(referrals.length).toBe(0)
     })
   })

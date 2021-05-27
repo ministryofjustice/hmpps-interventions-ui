@@ -44,7 +44,7 @@ beforeEach(() => {
 
   const referral = draftReferralFactory.justCreated().build({ id: '1' })
   interventionsService.createDraftReferral.mockResolvedValue(referral)
-  interventionsService.getDraftReferralsForUser.mockResolvedValue([])
+  interventionsService.getDraftReferralsForUserToken.mockResolvedValue([])
   interventionsService.serializeDeliusServiceUser.mockReturnValue(serviceUser)
 })
 
@@ -54,7 +54,7 @@ afterEach(() => {
 
 describe('GET /intervention/:id/refer', () => {
   beforeEach(() => {
-    interventionsService.getDraftReferralsForUser.mockResolvedValue([])
+    interventionsService.getDraftReferralsForUserToken.mockResolvedValue([])
   })
 
   it('renders the page to start a referral', () => {

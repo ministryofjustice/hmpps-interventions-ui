@@ -38,12 +38,12 @@ afterEach(() => {
 })
 
 describe('GET /probation-practitioner/find', () => {
-  interventionsService.getDraftReferralsForUser.mockResolvedValue([])
+  interventionsService.getDraftReferralsForUserToken.mockResolvedValue([])
 
   it('displays a list in-progress referrals', async () => {
     const referral = draftReferralFactory.serviceUserSelected().build()
 
-    interventionsService.getDraftReferralsForUser.mockResolvedValue([referral])
+    interventionsService.getDraftReferralsForUserToken.mockResolvedValue([referral])
 
     await request(app)
       .get('/probation-practitioner/find')

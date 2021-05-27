@@ -204,12 +204,11 @@ export default class InterventionsService {
     }
   }
 
-  async getDraftReferralsForUser(token: string, userId: string): Promise<DraftReferral[]> {
+  async getDraftReferralsForUserToken(token: string): Promise<DraftReferral[]> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: '/draft-referrals',
-      query: `userID=${userId}`,
       headers: { Accept: 'application/json' },
     })) as DraftReferral[]
   }

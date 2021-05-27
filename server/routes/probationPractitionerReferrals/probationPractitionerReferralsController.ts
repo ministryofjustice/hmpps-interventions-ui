@@ -42,9 +42,9 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showFindStartPage(req: Request, res: Response): Promise<void> {
-    const { token, userId } = res.locals.user
+    const { accessToken } = res.locals.user.token
 
-    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token.accessToken, userId)
+    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUserToken(accessToken)
     const presenter = new FindStartPresenter(existingDraftReferrals)
     const view = new FindStartView(presenter)
 

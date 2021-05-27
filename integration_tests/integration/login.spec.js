@@ -15,8 +15,8 @@ context('Login', () => {
     beforeEach(() => {
       cy.task('stubProbationPractitionerToken')
       cy.task('stubProbationPractitionerAuthUser')
-      cy.stubGetDraftReferralsForUser([])
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetDraftReferralsForUserToken([])
       cy.login()
     })
 
