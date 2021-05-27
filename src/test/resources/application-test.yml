@@ -10,3 +10,8 @@ pactbroker:
   scheme: https
   consumerversionselectors:
     tags: main
+
+spring:
+  jpa:
+    properties:
+      hibernate.enable_lazy_load_no_trans: true
