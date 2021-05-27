@@ -11,8 +11,8 @@ context('Find an intervention', () => {
   })
 
   it('Probation practitioner views a list of search results', () => {
-    cy.stubGetSentReferrals([])
     cy.stubGetDraftReferralsForUser([])
+    cy.stubGetSentReferralsForUserToken([])
     cy.login()
 
     const thinkingAndBehaviourInterventionId = '6bf9d895-0d61-4b99-af91-f343befbc9a3'

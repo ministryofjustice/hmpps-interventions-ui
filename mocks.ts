@@ -101,7 +101,7 @@ export default async function setUpMocks(): Promise<void> {
     interventionsMocks.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory),
     interventionsMocks.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory),
     Promise.all(sentReferrals.map(referral => interventionsMocks.stubGetSentReferral(referral.id, referral))),
-    interventionsMocks.stubGetSentReferrals(assignedSentReferrals),
+    interventionsMocks.stubGetSentReferralsForUserToken(assignedSentReferrals),
     interventionsMocks.stubGetInterventions(interventions),
     // Adding mocks for assigning locally is a bit tricky - it's very hard to mock a real assignment here due to the state transition.
     // I've opted to just mark these as assigned to unblock the next story for now.

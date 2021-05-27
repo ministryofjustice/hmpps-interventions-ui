@@ -73,7 +73,7 @@ describe('GET /probation-practitioner/dashboard', () => {
 
     authUtils.getProbationPractitionerUserId = jest.fn()
     interventionsService.getIntervention.mockResolvedValue(intervention)
-    interventionsService.getReferralsSentByProbationPractitioner.mockResolvedValue(referrals)
+    interventionsService.getSentReferralsForUserToken.mockResolvedValue(referrals)
 
     await request(app)
       .get('/probation-practitioner/dashboard')

@@ -232,22 +232,11 @@ export default class InterventionsService {
     })) as SentReferral
   }
 
-  async getReferralsSentByProbationPractitioner(token: string, userId: string): Promise<SentReferral[]> {
+  async getSentReferralsForUserToken(token: string): Promise<SentReferral[]> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: `/sent-referrals`,
-      query: { sentBy: userId },
-      headers: { Accept: 'application/json' },
-    })) as SentReferral[]
-  }
-
-  async getReferralsSentToServiceProvider(token: string, providerId: string): Promise<SentReferral[]> {
-    const restClient = this.createRestClient(token)
-
-    return (await restClient.get({
-      path: `/sent-referrals`,
-      query: { sentTo: providerId },
       headers: { Accept: 'application/json' },
     })) as SentReferral[]
   }

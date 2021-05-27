@@ -81,8 +81,8 @@ module.exports = on => {
       return interventionsService.stubGetSentReferral(arg.id, arg.responseJson)
     },
 
-    stubGetSentReferrals: arg => {
-      return interventionsService.stubGetSentReferrals(arg.responseJson)
+    stubGetSentReferralsForUserToken: arg => {
+      return interventionsService.stubGetSentReferralsForUserToken(arg.responseJson)
     },
 
     stubAssignSentReferral: arg => {

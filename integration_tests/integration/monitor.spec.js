@@ -60,7 +60,7 @@ describe('Probation Practitioner monitor journey', () => {
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetSentReferralsForUserToken([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -133,7 +133,7 @@ describe('Probation Practitioner monitor journey', () => {
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetSentReferralsForUserToken([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -220,7 +220,7 @@ describe('Probation Practitioner monitor journey', () => {
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferrals([assignedReferral])
+      cy.stubGetSentReferralsForUserToken([assignedReferral])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
