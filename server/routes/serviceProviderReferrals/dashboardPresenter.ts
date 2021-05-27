@@ -1,12 +1,12 @@
+import Intervention from '../../models/intervention'
 import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 
 export default class DashboardPresenter {
-  constructor(private readonly referrals: SentReferral[], private readonly serviceCategories: ServiceCategory[]) {}
+  constructor(private readonly referrals: SentReferral[], private readonly interventions: Intervention[]) {}
 
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Date received', sort: 'none' },
@@ -18,12 +18,14 @@ export default class DashboardPresenter {
   ]
 
   readonly tableRows: SortableTableRow[] = this.referrals.map(referral => {
-    const { serviceCategoryId } = referral.referral
-    const serviceCategory = this.serviceCategories.find(aServiceCategory => aServiceCategory.id === serviceCategoryId)
-    if (serviceCategory === undefined) {
-      throw new Error(`Expected serviceCategories to contain service category with ID ${serviceCategoryId}`)
+    const interventionForReferral = this.interventions.find(
+      intervention => intervention.id === referral.referral.interventionId
+    )
+    if (interventionForReferral === undefined) {
+      throw new Error(
+        `Couldn't populate row as referral's intervention ID ${referral.referral.interventionId} not passed in collection`
+      )
     }
-
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referral.sentAt))
     const { serviceUser } = referral.referral
 
@@ -39,7 +41,7 @@ export default class DashboardPresenter {
         sortValue: PresenterUtils.fullNameSortValue(serviceUser),
         href: null,
       },
-      { text: utils.convertToProperCase(serviceCategory.name), sortValue: null, href: null },
+      { text: utils.convertToProperCase(interventionForReferral.contractType.name), sortValue: null, href: null },
       { text: referral.assignedTo?.username ?? '', sortValue: null, href: null },
       { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referral) },
     ]

@@ -1,18 +1,20 @@
 import DashboardPresenter from './dashboardPresenter'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 
 describe(DashboardPresenter, () => {
   describe('tableRows', () => {
     it('returns the table’s rows', () => {
-      const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-      const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+      const interventions = [
+        interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } }),
+        interventionFactory.build({ id: '2', contractType: { name: "women's services" } }),
+      ]
       const sentReferrals = [
         sentReferralFactory.build({
           sentAt: '2021-01-26T13:00:00.000000Z',
           referenceNumber: 'ABCABCA1',
           referral: {
-            serviceCategoryId: accommodationServiceCategory.id,
+            interventionId: '1',
             serviceUser: { firstName: 'George', lastName: 'Michael' },
           },
         }),
@@ -20,16 +22,13 @@ describe(DashboardPresenter, () => {
           sentAt: '2020-09-13T13:00:00.000000Z',
           referenceNumber: 'ABCABCA2',
           referral: {
-            serviceCategoryId: socialInclusionServiceCategory.id,
+            interventionId: '2',
             serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
           },
         }),
       ]
 
-      const presenter = new DashboardPresenter(sentReferrals, [
-        accommodationServiceCategory,
-        socialInclusionServiceCategory,
-      ])
+      const presenter = new DashboardPresenter(sentReferrals, interventions)
 
       expect(presenter.tableRows).toEqual([
         [
@@ -44,7 +43,7 @@ describe(DashboardPresenter, () => {
           { text: '13 Sep 2020', sortValue: '2020-09-13', href: null },
           { text: 'ABCABCA2', sortValue: null, href: null },
           { text: 'Jenny Jones', sortValue: 'jones, jenny', href: null },
-          { text: 'Social inclusion', sortValue: null, href: null },
+          { text: "Women's services", sortValue: null, href: null },
           { text: '', sortValue: null, href: null },
           { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[1].id}/details` },
         ],
@@ -53,14 +52,14 @@ describe(DashboardPresenter, () => {
 
     describe('when a referral has been assigned to a caseworker', () => {
       it('includes the caseworker’s username', () => {
-        const serviceCategory = serviceCategoryFactory.build()
+        const intervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
         const sentReferrals = [
           sentReferralFactory
             .assigned()
-            .build({ assignedTo: { username: 'john.smith' }, referral: { serviceCategoryId: serviceCategory.id } }),
+            .build({ assignedTo: { username: 'john.smith' }, referral: { interventionId: intervention.id } }),
         ]
 
-        const presenter = new DashboardPresenter(sentReferrals, [serviceCategory])
+        const presenter = new DashboardPresenter(sentReferrals, [intervention])
 
         expect(presenter.tableRows[0][4]).toMatchObject({ text: 'john.smith' })
       })
@@ -69,12 +68,12 @@ describe(DashboardPresenter, () => {
     describe('the View link', () => {
       describe('when a referral has been assigned to a caseworker', () => {
         it('links to the intervention progress page', () => {
-          const serviceCategory = serviceCategoryFactory.build()
+          const intervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
           const sentReferrals = [
-            sentReferralFactory.assigned().build({ referral: { serviceCategoryId: serviceCategory.id } }),
+            sentReferralFactory.assigned().build({ referral: { interventionId: intervention.id } }),
           ]
 
-          const presenter = new DashboardPresenter(sentReferrals, [serviceCategory])
+          const presenter = new DashboardPresenter(sentReferrals, [intervention])
 
           expect(presenter.tableRows[0][5]).toMatchObject({
             href: `/service-provider/referrals/${sentReferrals[0].id}/progress`,
