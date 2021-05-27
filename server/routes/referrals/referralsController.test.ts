@@ -893,7 +893,7 @@ describe('GET /referrals/:id/service-categories', () => {
       .get('/referrals/1/service-categories')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('What service types are you referring Alex to?')
+        expect(res.text).toContain('What service categories are you referring Alex to?')
       })
   })
 })

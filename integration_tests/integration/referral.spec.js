@@ -342,10 +342,15 @@ describe('Referral form', () => {
         ],
       })
       const intervention = interventionFactory.build({
+        title: 'Womans Service',
         serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+        contractType: {
+          code: 'WMS',
+          name: 'Womans Service',
+        },
       })
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
-        serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+        serviceCategoryIds: null,
         interventionId: intervention.id,
         serviceProvider: {
           name: 'Harmony Living',
@@ -355,7 +360,17 @@ describe('Referral form', () => {
       const completedServiceUserDetailsDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
-          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+          serviceCategoryIds: null,
+          interventionId: intervention.id,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedSelectingServiceCategories = draftReferralFactory
+        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
+        .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory])
+        .build({
           interventionId: intervention.id,
           serviceProvider: {
             name: 'Harmony Living',
@@ -365,7 +380,6 @@ describe('Referral form', () => {
       const completedDraftReferral = draftReferralFactory
         .filledFormUpToFurtherInformation([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
-          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           interventionId: intervention.id,
           serviceProvider: {
             name: 'Harmony Living',
@@ -403,22 +417,14 @@ describe('Referral form', () => {
       cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
       cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
       cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
+      cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
       ReferralSectionVerifier.verifySection
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
           riskInformation: true,
           needsAndRequirements: false,
         })
-        .cohortInterventionReferralDetails({
-          relevantSentence: false,
-          requiredComplexityLevel1: false,
-          desiredOutcomes1: false,
-          requiredComplexityLevel2: false,
-          desiredOutcomes2: false,
-          completedDate: false,
-          rarDays: false,
-          furtherInformation: false,
-        })
+        .selectServiceCagories({ selectServiceCategories: false })
         .checkYourAnswers({ checkAnswers: false })
 
       cy.contains('Confirm service user’s personal details').click()
@@ -463,12 +469,33 @@ describe('Referral form', () => {
       cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
       cy.get('[data-cy=status]').eq(1).contains('NOT STARTED', { matchCase: false })
       cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
+      cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
       ReferralSectionVerifier.verifySection
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
           riskInformation: true,
           needsAndRequirements: true,
         })
+        .selectServiceCagories({ selectServiceCategories: true })
+        .checkYourAnswers({ checkAnswers: false })
+      cy.contains('Select service categories').click()
+      cy.get('h1').contains('What service categories are you referring Alex to?')
+      cy.contains('Accommodation').click()
+      cy.contains('Social inclusion').click()
+
+      cy.stubGetDraftReferral(draftReferral.id, completedSelectingServiceCategories)
+      cy.contains('Save and continue').click()
+      cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
+      cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
+      cy.get('[data-cy=status]').eq(2).contains('NOT STARTED', { matchCase: false })
+      cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
+      ReferralSectionVerifier.verifySection
+        .reviewServiceUserInformation({
+          confirmServiceUserDetails: true,
+          riskInformation: true,
+          needsAndRequirements: true,
+        })
+        .selectServiceCagories({ selectServiceCategories: true })
         .cohortInterventionReferralDetails({
           relevantSentence: true,
           requiredComplexityLevel1: false,
@@ -481,7 +508,7 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: false })
 
-      cy.contains('Confirm the relevant sentence for the intervention referral').click()
+      cy.contains('Confirm the relevant sentence for the Womans Service referral').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
       cy.get('h1').contains('Select the relevant sentence for the accommodation referral')
@@ -492,7 +519,7 @@ describe('Referral form', () => {
 
       cy.location('pathname').should(
         'equal',
-        `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[0]}/desired-outcomes`
+        `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[0]}/desired-outcomes`
       )
       cy.get('h1').contains('What are the desired outcomes for the accommodation service?')
 
@@ -503,7 +530,7 @@ describe('Referral form', () => {
 
       cy.location('pathname').should(
         'equal',
-        `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[0]}/complexity-level`
+        `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[0]}/complexity-level`
       )
 
       cy.get('h1').contains('What is the complexity level for the accommodation service?')
@@ -513,7 +540,7 @@ describe('Referral form', () => {
 
       cy.location('pathname').should(
         'equal',
-        `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[1]}/desired-outcomes`
+        `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[1]}/desired-outcomes`
       )
       cy.get('h1').contains('What are the desired outcomes for the social inclusion service?')
       cy.contains('Service User develops and sustains social networks to reduce initial social isolation.').click()
@@ -526,7 +553,7 @@ describe('Referral form', () => {
 
       cy.location('pathname').should(
         'equal',
-        `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[1]}/complexity-level`
+        `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[1]}/complexity-level`
       )
 
       cy.get('h1').contains('What is the complexity level for the social inclusion service?')
@@ -562,23 +589,26 @@ describe('Referral form', () => {
 
       cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
       cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('NOT STARTED', { matchCase: false })
-      ReferralSectionVerifier.verifySection.reviewServiceUserInformation({
-        confirmServiceUserDetails: true,
-        riskInformation: true,
-        needsAndRequirements: true,
-      })
-      ReferralSectionVerifier.verifySection.cohortInterventionReferralDetails({
-        relevantSentence: true,
-        requiredComplexityLevel1: true,
-        desiredOutcomes1: true,
-        requiredComplexityLevel2: true,
-        desiredOutcomes2: true,
-        completedDate: true,
-        rarDays: true,
-        furtherInformation: true,
-      })
-      ReferralSectionVerifier.verifySection.checkYourAnswers({ checkAnswers: true })
+      cy.get('[data-cy=status]').eq(2).contains('COMPLETED', { matchCase: false })
+      cy.get('[data-cy=status]').eq(3).contains('NOT STARTED', { matchCase: false })
+      ReferralSectionVerifier.verifySection
+        .reviewServiceUserInformation({
+          confirmServiceUserDetails: true,
+          riskInformation: true,
+          needsAndRequirements: true,
+        })
+        .selectServiceCagories({ selectServiceCategories: true })
+        .cohortInterventionReferralDetails({
+          relevantSentence: true,
+          requiredComplexityLevel1: true,
+          desiredOutcomes1: true,
+          requiredComplexityLevel2: true,
+          desiredOutcomes2: true,
+          completedDate: true,
+          rarDays: true,
+          furtherInformation: true,
+        })
+        .checkYourAnswers({ checkAnswers: true })
 
       cy.get('a').contains('Check your answers').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)

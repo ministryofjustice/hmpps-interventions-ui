@@ -11,7 +11,7 @@ export default class UpdateServiceCategoriesPresenter {
   ) {}
 
   readonly text = {
-    title: `What service types are you referring ${this.referral.serviceUser.firstName} to?`,
+    title: `What service categories are you referring ${this.referral.serviceUser.firstName} to?`,
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'service-category-ids')

@@ -142,15 +142,14 @@ export default class ReferralsController {
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
-    const { serviceCategories } = intervention
     if (
-      serviceCategories.length === 1 &&
+      intervention.serviceCategories.length === 1 &&
       (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length === 0)
     ) {
       throw new Error('No service category selected')
     }
 
-    const presenter = new ReferralFormPresenter(referral, serviceCategories)
+    const presenter = new ReferralFormPresenter(referral, intervention)
     const view = new ReferralFormView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
