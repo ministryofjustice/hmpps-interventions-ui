@@ -42,6 +42,7 @@ class CommunityAPIActionPlanServiceTest {
       NotificationCreateRequestDTO(
         "ACC",
         sentAtDefault,
+        event.actionPlan.referral.id,
         submittedAtDefault,
         "Action Plan Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
           "http://testUrl/probation-practitioner/submit-action-plan/${event.actionPlan.referral.id}",

@@ -197,6 +197,7 @@ class CommunityAPIClientTest {
   private val appointmentCreateRequest = AppointmentCreateRequestDTO(
     contractType = "ACC",
     referralStart = OffsetDateTime.now(),
+    referralId = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
     appointmentStart = OffsetDateTime.now(),
     appointmentEnd = OffsetDateTime.now(),
     officeLocationCode = "CRSEXTL",

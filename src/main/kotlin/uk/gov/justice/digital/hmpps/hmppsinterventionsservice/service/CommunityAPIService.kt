@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.OffsetDateTime
+import java.util.UUID
 
 interface CommunityAPIService {
   fun getNotes(referral: Referral, url: String, description: String): String {
@@ -76,6 +77,7 @@ class CommunityAPIReferralEventService(
       event.referral.intervention.dynamicFrameworkContract.contractType.code,
       event.referral.sentAt!!,
       event.referral.relevantSentenceId!!,
+      event.referral.id,
       getNotes(event.referral, url, "Referral Sent"),
     )
 
@@ -92,6 +94,7 @@ class CommunityAPIReferralEventService(
       event.referral.sentAt!!,
       event.referral.concludedAt!!,
       event.referral.relevantSentenceId!!,
+      event.referral.id,
       event.type.name,
       getNotes(event.referral, url, "Referral Ended"),
     )
@@ -135,6 +138,7 @@ class CommunityAPIEndOfServiceReportEventService(
     val request = NotificationCreateRequestDTO(
       event.endOfServiceReport.referral.intervention.dynamicFrameworkContract.contractType.code,
       referral.sentAt!!,
+      referral.id,
       event.endOfServiceReport.submittedAt!!,
       getNotes(referral, url, "End of Service Report Submitted"),
     )
@@ -178,6 +182,7 @@ class CommunityAPIActionPlanEventService(
     val request = NotificationCreateRequestDTO(
       referral.intervention.dynamicFrameworkContract.contractType.code,
       referral.sentAt!!,
+      referral.id,
       event.actionPlan.submittedAt!!,
       getNotes(referral, url, "Action Plan Submitted"),
     )
@@ -228,6 +233,7 @@ data class ReferRequest(
   val contractType: String,
   val startedAt: OffsetDateTime,
   val sentenceId: Long,
+  val referralId: UUID,
   val notes: String,
 )
 
@@ -236,6 +242,7 @@ data class ReferralEndRequest(
   val startedAt: OffsetDateTime,
   val endedAt: OffsetDateTime,
   val sentenceId: Long,
+  val referralId: UUID,
   val endType: String,
   val notes: String,
 )
@@ -243,6 +250,7 @@ data class ReferralEndRequest(
 data class NotificationCreateRequestDTO(
   val contractType: String,
   val referralStart: OffsetDateTime,
+  val referralId: UUID,
   val contactDateTime: OffsetDateTime,
   val notes: String
 )

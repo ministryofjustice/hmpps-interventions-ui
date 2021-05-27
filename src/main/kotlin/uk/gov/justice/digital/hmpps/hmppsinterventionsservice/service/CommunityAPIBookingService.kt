@@ -7,6 +7,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import java.time.OffsetDateTime
+import java.util.UUID
 import javax.validation.constraints.NotNull
 
 @Service
@@ -69,6 +70,7 @@ class CommunityAPIBookingService(
     return AppointmentCreateRequestDTO(
       contractType = appointment.actionPlan.referral.intervention.dynamicFrameworkContract.contractType.code,
       referralStart = appointment.actionPlan.referral.sentAt!!,
+      referralId = appointment.actionPlan.referral.id,
       appointmentStart = appointmentTime,
       appointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
       officeLocationCode = officeLocation,
@@ -114,6 +116,7 @@ abstract class AppointmentRequestDTO
 data class AppointmentCreateRequestDTO(
   val contractType: String,
   val referralStart: OffsetDateTime,
+  val referralId: UUID,
   val appointmentStart: OffsetDateTime,
   val appointmentEnd: OffsetDateTime,
   val officeLocationCode: String,
