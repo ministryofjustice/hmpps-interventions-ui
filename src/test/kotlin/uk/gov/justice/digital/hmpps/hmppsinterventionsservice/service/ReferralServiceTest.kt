@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
@@ -34,10 +35,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Int
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
 import java.time.LocalDate
 import java.time.LocalTime
@@ -63,6 +66,9 @@ class ReferralServiceTest @Autowired constructor(
   private val contractFactory = DynamicFrameworkContractFactory(entityManager)
   private val serviceProviderFactory = ServiceProviderFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
+  private val serviceCategoryFactory = ServiceCategoryFactory(entityManager)
+  private val contractTypeFactory = ContractTypeFactory(entityManager)
+  private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory(entityManager)
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
@@ -465,5 +471,34 @@ class ReferralServiceTest @Autowired constructor(
 
     // the second user doesn't see any referrals (because there aren't any for their provider)
     assertThat(referralService.getSentReferralsForUser(users[1])).isEmpty()
+  }
+
+  @Test
+  fun `ensure that desired outcomes are actually removed via orphan removal`() {
+
+    val serviceCategoryId1 = UUID.randomUUID()
+    val serviceCategoryId2 = UUID.randomUUID()
+    val desiredOutcome1 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId1)
+    val desiredOutcome2 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId2)
+    val serviceCategory1 = serviceCategoryFactory.create(id = serviceCategoryId1, desiredOutcomes = mutableListOf(desiredOutcome1))
+    val serviceCategory2 = serviceCategoryFactory.create(id = serviceCategoryId2, desiredOutcomes = mutableListOf(desiredOutcome2))
+
+    val contractType = contractTypeFactory.create(serviceCategories = setOf(serviceCategory1, serviceCategory2))
+    val referral = referralFactory.createDraft(
+      intervention = interventionFactory.create(
+        contract = dynamicFrameworkContractFactory.create(
+          contractType = contractType
+        )
+      ),
+      selectedServiceCategories = setOf(serviceCategory1).toMutableSet(),
+      desiredOutcomes = listOf(desiredOutcome1).toMutableList()
+    )
+    referralService.updateDraftReferral(referral, DraftReferralDTO(serviceCategoryIds = listOf(serviceCategoryId2)))
+
+    referralRepository.flush()
+    val updatedReferral = referralRepository.findById(referral.id).get()
+    assertThat(updatedReferral!!.selectedServiceCategories).hasSize(1)
+    assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId2)
+    assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(0)
   }
 }

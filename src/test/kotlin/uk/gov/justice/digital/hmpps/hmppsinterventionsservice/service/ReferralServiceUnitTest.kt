@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -252,6 +253,7 @@ class ReferralServiceUnitTest {
       )
 
       val update = DraftReferralDTO(serviceCategoryIds = serviceCategoryIds)
+      whenever(referralRepository.saveAndFlush(any())).thenReturn(referral)
       whenever(referralRepository.save(any())).thenReturn(referral)
 
       referralService.updateDraftReferral(referral, update)
@@ -260,6 +262,126 @@ class ReferralServiceUnitTest {
       verify(referralRepository).save(argument.capture())
       val savedActionPlan = argument.value
       assertThat(savedActionPlan.selectedServiceCategories == serviceCategories)
+    }
+
+    @Test
+    fun `updating selected service category with new set removes desired outcome for existing service categories`() {
+
+      val serviceCategoryId1 = UUID.randomUUID()
+      val serviceCategoryId2 = UUID.randomUUID()
+      val desiredOutcome1 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId1)
+      val desiredOutcome2 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId2)
+      val serviceCategory1 = serviceCategoryFactory.create(id = serviceCategoryId1, desiredOutcomes = listOf(desiredOutcome1))
+      val serviceCategory2 = serviceCategoryFactory.create(id = serviceCategoryId2, desiredOutcomes = listOf(desiredOutcome2))
+
+      val contractType = contractTypeFactory.create(serviceCategories = setOf(serviceCategory1, serviceCategory2))
+      val referral = referralFactory.createDraft(
+        intervention = interventionFactory.create(
+          contract = dynamicFrameworkContractFactory.create(
+            contractType = contractType
+          )
+        ),
+        selectedServiceCategories = setOf(serviceCategory1),
+        desiredOutcomes = listOf(desiredOutcome1)
+      )
+
+      whenever(serviceCategoryRepository.findByIdIn(any())).thenReturn(setOf(serviceCategory2))
+      whenever(referralRepository.saveAndFlush(any())).thenReturn(referral)
+      whenever(referralRepository.save(any())).thenReturn(referral)
+      val updatedReferral = referralService.updateDraftReferral(referral, DraftReferralDTO(serviceCategoryIds = listOf(serviceCategoryId2)))
+
+      assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
+      assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId2)
+      assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(0)
+    }
+
+    @Test
+    fun `updating selected service category with same set doesn't remove desired outcome for same service categories`() {
+
+      val serviceCategoryId1 = UUID.randomUUID()
+      val desiredOutcome1 = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId1)
+      val serviceCategory1 = serviceCategoryFactory.create(id = serviceCategoryId1, desiredOutcomes = listOf(desiredOutcome1))
+
+      val contractType = contractTypeFactory.create(serviceCategories = setOf(serviceCategory1))
+      val referral = referralFactory.createDraft(
+        intervention = interventionFactory.create(
+          contract = dynamicFrameworkContractFactory.create(
+            contractType = contractType
+          )
+        ),
+        selectedServiceCategories = setOf(serviceCategory1),
+        desiredOutcomes = listOf(desiredOutcome1)
+      )
+
+      whenever(serviceCategoryRepository.findByIdIn(any())).thenReturn(setOf(serviceCategory1))
+      whenever(referralRepository.saveAndFlush(any())).thenReturn(referral)
+      whenever(referralRepository.save(any())).thenReturn(referral)
+
+      val updatedReferral = referralService.updateDraftReferral(referral, DraftReferralDTO(serviceCategoryIds = listOf(serviceCategoryId1)))
+
+      verify(referralRepository).save(any())
+      assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
+      assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId1)
+      assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(1)
+      assertThat(updatedReferral.selectedDesiredOutcomes!!.elementAt(0).serviceCategoryId).isEqualTo(serviceCategoryId1)
+      assertThat(updatedReferral.selectedDesiredOutcomes!!.elementAt(0).desiredOutcomeId).isEqualTo(desiredOutcome1.id)
+    }
+
+    @Test
+    fun `updating selected service category with new set removes complexity level for existing service categories`() {
+
+      val complexityLevel1 = ComplexityLevel(UUID.randomUUID(), "title", "description")
+      val complexityLevel2 = ComplexityLevel(UUID.randomUUID(), "title", "description")
+      val serviceCategory1 = serviceCategoryFactory.create(complexityLevels = listOf(complexityLevel1))
+      val serviceCategory2 = serviceCategoryFactory.create(complexityLevels = listOf(complexityLevel2))
+
+      val contractType = contractTypeFactory.create(serviceCategories = setOf(serviceCategory1, serviceCategory2))
+      val referral = referralFactory.createDraft(
+        intervention = interventionFactory.create(
+          contract = dynamicFrameworkContractFactory.create(
+            contractType = contractType
+          )
+        ),
+        selectedServiceCategories = setOf(serviceCategory1),
+        complexityLevelIds = mapOf(serviceCategory1.id to complexityLevel1.id).toMutableMap()
+      )
+
+      whenever(serviceCategoryRepository.findByIdIn(any())).thenReturn(setOf(serviceCategory2))
+      whenever(referralRepository.saveAndFlush(any())).thenReturn(referral)
+      whenever(referralRepository.save(any())).thenReturn(referral)
+      val updatedReferral = referralService.updateDraftReferral(referral, DraftReferralDTO(serviceCategoryIds = listOf(serviceCategory2.id)))
+
+      assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
+      assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategory2.id)
+      assertThat(updatedReferral.complexityLevelIds).hasSize(0)
+    }
+
+    @Test
+    fun `updating selected service category with same set doesn't remove complexity level for same service categories`() {
+
+      val complexityLevel1 = ComplexityLevel(UUID.randomUUID(), "title", "description")
+      val serviceCategory1 = serviceCategoryFactory.create(complexityLevels = listOf(complexityLevel1))
+
+      val contractType = contractTypeFactory.create(serviceCategories = setOf(serviceCategory1))
+      val referral = referralFactory.createDraft(
+        intervention = interventionFactory.create(
+          contract = dynamicFrameworkContractFactory.create(
+            contractType = contractType
+          )
+        ),
+        selectedServiceCategories = setOf(serviceCategory1),
+        complexityLevelIds = mapOf(serviceCategory1.id to complexityLevel1.id).toMutableMap()
+      )
+
+      whenever(serviceCategoryRepository.findByIdIn(any())).thenReturn(setOf(serviceCategory1))
+      whenever(referralRepository.saveAndFlush(any())).thenReturn(referral)
+      whenever(referralRepository.save(any())).thenReturn(referral)
+      val updatedReferral = referralService.updateDraftReferral(referral, DraftReferralDTO(serviceCategoryIds = listOf(serviceCategory1.id)))
+
+      assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
+      assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategory1.id)
+      assertThat(updatedReferral.complexityLevelIds).hasSize(1)
+      assertThat(updatedReferral.complexityLevelIds!![serviceCategory1.id]).isEqualTo(complexityLevel1.id)
     }
 
     @Test
@@ -280,6 +402,7 @@ class ReferralServiceUnitTest {
       )
 
       val update = DraftReferralDTO(serviceCategoryIds = serviceCategoryIds)
+      whenever(referralRepository.saveAndFlush(any())).thenReturn(referral)
       whenever(referralRepository.save(any())).thenReturn(referral)
 
       val exception = Assertions.assertThrows(ValidationError::class.java) {
