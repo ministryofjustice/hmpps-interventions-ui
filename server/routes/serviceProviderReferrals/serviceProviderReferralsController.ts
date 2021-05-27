@@ -249,7 +249,7 @@ export default class ServiceProviderReferralsController {
     const [serviceCategory, serviceUser] = await Promise.all([
       this.interventionsService.getServiceCategory(
         res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryId
+        sentReferral.referral.serviceCategoryIds[0]
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
@@ -283,7 +283,7 @@ export default class ServiceProviderReferralsController {
     const [serviceCategory, serviceUser] = await Promise.all([
       this.interventionsService.getServiceCategory(
         res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryId
+        sentReferral.referral.serviceCategoryIds[0]
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
@@ -304,7 +304,7 @@ export default class ServiceProviderReferralsController {
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
       res.locals.user.token.accessToken,
-      sentReferral.referral.serviceCategoryId
+      sentReferral.referral.serviceCategoryIds[0]
     )
 
     const form = new FinaliseActionPlanActivitiesForm(sentReferral, actionPlan, serviceCategory)
@@ -331,7 +331,7 @@ export default class ServiceProviderReferralsController {
     const [serviceCategory, serviceUser] = await Promise.all([
       this.interventionsService.getServiceCategory(
         res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryId
+        sentReferral.referral.serviceCategoryIds[0]
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
@@ -362,7 +362,7 @@ export default class ServiceProviderReferralsController {
     const [serviceCategory, serviceUser] = await Promise.all([
       this.interventionsService.getServiceCategory(
         res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryId
+        sentReferral.referral.serviceCategoryIds[0]
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
@@ -396,7 +396,7 @@ export default class ServiceProviderReferralsController {
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const serviceCategory = await this.interventionsService.getServiceCategory(
       token,
-      referral.referral.serviceCategoryId
+      referral.referral.serviceCategoryIds[0]
     )
 
     const presenter = new AddActionPlanNumberOfSessionsPresenter(

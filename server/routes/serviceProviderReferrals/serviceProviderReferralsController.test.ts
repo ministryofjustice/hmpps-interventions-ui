@@ -270,7 +270,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
         desiredOutcomesIds: [desiredOutcome.id],
       },
@@ -300,7 +300,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
     })
@@ -334,7 +334,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
       const referral = sentReferralFactory.assigned().build({
         referral: {
-          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
           serviceUser: { firstName: 'Alex', lastName: 'River' },
           desiredOutcomesIds: [desiredOutcome.id],
         },
@@ -380,7 +380,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
   const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes })
   const referral = sentReferralFactory.build({
     referral: {
-      serviceCategoryId: serviceCategory.id,
+      serviceCategoryIds: [serviceCategory.id],
       desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id],
     },
   })
@@ -430,7 +430,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', (
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
     })
@@ -471,7 +471,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const referral = sentReferralFactory.assigned().build({
         referral: {
-          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
           serviceUser: { firstName: 'Alex', lastName: 'River' },
         },
       })
@@ -502,7 +502,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
         desiredOutcomesIds: [desiredOutcome.id],
       },
@@ -548,7 +548,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/confirmation', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
     })
