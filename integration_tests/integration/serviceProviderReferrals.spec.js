@@ -252,8 +252,7 @@ describe('Service provider referrals dashboard', () => {
       referral: {
         interventionId: accommodationIntervention.id,
         serviceCategoryIds: [serviceCategory.id],
-        serviceCategoryId: serviceCategory.id, // TODO IC-1668: Remove this once action plan switched to cohort structure
-        desiredOutcomesIds: selectedDesiredOutcomesIds,
+        desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
       },
     }
     const deliusServiceUser = deliusServiceUserFactory.build()

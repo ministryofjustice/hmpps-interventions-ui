@@ -13,7 +13,9 @@ export default class ReviewActionPlanPresenter {
 
   readonly submitFormAction = `/service-provider/action-plan/${this.actionPlan.id}/submit`
 
-  private readonly desiredOutcomesIds = this.sentReferral.referral.desiredOutcomesIds
+  private readonly desiredOutcomesIds = this.sentReferral.referral.desiredOutcomes.flatMap(
+    desiredOutcome => desiredOutcome.desiredOutcomesIds
+  )
 
   readonly text = {
     title: `${utils.convertToProperCase(this.serviceCategory.name)} - create action plan`,

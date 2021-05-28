@@ -16,9 +16,12 @@ export default class FinaliseActionPlanActivitiesForm {
   }
 
   get errors(): { desiredOutcomeId: string; error: FormValidationError }[] {
-    const desiredOutcomeIdsWithoutActivities = this.referral.referral.desiredOutcomesIds.filter(
-      desiredOutcomeId => !this.actionPlan.activities.some(activity => activity.desiredOutcome.id === desiredOutcomeId)
-    )
+    const desiredOutcomeIdsWithoutActivities = this.referral.referral.desiredOutcomes
+      .flatMap(desiredOutcome => desiredOutcome.desiredOutcomesIds)
+      .filter(
+        desiredOutcomeId =>
+          !this.actionPlan.activities.some(activity => activity.desiredOutcome.id === desiredOutcomeId)
+      )
 
     return desiredOutcomeIdsWithoutActivities.map(desiredOutcomeId => {
       const desiredOutcome = this.serviceCategory.desiredOutcomes.find(outcome => desiredOutcomeId === outcome.id)

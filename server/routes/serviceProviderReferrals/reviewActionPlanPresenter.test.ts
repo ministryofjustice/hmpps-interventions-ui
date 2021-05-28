@@ -27,9 +27,9 @@ describe(ReviewActionPlanPresenter, () => {
   const selectedDesiredOutcomesIds = [desiredOutcomes[0].id, desiredOutcomes[1].id]
   const sentReferral = sentReferralFactory.assigned().build({
     referral: {
-      serviceCategoryId: serviceCategory.id,
+      serviceCategoryIds: [serviceCategory.id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-      desiredOutcomesIds: selectedDesiredOutcomesIds,
+      desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
     },
   })
 
