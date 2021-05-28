@@ -1154,18 +1154,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getDraftReferralsForUser', () => {
+  describe('getDraftReferralsForUserToken', () => {
     it('returns a list of draft referrals for a given userID', async () => {
+      const userToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '8751622134' } })
+
       await provider.addInteraction({
         state: 'a single referral for user with ID 8751622134 exists',
         uponReceiving: 'a GET request to return the referrals for that user ID',
         withRequest: {
           method: 'GET',
           path: '/draft-referrals',
-          query: 'userID=8751622134',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         },
         willRespondWith: {
@@ -1182,22 +1183,23 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUser(token, '8751622134')
+      const referrals = await interventionsService.getDraftReferralsForUserToken(userToken)
       expect(referrals.length).toBe(1)
       expect(referrals[0].id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
 
     it('returns an empty list for an unknown user ID', async () => {
+      const unknownUserToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '123344556' } })
+
       await provider.addInteraction({
         state: 'a referral does not exist for user with ID 123344556',
         uponReceiving: 'a GET request to return the referrals for that user ID',
         withRequest: {
           method: 'GET',
           path: '/draft-referrals',
-          query: 'userID=123344556',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${unknownUserToken}`,
           },
         },
         willRespondWith: {
@@ -1209,7 +1211,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUser(token, '123344556')
+      const referrals = await interventionsService.getDraftReferralsForUserToken(unknownUserToken)
       expect(referrals.length).toBe(0)
     })
   })
@@ -1444,15 +1446,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getReferralsSentToServiceProvider', () => {
-    it('returns a list of all sent referrals for the SP user', async () => {
+  describe('getReferralsForUserToken', () => {
+    it('returns a list of sent referrals', async () => {
       await provider.addInteraction({
-        state: 'There are some existing sent referrals sent to HARMONY_LIVING',
-        uponReceiving: "a request for all sent referrals for the SP user's organization",
+        state: 'There are some existing sent referrals sent by a probation practitioner user',
+        uponReceiving: 'a request for all sent referrals for the probation practitioner user',
         withRequest: {
           method: 'GET',
           path: '/sent-referrals',
-          query: { sentTo: 'HARMONY_LIVING' },
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -1462,35 +1463,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getReferralsSentToServiceProvider(token, 'HARMONY_LIVING')).toEqual([
-        sentReferral,
-        sentReferral,
-      ])
-    })
-  })
-
-  describe('getReferralsSentByProbationPractitioner', () => {
-    it('returns a list of all referrals sent by the PP user', async () => {
-      await provider.addInteraction({
-        state: "There are some existing sent referrals sent by user with id 'bernard.beaks'",
-        uponReceiving: "a request for all sent referrals for the SP user's organization",
-        withRequest: {
-          method: 'GET',
-          path: '/sent-referrals',
-          query: { sentBy: 'bernard.beaks' },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like([sentReferral, sentReferral]),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      })
-
-      expect(await interventionsService.getReferralsSentByProbationPractitioner(token, 'bernard.beaks')).toEqual([
-        sentReferral,
-        sentReferral,
-      ])
+      expect(await interventionsService.getSentReferralsForUserToken(token)).toEqual([sentReferral, sentReferral])
     })
   })
 

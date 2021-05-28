@@ -106,7 +106,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubGetDraftReferralsForUser = async (responseJson: unknown): Promise<unknown> => {
+  stubGetDraftReferralsForUserToken = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
@@ -154,7 +154,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubGetSentReferrals = async (responseJson: unknown): Promise<unknown> => {
+  stubGetSentReferralsForUserToken = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',

@@ -69,8 +69,8 @@ module.exports = on => {
       return interventionsService.stubGetServiceCategory(arg.id, arg.responseJson)
     },
 
-    stubGetDraftReferralsForUser: arg => {
-      return interventionsService.stubGetDraftReferralsForUser(arg.responseJson)
+    stubGetDraftReferralsForUserToken: arg => {
+      return interventionsService.stubGetDraftReferralsForUserToken(arg.responseJson)
     },
 
     stubSendDraftReferral: arg => {
@@ -81,8 +81,8 @@ module.exports = on => {
       return interventionsService.stubGetSentReferral(arg.id, arg.responseJson)
     },
 
-    stubGetSentReferrals: arg => {
-      return interventionsService.stubGetSentReferrals(arg.responseJson)
+    stubGetSentReferralsForUserToken: arg => {
+      return interventionsService.stubGetSentReferralsForUserToken(arg.responseJson)
     },
 
     stubAssignSentReferral: arg => {

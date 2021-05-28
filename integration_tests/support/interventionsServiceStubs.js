@@ -22,8 +22,8 @@ Cypress.Commands.add('stubGetServiceCategory', (id, responseJson) => {
   cy.task('stubGetServiceCategory', { id, responseJson })
 })
 
-Cypress.Commands.add('stubGetDraftReferralsForUser', responseJson => {
-  cy.task('stubGetDraftReferralsForUser', { responseJson })
+Cypress.Commands.add('stubGetDraftReferralsForUserToken', responseJson => {
+  cy.task('stubGetDraftReferralsForUserToken', { responseJson })
 })
 
 Cypress.Commands.add('stubSendDraftReferral', (id, responseJson) => {
@@ -34,8 +34,8 @@ Cypress.Commands.add('stubGetSentReferral', (id, responseJson) => {
   cy.task('stubGetSentReferral', { id, responseJson })
 })
 
-Cypress.Commands.add('stubGetSentReferrals', responseJson => {
-  cy.task('stubGetSentReferrals', { responseJson })
+Cypress.Commands.add('stubGetSentReferralsForUserToken', responseJson => {
+  cy.task('stubGetSentReferralsForUserToken', { responseJson })
 })
 
 Cypress.Commands.add('stubAssignSentReferral', (id, responseJson) => {

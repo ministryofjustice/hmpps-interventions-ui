@@ -46,7 +46,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
     cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
-    cy.stubGetSentReferrals(sentReferrals)
+    cy.stubGetSentReferralsForUserToken(sentReferrals)
 
     cy.login()
 
@@ -75,7 +75,7 @@ describe('Probation practitioner referrals dashboard', () => {
   })
 
   it('user views an end of service report', () => {
-    cy.stubGetSentReferrals([])
+    cy.stubGetSentReferralsForUserToken([])
     cy.login()
 
     const serviceCategory = serviceCategoryFactory.build()

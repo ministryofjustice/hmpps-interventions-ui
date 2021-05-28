@@ -64,7 +64,7 @@ describe('GET /service-provider/dashboard', () => {
       }),
     ]
 
-    interventionsService.getReferralsSentToServiceProvider.mockResolvedValue(sentReferrals)
+    interventionsService.getSentReferralsForUserToken.mockResolvedValue(sentReferrals)
     interventionsService.getIntervention.mockImplementation(async (token, id) => {
       const result = [accommodationIntervention, womensServicesIntervention].find(category => category.id === id)
       return result!

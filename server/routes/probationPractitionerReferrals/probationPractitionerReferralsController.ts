@@ -8,7 +8,6 @@ import FindStartPresenter from './findStartPresenter'
 import MyCasesView from './myCasesView'
 import MyCasesPresenter from './myCasesPresenter'
 import FindStartView from './findStartView'
-import AuthUtils from '../../utils/authUtils'
 import SubmittedPostSessionFeedbackPresenter from '../shared/submittedPostSessionFeedbackPresenter'
 import SubmittedPostSessionFeedbackView from '../shared/submittedPostSessionFeedbackView'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
@@ -30,11 +29,7 @@ export default class ProbationPractitionerReferralsController {
   ) {}
 
   async showMyCases(req: Request, res: Response): Promise<void> {
-    const userId = AuthUtils.getProbationPractitionerUserId(res.locals.user)
-    const cases = await this.interventionsService.getReferralsSentByProbationPractitioner(
-      res.locals.user.token.accessToken,
-      userId
-    )
+    const cases = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken)
 
     const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
     const interventions = await Promise.all(
@@ -47,9 +42,9 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showFindStartPage(req: Request, res: Response): Promise<void> {
-    const { token, userId } = res.locals.user
+    const { accessToken } = res.locals.user.token
 
-    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUser(token.accessToken, userId)
+    const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUserToken(accessToken)
     const presenter = new FindStartPresenter(existingDraftReferrals)
     const view = new FindStartView(presenter)
 
