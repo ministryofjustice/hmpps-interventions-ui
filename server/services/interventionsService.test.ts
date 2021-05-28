@@ -916,7 +916,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns the updated referral when setting serviceCategoryIds', async () => {
       await provider.addInteraction({
-        state: 'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962',
+        state:
+          'There is an existing draft referral with ID of d496e4a7-7cc1-44ea-ba67-c295084f1962 with contract type of womens services',
         uponReceiving: 'a PATCH request to update serviceCategoryIds',
         withRequest: {
           method: 'PATCH',
@@ -927,14 +928,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             Authorization: `Bearer ${token}`,
           },
           body: {
-            serviceCategoryIds: ['c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f', 'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12'],
+            serviceCategoryIds: ['ca374ac3-84eb-4b91-bea7-9005398f426f', '428ee70f-3001-4399-95a6-ad25eaaede16'],
           },
         },
         willRespondWith: {
           status: 200,
           body: {
             id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-            serviceCategoryIds: ['c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f', 'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12'],
+            serviceCategoryIds: ['ca374ac3-84eb-4b91-bea7-9005398f426f', '428ee70f-3001-4399-95a6-ad25eaaede16'],
           },
           headers: {
             'Content-Type': 'application/json',
@@ -943,12 +944,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
-        serviceCategoryIds: ['c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f', 'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12'],
+        serviceCategoryIds: ['ca374ac3-84eb-4b91-bea7-9005398f426f', '428ee70f-3001-4399-95a6-ad25eaaede16'],
       })
       expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
       expect(referral.serviceCategoryIds).toEqual([
-        'c81b6da3-77ef-4e9d-b8c7-c703b2cc7e8f',
-        'eaed6f70-f8cb-40dd-a0ca-8d91c5906d12',
+        'ca374ac3-84eb-4b91-bea7-9005398f426f',
+        '428ee70f-3001-4399-95a6-ad25eaaede16',
       ])
     })
   })
@@ -1021,7 +1022,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           body: {
             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-            complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
           },
         },
         willRespondWith: {
@@ -1031,7 +1032,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             complexityLevels: Matchers.like([
               {
                 serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-                complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+                complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
               },
             ]),
           },
@@ -1046,13 +1047,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-          complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
         }
       )
 
       expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
       expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-      expect(referral.complexityLevels![0].complexityLevelId).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+      expect(referral.complexityLevels![0].complexityLevelId).toEqual('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
     })
   })
 
