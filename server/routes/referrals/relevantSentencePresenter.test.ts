@@ -1,18 +1,18 @@
 import RelevantSentencePresenter from './relevantSentencePresenter'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 describe(RelevantSentencePresenter, () => {
-  const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-  const draftReferral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+  const intervention = interventionFactory.build({ contractType: { name: 'personal wellbeing' } })
+  const draftReferral = draftReferralFactory.justCreated().build({ interventionId: intervention.id })
 
   describe('title', () => {
-    it('includes the service category name', () => {
+    it('includes the service type name', () => {
       const convictions = [deliusConvictionFactory.build()]
-      const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+      const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
-      expect(presenter.title).toEqual('Select the relevant sentence for the social inclusion referral')
+      expect(presenter.title).toEqual('Select the relevant sentence for the personal wellbeing referral')
     })
   })
 
@@ -64,7 +64,7 @@ describe(RelevantSentencePresenter, () => {
 
         const convictions = [deliusConvictionFactory.build({ offences })]
 
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
         expect(presenter.relevantSentenceFields[0].category).toEqual('Common and other types of assault')
       })
@@ -117,7 +117,7 @@ describe(RelevantSentencePresenter, () => {
 
         const convictions = [deliusConvictionFactory.build({ offences })]
 
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
         expect(presenter.relevantSentenceFields[0].subcategory).toEqual('Common assault and battery')
       })
@@ -139,7 +139,7 @@ describe(RelevantSentencePresenter, () => {
           }),
         ]
 
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
         expect(presenter.relevantSentenceFields[0].endOfSentenceDate).toEqual('15 September 2025')
       })
@@ -149,7 +149,7 @@ describe(RelevantSentencePresenter, () => {
       it('uses the conviction ID', () => {
         const convictions = [deliusConvictionFactory.build({ convictionId: 123456789 })]
 
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
         expect(presenter.relevantSentenceFields[0].value).toEqual(123456789)
       })
@@ -160,7 +160,7 @@ describe(RelevantSentencePresenter, () => {
         it('sets the `checked` value to `false`', () => {
           const convictions = deliusConvictionFactory.buildList(2)
 
-          const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+          const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
           expect(presenter.relevantSentenceFields[0].checked).toBe(false)
           expect(presenter.relevantSentenceFields[1].checked).toBe(false)
@@ -173,7 +173,7 @@ describe(RelevantSentencePresenter, () => {
 
             const convictions = [deliusConvictionFactory.build(), convictionWithSelectedSentence]
 
-            const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+            const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
             expect(presenter.relevantSentenceFields[0].checked).toBe(false)
             expect(presenter.relevantSentenceFields[1].checked).toBe(true)
@@ -187,7 +187,7 @@ describe(RelevantSentencePresenter, () => {
 
           const convictions = [deliusConvictionFactory.build(), convictionWithSelectedSentence]
 
-          const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions, null, {
+          const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions, null, {
             'relevant-sentence-id': convictionWithSelectedSentence.convictionId,
           })
 
@@ -206,7 +206,7 @@ describe(RelevantSentencePresenter, () => {
 
             const convictions = [convictionWithSentenceAlreadyOnReferral, convictionWithSentenceChosenByUser]
 
-            const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions, null, {
+            const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions, null, {
               'relevant-sentence-id': convictionWithSentenceChosenByUser.convictionId,
             })
 
@@ -223,7 +223,7 @@ describe(RelevantSentencePresenter, () => {
 
     describe('when no error is passed in', () => {
       it('returns null', () => {
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -231,7 +231,7 @@ describe(RelevantSentencePresenter, () => {
 
     describe('when an error is passed in', () => {
       it('returns error information', () => {
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions, {
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions, {
           errors: [
             {
               formFields: ['relevant-sentence-id'],
@@ -253,7 +253,7 @@ describe(RelevantSentencePresenter, () => {
 
     describe('when no error is passed in', () => {
       it('returns null', () => {
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
         expect(presenter.errorMessage).toBeNull()
       })
@@ -261,7 +261,7 @@ describe(RelevantSentencePresenter, () => {
 
     describe('when an error is passed in', () => {
       it('returns error information', () => {
-        const presenter = new RelevantSentencePresenter(draftReferral, serviceCategory, convictions, {
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions, {
           errors: [
             {
               formFields: ['relevant-sentence-id'],
