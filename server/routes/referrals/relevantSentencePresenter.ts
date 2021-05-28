@@ -1,19 +1,19 @@
-import ServiceCategory from '../../models/serviceCategory'
 import DeliusConviction from '../../models/delius/deliusConviction'
 import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import Intervention from '../../models/intervention'
 
 export default class RelevantSentencePresenter {
   constructor(
     private readonly referral: DraftReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly convictions: DeliusConviction[],
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly title = `Select the relevant sentence for the ${this.serviceCategory.name.toLocaleLowerCase()} referral`
+  readonly title = `Select the relevant sentence for the ${this.intervention.contractType.name.toLocaleLowerCase()} referral`
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'relevant-sentence-id')
 

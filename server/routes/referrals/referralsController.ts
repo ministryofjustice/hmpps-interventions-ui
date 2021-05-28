@@ -159,12 +159,8 @@ export default class ReferralsController {
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    if (referral.serviceCategoryId === null) {
-      throw new Error('Attempting to view relevant sentence without service category selected')
-    }
-
-    const [serviceCategory, serviceUser, convictions] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+    const [intervention, serviceUser, convictions] = await Promise.all([
+      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
     ])
@@ -173,7 +169,7 @@ export default class ReferralsController {
       throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
     }
 
-    const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions)
+    const presenter = new RelevantSentencePresenter(referral, intervention, convictions)
     const view = new RelevantSentenceView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -187,7 +183,10 @@ export default class ReferralsController {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     if (!referral.serviceCategoryIds || referral.serviceCategoryIds.length < 1) {
-      throw new Error('Attempting to update relevant sentence without service category selected')
+      throw new Error(
+        'Attempting to update relevant sentence without service category selected; ' +
+          'a selected service category is required to construct the link to the next page in the referral form.'
+      )
     }
 
     if (form.isValid) {
@@ -207,12 +206,8 @@ export default class ReferralsController {
     if (!error) {
       res.redirect(`/referrals/${req.params.id}/service-category/${referral.serviceCategoryIds[0]}/desired-outcomes`)
     } else {
-      if (!referral.serviceCategoryId) {
-        throw new Error('Attempting to view relevant sentence without service category selected')
-      }
-
-      const [serviceCategory, serviceUser, convictions] = await Promise.all([
-        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      const [intervention, serviceUser, convictions] = await Promise.all([
+        this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
         this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
       ])
@@ -221,7 +216,7 @@ export default class ReferralsController {
         throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
       }
 
-      const presenter = new RelevantSentencePresenter(referral, serviceCategory, convictions, error)
+      const presenter = new RelevantSentencePresenter(referral, intervention, convictions, error)
       const view = new RelevantSentenceView(presenter)
 
       res.status(400)
@@ -326,6 +321,7 @@ export default class ReferralsController {
         req.params.id
       )
 
+      // fixme: no longer needed - change to check intervention service type
       if (referral.serviceCategoryId === null) {
         throw new Error('Attempting to view completion deadline without service category selected')
       }

@@ -780,16 +780,13 @@ describe('GET /referrals/:id/relevant-sentence', () => {
   let serviceUserCRN: string
 
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({
-      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
-      name: 'social inclusion',
-    })
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build()
+    const referral = draftReferralFactory.justCreated().build({ interventionId: intervention.id })
 
     serviceUserCRN = referral.serviceUser.crn
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     communityApiService.getActiveConvictionsByCRN.mockResolvedValue(deliusConvictionFactory.buildList(2))
   })
 
@@ -798,20 +795,20 @@ describe('GET /referrals/:id/relevant-sentence', () => {
       .get('/referrals/1/relevant-sentence')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Select the relevant sentence for the social inclusion referral')
+        expect(res.text).toContain('Select the relevant sentence for the accommodation referral')
       })
 
     expect(communityApiService.getActiveConvictionsByCRN).toHaveBeenCalledWith(serviceUserCRN)
   })
 
-  it('renders an error when the request for a service category fails', async () => {
-    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+  it('renders an error when the request for the intervention fails', async () => {
+    interventionsService.getIntervention.mockRejectedValue(new Error('Failed to get intervention'))
 
     await request(app)
       .get('/referrals/1/relevant-sentence')
       .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Failed to get service category')
+        expect(res.text).toContain('Failed to get intervention')
       })
   })
 
@@ -829,14 +826,16 @@ describe('GET /referrals/:id/relevant-sentence', () => {
 
 describe('POST /referrals/:id/relevant-sentence', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ id: 'b33c19d1-7414-4014-b543-e543e59c5b39' })
+    const intervention = interventionFactory.build()
+    const serviceCategory = serviceCategoryFactory.build({
+      id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+      name: 'social inclusion',
+    })
     const referral = draftReferralFactory
       .serviceCategorySelected(serviceCategory.id)
-      .serviceCategoriesSelected([serviceCategory.id])
-      .build()
-
+      .build({ interventionId: intervention.id })
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
   })
 
   it('updates the referral on the backend and redirects to the next question', async () => {
