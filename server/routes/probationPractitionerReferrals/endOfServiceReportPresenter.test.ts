@@ -35,7 +35,7 @@ describe(EndOfServiceReportPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), serviceCategory)
+      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), [serviceCategory])
 
       expect(presenter.text).toEqual({
         introduction:
@@ -46,7 +46,7 @@ describe(EndOfServiceReportPresenter, () => {
 
   describe('answersPresenter', () => {
     it('returns a presenter', () => {
-      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), serviceCategory)
+      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), [serviceCategory])
 
       expect(presenter.answersPresenter).toBeDefined()
     })

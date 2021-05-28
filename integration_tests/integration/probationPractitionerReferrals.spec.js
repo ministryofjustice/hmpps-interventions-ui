@@ -79,10 +79,12 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.login()
 
     const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        interventionId: intervention.id,
+        serviceCategoryIds: [serviceCategory.id],
         desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id],
         serviceUser: { crn: deliusServiceUser.otherIds.crn },
       },
@@ -103,6 +105,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetEndOfServiceReport(endOfServiceReport.id, endOfServiceReport)
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetServiceUserByCRN(deliusServiceUser.otherIds.crn, deliusServiceUser)
 
     cy.visit(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
