@@ -171,11 +171,11 @@ describe('GET /service-provider/referrals/:id/progress', () => {
 
 describe('GET /service-provider/referrals/:id/assignment/check', () => {
   it('displays the name of the selected caseworker', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const referral = sentReferralFactory.build({ referral: { interventionId: intervention.id } })
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
 
@@ -184,7 +184,7 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
       .query({ email: 'john@harmonyliving.org.uk' })
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Confirm the accommodation referral assignment')
+        expect(res.text).toContain('Confirm the Accommodation referral assignment')
         expect(res.text).toContain('John Smith')
         expect(res.text).toContain('john@harmonyliving.org.uk')
       })
@@ -207,13 +207,13 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
 
 describe('POST /service-provider/referrals/:id/assignment', () => {
   it('assigns the referral to the selected caseworker', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
     const referral = sentReferralFactory.build({
-      referral: { serviceCategoryId: serviceCategory.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
+      referral: { interventionId: intervention.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
     })
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
     interventionsService.assignSentReferral.mockResolvedValue(referral)
@@ -238,17 +238,17 @@ describe('POST /service-provider/referrals/:id/assignment', () => {
 
 describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
   it('displays details of the assigned caseworker and the referral', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        interventionId: intervention.id,
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
       assignedTo: { username: 'john.smith' },
     })
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 

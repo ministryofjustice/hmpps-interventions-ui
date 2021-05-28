@@ -1,18 +1,19 @@
-import ServiceCategory from '../../models/serviceCategory'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import Intervention from '../../models/intervention'
+import utils from '../../utils/utils'
 
 export default class CheckAssignmentPresenter {
   constructor(
     private readonly referralId: string,
     private readonly assignee: AuthUserDetails,
     private readonly email: string,
-    private readonly serviceCategory: ServiceCategory
+    private readonly intervention: Intervention
   ) {}
 
   readonly text = {
-    title: `Confirm the ${this.serviceCategory.name} referral assignment`,
+    title: `Confirm the ${utils.convertToProperCase(this.intervention.contractType.name)} referral assignment`,
   }
 
   readonly summary: SummaryListItem[] = [

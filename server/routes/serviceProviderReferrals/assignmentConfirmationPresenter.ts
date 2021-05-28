@@ -1,14 +1,14 @@
 import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import Intervention from '../../models/intervention'
 
 export default class AssignmentConfirmationPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly assignee: AuthUserDetails
   ) {}
 
@@ -25,7 +25,7 @@ export default class AssignmentConfirmationPresenter {
     },
     {
       key: 'Service type',
-      lines: [utils.convertToProperCase(this.serviceCategory.name)],
+      lines: [utils.convertToProperCase(this.intervention.contractType.name)],
     },
     {
       key: 'Assigned to',
