@@ -601,15 +601,19 @@ export default class ReferralsController {
 
   async checkAnswers(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    if (referral.serviceCategoryId === null) {
-      throw new Error('Attempting to check answers without service category selected')
+    if (referral.serviceCategoryIds === null) {
+      throw new Error('Attempting to check answers without service categories selected')
     }
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+    const [serviceCategories, serviceUser] = await Promise.all([
+      Promise.all(
+        referral.serviceCategoryIds.map(id =>
+          this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
+        )
+      ),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
 
-    const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+    const presenter = new CheckAnswersPresenter(referral, serviceCategories)
     const view = new CheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

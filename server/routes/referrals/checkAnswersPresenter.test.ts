@@ -22,7 +22,7 @@ describe(CheckAnswersPresenter, () => {
 
   describe('serviceUserDetailsSection', () => {
     const referral = parameterisedDraftReferralFactory.build()
-    const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+    const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
     describe('title', () => {
       it('returns the section title', () => {
@@ -51,7 +51,7 @@ describe(CheckAnswersPresenter, () => {
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()
-      const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+      const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
       it('returns the section title', () => {
         expect(presenter.needsAndRequirementsSection.title).toEqual('Alex’s needs and requirements')
@@ -63,7 +63,7 @@ describe(CheckAnswersPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           additionalNeedsInformation: 'Some additional needs information',
         })
-        const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+        const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[0]).toEqual({
@@ -77,7 +77,7 @@ describe(CheckAnswersPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           accessibilityNeeds: 'Some accessibility needs information',
         })
-        const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+        const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[1]).toEqual({
@@ -92,7 +92,7 @@ describe(CheckAnswersPresenter, () => {
           const referral = parameterisedDraftReferralFactory.build({
             needsInterpreter: false,
           })
-          const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
             key: 'Does Alex need an interpreter?',
@@ -105,7 +105,7 @@ describe(CheckAnswersPresenter, () => {
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
-          const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
           it('also includes the language', () => {
             expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
@@ -121,7 +121,7 @@ describe(CheckAnswersPresenter, () => {
           const referral = parameterisedDraftReferralFactory.build({
             hasAdditionalResponsibilities: false,
           })
-          const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
             key: 'Does Alex have caring or employment responsibilities?',
@@ -134,13 +134,90 @@ describe(CheckAnswersPresenter, () => {
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
-          const presenter = new CheckAnswersPresenter(referral, serviceCategory)
+          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
 
           it('includes information about when they’re unavailable', () => {
             expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
               key: 'Does Alex have caring or employment responsibilities?',
               lines: ['Yes. Alex can’t attend on Fridays'],
             })
+          })
+        })
+      })
+    })
+  })
+
+  describe('referralDetailsSections', () => {
+    const accommodationServiceCategory = serviceCategoryFactory.build({
+      name: 'Accommodation',
+      complexityLevels: [
+        { id: '1', title: 'Low complexity', description: 'Low complexity accommodation description' },
+        { id: '2', title: 'High complexity', description: 'High complexity accommodation description' },
+      ],
+      desiredOutcomes: [
+        {
+          id: '1',
+          description: 'Accommodation desired outcome example 1',
+        },
+        {
+          id: '2',
+          description: 'Accommodation desired outcome example 2',
+        },
+        {
+          id: '3',
+          description: 'Accommodation desired outcome example 3',
+        },
+      ],
+    })
+    const eteServiceCategory = serviceCategoryFactory.build({
+      name: 'Education, training and employment',
+      complexityLevels: [
+        { id: '3', title: 'Low complexity', description: 'Low complexity ETE description' },
+        { id: '4', title: 'High complexity', description: 'High complexity ETE description' },
+      ],
+    })
+    const referral = parameterisedDraftReferralFactory.build({
+      serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
+      complexityLevels: [
+        { serviceCategoryId: accommodationServiceCategory.id, complexityLevelId: '1' },
+        { serviceCategoryId: eteServiceCategory.id, complexityLevelId: '4' },
+      ],
+      desiredOutcomes: [
+        { serviceCategoryId: accommodationServiceCategory.id, desiredOutcomesIds: ['1', '3'] },
+        { serviceCategoryId: eteServiceCategory.id, desiredOutcomesIds: ['2'] },
+      ],
+    })
+    const presenter = new CheckAnswersPresenter(referral, [accommodationServiceCategory, eteServiceCategory])
+
+    it('contains a section for each service category in the referral', () => {
+      expect(presenter.referralDetailsSections).toMatchObject([
+        { title: 'Accommodation referral details' },
+        { title: 'Education, training and employment referral details' },
+      ])
+    })
+
+    describe('a section', () => {
+      const section = presenter.referralDetailsSections[0]
+
+      describe('complexity level', () => {
+        it('includes the chosen complexity level’s title and description', () => {
+          const item = section.summary[0]
+
+          expect(item).toEqual({
+            key: 'Complexity level',
+            lines: ['Low complexity', '', 'Low complexity accommodation description'],
+          })
+        })
+      })
+
+      describe('desired outcomes', () => {
+        it('includes the chosen desired outcomes’ descriptions', () => {
+          const item = section.summary[1]
+
+          expect(item).toEqual({
+            key: 'Desired outcomes',
+            lines: ['Accommodation desired outcome example 1', 'Accommodation desired outcome example 3'],
+            listStyle: ListStyle.bulleted,
           })
         })
       })

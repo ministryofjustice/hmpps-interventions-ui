@@ -12,6 +12,11 @@ export default class CheckAnswersView {
     this.presenter.needsAndRequirementsSection.summary
   )
 
+  private readonly referralDetailsSections = this.presenter.referralDetailsSections.map(section => ({
+    title: section.title,
+    summaryListArgs: ViewUtils.summaryListArgs(section.summary),
+  }))
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'referrals/checkAnswers',
@@ -19,6 +24,7 @@ export default class CheckAnswersView {
         presenter: this.presenter,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         needsAndRequirementsSummaryListArgs: this.needsAndRequirementsSummaryListArgs,
+        referralDetailsSections: this.referralDetailsSections,
       },
     ]
   }
