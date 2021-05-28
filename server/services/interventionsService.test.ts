@@ -1156,6 +1156,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getDraftReferralsForUserToken', () => {
     it('returns a list of draft referrals for a given userID', async () => {
+      const userToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '8751622134' } })
+
       await provider.addInteraction({
         state: 'a single referral for user with ID 8751622134 exists',
         uponReceiving: 'a GET request to return the referrals for that user ID',
@@ -1164,7 +1166,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/draft-referrals',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         },
         willRespondWith: {
@@ -1181,12 +1183,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUserToken(token)
+      const referrals = await interventionsService.getDraftReferralsForUserToken(userToken)
       expect(referrals.length).toBe(1)
       expect(referrals[0].id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
     })
 
     it('returns an empty list for an unknown user ID', async () => {
+      const unknownUserToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '123344556' } })
+
       await provider.addInteraction({
         state: 'a referral does not exist for user with ID 123344556',
         uponReceiving: 'a GET request to return the referrals for that user ID',
@@ -1195,7 +1199,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/draft-referrals',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${unknownUserToken}`,
           },
         },
         willRespondWith: {
@@ -1207,7 +1211,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referrals = await interventionsService.getDraftReferralsForUserToken(token)
+      const referrals = await interventionsService.getDraftReferralsForUserToken(unknownUserToken)
       expect(referrals.length).toBe(0)
     })
   })
