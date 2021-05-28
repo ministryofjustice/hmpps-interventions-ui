@@ -158,7 +158,9 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
       const referral = sentReferralFactory.build({
         referral: {
           serviceCategoryIds: [serviceCategory.id],
-          desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id],
+          desiredOutcomes: [
+            { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
+          ],
         },
       })
       const endOfServiceReport = endOfServiceReportFactory.build({

@@ -20,7 +20,7 @@ export default class EndOfServiceReportPresenter {
   readonly answersPresenter = new EndOfServiceReportAnswersPresenter(
     this.referral,
     this.endOfServiceReport,
-    this.serviceCategories[0],
+    this.serviceCategories,
     false
   )
 }

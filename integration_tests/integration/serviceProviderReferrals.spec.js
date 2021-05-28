@@ -842,7 +842,9 @@ describe('Service provider referrals dashboard', () => {
       referral: {
         interventionId: accommodationIntervention.id,
         serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         desiredOutcomesIds: selectedDesiredOutcomesIds,
+        desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
     }
