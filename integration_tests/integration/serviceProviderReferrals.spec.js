@@ -375,7 +375,10 @@ describe('Service provider referrals dashboard', () => {
 
   it('User schedules and views an action plan appointment', () => {
     const serviceCategory = serviceCategoryFactory.build()
-    const referral = sentReferralFactory.build({ referral: { serviceCategoryId: serviceCategory.id } })
+    const intervention = interventionFactory.build()
+    const referral = sentReferralFactory.build({
+      referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
+    })
     const actionPlan = actionPlanFactory.build({ referralId: referral.id })
     const appointment = actionPlanAppointmentFactory
       .newlyCreated()
@@ -383,6 +386,7 @@ describe('Service provider referrals dashboard', () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
 
     cy.stubGetSentReferralsForUserToken([])
+    cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, appointment)
     cy.stubGetActionPlan(actionPlan.id, actionPlan)
     cy.stubGetSentReferral(referral.id, referral)
@@ -436,7 +440,7 @@ describe('Service provider referrals dashboard', () => {
       })
       const referralParams = {
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-        referral: { interventionId: accommodationIntervention.id, serviceCategoryId: serviceCategory.id },
+        referral: { interventionId: accommodationIntervention.id, serviceCategoryIds: [serviceCategory.id] },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
       const probationPractitioner = deliusUserFactory.build({
@@ -586,7 +590,7 @@ describe('Service provider referrals dashboard', () => {
       })
       const referralParams = {
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
-        referral: { interventionId: intervention.id, serviceCategoryId: serviceCategory.id },
+        referral: { interventionId: intervention.id, serviceCategoryIds: [serviceCategory.id] },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
       const probationPractitioner = deliusUserFactory.build({
