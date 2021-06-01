@@ -46,7 +46,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-ui:1.5.5")
 
   // notifications
-  implementation("uk.gov.service.notify:notifications-java-client:3.17.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
   implementation("software.amazon.awssdk:sns:2.16.9")
 
   // security
