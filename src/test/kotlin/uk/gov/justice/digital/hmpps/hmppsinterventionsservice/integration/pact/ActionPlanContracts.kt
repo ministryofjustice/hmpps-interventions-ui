@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
 
 import au.com.dius.pact.provider.junitsupport.State
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.SetupAssistant
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime

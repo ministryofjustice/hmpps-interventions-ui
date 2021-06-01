@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import org.springframework.data.repository.findByIdOrNull
@@ -9,10 +9,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attende
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ContractType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.NPSRegion
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
@@ -68,9 +70,10 @@ class SetupAssistant(
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
   private val contractTypeFactory = ContractTypeFactory()
 
-  private val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
-  private val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
-  private val cancellationReasons = cancellationReasonRepository.findAll().associateBy { it.code }
+  val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
+  val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
+  val cancellationReasons = cancellationReasonRepository.findAll().associateBy { it.code }
+  val contractTypes = contractTypeRepository.findAll().associateBy { it.code }
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
@@ -101,6 +104,14 @@ class SetupAssistant(
     return serviceCategoryRepository.findByIdOrNull(serviceCategory.id)!!.complexityLevels.random()
   }
 
+  fun randomContractType(): ContractType {
+    return contractTypes.random().value
+  }
+
+  fun randomNPSRegion(): NPSRegion {
+    return npsRegions.random().value
+  }
+
   fun desiredOutcomesForServiceCategory(serviceCategoryId: UUID): List<DesiredOutcome> {
     return desiredOutcomeRepository.findByServiceCategoryId(serviceCategoryId)
   }
@@ -119,25 +130,21 @@ class SetupAssistant(
     return authUserRepository.save(user)
   }
 
-  fun createIntervention(id: UUID = UUID.randomUUID(), dynamicFrameworkContract: DynamicFrameworkContract? = null): Intervention {
-    val accommodationServiceCategory = serviceCategories["Accommodation"]!!
+  fun createIntervention(
+    id: UUID = UUID.randomUUID(),
+    dynamicFrameworkContract: DynamicFrameworkContract? = null
+  ): Intervention {
+    val contractType = contractTypes["ACC"]!!
     val region = npsRegions['C']!!
 
     val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create())
 
-    val contract: DynamicFrameworkContract
-
-    if (dynamicFrameworkContract == null) {
-      contract = dynamicFrameworkContractRepository.save(
-        dynamicFrameworkContractFactory.create(
-          contractType = contractTypeRepository.save(contractTypeFactory.create(serviceCategories = setOf(accommodationServiceCategory))),
-          primeProvider = primeProvider,
-          npsRegion = region,
-        )
+    val contract = dynamicFrameworkContract
+      ?: createDynamicFrameworkContract(
+        contractType = contractType,
+        primeProviderId = primeProvider.id,
+        npsRegion = region,
       )
-    } else {
-      contract = dynamicFrameworkContract
-    }
 
     return interventionRepository.save(interventionFactory.create(id = id, contract = contract))
   }
@@ -172,16 +179,25 @@ class SetupAssistant(
 
   fun createDynamicFrameworkContract(
     id: UUID = UUID.randomUUID(),
+    contractType: ContractType = randomContractType(),
     contractReference: String = RandomStringUtils.randomAlphanumeric(8),
     primeProviderId: String,
-    subContractorServiceProviderIds: Set<String>
+    subContractorServiceProviderIds: Set<String> = emptySet(),
+    npsRegion: NPSRegion = randomNPSRegion(),
   ): DynamicFrameworkContract {
     val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create(id = primeProviderId, name = primeProviderId))
-    val serviceProviders = subContractorServiceProviderIds.mapTo(HashSet()) { serviceProviderRepository.save(serviceProviderFactory.create(id = it, name = it)) }
+    val serviceProviders = subContractorServiceProviderIds.map {
+      serviceProviderRepository.save(serviceProviderFactory.create(id = it, name = it))
+    }.toSet()
 
-    val contract = dynamicFrameworkContractFactory.create(id = id, contractReference = contractReference, primeProvider = primeProvider, subcontractorProviders = serviceProviders)
-    serviceCategoryRepository.save(contract.contractType.serviceCategories.elementAt(0))
-    contractTypeRepository.save(contract.contractType)
+    val contract = dynamicFrameworkContractFactory.create(
+      id = id,
+      contractType = contractType,
+      contractReference = contractReference,
+      primeProvider = primeProvider,
+      subcontractorProviders = serviceProviders,
+      npsRegion = npsRegion
+    )
     return dynamicFrameworkContractRepository.save(contract)
   }
 
@@ -256,7 +272,7 @@ class SetupAssistant(
     referral: Referral,
     selectedServiceCategories: List<ServiceCategory> = referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.toList(),
     complexityLevelIds: MutableMap<UUID, UUID>? = mutableMapOf(selectedServiceCategories[0].id to randomComplexityLevel(selectedServiceCategories[0]).id),
-    desiredOutcomes: List<DesiredOutcome> = emptyList(),
+    desiredOutcomes: List<DesiredOutcome> = referral.intervention.dynamicFrameworkContract.contractType.serviceCategories.first().desiredOutcomes,
     serviceUserData: ServiceUserData = ServiceUserData(
       referral = referral,
       title = "Mr",
@@ -282,6 +298,10 @@ class SetupAssistant(
     usingRarDays: Boolean = true,
     whenUnavailable: String = "She works Mondays 9am - midday",
   ): Referral {
+    referral.selectedServiceCategories = selectedServiceCategories.toSet()
+    // required to satisfy foreign key constrains on desired outcomes and complexity levels
+    referralRepository.saveAndFlush(referral)
+
     referral.serviceUserData = serviceUserData
     referral.selectedDesiredOutcomes = desiredOutcomes.map { SelectedDesiredOutcomesMapping(it.serviceCategoryId, it.id) }.toMutableList()
     referral.accessibilityNeeds = accessibilityNeeds

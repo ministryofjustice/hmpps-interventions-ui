@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.pact.SetupAssistant
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.SetupAssistant
 import java.util.UUID
 
 enum class Request {
