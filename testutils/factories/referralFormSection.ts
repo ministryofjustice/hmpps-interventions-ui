@@ -23,6 +23,20 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     })
   }
 
+  selectedServiceCategories(
+    contractName: string,
+    referralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    serviceCategoriesUrl: string | null = null
+  ) {
+    return this.params({
+      type: 'single',
+      title: 'Choose service categories',
+      number: '2',
+      status: referralFormStatus,
+      tasks: [{ title: `Select service categories for the ${contractName} referral`, url: serviceCategoriesUrl }],
+    })
+  }
+
   interventionDetails(
     serviceCategoryName: string,
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
@@ -54,12 +68,13 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
 
   checkAnswers(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
-    checkAnswersUrl: string | null = null
+    checkAnswersUrl: string | null = null,
+    sectionNumber = '3'
   ) {
     return this.params({
       type: 'single',
       title: 'Check your answers',
-      number: '3',
+      number: sectionNumber,
       status: referralFormStatus,
       tasks: [{ title: 'Check your answers', url: checkAnswersUrl }],
     })

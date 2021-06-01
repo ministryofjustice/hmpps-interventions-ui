@@ -6,40 +6,44 @@ import {
 
 class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSectionPresenter> {
   cohortInterventionDetails(
-    serviceCategoryName: string,
+    contractName: string,
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     relevantSentenceUrl: string | null = null,
-    cohortUrls: { title: string; desiredOutcomesUrl: string | null; complexityLevelUrl: string | null }[] = [],
+    cohortUrls: { title: string; desiredOutcomesUrl: string | null; complexityLevelUrl: string | null }[] | null = [],
     completionDateUrl: string | null = null,
     rarDaysUrl: string | null = null,
     furtherInformationUrl: string | null = null
   ) {
     return this.params({
       type: 'multi',
-      title: `Add intervention referral details`,
-      number: '2',
+      title: `Add ${contractName} referral details`,
+      number: '3',
       status: referralFormStatus,
       taskListSections: [
         {
-          tasks: [{ title: `Confirm the relevant sentence for the intervention referral`, url: relevantSentenceUrl }],
+          tasks: [
+            { title: `Confirm the relevant sentence for the ${contractName} referral`, url: relevantSentenceUrl },
+          ],
         },
       ]
         .concat(
-          cohortUrls.map(cohortUrl => {
-            return {
-              title: cohortUrl.title,
-              tasks: [
-                { title: 'Select desired outcomes', url: cohortUrl.desiredOutcomesUrl },
-                { title: 'Select required complexity level', url: cohortUrl.complexityLevelUrl },
-              ],
-            }
-          })
+          cohortUrls === null
+            ? []
+            : cohortUrls.map(cohortUrl => {
+                return {
+                  title: cohortUrl.title,
+                  tasks: [
+                    { title: 'Select desired outcomes', url: cohortUrl.desiredOutcomesUrl },
+                    { title: 'Select required complexity level', url: cohortUrl.complexityLevelUrl },
+                  ],
+                }
+              })
         )
         .concat([
           {
             tasks: [
               {
-                title: `Enter when the intervention service need to be completed`,
+                title: `Enter when the ${contractName} referral need to be completed`,
                 url: completionDateUrl,
               },
               { title: 'Enter enforceable days used', url: rarDaysUrl },

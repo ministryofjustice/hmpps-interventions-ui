@@ -10,7 +10,7 @@ describe(UpdateServiceCategoriesPresenter, () => {
 
       const presenter = new UpdateServiceCategoriesPresenter(referral, serviceCategoriesFromIntervention)
 
-      expect(presenter.text.title).toEqual('What service types are you referring Alex to?')
+      expect(presenter.text.title).toEqual('What service categories are you referring Alex to?')
     })
   })
 
