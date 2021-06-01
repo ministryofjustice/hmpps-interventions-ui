@@ -291,7 +291,7 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, form.errors)
+    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, form.error)
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.status(400)
@@ -311,12 +311,12 @@ export default class ServiceProviderReferralsController {
       )
     )
 
-    const form = new FinaliseActionPlanActivitiesForm(sentReferral, actionPlan, serviceCategories[0])
+    const form = new FinaliseActionPlanActivitiesForm(actionPlan)
 
     if (form.isValid) {
       res.redirect(`/service-provider/action-plan/${actionPlan.id}/number-of-sessions`)
     } else {
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, form.errors)
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, form.error)
       const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
       const view = new AddActionPlanActivitiesView(presenter)
 

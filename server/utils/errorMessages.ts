@@ -64,8 +64,7 @@ export default {
   },
   actionPlanActivity: {
     empty: 'Enter an activity',
-    noneAdded: (desiredOutcomeDescription: string) =>
-      `You must add at least one activity for the desired outcome “${desiredOutcomeDescription}”`,
+    noneAdded: 'You must add at least one activity',
   },
   actionPlanNumberOfSessions: {
     empty: 'Enter the number of sessions',

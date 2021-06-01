@@ -288,8 +288,8 @@ describe('Service provider referrals dashboard', () => {
 
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
 
-    cy.contains('Accommodation - create action plan')
-    cy.contains('Add suggested activities to Alex’s action plan')
+    cy.contains('Add activity 1 to action plan')
+    cy.contains('Referred outcomes for Alex')
     cy.contains(desiredOutcomes[0].description)
     cy.contains(desiredOutcomes[1].description)
 
@@ -310,11 +310,10 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
     cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithActivity)
 
-    cy.get('#description-1').type('Attend training course')
-    cy.get('#add-activity-1').click()
+    cy.get('#description').type('Attend training course')
+    cy.contains('Save and add activity 1').click()
 
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
-    cy.contains('Attend training course')
 
     const draftActionPlanWithAllActivities = {
       ...draftActionPlanWithActivity,
@@ -334,14 +333,12 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
     cy.stubUpdateDraftActionPlan(draftActionPlan.id, draftActionPlanWithAllActivities)
 
-    cy.get('#description-2').type('Create appointment with local authority')
-    cy.get('#add-activity-2').click()
+    cy.get('#description').type('Create appointment with local authority')
+    cy.contains('Save and add activity 2').click()
 
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
-    cy.contains('Attend training course')
-    cy.contains('Create appointment with local authority')
 
-    cy.contains('Save and continue').click()
+    cy.contains('Continue without adding other activities').click()
 
     const draftActionPlanWithNumberOfSessions = { ...draftActionPlanWithAllActivities, numberOfSessions: 4 }
 

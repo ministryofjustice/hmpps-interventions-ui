@@ -15,6 +15,12 @@ class ActionPlanFactory extends Factory<ActionPlan> {
     return this.params({ referralId })
   }
 
+  oneActivityAdded() {
+    return this.params({
+      activities: [actionPlanActivityFactory.build()],
+    })
+  }
+
   readyToSubmit(referralId: string) {
     return this.params({
       referralId,

@@ -294,10 +294,10 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
       .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Accommodation - create action plan')
-        expect(res.text).toContain('Add suggested activities to Alex’s action plan')
+        expect(res.text).toContain('Add activity 2 to action plan')
+        expect(res.text).toContain('Referred outcomes for Alex')
+        expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Achieve a thing')
-        expect(res.text).toContain('Do a thing')
       })
   })
 })
@@ -404,7 +404,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
     },
   })
 
-  describe('when there is an activity in the action plan for every desired outcome of the referral', () => {
+  describe('when there is at least one activity in the action plan', () => {
     it('redirects to the next page of the action plan journey', async () => {
       const actionPlan = actionPlanFactory.build({
         activities: [
@@ -424,7 +424,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
     })
   })
 
-  describe('when there is a desired outcome in the referral for which there is no activity in the action plan', () => {
+  describe('when there is no activity in the action plan', () => {
     it('responds with a 400 and renders an error', async () => {
       const actionPlan = actionPlanFactory.build({ activities: [] })
 
@@ -436,8 +436,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
         .post(`/service-provider/action-plan/${actionPlan.id}/add-activities`)
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 1”')
-          expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 2”')
+          expect(res.text).toContain('You must add at least one activity')
         })
     })
   })
