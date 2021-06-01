@@ -101,9 +101,14 @@ describe('DesiredOutcomesPresenter', () => {
     })
   })
 
-  describe('when the referral already has selected desired outcomes', () => {
-    it('sets checked to true for the referral’s selected desired outcomes', () => {
-      draftReferral.desiredOutcomesIds = [serviceCategory.desiredOutcomes[0].id, serviceCategory.desiredOutcomes[1].id]
+  describe('when the referral already has selected desired outcomes for the service category', () => {
+    it('sets checked to true for the referral’s selected desired outcomes for the service category', () => {
+      draftReferral.desiredOutcomes = [
+        {
+          serviceCategoryId: serviceCategory.id,
+          desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id, serviceCategory.desiredOutcomes[1].id],
+        },
+      ]
       const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory)
 
       expect(presenter.desiredOutcomes.map(desiredOutcome => desiredOutcome.checked)).toEqual([
@@ -143,9 +148,14 @@ describe('DesiredOutcomesPresenter', () => {
     })
   })
 
-  describe('when the referral already has a selected desired outcomes and there is user input data', () => {
+  describe('when the referral already has a selected desired outcomes for the service category and there is user input data', () => {
     it('sets checked to true for the desired outcomes that the user chose', () => {
-      draftReferral.desiredOutcomesIds = [serviceCategory.desiredOutcomes[0].id]
+      draftReferral.desiredOutcomes = [
+        {
+          serviceCategoryId: serviceCategory.id,
+          desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id, serviceCategory.desiredOutcomes[1].id],
+        },
+      ]
       const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory, null, {
         'desired-outcomes-ids': [serviceCategory.desiredOutcomes[1].id, serviceCategory.desiredOutcomes[2].id],
       })
@@ -160,7 +170,12 @@ describe('DesiredOutcomesPresenter', () => {
 
     describe('when the user input data doesn’t contain a desired-outcomes-ids key', () => {
       it('doesn’t set any of the desired outcomes as checked', () => {
-        draftReferral.desiredOutcomesIds = [serviceCategory.desiredOutcomes[0].id]
+        draftReferral.desiredOutcomes = [
+          {
+            serviceCategoryId: serviceCategory.id,
+            desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id],
+          },
+        ]
         const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory, null, {})
 
         expect(presenter.desiredOutcomes.map(desiredOutcome => desiredOutcome.checked)).toEqual([

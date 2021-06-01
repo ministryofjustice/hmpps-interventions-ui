@@ -32,7 +32,10 @@ export default class DesiredOutcomesPresenter {
       return this.userInputData['desired-outcomes-ids'] ?? []
     }
 
-    return this.referral.desiredOutcomesIds ?? []
+    return (
+      this.referral.desiredOutcomes?.find(val => val.serviceCategoryId === this.serviceCategory.id)
+        ?.desiredOutcomesIds ?? []
+    )
   }
 
   readonly title = `What are the desired outcomes for the ${this.serviceCategory.name} service?`

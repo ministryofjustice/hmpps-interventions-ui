@@ -30,7 +30,14 @@ export default class ComplexityLevelPresenter {
   })
 
   private get selectedComplexityLevelId() {
-    return this.userInputData ? this.userInputData['complexity-level-id'] : this.referral.complexityLevelId
+    if (this.userInputData) {
+      return this.userInputData['complexity-level-id']
+    }
+
+    return (
+      this.referral.complexityLevels?.find(val => val.serviceCategoryId === this.serviceCategory.id)
+        ?.complexityLevelId ?? null
+    )
   }
 
   readonly title = `What is the complexity level for the ${this.serviceCategory.name} service?`

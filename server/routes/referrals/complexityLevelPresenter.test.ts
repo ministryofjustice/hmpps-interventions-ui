@@ -36,9 +36,14 @@ describe('ComplexityLevelPresenter', () => {
       expect(expectedHints).toEqual(complexityLevelIds)
     })
 
-    describe('when the referral already has a selected complexity level', () => {
-      it('sets checked to true for the referral’s selected complexity level', () => {
-        draftReferral.complexityLevelId = serviceCategory.complexityLevels[1].id
+    describe('when the referral already has a selected complexity level for the service category', () => {
+      it('sets checked to true for the referral’s selected complexity level for the service category', () => {
+        draftReferral.complexityLevels = [
+          {
+            serviceCategoryId: serviceCategory.id,
+            complexityLevelId: serviceCategory.complexityLevels[1].id,
+          },
+        ]
         const presenter = new ComplexityLevelPresenter(draftReferral, serviceCategory)
 
         expect(presenter.complexityDescriptions.map(description => description.checked)).toEqual([false, true, false])
@@ -55,9 +60,14 @@ describe('ComplexityLevelPresenter', () => {
       })
     })
 
-    describe('when the referral already has a selected complexity level and there is user input data', () => {
+    describe('when the referral already has a selected complexity level for the service category and there is user input data', () => {
       it('sets checked to true for the complexity level that the user chose', () => {
-        draftReferral.complexityLevelId = serviceCategory.complexityLevels[0].id
+        draftReferral.complexityLevels = [
+          {
+            serviceCategoryId: serviceCategory.id,
+            complexityLevelId: serviceCategory.complexityLevels[0].id,
+          },
+        ]
         const presenter = new ComplexityLevelPresenter(draftReferral, serviceCategory, null, {
           'complexity-level-id': serviceCategory.complexityLevels[1].id,
         })
