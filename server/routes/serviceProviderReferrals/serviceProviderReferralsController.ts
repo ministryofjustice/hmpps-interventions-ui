@@ -56,7 +56,6 @@ import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmation
 import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
-import DesiredOutcome from '../../models/desiredOutcome'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -669,12 +668,14 @@ export default class ServiceProviderReferralsController {
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
 
     const desiredOutcomeNumber = Number(req.params.number)
-
-    if (desiredOutcomeNumber > referral.referral.desiredOutcomesIds.length) {
+    const desiredOutcomeIds = referral.referral.desiredOutcomes.flatMap(
+      desiredOutcome => desiredOutcome.desiredOutcomesIds
+    )
+    if (desiredOutcomeNumber > desiredOutcomeIds.length) {
       throw createError(404, 'Outcome number is out of bounds')
     }
 
-    const desiredOutcomeId = referral.referral.desiredOutcomesIds[desiredOutcomeNumber - 1]
+    const desiredOutcomeId = desiredOutcomeIds[desiredOutcomeNumber - 1]
 
     const serviceCategories = await this.findSelectedServiceCategories(
       accessToken,
@@ -682,11 +683,15 @@ export default class ServiceProviderReferralsController {
       referral.referral.serviceCategoryIds
     )
 
-    const desiredOutcome = serviceCategories[0].desiredOutcomes.find(
-      (val: DesiredOutcome) => val.id === desiredOutcomeId
+    const matchedServiceCategory = serviceCategories.find(serviceCategory =>
+      serviceCategory.desiredOutcomes.some(desiredOutcome => desiredOutcome.id === desiredOutcomeId)
     )
+    if (matchedServiceCategory === undefined) {
+      throw new Error(`Desired outcome for ID ${desiredOutcomeId} not found`)
+    }
+    const matchedDesiredOutcome = matchedServiceCategory.desiredOutcomes.find(val => val.id === desiredOutcomeId)
 
-    if (desiredOutcome === undefined) {
+    if (matchedDesiredOutcome === undefined) {
       throw new Error(`Desired outcome for ID ${desiredOutcomeId} not found`)
     }
 
@@ -710,7 +715,7 @@ export default class ServiceProviderReferralsController {
           formData.paramsForUpdate
         )
 
-        const isLastDesiredOutcome = desiredOutcomeNumber === referral.referral.desiredOutcomesIds.length
+        const isLastDesiredOutcome = desiredOutcomeNumber === desiredOutcomeIds.length
         if (isLastDesiredOutcome) {
           res.redirect(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
         } else {
@@ -727,8 +732,8 @@ export default class ServiceProviderReferralsController {
     const presenter = new EndOfServiceReportOutcomePresenter(
       referral,
       endOfServiceReport,
-      serviceCategories[0],
-      desiredOutcome,
+      matchedServiceCategory,
+      matchedDesiredOutcome,
       desiredOutcomeNumber,
       outcome,
       userInputData,

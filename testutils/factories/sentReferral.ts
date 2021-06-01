@@ -106,8 +106,6 @@ export default SentReferralFactory.define(({ sequence }) => ({
     userId: sequence.toString(),
     authSource: 'delius',
   },
-  serviceCategories: null,
-  interventionId: null,
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
   referral: exampleReferralFields(),
   assignedTo: null,
