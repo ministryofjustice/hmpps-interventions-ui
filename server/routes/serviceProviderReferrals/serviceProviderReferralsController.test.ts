@@ -1013,12 +1013,19 @@ describe('POST /service-provider/referrals/:id/end-of-service-report', () => {
 describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () => {
   it('renders a form', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
     const desiredOutcome = serviceCategory.desiredOutcomes[0]
-    const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: [desiredOutcome.id, '2', '3'] } })
+    const referral = sentReferralFactory.build({
+      referral: {
+        desiredOutcomesIds: [desiredOutcome.id, '2', '3'],
+        serviceCategoryIds: [serviceCategory.id],
+        interventionId: intervention.id,
+      },
+    })
     const endOfServiceReport = endOfServiceReportFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
@@ -1051,11 +1058,18 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
     describe('when the outcome number doesn’t refer to the last of the referral’s desired outcomes', () => {
       it('updates the appointment on the interventions service and redirects to the page for the next outcome', async () => {
         const serviceCategory = serviceCategoryFactory.build()
+        const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
         const desiredOutcome = serviceCategory.desiredOutcomes[0]
-        const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: [desiredOutcome.id, '2', '3'] } })
+        const referral = sentReferralFactory.build({
+          referral: {
+            desiredOutcomesIds: [desiredOutcome.id, '2', '3'],
+            serviceCategoryIds: [serviceCategory.id],
+            interventionId: intervention.id,
+          },
+        })
         const endOfServiceReport = endOfServiceReportFactory.build()
 
-        interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+        interventionsService.getIntervention.mockResolvedValue(intervention)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
         interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
@@ -1089,11 +1103,18 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
     describe('when the outcome refers to the last of the referral’s desired outcomes', () => {
       it('updates the appointment on the interventions service and redirects to the further information form', async () => {
         const serviceCategory = serviceCategoryFactory.build()
+        const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
         const desiredOutcome = serviceCategory.desiredOutcomes[0]
-        const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: ['2', '3', desiredOutcome.id] } })
+        const referral = sentReferralFactory.build({
+          referral: {
+            desiredOutcomesIds: ['2', '3', desiredOutcome.id],
+            serviceCategoryIds: [serviceCategory.id],
+            interventionId: intervention.id,
+          },
+        })
         const endOfServiceReport = endOfServiceReportFactory.build()
 
-        interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+        interventionsService.getIntervention.mockResolvedValue(intervention)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
         interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
@@ -1150,14 +1171,20 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
   describe('with invalid data', () => {
     it('renders an error page and does not update the appointment on the interventions service', async () => {
       const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
       const desiredOutcome = serviceCategory.desiredOutcomes[0]
       const referral = sentReferralFactory.build({
-        referral: { serviceUser: { firstName: 'Alex' }, desiredOutcomesIds: [desiredOutcome.id, '2', '3'] },
+        referral: {
+          serviceUser: { firstName: 'Alex' },
+          desiredOutcomesIds: [desiredOutcome.id, '2', '3'],
+          serviceCategoryIds: [serviceCategory.id],
+          interventionId: intervention.id,
+        },
       })
       const endOfServiceReport = endOfServiceReportFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
 
-      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
       interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
@@ -1180,13 +1207,19 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
 describe('GET /service-provider/end-of-service-report/:id/further-information', () => {
   it('renders a form page', async () => {
     const endOfServiceReport = endOfServiceReportFactory.build()
-    const referral = sentReferralFactory.build()
     const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id],
+        interventionId: intervention.id,
+      },
+    })
     const deliusServiceUser = deliusServiceUserFactory.build()
 
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
@@ -1222,6 +1255,7 @@ describe('POST /service-provider/end-of-service-report/:id/further-information',
 describe('GET /service-provider/end-of-service-report/:id/check-answers', () => {
   it('renders a page with the contents of the end of service report', async () => {
     const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
     const referral = sentReferralFactory.build({
       referral: {
         desiredOutcomes: [
@@ -1230,6 +1264,8 @@ describe('GET /service-provider/end-of-service-report/:id/check-answers', () => 
             desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id],
           },
         ],
+        serviceCategoryIds: [serviceCategory.id],
+        interventionId: intervention.id,
       },
     })
     const endOfServiceReport = endOfServiceReportFactory.build({
@@ -1247,7 +1283,7 @@ describe('GET /service-provider/end-of-service-report/:id/check-answers', () => 
 
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
@@ -1279,13 +1315,18 @@ describe('POST /service-provider/end-of-service-report/:id/submit', () => {
 
 describe('GET /service-provider/end-of-service-report/:id/confirmation', () => {
   it('displays a confirmation page for that end of service report', async () => {
-    const endOfServiceReport = endOfServiceReportFactory.build()
-    const referral = sentReferralFactory.build()
     const serviceCategory = serviceCategoryFactory.build()
-
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id],
+        interventionId: intervention.id,
+      },
+    })
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/confirmation`)
