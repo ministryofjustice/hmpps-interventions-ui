@@ -1,16 +1,15 @@
 import { Request } from 'express'
 import { ValidationChain, body, Result, ValidationError } from 'express-validator'
-import DraftReferral from '../../models/draftReferral'
 import errorMessages from '../../utils/errorMessages'
 import { FormValidationError } from '../../utils/formValidationError'
 import { FormData } from '../../utils/forms/formData'
 import FormUtils from '../../utils/formUtils'
+import ReferralDesiredOutcomes from '../../models/referralDesiredOutcomes'
 
 export default class DesiredOutcomesForm {
   constructor(private readonly request: Request) {}
 
-  // TODO: return Partial<ReferralDesiredOutcomes> when we update the code for single-service referrals to use the new PATCH function.
-  async data(): Promise<FormData<Partial<DraftReferral>>> {
+  async data(): Promise<FormData<Partial<ReferralDesiredOutcomes>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
       validations: DesiredOutcomesForm.validations,

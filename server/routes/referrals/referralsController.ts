@@ -277,12 +277,12 @@ export default class ReferralsController {
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    if (referral.serviceCategoryId === null) {
+    if (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length < 1) {
       throw new Error('Attempting to view completion deadline without service category selected')
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryIds[0]),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
 
@@ -321,12 +321,12 @@ export default class ReferralsController {
       )
 
       // fixme: no longer needed - change to check intervention service type
-      if (referral.serviceCategoryId === null) {
+      if (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length < 1) {
         throw new Error('Attempting to view completion deadline without service category selected')
       }
 
       const [serviceCategory, serviceUser] = await Promise.all([
-        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryIds[0]),
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       ])
 
@@ -341,12 +341,12 @@ export default class ReferralsController {
   async viewFurtherInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    if (referral.serviceCategoryId === null) {
+    if (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length < 1) {
       throw new Error('Attempting to view further information without service category selected')
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryIds[0]),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
 
@@ -382,12 +382,12 @@ export default class ReferralsController {
         req.params.id
       )
 
-      if (!referral.serviceCategoryId) {
+      if (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length < 1) {
         throw new Error('Attempting to view complexity level without service category selected')
       }
 
       const [serviceCategory, serviceUser] = await Promise.all([
-        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+        this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryIds[0]),
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       ])
 
@@ -537,12 +537,12 @@ export default class ReferralsController {
   async viewRarDays(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    if (referral.serviceCategoryId === null) {
+    if (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length < 1) {
       throw new Error('Attempting to view RAR days without service category selected')
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryId),
+      this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, referral.serviceCategoryIds[0]),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
 
@@ -555,13 +555,13 @@ export default class ReferralsController {
   async updateRarDays(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    if (referral.serviceCategoryId === null) {
+    if (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length < 1) {
       throw new Error('Attempting to update RAR days without service category selected')
     }
 
     const serviceCategory = await this.interventionsService.getServiceCategory(
       res.locals.user.token.accessToken,
-      referral.serviceCategoryId
+      referral.serviceCategoryIds[0]
     )
 
     const form = await RarDaysForm.createForm(req, serviceCategory)

@@ -22,7 +22,7 @@ describe(FinaliseActionPlanActivitiesForm, () => {
     const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes })
     const referral = sentReferralFactory.build({
       referral: {
-        serviceCategoryId: serviceCategory.id,
+        serviceCategoryIds: [serviceCategory.id],
         desiredOutcomes: [
           { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id] },
         ],

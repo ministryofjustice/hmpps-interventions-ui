@@ -14,6 +14,8 @@ import ServiceCategory from '../models/serviceCategory'
 import ActionPlan, { ActionPlanAppointment, AppointmentAttendance, AppointmentBehaviour } from '../models/actionPlan'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
+import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
+import ReferralComplexityLevel from '../models/referralComplexityLevel'
 
 export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
@@ -156,8 +158,7 @@ export default class InterventionsService {
   async setDesiredOutcomesForServiceCategory(
     token: string,
     referralId: string,
-    // TODO: switch below to Partial<ReferralDesiredOutcomes> when we update the code for single-service referrals to use the new PATCH function.
-    desiredOutcomes: Partial<DraftReferral>
+    desiredOutcomes: Partial<ReferralDesiredOutcomes>
   ): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
@@ -175,8 +176,7 @@ export default class InterventionsService {
   async setComplexityLevelForServiceCategory(
     token: string,
     referralId: string,
-    // TODO: switch below to Partial<ReferralComplexityLevel> when we update the code for single-service referrals to use the new PATCH function.
-    complexityLevel: Partial<DraftReferral>
+    complexityLevel: Partial<ReferralComplexityLevel>
   ): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 

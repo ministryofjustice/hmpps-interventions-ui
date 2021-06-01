@@ -4,7 +4,14 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 
 describe(EndOfServiceReportFormPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-  const referral = sentReferralFactory.build({ referral: { desiredOutcomesIds: ['1', '2', '3', '4', '5'] } })
+  const referral = sentReferralFactory.build({
+    referral: {
+      desiredOutcomes: [
+        { serviceCategoryId: '1', desiredOutcomesIds: ['1', '2'] },
+        { serviceCategoryId: '2', desiredOutcomesIds: ['3', '4', '5'] },
+      ],
+    },
+  })
 
   describe('title', () => {
     it('returns the title for all the form pages', () => {

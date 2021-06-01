@@ -64,8 +64,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             status: 200,
             body: Matchers.like({
               id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-              serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-              complexityLevelId: null,
+              serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
+              complexityLevels: null,
             }),
             headers: { 'Content-Type': 'application/json' },
           },
@@ -76,7 +76,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-        expect(referral.serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+        expect(referral.serviceCategoryIds![0]).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
       })
     })
 
@@ -127,8 +127,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             status: 200,
             body: Matchers.like({
               id: '037cc90b-beaa-4a32-9ab7-7f79136e1d27',
-              serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-              desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
+              desiredOutcomes: [
+                {
+                  serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                  desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+                },
+              ],
             }),
             headers: { 'Content-Type': 'application/json' },
           },
@@ -139,7 +144,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
 
         expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
-        expect(referral.desiredOutcomesIds).toEqual([
+        expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
           '301ead30-30a4-4c7c-8296-2768abfb59b5',
           '65924ac6-9724-455b-ad30-906936291421',
         ])
@@ -206,7 +211,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             status: 200,
             body: Matchers.like({
               id: '037cc90b-beaa-4a32-9ab7-7f79136e1d27',
-              complexityLevelId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+              complexityLevels: [
+                {
+                  serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                  complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+                },
+              ],
             }),
             headers: { 'Content-Type': 'application/json' },
           },
@@ -217,7 +227,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
 
         expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
-        expect(referral.complexityLevelId).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
+        expect(referral.complexityLevels![0].complexityLevelId).toEqual('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
       })
     })
 
@@ -492,19 +502,27 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         uponReceiving: 'a PATCH request to update the complexity level ID',
         withRequest: {
           method: 'PATCH',
-          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
+          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962/complexity-level',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: { complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
         },
         willRespondWith: {
           status: 200,
           body: {
             id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+            complexityLevels: [
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+              },
+            ],
           },
           headers: {
             'Content-Type': 'application/json',
@@ -512,11 +530,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
-        complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-      })
+      const referral = await interventionsService.setComplexityLevelForServiceCategory(
+        token,
+        'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        }
+      )
       expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-      expect(referral.complexityLevelId).toBe('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
+      expect(referral.complexityLevels![0].complexityLevelId).toBe('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
     })
 
     it('returns the updated referral adding further information', async () => {
@@ -594,13 +617,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         uponReceiving: 'a PATCH request to update desired outcomes IDs',
         withRequest: {
           method: 'PATCH',
-          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
+          path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962/desired-outcomes',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
             desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
           },
         },
@@ -608,7 +632,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: {
             id: 'd496e4a7-7cc1-44ea-ba67-c295084f1962',
-            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+            desiredOutcomes: [
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              },
+            ],
           },
           headers: {
             'Content-Type': 'application/json',
@@ -616,11 +645,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
-        desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-      })
+      const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
+        token,
+        'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        }
+      )
       expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
-      expect(referral.desiredOutcomesIds).toEqual([
+      expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
         '301ead30-30a4-4c7c-8296-2768abfb59b5',
         '65924ac6-9724-455b-ad30-906936291421',
       ])
@@ -1253,9 +1287,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         name: 'Harmony Living',
       },
       interventionId: '000b2538-914b-4641-a1cc-a293409536bf',
-      serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
       serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
-      complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
       complexityLevels: [
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -1264,7 +1296,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ],
       furtherInformation: 'Some information about the service user',
       relevantSentenceId: 2600295124,
-      desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
       desiredOutcomes: [
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',

@@ -14,7 +14,7 @@ export default class EndOfServiceReportFormPresenter {
   constructor(private readonly serviceCategory: ServiceCategory, private readonly referral: SentReferral) {}
 
   private get numberOfDesiredOutcomes(): number {
-    return this.referral.referral.desiredOutcomesIds.length
+    return this.referral.referral.desiredOutcomes.flatMap(desiredOutcome => desiredOutcome.desiredOutcomesIds).length
   }
 
   private get title(): string {

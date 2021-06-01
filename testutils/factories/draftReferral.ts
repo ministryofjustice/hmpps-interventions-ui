@@ -16,7 +16,6 @@ class DraftReferralFactory extends Factory<DraftReferral> {
   serviceCategorySelected(serviceCategoryId?: string) {
     const resolvedServiceCategoryId = serviceCategoryId ?? serviceCategoryFactory.build().id
     return this.params({
-      serviceCategoryId: resolvedServiceCategoryId,
       serviceCategoryIds: [resolvedServiceCategoryId],
     })
   }
@@ -56,7 +55,6 @@ class DraftReferralFactory extends Factory<DraftReferral> {
   selectedServiceCategories(serviceCategories: ServiceCategory[]) {
     const resolvedServiceCategoryIds = serviceCategories.map(serviceCategory => serviceCategory.id)
     return this.serviceUserSelected().params({
-      serviceCategoryId: resolvedServiceCategoryIds[0],
       serviceCategoryIds: resolvedServiceCategoryIds,
     })
   }
@@ -86,9 +84,6 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 
   addSelectedDesiredOutcomes(serviceCategories: ServiceCategory[]) {
     return this.params({
-      desiredOutcomesIds: serviceCategories
-        .map(serviceCategory => serviceCategory.desiredOutcomes.map(desiredOutcome => desiredOutcome.id))
-        .reduce((acc, list) => acc.concat(list), []),
       desiredOutcomes: serviceCategories.map(serviceCategory => {
         return {
           serviceCategoryId: serviceCategory.id,
@@ -100,7 +95,6 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 
   addSelectedComplexityLevel(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
     return this.params({
-      complexityLevelId: serviceCategories[0].complexityLevels[0].id,
       complexityLevels: serviceCategories.map(serviceCategory => {
         return {
           serviceCategoryId: serviceCategory.id,

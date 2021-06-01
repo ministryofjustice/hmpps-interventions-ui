@@ -1,15 +1,15 @@
 import { Request } from 'express'
 import { ValidationChain, body, Result, ValidationError } from 'express-validator'
-import DraftReferral from '../../models/draftReferral'
 import errorMessages from '../../utils/errorMessages'
 import FormUtils from '../../utils/formUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import { FormData } from '../../utils/forms/formData'
+import ReferralComplexityLevel from '../../models/referralComplexityLevel'
 
 export default class ComplexityLevelForm {
   constructor(private readonly request: Request) {}
 
-  async data(): Promise<FormData<Partial<DraftReferral>>> {
+  async data(): Promise<FormData<Partial<ReferralComplexityLevel>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
       validations: ComplexityLevelForm.validations,
