@@ -24,6 +24,12 @@
 
       {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}
 
+      {% for section in referralDetailsSections %}
+        <h2 class="govuk-heading-l">{{ section.title }}</h2>
+
+        {{ govukSummaryList(section.summaryListArgs) }}
+      {% endfor %}
+
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukButton({ text: "Submit referral" }) }}
