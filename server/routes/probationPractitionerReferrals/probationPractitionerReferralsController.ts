@@ -212,16 +212,18 @@ export default class ProbationPractitionerReferralsController {
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
-
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
-      accessToken,
-      referral.referral.serviceCategoryId
+    const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
+    const serviceCategories = intervention.serviceCategories.filter(serviceCategory =>
+      referral.referral.serviceCategoryIds.some(serviceCategoryId => serviceCategoryId === serviceCategory.id)
     )
+    if (serviceCategories.length !== referral.referral.serviceCategoryIds.length) {
+      throw new Error('Expected service categories are missing in intervention')
+    }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategory)
+    const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategories)
     const view = new EndOfServiceReportView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

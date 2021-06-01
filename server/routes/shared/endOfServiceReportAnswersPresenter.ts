@@ -20,7 +20,7 @@ export default class EndOfServiceReportAnswersPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategories: ServiceCategory[],
     private readonly allowChange: boolean = true
   ) {}
 
@@ -29,32 +29,36 @@ export default class EndOfServiceReportAnswersPresenter {
     { key: 'Service user’s name', lines: [PresenterUtils.fullName(this.referral.referral.serviceUser)] },
   ]
 
-  readonly outcomes: OutcomePresenter[] = this.referral.referral.desiredOutcomesIds.map((desiredOutcomeId, index) => {
-    const number = index + 1
-    const outcome = this.endOfServiceReport.outcomes.find(anOutcome => anOutcome.desiredOutcome.id === desiredOutcomeId)
+  readonly outcomes: OutcomePresenter[] = this.referral.referral.desiredOutcomes
+    .flatMap(desiredOutcome => desiredOutcome.desiredOutcomesIds)
+    .map((desiredOutcomeId, index) => {
+      const number = index + 1
+      const outcome = this.endOfServiceReport.outcomes.find(
+        anOutcome => anOutcome.desiredOutcome.id === desiredOutcomeId
+      )
 
-    if (!outcome) {
-      throw new Error(`Outcome not found for desired outcome ${desiredOutcomeId}`)
-    }
+      if (!outcome) {
+        throw new Error(`Outcome not found for desired outcome ${desiredOutcomeId}`)
+      }
 
-    const desiredOutcome = this.serviceCategory.desiredOutcomes.find(
-      aDesiredOutcome => aDesiredOutcome.id === desiredOutcomeId
-    )
+      const desiredOutcome = this.serviceCategories
+        .flatMap(serviceCategory => serviceCategory.desiredOutcomes)
+        .find(aDesiredOutcome => aDesiredOutcome.id === desiredOutcomeId)
 
-    if (!desiredOutcome) {
-      throw new Error(`Desired outcome ${desiredOutcomeId} not found`)
-    }
+      if (!desiredOutcome) {
+        throw new Error(`Desired outcome ${desiredOutcomeId} not found`)
+      }
 
-    return {
-      title: `Outcome ${number}`,
-      subtitle: desiredOutcome.description,
-      progressionComments: outcome.progressionComments?.length ? outcome.progressionComments : 'None',
-      additionalTaskComments: outcome.additionalTaskComments?.length ? outcome.additionalTaskComments : 'None',
-      changeHref: `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/outcomes/${number}`,
-      achievementLevelText: this.achievementLevelText(outcome),
-      achievementLevelStyle: outcome.achievementLevel,
-    }
-  })
+      return {
+        title: `Outcome ${number}`,
+        subtitle: desiredOutcome.description,
+        progressionComments: outcome.progressionComments?.length ? outcome.progressionComments : 'None',
+        additionalTaskComments: outcome.additionalTaskComments?.length ? outcome.additionalTaskComments : 'None',
+        changeHref: `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/outcomes/${number}`,
+        achievementLevelText: this.achievementLevelText(outcome),
+        achievementLevelStyle: outcome.achievementLevel,
+      }
+    })
 
   private achievementLevelText(outcome: EndOfServiceReportOutcome): string {
     switch (outcome.achievementLevel) {

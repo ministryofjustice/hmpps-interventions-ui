@@ -8,7 +8,7 @@ export default class EndOfServiceReportPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategory
+    private readonly serviceCategories: ServiceCategory[]
   ) {}
 
   readonly text = {
@@ -20,7 +20,7 @@ export default class EndOfServiceReportPresenter {
   readonly answersPresenter = new EndOfServiceReportAnswersPresenter(
     this.referral,
     this.endOfServiceReport,
-    this.serviceCategory,
+    this.serviceCategories,
     false
   )
 }

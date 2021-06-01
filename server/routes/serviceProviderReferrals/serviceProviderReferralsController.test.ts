@@ -1223,7 +1223,14 @@ describe('GET /service-provider/end-of-service-report/:id/check-answers', () => 
   it('renders a page with the contents of the end of service report', async () => {
     const serviceCategory = serviceCategoryFactory.build()
     const referral = sentReferralFactory.build({
-      referral: { desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
+      referral: {
+        desiredOutcomes: [
+          {
+            serviceCategoryId: serviceCategory.id,
+            desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id],
+          },
+        ],
+      },
     })
     const endOfServiceReport = endOfServiceReportFactory.build({
       outcomes: [

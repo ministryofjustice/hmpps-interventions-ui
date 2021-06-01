@@ -4,9 +4,6 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 
 describe(EndOfServiceReportPresenter, () => {
-  const referral = sentReferralFactory.build({
-    referral: { desiredOutcomesIds: ['1', '3'], serviceUser: { firstName: 'Alex', lastName: 'River' } },
-  })
   const serviceCategory = serviceCategoryFactory.build({
     name: 'social inclusion',
     desiredOutcomes: [
@@ -14,6 +11,12 @@ describe(EndOfServiceReportPresenter, () => {
       { id: '2', description: 'Description of desired outcome 2' },
       { id: '3', description: 'Description of desired outcome 3' },
     ],
+  })
+  const referral = sentReferralFactory.build({
+    referral: {
+      desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: ['1', '3'] }],
+      serviceUser: { firstName: 'Alex', lastName: 'River' },
+    },
   })
   const buildEndOfServiceReport = () =>
     endOfServiceReportFactory.build({
@@ -35,7 +38,7 @@ describe(EndOfServiceReportPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), serviceCategory)
+      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), [serviceCategory])
 
       expect(presenter.text).toEqual({
         introduction:
@@ -46,7 +49,7 @@ describe(EndOfServiceReportPresenter, () => {
 
   describe('answersPresenter', () => {
     it('returns a presenter', () => {
-      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), serviceCategory)
+      const presenter = new EndOfServiceReportPresenter(referral, buildEndOfServiceReport(), [serviceCategory])
 
       expect(presenter.answersPresenter).toBeDefined()
     })
