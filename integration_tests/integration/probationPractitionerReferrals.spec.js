@@ -32,7 +32,9 @@ describe('Probation practitioner referrals dashboard', () => {
             },
           ],
           desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-          complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78' },
+          ],
         },
       }),
       sentReferralFactory.build({
@@ -53,7 +55,9 @@ describe('Probation practitioner referrals dashboard', () => {
               desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
             },
           ],
-          complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78' },
+          ],
         },
       }),
     ]
