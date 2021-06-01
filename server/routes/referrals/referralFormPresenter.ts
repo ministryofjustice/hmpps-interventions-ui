@@ -1,4 +1,5 @@
 /* eslint max-classes-per-file: 0 */
+import InterventionDecorator from '../../decorators/interventionDecorator'
 import DraftReferral from '../../models/draftReferral'
 import Intervention from '../../models/intervention'
 
@@ -15,12 +16,8 @@ export default class ReferralFormPresenter {
     this.formSectionBuilder = new FormSectionBuilder(referral, intervention, this.taskValues, this.sectionValues)
   }
 
-  get isCohortIntervention(): boolean {
-    return this.intervention.serviceCategories.length > 1
-  }
-
   get sections(): ReferralFormSectionPresenter[] {
-    if (this.isCohortIntervention) {
+    if (new InterventionDecorator(this.intervention).isCohortIntervention) {
       return this.formSectionBuilder.buildCohortReferralSections()
     }
     return this.formSectionBuilder.buildSingleReferralSections()
