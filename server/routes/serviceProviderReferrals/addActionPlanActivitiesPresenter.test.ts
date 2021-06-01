@@ -23,20 +23,20 @@ describe(AddActionPlanActivitiesPresenter, () => {
       description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
     },
   ]
-  const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })
+  const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })]
   const selectedDesiredOutcomesIds = [desiredOutcomes[0].id, desiredOutcomes[1].id]
   const sentReferral = sentReferralFactory.assigned().build({
     referral: {
-      serviceCategoryIds: [serviceCategory.id],
+      serviceCategoryIds: [serviceCategories[0].id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-      desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
+      desiredOutcomes: [{ serviceCategoryId: serviceCategories[0].id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
     },
   })
 
   describe('saveAndContinueFormAction', () => {
     it('returns a relative URL of the action plan’s add-activities page', () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
       expect(presenter.saveAndContinueFormAction).toEqual(
         `/service-provider/action-plan/${actionPlan.id}/add-activities`
@@ -49,7 +49,11 @@ describe(AddActionPlanActivitiesPresenter, () => {
       it('includes the name of the service category', () => {
         const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, socialInclusionServiceCategory, actionPlan)
+        const presenter = new AddActionPlanActivitiesPresenter(
+          sentReferral,
+          [socialInclusionServiceCategory],
+          actionPlan
+        )
 
         expect(presenter.text.title).toEqual('Social inclusion - create action plan')
       })
@@ -59,7 +63,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
       it('includes the name of the service user', () => {
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
         expect(presenter.text.subTitle).toEqual('Add suggested activities to Jenny’s action plan')
       })
@@ -70,7 +74,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
     describe('when an empty array of errors is passed in', () => {
       it('returns null', () => {
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, [])
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, [])
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -94,7 +98,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
           },
         ]
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, errors)
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, errors)
 
         expect(presenter.errorSummary).toEqual([{ field: 'description-1', message: 'Enter an activity' }])
       })
@@ -105,7 +109,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
     it('returns the desired outcomes on the Service Category that match those populated on the SentReferral', () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ activities: [] })
 
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
       expect(presenter.desiredOutcomes).toEqual([
         {
@@ -151,7 +155,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
           ],
         })
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
         expect(presenter.desiredOutcomes).toMatchObject([
           { activities: [{ text: 'description 1' }, { text: 'description 2' }] },
           { activities: [{ text: 'description 3' }] },
@@ -176,7 +180,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
           ],
         })
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
         expect(presenter.desiredOutcomes[0]).toMatchObject({
           activities: [{ text: 'description 2' }, { text: 'description 1' }],
         })
@@ -200,7 +204,7 @@ describe(AddActionPlanActivitiesPresenter, () => {
         },
       ]
 
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, errors)
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, errors)
 
       describe('when there is an error on the description field for that desired outcome', () => {
         it('returns that error’s message', () => {

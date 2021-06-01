@@ -9,7 +9,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 export default class AddActionPlanActivitiesPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategories: ServiceCategory[],
     private readonly actionPlan: ActionPlan,
     private readonly errors: { desiredOutcomeId: string; error: FormValidationError }[] = []
   ) {}
@@ -41,13 +41,13 @@ export default class AddActionPlanActivitiesPresenter {
   })()
 
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)} - create action plan`,
+    title: `${utils.convertToProperCase(this.serviceCategories[0].name)} - create action plan`,
     pageNumber: 1,
     subTitle: `Add suggested activities to ${this.sentReferral.referral.serviceUser.firstName}’s action plan`,
   }
 
   readonly desiredOutcomes = this.desiredOutcomesIds.map(id => {
-    const desiredOutcome = this.serviceCategory.desiredOutcomes.find(outcome => id === outcome.id)
+    const desiredOutcome = this.serviceCategories[0].desiredOutcomes.find(outcome => id === outcome.id)
 
     if (!desiredOutcome) {
       return null
