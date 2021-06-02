@@ -1,21 +1,24 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 
 @Component
 class ReferralAccessChecker(
   private val userTypeChecker: UserTypeChecker,
   private val eligibleProviderMapper: EligibleProviderMapper,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
+  private val communityApiOffenderService: CommunityAPIOffenderService,
 ) {
   private val errorMessage = "user does not have access to referral"
 
-  fun forUser(referral: Referral, user: AuthUser) {
+  fun forUser(referral: Referral, user: AuthUser, authentication: JwtAuthenticationToken) {
     when {
-      userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user)
+      userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user, authentication)
       userTypeChecker.isServiceProviderUser(user) -> forServiceProviderUser(referral, user)
       else -> throw AccessError(errorMessage, listOf("invalid user type"))
     }
@@ -39,7 +42,10 @@ class ReferralAccessChecker(
     }
   }
 
-  private fun forProbationPractitionerUser(referral: Referral, user: AuthUser) {
-    // currently no access restrictions on PP users
+  private fun forProbationPractitionerUser(referral: Referral, user: AuthUser, authentication: JwtAuthenticationToken) {
+    val hasAccess = communityApiOffenderService.checkIfAuthenticatedDeliusUserHasAccessToOffender(authentication, referral.serviceUserCRN)
+    if (!hasAccess) {
+      throw AccessError(errorMessage, listOf("probation practitioner is excluded from access to this service user"))
+    }
   }
 }
