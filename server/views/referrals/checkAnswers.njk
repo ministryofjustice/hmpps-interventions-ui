@@ -44,6 +44,10 @@
 
       {{ govukSummaryList(completionDeadlineSummaryListArgs) }}
 
+      <h2 class="govuk-heading-l">Enforceable days</h2>
+
+      {{ govukSummaryList(enforceableDaysSummaryListArgs) }}
+
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukButton({ text: "Submit referral" }) }}

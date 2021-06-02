@@ -384,4 +384,48 @@ describe(CheckAnswersPresenter, () => {
       })
     })
   })
+
+  describe('enforceableDaysSummary', () => {
+    describe('when the referral is not using enforceable days', () => {
+      const referral = parameterisedDraftReferralFactory.build({ usingRarDays: false })
+
+      it('states that enforceable days aren’t being used', () => {
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction
+        )
+
+        expect(presenter.enforceableDaysSummary).toEqual([
+          {
+            key: 'Are you using enforceable days?',
+            lines: ['No'],
+          },
+        ])
+      })
+    })
+
+    describe('when the referral is using enforceable days', () => {
+      const referral = parameterisedDraftReferralFactory.build({ usingRarDays: true, maximumRarDays: 15 })
+
+      it('states that enforceable days are being used and the maximum number to use', () => {
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction
+        )
+
+        expect(presenter.enforceableDaysSummary).toEqual([
+          {
+            key: 'Are you using enforceable days?',
+            lines: ['Yes'],
+          },
+          {
+            key: 'Maximum number of enforceable days',
+            lines: ['15'],
+          },
+        ])
+      })
+    })
+  })
 })

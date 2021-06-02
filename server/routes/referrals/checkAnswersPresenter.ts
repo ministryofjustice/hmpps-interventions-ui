@@ -154,5 +154,23 @@ export default class CheckAnswersPresenter {
     }
   }
 
+  get enforceableDaysSummary(): SummaryListItem[] {
+    const result = [
+      {
+        key: 'Are you using enforceable days?',
+        lines: [this.referral.usingRarDays ? 'Yes' : 'No'],
+      },
+    ]
+
+    if (this.referral.usingRarDays) {
+      if (this.referral.maximumRarDays === null) {
+        throw new Error('Trying to check answers for referral that uses RAR days, but without maximum RAR days set')
+      }
+      result.push({ key: 'Maximum number of enforceable days', lines: [this.referral.maximumRarDays.toString()] })
+    }
+
+    return result
+  }
+
   private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''
 }
