@@ -32,4 +32,30 @@ describe(DraftReferralDecorator, () => {
       })
     })
   })
+
+  describe('completionDeadline', () => {
+    describe('when referral has a null completionDeadline', () => {
+      it('returns null', () => {
+        const referral = draftReferralFactory.build({ completionDeadline: null })
+
+        expect(new DraftReferralDecorator(referral).completionDeadline).toBeNull()
+      })
+    })
+
+    describe('when referral has a parseable completionDeadline', () => {
+      it('returns the referral’s completion deadline as a calendar day', () => {
+        const referral = draftReferralFactory.build({ completionDeadline: '2021-03-10' })
+
+        expect(new DraftReferralDecorator(referral).completionDeadline).toEqual({ day: 10, month: 3, year: 2021 })
+      })
+    })
+
+    describe('when referral has a malformed completionDeadline', () => {
+      it('throws an error', () => {
+        const referral = draftReferralFactory.build({ completionDeadline: 'abc' })
+
+        expect(() => new DraftReferralDecorator(referral).completionDeadline).toThrow()
+      })
+    })
+  })
 })
