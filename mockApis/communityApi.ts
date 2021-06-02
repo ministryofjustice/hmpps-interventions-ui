@@ -50,4 +50,20 @@ export default class CommunityApiMocks {
       },
     })
   }
+
+  stubGetConvictionById = async (crn: string, id: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/community-api/secure/offenders/crn/${crn}/convictions/${id}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
