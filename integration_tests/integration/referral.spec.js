@@ -348,11 +348,11 @@ describe('Referral form', () => {
         ],
       })
       const intervention = interventionFactory.build({
-        title: 'Womans Service',
+        title: "Women's Services",
         serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
         contractType: {
           code: 'WMS',
-          name: 'Womans Service',
+          name: "Women's Services",
         },
       })
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
@@ -430,7 +430,7 @@ describe('Referral form', () => {
           riskInformation: true,
           needsAndRequirements: false,
         })
-        .selectServiceCagories({ selectServiceCategories: false })
+        .selectServiceCategories({ selectServiceCategories: false })
         .checkYourAnswers({ checkAnswers: false })
 
       cy.contains('Confirm service user’s personal details').click()
@@ -482,7 +482,7 @@ describe('Referral form', () => {
           riskInformation: true,
           needsAndRequirements: true,
         })
-        .selectServiceCagories({ selectServiceCategories: true })
+        .selectServiceCategories({ selectServiceCategories: true })
         .checkYourAnswers({ checkAnswers: false })
       cy.contains('Select service categories').click()
       cy.get('h1').contains('What service categories are you referring Alex to?')
@@ -501,7 +501,7 @@ describe('Referral form', () => {
           riskInformation: true,
           needsAndRequirements: true,
         })
-        .selectServiceCagories({ selectServiceCategories: true })
+        .selectServiceCategories({ selectServiceCategories: true })
         .cohortInterventionReferralDetails({
           relevantSentence: true,
           requiredComplexityLevel1: false,
@@ -514,10 +514,10 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: false })
 
-      cy.contains('Confirm the relevant sentence for the Womans Service referral').click()
+      cy.contains("Confirm the relevant sentence for the Women's Services referral").click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
-      cy.get('h1').contains('Select the relevant sentence for the accommodation referral')
+      cy.get('h1').contains("Select the relevant sentence for the women's services referral")
 
       cy.contains('Burglary').click()
 
@@ -603,7 +603,7 @@ describe('Referral form', () => {
           riskInformation: true,
           needsAndRequirements: true,
         })
-        .selectServiceCagories({ selectServiceCategories: true })
+        .selectServiceCategories({ selectServiceCategories: true })
         .cohortInterventionReferralDetails({
           relevantSentence: true,
           requiredComplexityLevel1: true,
