@@ -358,8 +358,12 @@ describe('Service provider referrals dashboard', () => {
     cy.stubSubmitActionPlan(draftActionPlan.id, submittedActionPlan)
     cy.stubGetActionPlan(draftActionPlan.id, submittedActionPlan)
 
-    cy.contains('Review Alex’s action plan')
+    cy.contains('Confirm action plan')
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/review`)
+    cy.contains('Activity 1')
+    cy.contains('Attend training course')
+    cy.contains('Activity 2')
+    cy.contains('Create appointment with local authority')
     cy.contains('Submit for approval').click()
 
     cy.contains('Action plan submitted for approval')

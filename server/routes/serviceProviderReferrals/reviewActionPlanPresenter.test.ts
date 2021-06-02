@@ -23,20 +23,20 @@ describe(ReviewActionPlanPresenter, () => {
       description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
     },
   ]
-  const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })
+  const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })]
   const selectedDesiredOutcomesIds = [desiredOutcomes[0].id, desiredOutcomes[1].id]
   const sentReferral = sentReferralFactory.assigned().build({
     referral: {
-      serviceCategoryIds: [serviceCategory.id],
+      serviceCategoryIds: [serviceCategories[0].id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-      desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
+      desiredOutcomes: [{ serviceCategoryId: serviceCategories[0].id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
     },
   })
 
   describe('submitFormAction', () => {
     it('returns a relative URL of the action plan’s submit action', () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
+      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
 
       expect(presenter.submitFormAction).toEqual(`/service-provider/action-plan/${actionPlan.id}/submit`)
     })
@@ -47,19 +47,9 @@ describe(ReviewActionPlanPresenter, () => {
       it('includes the name of the service category', () => {
         const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-        const presenter = new ReviewActionPlanPresenter(sentReferral, socialInclusionServiceCategory, actionPlan)
+        const presenter = new ReviewActionPlanPresenter(sentReferral, [socialInclusionServiceCategory], actionPlan)
 
-        expect(presenter.text.title).toEqual('Social inclusion - create action plan')
-      })
-    })
-
-    describe('subTitle', () => {
-      it('includes the name of the service user', () => {
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-
-        const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
-
-        expect(presenter.text.subTitle).toEqual('Review Jenny’s action plan')
+        expect(presenter.text.title).toEqual('Confirm action plan')
       })
     })
 
@@ -67,87 +57,52 @@ describe(ReviewActionPlanPresenter, () => {
       it('returns the suggested number of sessions in the action plan', () => {
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ numberOfSessions: 10 })
 
-        const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
+        const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
 
         expect(presenter.text.numberOfSessions).toEqual('10')
       })
     })
   })
 
-  describe('desiredOutcomes', () => {
+  describe('desiredOutcomesByServiceCategory', () => {
     it('returns the desired outcomes on the Service Category that match those populated on the SentReferral', () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ activities: [] })
 
-      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
+      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
 
-      expect(presenter.desiredOutcomes).toEqual([
+      expect(presenter.desiredOutcomesByServiceCategory).toEqual([
         {
-          description:
+          serviceCategory: 'Accommodation',
+          desiredOutcomes: [
             'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          activities: [],
-        },
-        {
-          description: 'Service User makes progress in obtaining accommodation',
-          activities: [],
+            'Service User makes progress in obtaining accommodation',
+          ],
         },
       ])
     })
+  })
 
-    describe('activities', () => {
-      it('adds the activities to the correct desired outcome', () => {
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
-          activities: [
-            {
-              id: '1',
-              description: 'description 1',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-            {
-              id: '2',
-              description: 'description 2',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-            {
-              id: '3',
-              description: 'description 3',
-              desiredOutcome: desiredOutcomes[1],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-          ],
-        })
-
-        const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
-        expect(presenter.desiredOutcomes).toMatchObject([
-          { activities: [{ text: 'description 1' }, { text: 'description 2' }] },
-          { activities: [{ text: 'description 3' }] },
-        ])
+  describe('orderedActivities', () => {
+    it('returns the activities specified on the draft action plan in date created order', () => {
+      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
+        activities: [
+          {
+            id: '1',
+            description: 'description 1',
+            desiredOutcome: desiredOutcomes[0],
+            createdAt: '2021-03-15T10:05:00Z',
+          },
+          {
+            id: '2',
+            description: 'description 2',
+            desiredOutcome: desiredOutcomes[0],
+            createdAt: '2021-03-15T10:00:00Z',
+          },
+        ],
       })
 
-      it('sorts an outcome’s referrals into oldest-to-newest order', () => {
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
-          activities: [
-            {
-              id: '1',
-              description: 'description 1',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:05:00Z',
-            },
-            {
-              id: '2',
-              description: 'description 2',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-          ],
-        })
-
-        const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
-        expect(presenter.desiredOutcomes[0]).toMatchObject({
-          activities: [{ text: 'description 2' }, { text: 'description 1' }],
-        })
-      })
+      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
+      expect(presenter.orderedActivities).toEqual(['description 2', 'description 1'])
     })
   })
 })

@@ -538,8 +538,10 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
       .get(`/service-provider/action-plan/${draftActionPlan.id}/review`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Review Alex’s action plan')
+        expect(res.text).toContain('Confirm action plan')
+        expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Achieve a thing')
+        expect(res.text).toContain('Activity 1')
         expect(res.text).toContain('Do a thing')
         expect(res.text).toContain('Suggested number of sessions: 10')
       })

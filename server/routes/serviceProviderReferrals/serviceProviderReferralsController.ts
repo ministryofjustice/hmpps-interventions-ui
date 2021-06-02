@@ -332,15 +332,16 @@ export default class ServiceProviderReferralsController {
       actionPlan.referralId
     )
 
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryIds[0]
+    const [serviceCategories, serviceUser] = await Promise.all([
+      Promise.all(
+        sentReferral.referral.serviceCategoryIds.map(id =>
+          this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
+        )
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategory, actionPlan)
+    const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
     const view = new ReviewActionPlanView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
