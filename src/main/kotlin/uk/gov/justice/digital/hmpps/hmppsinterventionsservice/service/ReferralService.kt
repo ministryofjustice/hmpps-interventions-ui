@@ -30,8 +30,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ser
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.transaction.Transactional
 
 @Service
+@Transactional
 class ReferralService(
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
@@ -46,6 +48,7 @@ class ReferralService(
   val userTypeChecker: UserTypeChecker,
   val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
   val referralAccessFilter: ReferralAccessFilter,
+  val communityAPIReferralService: CommunityAPIReferralService,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -130,8 +133,15 @@ class ReferralService(
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
-    referral.sentBy = authUserRepository.save(user)
     referral.referenceNumber = generateReferenceNumber(referral)
+    referral.sentBy = authUserRepository.save(user)
+
+    /*
+     * This is a temporary solution until a robust asynchronous link is created between Interventions
+     * and Delius. Once the asynchronous link is implemented, this feature can be turned off, and instead
+     * Delius will be notified via the normal asynchronous route
+     */
+    communityAPIReferralService.send(referral)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)

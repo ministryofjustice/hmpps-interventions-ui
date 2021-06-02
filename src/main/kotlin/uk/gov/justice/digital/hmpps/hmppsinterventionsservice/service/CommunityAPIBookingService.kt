@@ -8,9 +8,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Communit
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.transaction.Transactional
 import javax.validation.constraints.NotNull
 
 @Service
+@Transactional
 class CommunityAPIBookingService(
   @Value("\${appointments.bookings.enabled}") private val bookingsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,

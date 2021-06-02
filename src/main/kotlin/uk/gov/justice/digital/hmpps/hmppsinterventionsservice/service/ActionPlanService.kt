@@ -13,8 +13,10 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import java.util.UUID.randomUUID
 import javax.persistence.EntityNotFoundException
+import javax.transaction.Transactional
 
 @Service
+@Transactional
 class ActionPlanService(
   val authUserRepository: AuthUserRepository,
   val referralRepository: ReferralRepository,

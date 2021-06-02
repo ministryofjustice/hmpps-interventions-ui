@@ -77,6 +77,7 @@ class ReferralServiceTest @Autowired constructor(
   private val userTypeChecker = UserTypeChecker()
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper = mock()
   private val referralAccessFilter: ReferralAccessFilter = mock()
+  private val communityAPIReferralService: CommunityAPIReferralService = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -92,6 +93,7 @@ class ReferralServiceTest @Autowired constructor(
     userTypeChecker,
     serviceProviderAccessScopeMapper,
     referralAccessFilter,
+    communityAPIReferralService,
   )
 
   // reset before each test
@@ -377,6 +379,7 @@ class ReferralServiceTest @Autowired constructor(
     val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
     referralService.sendDraftReferral(draftReferral, user)
+    verify(communityAPIReferralService).send(draftReferral)
     verify(referralEventPublisher).referralSentEvent(draftReferral)
   }
 

@@ -12,10 +12,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import javax.transaction.Transactional
 
 interface SNSService
 
 @Service
+@Transactional
 class SNSActionPlanService(
   private val snsPublisher: SNSPublisher,
 ) : ApplicationListener<ActionPlanEvent>, SNSService {
@@ -38,6 +40,7 @@ class SNSActionPlanService(
 }
 
 @Service
+@Transactional
 class SNSReferralService(
   private val snsPublisher: SNSPublisher,
 ) : ApplicationListener<ReferralEvent>, SNSService {
@@ -70,6 +73,7 @@ class SNSReferralService(
 }
 
 @Service
+@Transactional
 class SNSAppointmentService(
   private val snsPublisher: SNSPublisher,
 ) : ApplicationListener<AppointmentEvent>, SNSService {

@@ -42,12 +42,10 @@ class CommunityAPIReferralEventService(
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {
-        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUISentReferralLocation)
-          .buildAndExpand(event.referral.id)
-          .toString()
-
-        postReferralStartRequest(event, url)
+        // Has become a synchronous call so no action required here
+        // This is due to the link to delius not being robust at the moment
+        // As soon as it is made resilient this route will be reinstated
+        // Functionality moved to CommunityApiReferralService
       }
       ReferralEventType.CANCELLED,
       -> {
@@ -70,22 +68,6 @@ class CommunityAPIReferralEventService(
       }
       else -> {}
     }
-  }
-
-  private fun postReferralStartRequest(event: ReferralEvent, url: String) {
-    val referRequest = ReferRequest(
-      event.referral.intervention.dynamicFrameworkContract.contractType.code,
-      event.referral.sentAt!!,
-      event.referral.relevantSentenceId!!,
-      event.referral.id,
-      getNotes(event.referral, url, "Referral Sent"),
-    )
-
-    val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPISentReferralLocation)
-      .buildAndExpand(event.referral.serviceUserCRN, integrationContext)
-      .toString()
-
-    communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, referRequest)
   }
 
   private fun postReferralEndRequest(event: ReferralEvent, url: String) {
@@ -228,14 +210,6 @@ class CommunityAPIAppointmentEventService(
     }
   }
 }
-
-data class ReferRequest(
-  val contractType: String,
-  val startedAt: OffsetDateTime,
-  val sentenceId: Long,
-  val referralId: UUID,
-  val notes: String,
-)
 
 data class ReferralEndRequest(
   val contractType: String,
