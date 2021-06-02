@@ -58,6 +58,17 @@ class CommunityAPIClient(
       .block()
   }
 
+  fun <T : Any> makeSyncGetRequest(uri: String, responseBodyClass: Class<T>): T {
+    return communityApiWebClient.get().uri(uri)
+      .retrieve()
+      .bodyToMono(responseBodyClass)
+      .onErrorMap { e ->
+        handleResponse(e, "")
+        e
+      }
+      .block()
+  }
+
   fun handleResponse(e: Throwable, requestBody: Any): String {
     val responseBodyAsString = when (e) {
       is BadRequest -> e.responseBodyAsString
