@@ -15,6 +15,7 @@ import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceUserAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -56,6 +57,7 @@ class ReferralServiceUnitTest {
   private val referralAccessFilter: ReferralAccessFilter = mock()
   private val communityAPIReferralService: CommunityAPIReferralService = mock()
   private val userTypeChecker: UserTypeChecker = mock()
+  private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
@@ -69,7 +71,7 @@ class ReferralServiceUnitTest {
     referralRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
     actionPlanAppointmentRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
-    serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService,
+    serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,
   )
 
   @Test
