@@ -1,5 +1,7 @@
 import RelevantSentencePresenter from './relevantSentencePresenter'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import deliusOffenceFactory from '../../../testutils/factories/deliusOffence'
+import deliusSentenceFactory from '../../../testutils/factories/deliusSentence'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import interventionFactory from '../../../testutils/factories/intervention'
 
@@ -20,46 +22,18 @@ describe(RelevantSentencePresenter, () => {
     describe('category', () => {
       it('returns the main offence‘s category', () => {
         const offences = [
-          {
-            offenceId: 'M2500297061',
+          deliusOffenceFactory.build({
             mainOffence: false,
             detail: {
-              code: '10400',
-              description: 'Assault on Police Officer - 10400',
-              mainCategoryCode: '104',
               mainCategoryDescription: 'Assault on Police Officer',
-              mainCategoryAbbreviation: 'Assault on Police Officer',
-              ogrsOffenceCategory: 'Violence',
-              subCategoryCode: '00',
-              subCategoryDescription: 'Assault on Police Officer',
-              form20Code: '88',
             },
-            offenceDate: '2019-09-09T00:00:00',
-            offenceCount: 1,
-            offenderId: 2500343964,
-            createdDatetime: '2019-09-17T00:00:00',
-            lastUpdatedDatetime: '2019-09-17T00:00:00',
-          },
-          {
-            offenceId: 'M2600297062',
+          }),
+          deliusOffenceFactory.build({
             mainOffence: true,
             detail: {
-              code: '10501',
-              description: 'Common assault and battery - 10501',
-              mainCategoryCode: '105',
               mainCategoryDescription: 'Common and other types of assault',
-              mainCategoryAbbreviation: 'Common and other types of assault',
-              ogrsOffenceCategory: 'Violence',
-              subCategoryCode: '01',
-              subCategoryDescription: 'Common assault and battery',
-              form20Code: '88',
             },
-            offenceDate: '2019-09-09T00:00:00',
-            offenceCount: 1,
-            offenderId: 2600343964,
-            createdDatetime: '2019-09-17T00:00:00',
-            lastUpdatedDatetime: '2019-09-17T00:00:00',
-          },
+          }),
         ]
 
         const convictions = [deliusConvictionFactory.build({ offences })]
@@ -73,46 +47,18 @@ describe(RelevantSentencePresenter, () => {
     describe('subcategory', () => {
       it('returns the main offence‘s subcategory', () => {
         const offences = [
-          {
-            offenceId: 'M2500297061',
+          deliusOffenceFactory.build({
             mainOffence: false,
             detail: {
-              code: '10400',
-              description: 'Assault on Police Officer - 10400',
-              mainCategoryCode: '104',
-              mainCategoryDescription: 'Assault on Police Officer',
-              mainCategoryAbbreviation: 'Assault on Police Officer',
-              ogrsOffenceCategory: 'Violence',
-              subCategoryCode: '00',
               subCategoryDescription: 'Assault on Police Officer',
-              form20Code: '88',
             },
-            offenceDate: '2019-09-09T00:00:00',
-            offenceCount: 1,
-            offenderId: 2500343964,
-            createdDatetime: '2019-09-17T00:00:00',
-            lastUpdatedDatetime: '2019-09-17T00:00:00',
-          },
-          {
-            offenceId: 'M2600297062',
+          }),
+          deliusOffenceFactory.build({
             mainOffence: true,
             detail: {
-              code: '10501',
-              description: 'Common assault and battery - 10501',
-              mainCategoryCode: '105',
-              mainCategoryDescription: 'Common and other types of assault',
-              mainCategoryAbbreviation: 'Common and other types of assault',
-              ogrsOffenceCategory: 'Violence',
-              subCategoryCode: '01',
               subCategoryDescription: 'Common assault and battery',
-              form20Code: '88',
             },
-            offenceDate: '2019-09-09T00:00:00',
-            offenceCount: 1,
-            offenderId: 2600343964,
-            createdDatetime: '2019-09-17T00:00:00',
-            lastUpdatedDatetime: '2019-09-17T00:00:00',
-          },
+          }),
         ]
 
         const convictions = [deliusConvictionFactory.build({ offences })]
@@ -127,15 +73,9 @@ describe(RelevantSentencePresenter, () => {
       it('uses the GOV UK date format', () => {
         const convictions = [
           deliusConvictionFactory.build({
-            sentence: {
-              sentenceId: 2500284169,
-              description: 'Absolute/Conditional Discharge',
+            sentence: deliusSentenceFactory.build({
               expectedSentenceEndDate: '2025-09-15',
-              sentenceType: {
-                code: 'SC',
-                description: 'CJA - Indeterminate Public Prot.',
-              },
-            },
+            }),
           }),
         ]
 
