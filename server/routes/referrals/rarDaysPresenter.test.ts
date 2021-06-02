@@ -1,22 +1,22 @@
 import RarDaysPresenter from './rarDaysPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 describe(RarDaysPresenter, () => {
+  const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const referral = draftReferralFactory.build()
 
-      const presenter = new RarDaysPresenter(referral, serviceCategory)
+      const presenter = new RarDaysPresenter(referral, intervention)
 
       expect(presenter.text).toEqual({
-        title: 'Are you using RAR days for the Accommodation service?',
+        title: "Are you using RAR days for the Women's service referral?",
         usingRarDays: {
           errorMessage: null,
         },
         maximumRarDays: {
-          label: 'What is the maximum number of RAR days for the Accommodation service?',
+          label: "What is the maximum number of RAR days for the Women's service referral?",
           errorMessage: null,
         },
       })
@@ -24,10 +24,9 @@ describe(RarDaysPresenter, () => {
 
     describe('when some fields have errors', () => {
       it('includes error messages for those fields', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory, {
+        const presenter = new RarDaysPresenter(referral, intervention, {
           errors: [
             { formFields: ['using-rar-days'], errorSummaryLinkedField: 'using-rar-days', message: 'usingRarDays msg' },
             {
@@ -53,10 +52,9 @@ describe(RarDaysPresenter, () => {
   describe('fields', () => {
     describe('when the answers are null on the referral and there is no user input data', () => {
       it('returns values corresponding to no selection', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory)
+        const presenter = new RarDaysPresenter(referral, intervention)
 
         expect(presenter.fields).toEqual({
           usingRarDays: null,
@@ -67,10 +65,9 @@ describe(RarDaysPresenter, () => {
 
     describe('when the answers are present on the referral', () => {
       it('returns the values from the referral', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build({ usingRarDays: true, maximumRarDays: 10 })
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory)
+        const presenter = new RarDaysPresenter(referral, intervention)
 
         expect(presenter.fields).toEqual({
           usingRarDays: true,
@@ -81,10 +78,9 @@ describe(RarDaysPresenter, () => {
 
     describe('when there is user input data', () => {
       it('returns the user input values', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory, null, {
+        const presenter = new RarDaysPresenter(referral, intervention, null, {
           'using-rar-days': 'yes',
           'maximum-rar-days': 'blah',
         })
@@ -98,10 +94,9 @@ describe(RarDaysPresenter, () => {
 
     describe('when there is user input data and the answers are present on the referral', () => {
       it('returns the user input values', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build({ usingRarDays: false, maximumRarDays: null })
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory, null, {
+        const presenter = new RarDaysPresenter(referral, intervention, null, {
           'using-rar-days': 'yes',
           'maximum-rar-days': 'blah',
         })
@@ -117,10 +112,9 @@ describe(RarDaysPresenter, () => {
   describe('errorSummary', () => {
     describe('when error is null', () => {
       it('returns null', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory)
+        const presenter = new RarDaysPresenter(referral, intervention)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -128,10 +122,9 @@ describe(RarDaysPresenter, () => {
 
     describe('when error is not null', () => {
       it('returns a summary of the errors sorted by the order the fields appear on the page', () => {
-        const serviceCategory = serviceCategoryFactory.build()
         const referral = draftReferralFactory.build()
 
-        const presenter = new RarDaysPresenter(referral, serviceCategory, {
+        const presenter = new RarDaysPresenter(referral, intervention, {
           errors: [
             {
               formFields: ['maximum-rar-days'],

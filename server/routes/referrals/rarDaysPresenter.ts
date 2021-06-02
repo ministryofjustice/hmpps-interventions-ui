@@ -1,13 +1,13 @@
 import DraftReferral from '../../models/draftReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import Intervention from '../../models/intervention'
 import utils from '../../utils/utils'
 
 export default class RarDaysPresenter {
   constructor(
     private readonly referral: DraftReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -17,14 +17,14 @@ export default class RarDaysPresenter {
   })
 
   readonly text = {
-    title: `Are you using RAR days for the ${utils.convertToProperCase(this.serviceCategory.name)} service?`,
+    title: `Are you using RAR days for the ${utils.convertToProperCase(this.intervention.contractType.name)} referral?`,
     usingRarDays: {
       errorMessage: PresenterUtils.errorMessage(this.error, 'using-rar-days'),
     },
     maximumRarDays: {
       label: `What is the maximum number of RAR days for the ${utils.convertToProperCase(
-        this.serviceCategory.name
-      )} service?`,
+        this.intervention.contractType.name
+      )} referral?`,
       errorMessage: PresenterUtils.errorMessage(this.error, 'maximum-rar-days'),
     },
   }
