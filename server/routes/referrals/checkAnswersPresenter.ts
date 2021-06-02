@@ -10,6 +10,7 @@ import Intervention from '../../models/intervention'
 import InterventionDecorator from '../../decorators/interventionDecorator'
 import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from './sentencePresenter'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class CheckAnswersPresenter {
   constructor(
@@ -138,6 +139,19 @@ export default class CheckAnswersPresenter {
         lines: [presenter.endOfSentenceDate],
       },
     ]
+  }
+
+  get completionDeadlineSection(): { title: string; summary: SummaryListItem[] } {
+    const { completionDeadline } = new DraftReferralDecorator(this.referral)
+
+    if (completionDeadline === null) {
+      throw new Error('Trying to check answers with completion deadline not set')
+    }
+
+    return {
+      title: `${this.intervention.contractType.name} completion date`,
+      summary: [{ key: 'Date', lines: [PresenterUtils.govukFormattedDate(completionDeadline)] }],
+    }
   }
 
   private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''

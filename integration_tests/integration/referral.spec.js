@@ -315,6 +315,8 @@ describe('Referral form', () => {
       cy.contains('Service User makes progress in obtaining accommodation')
       cy.contains('Service User is prevented from becoming homeless')
 
+      cy.contains('24 August 2021')
+
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 

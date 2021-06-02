@@ -361,4 +361,27 @@ describe(CheckAnswersPresenter, () => {
       ])
     })
   })
+
+  describe('completionDeadlineSection', () => {
+    const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
+    const referral = parameterisedDraftReferralFactory.build({ completionDeadline: '2021-10-24' })
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
+
+    describe('title', () => {
+      it('includes the contract type name', () => {
+        expect(presenter.completionDeadlineSection.title).toEqual('Women’s services completion date')
+      })
+    })
+
+    describe('summary', () => {
+      it('returns information about the completion deadline', () => {
+        expect(presenter.completionDeadlineSection.summary).toEqual([
+          {
+            key: 'Date',
+            lines: ['24 October 2021'],
+          },
+        ])
+      })
+    })
+  })
 })

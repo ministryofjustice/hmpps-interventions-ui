@@ -1208,6 +1208,7 @@ describe('GET /referrals/:id/check-answers', () => {
     const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
     const referral = draftReferralFactory
       .serviceCategorySelected(serviceCategory.id)
+      .completionDeadlineSet()
       .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' }, relevantSentenceId: 123 })
     const conviction = deliusConvictionFactory.build()
 

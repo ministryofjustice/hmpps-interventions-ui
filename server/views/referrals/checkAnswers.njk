@@ -40,6 +40,10 @@
         {{ govukSummaryList(section.summaryListArgs) }}
       {% endfor %}
 
+      <h2 class="govuk-heading-l">{{ presenter.completionDeadlineSection.title }}</h2>
+
+      {{ govukSummaryList(completionDeadlineSummaryListArgs) }}
+
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukButton({ text: "Submit referral" }) }}
