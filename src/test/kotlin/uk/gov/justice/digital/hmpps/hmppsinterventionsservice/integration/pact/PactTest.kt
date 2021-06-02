@@ -5,19 +5,26 @@ import au.com.dius.pact.provider.junitsupport.Provider
 import au.com.dius.pact.provider.junitsupport.State
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceUserAccessResult
 
 @PactBroker
 @Provider("Interventions Service")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class PactTest : IntegrationTestBase() {
   @MockBean private lateinit var hmppsAuthService: HMPPSAuthService
+  @MockBean private lateinit var communityAPIOffenderService: CommunityAPIOffenderService
+  @MockBean private lateinit var communityAPIReferralService: CommunityAPIReferralService
 
   @TestTemplate
   @ExtendWith(PactVerificationSpringProvider::class)
@@ -27,6 +34,9 @@ class PactTest : IntegrationTestBase() {
 
   @BeforeEach
   fun `before each`(context: PactVerificationContext) {
+    whenever(communityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
+      .thenReturn(ServiceUserAccessResult(true, emptyList()))
+
     context.addStateChangeHandlers(
       ActionPlanContracts(setupAssistant),
       InterventionContracts(setupAssistant),
