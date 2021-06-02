@@ -110,6 +110,7 @@ class ReferralController(
         user,
         createReferralRequestDTO.serviceUserCrn,
         createReferralRequestDTO.interventionId,
+        authentication,
       )
     } catch (e: EntityNotFoundException) {
       throw ServerWebInputException("invalid intervention id [id=${createReferralRequestDTO.interventionId}]")

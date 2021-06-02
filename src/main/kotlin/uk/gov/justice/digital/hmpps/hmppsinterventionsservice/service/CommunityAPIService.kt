@@ -32,14 +32,18 @@ class CommunityAPIOffenderService(
   @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
   private val communityAPIClient: CommunityAPIClient,
 ) {
-  fun checkIfAuthenticatedDeliusUserHasAccessToOffender(authentication: JwtAuthenticationToken, crn: String): Boolean {
+  fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(authentication: JwtAuthenticationToken, crn: String): ServiceUserAccessResult {
     val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
       .buildAndExpand(crn)
       .toString()
 
     val client = communityAPIClient.withCustomAuth(authentication)
     val response = client.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
-    return !(response.userExcluded || response.userRestricted)
+    return ServiceUserAccessResult(
+      !(response.userExcluded || response.userRestricted),
+      response.exclusionMessage,
+      response.restrictionMessage,
+    )
   }
 }
 
@@ -255,6 +259,12 @@ data class AppointmentOutcomeRequest(
 data class UserAccessResponse(
   val userExcluded: Boolean,
   val userRestricted: Boolean,
+  val exclusionMessage: String?,
+  val restrictionMessage: String?,
+)
+
+data class ServiceUserAccessResult(
+  val canAccess: Boolean,
   val exclusionMessage: String?,
   val restrictionMessage: String?,
 )

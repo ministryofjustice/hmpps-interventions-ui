@@ -9,6 +9,7 @@ import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceUserAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
@@ -50,6 +51,7 @@ class ReferralService(
   val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
   val referralAccessFilter: ReferralAccessFilter,
   val communityAPIReferralService: CommunityAPIReferralService,
+  val serviceUserAccessChecker: ServiceUserAccessChecker,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -153,10 +155,18 @@ class ReferralService(
     user: AuthUser,
     crn: String,
     interventionId: UUID,
+    authentication: JwtAuthenticationToken,
     overrideID: UUID? = null,
     overrideCreatedAt: OffsetDateTime? = null,
     endOfServiceReport: EndOfServiceReport? = null,
   ): Referral {
+    if (!userTypeChecker.isProbationPractitionerUser(user)) {
+      throw AccessError("user cannot create referral", listOf("only probation practitioners can create draft referrals"))
+    }
+
+    // PPs can't create referrals for service users they are not allowed to see
+    serviceUserAccessChecker.forProbationPractitionerUser(crn, authentication)
+
     val intervention = interventionRepository.getOne(interventionId)
     val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
     val selectedServiceCategories = if (serviceCategories.size == 1) serviceCategories.toMutableSet() else null

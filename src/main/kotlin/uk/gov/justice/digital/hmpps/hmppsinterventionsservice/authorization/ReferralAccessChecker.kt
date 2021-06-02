@@ -5,14 +5,13 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 
 @Component
 class ReferralAccessChecker(
   private val userTypeChecker: UserTypeChecker,
   private val eligibleProviderMapper: EligibleProviderMapper,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
-  private val communityApiOffenderService: CommunityAPIOffenderService,
+  private val serviceUserAccessChecker: ServiceUserAccessChecker,
 ) {
   private val errorMessage = "user does not have access to referral"
 
@@ -43,9 +42,7 @@ class ReferralAccessChecker(
   }
 
   private fun forProbationPractitionerUser(referral: Referral, user: AuthUser, authentication: JwtAuthenticationToken) {
-    val hasAccess = communityApiOffenderService.checkIfAuthenticatedDeliusUserHasAccessToOffender(authentication, referral.serviceUserCRN)
-    if (!hasAccess) {
-      throw AccessError(errorMessage, listOf("probation practitioner is excluded from access to this service user"))
-    }
+    // check if the PP is allowed to access this service user's records
+    serviceUserAccessChecker.forProbationPractitionerUser(referral.serviceUserCRN, authentication)
   }
 }
