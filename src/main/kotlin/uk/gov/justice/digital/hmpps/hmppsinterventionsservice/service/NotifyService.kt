@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import java.net.URI
 import java.util.UUID
-import javax.transaction.Transactional
 
 interface NotifyService {
   fun generateResourceUrl(baseURL: String, path: String, id: UUID): URI {
@@ -25,7 +24,6 @@ interface NotifyService {
 }
 
 @Service
-@Transactional
 class NotifyActionPlanService(
   @Value("\${notify.templates.action-plan-submitted}") private val actionPlanSubmittedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
@@ -55,7 +53,6 @@ class NotifyActionPlanService(
 }
 
 @Service
-@Transactional
 class NotifyEndOfServiceReportService(
   @Value("\${notify.templates.end-of-service-report-submitted}") private val endOfServiceReportSubmittedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
@@ -85,7 +82,6 @@ class NotifyEndOfServiceReportService(
 }
 
 @Service
-@Transactional
 class NotifyAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
@@ -134,7 +130,6 @@ class NotifyAppointmentService(
 }
 
 @Service
-@Transactional
 class NotifyReferralService(
   @Value("\${notify.templates.referral-sent}") private val referralSentTemplateID: String,
   @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
