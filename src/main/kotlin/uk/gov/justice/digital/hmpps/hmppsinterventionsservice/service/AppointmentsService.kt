@@ -56,7 +56,6 @@ class AppointmentsService(
     }
   }
 
-  @Transactional
   fun updateAppointment(
     actionPlanId: UUID,
     sessionNumber: Int,

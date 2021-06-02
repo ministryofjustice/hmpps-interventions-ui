@@ -133,8 +133,8 @@ class ReferralService(
 
   fun sendDraftReferral(referral: Referral, user: AuthUser): Referral {
     referral.sentAt = OffsetDateTime.now()
-    referral.referenceNumber = generateReferenceNumber(referral)
     referral.sentBy = authUserRepository.save(user)
+    referral.referenceNumber = generateReferenceNumber(referral)
 
     /*
      * This is a temporary solution until a robust asynchronous link is created between Interventions
