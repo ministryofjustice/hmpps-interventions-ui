@@ -15,7 +15,7 @@ class ServiceUserAccessChecker(
     val accessResult =
       communityApiOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(authentication, crn)
     if (!accessResult.canAccess) {
-      throw AccessError(errorMessage, listOfNotNull(accessResult.exclusionMessage, accessResult.restrictionMessage))
+      throw AccessError(errorMessage, accessResult.messages)
     }
   }
 }

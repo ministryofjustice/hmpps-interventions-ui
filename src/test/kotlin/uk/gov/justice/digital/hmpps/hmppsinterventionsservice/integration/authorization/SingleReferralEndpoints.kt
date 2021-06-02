@@ -55,11 +55,11 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   private fun setLimitedAccessCRNs(vararg crns: String) {
     // order is important here! it's LIFO so generic matchers first, followed by specific CRNs
     whenever(mockCommunityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
-      .thenReturn(ServiceUserAccessResult(true, null, null))
+      .thenReturn(ServiceUserAccessResult(true, listOf()))
 
     crns.forEach {
       whenever(mockCommunityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), eq(it)))
-        .thenReturn(ServiceUserAccessResult(false, "exclusion message", "restriction message"))
+        .thenReturn(ServiceUserAccessResult(false, listOf("exclusion message", "restriction message")))
     }
   }
 

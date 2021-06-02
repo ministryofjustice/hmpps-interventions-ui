@@ -41,8 +41,7 @@ class CommunityAPIOffenderService(
     val response = client.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
     return ServiceUserAccessResult(
       !(response.userExcluded || response.userRestricted),
-      response.exclusionMessage,
-      response.restrictionMessage,
+      listOfNotNull(response.exclusionMessage, response.restrictionMessage),
     )
   }
 }
@@ -265,6 +264,5 @@ data class UserAccessResponse(
 
 data class ServiceUserAccessResult(
   val canAccess: Boolean,
-  val exclusionMessage: String?,
-  val restrictionMessage: String?,
+  val messages: List<String>,
 )
