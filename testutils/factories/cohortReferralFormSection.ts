@@ -3,6 +3,7 @@ import {
   ReferralFormMultiListSectionPresenter,
   ReferralFormStatus,
 } from '../../server/routes/referrals/referralFormPresenter'
+import utils from '../../server/utils/utils'
 
 class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSectionPresenter> {
   cohortInterventionDetails(
@@ -16,13 +17,16 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
   ) {
     return this.params({
       type: 'multi',
-      title: `Add ${contractName} referral details`,
+      title: `Add ${utils.convertToProperCase(contractName)} referral details`,
       number: '3',
       status: referralFormStatus,
       taskListSections: [
         {
           tasks: [
-            { title: `Confirm the relevant sentence for the ${contractName} referral`, url: relevantSentenceUrl },
+            {
+              title: `Confirm the relevant sentence for the ${utils.convertToProperCase(contractName)} referral`,
+              url: relevantSentenceUrl,
+            },
           ],
         },
       ]
@@ -31,7 +35,7 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
             ? []
             : cohortUrls.map(cohortUrl => {
                 return {
-                  title: cohortUrl.title,
+                  title: utils.convertToProperCase(cohortUrl.title),
                   tasks: [
                     { title: 'Select desired outcomes', url: cohortUrl.desiredOutcomesUrl },
                     { title: 'Select required complexity level', url: cohortUrl.complexityLevelUrl },
@@ -43,7 +47,7 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
           {
             tasks: [
               {
-                title: `Enter when the ${contractName} referral need to be completed`,
+                title: `Enter when the ${utils.convertToProperCase(contractName)} referral needs to be completed`,
                 url: completionDateUrl,
               },
               { title: 'Enter enforceable days used', url: rarDaysUrl },

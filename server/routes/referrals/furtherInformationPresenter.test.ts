@@ -10,7 +10,7 @@ describe('FurtherInformationPresenter', () => {
     it('returns a title', () => {
       const presenter = new FurtherInformationPresenter(draftReferral, serviceCategory)
       expect(presenter.title).toEqual(
-        'Do you have further information for the social inclusion service provider? (optional)'
+        'Do you have further information for the Social inclusion service provider? (optional)'
       )
     })
   })

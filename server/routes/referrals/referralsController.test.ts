@@ -172,7 +172,7 @@ describe('GET /referrals/:id/form', () => {
       .get('/referrals/1/form')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Add accommodation referral details')
+        expect(res.text).toContain('Add Accommodation referral details')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
@@ -452,7 +452,7 @@ describe('GET /referrals/:id/completion-deadline', () => {
       .get('/referrals/1/completion-deadline')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('What date does the accommodation service need to be completed by?')
+        expect(res.text).toContain('What date does the Accommodation service need to be completed by?')
       })
   })
   // TODO how do we (or indeed, do we) test what happens when the request has a completion deadline - i.e. that the
@@ -502,7 +502,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('What date does the accommodation service need to be completed by?')
+          expect(res.text).toContain('What date does the Accommodation service need to be completed by?')
           expect(res.text).toContain('The date by which the service needs to be completed must be in the future')
         })
 
@@ -579,7 +579,7 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/compl
       .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('What is the complexity level for the social inclusion service?')
+        expect(res.text).toContain('What is the complexity level for the Social inclusion service?')
       })
 
     expect(interventionsService.getServiceCategory).toHaveBeenCalledWith(
@@ -725,7 +725,7 @@ describe('GET /referrals/:id/further-information', () => {
       .get('/referrals/1/further-information')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Do you have further information for the accommodation service provider? (optional)')
+        expect(res.text).toContain('Do you have further information for the Accommodation service provider? (optional)')
       })
   })
 })
@@ -795,7 +795,7 @@ describe('GET /referrals/:id/relevant-sentence', () => {
       .get('/referrals/1/relevant-sentence')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Select the relevant sentence for the accommodation referral')
+        expect(res.text).toContain('Select the relevant sentence for the Accommodation referral')
       })
 
     expect(communityApiService.getActiveConvictionsByCRN).toHaveBeenCalledWith(serviceUserCRN)
@@ -951,7 +951,7 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/desir
       .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('What are the desired outcomes for the social inclusion service?')
+        expect(res.text).toContain('What are the desired outcomes for the Social inclusion service?')
       })
 
     expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
@@ -1100,7 +1100,7 @@ describe('GET /referrals/:id/rar-days', () => {
       .get('/referrals/1/rar-days')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Are you using RAR days for the accommodation service?')
+        expect(res.text).toContain('Are you using RAR days for the Accommodation service?')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
@@ -1177,7 +1177,7 @@ describe('POST /referrals/:id/rar-days', () => {
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('Enter the maximum number of RAR days for the accommodation service')
+          expect(res.text).toContain('Enter the maximum number of RAR days for the Accommodation service')
         })
 
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()

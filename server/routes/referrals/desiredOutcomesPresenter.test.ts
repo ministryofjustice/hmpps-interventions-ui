@@ -192,7 +192,7 @@ describe('DesiredOutcomesPresenter', () => {
     it('returns a title', () => {
       const presenter = new DesiredOutcomesPresenter(draftReferral, serviceCategory)
 
-      expect(presenter.title).toEqual('What are the desired outcomes for the social inclusion service?')
+      expect(presenter.title).toEqual('What are the desired outcomes for the Social inclusion service?')
     })
   })
 })

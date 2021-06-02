@@ -23,7 +23,7 @@ class _ReferralSectionChecker {
 
   interventionReferralDetails(activeLinks) {
     cy.get('[data-cy=url]')
-      .contains('Confirm the relevant sentence for the accommodation referral')
+      .contains('Confirm the relevant sentence for the Accommodation referral')
       .should(hrefAttrChainer(activeLinks.relevantSentence), 'href')
     cy.get('[data-cy=url]')
       .contains('Select required complexity level')
@@ -32,7 +32,7 @@ class _ReferralSectionChecker {
       .contains('Select desired outcomes')
       .should(hrefAttrChainer(activeLinks.desiredOutcomes), 'href')
     cy.get('[data-cy=url]')
-      .contains('Enter when the accommodation service need to be completed')
+      .contains('Enter when the Accommodation service needs to be completed')
       .should(hrefAttrChainer(activeLinks.completedDate), 'href')
     cy.get('[data-cy=url]').contains('Enter enforceable days used').should(hrefAttrChainer(activeLinks.rarDays), 'href')
     cy.get('[data-cy=url]')
@@ -42,7 +42,7 @@ class _ReferralSectionChecker {
   }
 
   selectServiceCategories(activeLinks) {
-    cy.get(`[data-cy=url]:contains("Select service categories for the Women's Services referral")`).should(
+    cy.get(`[data-cy=url]:contains("Select service categories for the Women's services referral")`).should(
       hrefAttrChainer(activeLinks.selectServiceCategories),
       'href'
     )
@@ -50,7 +50,7 @@ class _ReferralSectionChecker {
   }
 
   cohortInterventionReferralDetails(activeLinks) {
-    cy.get(`[data-cy=url]:contains("Confirm the relevant sentence for the Women's Services referral")`).should(
+    cy.get(`[data-cy=url]:contains("Confirm the relevant sentence for the Women's services referral")`).should(
       hrefAttrChainer(activeLinks.relevantSentence),
       'href'
     )
@@ -67,7 +67,7 @@ class _ReferralSectionChecker {
       .eq(1)
       .should(hrefAttrChainer(activeLinks.desiredOutcomes1), 'href')
     cy.get('[data-cy=url]')
-      .contains("Enter when the Women's Services referral need to be completed")
+      .contains("Enter when the Women's services referral needs to be completed")
       .should(hrefAttrChainer(activeLinks.completedDate), 'href')
     cy.get('[data-cy=url]').contains('Enter enforceable days used').should(hrefAttrChainer(activeLinks.rarDays), 'href')
     cy.get('[data-cy=url]')

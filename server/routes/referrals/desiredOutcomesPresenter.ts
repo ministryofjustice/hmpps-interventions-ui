@@ -2,6 +2,7 @@ import DraftReferral from '../../models/draftReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import utils from '../../utils/utils'
 
 export default class DesiredOutcomesPresenter {
   constructor(
@@ -38,5 +39,7 @@ export default class DesiredOutcomesPresenter {
     )
   }
 
-  readonly title = `What are the desired outcomes for the ${this.serviceCategory.name} service?`
+  readonly title = `What are the desired outcomes for the ${utils.convertToProperCase(
+    this.serviceCategory.name
+  )} service?`
 }

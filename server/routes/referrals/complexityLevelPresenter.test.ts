@@ -81,7 +81,7 @@ describe('ComplexityLevelPresenter', () => {
     it('returns a title', () => {
       const presenter = new ComplexityLevelPresenter(draftReferral, serviceCategory)
 
-      expect(presenter.title).toEqual('What is the complexity level for the social inclusion service?')
+      expect(presenter.title).toEqual('What is the complexity level for the Social inclusion service?')
     })
   })
 })
