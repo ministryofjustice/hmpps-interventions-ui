@@ -3,6 +3,7 @@ import {
   ReferralFormSingleListSectionPresenter,
   ReferralFormStatus,
 } from '../../server/routes/referrals/referralFormPresenter'
+import utils from '../../server/utils/utils'
 
 class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPresenter> {
   reviewServiceUser(
@@ -33,7 +34,12 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
       title: 'Choose service categories',
       number: '2',
       status: referralFormStatus,
-      tasks: [{ title: `Select service categories for the ${contractName} referral`, url: serviceCategoriesUrl }],
+      tasks: [
+        {
+          title: `Select service categories for the ${utils.convertToProperCase(contractName)} referral`,
+          url: serviceCategoriesUrl,
+        },
+      ],
     })
   }
 
@@ -49,15 +55,18 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
   ) {
     return this.params({
       type: 'single',
-      title: `Add ${serviceCategoryName} referral details`,
+      title: `Add ${utils.convertToProperCase(serviceCategoryName)} referral details`,
       number: '2',
       status: referralFormStatus,
       tasks: [
-        { title: `Confirm the relevant sentence for the ${serviceCategoryName} referral`, url: relevantSentenceUrl },
+        {
+          title: `Confirm the relevant sentence for the ${utils.convertToProperCase(serviceCategoryName)} referral`,
+          url: relevantSentenceUrl,
+        },
         { title: 'Select desired outcomes', url: desiredOutcomesUrl },
         { title: 'Select required complexity level', url: complexityLevelUrl },
         {
-          title: `Enter when the ${serviceCategoryName} service need to be completed`,
+          title: `Enter when the ${utils.convertToProperCase(serviceCategoryName)} service needs to be completed`,
           url: completionDateUrl,
         },
         { title: 'Enter enforceable days used', url: rarDaysUrl },

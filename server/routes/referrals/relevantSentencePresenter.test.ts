@@ -12,7 +12,7 @@ describe(RelevantSentencePresenter, () => {
       const convictions = [deliusConvictionFactory.build()]
       const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
-      expect(presenter.title).toEqual('Select the relevant sentence for the personal wellbeing referral')
+      expect(presenter.title).toEqual('Select the relevant sentence for the Personal wellbeing referral')
     })
   })
 

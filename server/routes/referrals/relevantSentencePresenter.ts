@@ -3,6 +3,7 @@ import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import Intervention from '../../models/intervention'
+import utils from '../../utils/utils'
 
 export default class RelevantSentencePresenter {
   constructor(
@@ -13,7 +14,9 @@ export default class RelevantSentencePresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly title = `Select the relevant sentence for the ${this.intervention.contractType.name.toLocaleLowerCase()} referral`
+  readonly title = `Select the relevant sentence for the ${utils.convertToProperCase(
+    this.intervention.contractType.name
+  )} referral`
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'relevant-sentence-id')
 

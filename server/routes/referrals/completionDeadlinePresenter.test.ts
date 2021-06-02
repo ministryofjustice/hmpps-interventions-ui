@@ -95,7 +95,7 @@ describe('CompletionDeadlinePresenter', () => {
       const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
       const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
 
-      expect(presenter.title).toEqual('What date does the social inclusion service need to be completed by?')
+      expect(presenter.title).toEqual('What date does the Social inclusion service need to be completed by?')
     })
   })
 

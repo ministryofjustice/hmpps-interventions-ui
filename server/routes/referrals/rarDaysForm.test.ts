@@ -33,7 +33,7 @@ describe(RarDaysForm, () => {
             {
               formFields: ['using-rar-days'],
               errorSummaryLinkedField: 'using-rar-days',
-              message: 'Select yes if you are using RAR days for the accommodation service',
+              message: 'Select yes if you are using RAR days for the Accommodation service',
             },
           ],
         })
@@ -83,7 +83,7 @@ describe(RarDaysForm, () => {
               {
                 formFields: ['maximum-rar-days'],
                 errorSummaryLinkedField: 'maximum-rar-days',
-                message: 'Enter the maximum number of RAR days for the accommodation service',
+                message: 'Enter the maximum number of RAR days for the Accommodation service',
               },
             ],
           })
@@ -102,7 +102,7 @@ describe(RarDaysForm, () => {
               {
                 formFields: ['maximum-rar-days'],
                 errorSummaryLinkedField: 'maximum-rar-days',
-                message: 'The maximum number of RAR days for the accommodation service must be a number, like 5',
+                message: 'The maximum number of RAR days for the Accommodation service must be a number, like 5',
               },
             ],
           })
@@ -121,7 +121,7 @@ describe(RarDaysForm, () => {
               {
                 formFields: ['maximum-rar-days'],
                 errorSummaryLinkedField: 'maximum-rar-days',
-                message: 'The maximum number of RAR days for the accommodation service must be a whole number, like 5',
+                message: 'The maximum number of RAR days for the Accommodation service must be a whole number, like 5',
               },
             ],
           })

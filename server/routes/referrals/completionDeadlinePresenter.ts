@@ -3,11 +3,14 @@ import ServiceCategory from '../../models/serviceCategory'
 import CalendarDay from '../../utils/calendarDay'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import utils from '../../utils/utils'
 
 export default class CompletionDeadlinePresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
-  readonly title = `What date does the ${this.serviceCategory.name} service need to be completed by?`
+  readonly title = `What date does the ${utils.convertToProperCase(
+    this.serviceCategory.name
+  )} service need to be completed by?`
 
   readonly hint = 'For example, 27 10 2021'
 

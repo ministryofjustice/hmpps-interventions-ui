@@ -11,12 +11,12 @@ describe(RarDaysPresenter, () => {
       const presenter = new RarDaysPresenter(referral, serviceCategory)
 
       expect(presenter.text).toEqual({
-        title: 'Are you using RAR days for the accommodation service?',
+        title: 'Are you using RAR days for the Accommodation service?',
         usingRarDays: {
           errorMessage: null,
         },
         maximumRarDays: {
-          label: 'What is the maximum number of RAR days for the accommodation service?',
+          label: 'What is the maximum number of RAR days for the Accommodation service?',
           errorMessage: null,
         },
       })

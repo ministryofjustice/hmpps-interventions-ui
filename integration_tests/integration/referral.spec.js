@@ -209,10 +209,10 @@ describe('Referral form', () => {
 
       cy.contains('Confirm service user’s personal details').should('have.attr', 'href')
 
-      cy.contains('Confirm the relevant sentence for the accommodation referral').click()
+      cy.contains('Confirm the relevant sentence for the Accommodation referral').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
-      cy.get('h1').contains('Select the relevant sentence for the accommodation referral')
+      cy.get('h1').contains('Select the relevant sentence for the Accommodation referral')
 
       cy.contains('Burglary').click()
 
@@ -223,7 +223,7 @@ describe('Referral form', () => {
         `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[0]}/desired-outcomes`
       )
 
-      cy.get('h1').contains('What are the desired outcomes for the accommodation service?')
+      cy.get('h1').contains('What are the desired outcomes for the Accommodation service?')
 
       cy.contains('Service User makes progress in obtaining accommodation').click()
       cy.contains('Service User is prevented from becoming homeless').click()
@@ -234,13 +234,13 @@ describe('Referral form', () => {
         'equal',
         `/referrals/${draftReferral.id}/service-category/${draftReferral.serviceCategoryIds[0]}/complexity-level`
       )
-      cy.get('h1').contains('What is the complexity level for the accommodation service?')
+      cy.get('h1').contains('What is the complexity level for the Accommodation service?')
       cy.contains('Low complexity').click()
 
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.get('h1').contains('What date does the accommodation service need to be completed by?')
+      cy.get('h1').contains('What date does the Accommodation service need to be completed by?')
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
@@ -248,14 +248,14 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/rar-days`)
-      cy.get('h1').contains('Are you using RAR days for the accommodation service?')
+      cy.get('h1').contains('Are you using RAR days for the Accommodation service?')
       cy.contains('Yes').click()
-      cy.contains('What is the maximum number of RAR days for the accommodation service?').type('10')
+      cy.contains('What is the maximum number of RAR days for the Accommodation service?').type('10')
 
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains('Do you have further information for the accommodation service provider? (optional)')
+      cy.get('h1').contains('Do you have further information for the Accommodation service provider? (optional)')
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed
@@ -514,10 +514,10 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: false })
 
-      cy.contains("Confirm the relevant sentence for the Women's Services referral").click()
+      cy.contains("Confirm the relevant sentence for the Women's services referral").click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
-      cy.get('h1').contains("Select the relevant sentence for the women's services referral")
+      cy.get('h1').contains("Select the relevant sentence for the Women's services referral")
 
       cy.contains('Burglary').click()
 
@@ -527,7 +527,7 @@ describe('Referral form', () => {
         'equal',
         `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[0]}/desired-outcomes`
       )
-      cy.get('h1').contains('What are the desired outcomes for the accommodation service?')
+      cy.get('h1').contains('What are the desired outcomes for the Accommodation service?')
 
       cy.contains('Service User makes progress in obtaining accommodation').click()
       cy.contains('Service User is prevented from becoming homeless').click()
@@ -539,7 +539,7 @@ describe('Referral form', () => {
         `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[0]}/complexity-level`
       )
 
-      cy.get('h1').contains('What is the complexity level for the accommodation service?')
+      cy.get('h1').contains('What is the complexity level for the Accommodation service?')
       cy.contains('Low complexity').click()
 
       cy.contains('Save and continue').click()
@@ -548,7 +548,7 @@ describe('Referral form', () => {
         'equal',
         `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[1]}/desired-outcomes`
       )
-      cy.get('h1').contains('What are the desired outcomes for the social inclusion service?')
+      cy.get('h1').contains('What are the desired outcomes for the Social inclusion service?')
       cy.contains('Service User develops and sustains social networks to reduce initial social isolation.').click()
       cy.contains('Service User secures early post-release engagement with community based services.').click()
       cy.contains(
@@ -562,13 +562,13 @@ describe('Referral form', () => {
         `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[1]}/complexity-level`
       )
 
-      cy.get('h1').contains('What is the complexity level for the social inclusion service?')
+      cy.get('h1').contains('What is the complexity level for the Social inclusion service?')
       cy.contains('Low complexity').click()
 
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.get('h1').contains('What date does the accommodation service need to be completed by?')
+      cy.get('h1').contains('What date does the Accommodation service need to be completed by?')
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
@@ -576,14 +576,14 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/rar-days`)
-      cy.get('h1').contains('Are you using RAR days for the accommodation service?')
+      cy.get('h1').contains('Are you using RAR days for the Accommodation service?')
       cy.contains('Yes').click()
-      cy.contains('What is the maximum number of RAR days for the accommodation service?').type('10')
+      cy.contains('What is the maximum number of RAR days for the Accommodation service?').type('10')
 
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains('Do you have further information for the accommodation service provider? (optional)')
+      cy.get('h1').contains('Do you have further information for the Accommodation service provider? (optional)')
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed

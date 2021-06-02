@@ -2,6 +2,7 @@ import DraftReferral from '../../models/draftReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import utils from '../../utils/utils'
 
 export default class ComplexityLevelPresenter {
   constructor(
@@ -40,5 +41,7 @@ export default class ComplexityLevelPresenter {
     )
   }
 
-  readonly title = `What is the complexity level for the ${this.serviceCategory.name} service?`
+  readonly title = `What is the complexity level for the ${utils.convertToProperCase(
+    this.serviceCategory.name
+  )} service?`
 }

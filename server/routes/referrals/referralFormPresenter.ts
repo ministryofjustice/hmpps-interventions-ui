@@ -1,6 +1,7 @@
 /* eslint max-classes-per-file: 0 */
 import DraftReferral from '../../models/draftReferral'
 import Intervention from '../../models/intervention'
+import utils from '../../utils/utils'
 
 export default class ReferralFormPresenter {
   private readonly taskValues: TaskValues
@@ -91,7 +92,9 @@ class FormSectionBuilder {
       ),
       tasks: [
         {
-          title: `Select service categories for the ${this.intervention.contractType.name} referral`,
+          title: `Select service categories for the ${utils.convertToProperCase(
+            this.intervention.contractType.name
+          )} referral`,
           url: this.calculateTaskUrl('service-categories', this.taskValues.needsAndRequirements),
         },
       ],
@@ -103,7 +106,7 @@ class FormSectionBuilder {
   ): ReferralFormSingleListSectionPresenter {
     return {
       type: 'single',
-      title: `Add ${this.intervention.serviceCategories[0].name} referral details`,
+      title: `Add ${utils.convertToProperCase(this.intervention.serviceCategories[0].name)} referral details`,
       number: '2',
       status: this.calculateStatus(
         this.sectionValues.serviceCategoryReferralDetails,
@@ -111,7 +114,9 @@ class FormSectionBuilder {
       ),
       tasks: [
         {
-          title: `Confirm the relevant sentence for the ${this.intervention.serviceCategories[0].name} referral`,
+          title: `Confirm the relevant sentence for the ${utils.convertToProperCase(
+            this.intervention.serviceCategories[0].name
+          )} referral`,
           url: this.calculateTaskUrl('relevant-sentence', this.taskValues.needsAndRequirements),
         },
         {
@@ -133,7 +138,9 @@ class FormSectionBuilder {
           ),
         },
         {
-          title: `Enter when the ${this.intervention.serviceCategories[0].name} service need to be completed`,
+          title: `Enter when the ${utils.convertToProperCase(
+            this.intervention.serviceCategories[0].name
+          )} service needs to be completed`,
           url: this.calculateTaskUrl('completion-deadline', this.taskValues.allComplexityLevels),
         },
         {
@@ -153,7 +160,7 @@ class FormSectionBuilder {
   ): ReferralFormMultiListSectionPresenter {
     return {
       type: 'multi',
-      title: `Add ${this.intervention.contractType.name} referral details`,
+      title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
       number: '3',
       status: this.calculateStatus(
         this.sectionValues.serviceCategoryReferralDetails,
@@ -163,7 +170,9 @@ class FormSectionBuilder {
         {
           tasks: [
             {
-              title: `Confirm the relevant sentence for the ${this.intervention.contractType.name} referral`,
+              title: `Confirm the relevant sentence for the ${utils.convertToProperCase(
+                this.intervention.contractType.name
+              )} referral`,
               url: this.calculateTaskUrl('relevant-sentence', this.taskValues.cohortServiceCategories),
             },
           ],
@@ -179,7 +188,7 @@ class FormSectionBuilder {
             })
             .map((serviceCat, index) => {
               return {
-                title: serviceCat.name,
+                title: utils.convertToProperCase(serviceCat.name),
                 tasks: [
                   {
                     title: `Select desired outcomes`,
@@ -205,7 +214,9 @@ class FormSectionBuilder {
           {
             tasks: [
               {
-                title: `Enter when the ${this.intervention.contractType.name} referral need to be completed`,
+                title: `Enter when the ${utils.convertToProperCase(
+                  this.intervention.contractType.name
+                )} referral needs to be completed`,
                 url: this.calculateTaskUrl('completion-deadline', this.taskValues.allComplexityLevels),
               },
               {
