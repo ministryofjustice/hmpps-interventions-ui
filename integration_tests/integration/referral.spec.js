@@ -98,6 +98,7 @@ describe('Referral form', () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
+          furtherInformation: 'Some information about Alex',
         })
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()

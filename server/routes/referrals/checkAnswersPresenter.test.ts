@@ -428,4 +428,44 @@ describe(CheckAnswersPresenter, () => {
       })
     })
   })
+
+  describe('furtherInformationSummary', () => {
+    describe('when the referral’s further information is not empty', () => {
+      const referral = parameterisedDraftReferralFactory.build({ furtherInformation: 'Some further information' })
+
+      it('contains the referral’s further information', () => {
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction
+        )
+
+        expect(presenter.furtherInformationSummary).toEqual([
+          {
+            key: 'Further information for the provider',
+            lines: ['Some further information'],
+          },
+        ])
+      })
+    })
+
+    describe('when the referral’s further information is empty', () => {
+      const referral = parameterisedDraftReferralFactory.build({ furtherInformation: '' })
+
+      it('states that there is no further information', () => {
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction
+        )
+
+        expect(presenter.furtherInformationSummary).toEqual([
+          {
+            key: 'Further information for the provider',
+            lines: ['None'],
+          },
+        ])
+      })
+    })
+  })
 })

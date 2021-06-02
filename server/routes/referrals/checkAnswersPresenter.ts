@@ -172,5 +172,14 @@ export default class CheckAnswersPresenter {
     return result
   }
 
+  get furtherInformationSummary(): SummaryListItem[] {
+    return [
+      {
+        key: 'Further information for the provider',
+        lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
+      },
+    ]
+  }
+
   private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''
 }

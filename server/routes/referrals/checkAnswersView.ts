@@ -31,6 +31,10 @@ export default class CheckAnswersView {
 
   private readonly enforceableDaysSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.enforceableDaysSummary)
 
+  private readonly furtherInformationSummaryListArgs = ViewUtils.summaryListArgs(
+    this.presenter.furtherInformationSummary
+  )
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'referrals/checkAnswers',
@@ -43,6 +47,7 @@ export default class CheckAnswersView {
         sentenceInformationSummaryListArgs: this.sentenceInformationSummaryListArgs,
         completionDeadlineSummaryListArgs: this.completionDeadlineSummaryListArgs,
         enforceableDaysSummaryListArgs: this.enforceableDaysSummaryListArgs,
+        furtherInformationSummaryListArgs: this.furtherInformationSummaryListArgs,
       },
     ]
   }
