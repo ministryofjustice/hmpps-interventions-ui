@@ -8,9 +8,15 @@ import utils from '../../utils/utils'
 import DraftReferralDecorator from '../../decorators/draftReferralDecorator'
 import Intervention from '../../models/intervention'
 import InterventionDecorator from '../../decorators/interventionDecorator'
+import DeliusConviction from '../../models/delius/deliusConviction'
+import SentencePresenter from './sentencePresenter'
 
 export default class CheckAnswersPresenter {
-  constructor(private readonly referral: DraftReferral, private readonly intervention: Intervention) {}
+  constructor(
+    private readonly referral: DraftReferral,
+    private readonly intervention: Intervention,
+    private readonly conviction: DeliusConviction
+  ) {}
 
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
     return {
@@ -111,6 +117,25 @@ export default class CheckAnswersPresenter {
         key: 'Selected service categories',
         lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
         listStyle: ListStyle.noMarkers,
+      },
+    ]
+  }
+
+  get sentenceInformationSummary(): SummaryListItem[] {
+    const presenter = new SentencePresenter(this.conviction)
+
+    return [
+      {
+        key: 'Sentence',
+        lines: [presenter.category],
+      },
+      {
+        key: 'Subcategory',
+        lines: [presenter.subcategory],
+      },
+      {
+        key: 'End of sentence date',
+        lines: [presenter.endOfSentenceDate],
       },
     ]
   }

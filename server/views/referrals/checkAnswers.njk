@@ -30,6 +30,10 @@
         {{ govukSummaryList(serviceCategoriesSummaryListArgs) }}
       {% endif %}
 
+      <h2 class="govuk-heading-l">Sentence information</h2>
+
+      {{ govukSummaryList(sentenceInformationSummaryListArgs) }}
+
       {% for section in referralDetailsSections %}
         <h2 class="govuk-heading-l">{{ section.title }}</h2>
 

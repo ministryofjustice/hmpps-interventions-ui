@@ -1208,10 +1208,12 @@ describe('GET /referrals/:id/check-answers', () => {
     const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
     const referral = draftReferralFactory
       .serviceCategorySelected(serviceCategory.id)
-      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
+      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' }, relevantSentenceId: 123 })
+    const conviction = deliusConvictionFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    communityApiService.getConvictionById.mockResolvedValue(conviction)
   })
 
   it('displays placeholder text in place of a summary of the referral', async () => {

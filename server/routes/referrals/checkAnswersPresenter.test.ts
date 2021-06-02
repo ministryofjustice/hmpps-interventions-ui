@@ -2,6 +2,9 @@ import CheckAnswersPresenter from './checkAnswersPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import interventionFactory from '../../../testutils/factories/intervention'
+import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import deliusOffenceFactory from '../../../testutils/factories/deliusOffence'
+import deliusSentenceFactory from '../../../testutils/factories/deliusSentence'
 import { ListStyle } from '../../utils/summaryList'
 
 describe(CheckAnswersPresenter, () => {
@@ -20,10 +23,11 @@ describe(CheckAnswersPresenter, () => {
     },
   })
   const serviceCategories = serviceCategoryFactory.buildList(3)
+  const conviction = deliusConvictionFactory.build()
 
   describe('serviceUserDetailsSection', () => {
     const referral = parameterisedDraftReferralFactory.build()
-    const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+    const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }), conviction)
 
     describe('title', () => {
       it('returns the section title', () => {
@@ -52,7 +56,11 @@ describe(CheckAnswersPresenter, () => {
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()
-      const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+      const presenter = new CheckAnswersPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        conviction
+      )
 
       it('returns the section title', () => {
         expect(presenter.needsAndRequirementsSection.title).toEqual('Alex’s needs and requirements')
@@ -64,7 +72,11 @@ describe(CheckAnswersPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           additionalNeedsInformation: 'Some additional needs information',
         })
-        const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction
+        )
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[0]).toEqual({
@@ -78,7 +90,11 @@ describe(CheckAnswersPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           accessibilityNeeds: 'Some accessibility needs information',
         })
-        const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction
+        )
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[1]).toEqual({
@@ -93,7 +109,11 @@ describe(CheckAnswersPresenter, () => {
           const referral = parameterisedDraftReferralFactory.build({
             needsInterpreter: false,
           })
-          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+          const presenter = new CheckAnswersPresenter(
+            referral,
+            interventionFactory.build({ serviceCategories }),
+            conviction
+          )
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
             key: 'Does Alex need an interpreter?',
@@ -106,7 +126,11 @@ describe(CheckAnswersPresenter, () => {
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
-          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+          const presenter = new CheckAnswersPresenter(
+            referral,
+            interventionFactory.build({ serviceCategories }),
+            conviction
+          )
 
           it('also includes the language', () => {
             expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
@@ -122,7 +146,11 @@ describe(CheckAnswersPresenter, () => {
           const referral = parameterisedDraftReferralFactory.build({
             hasAdditionalResponsibilities: false,
           })
-          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+          const presenter = new CheckAnswersPresenter(
+            referral,
+            interventionFactory.build({ serviceCategories }),
+            conviction
+          )
 
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
             key: 'Does Alex have caring or employment responsibilities?',
@@ -135,7 +163,11 @@ describe(CheckAnswersPresenter, () => {
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
-          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
+          const presenter = new CheckAnswersPresenter(
+            referral,
+            interventionFactory.build({ serviceCategories }),
+            conviction
+          )
 
           it('includes information about when they’re unavailable', () => {
             expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
@@ -191,7 +223,7 @@ describe(CheckAnswersPresenter, () => {
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
     })
-    const presenter = new CheckAnswersPresenter(referral, intervention)
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
@@ -246,7 +278,7 @@ describe(CheckAnswersPresenter, () => {
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
-        const presenter = new CheckAnswersPresenter(referral, intervention)
+        const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
       })
@@ -263,7 +295,7 @@ describe(CheckAnswersPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAnswersPresenter(referral, intervention)
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
           expect(presenter.serviceCategoriesSummary).toEqual([
             {
               key: 'Selected service categories',
@@ -280,7 +312,7 @@ describe(CheckAnswersPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAnswersPresenter(referral, intervention)
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
           expect(presenter.serviceCategoriesSummary).toEqual([
             {
               key: 'Selected service categories',
@@ -290,6 +322,43 @@ describe(CheckAnswersPresenter, () => {
           ])
         })
       })
+    })
+  })
+
+  describe('sentenceInformationSummary', () => {
+    const referral = parameterisedDraftReferralFactory.build()
+    const intervention = interventionFactory.build()
+    const assaultConviction = deliusConvictionFactory.build({
+      offences: [
+        deliusOffenceFactory.build({
+          mainOffence: true,
+          detail: {
+            mainCategoryDescription: 'Common and other types of assault',
+          },
+        }),
+      ],
+      sentence: deliusSentenceFactory.build({
+        expectedSentenceEndDate: '2025-09-15',
+      }),
+    })
+
+    it('returns information about the conviction', () => {
+      const presenter = new CheckAnswersPresenter(referral, intervention, assaultConviction)
+
+      expect(presenter.sentenceInformationSummary).toEqual([
+        {
+          key: 'Sentence',
+          lines: ['Common and other types of assault'],
+        },
+        {
+          key: 'Subcategory',
+          lines: ['Common assault and battery'],
+        },
+        {
+          key: 'End of sentence date',
+          lines: ['15 September 2025'],
+        },
+      ])
     })
   })
 })

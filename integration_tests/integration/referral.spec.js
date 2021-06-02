@@ -114,6 +114,7 @@ describe('Referral form', () => {
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetActiveConvictionsByCRN('X123456', convictions)
+      cy.stubGetConvictionById('X123456', 123456789, convictions[0])
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
@@ -304,6 +305,10 @@ describe('Referral form', () => {
       cy.contains('Yes. Spanish')
       cy.contains('Yes. She works Mondays 9am - midday')
 
+      cy.contains('Burglary')
+      cy.contains('Theft act, 1968')
+      cy.contains('15 November 2025')
+
       cy.contains('Accommodation referral details')
       cy.contains('Low complexity')
       cy.contains('Info about low complexity')
@@ -407,6 +412,7 @@ describe('Referral form', () => {
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetActiveConvictionsByCRN('X123456', convictions)
+      cy.stubGetConvictionById('X123456', 123456789, convictions[0])
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
