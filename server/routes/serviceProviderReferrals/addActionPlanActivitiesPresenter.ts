@@ -32,7 +32,6 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly text = {
     title: `Add activity ${this.activityNumber} to action plan`,
-    pageNumber: 1,
     referredOutcomesHeader: `Referred outcomes for ${this.sentReferral.referral.serviceUser.firstName}`,
   }
 

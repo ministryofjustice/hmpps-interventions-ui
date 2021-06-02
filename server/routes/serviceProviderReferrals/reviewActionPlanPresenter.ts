@@ -19,7 +19,6 @@ export default class ReviewActionPlanPresenter {
   readonly text = {
     title: 'Confirm action plan',
     numberOfSessions: this.actionPlan.numberOfSessions?.toString() ?? '',
-    pageNumber: 3,
   }
 
   readonly desiredOutcomesByServiceCategory = this.serviceCategories.map(serviceCategory => {

@@ -13,7 +13,6 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
       )
 
       expect(presenter.text).toMatchObject({
-        pageNumber: 2,
         serviceCategoryName: 'Accommodation',
         serviceUserFirstName: 'Alex',
         title: 'Accommodation - create action plan',
