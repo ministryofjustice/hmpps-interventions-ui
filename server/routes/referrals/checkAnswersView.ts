@@ -17,6 +17,10 @@ export default class CheckAnswersView {
     summaryListArgs: ViewUtils.summaryListArgs(section.summary),
   }))
 
+  private readonly serviceCategoriesSummaryListArgs = this.presenter.serviceCategoriesSummary
+    ? ViewUtils.summaryListArgs(this.presenter.serviceCategoriesSummary)
+    : null
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'referrals/checkAnswers',
@@ -25,6 +29,7 @@ export default class CheckAnswersView {
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         needsAndRequirementsSummaryListArgs: this.needsAndRequirementsSummaryListArgs,
         referralDetailsSections: this.referralDetailsSections,
+        serviceCategoriesSummaryListArgs: this.serviceCategoriesSummaryListArgs,
       },
     ]
   }

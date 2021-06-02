@@ -1,6 +1,7 @@
 import CheckAnswersPresenter from './checkAnswersPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 import { ListStyle } from '../../utils/summaryList'
 
 describe(CheckAnswersPresenter, () => {
@@ -18,11 +19,11 @@ describe(CheckAnswersPresenter, () => {
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
   })
-  const serviceCategory = serviceCategoryFactory.build()
+  const serviceCategories = serviceCategoryFactory.buildList(3)
 
   describe('serviceUserDetailsSection', () => {
     const referral = parameterisedDraftReferralFactory.build()
-    const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+    const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
     describe('title', () => {
       it('returns the section title', () => {
@@ -51,7 +52,7 @@ describe(CheckAnswersPresenter, () => {
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()
-      const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+      const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
       it('returns the section title', () => {
         expect(presenter.needsAndRequirementsSection.title).toEqual('Alex’s needs and requirements')
@@ -63,7 +64,7 @@ describe(CheckAnswersPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           additionalNeedsInformation: 'Some additional needs information',
         })
-        const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+        const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[0]).toEqual({
@@ -77,7 +78,7 @@ describe(CheckAnswersPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           accessibilityNeeds: 'Some accessibility needs information',
         })
-        const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+        const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[1]).toEqual({
@@ -92,7 +93,7 @@ describe(CheckAnswersPresenter, () => {
           const referral = parameterisedDraftReferralFactory.build({
             needsInterpreter: false,
           })
-          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
             key: 'Does Alex need an interpreter?',
@@ -105,7 +106,7 @@ describe(CheckAnswersPresenter, () => {
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
-          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
           it('also includes the language', () => {
             expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
@@ -121,7 +122,7 @@ describe(CheckAnswersPresenter, () => {
           const referral = parameterisedDraftReferralFactory.build({
             hasAdditionalResponsibilities: false,
           })
-          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
             key: 'Does Alex have caring or employment responsibilities?',
@@ -134,7 +135,7 @@ describe(CheckAnswersPresenter, () => {
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
-          const presenter = new CheckAnswersPresenter(referral, [serviceCategory])
+          const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }))
 
           it('includes information about when they’re unavailable', () => {
             expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
@@ -187,7 +188,10 @@ describe(CheckAnswersPresenter, () => {
         { serviceCategoryId: eteServiceCategory.id, desiredOutcomesIds: ['2'] },
       ],
     })
-    const presenter = new CheckAnswersPresenter(referral, [accommodationServiceCategory, eteServiceCategory])
+    const intervention = interventionFactory.build({
+      serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
+    })
+    const presenter = new CheckAnswersPresenter(referral, intervention)
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
@@ -219,6 +223,71 @@ describe(CheckAnswersPresenter, () => {
             lines: ['Accommodation desired outcome example 1', 'Accommodation desired outcome example 3'],
             listStyle: ListStyle.bulleted,
           })
+        })
+      })
+    })
+  })
+
+  describe('serviceCategoriesSummary', () => {
+    const accommodationServiceCategory = serviceCategoryFactory.build({
+      name: 'Accommodation',
+    })
+    const eteServiceCategory = serviceCategoryFactory.build({
+      name: 'Education, training and employment',
+    })
+
+    describe('for a single-service intervention', () => {
+      const intervention = interventionFactory.build({
+        serviceCategories: [accommodationServiceCategory],
+      })
+
+      it('returns null', () => {
+        const referral = parameterisedDraftReferralFactory.build({
+          serviceCategoryIds: [accommodationServiceCategory.id],
+        })
+
+        const presenter = new CheckAnswersPresenter(referral, intervention)
+
+        expect(presenter.serviceCategoriesSummary).toBeNull()
+      })
+    })
+
+    describe('for a cohort intervention', () => {
+      const intervention = interventionFactory.build({
+        serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
+      })
+
+      describe('with a single service category chosen in the referral', () => {
+        const referral = parameterisedDraftReferralFactory.build({
+          serviceCategoryIds: [accommodationServiceCategory.id],
+        })
+
+        it('lists the service categories chosen in the referral', () => {
+          const presenter = new CheckAnswersPresenter(referral, intervention)
+          expect(presenter.serviceCategoriesSummary).toEqual([
+            {
+              key: 'Selected service categories',
+              lines: ['Accommodation'],
+              listStyle: ListStyle.noMarkers,
+            },
+          ])
+        })
+      })
+
+      describe('with multiple service categories chosen in the referral', () => {
+        const referral = parameterisedDraftReferralFactory.build({
+          serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
+        })
+
+        it('lists the service categories chosen in the referral', () => {
+          const presenter = new CheckAnswersPresenter(referral, intervention)
+          expect(presenter.serviceCategoriesSummary).toEqual([
+            {
+              key: 'Selected service categories',
+              lines: ['Accommodation', 'Education, training and employment'],
+              listStyle: ListStyle.noMarkers,
+            },
+          ])
         })
       })
     })

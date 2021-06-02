@@ -570,16 +570,12 @@ export default class ReferralsController {
     if (referral.serviceCategoryIds === null) {
       throw new Error('Attempting to check answers without service categories selected')
     }
-    const [serviceCategories, serviceUser] = await Promise.all([
-      Promise.all(
-        referral.serviceCategoryIds.map(id =>
-          this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
-        )
-      ),
+    const [intervention, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
 
-    const presenter = new CheckAnswersPresenter(referral, serviceCategories)
+    const presenter = new CheckAnswersPresenter(referral, intervention)
     const view = new CheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

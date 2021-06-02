@@ -24,6 +24,12 @@
 
       {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}
 
+      {% if serviceCategoriesSummaryListArgs %}
+        <h2 class="govuk-heading-l">Service types</h2>
+
+        {{ govukSummaryList(serviceCategoriesSummaryListArgs) }}
+      {% endif %}
+
       {% for section in referralDetailsSections %}
         <h2 class="govuk-heading-l">{{ section.title }}</h2>
 

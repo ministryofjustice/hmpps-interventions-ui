@@ -1,14 +1,16 @@
 import DraftReferral from '../../models/draftReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
 import ComplexityLevelPresenter from './complexityLevelPresenter'
 import DesiredOutcomesPresenter from './desiredOutcomesPresenter'
 import utils from '../../utils/utils'
+import DraftReferralDecorator from '../../decorators/draftReferralDecorator'
+import Intervention from '../../models/intervention'
+import InterventionDecorator from '../../decorators/interventionDecorator'
 
 export default class CheckAnswersPresenter {
-  constructor(private readonly referral: DraftReferral, private readonly serviceCategories: ServiceCategory[]) {}
+  constructor(private readonly referral: DraftReferral, private readonly intervention: Intervention) {}
 
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
     return {
@@ -66,7 +68,7 @@ export default class CheckAnswersPresenter {
     }
 
     return this.referral.serviceCategoryIds.map(serviceCategoryId => {
-      const serviceCategory = this.serviceCategories.find(aCategory => aCategory.id === serviceCategoryId)
+      const serviceCategory = this.intervention.serviceCategories.find(aCategory => aCategory.id === serviceCategoryId)
 
       if (serviceCategory === undefined) {
         throw new Error(`Couldn’t find service category with ID ${serviceCategoryId}`)
@@ -93,6 +95,24 @@ export default class CheckAnswersPresenter {
         ],
       }
     })
+  }
+
+  get serviceCategoriesSummary(): SummaryListItem[] | null {
+    if (!new InterventionDecorator(this.intervention).isCohortIntervention) {
+      return null
+    }
+
+    const serviceCategories = new DraftReferralDecorator(this.referral).referralServiceCategories(
+      this.intervention.serviceCategories
+    )
+
+    return [
+      {
+        key: 'Selected service categories',
+        lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
+        listStyle: ListStyle.noMarkers,
+      },
+    ]
   }
 
   private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''

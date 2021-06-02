@@ -102,7 +102,7 @@ describe('Referral form', () => {
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
 
-      const intervention = interventionFactory.build()
+      const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -622,6 +622,9 @@ describe('Referral form', () => {
 
       cy.get('a').contains('Check your answers').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
+
+      cy.contains('Accommodation')
+      cy.contains('Social inclusion')
 
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)

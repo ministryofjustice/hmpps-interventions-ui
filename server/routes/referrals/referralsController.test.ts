@@ -1204,8 +1204,13 @@ describe('POST /referrals/:id/rar-days', () => {
 
 describe('GET /referrals/:id/check-answers', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory.build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = draftReferralFactory
+      .serviceCategorySelected(serviceCategory.id)
+      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
 
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
