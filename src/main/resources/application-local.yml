@@ -9,7 +9,7 @@ interventions-ui:
   baseurl: http://localhost:3000
 
 community-api:
-  baseurl: http://localhost:8081
+  baseurl: http://localhost:8091
 
 aws:
   sns:

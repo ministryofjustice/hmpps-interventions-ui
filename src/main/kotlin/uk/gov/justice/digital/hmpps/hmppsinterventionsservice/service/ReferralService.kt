@@ -3,11 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceUserAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
@@ -49,30 +51,31 @@ class ReferralService(
   val serviceProviderUserAccessScopeMapper: ServiceProviderAccessScopeMapper,
   val referralAccessFilter: ReferralAccessFilter,
   val communityAPIReferralService: CommunityAPIReferralService,
+  val serviceUserAccessChecker: ServiceUserAccessChecker,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
     private const val maxReferenceNumberTries = 10
   }
 
-  fun getSentReferralForUser(id: UUID, user: AuthUser): Referral? {
+  fun getSentReferralForUser(id: UUID, user: AuthUser, authentication: JwtAuthenticationToken): Referral? {
     val referral = referralRepository.findByIdAndSentAtIsNotNull(id)
 
     referral?.let {
-      referralAccessChecker.forUser(it, user)
+      referralAccessChecker.forUser(it, user, authentication)
     }
 
     return referral
   }
 
-  fun getDraftReferralForUser(id: UUID, user: AuthUser): Referral? {
+  fun getDraftReferralForUser(id: UUID, user: AuthUser, authentication: JwtAuthenticationToken): Referral? {
     if (!userTypeChecker.isProbationPractitionerUser(user)) {
       throw AccessError("user does not have access to referral", listOf("only probation practitioners can access draft referrals"))
     }
 
     val referral = referralRepository.findByIdAndSentAtIsNull(id)
     referral?.let {
-      referralAccessChecker.forUser(it, user)
+      referralAccessChecker.forUser(it, user, authentication)
     }
     return referral
   }
@@ -152,10 +155,18 @@ class ReferralService(
     user: AuthUser,
     crn: String,
     interventionId: UUID,
+    authentication: JwtAuthenticationToken,
     overrideID: UUID? = null,
     overrideCreatedAt: OffsetDateTime? = null,
     endOfServiceReport: EndOfServiceReport? = null,
   ): Referral {
+    if (!userTypeChecker.isProbationPractitionerUser(user)) {
+      throw AccessError("user cannot create referral", listOf("only probation practitioners can create draft referrals"))
+    }
+
+    // PPs can't create referrals for service users they are not allowed to see
+    serviceUserAccessChecker.forProbationPractitionerUser(crn, authentication)
+
     val intervention = interventionRepository.getOne(interventionId)
     val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
     val selectedServiceCategories = if (serviceCategories.size == 1) serviceCategories.toMutableSet() else null

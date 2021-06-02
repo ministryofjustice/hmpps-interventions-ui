@@ -13,10 +13,12 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.AdditionalAnswers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceUserAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
@@ -78,6 +80,8 @@ class ReferralServiceTest @Autowired constructor(
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper = mock()
   private val referralAccessFilter: ReferralAccessFilter = mock()
   private val communityAPIReferralService: CommunityAPIReferralService = mock()
+  private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
+  private val authentication: JwtAuthenticationToken = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -94,6 +98,7 @@ class ReferralServiceTest @Autowired constructor(
     serviceProviderAccessScopeMapper,
     referralAccessFilter,
     communityAPIReferralService,
+    serviceUserAccessChecker,
   )
 
   // reset before each test
@@ -182,7 +187,7 @@ class ReferralServiceTest @Autowired constructor(
     val today = LocalDate.now()
     val draftReferral = DraftReferralDTO(completionDeadline = today)
     referralService.updateDraftReferral(sampleReferral, draftReferral)
-    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())
+    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create(), authentication)
     assertThat(savedDraftReferral!!.id).isEqualTo(sampleReferral.id)
     assertThat(savedDraftReferral.createdAt).isEqualTo(sampleReferral.createdAt)
     assertThat(savedDraftReferral.completionDeadline).isEqualTo(draftReferral.completionDeadline)
@@ -191,10 +196,10 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `create and persist non-cohort draft referral`() {
     val authUser = AuthUser("user_id", "delius", "user_name")
-    val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleIntervention.id)
+    val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleIntervention.id, authentication)
     entityManager.flush()
 
-    val savedDraftReferral = referralService.getDraftReferralForUser(draftReferral.id, authUser)
+    val savedDraftReferral = referralService.getDraftReferralForUser(draftReferral.id, authUser, authentication)
     assertThat(savedDraftReferral!!.id).isNotNull
     assertThat(savedDraftReferral.createdAt).isNotNull
     assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
@@ -206,10 +211,10 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `create and persist cohort draft referral`() {
     val authUser = AuthUser("user_id", "delius", "user_name")
-    val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleCohortIntervention.id)
+    val draftReferral = referralService.createDraftReferral(authUser, "X123456", sampleCohortIntervention.id, authentication)
     entityManager.flush()
 
-    val savedDraftReferral = referralService.getDraftReferralForUser(draftReferral.id, authUser)
+    val savedDraftReferral = referralService.getDraftReferralForUser(draftReferral.id, authUser, authentication)
     assertThat(savedDraftReferral!!.id).isNotNull
     assertThat(savedDraftReferral.createdAt).isNotNull
     assertThat(savedDraftReferral.createdBy).isEqualTo(authUser)
@@ -222,7 +227,7 @@ class ReferralServiceTest @Autowired constructor(
     sampleReferral.completionDeadline = LocalDate.of(2021, 6, 26)
     entityManager.persistAndFlush(sampleReferral)
 
-    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())
+    val savedDraftReferral = referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create(), authentication)
     assertThat(savedDraftReferral!!.id).isEqualTo(sampleReferral.id)
     assertThat(savedDraftReferral.createdAt).isEqualTo(sampleReferral.createdAt)
     assertThat(savedDraftReferral.completionDeadline).isEqualTo(sampleReferral.completionDeadline)
@@ -233,9 +238,9 @@ class ReferralServiceTest @Autowired constructor(
     val user1 = AuthUser("123", "delius", "bernie.b")
     val user2 = AuthUser("456", "delius", "sheila.h")
     val user3 = AuthUser("789", "delius", "tom.myers")
-    referralService.createDraftReferral(user1, "X123456", sampleIntervention.id)
-    referralService.createDraftReferral(user1, "X123456", sampleIntervention.id)
-    referralService.createDraftReferral(user2, "X123456", sampleIntervention.id)
+    referralService.createDraftReferral(user1, "X123456", sampleIntervention.id, authentication)
+    referralService.createDraftReferral(user1, "X123456", sampleIntervention.id, authentication)
+    referralService.createDraftReferral(user2, "X123456", sampleIntervention.id, authentication)
     entityManager.flush()
 
     whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
@@ -331,26 +336,26 @@ class ReferralServiceTest @Autowired constructor(
     }
 
     entityManager.flush()
-    assertThat(referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create())!!.additionalNeedsInformation).isNull()
+    assertThat(referralService.getDraftReferralForUser(sampleReferral.id, userFactory.create(), authentication)!!.additionalNeedsInformation).isNull()
   }
 
   @Test
   fun `once a draft referral is sent it's id is no longer is a valid draft referral`() {
     val user = AuthUser("user_id", "delius", "user_name")
-    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
 
-    assertThat(referralService.getDraftReferralForUser(draftReferral.id, user)).isNotNull()
+    assertThat(referralService.getDraftReferralForUser(draftReferral.id, user, authentication)).isNotNull()
 
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
 
-    assertThat(referralService.getDraftReferralForUser(draftReferral.id, user)).isNull()
-    assertThat(referralService.getSentReferralForUser(draftReferral.id, user)).isNotNull()
+    assertThat(referralService.getDraftReferralForUser(draftReferral.id, user, authentication)).isNull()
+    assertThat(referralService.getSentReferralForUser(draftReferral.id, user, authentication)).isNotNull()
   }
 
   @Test
   fun `sending a draft referral generates a referral reference number`() {
     val user = AuthUser("user_id", "delius", "user_name")
-    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
 
     assertThat(draftReferral.referenceNumber).isNull()
 
@@ -361,8 +366,8 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `sending a draft referral generates a unique reference, even if the previous reference already exists`() {
     val user = AuthUser("user_id", "delius", "user_name")
-    val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
-    val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+    val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
+    val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
 
     whenever(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.contractType.name))
       .thenReturn("AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "BB0000ZZ")
@@ -377,7 +382,7 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `sending a draft referral triggers an event`() {
     val user = AuthUser("user_id", "delius", "user_name")
-    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id)
+    val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
     referralService.sendDraftReferral(draftReferral, user)
     verify(communityAPIReferralService).send(draftReferral)
     verify(referralEventPublisher).referralSentEvent(draftReferral)
@@ -389,7 +394,7 @@ class ReferralServiceTest @Autowired constructor(
     whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
     for (i in 1..3) {
-      assertDoesNotThrow { referralService.createDraftReferral(user, "X123456", sampleIntervention.id) }
+      assertDoesNotThrow { referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication) }
     }
     assertThat(referralService.getDraftReferralsForUser(user)).hasSize(3)
   }

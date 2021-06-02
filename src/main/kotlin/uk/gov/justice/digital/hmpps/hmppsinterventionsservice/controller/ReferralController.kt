@@ -46,11 +46,9 @@ class ReferralController(
     @RequestBody referralAssignment: ReferralAssignmentDTO,
     authentication: JwtAuthenticationToken,
   ): SentReferralDTO {
+    val sentReferral = getSentReferralForAuthenticatedUser(authentication, id)
+
     val assignedBy = userMapper.fromToken(authentication)
-
-    val sentReferral = referralService.getSentReferralForUser(id, assignedBy)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
-
     val assignedTo = AuthUser(
       id = referralAssignment.assignedTo.userId,
       authSource = referralAssignment.assignedTo.authSource,
@@ -65,8 +63,7 @@ class ReferralController(
   fun sendDraftReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
     val user = userMapper.fromToken(authentication)
 
-    val draftReferral = referralService.getDraftReferralForUser(id, user)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
+    val draftReferral = getDraftReferralForAuthenticatedUser(authentication, id)
 
     val sentReferral = referralService.sendDraftReferral(draftReferral, user)
 
@@ -83,10 +80,7 @@ class ReferralController(
 
   @GetMapping("/sent-referral/{id}")
   fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
-    val user = userMapper.fromToken(authentication)
-    return referralService.getSentReferralForUser(id, user)
-      ?.let { SentReferralDTO.from(it) }
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
+    return SentReferralDTO.from(getSentReferralForAuthenticatedUser(authentication, id))
   }
 
   @GetMapping("/sent-referrals")
@@ -99,13 +93,11 @@ class ReferralController(
 
   @PostMapping("/sent-referral/{id}/end")
   fun endSentReferral(@PathVariable id: UUID, @RequestBody endReferralRequest: EndReferralRequestDTO, authentication: JwtAuthenticationToken): SentReferralDTO {
-    val user = userMapper.fromToken(authentication)
-
-    val sentReferral = referralService.getSentReferralForUser(id, user)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "referral not found [id=$id]")
+    val sentReferral = getSentReferralForAuthenticatedUser(authentication, id)
 
     val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferralRequest.reasonCode)
 
+    val user = userMapper.fromToken(authentication)
     return SentReferralDTO.from(referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments))
   }
 
@@ -118,6 +110,7 @@ class ReferralController(
         user,
         createReferralRequestDTO.serviceUserCrn,
         createReferralRequestDTO.interventionId,
+        authentication,
       )
     } catch (e: EntityNotFoundException) {
       throw ServerWebInputException("invalid intervention id [id=${createReferralRequestDTO.interventionId}]")
@@ -136,10 +129,7 @@ class ReferralController(
 
   @GetMapping("/draft-referral/{id}")
   fun getDraftReferralByID(@PathVariable id: UUID, authentication: JwtAuthenticationToken): DraftReferralDTO {
-    val user = userMapper.fromToken(authentication)
-    return referralService.getDraftReferralForUser(id, user)
-      ?.let { DraftReferralDTO.from(it) }
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
+    return DraftReferralDTO.from(getDraftReferralForAuthenticatedUser(authentication, id))
   }
 
   @PatchMapping("/draft-referral/{id}")
@@ -188,7 +178,13 @@ class ReferralController(
 
   private fun getDraftReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
     val user = userMapper.fromToken(authentication)
-    return referralService.getDraftReferralForUser(id, user)
+    return referralService.getDraftReferralForUser(id, user, authentication)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
+  }
+
+  private fun getSentReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
+    val user = userMapper.fromToken(authentication)
+    return referralService.getSentReferralForUser(id, user, authentication)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
   }
 }
