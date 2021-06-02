@@ -55,6 +55,7 @@ import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirm
 import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
 import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import ServiceCategory from '../../models/serviceCategory'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -667,21 +668,30 @@ export default class ServiceProviderReferralsController {
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
 
     const desiredOutcomeNumber = Number(req.params.number)
-
-    if (desiredOutcomeNumber > referral.referral.desiredOutcomesIds.length) {
+    const desiredOutcomeIds = referral.referral.desiredOutcomes.flatMap(
+      desiredOutcome => desiredOutcome.desiredOutcomesIds
+    )
+    if (desiredOutcomeNumber > desiredOutcomeIds.length) {
       throw createError(404, 'Outcome number is out of bounds')
     }
 
-    const desiredOutcomeId = referral.referral.desiredOutcomesIds[desiredOutcomeNumber - 1]
+    const desiredOutcomeId = desiredOutcomeIds[desiredOutcomeNumber - 1]
 
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const serviceCategories = await this.findSelectedServiceCategories(
       accessToken,
-      referral.referral.serviceCategoryId
+      referral.referral.interventionId,
+      referral.referral.serviceCategoryIds
     )
 
-    const desiredOutcome = serviceCategory.desiredOutcomes.find(val => val.id === desiredOutcomeId)
+    const matchedServiceCategory = serviceCategories.find(serviceCategory =>
+      serviceCategory.desiredOutcomes.some(desiredOutcome => desiredOutcome.id === desiredOutcomeId)
+    )
+    if (matchedServiceCategory === undefined) {
+      throw new Error(`Desired outcome for ID ${desiredOutcomeId} not found`)
+    }
+    const matchedDesiredOutcome = matchedServiceCategory.desiredOutcomes.find(val => val.id === desiredOutcomeId)
 
-    if (desiredOutcome === undefined) {
+    if (matchedDesiredOutcome === undefined) {
       throw new Error(`Desired outcome for ID ${desiredOutcomeId} not found`)
     }
 
@@ -705,7 +715,7 @@ export default class ServiceProviderReferralsController {
           formData.paramsForUpdate
         )
 
-        const isLastDesiredOutcome = desiredOutcomeNumber === referral.referral.desiredOutcomesIds.length
+        const isLastDesiredOutcome = desiredOutcomeNumber === desiredOutcomeIds.length
         if (isLastDesiredOutcome) {
           res.redirect(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
         } else {
@@ -722,8 +732,8 @@ export default class ServiceProviderReferralsController {
     const presenter = new EndOfServiceReportOutcomePresenter(
       referral,
       endOfServiceReport,
-      serviceCategory,
-      desiredOutcome,
+      matchedServiceCategory,
+      matchedDesiredOutcome,
       desiredOutcomeNumber,
       outcome,
       userInputData,
@@ -747,15 +757,16 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const serviceCategories = await this.findSelectedServiceCategories(
       accessToken,
-      referral.referral.serviceCategoryId
+      referral.referral.interventionId,
+      referral.referral.serviceCategoryIds
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportFurtherInformationPresenter(
       endOfServiceReport,
-      serviceCategory,
+      serviceCategories[0],
       referral,
       null
     )
@@ -769,13 +780,14 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const serviceCategories = await this.findSelectedServiceCategories(
       accessToken,
-      referral.referral.serviceCategoryId
+      referral.referral.interventionId,
+      referral.referral.serviceCategoryIds
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategory)
+    const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategories[0])
     const view = new EndOfServiceReportCheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -791,15 +803,31 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategory = await this.interventionsService.getServiceCategory(
+    const serviceCategories = await this.findSelectedServiceCategories(
       accessToken,
-      referral.referral.serviceCategoryId
+      referral.referral.interventionId,
+      referral.referral.serviceCategoryIds
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategory)
+    const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategories[0])
     const view = new EndOfServiceReportConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async findSelectedServiceCategories(
+    accessToken: string,
+    interventionId: string,
+    selectedServiceCategoryIds: string[]
+  ): Promise<ServiceCategory[]> {
+    const intervention = await this.interventionsService.getIntervention(accessToken, interventionId)
+    const serviceCategories = intervention.serviceCategories.filter(serviceCategory =>
+      selectedServiceCategoryIds.some(serviceCategoryId => serviceCategoryId === serviceCategory.id)
+    )
+    if (serviceCategories.length !== selectedServiceCategoryIds.length) {
+      throw new Error('Expected service categories are missing in intervention')
+    }
+    return serviceCategories
   }
 }
