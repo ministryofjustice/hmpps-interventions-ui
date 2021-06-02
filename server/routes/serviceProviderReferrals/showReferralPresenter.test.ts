@@ -87,10 +87,17 @@ describe(ShowReferralPresenter, () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
-          serviceCategoryId: serviceCategory.id,
-          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          serviceCategoryIds: [serviceCategory.id],
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+          ],
           furtherInformation: 'Some information about the service user',
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+          desiredOutcomes: [
+            {
+              serviceCategoryId: serviceCategory.id,
+              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            },
+          ],
           additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
           accessibilityNeeds: 'She uses a wheelchair',
           needsInterpreter: true,
@@ -142,10 +149,17 @@ describe(ShowReferralPresenter, () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
-          serviceCategoryId: serviceCategory.id,
-          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          serviceCategoryIds: [serviceCategory.id],
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+          ],
           furtherInformation: '',
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+          desiredOutcomes: [
+            {
+              serviceCategoryId: serviceCategory.id,
+              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            },
+          ],
           additionalNeedsInformation: '',
           accessibilityNeeds: '',
           needsInterpreter: false,
@@ -199,7 +213,6 @@ describe(ShowReferralPresenter, () => {
           name: 'Harmony Living',
         },
         serviceCategoryIds: cohortServiceCategories.map(it => it.id),
-        serviceCategoryId: cohortServiceCategories[0].id,
         complexityLevels: cohortServiceCategories.map(it => {
           return { serviceCategoryId: it.id, complexityLevelId: it.complexityLevels[0].id }
         }),
@@ -282,10 +295,17 @@ describe(ShowReferralPresenter, () => {
             serviceProvider: {
               name: 'Harmony Living',
             },
-            serviceCategoryId: serviceCategory.id,
-            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+            serviceCategoryIds: [serviceCategory.id],
+            complexityLevels: [
+              { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+            ],
             furtherInformation: 'Some information about the service user',
-            desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            desiredOutcomes: [
+              {
+                serviceCategoryId: serviceCategory.id,
+                desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+              },
+            ],
             additionalNeedsInformation: "Alex is currently sleeping on her aunt's sofa",
             accessibilityNeeds: 'She uses a wheelchair',
             needsInterpreter: true,
@@ -359,10 +379,17 @@ describe(ShowReferralPresenter, () => {
             serviceProvider: {
               name: 'Harmony Living',
             },
-            serviceCategoryId: serviceCategory.id,
-            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+            serviceCategoryIds: [serviceCategory.id],
+            complexityLevels: [
+              { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+            ],
             furtherInformation: '',
-            desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            desiredOutcomes: [
+              {
+                serviceCategoryId: serviceCategory.id,
+                desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+              },
+            ],
             additionalNeedsInformation: '',
             accessibilityNeeds: '',
             needsInterpreter: false,
