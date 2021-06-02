@@ -39,8 +39,6 @@ spec:
             env:
               - name: USE_STATIC_LOCATION
                 value: "true"
-              - name: LOCAL_EXPORT_DESTINATION
-                value: export
               - name: PGHOST
                 valueFrom:
                   secretKeyRef:
