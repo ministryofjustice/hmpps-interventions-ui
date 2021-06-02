@@ -1,7 +1,6 @@
 import RelevantSentencePresenter from './relevantSentencePresenter'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import deliusOffenceFactory from '../../../testutils/factories/deliusOffence'
-import deliusSentenceFactory from '../../../testutils/factories/deliusSentence'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import interventionFactory from '../../../testutils/factories/intervention'
 
@@ -19,69 +18,24 @@ describe(RelevantSentencePresenter, () => {
   })
 
   describe('relevantSentenceFields', () => {
-    describe('category', () => {
-      it('returns the main offence‘s category', () => {
-        const offences = [
-          deliusOffenceFactory.build({
-            mainOffence: false,
-            detail: {
-              mainCategoryDescription: 'Assault on Police Officer',
-            },
-          }),
-          deliusOffenceFactory.build({
-            mainOffence: true,
-            detail: {
-              mainCategoryDescription: 'Common and other types of assault',
-            },
-          }),
-        ]
-
-        const convictions = [deliusConvictionFactory.build({ offences })]
-
-        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
-
-        expect(presenter.relevantSentenceFields[0].category).toEqual('Common and other types of assault')
-      })
-    })
-
-    describe('subcategory', () => {
-      it('returns the main offence‘s subcategory', () => {
-        const offences = [
-          deliusOffenceFactory.build({
-            mainOffence: false,
-            detail: {
-              subCategoryDescription: 'Assault on Police Officer',
-            },
-          }),
-          deliusOffenceFactory.build({
-            mainOffence: true,
-            detail: {
-              subCategoryDescription: 'Common assault and battery',
-            },
-          }),
-        ]
-
-        const convictions = [deliusConvictionFactory.build({ offences })]
-
-        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
-
-        expect(presenter.relevantSentenceFields[0].subcategory).toEqual('Common assault and battery')
-      })
-    })
-
-    describe('endOfSentenceDate', () => {
-      it('uses the GOV UK date format', () => {
+    describe('presenter', () => {
+      it('returns a presenter with information about the conviction', () => {
         const convictions = [
           deliusConvictionFactory.build({
-            sentence: deliusSentenceFactory.build({
-              expectedSentenceEndDate: '2025-09-15',
-            }),
+            offences: [
+              deliusOffenceFactory.build({
+                mainOffence: true,
+                detail: {
+                  mainCategoryDescription: 'Common and other types of assault',
+                },
+              }),
+            ],
           }),
         ]
-
         const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
 
-        expect(presenter.relevantSentenceFields[0].endOfSentenceDate).toEqual('15 September 2025')
+        expect(presenter.relevantSentenceFields[0].presenter).toBeDefined()
+        expect(presenter.relevantSentenceFields[0].presenter.category).toEqual('Common and other types of assault')
       })
     })
 
