@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
@@ -23,6 +24,22 @@ interface CommunityAPIService {
     val contractTypeName = referral.intervention.dynamicFrameworkContract.contractType.name
     val primeProviderName = referral.intervention.dynamicFrameworkContract.primeProvider.name
     return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
+  }
+}
+
+@Service
+class CommunityAPIOffenderService(
+  @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
+  private val communityAPIClient: CommunityAPIClient,
+) {
+  fun checkIfAuthenticatedDeliusUserHasAccessToOffender(authentication: JwtAuthenticationToken, crn: String): Boolean {
+    val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
+      .buildAndExpand(crn)
+      .toString()
+
+    val client = communityAPIClient.withCustomAuth(authentication)
+    val response = client.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
+    return !(response.userExcluded || response.userRestricted)
   }
 }
 
@@ -233,4 +250,11 @@ data class AppointmentOutcomeRequest(
   val notes: String,
   val attended: String,
   val notifyPPOfAttendanceBehaviour: Boolean,
+)
+
+data class UserAccessResponse(
+  val userExcluded: Boolean,
+  val userRestricted: Boolean,
+  val exclusionMessage: String?,
+  val restrictionMessage: String?,
 )
