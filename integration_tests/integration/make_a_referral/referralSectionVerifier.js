@@ -41,8 +41,8 @@ class _ReferralSectionChecker {
     return this
   }
 
-  selectServiceCagories(activeLinks) {
-    cy.get("[data-cy=url]:contains('Select service categories for the Womans Service referral')").should(
+  selectServiceCategories(activeLinks) {
+    cy.get(`[data-cy=url]:contains("Select service categories for the Women's Services referral")`).should(
       hrefAttrChainer(activeLinks.selectServiceCategories),
       'href'
     )
@@ -50,7 +50,7 @@ class _ReferralSectionChecker {
   }
 
   cohortInterventionReferralDetails(activeLinks) {
-    cy.get("[data-cy=url]:contains('Confirm the relevant sentence for the Womans Service referral')").should(
+    cy.get(`[data-cy=url]:contains("Confirm the relevant sentence for the Women's Services referral")`).should(
       hrefAttrChainer(activeLinks.relevantSentence),
       'href'
     )
@@ -67,7 +67,7 @@ class _ReferralSectionChecker {
       .eq(1)
       .should(hrefAttrChainer(activeLinks.desiredOutcomes1), 'href')
     cy.get('[data-cy=url]')
-      .contains('Enter when the Womans Service referral need to be completed')
+      .contains("Enter when the Women's Services referral need to be completed")
       .should(hrefAttrChainer(activeLinks.completedDate), 'href')
     cy.get('[data-cy=url]').contains('Enter enforceable days used').should(hrefAttrChainer(activeLinks.rarDays), 'href')
     cy.get('[data-cy=url]')
