@@ -15,8 +15,10 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
+import javax.transaction.Transactional
 
 @Service
+@Transactional
 class AppointmentsService(
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
   val actionPlanRepository: ActionPlanRepository,

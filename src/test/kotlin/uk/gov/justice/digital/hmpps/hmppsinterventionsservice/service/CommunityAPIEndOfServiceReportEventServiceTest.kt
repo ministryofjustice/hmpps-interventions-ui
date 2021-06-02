@@ -4,35 +4,31 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType.SUBMITTED
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 
-class CommunityAPIActionPlanServiceTest {
+class CommunityAPIEndOfServiceReportEventServiceTest {
 
   private val communityAPIClient = mock<CommunityAPIClient>()
 
   private val sentAtDefault = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
   private val submittedAtDefault = OffsetDateTime.of(2020, 2, 2, 2, 2, 2, 2, ZoneOffset.UTC)
 
-  private val actionPlanFactory = ActionPlanFactory()
-  private val referralFactory = ReferralFactory()
-
-  val communityAPIService = CommunityAPIActionPlanEventService(
+  val communityAPIService = CommunityAPIEndOfServiceReportEventService(
     "http://testUrl",
-    "/probation-practitioner/submit-action-plan/{id}",
+    "/probation-practitioner/end-of-service-report/{id}",
     "/secure/offenders/crn/{crn}/sentence/{sentenceId}/notifications/context/{contextName}",
     "commissioned-rehabilitation-services",
     communityAPIClient
   )
 
   @Test
-  fun `notify submitted action plan`() {
+  fun `notify submitted end of service report`() {
 
     val event = getEvent(SUBMITTED)
     communityAPIService.onApplicationEvent(event)
@@ -42,30 +38,31 @@ class CommunityAPIActionPlanServiceTest {
       NotificationCreateRequestDTO(
         "ACC",
         sentAtDefault,
-        event.actionPlan.referral.id,
+        event.endOfServiceReport.referral.id,
         submittedAtDefault,
-        "Action Plan Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
-          "http://testUrl/probation-practitioner/submit-action-plan/${event.actionPlan.referral.id}",
+        "End of Service Report Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
+          "http://testUrl/probation-practitioner/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
       )
     )
   }
 
   private fun getEvent(
-    ActionPlanEventType: ActionPlanEventType
-  ): ActionPlanEvent =
-    ActionPlanEvent(
+    endOfServiceReportEventType: EndOfServiceReportEventType
+  ): EndOfServiceReportEvent =
+    EndOfServiceReportEvent(
       "source",
-      ActionPlanEventType,
-      actionPlanFactory.create(
+      endOfServiceReportEventType,
+      SampleData.sampleEndOfServiceReport(
         id = UUID.fromString("120b1a45-8ac7-4920-b05b-acecccf4734b"),
         submittedAt = submittedAtDefault,
-        referral = referralFactory.createSent(
-          serviceUserCRN = "X123456",
+        referral = SampleData.sampleReferral(
+          crn = "X123456",
           relevantSentenceId = 1234L,
+          serviceProviderName = "Harmony Living",
           sentAt = sentAtDefault,
           referenceNumber = "XX1234"
         ),
       ),
-      "http://localhost:8080/submit-action-plan/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
+      "http://localhost:8080/end-of-service-report/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
     )
 }

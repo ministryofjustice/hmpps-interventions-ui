@@ -9,8 +9,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegi
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
 import java.util.UUID
+import javax.transaction.Transactional
 
 @Service
+@Transactional
 class InterventionService(
   val pccRegionRepository: PCCRegionRepository,
   val interventionRepository: InterventionRepository

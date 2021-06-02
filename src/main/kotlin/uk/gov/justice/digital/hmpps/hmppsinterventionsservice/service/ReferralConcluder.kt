@@ -12,8 +12,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
 import java.util.Objects.nonNull
+import javax.transaction.Transactional
 
 @Service
+@Transactional
 class ReferralConcluder(
   val referralRepository: ReferralRepository,
   val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,

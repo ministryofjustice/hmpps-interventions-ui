@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class CommunityAPIAppointmentServiceTest {
+class CommunityAPIAppointmentEventServiceTest {
 
   private val communityAPIClient = mock<CommunityAPIClient>()
 

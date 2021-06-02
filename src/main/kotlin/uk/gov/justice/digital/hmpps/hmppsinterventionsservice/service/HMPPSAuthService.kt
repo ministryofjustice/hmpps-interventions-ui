@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import javax.transaction.Transactional
 
 class UnverifiedEmailException : RuntimeException()
 
@@ -38,6 +39,7 @@ private data class UserDetailResponse(
 )
 
 @Service
+@Transactional
 class HMPPSAuthService(
   @Value("\${hmppsauth.api.locations.auth-user-groups}") private val authUserGroupsLocation: String,
   @Value("\${hmppsauth.api.locations.auth-user-detail}") private val authUserDetailLocation: String,
