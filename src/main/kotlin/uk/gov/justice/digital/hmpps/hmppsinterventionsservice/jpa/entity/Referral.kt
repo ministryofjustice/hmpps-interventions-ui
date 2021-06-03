@@ -44,6 +44,7 @@ class Referral(
   var sentAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var sentBy: AuthUser? = null,
   var referenceNumber: String? = null,
+  var supplementaryRiskId: UUID? = null,
 
   var endRequestedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var endRequestedBy: AuthUser? = null,
