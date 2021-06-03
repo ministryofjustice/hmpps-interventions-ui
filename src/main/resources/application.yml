@@ -116,6 +116,10 @@ hmppsauth:
       user-email: "/api/user/{username}/email"
       user-detail: "/api/user/{username}"
 
+assess-risks-and-needs:
+  locations:
+    create-supplementary-risk: "/risks/supplementary"
+
 aws:
   sns:
     enabled: true

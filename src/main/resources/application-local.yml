@@ -11,6 +11,9 @@ interventions-ui:
 community-api:
   baseurl: http://localhost:8091
 
+assess-risks-and-needs:
+  baseurl: http://localhost:8094
+
 aws:
   sns:
     enabled: false

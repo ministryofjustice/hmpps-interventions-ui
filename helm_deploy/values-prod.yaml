@@ -19,4 +19,5 @@ env:
   HMPPSAUTH_BASEURL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
   INTERVENTIONSUI_BASEURL: "https://refer-monitor-intervention.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.probation.service.justice.gov.uk"
+  ASSESSRISKSANDNEEDS_BASEURL: "https://assess-risks-and-needs.hmpps.service.justice.gov.uk"
   SENTRY_ENVIRONMENT: "prod"
