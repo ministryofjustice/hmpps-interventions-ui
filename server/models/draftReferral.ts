@@ -23,8 +23,6 @@ export interface ReferralFields {
   whenUnavailable: string | null
   serviceUser: ServiceUser
   additionalRiskInformation: string
-  usingRarDays: boolean // deprecated
-  maximumRarDays: number | null // deprecated
   maximumEnforceableDays: number
 }
 

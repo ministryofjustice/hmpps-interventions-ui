@@ -21,9 +21,6 @@ import NeedsAndRequirementsView from './needsAndRequirementsView'
 import NeedsAndRequirementsForm from './needsAndRequirementsForm'
 import RiskInformationPresenter from './riskInformationPresenter'
 import RiskInformationView from './riskInformationView'
-import RarDaysView from './rarDaysView'
-import RarDaysPresenter from './rarDaysPresenter'
-import RarDaysForm from './rarDaysForm'
 import ReferralStartView from './referralStartView'
 import CheckAnswersView from './checkAnswersView'
 import CheckAnswersPresenter from './checkAnswersPresenter'
@@ -510,58 +507,6 @@ export default class ReferralsController {
 
       const presenter = new RiskInformationPresenter(referral, error, req.body)
       const view = new RiskInformationView(presenter)
-
-      res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
-    }
-  }
-
-  async viewRarDays(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-
-    const [intervention, serviceUser] = await Promise.all([
-      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-    ])
-
-    const presenter = new RarDaysPresenter(referral, intervention)
-    const view = new RarDaysView(presenter)
-
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  async updateRarDays(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-
-    const intervention = await this.interventionsService.getIntervention(
-      res.locals.user.token.accessToken,
-      referral.interventionId
-    )
-
-    const form = await RarDaysForm.createForm(req, intervention)
-
-    let error: FormValidationError | null = null
-
-    if (form.isValid) {
-      try {
-        await this.interventionsService.patchDraftReferral(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          form.paramsForUpdate
-        )
-      } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
-      }
-    } else {
-      error = form.error
-    }
-
-    if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/further-information`)
-    } else {
-      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
-      const presenter = new RarDaysPresenter(referral, intervention, error, req.body)
-      const view = new RarDaysView(presenter)
 
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)

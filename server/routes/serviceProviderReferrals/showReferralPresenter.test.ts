@@ -117,8 +117,6 @@ describe(ShowReferralPresenter, () => {
             disabilities: ['Autism spectrum condition', 'sciatica'],
           },
           additionalRiskInformation: 'A danger to the elderly',
-          usingRarDays: true,
-          maximumRarDays: 10,
           maximumEnforceableDays: 10,
         },
       })
@@ -180,8 +178,6 @@ describe(ShowReferralPresenter, () => {
             disabilities: ['Autism spectrum condition', 'sciatica'],
           },
           additionalRiskInformation: '',
-          usingRarDays: false,
-          maximumRarDays: null,
           maximumEnforceableDays: 10,
         },
       })
@@ -327,8 +323,6 @@ describe(ShowReferralPresenter, () => {
               disabilities: ['Autism spectrum condition', 'sciatica'],
             },
             additionalRiskInformation: 'A danger to the elderly',
-            usingRarDays: true,
-            maximumRarDays: 10,
             maximumEnforceableDays: 10,
           },
         })
@@ -412,8 +406,6 @@ describe(ShowReferralPresenter, () => {
               disabilities: ['Autism spectrum condition', 'sciatica'],
             },
             additionalRiskInformation: '',
-            usingRarDays: false,
-            maximumRarDays: null,
             maximumEnforceableDays: 10,
           },
         })
