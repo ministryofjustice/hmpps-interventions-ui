@@ -13,11 +13,7 @@ spec:
           - name: data-extractor-analytics
             image: ministryofjustice/data-engineering-data-extractor:develop
             imagePullPolicy: Always
-            {{ if (and .Values.env_details.contains_live_data (not .data_protection_impact_assessment_signed_off)) }}
-            args: ["sh", "-c", "psql -c 'SELECT 1' && mkdir -p 'export/csv' && touch 'export/csv/signed_off_DPIA_required.csv' && transfer_local_to_s3.sh"]
-            {{ else }}
             args: ["sh", "-c", "extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
-            {{ end }}
             env:
               - name: PGPORT
                 value: "5432"
