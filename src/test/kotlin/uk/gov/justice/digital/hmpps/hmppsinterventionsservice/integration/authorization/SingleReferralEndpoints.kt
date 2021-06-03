@@ -20,10 +20,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.util.UUID
 
+// @Suppress("UNUSED") is used for things that are only used through parameterised tests, so appear unused
 class SingleReferralEndpoints : IntegrationTestBase() {
   @MockBean lateinit var mockHmppsAuthService: HMPPSAuthService
   @MockBean lateinit var mockCommunityAPIOffenderService: CommunityAPIOffenderService
-  @MockBean lateinit var mockCommunityApiReferralService: CommunityAPIReferralService
+  @MockBean @Suppress("UNUSED") lateinit var mockCommunityApiReferralService: CommunityAPIReferralService
 
   private lateinit var requestFactory: RequestFactory
 
@@ -35,15 +36,18 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   }
 
   companion object {
-    @JvmStatic private fun draftReferralRequests(): List<Request> {
+    @Suppress("UNUSED")
+    @JvmStatic fun draftReferralRequests(): List<Request> {
       return listOf(Request.GetDraftReferral, Request.UpdateDraftReferral, Request.SendDraftReferral)
     }
 
-    @JvmStatic private fun sentReferralRequests(): List<Request> {
+    @Suppress("UNUSED")
+    @JvmStatic fun sentReferralRequests(): List<Request> {
       return listOf(Request.GetSentReferral, Request.AssignSentReferral, Request.EndSentReferral)
     }
 
-    @JvmStatic private fun allReferralRequests(): List<Request> {
+    @Suppress("UNUSED")
+    @JvmStatic fun allReferralRequests(): List<Request> {
       return draftReferralRequests() + sentReferralRequests()
     }
   }
