@@ -17,6 +17,24 @@ export default class CheckAnswersView {
     summaryListArgs: ViewUtils.summaryListArgs(section.summary),
   }))
 
+  private readonly serviceCategoriesSummaryListArgs = this.presenter.serviceCategoriesSummary
+    ? ViewUtils.summaryListArgs(this.presenter.serviceCategoriesSummary)
+    : null
+
+  private readonly sentenceInformationSummaryListArgs = ViewUtils.summaryListArgs(
+    this.presenter.sentenceInformationSummary
+  )
+
+  private readonly completionDeadlineSummaryListArgs = ViewUtils.summaryListArgs(
+    this.presenter.completionDeadlineSection.summary
+  )
+
+  private readonly enforceableDaysSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.enforceableDaysSummary)
+
+  private readonly furtherInformationSummaryListArgs = ViewUtils.summaryListArgs(
+    this.presenter.furtherInformationSummary
+  )
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'referrals/checkAnswers',
@@ -25,6 +43,11 @@ export default class CheckAnswersView {
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         needsAndRequirementsSummaryListArgs: this.needsAndRequirementsSummaryListArgs,
         referralDetailsSections: this.referralDetailsSections,
+        serviceCategoriesSummaryListArgs: this.serviceCategoriesSummaryListArgs,
+        sentenceInformationSummaryListArgs: this.sentenceInformationSummaryListArgs,
+        completionDeadlineSummaryListArgs: this.completionDeadlineSummaryListArgs,
+        enforceableDaysSummaryListArgs: this.enforceableDaysSummaryListArgs,
+        furtherInformationSummaryListArgs: this.furtherInformationSummaryListArgs,
       },
     ]
   }

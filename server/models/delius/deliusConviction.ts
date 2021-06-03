@@ -6,7 +6,7 @@ export default interface DeliusConviction {
   offences: Offence[]
 }
 
-interface Sentence {
+export interface Sentence {
   description: string
   sentenceId: number
   expectedSentenceEndDate: string
@@ -16,7 +16,7 @@ interface Sentence {
   }
 }
 
-interface Offence {
+export interface Offence {
   detail: {
     mainCategoryDescription: string
     subCategoryDescription: string

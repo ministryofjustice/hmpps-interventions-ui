@@ -28,11 +28,19 @@ export default class CommunityApiService {
 
   async getActiveConvictionsByCRN(crn: string): Promise<DeliusConviction[]> {
     const token = await this.hmppsAuthService.getApiClientToken()
-    logger.info({ crn }, 'getting conviction for service user')
+    logger.info({ crn }, 'getting convictions for service user')
     const convictions = (await this.restClient(token).get({
       path: `/secure/offenders/crn/${crn}/convictions`,
     })) as DeliusConviction[]
 
     return convictions.filter(conviction => conviction.active && conviction.sentence)
+  }
+
+  async getConvictionById(crn: string, id: number): Promise<DeliusConviction> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+    logger.info({ crn, id }, 'getting conviction for service user')
+    return (await this.restClient(token).get({
+      path: `/secure/offenders/crn/${crn}/convictions/${id}`,
+    })) as DeliusConviction
   }
 }

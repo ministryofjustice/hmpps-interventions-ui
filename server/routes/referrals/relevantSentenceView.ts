@@ -20,9 +20,9 @@ export default class RelevantSentenceView {
       items: this.presenter.relevantSentenceFields.map(relevantSentence => {
         return {
           value: relevantSentence.value.toString(),
-          html: `${ViewUtils.escape(relevantSentence.category)}<br>Subcategory: ${ViewUtils.escape(
-            relevantSentence.subcategory
-          )}<br>End of sentence date: ${ViewUtils.escape(relevantSentence.endOfSentenceDate)}`,
+          html: `${ViewUtils.escape(relevantSentence.presenter.category)}<br>Subcategory: ${ViewUtils.escape(
+            relevantSentence.presenter.subcategory
+          )}<br>End of sentence date: ${ViewUtils.escape(relevantSentence.presenter.endOfSentenceDate)}`,
           checked: relevantSentence.checked,
         }
       }),

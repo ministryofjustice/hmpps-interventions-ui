@@ -1204,18 +1204,25 @@ describe('POST /referrals/:id/rar-days', () => {
 
 describe('GET /referrals/:id/check-answers', () => {
   beforeEach(() => {
-    const referral = draftReferralFactory.build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = draftReferralFactory
+      .serviceCategorySelected(serviceCategory.id)
+      .completionDeadlineSet()
+      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' }, relevantSentenceId: 123 })
+    const conviction = deliusConvictionFactory.build()
 
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    communityApiService.getConvictionById.mockResolvedValue(conviction)
   })
 
-  it('displays placeholder text in place of a summary of the referral', async () => {
+  it('displays a summary of the draft referral', async () => {
     await request(app)
       .get('/referrals/1/check-answers')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Submit your referral')
-        expect(res.text).toContain('Make sure you have checked your answers before submitting your referral')
+        expect(res.text).toContain('Check your answers')
         expect(res.text).toContain('Johnny’s personal details')
         expect(res.text).toContain('Agnostic')
       })
