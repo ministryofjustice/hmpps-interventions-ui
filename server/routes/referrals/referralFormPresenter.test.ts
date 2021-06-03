@@ -150,7 +150,7 @@ describe('ReferralFormPresenter', () => {
           })
         })
         describe('when "date completed by" has been set', () => {
-          it('should contain a "Not Started" label and "rar-days" url visible', () => {
+          it('should contain a "Not Started" label and "enforceable-days" url visible', () => {
             const referral = draftReferralFactory.filledFormUpToCompletionDate([serviceCategory]).build()
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
@@ -165,7 +165,7 @@ describe('ReferralFormPresenter', () => {
                   `service-category/${serviceCategory.id}/desired-outcomes`,
                   `service-category/${serviceCategory.id}/complexity-level`,
                   'completion-deadline',
-                  'rar-days'
+                  'enforceable-days'
                 )
                 .build(),
               referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
@@ -173,9 +173,9 @@ describe('ReferralFormPresenter', () => {
             expect(presenter.sections).toEqual(expected)
           })
         })
-        describe('when "rar days" has been set', () => {
+        describe('when "enforceable days" has been set', () => {
           it('should contain a "Not Started" label and "further-information" url visible', () => {
-            const referral = draftReferralFactory.filledFormUpToRarDays([serviceCategory]).build()
+            const referral = draftReferralFactory.filledFormUpToEnforceableDays([serviceCategory]).build()
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
@@ -189,7 +189,7 @@ describe('ReferralFormPresenter', () => {
                   `service-category/${serviceCategory.id}/desired-outcomes`,
                   `service-category/${serviceCategory.id}/complexity-level`,
                   'completion-deadline',
-                  'rar-days',
+                  'enforceable-days',
                   'further-information'
                 )
                 .build(),
@@ -214,7 +214,7 @@ describe('ReferralFormPresenter', () => {
                   `service-category/${serviceCategory.id}/desired-outcomes`,
                   `service-category/${serviceCategory.id}/complexity-level`,
                   'completion-deadline',
-                  'rar-days',
+                  'enforceable-days',
                   'further-information'
                 )
                 .build(),
@@ -500,7 +500,7 @@ describe('ReferralFormPresenter', () => {
         })
       })
       describe('when "date completed by" has been set', () => {
-        it('should contain a "Not Started" label and "rar-days" url visible', () => {
+        it('should contain a "Not Started" label and "enforceable-days" url visible', () => {
           const referral = draftReferralFactory.filledFormUpToCompletionDate(serviceCategories).build()
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
@@ -532,7 +532,7 @@ describe('ReferralFormPresenter', () => {
                   },
                 ],
                 'completion-deadline',
-                'rar-days'
+                'enforceable-days'
               )
               .build(),
             referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
@@ -540,9 +540,9 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
-      describe('when "rar days" has been set', () => {
+      describe('when "enforceable days" has been set', () => {
         it('should contain a "Not Started" label and "further-information" url visible', () => {
-          const referral = draftReferralFactory.filledFormUpToRarDays(serviceCategories).build()
+          const referral = draftReferralFactory.filledFormUpToEnforceableDays(serviceCategories).build()
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
@@ -573,7 +573,7 @@ describe('ReferralFormPresenter', () => {
                   },
                 ],
                 'completion-deadline',
-                'rar-days',
+                'enforceable-days',
                 'further-information'
               )
               .build(),
@@ -615,7 +615,7 @@ describe('ReferralFormPresenter', () => {
                   },
                 ],
                 'completion-deadline',
-                'rar-days',
+                'enforceable-days',
                 'further-information'
               )
               .build(),

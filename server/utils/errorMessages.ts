@@ -2,8 +2,6 @@
 // Explicit return types would make this file very messy and not much more
 // informational — everything returned is a string, since they’re messages!
 
-import utils from './utils'
-
 export default {
   startReferral: {
     crnEmpty: 'A CRN is needed',
@@ -41,21 +39,11 @@ export default {
   whenUnavailable: {
     empty: (name: string) => `Enter details of when ${name} will not be able to attend sessions`,
   },
-  usingRarDays: {
-    empty: (referralName: string) =>
-      `Select yes if you are using RAR days for the ${utils.convertToProperCase(referralName)} referral`,
-  },
-  maximumRarDays: {
-    empty: (referralName: string) =>
-      `Enter the maximum number of RAR days for the ${utils.convertToProperCase(referralName)} referral`,
-    notNumber: (referralName: string) =>
-      `The maximum number of RAR days for the ${utils.convertToProperCase(
-        referralName
-      )} referral must be a number, like 5`,
-    notWholeNumber: (referralName: string) =>
-      `The maximum number of RAR days for the ${utils.convertToProperCase(
-        referralName
-      )} referral must be a whole number, like 5`,
+  maximumEnforceableDays: {
+    empty: 'Enter the maximum number of enforceable days',
+    notNumber: 'The maximum number of enforceable days must be a number, like 5',
+    notWholeNumber: 'The maximum number of enforceable days must be a whole number, like 5',
+    tooSmall: 'The maximum number of enforceable days must be at least 1',
   },
   assignReferral: {
     emailEmpty: 'An email address is required',

@@ -479,7 +479,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .type('form')
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
-        .expect('Location', '/referrals/1/rar-days')
+        .expect('Location', '/referrals/1/enforceable-days')
 
       expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
         'token',
@@ -1085,21 +1085,19 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/desi
   })
 })
 
-describe('GET /referrals/:id/rar-days', () => {
+describe('GET /referrals/:id/enforceable-days', () => {
   beforeEach(() => {
-    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
     const referral = draftReferralFactory.build()
 
-    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
   it('renders a form page', async () => {
     await request(app)
-      .get('/referrals/1/rar-days')
+      .get('/referrals/1/enforceable-days')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Are you using RAR days for the Women&#39;s service referral?')
+        expect(res.text).toContain('How many enforceable days will you use for this service?')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
@@ -1109,48 +1107,33 @@ describe('GET /referrals/:id/rar-days', () => {
     interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
 
     await request(app)
-      .get('/referrals/1/rar-days')
+      .get('/referrals/1/enforceable-days')
       .expect(500)
       .expect(res => {
         expect(res.text).toContain('Failed to get draft referral')
       })
   })
-
-  it('renders an error when the service category call fails', async () => {
-    interventionsService.getIntervention.mockRejectedValue(new Error('Failed to get intervention'))
-
-    await request(app)
-      .get('/referrals/1/rar-days')
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Failed to get intervention')
-      })
-  })
 })
 
-describe('POST /referrals/:id/rar-days', () => {
+describe('POST /referrals/:id/enforceable-days', () => {
   beforeEach(() => {
-    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
     const referral = draftReferralFactory.build()
 
-    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
   it('updates the referral on the backend and redirects to the next question', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
-      usingRarDays: true,
-      maximumRarDays: 10,
+      maximumEnforceableDays: 10,
     })
 
     interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
 
     await request(app)
-      .post('/referrals/1/rar-days')
+      .post('/referrals/1/enforceable-days')
       .type('form')
       .send({
-        'using-rar-days': 'yes',
-        'maximum-rar-days': '10',
+        'maximum-enforceable-days': '10',
       })
       .expect(302)
       .expect('Location', '/referrals/1/further-information')
@@ -1159,8 +1142,7 @@ describe('POST /referrals/:id/rar-days', () => {
       'token',
       '1',
       {
-        usingRarDays: true,
-        maximumRarDays: 10,
+        maximumEnforceableDays: 10,
       },
     ])
   })
@@ -1168,15 +1150,14 @@ describe('POST /referrals/:id/rar-days', () => {
   describe('when the user enters invalid data', () => {
     it('does not update the referral on the backend and returns a 400 with an error message', async () => {
       await request(app)
-        .post('/referrals/1/rar-days')
+        .post('/referrals/1/enforceable-days')
         .type('form')
         .send({
-          'using-rar-days': 'yes',
-          'maximum-rar-days': '',
+          'maximum-enforceable-days': '',
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('What is the maximum number of RAR days for the Women&#39;s service referral')
+          expect(res.text).toContain('How many enforceable days will you use for this service?')
         })
 
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
@@ -1189,11 +1170,10 @@ describe('POST /referrals/:id/rar-days', () => {
     })
 
     await request(app)
-      .post('/referrals/1/rar-days')
+      .post('/referrals/1/enforceable-days')
       .type('form')
       .send({
-        'using-rar-days': 'yes',
-        'maximum-rar-days': '10',
+        'maximum-enforceable-days': '10',
       })
       .expect(500)
       .expect(res => {

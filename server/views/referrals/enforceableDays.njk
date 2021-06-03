@@ -22,10 +22,7 @@
           {{ govukErrorSummary(errorSummaryArgs) }}
         {% endif %}
 
-        {% set maximumDaysHtml %}
-          {{ govukInput(maximumRarDaysInputArgs) }}
-        {% endset -%}
-        {{ govukRadios(usingRarDaysRadiosArgs(maximumDaysHtml)) }}
+        {{ govukInput(maximumEnforceableDaysInputArgs) }}
 
         {{ govukButton({ text: "Save and continue" }) }}
       </form>
