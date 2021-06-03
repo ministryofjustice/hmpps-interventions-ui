@@ -86,7 +86,7 @@ describe('RiskInformationPresenter', () => {
   })
 
   describe('errorSummary', () => {
-    describe('when errors is null', () => {
+    describe('when error is null', () => {
       it('returns null', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
         const presenter = new RiskInformationPresenter(referral, null)
@@ -95,7 +95,7 @@ describe('RiskInformationPresenter', () => {
       })
     })
 
-    describe('when errors is not null', () => {
+    describe('when error is not null', () => {
       it('returns the errors', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
         const presenter = new RiskInformationPresenter(referral, {
