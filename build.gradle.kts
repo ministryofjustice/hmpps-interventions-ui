@@ -39,7 +39,7 @@ tasks {
 dependencies {
   // monitoring and logging
   implementation("io.sentry:sentry-spring-boot-starter:5.0.0")
-  implementation("io.sentry:sentry-logback:4.3.0")
+  implementation("io.sentry:sentry-logback:5.0.0")
   implementation("io.github.microutils:kotlin-logging-jvm:2.0.8")
 
   // openapi
