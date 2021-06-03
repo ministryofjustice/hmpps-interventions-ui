@@ -488,8 +488,7 @@ if __name__ == '__main__':
         has_additional_responsibilities = random_bool()
         when_unavailable = random_when_unavailable() if has_additional_responsibilities else None
 
-        using_rar_days = random_bool()
-        maximum_rar_days = random.randint(1, 10) if using_rar_days else None
+        maximum_enforceable_days = random.randint(1, 10)
 
         # core fields
         fields.extend([referral_id, created_at, created_by_id, service_usercrn, intervention_id])
@@ -499,7 +498,7 @@ if __name__ == '__main__':
         fields.extend(['', '', '', ''])
         fields.extend([needs_interpreter, interpreter_language])
         fields.extend([has_additional_responsibilities, when_unavailable])
-        fields.extend([using_rar_days, maximum_rar_days])
+        fields.extend([maximum_enforceable_days])
 
         # sent fields
         if (i >= NUM_DRAFT_REFERRALS):
@@ -535,7 +534,7 @@ if __name__ == '__main__':
             further_information, accessibility_needs, additional_needs_information, additional_risk_information,
             needs_interpreter, interpreter_language,
             has_additional_responsibilities, when_unavailable,
-            using_rar_days, maximum_rar_days,
+            maximum_enforceable_days,
             reference_number,
             sent_at, sent_by_id,
             assigned_at, assigned_by_id, assigned_to_id)

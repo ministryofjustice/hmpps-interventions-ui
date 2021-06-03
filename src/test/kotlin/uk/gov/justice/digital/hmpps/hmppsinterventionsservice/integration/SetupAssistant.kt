@@ -292,10 +292,9 @@ class SetupAssistant(
     furtherInformation: String = "Some information about the service user",
     hasAdditionalResponsibilities: Boolean = true,
     interpreterLanguage: String = "Spanish",
-    maximumRarDays: Int = 10,
+    maximumEnforceableDays: Int = 10,
     needsInterpreter: Boolean = true,
     relevantSentenceId: Long = 2600295124,
-    usingRarDays: Boolean = true,
     whenUnavailable: String = "She works Mondays 9am - midday",
   ): Referral {
     referral.selectedServiceCategories = selectedServiceCategories.toSet()
@@ -312,10 +311,9 @@ class SetupAssistant(
     referral.furtherInformation = furtherInformation
     referral.hasAdditionalResponsibilities = hasAdditionalResponsibilities
     referral.interpreterLanguage = interpreterLanguage
-    referral.maximumRarDays = maximumRarDays
+    referral.maximumEnforceableDays = maximumEnforceableDays
     referral.needsInterpreter = needsInterpreter
     referral.relevantSentenceId = relevantSentenceId
-    referral.usingRarDays = usingRarDays
     referral.whenUnavailable = whenUnavailable
 
     return referralRepository.save(referral)
