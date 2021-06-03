@@ -39,7 +39,7 @@ data class DraftReferralDTO(
         id = referral.id,
         createdAt = referral.createdAt,
         completionDeadline = referral.completionDeadline,
-        complexityLevels = referral.complexityLevelIds?.map { ReferralComplexityLevel(it.key, it.value) },
+        complexityLevels = referral.complexityLevelIds?.map { ReferralComplexityLevel(it.key, it.value) }?.sortedBy { it.serviceCategoryId },
         furtherInformation = referral.furtherInformation,
         additionalNeedsInformation = referral.additionalNeedsInformation,
         accessibilityNeeds = referral.accessibilityNeeds,
@@ -49,13 +49,14 @@ data class DraftReferralDTO(
         whenUnavailable = referral.whenUnavailable,
         additionalRiskInformation = referral.additionalRiskInformation,
         maximumEnforceableDays = referral.maximumEnforceableDays,
-        desiredOutcomes = referral.selectedDesiredOutcomes?.groupBy { it.serviceCategoryId }?.map { (serviceCategoryId, desiredoutcomes) -> SelectedDesiredOutcomesDTO(serviceCategoryId, desiredoutcomes.map { it.desiredOutcomeId }) },
+        desiredOutcomes = referral.selectedDesiredOutcomes?.groupBy { it.serviceCategoryId }?.toSortedMap()
+          ?.map { (serviceCategoryId, desiredoutcomes) -> SelectedDesiredOutcomesDTO(serviceCategoryId, desiredoutcomes.map { it.desiredOutcomeId }.sorted()) },
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
         relevantSentenceId = referral.relevantSentenceId,
         // TODO: remove this once cohort referrals changes are complete
         serviceCategoryId = if (referral.selectedServiceCategories?.isNotEmpty() == true) referral.selectedServiceCategories!!.elementAt(0).id else null,
-        serviceCategoryIds = referral.selectedServiceCategories?.map { it.id },
+        serviceCategoryIds = referral.selectedServiceCategories?.map { it.id }?.sorted(),
         interventionId = referral.intervention.id,
       )
     }
