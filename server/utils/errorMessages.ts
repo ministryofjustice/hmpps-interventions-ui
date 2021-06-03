@@ -57,6 +57,12 @@ export default {
         referralName
       )} referral must be a whole number, like 5`,
   },
+  maximumEnforceableDays: {
+    empty: 'Enter the maximum number of enforceable days',
+    notNumber: 'The maximum number of enforceable days must be a number, like 5',
+    notWholeNumber: 'The maximum number of enforceable days must be a whole number, like 5',
+    tooSmall: 'The maximum number of enforceable days must be at least 1',
+  },
   assignReferral: {
     emailEmpty: 'An email address is required',
     emailNotFound: 'Email address not found',

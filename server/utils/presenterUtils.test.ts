@@ -75,7 +75,7 @@ describe(PresenterUtils, () => {
           it('returns the formatted value from the referral', () => {
             const utils = new PresenterUtils(null)
 
-            expect(utils.stringValue(10, 'maximum-rar-days')).toBe('10')
+            expect(utils.stringValue(10, 'maximum-enforceable-days')).toBe('10')
           })
         })
       })

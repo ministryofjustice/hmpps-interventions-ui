@@ -43,6 +43,9 @@ import ControllerUtils from '../../utils/controllerUtils'
 import UpdateServiceCategoriesPresenter from './updateServiceCategoriesPresenter'
 import UpdateServiceCategoriesView from './updateServiceCategoriesView'
 import UpdateServiceCategoriesForm from './updateServiceCategoriesForm'
+import EnforceableDaysForm from './enforceableDaysForm'
+import EnforceableDaysPresenter from './enforceableDaysPresenter'
+import EnforceableDaysView from './enforceableDaysView'
 
 export default class ReferralsController {
   constructor(
@@ -305,7 +308,7 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/rar-days`)
+      res.redirect(`/referrals/${req.params.id}/enforceable-days`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(
         res.locals.user.token.accessToken,
@@ -559,6 +562,50 @@ export default class ReferralsController {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
       const presenter = new RarDaysPresenter(referral, intervention, error, req.body)
       const view = new RarDaysView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async viewEnforceableDays(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+    const presenter = new EnforceableDaysPresenter(referral)
+    const view = new EnforceableDaysView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateEnforceableDays(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const data = await new EnforceableDaysForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!data.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          data.paramsForUpdate
+        )
+      } catch (e) {
+        error = createFormValidationErrorOrRethrow(e)
+      }
+    } else {
+      error = data.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/further-information`)
+    } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+      const presenter = new EnforceableDaysPresenter(referral, error, req.body)
+      const view = new EnforceableDaysView(presenter)
 
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)

@@ -142,11 +142,11 @@ class FormSectionBuilder {
         },
         {
           title: 'Enter enforceable days used',
-          url: this.calculateTaskUrl('rar-days', this.taskValues.completionDeadline),
+          url: this.calculateTaskUrl('enforceable-days', this.taskValues.completionDeadline),
         },
         {
           title: 'Further information for service provider',
-          url: this.calculateTaskUrl('further-information', this.taskValues.rarDays),
+          url: this.calculateTaskUrl('further-information', this.taskValues.enforceableDays),
         },
       ],
     }
@@ -218,11 +218,11 @@ class FormSectionBuilder {
               },
               {
                 title: 'Enter enforceable days used',
-                url: this.calculateTaskUrl('rar-days', this.taskValues.completionDeadline),
+                url: this.calculateTaskUrl('enforceable-days', this.taskValues.completionDeadline),
               },
               {
                 title: 'Further information for service provider',
-                url: this.calculateTaskUrl('further-information', this.taskValues.rarDays),
+                url: this.calculateTaskUrl('further-information', this.taskValues.enforceableDays),
               },
             ],
           },
@@ -294,7 +294,7 @@ class SectionValues {
       this.taskValues.allDesiredOutcomes &&
       this.taskValues.allComplexityLevels &&
       this.taskValues.completionDeadline &&
-      this.taskValues.rarDays &&
+      this.taskValues.enforceableDays &&
       this.taskValues.furtherInformation
     )
   }
@@ -379,8 +379,8 @@ class TaskValues {
     return [this.referral.completionDeadline]
   }
 
-  get rarDays(): DraftReferralValues {
-    return [this.referral.usingRarDays]
+  get enforceableDays(): DraftReferralValues {
+    return [this.referral.maximumEnforceableDays]
   }
 
   get furtherInformation(): DraftReferralValues {

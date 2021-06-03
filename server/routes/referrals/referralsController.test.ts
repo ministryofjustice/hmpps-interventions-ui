@@ -479,7 +479,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .type('form')
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
-        .expect('Location', '/referrals/1/rar-days')
+        .expect('Location', '/referrals/1/enforceable-days')
 
       expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
         'token',
@@ -1194,6 +1194,103 @@ describe('POST /referrals/:id/rar-days', () => {
       .send({
         'using-rar-days': 'yes',
         'maximum-rar-days': '10',
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+  })
+})
+
+describe('GET /referrals/:id/enforceable-days', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/enforceable-days')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('How many enforceable days will you use for this service?')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/enforceable-days')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/enforceable-days', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.build()
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the referral on the backend and redirects to the next question', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      maximumEnforceableDays: 10,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/enforceable-days')
+      .type('form')
+      .send({
+        'maximum-enforceable-days': '10',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/further-information')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        maximumEnforceableDays: 10,
+      },
+    ])
+  })
+
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/enforceable-days')
+        .type('form')
+        .send({
+          'maximum-enforceable-days': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('How many enforceable days will you use for this service?')
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+
+    await request(app)
+      .post('/referrals/1/enforceable-days')
+      .type('form')
+      .send({
+        'maximum-enforceable-days': '10',
       })
       .expect(500)
       .expect(res => {

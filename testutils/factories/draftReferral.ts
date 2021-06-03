@@ -113,15 +113,14 @@ class DraftReferralFactory extends Factory<DraftReferral> {
       })
   }
 
-  filledFormUpToRarDays(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+  filledFormUpToEnforceableDays(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
     return this.filledFormUpToCompletionDate(serviceCategories).params({
-      usingRarDays: true,
-      maximumRarDays: 10,
+      maximumEnforceableDays: 10,
     })
   }
 
   filledFormUpToFurtherInformation(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.filledFormUpToRarDays(serviceCategories).params({
+    return this.filledFormUpToEnforceableDays(serviceCategories).params({
       furtherInformation: '',
     })
   }

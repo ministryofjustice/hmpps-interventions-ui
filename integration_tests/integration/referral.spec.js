@@ -146,7 +146,7 @@ describe('Referral form', () => {
           requiredComplexityLevel: false,
           desiredOutcomes: false,
           completedDate: false,
-          rarDays: false,
+          enforceableDays: false,
           furtherInformation: false,
         })
         .checkYourAnswers({ checkAnswers: false })
@@ -204,7 +204,7 @@ describe('Referral form', () => {
           requiredComplexityLevel: false,
           desiredOutcomes: false,
           completedDate: false,
-          rarDays: false,
+          enforceableDays: false,
           furtherInformation: false,
         })
         .checkYourAnswers({ checkAnswers: false })
@@ -249,10 +249,9 @@ describe('Referral form', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/rar-days`)
-      cy.get('h1').contains('Are you using RAR days for the Accommodation referral?')
-      cy.contains('Yes').click()
-      cy.contains('What is the maximum number of RAR days for the Accommodation referral?').type('10')
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
+      cy.get('h1').contains('How many enforceable days will you use for this service?')
+      cy.contains('How many enforceable days will you use for this service?').type('10')
 
       cy.contains('Save and continue').click()
 
@@ -283,7 +282,7 @@ describe('Referral form', () => {
           requiredComplexityLevel: true,
           desiredOutcomes: true,
           completedDate: true,
-          rarDays: true,
+          enforceableDays: true,
           furtherInformation: true,
         })
         .checkYourAnswers({ checkAnswers: true })
@@ -523,7 +522,7 @@ describe('Referral form', () => {
           requiredComplexityLevel2: false,
           desiredOutcomes2: false,
           completedDate: false,
-          rarDays: false,
+          enforceableDays: false,
           furtherInformation: false,
         })
         .checkYourAnswers({ checkAnswers: false })
@@ -589,10 +588,9 @@ describe('Referral form', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/rar-days`)
-      cy.get('h1').contains("Are you using RAR days for the Women's services referral?")
-      cy.contains('Yes').click()
-      cy.contains("What is the maximum number of RAR days for the Women's services referral?").type('10')
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
+      cy.get('h1').contains('How many enforceable days will you use for this service?')
+      cy.contains('How many enforceable days will you use for this service?').type('10')
 
       cy.contains('Save and continue').click()
 
@@ -627,7 +625,7 @@ describe('Referral form', () => {
           requiredComplexityLevel2: true,
           desiredOutcomes2: true,
           completedDate: true,
-          rarDays: true,
+          enforceableDays: true,
           furtherInformation: true,
         })
         .checkYourAnswers({ checkAnswers: true })
