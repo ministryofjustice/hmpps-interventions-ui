@@ -61,8 +61,7 @@ class Referral(
   var interpreterLanguage: String? = null,
   var hasAdditionalResponsibilities: Boolean? = null,
   var whenUnavailable: String? = null,
-  var usingRarDays: Boolean? = null,
-  var maximumRarDays: Int? = null,
+  var maximumEnforceableDays: Int? = null,
   @ElementCollection
   @CollectionTable(name = "referral_desired_outcome", joinColumns = [JoinColumn(name = "referral_id")])
   var selectedDesiredOutcomes: MutableList<SelectedDesiredOutcomesMapping>? = null,

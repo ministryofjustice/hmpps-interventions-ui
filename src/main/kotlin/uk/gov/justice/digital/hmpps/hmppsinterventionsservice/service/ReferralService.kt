@@ -207,12 +207,6 @@ class ReferralService(
       }
     }
 
-    update.usingRarDays?.let {
-      if (it && update.maximumRarDays == null) {
-        errors.add(FieldError(field = "usingRarDays", error = Code.CONDITIONAL_FIELD_MUST_BE_SET))
-      }
-    }
-
     update.serviceUser?.let {
       if (it.crn != null && it.crn != referral.serviceUserCRN) {
         errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
@@ -267,9 +261,8 @@ class ReferralService(
       referral.additionalRiskInformation = it
     }
 
-    update.usingRarDays?.let {
-      referral.usingRarDays = it
-      referral.maximumRarDays = if (it) update.maximumRarDays else null
+    update.maximumEnforceableDays?.let {
+      referral.maximumEnforceableDays = it
     }
 
     update.relevantSentenceId?.let {

@@ -55,8 +55,7 @@ COMMENT ON COLUMN referral.interpreter_language IS 'what language the interprete
 COMMENT ON COLUMN referral.has_additional_responsibilities IS 'if the service user has attitional responsibilities in their life';
 COMMENT ON COLUMN referral.when_unavailable IS 'when the service user is unavailable due to existing commitments';
 COMMENT ON COLUMN referral.additional_risk_information IS 'further risk information about the service user';
-COMMENT ON COLUMN referral.using_rar_days IS 'how many enforceable/RAR days can be used';
-COMMENT ON COLUMN referral.maximum_rar_days IS 'the maximum number of enforceable/RAR days that can be used';
+COMMENT ON COLUMN referral.maximum_enforceable_days IS 'the maximum number of enforceable/RAR days that can be used';
 COMMENT ON COLUMN referral.reference_number IS 'referral number';
 COMMENT ON COLUMN referral.sent_at IS 'when the referral was sent';
 COMMENT ON COLUMN referral.sent_by_id IS 'ID of the person who sent the referral';
