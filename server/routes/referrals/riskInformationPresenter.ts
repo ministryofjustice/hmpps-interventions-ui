@@ -12,7 +12,7 @@ export default class RiskInformationPresenter {
   readonly text = {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
     additionalRiskInformation: {
-      label: `Additional information for the provider about ${this.referral.serviceUser?.firstName}’s risks (optional)`,
+      label: `Information for the service provider about ${this.referral.serviceUser?.firstName}’s risks`,
       errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
     },
   }

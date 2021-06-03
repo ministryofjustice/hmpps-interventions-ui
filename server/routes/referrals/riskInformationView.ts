@@ -16,6 +16,9 @@ export default class RiskInformationView {
         classes: 'govuk-label--s',
       },
       value: this.presenter.fields.additionalRiskInformation,
+      hint: {
+        text: 'Provide relevant risk information to share with the service provider.',
+      },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.additionalRiskInformation.errorMessage),
     }
   }

@@ -14,7 +14,7 @@ describe('RiskInformationPresenter', () => {
         title: 'Geoffrey’s risk information',
         additionalRiskInformation: {
           errorMessage: null,
-          label: 'Additional information for the provider about Geoffrey’s risks (optional)',
+          label: 'Information for the service provider about Geoffrey’s risks',
         },
       })
     })
