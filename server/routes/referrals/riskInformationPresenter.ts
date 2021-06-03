@@ -9,14 +9,6 @@ export default class RiskInformationPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly summary = [
-    { key: 'OGRS score', text: '50' },
-    { key: 'ROSHA score', text: 'Medium' },
-    { key: 'RM2000 score', text: 'Medium' },
-    { key: 'SARA score', text: 'Low' },
-    // TODO IC-806 populate with service user data once we have it
-  ]
-
   readonly text = {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
     additionalRiskInformation: {

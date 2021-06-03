@@ -112,18 +112,4 @@ describe('RiskInformationPresenter', () => {
       })
     })
   })
-
-  describe('summary', () => {
-    it('returns a summary of the service user’s risk scores', () => {
-      const referral = draftReferralFactory.serviceUserSelected().build()
-      const presenter = new RiskInformationPresenter(referral)
-
-      expect(presenter.summary).toEqual([
-        { key: 'OGRS score', text: '50' },
-        { key: 'ROSHA score', text: 'Medium' },
-        { key: 'RM2000 score', text: 'Medium' },
-        { key: 'SARA score', text: 'Low' },
-      ])
-    })
-  })
 })
