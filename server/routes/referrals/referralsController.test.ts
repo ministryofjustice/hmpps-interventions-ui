@@ -301,6 +301,23 @@ describe('POST /referrals/:id/risk-information', () => {
     ])
   })
 
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/risk-information')
+        .type('form')
+        .send({
+          'additional-risk-information': 'a'.repeat(4001),
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Risk information must be 4000 characters or fewer')
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
   it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
     interventionsService.patchDraftReferral.mockRejectedValue({
       message: 'Some backend error message',

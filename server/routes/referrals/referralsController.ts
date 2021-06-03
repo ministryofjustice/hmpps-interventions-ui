@@ -43,6 +43,7 @@ import UpdateServiceCategoriesForm from './updateServiceCategoriesForm'
 import EnforceableDaysForm from './enforceableDaysForm'
 import EnforceableDaysPresenter from './enforceableDaysPresenter'
 import EnforceableDaysView from './enforceableDaysView'
+import RiskInformationForm from './riskInformationForm'
 
 export default class ReferralsController {
   constructor(
@@ -482,18 +483,19 @@ export default class ReferralsController {
   async updateRiskInformation(req: Request, res: Response): Promise<void> {
     let error: FormValidationError | null = null
 
-    const paramsForUpdate = {
-      additionalRiskInformation: req.body['additional-risk-information'],
-    }
+    const data = await new RiskInformationForm(req).data()
+    error = data.error
 
-    try {
-      await this.interventionsService.patchDraftReferral(
-        res.locals.user.token.accessToken,
-        req.params.id,
-        paramsForUpdate
-      )
-    } catch (e) {
-      error = createFormValidationErrorOrRethrow(e)
+    if (data.error === null) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          data.paramsForUpdate
+        )
+      } catch (e) {
+        error = createFormValidationErrorOrRethrow(e)
+      }
     }
 
     if (error === null) {
