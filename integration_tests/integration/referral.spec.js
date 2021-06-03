@@ -240,7 +240,7 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.get('h1').contains('What date does the Accommodation service need to be completed by?')
+      cy.get('h1').contains('What date does the Accommodation referral need to be completed by?')
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
@@ -248,14 +248,16 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/rar-days`)
-      cy.get('h1').contains('Are you using RAR days for the Accommodation service?')
+      cy.get('h1').contains('Are you using RAR days for the Accommodation referral?')
       cy.contains('Yes').click()
-      cy.contains('What is the maximum number of RAR days for the Accommodation service?').type('10')
+      cy.contains('What is the maximum number of RAR days for the Accommodation referral?').type('10')
 
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains('Do you have further information for the Accommodation service provider? (optional)')
+      cy.get('h1').contains(
+        'Do you have further information for the Accommodation referral service provider? (optional)'
+      )
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed
@@ -568,7 +570,7 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.get('h1').contains('What date does the Accommodation service need to be completed by?')
+      cy.get('h1').contains("What date does the Women's services referral need to be completed by?")
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
@@ -576,14 +578,16 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/rar-days`)
-      cy.get('h1').contains('Are you using RAR days for the Accommodation service?')
+      cy.get('h1').contains("Are you using RAR days for the Women's services referral?")
       cy.contains('Yes').click()
-      cy.contains('What is the maximum number of RAR days for the Accommodation service?').type('10')
+      cy.contains("What is the maximum number of RAR days for the Women's services referral?").type('10')
 
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains('Do you have further information for the Accommodation service provider? (optional)')
+      cy.get('h1').contains(
+        "Do you have further information for the Women's services referral service provider? (optional)"
+      )
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed

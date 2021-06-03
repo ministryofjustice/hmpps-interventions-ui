@@ -1,39 +1,39 @@
 import { Request } from 'express'
 import { Result, ValidationChain, ValidationError } from 'express-validator'
 import DraftReferral from '../../models/draftReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import errorMessages from '../../utils/errorMessages'
 import FormUtils from '../../utils/formUtils'
 import { FormValidationError } from '../../utils/formValidationError'
+import Intervention from '../../models/intervention'
 
 export default class RarDaysForm {
   private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
 
-  static async createForm(request: Request, serviceCategory: ServiceCategory): Promise<RarDaysForm> {
+  static async createForm(request: Request, intervention: Intervention): Promise<RarDaysForm> {
     return new RarDaysForm(
       request,
-      await FormUtils.runValidations({ request, validations: this.validations(serviceCategory) })
+      await FormUtils.runValidations({ request, validations: this.validations(intervention) })
     )
   }
 
-  static validations(serviceCategory: ServiceCategory): ValidationChain[] {
-    const firstName = serviceCategory.name
+  static validations(intervention: Intervention): ValidationChain[] {
+    const referralName = intervention.contractType.name
 
     return FormUtils.yesNoRadioWithConditionalInputValidationChain({
       radioName: 'using-rar-days',
       inputName: 'maximum-rar-days',
-      notSelectedErrorMessage: errorMessages.usingRarDays.empty(firstName),
+      notSelectedErrorMessage: errorMessages.usingRarDays.empty(referralName),
       inputValidator: chain =>
         chain
           .notEmpty({ ignore_whitespace: true })
-          .withMessage(errorMessages.maximumRarDays.empty(serviceCategory.name))
+          .withMessage(errorMessages.maximumRarDays.empty(referralName))
           .bail()
           .trim()
           .isNumeric()
-          .withMessage(errorMessages.maximumRarDays.notNumber(serviceCategory.name))
+          .withMessage(errorMessages.maximumRarDays.notNumber(referralName))
           .bail()
           .isInt()
-          .withMessage(errorMessages.maximumRarDays.notWholeNumber(serviceCategory.name)),
+          .withMessage(errorMessages.maximumRarDays.notWholeNumber(referralName)),
     })
   }
 

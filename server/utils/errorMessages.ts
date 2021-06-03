@@ -42,16 +42,20 @@ export default {
     empty: (name: string) => `Enter details of when ${name} will not be able to attend sessions`,
   },
   usingRarDays: {
-    empty: (name: string) => `Select yes if you are using RAR days for the ${utils.convertToProperCase(name)} service`,
+    empty: (referralName: string) =>
+      `Select yes if you are using RAR days for the ${utils.convertToProperCase(referralName)} referral`,
   },
   maximumRarDays: {
-    empty: (name: string) => `Enter the maximum number of RAR days for the ${utils.convertToProperCase(name)} service`,
-    notNumber: (name: string) =>
-      `The maximum number of RAR days for the ${utils.convertToProperCase(name)} service must be a number, like 5`,
-    notWholeNumber: (name: string) =>
+    empty: (referralName: string) =>
+      `Enter the maximum number of RAR days for the ${utils.convertToProperCase(referralName)} referral`,
+    notNumber: (referralName: string) =>
       `The maximum number of RAR days for the ${utils.convertToProperCase(
-        name
-      )} service must be a whole number, like 5`,
+        referralName
+      )} referral must be a number, like 5`,
+    notWholeNumber: (referralName: string) =>
+      `The maximum number of RAR days for the ${utils.convertToProperCase(
+        referralName
+      )} referral must be a whole number, like 5`,
   },
   assignReferral: {
     emailEmpty: 'An email address is required',

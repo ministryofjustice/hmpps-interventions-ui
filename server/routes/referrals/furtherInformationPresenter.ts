@@ -1,20 +1,20 @@
 import DraftReferral from '../../models/draftReferral'
-import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
+import Intervention from '../../models/intervention'
 import utils from '../../utils/utils'
 
 export default class FurtherInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly intervention: Intervention,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {}
 
   readonly title = `Do you have further information for the ${utils.convertToProperCase(
-    this.serviceCategory.name
-  )} service provider? (optional)`
+    this.intervention.contractType.name
+  )} referral service provider? (optional)`
 
   readonly hint =
     'For example, relevant previous offences, previously completed programmes or further reasons for this referral'

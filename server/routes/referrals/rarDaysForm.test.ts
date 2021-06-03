@@ -1,14 +1,14 @@
 import { Request } from 'express'
 import RarDaysForm from './rarDaysForm'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 describe(RarDaysForm, () => {
-  const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+  const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
 
   describe('isValid', () => {
     describe('when there are no errors in the form', () => {
       it('returns true', async () => {
-        const form = await RarDaysForm.createForm({ body: { 'using-rar-days': 'no' } } as Request, serviceCategory)
+        const form = await RarDaysForm.createForm({ body: { 'using-rar-days': 'no' } } as Request, intervention)
 
         expect(form.isValid).toBe(true)
       })
@@ -16,7 +16,7 @@ describe(RarDaysForm, () => {
 
     describe('when there are errors in the form', () => {
       it('returns false', async () => {
-        const form = await RarDaysForm.createForm({ body: {} } as Request, serviceCategory)
+        const form = await RarDaysForm.createForm({ body: {} } as Request, intervention)
 
         expect(form.isValid).toBe(false)
       })
@@ -26,14 +26,14 @@ describe(RarDaysForm, () => {
   describe('errors', () => {
     describe('when no answer is selected for using-rar-days', () => {
       it('gives an error for using-rar-days', async () => {
-        const form = await RarDaysForm.createForm({ body: {} } as Request, serviceCategory)
+        const form = await RarDaysForm.createForm({ body: {} } as Request, intervention)
 
         expect(form.error).toEqual({
           errors: [
             {
               formFields: ['using-rar-days'],
               errorSummaryLinkedField: 'using-rar-days',
-              message: 'Select yes if you are using RAR days for the Accommodation service',
+              message: "Select yes if you are using RAR days for the Women's service referral",
             },
           ],
         })
@@ -42,7 +42,7 @@ describe(RarDaysForm, () => {
 
     describe('when choosing no for using-rar-days', () => {
       it('gives no error', async () => {
-        const form = await RarDaysForm.createForm({ body: { 'using-rar-days': 'no' } } as Request, serviceCategory)
+        const form = await RarDaysForm.createForm({ body: { 'using-rar-days': 'no' } } as Request, intervention)
 
         expect(form.error).toBeNull()
       })
@@ -53,7 +53,7 @@ describe(RarDaysForm, () => {
         it('gives no error', async () => {
           const form = await RarDaysForm.createForm(
             { body: { 'using-rar-days': 'yes', 'maximum-rar-days': '10' } } as Request,
-            serviceCategory
+            intervention
           )
 
           expect(form.error).toBeNull()
@@ -64,7 +64,7 @@ describe(RarDaysForm, () => {
         it('gives no error', async () => {
           const form = await RarDaysForm.createForm(
             { body: { 'using-rar-days': 'yes', 'maximum-rar-days': ' 10  ' } } as Request,
-            serviceCategory
+            intervention
           )
 
           expect(form.error).toBeNull()
@@ -75,7 +75,7 @@ describe(RarDaysForm, () => {
         it('gives an error for maximum-rar-days', async () => {
           const form = await RarDaysForm.createForm(
             { body: { 'using-rar-days': 'yes', 'maximum-rar-days': '' } } as Request,
-            serviceCategory
+            intervention
           )
 
           expect(form.error).toEqual({
@@ -83,7 +83,7 @@ describe(RarDaysForm, () => {
               {
                 formFields: ['maximum-rar-days'],
                 errorSummaryLinkedField: 'maximum-rar-days',
-                message: 'Enter the maximum number of RAR days for the Accommodation service',
+                message: "Enter the maximum number of RAR days for the Women's service referral",
               },
             ],
           })
@@ -94,7 +94,7 @@ describe(RarDaysForm, () => {
         it('gives an error for maximum-rar-days', async () => {
           const form = await RarDaysForm.createForm(
             { body: { 'using-rar-days': 'yes', 'maximum-rar-days': 'blah' } } as Request,
-            serviceCategory
+            intervention
           )
 
           expect(form.error).toEqual({
@@ -102,7 +102,7 @@ describe(RarDaysForm, () => {
               {
                 formFields: ['maximum-rar-days'],
                 errorSummaryLinkedField: 'maximum-rar-days',
-                message: 'The maximum number of RAR days for the Accommodation service must be a number, like 5',
+                message: "The maximum number of RAR days for the Women's service referral must be a number, like 5",
               },
             ],
           })
@@ -113,7 +113,7 @@ describe(RarDaysForm, () => {
         it('gives an error for maximum-rar-days', async () => {
           const form = await RarDaysForm.createForm(
             { body: { 'using-rar-days': 'yes', 'maximum-rar-days': '3.5' } } as Request,
-            serviceCategory
+            intervention
           )
 
           expect(form.error).toEqual({
@@ -121,7 +121,8 @@ describe(RarDaysForm, () => {
               {
                 formFields: ['maximum-rar-days'],
                 errorSummaryLinkedField: 'maximum-rar-days',
-                message: 'The maximum number of RAR days for the Accommodation service must be a whole number, like 5',
+                message:
+                  "The maximum number of RAR days for the Women's service referral must be a whole number, like 5",
               },
             ],
           })
@@ -135,7 +136,7 @@ describe(RarDaysForm, () => {
       it('returns true for usingRarDays, and a non-null maximumRarDays', async () => {
         const form = await RarDaysForm.createForm(
           { body: { 'using-rar-days': 'yes', 'maximum-rar-days': '3' } } as Request,
-          serviceCategory
+          intervention
         )
 
         expect(form.paramsForUpdate).toEqual({ usingRarDays: true, maximumRarDays: 3 })
@@ -146,7 +147,7 @@ describe(RarDaysForm, () => {
       it('returns false for usingRarDays, and a null maximumRarDays', async () => {
         const form = await RarDaysForm.createForm(
           { body: { 'using-rar-days': 'no', 'maximum-rar-days': '' } } as Request,
-          serviceCategory
+          intervention
         )
 
         expect(form.paramsForUpdate).toEqual({ usingRarDays: false, maximumRarDays: null })
@@ -157,7 +158,7 @@ describe(RarDaysForm, () => {
       it('correctly converts it to a number', async () => {
         const form = await RarDaysForm.createForm(
           { body: { 'using-rar-days': 'yes', 'maximum-rar-days': '  3  ' } } as Request,
-          serviceCategory
+          intervention
         )
 
         expect(form.paramsForUpdate).toEqual({ usingRarDays: true, maximumRarDays: 3 })

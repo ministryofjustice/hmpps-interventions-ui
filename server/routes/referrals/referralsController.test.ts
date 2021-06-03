@@ -440,11 +440,11 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
 
 describe('GET /referrals/:id/completion-deadline', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
+    const referral = draftReferralFactory.build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
   })
 
   it('renders a form page', async () => {
@@ -452,7 +452,7 @@ describe('GET /referrals/:id/completion-deadline', () => {
       .get('/referrals/1/completion-deadline')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('What date does the Accommodation service need to be completed by?')
+        expect(res.text).toContain('What date does the Women&#39;s service referral need to be completed by?')
       })
   })
   // TODO how do we (or indeed, do we) test what happens when the request has a completion deadline - i.e. that the
@@ -461,19 +461,16 @@ describe('GET /referrals/:id/completion-deadline', () => {
 
 describe('POST /referrals/:id/completion-deadline', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
+    const referral = draftReferralFactory.build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
   })
 
   describe('when the user inputs a valid date', () => {
     it('updates the referral on the backend and redirects to the next question if the API call succeeds', async () => {
-      const serviceCategory = serviceCategoryFactory.build()
-      const referral = draftReferralFactory
-        .serviceCategorySelected(serviceCategory.id)
-        .build({ completionDeadline: '2021-09-15' })
+      const referral = draftReferralFactory.build({ completionDeadline: '2021-09-15' })
 
       interventionsService.patchDraftReferral.mockResolvedValue(referral)
 
@@ -502,7 +499,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('What date does the Accommodation service need to be completed by?')
+          expect(res.text).toContain('What date does the Women&#39;s service referral need to be completed by?')
           expect(res.text).toContain('The date by which the service needs to be completed must be in the future')
         })
 
@@ -713,11 +710,11 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/comp
 
 describe('GET /referrals/:id/further-information', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
+    const referral = draftReferralFactory.build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
   })
 
   it('renders a form page', async () => {
@@ -725,18 +722,20 @@ describe('GET /referrals/:id/further-information', () => {
       .get('/referrals/1/further-information')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Do you have further information for the Accommodation service provider? (optional)')
+        expect(res.text).toContain(
+          'Do you have further information for the Women&#39;s service referral service provider? (optional)'
+        )
       })
   })
 })
 
 describe('POST /referrals/:id/further-information', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
+    const referral = draftReferralFactory.build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
   })
 
   it('updates the referral on the backend and redirects to the referral form', async () => {
@@ -1088,10 +1087,10 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/desi
 
 describe('GET /referrals/:id/rar-days', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
+    const referral = draftReferralFactory.build()
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
@@ -1100,7 +1099,7 @@ describe('GET /referrals/:id/rar-days', () => {
       .get('/referrals/1/rar-days')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Are you using RAR days for the Accommodation service?')
+        expect(res.text).toContain('Are you using RAR days for the Women&#39;s service referral?')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
@@ -1118,23 +1117,23 @@ describe('GET /referrals/:id/rar-days', () => {
   })
 
   it('renders an error when the service category call fails', async () => {
-    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get service category'))
+    interventionsService.getIntervention.mockRejectedValue(new Error('Failed to get intervention'))
 
     await request(app)
       .get('/referrals/1/rar-days')
       .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Failed to get service category')
+        expect(res.text).toContain('Failed to get intervention')
       })
   })
 })
 
 describe('POST /referrals/:id/rar-days', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
+    const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
+    const referral = draftReferralFactory.build()
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
@@ -1177,7 +1176,7 @@ describe('POST /referrals/:id/rar-days', () => {
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('Enter the maximum number of RAR days for the Accommodation service')
+          expect(res.text).toContain('What is the maximum number of RAR days for the Women&#39;s service referral')
         })
 
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
@@ -1205,12 +1204,8 @@ describe('POST /referrals/:id/rar-days', () => {
 
 describe('GET /referrals/:id/check-answers', () => {
   beforeEach(() => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-    const referral = draftReferralFactory
-      .serviceCategorySelected(serviceCategory.id)
-      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
+    const referral = draftReferralFactory.build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' } })
 
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 

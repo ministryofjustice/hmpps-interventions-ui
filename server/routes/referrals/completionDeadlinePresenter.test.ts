@@ -1,14 +1,14 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 describe('CompletionDeadlinePresenter', () => {
+  const intervention = interventionFactory.build({ contractType: { name: "Women's Service" } })
   describe('day, month, year', () => {
     describe('when the referral has no completion deadline and there is no user input data', () => {
       it('returns empty strings', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-        const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
+        const referral = draftReferralFactory.build()
+        const presenter = new CompletionDeadlinePresenter(referral, intervention)
 
         expect(presenter.fields.completionDeadline.day.value).toBe('')
         expect(presenter.fields.completionDeadline.month.value).toBe('')
@@ -18,11 +18,8 @@ describe('CompletionDeadlinePresenter', () => {
 
     describe('when the referral has a completion deadline and there is no user input data', () => {
       it('returns the corresponding values from the completion deadline', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory
-          .serviceCategorySelected(serviceCategory.id)
-          .build({ completionDeadline: '2021-09-12' })
-        const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
+        const referral = draftReferralFactory.build({ completionDeadline: '2021-09-12' })
+        const presenter = new CompletionDeadlinePresenter(referral, intervention)
 
         expect(presenter.fields.completionDeadline.day.value).toBe('12')
         expect(presenter.fields.completionDeadline.month.value).toBe('9')
@@ -32,12 +29,8 @@ describe('CompletionDeadlinePresenter', () => {
 
     describe('when there is user input data', () => {
       it('returns the user input data, or an empty string if a field is missing', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory
-          .serviceCategorySelected(serviceCategory.id)
-          .completionDeadlineSet()
-          .build()
-        const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, null, {
+        const referral = draftReferralFactory.completionDeadlineSet().build()
+        const presenter = new CompletionDeadlinePresenter(referral, intervention, null, {
           'completion-deadline-day': 'egg',
           'completion-deadline-month': '7',
         })
@@ -52,9 +45,8 @@ describe('CompletionDeadlinePresenter', () => {
   describe('error information', () => {
     describe('when a null error is passed in', () => {
       it('returns no errors', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-        const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
+        const referral = draftReferralFactory.build()
+        const presenter = new CompletionDeadlinePresenter(referral, intervention)
 
         expect(presenter.fields.completionDeadline.errorMessage).toBeNull()
         expect(presenter.fields.completionDeadline.day.hasError).toEqual(false)
@@ -66,9 +58,8 @@ describe('CompletionDeadlinePresenter', () => {
 
     describe('when a non-null error is passed in', () => {
       it('returns error information', () => {
-        const serviceCategory = serviceCategoryFactory.build()
-        const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-        const presenter = new CompletionDeadlinePresenter(referral, serviceCategory, {
+        const referral = draftReferralFactory.build()
+        const presenter = new CompletionDeadlinePresenter(referral, intervention, {
           errors: [
             {
               errorSummaryLinkedField: 'completion-deadline-month',
@@ -91,19 +82,17 @@ describe('CompletionDeadlinePresenter', () => {
 
   describe('title', () => {
     it('returns a title', () => {
-      const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-      const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-      const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
+      const referral = draftReferralFactory.build()
+      const presenter = new CompletionDeadlinePresenter(referral, intervention)
 
-      expect(presenter.title).toEqual('What date does the Social inclusion service need to be completed by?')
+      expect(presenter.title).toEqual("What date does the Women's service referral need to be completed by?")
     })
   })
 
   describe('hint', () => {
     it('returns a hint', () => {
-      const serviceCategory = serviceCategoryFactory.build()
-      const referral = draftReferralFactory.serviceCategorySelected(serviceCategory.id).build()
-      const presenter = new CompletionDeadlinePresenter(referral, serviceCategory)
+      const referral = draftReferralFactory.build()
+      const presenter = new CompletionDeadlinePresenter(referral, intervention)
 
       expect(presenter.hint).toEqual('For example, 27 10 2021')
     })
