@@ -17,7 +17,7 @@ class SentReferralDTO(
   val endRequestedComments: String?,
   val endOfServiceReport: EndOfServiceReportDTO?,
   val concludedAt: OffsetDateTime?,
-  val supplementaryRiskId: UUID?, // fixme this should not be nullable!!
+  val supplementaryRiskId: UUID,
 ) {
   companion object {
     fun from(referral: Referral): SentReferralDTO {
@@ -34,7 +34,7 @@ class SentReferralDTO(
         endRequestedComments = referral.endRequestedComments,
         endOfServiceReport = referral.endOfServiceReport?.let { EndOfServiceReportDTO.from(it) },
         concludedAt = referral.concludedAt,
-        supplementaryRiskId = referral.supplementaryRiskId,
+        supplementaryRiskId = referral.supplementaryRiskId!!,
       )
     }
   }

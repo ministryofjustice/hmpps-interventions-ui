@@ -30,6 +30,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     desiredOutcomes: List<DesiredOutcome> = emptyList(),
     serviceUserData: ServiceUserData? = null,
     complexityLevelIds: MutableMap<UUID, UUID>? = null,
+    additionalRiskInformation: String? = null,
   ): Referral {
     return create(
       id = id,
@@ -42,6 +43,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       desiredOutcomes = desiredOutcomes,
       serviceUserData = serviceUserData,
       complexityLevelIds = complexityLevelIds,
+      additionalRiskInformation = additionalRiskInformation,
     )
   }
 
@@ -59,6 +61,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
     referenceNumber: String? = "JS18726AC",
+    supplementaryRiskId: UUID = UUID.randomUUID(),
 
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
@@ -78,6 +81,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       sentAt = sentAt,
       sentBy = sentBy,
       referenceNumber = referenceNumber,
+      supplementaryRiskId = supplementaryRiskId,
 
       assignedBy = assignedBy,
       assignedTo = assignedTo,
@@ -95,6 +99,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
     referenceNumber: String? = "JS18726AC",
+    supplementaryRiskId: UUID = UUID.randomUUID(),
 
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
@@ -118,6 +123,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       sentAt = sentAt,
       sentBy = sentBy,
       referenceNumber = referenceNumber,
+      supplementaryRiskId = supplementaryRiskId,
 
       assignedBy = assignedBy,
       assignedTo = assignedTo,
@@ -146,10 +152,12 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     actionPlan: ActionPlan? = null,
     selectedServiceCategories: Set<ServiceCategory>? = null,
     complexityLevelIds: MutableMap<UUID, UUID>? = null,
+    additionalRiskInformation: String? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
     referenceNumber: String? = null,
+    supplementaryRiskId: UUID? = null,
 
     assignedAt: OffsetDateTime? = null,
     assignedBy: AuthUser? = null,
@@ -175,9 +183,11 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         actionPlan = actionPlan,
         selectedServiceCategories = selectedServiceCategories,
         complexityLevelIds = complexityLevelIds,
+        additionalRiskInformation = additionalRiskInformation,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,
+        supplementaryRiskId = supplementaryRiskId,
         assignedAt = assignedAt,
         assignedBy = assignedBy,
         assignedTo = assignedTo,

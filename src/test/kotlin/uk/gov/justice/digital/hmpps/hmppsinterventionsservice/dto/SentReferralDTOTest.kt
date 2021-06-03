@@ -19,7 +19,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
   private val referralFactory = ReferralFactory()
 
   @Test
-  fun `sent referral requires reference number, sent timestamp, sentBy`() {
+  fun `sent referral requires reference number, sent timestamp, sentBy, and risk id`() {
     val referral = SampleData.sampleReferral("X123456", "Provider")
     val timestamp = OffsetDateTime.now()
 
@@ -38,6 +38,11 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     }
 
     referral.sentBy = AuthUser("id", "source", "username")
+    assertThrows<RuntimeException> {
+      SentReferralDTO.from(referral)
+    }
+
+    referral.supplementaryRiskId = UUID.randomUUID()
     assertDoesNotThrow { SentReferralDTO.from(referral) }
   }
 
@@ -58,6 +63,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.referenceNumber = "something"
     referral.needsInterpreter = true
     referral.interpreterLanguage = "french"
+    referral.supplementaryRiskId = UUID.fromString("1c893c33-a373-435e-b13f-7efbc6206e2a")
     referral.sentAt = sentAt
     referral.sentBy = sentBy
 
@@ -71,6 +77,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "authSource": "source"
         },
         "referenceNumber": "something",
+        "supplementaryRiskId": "1c893c33-a373-435e-b13f-7efbc6206e2a",
         "referral": {
           "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
           "createdAt": "2020-12-04T10:42:43Z",
@@ -103,6 +110,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.referenceNumber = "something"
     referral.needsInterpreter = true
     referral.interpreterLanguage = "french"
+    referral.supplementaryRiskId = UUID.fromString("1c893c33-a373-435e-b13f-7efbc6206e2a")
     referral.sentAt = sentAt
     referral.sentBy = sentBy
 
@@ -116,6 +124,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "authSource": "source"
         },
         "referenceNumber": "something",
+        "supplementaryRiskId": "1c893c33-a373-435e-b13f-7efbc6206e2a",
         "referral": {
           "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
           "createdAt": "2020-12-04T10:42:43Z",
@@ -137,11 +146,10 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     val sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
     val sentBy = AuthUser("id", "source", "username")
 
-    val referral = SampleData.sampleReferral(
-      "X123456",
-      "Provider",
+    val referral = referralFactory.createSent(
       id = id,
       createdAt = createdAt,
+      serviceUserCRN = "X123456",
     )
 
     referral.endOfServiceReport = SampleData.sampleEndOfServiceReport(
@@ -153,6 +161,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.referenceNumber = "something"
     referral.needsInterpreter = true
     referral.interpreterLanguage = "french"
+    referral.supplementaryRiskId = UUID.fromString("1c893c33-a373-435e-b13f-7efbc6206e2a")
     referral.sentAt = sentAt
     referral.sentBy = sentBy
 
@@ -166,13 +175,14 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "authSource": "source"
         },
         "referenceNumber": "something",
+        "supplementaryRiskId": "1c893c33-a373-435e-b13f-7efbc6206e2a",
         "referral": {
           "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
           "createdAt": "2020-12-04T10:42:43Z",
           "needsInterpreter": true,
           "interpreterLanguage": "french",
           "serviceUser": {"crn": "X123456"},
-          "serviceProvider": {"name": "Provider"}
+          "serviceProvider": {"name": "Harmony Living"}
         },
         "endOfServiceReport": {
         "id" : "3b9ed289-8412-41a9-8291-45e33e60276c",

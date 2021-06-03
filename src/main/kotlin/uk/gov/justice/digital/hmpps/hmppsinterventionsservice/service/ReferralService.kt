@@ -52,6 +52,7 @@ class ReferralService(
   val referralAccessFilter: ReferralAccessFilter,
   val communityAPIReferralService: CommunityAPIReferralService,
   val serviceUserAccessChecker: ServiceUserAccessChecker,
+  val assessRisksAndNeedsService: RisksAndNeedsService,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -141,14 +142,32 @@ class ReferralService(
 
     /*
      * This is a temporary solution until a robust asynchronous link is created between Interventions
-     * and Delius. Once the asynchronous link is implemented, this feature can be turned off, and instead
-     * Delius will be notified via the normal asynchronous route
+     * and Delius/ARN. Once the asynchronous link is implemented, this feature can be turned off, and instead
+     * Delius/ARN will be notified via the normal asynchronous route
      */
     communityAPIReferralService.send(referral)
+    submitAdditionalRiskInformation(referral, user)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)
     return sentReferral
+  }
+
+  private fun submitAdditionalRiskInformation(referral: Referral, user: AuthUser) {
+    val riskInformation = referral.additionalRiskInformation
+      ?: throw ServerWebInputException("can't submit a referral without risk information")
+
+    val riskId = assessRisksAndNeedsService.createSupplementaryRisk(
+      referral.id,
+      referral.serviceUserCRN,
+      user.id,
+      OffsetDateTime.now(), // fixme: this should be the timestamp which we store when additionalRiskInformation is set
+      riskInformation,
+    )
+
+    referral.supplementaryRiskId = riskId
+    // we do not store _any_ risk information in interventions once it has been sent to ARN
+    referral.additionalRiskInformation = null
   }
 
   fun createDraftReferral(

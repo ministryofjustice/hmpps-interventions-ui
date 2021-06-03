@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -58,6 +59,7 @@ class ReferralServiceUnitTest {
   private val communityAPIReferralService: CommunityAPIReferralService = mock()
   private val userTypeChecker: UserTypeChecker = mock()
   private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
+  private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
@@ -72,6 +74,7 @@ class ReferralServiceUnitTest {
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
     actionPlanAppointmentRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
     serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,
+    assessRisksAndNeedsService,
   )
 
   @Test
@@ -574,6 +577,42 @@ class ReferralServiceUnitTest {
       assertThat(updatedReferral.selectedDesiredOutcomes!![0].desiredOutcomeId).isEqualTo(desiredOutcome1.id)
       assertThat(updatedReferral.selectedDesiredOutcomes!![1].serviceCategoryId).isEqualTo(serviceCategory2.id)
       assertThat(updatedReferral.selectedDesiredOutcomes!![1].desiredOutcomeId).isEqualTo(desiredOutcome2.id)
+    }
+
+    @Test
+    fun `cant send draft referral without risk information`() {
+      val referral = referralFactory.createDraft()
+      val authUser = authUserFactory.create()
+
+      val e = assertThrows<ServerWebInputException> {
+        referralService.sendDraftReferral(referral, authUser)
+      }
+
+      assertThat(e.message).contains("can't submit a referral without risk information")
+    }
+
+    @Test
+    fun`draft referral risk information is deleted when referral is sent`() {
+      val referral = referralFactory.createDraft(additionalRiskInformation = "something")
+      val authUser = authUserFactory.create()
+
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+
+      val sentReferral = referralService.sendDraftReferral(referral, authUser)
+      assertThat(sentReferral.additionalRiskInformation).isNull()
+    }
+
+    @Test
+    fun `supplementaryRiskId is set when referral is sent`() {
+      val referral = referralFactory.createDraft(additionalRiskInformation = "something")
+      val authUser = authUserFactory.create()
+
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+      whenever(assessRisksAndNeedsService.createSupplementaryRisk(eq(referral.id), any(), any(), any(), any()))
+        .thenReturn(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+
+      val sentReferral = referralService.sendDraftReferral(referral, authUser)
+      assertThat(sentReferral.supplementaryRiskId).isEqualTo(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
     }
   }
 }
