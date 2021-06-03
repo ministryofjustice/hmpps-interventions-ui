@@ -79,7 +79,7 @@ describe(ShowReferralPresenter, () => {
   })
 
   describe('interventionDetails', () => {
-    describe('when all possibly optional fields have been set on the referral, including RAR days', () => {
+    describe('when all possibly optional fields have been set on the referral', () => {
       const referralWithAllOptionalFields = sentReferralFactory.build({
         referral: {
           createdAt: '2020-12-07T20:45:21.986389Z',
@@ -119,6 +119,7 @@ describe(ShowReferralPresenter, () => {
           additionalRiskInformation: 'A danger to the elderly',
           usingRarDays: true,
           maximumRarDays: 10,
+          maximumEnforceableDays: 10,
         },
       })
 
@@ -141,7 +142,7 @@ describe(ShowReferralPresenter, () => {
       })
     })
 
-    describe('when no optional fields have been set on the referral and no RAR days are selected', () => {
+    describe('when no optional fields have been set on the referral', () => {
       const referralWithNoOptionalFields = sentReferralFactory.build({
         referral: {
           createdAt: '2020-12-07T20:45:21.986389Z',
@@ -181,6 +182,7 @@ describe(ShowReferralPresenter, () => {
           additionalRiskInformation: '',
           usingRarDays: false,
           maximumRarDays: null,
+          maximumEnforceableDays: 10,
         },
       })
 
@@ -193,7 +195,7 @@ describe(ShowReferralPresenter, () => {
           { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',
-            lines: ['N/A'],
+            lines: ['10'],
           },
           {
             key: 'Further information for the provider',
@@ -327,6 +329,7 @@ describe(ShowReferralPresenter, () => {
             additionalRiskInformation: 'A danger to the elderly',
             usingRarDays: true,
             maximumRarDays: 10,
+            maximumEnforceableDays: 10,
           },
         })
 
@@ -411,6 +414,7 @@ describe(ShowReferralPresenter, () => {
             additionalRiskInformation: '',
             usingRarDays: false,
             maximumRarDays: null,
+            maximumEnforceableDays: 10,
           },
         })
 

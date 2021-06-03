@@ -140,7 +140,7 @@ export default class ShowReferralPresenter {
       },
       {
         key: 'Maximum number of enforceable days',
-        lines: [this.sentReferral.referral.usingRarDays ? String(this.sentReferral.referral.maximumRarDays) : 'N/A'],
+        lines: [String(this.sentReferral.referral.maximumEnforceableDays)],
       },
       {
         key: 'Further information for the provider',
