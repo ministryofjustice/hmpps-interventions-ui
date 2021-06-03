@@ -301,6 +301,8 @@ describe('Referral form', () => {
       cy.contains('Agnostic')
       cy.contains('Autism')
 
+      cy.contains('A danger to the elderly')
+
       cy.contains('Alex is currently sleeping on her aunt’s sofa')
       cy.contains('She uses a wheelchair')
       cy.contains('Yes. Spanish')
