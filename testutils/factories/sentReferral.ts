@@ -50,6 +50,7 @@ const exampleReferralFields = () => {
     additionalRiskInformation: 'A danger to the elderly',
     usingRarDays: true,
     maximumRarDays: 10,
+    maximumEnforceableDays: 10,
   }
 }
 

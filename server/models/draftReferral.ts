@@ -23,8 +23,9 @@ export interface ReferralFields {
   whenUnavailable: string | null
   serviceUser: ServiceUser
   additionalRiskInformation: string
-  usingRarDays: boolean
-  maximumRarDays: number | null
+  usingRarDays: boolean // deprecated
+  maximumRarDays: number | null // deprecated
+  maximumEnforceableDays: number
 }
 
 export default interface DraftReferral extends WithNullableValues<ReferralFields> {

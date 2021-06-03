@@ -948,6 +948,39 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(referral.maximumRarDays).toBeNull()
     })
 
+    it('returns the updated referral when setting the number of maximumEnforceableDays', async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
+        uponReceiving: 'a PATCH request to set the number of maximumEnforceableDays to 4',
+        withRequest: {
+          method: 'PATCH',
+          path: '/draft-referral/dfb64747-f658-40e0-a827-87b4b0bdcfed',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: { maximumEnforceableDays: 4 },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
+            maximumEnforceableDays: 4,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        maximumEnforceableDays: 4,
+      })
+      expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(referral.maximumEnforceableDays).toEqual(4)
+    })
+
     it('returns the updated referral when setting serviceCategoryIds', async () => {
       await provider.addInteraction({
         state:
@@ -1312,6 +1345,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       additionalRiskInformation: 'A danger to the elderly',
       usingRarDays: true,
       maximumRarDays: 10,
+      maximumEnforceableDays: 10,
     },
   }
 
