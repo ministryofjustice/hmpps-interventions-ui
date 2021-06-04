@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -37,13 +38,13 @@ class RisksAndNeedsService(
 ) {
   companion object : KLogging()
 
-  fun createSupplementaryRisk(referralId: UUID, crn: String, userId: String, riskCreatedAt: OffsetDateTime, riskInformation: String): UUID {
+  fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime, riskInformation: String): UUID {
     val request = CreateSupplementaryRiskRequest(
       "INTERVENTION_REFERRAL",
       referralId,
       crn,
-      userId,
-      "DELIUS",
+      user.id,
+      user.authSource,
       riskCreatedAt.toLocalDateTime(),
       riskInformation,
     )
