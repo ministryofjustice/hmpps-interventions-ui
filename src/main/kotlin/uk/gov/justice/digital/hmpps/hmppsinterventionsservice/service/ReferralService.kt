@@ -160,7 +160,7 @@ class ReferralService(
     val riskId = assessRisksAndNeedsService.createSupplementaryRisk(
       referral.id,
       referral.serviceUserCRN,
-      user.id,
+      user,
       OffsetDateTime.now(), // fixme: this should be the timestamp which we store when additionalRiskInformation is set
       riskInformation,
     )
