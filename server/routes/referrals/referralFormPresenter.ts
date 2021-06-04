@@ -338,15 +338,15 @@ class TaskValues {
     ]
   }
 
-  get relevantSentence(): DraftReferralValues {
-    return [this.referral.relevantSentenceId]
-  }
-
   get cohortServiceCategories(): DraftReferralValues {
-    if (this.referral.serviceCategoryIds === null) {
+    if (this.referral.serviceCategoryIds === null || this.referral.serviceCategoryIds.length === 0) {
       return [null]
     }
     return this.referral.serviceCategoryIds
+  }
+
+  get relevantSentence(): DraftReferralValues {
+    return [this.referral.relevantSentenceId]
   }
 
   get allComplexityLevels(): DraftReferralValues {
