@@ -155,13 +155,11 @@ export default class ShowReferralPresenter {
 
   get serviceUserRisks(): SummaryListItem[] {
     return [
-      { key: 'Risk to known adult', lines: ['Medium'] },
-      { key: 'Risk to public', lines: ['Low'] },
-      { key: 'Risk to children', lines: ['Low'] },
-      { key: 'Risk to staff', lines: ['Low'] },
       {
         key: 'Additional risk information',
-        lines: [this.sentReferral.referral.additionalRiskInformation],
+        lines: [
+          'The Refer and Monitor an Intervention service cannot currently display this risk information. We will add it in the coming weeks.',
+        ],
       },
     ]
   }
