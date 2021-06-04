@@ -158,7 +158,7 @@ export default class ShowReferralPresenter {
       {
         key: 'Additional risk information',
         lines: [
-          'The Refer and Monitor an Intervention service cannot currently display this risk information. We will add it in the coming weeks.',
+          'The Refer and Monitor an Intervention service cannot currently display this risk information. It will be available before Service Providers start using the digital service.',
         ],
       },
     ]
