@@ -13,7 +13,7 @@ spec:
           - name: data-extractor-analytics
             image: ministryofjustice/data-engineering-data-extractor:develop
             imagePullPolicy: Always
-            args: ["sh", "-c", "extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
+            args: ["extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
             env:
               - name: PGPORT
                 value: "5432"
