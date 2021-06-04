@@ -78,5 +78,18 @@ services:
       - ./wiremock_mappings:/home/wiremock/mappings
     command: '--verbose'
 
+  assess-risks-and-needs:
+    image: quay.io/hmpps/hmpps-assess-risks-and-needs:latest
+    networks:
+      - hmpps
+    container_name: assess-risks-and-needs
+    ports:
+      - "8094:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    environment:
+      - SERVER_PORT=8080
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
+
 networks:
   hmpps:
