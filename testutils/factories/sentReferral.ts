@@ -47,7 +47,6 @@ const exampleReferralFields = () => {
       religionOrBelief: 'Agnostic',
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
-    additionalRiskInformation: 'A danger to the elderly',
     maximumEnforceableDays: 10,
   }
 }
@@ -103,6 +102,7 @@ export default SentReferralFactory.define(({ sequence }) => ({
     authSource: 'delius',
   },
   referenceNumber: sequence.toString().padStart(8, 'ABC'),
+  supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
   referral: exampleReferralFields(),
   assignedTo: null,
   actionPlanId: null,

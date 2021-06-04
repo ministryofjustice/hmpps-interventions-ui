@@ -8,6 +8,7 @@ export default interface SentReferral {
   referenceNumber: string
   referral: ReferralFields
   sentBy: User
+  supplementaryRiskId: string
   assignedTo: User | null
   actionPlanId: string | null
   endRequestedAt: string | null
