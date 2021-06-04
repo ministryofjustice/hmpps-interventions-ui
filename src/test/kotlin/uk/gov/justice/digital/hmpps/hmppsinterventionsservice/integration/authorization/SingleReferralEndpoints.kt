@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.RisksAndNeedsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceUserAccessResult
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.util.UUID
@@ -25,6 +26,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @MockBean lateinit var mockHmppsAuthService: HMPPSAuthService
   @MockBean lateinit var mockCommunityAPIOffenderService: CommunityAPIOffenderService
   @MockBean @Suppress("UNUSED") lateinit var mockCommunityApiReferralService: CommunityAPIReferralService
+  @MockBean lateinit var mockRisksAndNeedsService: RisksAndNeedsService
 
   private lateinit var requestFactory: RequestFactory
 
@@ -33,6 +35,12 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @BeforeEach
   fun initRequestBuilder() {
     requestFactory = RequestFactory(webTestClient, setupAssistant)
+  }
+
+  @BeforeEach
+  fun setupMocks() {
+    // required for 'sendDraftReferral' to return a valid DTO
+    whenever(mockRisksAndNeedsService.createSupplementaryRisk(any(), any(), any(), any(), any())).thenReturn(UUID.randomUUID())
   }
 
   companion object {
@@ -84,6 +92,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     setLimitedAccessCRNs("X999999")
     val referral1 = setupAssistant.createDraftReferral(serviceUserCRN = "X000000")
     val referral2 = setupAssistant.createDraftReferral(serviceUserCRN = "X999999")
+    setupAssistant.fillReferralFields(referral1)
+    setupAssistant.fillReferralFields(referral2)
 
     requestFactory.create(request, token, referral1.id.toString())
       .exchange()

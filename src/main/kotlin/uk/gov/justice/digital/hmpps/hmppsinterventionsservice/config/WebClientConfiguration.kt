@@ -16,8 +16,14 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration(
   @Value("\${community-api.baseurl}") private val communityApiBaseUrl: String,
   @Value("\${hmppsauth.baseurl}") private val hmppsAuthBaseUrl: String,
+  @Value("\${assess-risks-and-needs.baseurl}") private val assessRisksAndNeedsBaseUrl: String,
   private val webClientBuilder: WebClient.Builder
 ) {
+  @Bean
+  fun assessRisksAndNeedsClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
+    return createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl)
+  }
+
   @Bean
   fun communityApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
     return createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl)

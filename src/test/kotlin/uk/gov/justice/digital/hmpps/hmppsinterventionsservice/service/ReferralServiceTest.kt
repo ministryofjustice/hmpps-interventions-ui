@@ -82,6 +82,7 @@ class ReferralServiceTest @Autowired constructor(
   private val communityAPIReferralService: CommunityAPIReferralService = mock()
   private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
   private val authentication: JwtAuthenticationToken = mock()
+  private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -99,6 +100,7 @@ class ReferralServiceTest @Autowired constructor(
     referralAccessFilter,
     communityAPIReferralService,
     serviceUserAccessChecker,
+    assessRisksAndNeedsService,
   )
 
   // reset before each test
@@ -327,6 +329,7 @@ class ReferralServiceTest @Autowired constructor(
   fun `once a draft referral is sent it's id is no longer is a valid draft referral`() {
     val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
+    draftReferral.additionalRiskInformation = "risk"
 
     assertThat(referralService.getDraftReferralForUser(draftReferral.id, user, authentication)).isNotNull()
 
@@ -340,6 +343,7 @@ class ReferralServiceTest @Autowired constructor(
   fun `sending a draft referral generates a referral reference number`() {
     val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
+    draftReferral.additionalRiskInformation = "risk"
 
     assertThat(draftReferral.referenceNumber).isNull()
 
@@ -352,6 +356,8 @@ class ReferralServiceTest @Autowired constructor(
     val user = AuthUser("user_id", "delius", "user_name")
     val draft1 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
     val draft2 = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
+    draft1.additionalRiskInformation = "risk"
+    draft2.additionalRiskInformation = "risk"
 
     whenever(referenceGenerator.generate(sampleIntervention.dynamicFrameworkContract.contractType.name))
       .thenReturn("AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "AA0000ZZ", "BB0000ZZ")
@@ -367,6 +373,8 @@ class ReferralServiceTest @Autowired constructor(
   fun `sending a draft referral triggers an event`() {
     val user = AuthUser("user_id", "delius", "user_name")
     val draftReferral = referralService.createDraftReferral(user, "X123456", sampleIntervention.id, authentication)
+    draftReferral.additionalRiskInformation = "risk"
+
     referralService.sendDraftReferral(draftReferral, user)
     verify(communityAPIReferralService).send(draftReferral)
     verify(referralEventPublisher).referralSentEvent(draftReferral)
