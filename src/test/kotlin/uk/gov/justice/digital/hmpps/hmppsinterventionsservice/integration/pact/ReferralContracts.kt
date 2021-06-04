@@ -70,7 +70,10 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
   fun `create a new draft referral with women's service type and 'HARMONY_LIVING' service provider`() {
     val contract = setupAssistant.createDynamicFrameworkContract(contractType = setupAssistant.contractTypes["WOS"]!!, primeProviderId = "HARMONY_LIVING")
     val intervention = setupAssistant.createIntervention(dynamicFrameworkContract = contract)
-    setupAssistant.createDraftReferral(id = UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"), intervention = intervention)
+    setupAssistant.createDraftReferral(
+      id = UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"), intervention = intervention,
+      selectedServiceCategories = setOf(setupAssistant.serviceCategory(UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")))
+    )
   }
 
   @State(
