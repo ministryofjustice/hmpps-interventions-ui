@@ -8,6 +8,10 @@ export default {
     crnNotFound: 'CRN not found in nDelius',
     unknownError: 'Could not start referral due to service interruption; please try again later',
   },
+  riskInformation: {
+    empty: 'Enter risk information',
+    tooLong: 'Risk information must be 4000 characters or fewer',
+  },
   completionDeadline: {
     dayEmpty: 'The date by which the service needs to be completed must include a day',
     monthEmpty: 'The date by which the service needs to be completed must include a month',

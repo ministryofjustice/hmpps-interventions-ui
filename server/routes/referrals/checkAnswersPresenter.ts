@@ -26,6 +26,13 @@ export default class CheckAnswersPresenter {
     }
   }
 
+  get riskSection(): { title: string; text: string } {
+    return {
+      title: `${this.serviceUserName}’s risk information`,
+      text: this.referral.additionalRiskInformation ?? '',
+    }
+  }
+
   get needsAndRequirementsSection(): { title: string; summary: SummaryListItem[] } {
     const needsAndRequirementsPresenter = new NeedsAndRequirementsPresenter(this.referral)
 

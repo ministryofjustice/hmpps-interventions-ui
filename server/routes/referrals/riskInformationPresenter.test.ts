@@ -14,7 +14,7 @@ describe('RiskInformationPresenter', () => {
         title: 'Geoffrey’s risk information',
         additionalRiskInformation: {
           errorMessage: null,
-          label: 'Additional information for the provider about Geoffrey’s risks (optional)',
+          label: 'Information for the service provider about Geoffrey’s risks',
         },
       })
     })
@@ -86,7 +86,7 @@ describe('RiskInformationPresenter', () => {
   })
 
   describe('errorSummary', () => {
-    describe('when errors is null', () => {
+    describe('when error is null', () => {
       it('returns null', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
         const presenter = new RiskInformationPresenter(referral, null)
@@ -95,7 +95,7 @@ describe('RiskInformationPresenter', () => {
       })
     })
 
-    describe('when errors is not null', () => {
+    describe('when error is not null', () => {
       it('returns the errors', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
         const presenter = new RiskInformationPresenter(referral, {
@@ -110,20 +110,6 @@ describe('RiskInformationPresenter', () => {
 
         expect(presenter.errorSummary).toEqual([{ field: 'additional-risk-information', message: 'msg' }])
       })
-    })
-  })
-
-  describe('summary', () => {
-    it('returns a summary of the service user’s risk scores', () => {
-      const referral = draftReferralFactory.serviceUserSelected().build()
-      const presenter = new RiskInformationPresenter(referral)
-
-      expect(presenter.summary).toEqual([
-        { key: 'OGRS score', text: '50' },
-        { key: 'ROSHA score', text: 'Medium' },
-        { key: 'RM2000 score', text: 'Medium' },
-        { key: 'SARA score', text: 'Low' },
-      ])
     })
   })
 })

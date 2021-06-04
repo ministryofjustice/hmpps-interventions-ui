@@ -18,6 +18,10 @@
 
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
+      <h2 class="govuk-heading-l">{{ presenter.riskSection.title }}</h2>
+
+      <p class="govuk-body">{{ presenter.riskSection.text | escape | nl2br }}</p>
+
       <h2 class="govuk-heading-l">{{ presenter.needsAndRequirementsSection.title }}</h2>
 
       {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}

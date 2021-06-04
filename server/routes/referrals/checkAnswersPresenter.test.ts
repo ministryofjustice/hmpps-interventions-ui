@@ -53,6 +53,23 @@ describe(CheckAnswersPresenter, () => {
     })
   })
 
+  describe('riskSection', () => {
+    const referral = parameterisedDraftReferralFactory.build({ additionalRiskInformation: 'Past assault of strangers' })
+    const presenter = new CheckAnswersPresenter(referral, interventionFactory.build({ serviceCategories }), conviction)
+
+    describe('title', () => {
+      it('returns the section title', () => {
+        expect(presenter.riskSection.title).toEqual('Alex’s risk information')
+      })
+    })
+
+    describe('text', () => {
+      it('returns the additional risk information', () => {
+        expect(presenter.riskSection.text).toEqual('Past assault of strangers')
+      })
+    })
+  })
+
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()

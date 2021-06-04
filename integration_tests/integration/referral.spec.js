@@ -168,6 +168,7 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
+      cy.contains('Information for the service provider about Alex’s risks').type('A danger to the elderly')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
@@ -299,6 +300,8 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+
+      cy.contains('A danger to the elderly')
 
       cy.contains('Alex is currently sleeping on her aunt’s sofa')
       cy.contains('She uses a wheelchair')
@@ -463,6 +466,7 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
+      cy.contains('Information for the service provider about Alex’s risks').type('A danger to the elderly')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
