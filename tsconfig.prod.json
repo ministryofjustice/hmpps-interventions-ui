@@ -16,8 +16,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "strict": true
+    "strict": true,
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "exclude": ["node_modules", "**/*.test.*", "**/testutils", "**/*mock*"],
-  "include": ["server.ts", "server/**/*.js", "server/**/*.ts"]
+  "include": ["server.ts", "server/**/*.js", "server/**/*.ts", "types/**/*.ts"]
 }
