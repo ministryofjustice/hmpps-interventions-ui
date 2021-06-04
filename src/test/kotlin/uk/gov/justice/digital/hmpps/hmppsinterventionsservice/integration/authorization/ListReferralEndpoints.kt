@@ -162,8 +162,8 @@ class ListReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "service provider id does not exist in the interventions database",
-      "user has no valid contract groups configured"
+      "service provider id 'HOME_TRUST' does not exist in the interventions database",
+      "contract '0999' does not exist in the interventions database"
       ]}
       """.trimIndent()
     )
