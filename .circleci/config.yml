@@ -191,6 +191,17 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-interventions-ui-preprod
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          retrieve_secrets: "none"
+          slack_notification: true
+          slack_channel_name: "interventions-alerts"
+          requires:
+            - deploy_preprod
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-ui-prod
 
   nightly:
     triggers:
