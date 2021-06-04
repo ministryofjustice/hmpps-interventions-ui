@@ -161,7 +161,7 @@ class ReferralService(
       referral.id,
       referral.serviceUserCRN,
       user,
-      OffsetDateTime.now(), // fixme: this should be the timestamp which we store when additionalRiskInformation is set
+      referral.additionalRiskInformationUpdatedAt,
       riskInformation,
     )
 
@@ -278,6 +278,7 @@ class ReferralService(
 
     update.additionalRiskInformation?.let {
       referral.additionalRiskInformation = it
+      referral.additionalRiskInformationUpdatedAt = OffsetDateTime.now()
     }
 
     update.maximumEnforceableDays?.let {

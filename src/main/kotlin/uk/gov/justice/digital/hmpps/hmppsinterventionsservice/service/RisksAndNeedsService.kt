@@ -22,7 +22,7 @@ data class CreateSupplementaryRiskRequest(
   val crn: String,
   val createdByUser: String,
   val createdByUserType: String,
-  val createdDate: LocalDateTime,
+  val createdDate: LocalDateTime?,
   val riskSummaryComments: String,
 )
 
@@ -38,14 +38,14 @@ class RisksAndNeedsService(
 ) {
   companion object : KLogging()
 
-  fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime, riskInformation: String): UUID {
+  fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime?, riskInformation: String): UUID {
     val request = CreateSupplementaryRiskRequest(
       "INTERVENTION_REFERRAL",
       referralId,
       crn,
       user.id,
       user.authSource,
-      riskCreatedAt.toLocalDateTime(),
+      riskCreatedAt?.toLocalDateTime(),
       riskInformation,
     )
 

@@ -31,6 +31,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     serviceUserData: ServiceUserData? = null,
     complexityLevelIds: MutableMap<UUID, UUID>? = null,
     additionalRiskInformation: String? = null,
+    additionalRiskInformationUpdatedAt: OffsetDateTime? = null,
   ): Referral {
     return create(
       id = id,
@@ -44,6 +45,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       serviceUserData = serviceUserData,
       complexityLevelIds = complexityLevelIds,
       additionalRiskInformation = additionalRiskInformation,
+      additionalRiskInformationUpdatedAt = additionalRiskInformationUpdatedAt,
     )
   }
 
@@ -153,6 +155,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     selectedServiceCategories: Set<ServiceCategory>? = null,
     complexityLevelIds: MutableMap<UUID, UUID>? = null,
     additionalRiskInformation: String? = null,
+    additionalRiskInformationUpdatedAt: OffsetDateTime? = null,
 
     sentAt: OffsetDateTime? = null,
     sentBy: AuthUser? = null,
@@ -184,6 +187,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         selectedServiceCategories = selectedServiceCategories,
         complexityLevelIds = complexityLevelIds,
         additionalRiskInformation = additionalRiskInformation,
+        additionalRiskInformationUpdatedAt = additionalRiskInformationUpdatedAt,
         sentAt = sentAt,
         sentBy = sentBy,
         referenceNumber = referenceNumber,

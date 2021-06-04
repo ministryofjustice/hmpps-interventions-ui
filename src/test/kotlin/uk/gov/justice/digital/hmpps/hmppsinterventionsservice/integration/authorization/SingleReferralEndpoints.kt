@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.authorization
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.BeforeEach
@@ -40,7 +41,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @BeforeEach
   fun setupMocks() {
     // required for 'sendDraftReferral' to return a valid DTO
-    whenever(mockRisksAndNeedsService.createSupplementaryRisk(any(), any(), any(), any(), any())).thenReturn(UUID.randomUUID())
+    whenever(mockRisksAndNeedsService.createSupplementaryRisk(any(), any(), any(), anyOrNull(), any())).thenReturn(UUID.randomUUID())
   }
 
   companion object {
