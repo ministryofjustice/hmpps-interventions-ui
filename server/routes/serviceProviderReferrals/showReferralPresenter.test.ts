@@ -274,10 +274,6 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(sentReferral, intervention, deliusUser, null, null)
 
       expect(presenter.serviceUserRisks).toEqual([
-        { key: 'Risk to known adult', lines: ['Medium'] },
-        { key: 'Risk to public', lines: ['Low'] },
-        { key: 'Risk to children', lines: ['Low'] },
-        { key: 'Risk to staff', lines: ['Low'] },
         { key: 'Additional risk information', lines: [sentReferral.referral.additionalRiskInformation] },
       ])
     })

@@ -155,10 +155,6 @@ export default class ShowReferralPresenter {
 
   get serviceUserRisks(): SummaryListItem[] {
     return [
-      { key: 'Risk to known adult', lines: ['Medium'] },
-      { key: 'Risk to public', lines: ['Low'] },
-      { key: 'Risk to children', lines: ['Low'] },
-      { key: 'Risk to staff', lines: ['Low'] },
       {
         key: 'Additional risk information',
         lines: [this.sentReferral.referral.additionalRiskInformation],
