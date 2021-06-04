@@ -22,12 +22,13 @@ export default class ShowReferralPresenter {
     private readonly intervention: Intervention,
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
-    private readonly assignEmailError: FormValidationError | null
+    private readonly assignEmailError: FormValidationError | null,
+    subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      'service-provider'
+      subNavUrlPrefix
     )
   }
 

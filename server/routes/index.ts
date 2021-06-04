@@ -22,7 +22,8 @@ export default function routes(router: Router, services: Services): Router {
 
   const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
     services.interventionsService,
-    services.communityApiService
+    services.communityApiService,
+    services.hmppsAuthService
   )
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
   const staticContentController = new StaticContentController()
@@ -165,6 +166,9 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/probation-practitioner/referrals/:id/progress', (req, res) =>
     probationPractitionerReferralsController.showInterventionProgress(req, res)
+  )
+  get('/probation-practitioner/referrals/:id/details', (req, res) =>
+    probationPractitionerReferralsController.showReferral(req, res)
   )
   get(
     '/probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback',

@@ -46,7 +46,7 @@ export default class ShowReferralView {
 
   private readonly backLinkArgs = {
     text: 'Back',
-    href: '/service-provider/dashboard',
+    href: this.presenter.referralOverviewPagePresenter.dashboardURL,
   }
 
   get renderArgs(): [string, Record<string, unknown>] {

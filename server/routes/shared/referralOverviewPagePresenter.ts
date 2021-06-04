@@ -25,4 +25,6 @@ export default class ReferralOverviewPagePresenter {
       },
     ],
   }
+
+  readonly dashboardURL = `/${this.subNavUrlPrefix}/referrals/dashboard`
 }

@@ -117,7 +117,14 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, intervention, sentBy, assignee, formError)
+    const presenter = new ShowReferralPresenter(
+      sentReferral,
+      intervention,
+      sentBy,
+      assignee,
+      formError,
+      'service-provider'
+    )
     const view = new ShowReferralView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
