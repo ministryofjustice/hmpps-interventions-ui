@@ -191,6 +191,7 @@ class FormSectionBuilder {
       ]
         .concat(
           this.intervention.serviceCategories
+            .sort((a, b) => a.id.localeCompare(b.id))
             .filter(serviceCat => {
               if (this.referral.serviceCategoryIds !== null) {
                 return this.referral.serviceCategoryIds.some(id => id === serviceCat.id)

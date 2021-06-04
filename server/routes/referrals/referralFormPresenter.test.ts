@@ -304,6 +304,41 @@ describe('ReferralFormPresenter', () => {
     })
     describe('service category referral details section', () => {
       describe('when "selected service categories" has been set', () => {
+        it('should always be ordered in same order as selected service cateogries', () => {
+          const disorderedServiceCategories = [serviceCategories[0], serviceCategories[1]]
+          const disorderedCohortIntervention = interventionFactory.build({
+            serviceCategories: disorderedServiceCategories,
+          })
+          const referral = draftReferralFactory
+            .filledFormUpToNeedsAndRequirements(serviceCategories)
+            .selectedServiceCategories(serviceCategories)
+            .build()
+          const presenter = new ReferralFormPresenter(referral, disorderedCohortIntervention)
+          const expected = [
+            referralFormSectionFactory
+              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .build(),
+            referralFormSectionFactory
+              .selectedServiceCategories(
+                cohortIntervention.contractType.name,
+                ReferralFormStatus.Completed,
+                'service-categories'
+              )
+              .build(),
+            cohortReferralFormSectionFactory
+              .cohortInterventionDetails('Accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence', [
+                {
+                  title: 'accommodation',
+                  desiredOutcomesUrl: null,
+                  complexityLevelUrl: null,
+                },
+                { title: 'social inclusion', complexityLevelUrl: null, desiredOutcomesUrl: null },
+              ])
+              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
         it('should contain a "Not Started" label and "relevant-sentence" url is visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToNeedsAndRequirements(serviceCategories)
