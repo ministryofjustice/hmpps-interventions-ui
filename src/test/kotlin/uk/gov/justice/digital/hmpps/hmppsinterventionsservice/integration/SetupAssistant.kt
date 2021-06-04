@@ -89,6 +89,10 @@ class SetupAssistant(
     authUserRepository.deleteAll()
   }
 
+  fun serviceCategory(id: UUID): ServiceCategory {
+    return serviceCategoryRepository.findById(id).get()
+  }
+
   fun randomServiceCategory(): ServiceCategory {
     return serviceCategories.random().value
   }
@@ -155,6 +159,7 @@ class SetupAssistant(
     createdBy: AuthUser = createPPUser(),
     createdAt: OffsetDateTime = OffsetDateTime.now(),
     serviceUserCRN: String = "X123456",
+    selectedServiceCategories: Set<ServiceCategory>? = null,
   ): Referral {
     return referralRepository.save(
       referralFactory.createDraft(
@@ -163,6 +168,7 @@ class SetupAssistant(
         createdAt = createdAt,
         createdBy = createdBy,
         serviceUserCRN = serviceUserCRN,
+        selectedServiceCategories = selectedServiceCategories
       )
     )
   }
