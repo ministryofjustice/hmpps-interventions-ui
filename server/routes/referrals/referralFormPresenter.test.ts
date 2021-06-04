@@ -272,9 +272,7 @@ describe('ReferralFormPresenter', () => {
                 'service-categories'
               )
               .build(),
-            cohortReferralFormSectionFactory
-              .cohortInterventionDetails('Accommodation', ReferralFormStatus.CannotStartYet, null, null)
-              .build(),
+            referralFormSectionFactory.disabledCohortInterventionDetails('Accommodation').build(),
             referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)

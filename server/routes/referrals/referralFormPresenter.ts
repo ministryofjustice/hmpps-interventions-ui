@@ -154,7 +154,21 @@ class FormSectionBuilder {
 
   private buildCohortReferralDetailsSection(
     selectServiceCategoriesSection: ReferralFormSingleListSectionPresenter
-  ): ReferralFormMultiListSectionPresenter {
+  ): ReferralFormSectionPresenter {
+    if (selectServiceCategoriesSection.status !== ReferralFormStatus.Completed) {
+      return {
+        type: 'single',
+        title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
+        number: '3',
+        status: ReferralFormStatus.CannotStartYet,
+        tasks: [
+          {
+            title: 'Details of this part will depend on the services you choose',
+            url: null,
+          },
+        ],
+      }
+    }
     return {
       type: 'multi',
       title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
