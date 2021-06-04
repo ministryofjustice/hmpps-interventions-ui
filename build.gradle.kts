@@ -47,7 +47,7 @@ dependencies {
 
   // notifications
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
-  implementation("software.amazon.awssdk:sns:2.16.76")
+  implementation("software.amazon.awssdk:sns:2.16.77")
 
   // security
   implementation("org.springframework.boot:spring-boot-starter-webflux")
