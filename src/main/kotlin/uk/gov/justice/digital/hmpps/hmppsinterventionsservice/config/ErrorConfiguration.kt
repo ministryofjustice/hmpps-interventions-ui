@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
@@ -39,6 +40,7 @@ data class ErrorResponse(
   val status: Int,
   val error: String,
   val message: String?,
+  val userMessage: String?,
   val validationErrors: List<FieldError>? = null,
   val accessErrors: List<String>? = null,
 )
@@ -105,16 +107,33 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
     return errorResponse(HttpStatus.CONFLICT, "entity already exists", e.message)
   }
 
+  @ExceptionHandler(WebClientRequestException::class)
+  fun handleWebClientRequestException(e: WebClientRequestException): ResponseEntity<ErrorResponse> {
+    logger.info("web client request exception", e)
+    return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "web client request exception", e.message, userMessageForWebClientException(HttpStatus.INTERNAL_SERVER_ERROR))
+  }
+
   @ExceptionHandler(WebClientResponseException::class)
   fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse> {
-    logger.info("web client exception", e)
-    return errorResponse(e.statusCode, "web client exception", e.responseBodyAsString)
+    logger.info("web client response exception", e)
+    return errorResponse(e.statusCode, "web client response exception", e.responseBodyAsString, userMessageForWebClientException(e.statusCode))
+  }
+
+  fun userMessageForWebClientException(status: HttpStatus?): String? {
+    return when {
+      status == null -> null
+      status == HttpStatus.CONFLICT -> null
+      status.is4xxClientError -> "A problem has been encountered. Please contact Support"
+      status.is5xxServerError -> "Delius is experiencing issues. Please try again later and if the issue persists contact Support"
+      else -> null
+    }
   }
 
   private fun errorResponse(
     status: HttpStatus,
     summary: String,
     description: String?,
+    userMessage: String? = null,
     validationErrors: List<FieldError>? = null,
     accessErrors: List<String>? = null,
   ): ResponseEntity<ErrorResponse> {
@@ -125,6 +144,7 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
           status = status.value(),
           error = summary,
           message = description,
+          userMessage = userMessage,
           validationErrors = validationErrors,
           accessErrors = accessErrors,
         )
