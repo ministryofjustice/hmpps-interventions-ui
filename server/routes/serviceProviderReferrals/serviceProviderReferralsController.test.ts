@@ -267,14 +267,16 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
 describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () => {
   it('displays a page to add activities to an action plan', async () => {
     const desiredOutcome = { id: '1', description: 'Achieve a thing' }
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
+    const serviceCategories = [
+      serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] }),
+    ]
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryIds: [serviceCategory.id],
+        serviceCategoryIds: [serviceCategories[0].id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
         desiredOutcomes: [
           {
-            serviceCategoryId: serviceCategory.id,
+            serviceCategoryId: serviceCategories[0].id,
             desiredOutcomesIds: [desiredOutcome.id],
           },
         ],
@@ -286,26 +288,26 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
 
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
 
     await request(app)
       .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Accommodation - create action plan')
-        expect(res.text).toContain('Add suggested activities to Alex’s action plan')
+        expect(res.text).toContain('Add activity 2 to action plan')
+        expect(res.text).toContain('Referred outcomes for Alex')
+        expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Achieve a thing')
-        expect(res.text).toContain('Do a thing')
       })
   })
 })
 
 describe('POST /service-provider/action-plan/:id/add-activity', () => {
   it('updates the action plan with the specified activity and renders the add activity form again', async () => {
-    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation' })]
     const referral = sentReferralFactory.assigned().build({
       referral: {
-        serviceCategoryIds: [serviceCategory.id],
+        serviceCategoryIds: [serviceCategories[0].id],
         serviceUser: { firstName: 'Alex', lastName: 'River' },
       },
     })
@@ -313,7 +315,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
 
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
 
     await request(app)
       .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity`)
@@ -336,14 +338,16 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
   describe('when the user enters no description', () => {
     it('does not update the action plan on the backend and returns a 400 with an error message', async () => {
       const desiredOutcome = { id: '8eb52caf-b462-4100-a0e9-7022d2551c92', description: 'Achieve a thing' }
-      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
+      const serviceCategories = [
+        serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] }),
+      ]
       const referral = sentReferralFactory.assigned().build({
         referral: {
-          serviceCategoryIds: [serviceCategory.id],
+          serviceCategoryIds: [serviceCategories[0].id],
           serviceUser: { firstName: 'Alex', lastName: 'River' },
           desiredOutcomes: [
             {
-              serviceCategoryId: serviceCategory.id,
+              serviceCategoryId: serviceCategories[0].id,
               desiredOutcomesIds: [desiredOutcome.id],
             },
           ],
@@ -353,7 +357,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
 
       interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
 
       await request(app)
         .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity`)
@@ -400,7 +404,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
     },
   })
 
-  describe('when there is an activity in the action plan for every desired outcome of the referral', () => {
+  describe('when there is at least one activity in the action plan', () => {
     it('redirects to the next page of the action plan journey', async () => {
       const actionPlan = actionPlanFactory.build({
         activities: [
@@ -420,7 +424,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
     })
   })
 
-  describe('when there is a desired outcome in the referral for which there is no activity in the action plan', () => {
+  describe('when there is no activity in the action plan', () => {
     it('responds with a 400 and renders an error', async () => {
       const actionPlan = actionPlanFactory.build({ activities: [] })
 
@@ -432,8 +436,7 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
         .post(`/service-provider/action-plan/${actionPlan.id}/add-activities`)
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 1”')
-          expect(res.text).toContain('You must add at least one activity for the desired outcome “Description 2”')
+          expect(res.text).toContain('You must add at least one activity')
         })
     })
   })
@@ -535,8 +538,10 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
       .get(`/service-provider/action-plan/${draftActionPlan.id}/review`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Review Alex’s action plan')
+        expect(res.text).toContain('Confirm action plan')
+        expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Achieve a thing')
+        expect(res.text).toContain('Activity 1')
         expect(res.text).toContain('Do a thing')
         expect(res.text).toContain('Suggested number of sessions: 10')
       })

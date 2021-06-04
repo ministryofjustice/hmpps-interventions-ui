@@ -6,34 +6,28 @@
 {% block formSection %}
   <p class="govuk-body-m">This will be shared with the service user's probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
 
-  {% for desiredOutcome in presenter.desiredOutcomes %}
-    <form method="post" action="{{ desiredOutcome.addActivityAction }}">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="desired-outcome-id" value="{{ desiredOutcome.id }}">
+  <h2 class="govuk-heading-m">{{ presenter.text.referredOutcomesHeader }}</h2>
 
-      <h3 class="govuk-heading-m">
-        Desired outcome {{ loop.index }}
-      </h3>
-
-      <p class="govuk-body">
-      {{ desiredOutcome.description }}
-      </p>
-
-      {% for activity in desiredOutcome.activities %}
-        <h4 class="govuk-heading-s">
-          Activity {{ loop.index }}
-        </h4>
-        <p class="govuk-body">{{ activity.text }}</p>
+  {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
+    <h3 class="govuk-heading-s">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
+    <ul class="govuk-list govuk-list--bullet">
+      {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
+        <li>{{ desiredOutcome }}</li>
       {% endfor %}
-
-      {{ govukTextarea(addActivityTextareaArgs(loop.index0)) }}
-
-      {{ govukButton({ text: "Add activity", classes: "govuk-button--secondary", attributes: { id: 'add-activity-' + loop.index } }) }}
-    </form>
+    </ul>
   {% endfor %}
+
+  <form method="post" action="{{ presenter.addActivityAction }}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <input type="hidden" name="desired-outcome-id" value="{{ presenter.firstDesiredOutcomeId }}">
+
+    {{ govukTextarea(addActivityTextareaArgs) }}
+
+    {{ govukButton({ text: ('Save and add activity ' + presenter.activityNumber), classes: "govuk-button--secondary", attributes: { id: 'add-activity' } }) }}
+  </form>
 
   <form method="post" action="{{ presenter.saveAndContinueFormAction }}">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    {{ govukButton({ text: "Save and continue" }) }}
+    {{ govukButton({ text: "Continue without adding other activities" }) }}
   </form>
 {% endblock %}

@@ -1,39 +1,38 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% extends "./actionPlan/actionPlanFormTemplate.njk" %}
 
 {% block formSection %}
-  <p class="govuk-body-m">Review the action plan before submitting it to the service user’s probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
+  <h2 class="govuk-heading-l">
+    Desired outcomes and activities
+  </h2>
 
-  <h3 class="govuk-heading-m">
-    Outcomes and activities
-  </h3>
-
-  {% for desiredOutcome in presenter.desiredOutcomes %}
-      <h4 class="govuk-heading-s">
-        Desired outcome {{ loop.index }}
-      </h4>
-
-      <ul class="govuk-list govuk-list--bullet">
-        <li>{{ desiredOutcome.description }}</li>
-      </ul>
-
-      {% for activity in desiredOutcome.activities %}
-        <h5 class="govuk-body govuk-!-font-weight-bold">
-          Activity {{ loop.index }}
-        </h5>
-        <p class="govuk-body">{{ activity.text }}</p>
+  {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
+    <h3 class="govuk-heading-m">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
+    <ul class="govuk-list govuk-list--bullet">
+      {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
+        <li>{{ desiredOutcome }}</li>
       {% endfor %}
+    </ul>
   {% endfor %}
 
-  <h3 class="govuk-heading-m">
+  {% for description in presenter.orderedActivities %}
+    {{ govukInsetText(insetTextArgs(loop.index, description)) }}
+  {% endfor %}
+
+  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
+  <h2 class="govuk-heading-l">
     Suggested number of sessions for the action plan
-  </h3>
+  </h2>
 
   <p class="govuk-body">
-  Suggested number of sessions: {{ presenter.text.numberOfSessions }}
+    Suggested number of sessions: {{ presenter.text.numberOfSessions }}
   </p>
+
+  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
 
   <form method="post" action="{{ presenter.submitFormAction }}">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">

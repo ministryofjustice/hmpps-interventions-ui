@@ -23,20 +23,20 @@ describe(AddActionPlanActivitiesPresenter, () => {
       description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
     },
   ]
-  const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })
+  const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes })]
   const selectedDesiredOutcomesIds = [desiredOutcomes[0].id, desiredOutcomes[1].id]
   const sentReferral = sentReferralFactory.assigned().build({
     referral: {
-      serviceCategoryIds: [serviceCategory.id],
+      serviceCategoryIds: [serviceCategories[0].id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-      desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
+      desiredOutcomes: [{ serviceCategoryId: serviceCategories[0].id, desiredOutcomesIds: selectedDesiredOutcomesIds }],
     },
   })
 
   describe('saveAndContinueFormAction', () => {
     it('returns a relative URL of the action plan’s add-activities page', () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
       expect(presenter.saveAndContinueFormAction).toEqual(
         `/service-provider/action-plan/${actionPlan.id}/add-activities`
@@ -46,172 +46,134 @@ describe(AddActionPlanActivitiesPresenter, () => {
 
   describe('text', () => {
     describe('title', () => {
-      it('includes the name of the service category', () => {
+      it('specifies the number of the activity to be added', () => {
         const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, socialInclusionServiceCategory, actionPlan)
+        const actionPlan = actionPlanFactory.oneActivityAdded().build()
 
-        expect(presenter.text.title).toEqual('Social inclusion - create action plan')
+        const presenter = new AddActionPlanActivitiesPresenter(
+          sentReferral,
+          [socialInclusionServiceCategory],
+          actionPlan
+        )
+
+        expect(presenter.text.title).toEqual('Add activity 2 to action plan')
       })
     })
 
-    describe('subTitle', () => {
+    describe('referredOutcomesHeader', () => {
       it('includes the name of the service user', () => {
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
-        expect(presenter.text.subTitle).toEqual('Add suggested activities to Jenny’s action plan')
+        expect(presenter.text.referredOutcomesHeader).toEqual('Referred outcomes for Jenny')
+      })
+    })
+  })
+
+  describe('activityNumber', () => {
+    describe('when no activities have been added', () => {
+      it('specifies the number of the activity to be added', () => {
+        const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
+        const presenter = new AddActionPlanActivitiesPresenter(
+          sentReferral,
+          [socialInclusionServiceCategory],
+          actionPlan
+        )
+
+        expect(presenter.activityNumber).toEqual(1)
+      })
+    })
+
+    describe('when 1 activity has been added', () => {
+      it('specifies the number of the activity to be added', () => {
+        const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+        const actionPlan = actionPlanFactory.oneActivityAdded().build()
+        const presenter = new AddActionPlanActivitiesPresenter(
+          sentReferral,
+          [socialInclusionServiceCategory],
+          actionPlan
+        )
+
+        expect(presenter.activityNumber).toEqual(2)
       })
     })
   })
 
   describe('errorSummary', () => {
-    describe('when an empty array of errors is passed in', () => {
+    describe('when an no error is passed in', () => {
       it('returns null', () => {
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, [])
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
         expect(presenter.errorSummary).toBeNull()
       })
     })
 
-    describe('when a non-empty array of errors is passed in', () => {
-      it('returns a summary of the errors, with the correct index appended to the field ID', () => {
+    describe('when an error is passed in', () => {
+      it('returns a summary of the error', () => {
         const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-        const errors = [
-          {
-            desiredOutcomeId: desiredOutcomes[0].id,
-            error: {
-              errors: [
-                {
-                  formFields: ['description'],
-                  errorSummaryLinkedField: 'description',
-                  message: 'Enter an activity',
-                },
-              ],
+        const errors = {
+          errors: [
+            {
+              formFields: ['description'],
+              errorSummaryLinkedField: 'description',
+              message: 'Enter an activity',
             },
-          },
-        ]
+          ],
+        }
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, errors)
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, errors)
 
-        expect(presenter.errorSummary).toEqual([{ field: 'description-1', message: 'Enter an activity' }])
+        expect(presenter.errorSummary).toEqual([{ field: 'description', message: 'Enter an activity' }])
       })
     })
   })
 
-  describe('desiredOutcomes', () => {
+  describe('desiredOutcomesByServiceCategory', () => {
     it('returns the desired outcomes on the Service Category that match those populated on the SentReferral', () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ activities: [] })
 
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
+      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
-      expect(presenter.desiredOutcomes).toEqual([
+      expect(presenter.desiredOutcomesByServiceCategory).toEqual([
         {
-          description:
+          serviceCategory: 'Accommodation',
+          desiredOutcomes: [
             'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          addActivityAction: `/service-provider/action-plan/${actionPlan.id}/add-activity`,
-          id: selectedDesiredOutcomesIds[0],
-          activities: [],
-          errorMessage: null,
-        },
-        {
-          description: 'Service User makes progress in obtaining accommodation',
-          addActivityAction: `/service-provider/action-plan/${actionPlan.id}/add-activity`,
-          id: selectedDesiredOutcomesIds[1],
-          activities: [],
-          errorMessage: null,
+            'Service User makes progress in obtaining accommodation',
+          ],
         },
       ])
     })
+  })
 
-    describe('activities', () => {
-      it('adds the activities to the correct desired outcome', () => {
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
-          activities: [
-            {
-              id: '1',
-              description: 'description 1',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-            {
-              id: '2',
-              description: 'description 2',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-            {
-              id: '3',
-              description: 'description 3',
-              desiredOutcome: desiredOutcomes[1],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-          ],
-        })
+  describe('errorMessage', () => {
+    const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
+    const errors = {
+      errors: [
+        {
+          formFields: ['description'],
+          errorSummaryLinkedField: 'description',
+          message: 'Enter an activity',
+        },
+      ],
+    }
 
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
-        expect(presenter.desiredOutcomes).toMatchObject([
-          { activities: [{ text: 'description 1' }, { text: 'description 2' }] },
-          { activities: [{ text: 'description 3' }] },
-        ])
-      })
+    describe('when an error is passed in', () => {
+      it('returns an error message', () => {
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, errors)
 
-      it('sorts an outcome’s referrals into oldest-to-newest order', () => {
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
-          activities: [
-            {
-              id: '1',
-              description: 'description 1',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:05:00Z',
-            },
-            {
-              id: '2',
-              description: 'description 2',
-              desiredOutcome: desiredOutcomes[0],
-              createdAt: '2021-03-15T10:00:00Z',
-            },
-          ],
-        })
-
-        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan)
-        expect(presenter.desiredOutcomes[0]).toMatchObject({
-          activities: [{ text: 'description 2' }, { text: 'description 1' }],
-        })
+        expect(presenter.errorMessage).toEqual('Enter an activity')
       })
     })
 
-    describe('errorMessage', () => {
-      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
-      const errors = [
-        {
-          desiredOutcomeId: desiredOutcomes[0].id,
-          error: {
-            errors: [
-              {
-                formFields: ['description'],
-                errorSummaryLinkedField: 'description',
-                message: 'Enter an activity',
-              },
-            ],
-          },
-        },
-      ]
+    describe('when no error is passed in', () => {
+      it('returns null', () => {
+        const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
 
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategory, actionPlan, errors)
-
-      describe('when there is an error on the description field for that desired outcome', () => {
-        it('returns that error’s message', () => {
-          expect(presenter.desiredOutcomes[0]?.errorMessage).toEqual('Enter an activity')
-        })
-      })
-
-      describe('when there is no error for that desired outcome', () => {
-        it('returns null', () => {
-          expect(presenter.desiredOutcomes[1]?.errorMessage).toBeNull()
-        })
+        expect(presenter.errorMessage).toBeNull()
       })
     })
   })

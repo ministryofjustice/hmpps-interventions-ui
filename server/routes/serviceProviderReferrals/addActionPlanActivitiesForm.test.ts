@@ -48,7 +48,7 @@ describe(AddActionPlanActivitiesForm, () => {
     })
   })
 
-  describe('errors', () => {
+  describe('error', () => {
     describe('when there is a non-empty text string for "description"', () => {
       it('returns an empty array', async () => {
         const form = await AddActionPlanActivitiesForm.createForm({
@@ -58,12 +58,12 @@ describe(AddActionPlanActivitiesForm, () => {
           },
         } as Request)
 
-        expect(form.errors).toEqual([])
+        expect(form.error).toEqual(null)
       })
     })
 
     describe('when there is an empty string for "description"', () => {
-      it('returns an array with an error for the relevant desired outcome ID', async () => {
+      it('returns an error', async () => {
         const form = await AddActionPlanActivitiesForm.createForm({
           body: {
             description: '',
@@ -71,20 +71,15 @@ describe(AddActionPlanActivitiesForm, () => {
           },
         } as Request)
 
-        expect(form.errors).toEqual([
-          {
-            desiredOutcomeId: '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
-            error: {
-              errors: [
-                {
-                  errorSummaryLinkedField: 'description',
-                  formFields: ['description'],
-                  message: 'Enter an activity',
-                },
-              ],
+        expect(form.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'description',
+              formFields: ['description'],
+              message: 'Enter an activity',
             },
-          },
-        ])
+          ],
+        })
       })
     })
   })

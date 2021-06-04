@@ -1,79 +1,47 @@
 import FinaliseActionPlanActivitiesForm from './finaliseActionPlanActivitiesForm'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 
 describe(FinaliseActionPlanActivitiesForm, () => {
-  describe('errors', () => {
-    const desiredOutcomes = [
-      {
-        id: '1',
-        description: 'Description 1',
-      },
-      {
-        id: '2',
-        description: 'Description 2',
-      },
-      {
-        id: '3',
-        description: 'Description 3',
-      },
-    ]
-    const serviceCategory = serviceCategoryFactory.build({ desiredOutcomes })
-    const referral = sentReferralFactory.build({
-      referral: {
-        serviceCategoryIds: [serviceCategory.id],
-        desiredOutcomes: [
-          { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [desiredOutcomes[0].id, desiredOutcomes[1].id] },
-        ],
-      },
+  describe('isValid', () => {
+    it('returns true when there is at least one activity in the action plan', () => {
+      const actionPlan = actionPlanFactory.oneActivityAdded().build()
+      const form = new FinaliseActionPlanActivitiesForm(actionPlan)
+
+      expect(form.isValid).toEqual(true)
     })
 
-    describe('when there is an activity in the action plan for every desired outcome of the referral', () => {
-      it('returns an empty array', () => {
-        const actionPlan = actionPlanFactory.build({
-          activities: [
-            { id: '1', desiredOutcome: desiredOutcomes[0], createdAt: new Date().toISOString(), description: '' },
-            { id: '2', desiredOutcome: desiredOutcomes[1], createdAt: new Date().toISOString(), description: '' },
-          ],
-        })
-        const form = new FinaliseActionPlanActivitiesForm(referral, actionPlan, serviceCategory)
+    it('returns false when there are no activities in the action plan', () => {
+      const actionPlan = actionPlanFactory.build()
+      const form = new FinaliseActionPlanActivitiesForm(actionPlan)
 
-        expect(form.errors).toEqual([])
+      expect(form.isValid).toEqual(false)
+    })
+  })
+
+  describe('error', () => {
+    describe('when there is at least one activity in the action plan', () => {
+      it('returns an empty array', () => {
+        const actionPlan = actionPlanFactory.oneActivityAdded().build()
+        const form = new FinaliseActionPlanActivitiesForm(actionPlan)
+
+        expect(form.error).toEqual(null)
       })
     })
 
-    describe('when there is a desired outcome in the referral for which there is no activity in the action plan', () => {
-      it('returns an error for each outcome without an activity', () => {
+    describe('when there is no activity in the action plan', () => {
+      it('returns an error', () => {
         const actionPlan = actionPlanFactory.build({ activities: [] })
-        const form = new FinaliseActionPlanActivitiesForm(referral, actionPlan, serviceCategory)
+        const form = new FinaliseActionPlanActivitiesForm(actionPlan)
 
-        expect(form.errors).toEqual([
-          {
-            desiredOutcomeId: '1',
-            error: {
-              errors: [
-                {
-                  errorSummaryLinkedField: 'description',
-                  formFields: ['description'],
-                  message: 'You must add at least one activity for the desired outcome “Description 1”',
-                },
-              ],
+        expect(form.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'description',
+              formFields: ['description'],
+              message: 'You must add at least one activity',
             },
-          },
-          {
-            desiredOutcomeId: '2',
-            error: {
-              errors: [
-                {
-                  errorSummaryLinkedField: 'description',
-                  formFields: ['description'],
-                  message: 'You must add at least one activity for the desired outcome “Description 2”',
-                },
-              ],
-            },
-          },
-        ])
+          ],
+        })
       })
     })
   })

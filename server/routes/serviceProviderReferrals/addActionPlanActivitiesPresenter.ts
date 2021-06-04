@@ -1,75 +1,48 @@
-import ActionPlan, { Activity } from '../../models/actionPlan'
-import DesiredOutcome from '../../models/desiredOutcome'
+import ActionPlan from '../../models/actionPlan'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import { FormValidationError } from '../../utils/formValidationError'
-import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
+import utils from '../../utils/utils'
 
 export default class AddActionPlanActivitiesPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
-    private readonly serviceCategory: ServiceCategory,
+    private readonly serviceCategories: ServiceCategory[],
     private readonly actionPlan: ActionPlan,
-    private readonly errors: { desiredOutcomeId: string; error: FormValidationError }[] = []
+    private readonly errors: FormValidationError | null = null
   ) {}
 
   readonly saveAndContinueFormAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activities`
+
+  readonly addActivityAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activity`
+
+  readonly activityNumber = this.actionPlan.activities.length + 1
 
   private readonly desiredOutcomesIds = this.sentReferral.referral.desiredOutcomes.flatMap(
     desiredOutcome => desiredOutcome.desiredOutcomesIds
   )
 
-  readonly errorSummary = (() => {
-    const errorSummary = this.errors.reduce((accumIndexedSummary, error) => {
-      const unindexedSummary = PresenterUtils.errorSummary(error.error)
-      if (unindexedSummary === null) {
-        return accumIndexedSummary
-      }
+  readonly errorMessage = PresenterUtils.errorMessage(this.errors, 'description')
 
-      const index = this.desiredOutcomesIds.indexOf(error.desiredOutcomeId)
-      const indexedSummary = unindexedSummary.map(item => ({ ...item, field: `${item.field}-${index + 1}` }))
+  readonly errorSummary = PresenterUtils.errorSummary(this.errors)
 
-      return [...accumIndexedSummary, ...indexedSummary]
-    }, new Array<{ field: string; message: string }>())
-
-    if (errorSummary.length === 0) {
-      return null
-    }
-
-    return errorSummary
-  })()
+  // Temporary fix until we update the contracts to stop storing activities against a specific outcome - this will be removed in future
+  readonly firstDesiredOutcomeId = this.desiredOutcomesIds[0]
 
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)} - create action plan`,
-    pageNumber: 1,
-    subTitle: `Add suggested activities to ${this.sentReferral.referral.serviceUser.firstName}’s action plan`,
+    title: `Add activity ${this.activityNumber} to action plan`,
+    referredOutcomesHeader: `Referred outcomes for ${this.sentReferral.referral.serviceUser.firstName}`,
   }
 
-  readonly desiredOutcomes = this.desiredOutcomesIds.map(id => {
-    const desiredOutcome = this.serviceCategory.desiredOutcomes.find(outcome => id === outcome.id)
-
-    if (!desiredOutcome) {
-      return null
-    }
+  readonly desiredOutcomesByServiceCategory = this.serviceCategories.map(serviceCategory => {
+    const desiredOutcomesForServiceCategory = serviceCategory.desiredOutcomes.filter(desiredOutcome =>
+      this.desiredOutcomesIds.includes(desiredOutcome.id)
+    )
 
     return {
-      description: desiredOutcome.description,
-      id: desiredOutcome.id,
-      addActivityAction: `/service-provider/action-plan/${this.actionPlan.id}/add-activity`,
-      activities: this.orderedActivitiesForOutcome(desiredOutcome).map(activity => ({ text: activity.description })),
-      errorMessage: this.errorMessageForOutcome(desiredOutcome),
+      serviceCategory: utils.convertToProperCase(serviceCategory.name),
+      desiredOutcomes: desiredOutcomesForServiceCategory.map(desiredOutcome => desiredOutcome.description),
     }
   })
-
-  private errorMessageForOutcome(desiredOutcome: DesiredOutcome): string | null {
-    const error = this.errors.find(anError => anError.desiredOutcomeId === desiredOutcome.id)?.error ?? null
-    return PresenterUtils.errorMessage(error, 'description')
-  }
-
-  private orderedActivitiesForOutcome(outcome: DesiredOutcome): Activity[] {
-    return this.actionPlan.activities
-      .filter(activity => activity.desiredOutcome.id === outcome.id)
-      .sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
-  }
 }

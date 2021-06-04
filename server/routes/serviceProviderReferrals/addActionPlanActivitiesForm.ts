@@ -27,24 +27,19 @@ export default class AddActionPlanActivitiesForm {
     return this.request.body.description !== ''
   }
 
-  get errors(): { desiredOutcomeId: string; error: FormValidationError }[] {
+  get error(): FormValidationError | null {
     if (this.isValid) {
-      return []
+      return null
     }
 
-    return [
-      {
-        desiredOutcomeId: this.desiredOutcomeId,
-        error: {
-          errors: [
-            {
-              errorSummaryLinkedField: 'description',
-              formFields: ['description'],
-              message: errorMessages.actionPlanActivity.empty,
-            },
-          ],
+    return {
+      errors: [
+        {
+          errorSummaryLinkedField: 'description',
+          formFields: ['description'],
+          message: errorMessages.actionPlanActivity.empty,
         },
-      },
-    ]
+      ],
+    }
   }
 }

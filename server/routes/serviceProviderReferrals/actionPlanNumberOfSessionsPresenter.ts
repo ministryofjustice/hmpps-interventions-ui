@@ -21,7 +21,6 @@ export default class ActionPlanNumberOfSessionsPresenter {
     numberOfSessions: {
       errorMessage: PresenterUtils.errorMessage(this.error, 'number-of-sessions'),
     },
-    pageNumber: 2,
     serviceUserFirstName: this.serviceUser.firstName,
     serviceCategoryName: utils.convertToProperCase(this.serviceCategory.name),
   }
