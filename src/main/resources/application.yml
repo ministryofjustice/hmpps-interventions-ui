@@ -23,7 +23,7 @@ spring:
           interventions-client:
             provider: hmppsauth
             authorization-grant-type: client_credentials
-            scope: read
+            scope: read,write
       resourceserver:
         jwt:
           issuer-uri: ${hmppsauth.baseurl}/issuer
