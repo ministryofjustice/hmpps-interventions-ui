@@ -447,6 +447,7 @@ describe('Referral form', () => {
           needsAndRequirements: false,
         })
         .selectServiceCategories({ selectServiceCategories: false })
+        .disabledCohortInterventionReferralDetails()
         .checkYourAnswers({ checkAnswers: false })
 
       cy.contains('Confirm service user’s personal details').click()

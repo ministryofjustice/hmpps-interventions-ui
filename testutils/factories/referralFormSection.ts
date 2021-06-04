@@ -75,6 +75,21 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     })
   }
 
+  disabledCohortInterventionDetails(contractName: string) {
+    return this.params({
+      type: 'single',
+      title: `Add ${utils.convertToProperCase(contractName)} referral details`,
+      number: '3',
+      status: ReferralFormStatus.CannotStartYet,
+      tasks: [
+        {
+          title: `Details of this part will depend on the services you choose`,
+          url: null,
+        },
+      ],
+    })
+  }
+
   checkAnswers(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     checkAnswersUrl: string | null = null,

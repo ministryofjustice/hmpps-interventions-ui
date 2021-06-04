@@ -272,9 +272,30 @@ describe('ReferralFormPresenter', () => {
                 'service-categories'
               )
               .build(),
-            cohortReferralFormSectionFactory
-              .cohortInterventionDetails('Accommodation', ReferralFormStatus.CannotStartYet, null, null)
+            referralFormSectionFactory.disabledCohortInterventionDetails('Accommodation').build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
+      })
+      describe('when service categories is empty', () => {
+        it('should contain a "Not Started" label', () => {
+          const referral = draftReferralFactory
+            .filledFormUpToNeedsAndRequirements(serviceCategories)
+            .build({ serviceCategoryIds: [] })
+          const presenter = new ReferralFormPresenter(referral, cohortIntervention)
+          const expected = [
+            referralFormSectionFactory
+              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
               .build(),
+            referralFormSectionFactory
+              .selectedServiceCategories(
+                cohortIntervention.contractType.name,
+                ReferralFormStatus.NotStarted,
+                'service-categories'
+              )
+              .build(),
+            referralFormSectionFactory.disabledCohortInterventionDetails('Accommodation').build(),
             referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)

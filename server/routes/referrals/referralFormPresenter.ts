@@ -154,7 +154,21 @@ class FormSectionBuilder {
 
   private buildCohortReferralDetailsSection(
     selectServiceCategoriesSection: ReferralFormSingleListSectionPresenter
-  ): ReferralFormMultiListSectionPresenter {
+  ): ReferralFormSectionPresenter {
+    if (selectServiceCategoriesSection.status !== ReferralFormStatus.Completed) {
+      return {
+        type: 'single',
+        title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
+        number: '3',
+        status: ReferralFormStatus.CannotStartYet,
+        tasks: [
+          {
+            title: 'Details of this part will depend on the services you choose',
+            url: null,
+          },
+        ],
+      }
+    }
     return {
       type: 'multi',
       title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
@@ -324,15 +338,15 @@ class TaskValues {
     ]
   }
 
-  get relevantSentence(): DraftReferralValues {
-    return [this.referral.relevantSentenceId]
-  }
-
   get cohortServiceCategories(): DraftReferralValues {
-    if (this.referral.serviceCategoryIds === null) {
+    if (this.referral.serviceCategoryIds === null || this.referral.serviceCategoryIds.length === 0) {
       return [null]
     }
     return this.referral.serviceCategoryIds
+  }
+
+  get relevantSentence(): DraftReferralValues {
+    return [this.referral.relevantSentenceId]
   }
 
   get allComplexityLevels(): DraftReferralValues {

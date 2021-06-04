@@ -51,6 +51,14 @@ class _ReferralSectionChecker {
     return this
   }
 
+  disabledCohortInterventionReferralDetails() {
+    cy.get(`[data-cy=url]:contains("Details of this part will depend on the services you choose")`).should(
+      'not.have.attr',
+      'href'
+    )
+    return this
+  }
+
   cohortInterventionReferralDetails(activeLinks) {
     cy.get(`[data-cy=url]:contains("Confirm the relevant sentence for the Women's services referral")`).should(
       hrefAttrChainer(activeLinks.relevantSentence),
