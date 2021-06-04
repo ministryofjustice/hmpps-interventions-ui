@@ -9,7 +9,7 @@ import { TagArgs } from '../../utils/govukFrontendTypes'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
-  const { serviceCategory } = intervention
+  const serviceCategory = intervention.serviceCategories[0]
 
   const cohortServiceCategories = [
     serviceCategoryFactory.build({ name: 'Lifestyle and associates' }),
@@ -18,7 +18,6 @@ describe(ShowReferralPresenter, () => {
   const cohortIntervention = interventionFactory.build({
     contractType: { code: 'PWB', name: 'Personal wellbeing' },
     serviceCategories: cohortServiceCategories,
-    serviceCategory: cohortServiceCategories[0],
   })
 
   const referralParams = {

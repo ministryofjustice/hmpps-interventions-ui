@@ -156,7 +156,6 @@ describe('GET /referrals/:id/form', () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const intervention = interventionFactory.build({
       serviceCategories: [serviceCategory],
-      serviceCategory,
     })
     const referral = draftReferralFactory
       .serviceCategorySelected(serviceCategory.id)
