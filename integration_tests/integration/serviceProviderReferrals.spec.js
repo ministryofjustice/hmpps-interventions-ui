@@ -153,9 +153,9 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
     cy.contains("Service user's risk information")
-    cy.contains('Risk to known adult')
-    cy.contains('Medium')
-    cy.contains('A danger to the elderly')
+    cy.contains(
+      'The Refer and Monitor an Intervention service cannot currently display this risk information. We will add it in the coming weeks.'
+    )
     cy.contains("Service user's needs")
     cy.contains('Alex is currently sleeping on her aunt’s sofa')
     cy.contains('She uses a wheelchair')

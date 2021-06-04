@@ -157,7 +157,9 @@ export default class ShowReferralPresenter {
     return [
       {
         key: 'Additional risk information',
-        lines: [this.sentReferral.referral.additionalRiskInformation],
+        lines: [
+          'The Refer and Monitor an Intervention service cannot currently display this risk information. We will add it in the coming weeks.',
+        ],
       },
     ]
   }

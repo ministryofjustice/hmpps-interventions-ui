@@ -274,7 +274,12 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(sentReferral, intervention, deliusUser, null, null)
 
       expect(presenter.serviceUserRisks).toEqual([
-        { key: 'Additional risk information', lines: [sentReferral.referral.additionalRiskInformation] },
+        {
+          key: 'Additional risk information',
+          lines: [
+            'The Refer and Monitor an Intervention service cannot currently display this risk information. We will add it in the coming weeks.',
+          ],
+        },
       ])
     })
   })
