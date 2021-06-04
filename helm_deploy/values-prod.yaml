@@ -20,3 +20,4 @@ env:
   INTERVENTIONSUI_BASEURL: "https://refer-monitor-intervention.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.probation.service.justice.gov.uk"
   SENTRY_ENVIRONMENT: "prod"
+  NOTIFY_ENABLED: false
