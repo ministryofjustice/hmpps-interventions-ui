@@ -19,11 +19,6 @@ export default class ReferralOverviewPagePresenter {
         active: this.section === ReferralOverviewPageSection.Progress,
       },
       {
-        text: 'Case notes',
-        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/case-notes`,
-        active: this.section === ReferralOverviewPageSection.CaseNotes,
-      },
-      {
         text: 'Referral details',
         href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/details`,
         active: this.section === ReferralOverviewPageSection.Details,
