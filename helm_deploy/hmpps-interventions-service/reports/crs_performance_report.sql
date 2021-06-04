@@ -4,6 +4,12 @@ COPY (
       from action_plan_appointment
       where attended in ('YES', 'LATE')
       group by action_plan_id
+  ),
+  attempted_sessions AS (
+      select count(action_plan_id) AS attempted, action_plan_id
+      from action_plan_appointment
+      where attended IS NOT NULL
+      group by action_plan_id
   )
   SELECT
     r.reference_number      AS referral_ref,
@@ -31,14 +37,13 @@ COPY (
     )                       AS outcomes_to_be_achieved_count,
     'coming-later'          AS outcomes_progress,
     ap.number_of_sessions   AS count_of_sessions_expected,
-    s.attended              AS count_of_sessions_attended,
+    shows.attended          AS count_of_sessions_attended,
     r.concluded_at          AS date_intervention_ended,
     (
       CASE
         WHEN r.concluded_at IS NOT NULL AND eosr.id IS NULL THEN 'cancelled'
-        WHEN r.concluded_at IS NOT NULL AND eosr.id IS NOT NULL AND ap.number_of_sessions > s.attended THEN 'ended'
-        WHEN r.concluded_at IS NOT NULL AND eosr.id IS NOT NULL AND ap.number_of_sessions = s.attended THEN 'completed'
-        ELSE NULL
+        WHEN r.concluded_at IS NOT NULL AND eosr.id IS NOT NULL AND ap.number_of_sessions > atts.attempted THEN 'ended'
+        WHEN r.concluded_at IS NOT NULL AND eosr.id IS NOT NULL AND ap.number_of_sessions = atts.attempted THEN 'completed'
       END
     )                       AS intervention_end_reason,
     eosr.submitted_at       AS date_end_of_service_report_submitted
@@ -49,7 +54,8 @@ COPY (
     JOIN contract_type ct ON (c.contract_type_id = ct.id)
     JOIN service_provider prime ON (c.prime_provider_id = prime.id)
     LEFT JOIN action_plan ap ON (ap.referral_id = r.id) --❗️assumes a SINGLE action plan
-    LEFT JOIN attended_sessions s ON (s.action_plan_id = ap.id) --❗️should be linked to referrals instead, sessions are static
+    LEFT JOIN attended_sessions shows ON (shows.action_plan_id = ap.id) --❗️should be linked to referrals instead, sessions are static
+    LEFT JOIN attempted_sessions atts ON (atts.action_plan_id = ap.id) --❗️should be linked to referrals instead, sessions are static
     LEFT JOIN end_of_service_report eosr ON (eosr.referral_id = r.id)
   WHERE
     r.sent_at IS NOT NULL
