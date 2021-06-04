@@ -26,7 +26,6 @@ The service will use the following methods:
       { id: 'lancashire', name: 'Lancashire' },
       { id: 'merseyside', name: 'Merseyside' },
     ],
-    serviceCategory,
     serviceCategories: [serviceCategory],
     serviceProvider: serviceProviderFactory.build(),
     eligibility: eligibilityFactory.allAdults().build(),

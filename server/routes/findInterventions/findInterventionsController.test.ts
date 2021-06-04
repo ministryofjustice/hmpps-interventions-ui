@@ -6,6 +6,7 @@ import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import interventionFactory from '../../../testutils/factories/intervention'
 import pccRegionFactory from '../../../testutils/factories/pccRegion'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 
 jest.mock('../../services/interventionsService')
 const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
@@ -32,7 +33,10 @@ describe(FindInterventionsController, () => {
         { title: 'Better solutions (anger management)', categoryName: 'thinking and behaviour' },
         { title: 'HELP (domestic violence for males)', categoryName: 'relationships' },
       ].map(params => {
-        return interventionFactory.build({ title: params.title, serviceCategory: { name: params.categoryName } })
+        return interventionFactory.build({
+          title: params.title,
+          serviceCategories: [serviceCategoryFactory.build({ name: params.categoryName })],
+        })
       })
       interventionsService.getInterventions.mockResolvedValue(interventions)
 
@@ -75,7 +79,7 @@ describe(FindInterventionsController, () => {
     it('responds with a 200', async () => {
       const intervention = interventionFactory.build({
         title: 'Better solutions (anger management)',
-        serviceCategory: { name: 'thinking and behaviour' },
+        serviceCategories: [serviceCategoryFactory.build({ name: 'thinking and behaviour' })],
       })
 
       interventionsService.getIntervention.mockResolvedValue(intervention)

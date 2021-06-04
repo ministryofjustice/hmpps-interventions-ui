@@ -21,7 +21,6 @@ export default interface Intervention {
   description: string
   npsRegion: NPSRegion | null
   pccRegions: PCCRegion[]
-  serviceCategory: ServiceCategory // deprecated
   serviceCategories: ServiceCategory[]
   serviceProvider: ServiceProvider
   eligibility: Eligibility
