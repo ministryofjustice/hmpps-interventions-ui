@@ -143,7 +143,7 @@ describe('POST /intervention/:id/refer', () => {
         .send({ 'service-user-crn': 'X123456' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('CRN not found in nDelius')
+          expect(res.text).toContain('CRN not found in nDelius (CRNs are case sensitive)')
         })
 
       expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledTimes(1)

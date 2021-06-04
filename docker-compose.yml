@@ -39,23 +39,6 @@ services:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
 
-  offender-assessments-api:
-    image: mojdigitalstudio/offender-assessments-api:latest
-    restart: always
-    networks:
-      - hmpps
-    container_name: offender-assessments-api
-    depends_on:
-      - hmpps-auth
-    ports:
-      - '8093:8080'
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
-      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
-
   interventions-service:
     image: quay.io/hmpps/hmpps-interventions-service
     restart: always

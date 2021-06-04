@@ -5,7 +5,7 @@
 export default {
   startReferral: {
     crnEmpty: 'A CRN is needed',
-    crnNotFound: 'CRN not found in nDelius',
+    crnNotFound: 'CRN not found in nDelius (note: CRNs are case sensitive)',
     unknownError: 'Could not start referral due to service interruption; please try again later',
   },
   riskInformation: {
