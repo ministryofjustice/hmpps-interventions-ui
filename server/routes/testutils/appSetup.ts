@@ -10,7 +10,6 @@ import errorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
-import MockOffenderAssessmentsApiService from './mocks/mockOffenderAssessmentsApiService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import LoggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
@@ -65,7 +64,6 @@ export default function appWithAllRoutes({
   return appSetup(
     allRoutes(standardRouter(), {
       communityApiService: new MockCommunityApiService(),
-      offenderAssessmentsApiService: new MockOffenderAssessmentsApiService(),
       interventionsService: {} as InterventionsService,
       hmppsAuthService: new MockedHmppsAuthService(),
       ...overrides,

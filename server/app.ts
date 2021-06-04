@@ -22,7 +22,6 @@ import errorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
 import CommunityApiService from './services/communityApiService'
 import InterventionsService from './services/interventionsService'
-import OffenderAssessmentsApiService from './services/offenderAssessmentsApiService'
 import HmppsAuthService from './services/hmppsAuthService'
 import passportSetup from './authentication/passport'
 import authErrorHandler from './authentication/authErrorHandler'
@@ -31,7 +30,6 @@ const RedisStore = connectRedis(session)
 
 export default function createApp(
   communityApiService: CommunityApiService,
-  offenderAssessmentsApiService: OffenderAssessmentsApiService,
   interventionsService: InterventionsService,
   hmppsAuthService: HmppsAuthService
 ): express.Application {
@@ -171,7 +169,6 @@ export default function createApp(
     '/',
     indexRoutes(standardRouter(), {
       communityApiService,
-      offenderAssessmentsApiService,
       interventionsService,
       hmppsAuthService,
     })

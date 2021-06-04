@@ -3,22 +3,15 @@ import type { RequestHandler, Router } from 'express'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
-import OffenderAssessmentsApiService from '../services/offenderAssessmentsApiService'
 import HmppsAuthService from '../services/hmppsAuthService'
-import IntegrationSamplesRoutes from './integrationSamples'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import ReferralsController from './referrals/referralsController'
 import StaticContentController from './staticContent/staticContentController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 
-interface RouteProvider {
-  [key: string]: RequestHandler
-}
-
 export interface Services {
   communityApiService: CommunityApiService
-  offenderAssessmentsApiService: OffenderAssessmentsApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
 }
@@ -26,11 +19,6 @@ export interface Services {
 export default function routes(router: Router, services: Services): Router {
   const get = (path: string, handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
   const post = (path: string, handler: RequestHandler) => router.post(path, asyncMiddleware(handler))
-
-  const integrationSamples: RouteProvider = IntegrationSamplesRoutes(
-    services.communityApiService,
-    services.offenderAssessmentsApiService
-  )
 
   const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
     services.interventionsService,
@@ -198,9 +186,6 @@ export default function routes(router: Router, services: Services): Router {
   get('/probation-practitioner/referrals/:id/cancellation/confirmation', (req, res) =>
     probationPractitionerReferralsController.showCancellationConfirmationPage(req, res)
   )
-
-  get('/integrations/delius/user', integrationSamples.viewDeliusUserSample)
-  get('/integrations/oasys/assessment', integrationSamples.viewOasysAssessmentSample)
 
   get('/intervention/:interventionId/refer', (req, res) => referralsController.startReferral(req, res))
   post('/intervention/:interventionId/refer', (req, res) => referralsController.createReferral(req, res))
