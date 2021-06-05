@@ -22,7 +22,6 @@ export interface ReferralFields {
   hasAdditionalResponsibilities: boolean
   whenUnavailable: string | null
   serviceUser: ServiceUser
-  additionalRiskInformation: string
   maximumEnforceableDays: number
 }
 
@@ -31,4 +30,6 @@ export default interface DraftReferral extends WithNullableValues<ReferralFields
   createdAt: string
   serviceUser: ServiceUser
   interventionId: string
+  // risk information is a special field which is only set on the draft referral
+  additionalRiskInformation: string | null
 }

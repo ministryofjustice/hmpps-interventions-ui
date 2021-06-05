@@ -115,7 +115,6 @@ describe(ShowReferralPresenter, () => {
             religionOrBelief: 'Agnostic',
             disabilities: ['Autism spectrum condition', 'sciatica'],
           },
-          additionalRiskInformation: 'A danger to the elderly',
           maximumEnforceableDays: 10,
         },
       })
@@ -176,7 +175,6 @@ describe(ShowReferralPresenter, () => {
             religionOrBelief: 'Agnostic',
             disabilities: ['Autism spectrum condition', 'sciatica'],
           },
-          additionalRiskInformation: '',
           maximumEnforceableDays: 10,
         },
       })
@@ -322,7 +320,6 @@ describe(ShowReferralPresenter, () => {
               religionOrBelief: 'Agnostic',
               disabilities: ['Autism spectrum condition', 'sciatica'],
             },
-            additionalRiskInformation: 'A danger to the elderly',
             maximumEnforceableDays: 10,
           },
         })
@@ -405,7 +402,6 @@ describe(ShowReferralPresenter, () => {
               religionOrBelief: 'Agnostic',
               disabilities: ['Autism spectrum condition', 'sciatica'],
             },
-            additionalRiskInformation: '',
             maximumEnforceableDays: 10,
           },
         })
