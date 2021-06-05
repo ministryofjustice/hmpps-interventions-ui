@@ -157,11 +157,17 @@ class ReferralService(
     val riskInformation = referral.additionalRiskInformation
       ?: throw ServerWebInputException("can't submit a referral without risk information")
 
+    val riskSubmittedAt = referral.additionalRiskInformationUpdatedAt
+      ?: run {
+        logger.warn("no additionalRiskInformationUpdatedAt on referral; setting to current time")
+        OffsetDateTime.now()
+      }
+
     val riskId = assessRisksAndNeedsService.createSupplementaryRisk(
       referral.id,
       referral.serviceUserCRN,
       user,
-      referral.additionalRiskInformationUpdatedAt,
+      riskSubmittedAt,
       riskInformation,
     )
 
