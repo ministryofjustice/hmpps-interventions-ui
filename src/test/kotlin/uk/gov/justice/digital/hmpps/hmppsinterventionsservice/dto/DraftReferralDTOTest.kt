@@ -20,10 +20,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
   private val serviceCategoryFactory = ServiceCategoryFactory()
   @Test
   fun `test serialization of newly created referral`() {
-    val referral = SampleData.sampleReferral(
-      "X123456",
-      "Provider",
-      relevantSentenceId = 123456789L,
+    val referral = referralFactory.createDraft(
       id = UUID.fromString("3B9ED289-8412-41A9-8291-45E33E60276C"),
       createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
     )
@@ -34,13 +31,64 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       {
         "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
         "createdAt": "2020-12-04T10:42:43Z",
-        "relevantSentenceId": 123456789,
         "serviceUser": {
           "crn": "X123456"
         },
         "serviceProvider": {
-          "name": "Provider"
-        }
+          "name": "Harmony Living"
+        },
+        "serviceCategoryIds": null,
+        "desiredOutcomes": null,
+        "complexityLevels": null
+      }
+    """
+    )
+  }
+
+  @Test
+  fun `test serialization of referral with empty collections`() {
+    val referral = referralFactory.createDraft(
+      complexityLevelIds = mutableMapOf(),
+      desiredOutcomes = emptyList(),
+      selectedServiceCategories = emptySet(),
+    )
+
+    val out = json.write(DraftReferralDTO.from(referral))
+    assertThat(out).isEqualToJson(
+      """
+      {
+        "serviceCategoryIds": null,
+        "desiredOutcomes": null,
+        "complexityLevels": null
+      }
+    """
+    )
+  }
+
+  @Test
+  fun `test serialization of referral with populated collections`() {
+    val serviceCategory = serviceCategoryFactory.create(id = UUID.fromString("e30c24e5-3aa7-4820-82ee-b028909876e6"))
+    val complexityLevelUUID = UUID.fromString("11c6d1f1-a22e-402a-b343-e57595876857")
+    val desiredOutcomeUUID = UUID.fromString("5a9d6e60-c314-4bf9-bf1e-b42b366b9398")
+    val referral = referralFactory.createDraft(
+      complexityLevelIds = mutableMapOf(serviceCategory.id to complexityLevelUUID),
+      desiredOutcomes = listOf(DesiredOutcome(desiredOutcomeUUID, "", serviceCategory.id)),
+      selectedServiceCategories = setOf(serviceCategory),
+    )
+
+    val out = json.write(DraftReferralDTO.from(referral))
+    assertThat(out).isEqualToJson(
+      """
+      {
+        "serviceCategoryIds": ["e30c24e5-3aa7-4820-82ee-b028909876e6"],
+        "desiredOutcomes": [{
+           "serviceCategoryId": "e30c24e5-3aa7-4820-82ee-b028909876e6",
+           "desiredOutcomesIds": ["5a9d6e60-c314-4bf9-bf1e-b42b366b9398"]
+        }],
+        "complexityLevels": [{
+           "serviceCategoryId": "e30c24e5-3aa7-4820-82ee-b028909876e6",
+           "complexityLevelId": "11c6d1f1-a22e-402a-b343-e57595876857"
+        }]
       }
     """
     )
