@@ -1,4 +1,4 @@
-import ShowReferralPresenter from '../serviceProviderReferrals/showReferralPresenter'
+import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { InputArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
 
