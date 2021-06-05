@@ -1,4 +1,4 @@
-import ShowReferralPresenter from './showReferralPresenter'
+import ShowReferralPresenter from '../serviceProviderReferrals/showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { InputArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
 
@@ -51,7 +51,7 @@ export default class ShowReferralView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/referralDetails',
+      'shared/referralDetails',
       {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
