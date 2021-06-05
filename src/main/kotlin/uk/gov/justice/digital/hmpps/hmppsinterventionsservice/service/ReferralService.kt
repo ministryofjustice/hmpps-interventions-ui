@@ -157,11 +157,17 @@ class ReferralService(
     val riskInformation = referral.additionalRiskInformation
       ?: throw ServerWebInputException("can't submit a referral without risk information")
 
+    val riskSubmittedAt = referral.additionalRiskInformationUpdatedAt
+      ?: run {
+        logger.warn("no additionalRiskInformationUpdatedAt on referral; setting to current time")
+        OffsetDateTime.now()
+      }
+
     val riskId = assessRisksAndNeedsService.createSupplementaryRisk(
       referral.id,
       referral.serviceUserCRN,
       user,
-      OffsetDateTime.now(), // fixme: this should be the timestamp which we store when additionalRiskInformation is set
+      riskSubmittedAt,
       riskInformation,
     )
 
@@ -278,6 +284,7 @@ class ReferralService(
 
     update.additionalRiskInformation?.let {
       referral.additionalRiskInformation = it
+      referral.additionalRiskInformationUpdatedAt = OffsetDateTime.now()
     }
 
     update.maximumEnforceableDays?.let {
