@@ -142,6 +142,44 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
     assertThat(draftReferral.relevantSentenceId).isEqualTo(123456789)
   }
 
+  @Nested inner class RiskInformation {
+    // this field has some funky JsonView annotations going on,
+    // so double check it's working as expected
+
+    @Test
+    fun `test serialization of additionalRiskInformation in draft referrals`() {
+      val referral = referralFactory.createDraft(id = UUID.fromString("3b9ed289-8412-41a9-8291-45e33e60276c"))
+
+      val out = json.write(DraftReferralDTO.from(referral))
+      assertThat(out).isEqualToJson(
+        """
+        {
+          "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
+          "completionDeadline": null,
+          "additionalRiskInformation": null
+        }
+        """
+      )
+    }
+
+    @Test
+    fun `test serialization of additionalRiskInformation in sent referrals`() {
+      val referral = referralFactory.createSent(id = UUID.fromString("3b9ed289-8412-41a9-8291-45e33e60276c"))
+
+      val out = json.forView(Views.SentReferral::class.java)
+        .write(DraftReferralDTO.from(referral))
+      assertThat(out).isEqualToJson(
+        """
+        {
+          "id": "3b9ed289-8412-41a9-8291-45e33e60276c",
+          "completionDeadline": null
+        }
+        """
+      )
+      assertThat(out).doesNotHaveJsonPath("$.additionalRiskInformation")
+    }
+  }
+
   @Nested
   inner class Ordering {
     val uuid1 = UUID.fromString("10000000-0106-4bcf-9da4-2a3c8c062114")

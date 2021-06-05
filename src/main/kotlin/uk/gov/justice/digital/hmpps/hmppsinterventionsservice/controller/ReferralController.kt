@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import com.fasterxml.jackson.annotation.JsonView
 import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SelectedDesire
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.Views
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -40,6 +42,7 @@ class ReferralController(
 ) {
   companion object : KLogging()
 
+  @JsonView(Views.SentReferral::class)
   @PostMapping("/sent-referral/{id}/assign")
   fun assignSentReferral(
     @PathVariable id: UUID,
@@ -59,6 +62,7 @@ class ReferralController(
     )
   }
 
+  @JsonView(Views.SentReferral::class)
   @PostMapping("/draft-referral/{id}/send")
   fun sendDraftReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): ResponseEntity<SentReferralDTO> {
     val user = userMapper.fromToken(authentication)
@@ -78,11 +82,13 @@ class ReferralController(
       .body(SentReferralDTO.from(sentReferral))
   }
 
+  @JsonView(Views.SentReferral::class)
   @GetMapping("/sent-referral/{id}")
   fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
     return SentReferralDTO.from(getSentReferralForAuthenticatedUser(authentication, id))
   }
 
+  @JsonView(Views.SentReferral::class)
   @GetMapping("/sent-referrals")
   fun getSentReferrals(
     authentication: JwtAuthenticationToken,
@@ -91,6 +97,7 @@ class ReferralController(
     return referralService.getSentReferralsForUser(user).map { SentReferralDTO.from(it) }
   }
 
+  @JsonView(Views.SentReferral::class)
   @PostMapping("/sent-referral/{id}/end")
   fun endSentReferral(@PathVariable id: UUID, @RequestBody endReferralRequest: EndReferralRequestDTO, authentication: JwtAuthenticationToken): SentReferralDTO {
     val sentReferral = getSentReferralForAuthenticatedUser(authentication, id)
