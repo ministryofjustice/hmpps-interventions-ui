@@ -15,6 +15,10 @@ import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
 import authUtils from '../../utils/authUtils'
 import interventionFactory from '../../../testutils/factories/intervention'
+import deliusUserFactory from '../../../testutils/factories/deliusUser'
+import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
+import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
+import HmppsAuthService from '../../services/hmppsAuthService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -24,11 +28,13 @@ const interventionsService = new InterventionsService(apiConfig.apis.interventio
 >
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
+const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
+
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, communityApiService, hmppsAuthService },
     userType: AppSetupUserType.serviceProvider,
   })
 })
@@ -286,5 +292,71 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/submit', () =>
       'MOV',
       'Alex has moved out of the area'
     )
+  })
+})
+
+describe('GET /probation-practitioner/referrals/:id/details', () => {
+  it('displays information about the referral and service user', async () => {
+    const intervention = interventionFactory.build()
+    const sentReferral = sentReferralFactory.unassigned().build()
+    const deliusUser = deliusUserFactory.build({
+      firstName: 'Bernard',
+      surname: 'Beaks',
+      email: 'bernard.beaks@justice.gov.uk',
+    })
+    const deliusServiceUser = deliusServiceUserFactory.build({
+      firstName: 'Alex',
+      surname: 'River',
+      contactDetails: {
+        emailAddresses: ['alex.river@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('This intervention is not yet assigned to a caseworker')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('bernard.beaks@justice.gov.uk')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('07123456789')
+        expect(res.text).toContain('Alex River')
+      })
+  })
+
+  describe('when the referral has been assigned to a caseworker', () => {
+    it('mentions the assigned caseworker', async () => {
+      const intervention = interventionFactory.build()
+      const sentReferral = sentReferralFactory.assigned().build()
+      const deliusUser = deliusUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+
+      await request(app)
+        .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('This intervention is assigned to')
+          expect(res.text).toContain('John Smith')
+        })
+    })
   })
 })

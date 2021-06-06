@@ -40,4 +40,14 @@ describe(ReferralOverviewPagePresenter, () => {
       expect(item.href.startsWith('/service-provider')).toEqual(true)
     })
   })
+
+  describe('dashboardURL', () => {
+    const values: ('service-provider' | 'probation-practitioner')[] = ['service-provider', 'probation-practitioner']
+    it.each(values)('returns a relative URL for the %s dashboard', prefix => {
+      const sentReferral = sentReferralFactory.build()
+      const presenter = new ReferralOverviewPagePresenter(ReferralOverviewPageSection.Details, sentReferral.id, prefix)
+
+      expect(presenter.dashboardURL).toEqual(`/${prefix}/referrals/dashboard`)
+    })
+  })
 })

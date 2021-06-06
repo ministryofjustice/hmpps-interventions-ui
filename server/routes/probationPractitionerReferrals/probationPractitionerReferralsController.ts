@@ -21,11 +21,15 @@ import ReferralCancellationReasonForm from './referralCancellationReasonForm'
 import ReferralCancellationConfirmationView from './referralCancellationConfirmationView'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
 import ControllerUtils from '../../utils/controllerUtils'
+import ShowReferralPresenter from '../shared/showReferralPresenter'
+import ShowReferralView from '../shared/showReferralView'
+import HmppsAuthService from '../../services/hmppsAuthService'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService
+    private readonly communityApiService: CommunityApiService,
+    private readonly hmppsAuthService: HmppsAuthService
   ) {}
 
   async showMyCases(req: Request, res: Response): Promise<void> {
@@ -83,6 +87,41 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlanAppointments)
     const view = new InterventionProgressView(presenter)
 
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async showReferral(req: Request, res: Response): Promise<void> {
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
+    const [intervention, sentBy, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(
+        res.locals.user.token.accessToken,
+        sentReferral.referral.interventionId
+      ),
+      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const assignee =
+      sentReferral.assignedTo === null
+        ? null
+        : await this.hmppsAuthService.getSPUserByUsername(
+            res.locals.user.token.accessToken,
+            sentReferral.assignedTo.username
+          )
+
+    const presenter = new ShowReferralPresenter(
+      sentReferral,
+      intervention,
+      sentBy,
+      assignee,
+      null,
+      'probation-practitioner',
+      false
+    )
+    const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

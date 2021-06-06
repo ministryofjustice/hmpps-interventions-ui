@@ -5,7 +5,7 @@ import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
-import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
+import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import Intervention from '../../models/intervention'
 import ServiceCategory from '../../models/serviceCategory'
@@ -22,12 +22,14 @@ export default class ShowReferralPresenter {
     private readonly intervention: Intervention,
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
-    private readonly assignEmailError: FormValidationError | null
+    private readonly assignEmailError: FormValidationError | null,
+    subNavUrlPrefix: 'service-provider' | 'probation-practitioner',
+    readonly canAssignReferral: boolean
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      'service-provider'
+      subNavUrlPrefix
     )
   }
 

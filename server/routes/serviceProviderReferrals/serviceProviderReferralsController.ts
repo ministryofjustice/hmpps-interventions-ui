@@ -9,8 +9,8 @@ import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
 import DashboardPresenter from './dashboardPresenter'
 import DashboardView from './dashboardView'
-import ShowReferralPresenter from './showReferralPresenter'
-import ShowReferralView from './showReferralView'
+import ShowReferralPresenter from '../shared/showReferralPresenter'
+import ShowReferralView from '../shared/showReferralView'
 import AssignmentConfirmationView from './assignmentConfirmationView'
 import AssignmentConfirmationPresenter from './assignmentConfirmationPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -117,7 +117,15 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const presenter = new ShowReferralPresenter(sentReferral, intervention, sentBy, assignee, formError)
+    const presenter = new ShowReferralPresenter(
+      sentReferral,
+      intervention,
+      sentBy,
+      assignee,
+      formError,
+      'service-provider',
+      true
+    )
     const view = new ShowReferralView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

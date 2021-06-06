@@ -3,6 +3,7 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import interventionFactory from '../../testutils/factories/intervention'
+import deliusUserFactory from '../../testutils/factories/deliusUser'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -155,5 +156,113 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Some progression comments for serviceCategory1')
     cy.contains('Some task comments for serviceCategory1')
     cy.contains('Some further information')
+  })
+
+  it('probation practitioner views referral details', () => {
+    cy.stubGetSentReferralsForUserToken([])
+
+    const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+
+    const personalWellbeingIntervention = interventionFactory.build({
+      contractType: { code: 'PWB', name: 'Personal wellbeing' },
+      serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+    })
+
+    const referral = sentReferralFactory.build({
+      sentAt: '2020-09-13T13:00:00.000000Z',
+      referenceNumber: 'ABCABCA2',
+      referral: {
+        interventionId: personalWellbeingIntervention.id,
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+        complexityLevels: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          },
+        ],
+        desiredOutcomes: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          },
+        ],
+      },
+    })
+
+    const deliusUser = deliusUserFactory.build({
+      firstName: 'Bernard',
+      surname: 'Beaks',
+      email: 'bernard.beaks@justice.gov.uk',
+    })
+
+    const deliusServiceUser = deliusServiceUserFactory.build({
+      firstName: 'Jenny',
+      surname: 'Jones',
+      dateOfBirth: '1980-01-01',
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
+
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+
+    cy.login()
+
+    cy.visit(`/probation-practitioner/referrals/${referral.id}/details`)
+
+    cy.contains('This intervention is not yet assigned to a caseworker')
+
+    cy.contains('07123456789 | jenny.jones@example.com')
+
+    cy.contains('Intervention details')
+    cy.contains('Personal wellbeing')
+
+    cy.contains('Accommodation service')
+    cy.contains('LOW COMPLEXITY')
+    cy.contains('Service User has some capacity and means to secure')
+    cy.contains('All barriers, as identified in the Service User Action Plan')
+    cy.contains('Service User makes progress in obtaining accommodation')
+
+    cy.contains('Social inclusion service')
+    cy.contains('MEDIUM COMPLEXITY')
+    cy.contains('Service User is at risk of homelessness/is homeless')
+    cy.contains('Service User is helped to secure social or supported housing')
+    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
+
+    cy.contains("Service user's personal details")
+    cy.contains('English')
+    cy.contains('Agnostic')
+    cy.contains('Autism spectrum condition')
+    cy.contains('sciatica')
+    cy.contains("Service user's risk information")
+    cy.contains(
+      'The Refer and Monitor an Intervention service cannot currently display this risk information. It will be available before Service Providers start using the digital service.'
+    )
+    cy.contains("Service user's needs")
+    cy.contains('Alex is currently sleeping on her aunt’s sofa')
+    cy.contains('She uses a wheelchair')
+    cy.contains('Spanish')
+    cy.contains('She works Mondays 9am - midday')
+    cy.contains('Bernard Beaks')
+    cy.contains('bernard.beaks@justice.gov.uk')
   })
 })
