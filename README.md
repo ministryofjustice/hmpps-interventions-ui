@@ -72,3 +72,17 @@ If you want to populate your local database with seeded values from [local data 
 ```
 SPRING_PROFILES_ACTIVE=local,seed ./gradlew bootRun
 ```
+
+### Testing cronjobs
+
+Run the CronJob as a one-off job with:
+
+```
+kubectl create job --from=cronjob/{name} "{any name for the one-off job}" --namespace=hmpps-interventions-{yournamespace}
+```
+
+For example:
+
+```
+kubectl create job --from=cronjob.batch/data-extractor-reporting data-extractor-reporting-once --namespace=hmpps-interventions-preprod
+```
