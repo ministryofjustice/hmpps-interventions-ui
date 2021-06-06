@@ -36,11 +36,11 @@ describe(ServiceUserBannerPresenter, () => {
       serviceUser.dateOfBirth = '1989-02-10'
 
       const presenterWithDOB = new ServiceUserBannerPresenter(serviceUser)
-      expect(presenterWithDOB.dateOfBirth).toEqual('Date of birth: 10 February 1989')
+      expect(presenterWithDOB.dateOfBirth).toEqual('10 February 1989')
 
       serviceUser.dateOfBirth = null
       const presenterWithoutDOB = new ServiceUserBannerPresenter(serviceUser)
-      expect(presenterWithoutDOB.dateOfBirth).toEqual('Date of birth: Not found')
+      expect(presenterWithoutDOB.dateOfBirth).toEqual('Not found')
     })
   })
 

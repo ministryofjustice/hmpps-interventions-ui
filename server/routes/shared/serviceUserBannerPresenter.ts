@@ -10,7 +10,7 @@ export default class ServiceUserBannerPresenter {
   }
 
   get dateOfBirth(): string {
-    return `Date of birth: ${PresenterUtils.govukFormattedDateFromStringOrNull(this.serviceUser.dateOfBirth)}`
+    return PresenterUtils.govukFormattedDateFromStringOrNull(this.serviceUser.dateOfBirth)
   }
 
   get serviceUserEmail(): string {
