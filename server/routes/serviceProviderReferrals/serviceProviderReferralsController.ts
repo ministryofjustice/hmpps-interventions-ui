@@ -123,7 +123,8 @@ export default class ServiceProviderReferralsController {
       sentBy,
       assignee,
       formError,
-      'service-provider'
+      'service-provider',
+      true
     )
     const view = new ShowReferralView(presenter)
 

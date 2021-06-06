@@ -23,7 +23,8 @@ export default class ShowReferralPresenter {
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
-    subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
+    subNavUrlPrefix: 'service-provider' | 'probation-practitioner',
+    readonly canAssignReferral: boolean
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,

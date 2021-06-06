@@ -118,7 +118,8 @@ export default class ProbationPractitionerReferralsController {
       sentBy,
       assignee,
       null,
-      'probation-practitioner'
+      'probation-practitioner',
+      false
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)

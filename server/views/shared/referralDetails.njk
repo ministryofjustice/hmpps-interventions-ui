@@ -3,11 +3,15 @@
 
 {% block referralPageSection %}
       {% if presenter.text.assignedTo == null %}
-        <h2 class="govuk-heading-m">Who do you want to assign this referral to?</h2>
-        <form method="get" action={{ presenter.assignmentFormAction }}>
-          {{ govukInput(emailInputArgs) }}
-          {{ govukButton({ text: "Save and continue" }) }}
-        </form>
+         {% if presenter.canAssignReferral %}
+           <h2 class="govuk-heading-m">Who do you want to assign this referral to?</h2>
+           <form method="get" action={{ presenter.assignmentFormAction }}>
+                 {{ govukInput(emailInputArgs) }}
+                 {{ govukButton({ text: "Save and continue" }) }}
+           </form>
+         {% else %}
+           <p class="govuk-body">This intervention is not yet assigned to a caseworker.</p>
+         {% endif %}
       {% else %}
         <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
       {% endif %}
