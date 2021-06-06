@@ -127,3 +127,8 @@ aws:
     enabled: true
     provider: aws
     region: eu-west-2
+
+webclient:
+  connect-timeout-seconds: 20
+  read-timeout-seconds: 5
+  write-timeout-seconds: 5

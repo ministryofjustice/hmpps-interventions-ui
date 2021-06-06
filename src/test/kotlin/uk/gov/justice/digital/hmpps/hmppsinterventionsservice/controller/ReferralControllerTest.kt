@@ -45,7 +45,7 @@ internal class ReferralControllerTest {
   @Test
   fun `createDraftReferral handles EntityNotFound exceptions from InterventionsService`() {
     val token = tokenFactory.create()
-    whenever(referralService.createDraftReferral(any(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())).thenThrow(EntityNotFoundException::class.java)
+    whenever(referralService.createDraftReferral(any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())).thenThrow(EntityNotFoundException::class.java)
     assertThrows<ServerWebInputException> {
       referralController.createDraftReferral(CreateReferralRequestDTO("CRN20", UUID.randomUUID()), token)
     }
@@ -59,7 +59,7 @@ internal class ReferralControllerTest {
 
     @Test
     fun `getSentReferral returns not found if sent referral does not exist`() {
-      whenever(referralService.getSentReferralForUser(eq(referral.id), any(), any())).thenReturn(null)
+      whenever(referralService.getSentReferralForUser(eq(referral.id), any())).thenReturn(null)
       val e = assertThrows<ResponseStatusException> {
         referralController.getSentReferral(
           referral.id,
@@ -72,7 +72,7 @@ internal class ReferralControllerTest {
 
     @Test
     fun `getSentReferral returns a sent referral if it exists`() {
-      whenever(referralService.getSentReferralForUser(eq(referral.id), any(), any())).thenReturn(referral)
+      whenever(referralService.getSentReferralForUser(eq(referral.id), any())).thenReturn(referral)
       val sentReferral = referralController.getSentReferral(
         referral.id,
         token,
@@ -83,7 +83,7 @@ internal class ReferralControllerTest {
 
   @Test
   fun `assignSentReferral returns 404 if referral does not exist`() {
-    whenever(referralService.getSentReferralForUser(any(), any(), any())).thenReturn(null)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
     val e = assertThrows<ResponseStatusException> {
       referralController.assignSentReferral(
         UUID.randomUUID(),
@@ -98,7 +98,7 @@ internal class ReferralControllerTest {
   fun `assignSentReferral uses incoming jwt for 'assignedBy' argument, and request body for 'assignedTo'`() {
     val referral = referralFactory.createSent()
     val assignedToUser = authUserFactory.create(id = "to")
-    whenever(referralService.getSentReferralForUser(any(), any(), any())).thenReturn(referral)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
     whenever(referralService.assignSentReferral(any(), any(), any())).thenReturn(referral)
     referralController.assignSentReferral(
       UUID.randomUUID(),
@@ -120,7 +120,7 @@ internal class ReferralControllerTest {
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
-    whenever(referralService.getSentReferralForUser(any(), any(), any())).thenReturn(referral)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
 
     val user = AuthUser("CRN123", "auth", "user")
     val token = tokenFactory.create(user.id, user.authSource, user.userName)
@@ -136,7 +136,7 @@ internal class ReferralControllerTest {
     val cancellationReason = CancellationReason("AAA", "description")
 
     whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
-    whenever(referralService.getSentReferralForUser(any(), any(), any())).thenReturn(null)
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
 
     val token = tokenFactory.create()
     val e = assertThrows<ResponseStatusException> {

@@ -117,7 +117,6 @@ class ReferralController(
         user,
         createReferralRequestDTO.serviceUserCrn,
         createReferralRequestDTO.interventionId,
-        authentication,
       )
     } catch (e: EntityNotFoundException) {
       throw ServerWebInputException("invalid intervention id [id=${createReferralRequestDTO.interventionId}]")
@@ -185,13 +184,13 @@ class ReferralController(
 
   private fun getDraftReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
     val user = userMapper.fromToken(authentication)
-    return referralService.getDraftReferralForUser(id, user, authentication)
+    return referralService.getDraftReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft referral not found [id=$id]")
   }
 
   private fun getSentReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
     val user = userMapper.fromToken(authentication)
-    return referralService.getSentReferralForUser(id, user, authentication)
+    return referralService.getSentReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
   }
 }

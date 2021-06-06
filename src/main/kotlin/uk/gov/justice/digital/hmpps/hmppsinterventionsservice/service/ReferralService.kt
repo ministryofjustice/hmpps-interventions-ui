@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
@@ -59,24 +58,24 @@ class ReferralService(
     private const val maxReferenceNumberTries = 10
   }
 
-  fun getSentReferralForUser(id: UUID, user: AuthUser, authentication: JwtAuthenticationToken): Referral? {
+  fun getSentReferralForUser(id: UUID, user: AuthUser): Referral? {
     val referral = referralRepository.findByIdAndSentAtIsNotNull(id)
 
     referral?.let {
-      referralAccessChecker.forUser(it, user, authentication)
+      referralAccessChecker.forUser(it, user)
     }
 
     return referral
   }
 
-  fun getDraftReferralForUser(id: UUID, user: AuthUser, authentication: JwtAuthenticationToken): Referral? {
+  fun getDraftReferralForUser(id: UUID, user: AuthUser): Referral? {
     if (!userTypeChecker.isProbationPractitionerUser(user)) {
       throw AccessError("user does not have access to referral", listOf("only probation practitioners can access draft referrals"))
     }
 
     val referral = referralRepository.findByIdAndSentAtIsNull(id)
     referral?.let {
-      referralAccessChecker.forUser(it, user, authentication)
+      referralAccessChecker.forUser(it, user)
     }
     return referral
   }
@@ -180,7 +179,6 @@ class ReferralService(
     user: AuthUser,
     crn: String,
     interventionId: UUID,
-    authentication: JwtAuthenticationToken,
     overrideID: UUID? = null,
     overrideCreatedAt: OffsetDateTime? = null,
     endOfServiceReport: EndOfServiceReport? = null,
@@ -190,7 +188,7 @@ class ReferralService(
     }
 
     // PPs can't create referrals for service users they are not allowed to see
-    serviceUserAccessChecker.forProbationPractitionerUser(crn, authentication)
+    serviceUserAccessChecker.forProbationPractitionerUser(crn, user)
 
     val intervention = interventionRepository.getOne(interventionId)
     val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
