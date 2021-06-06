@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
@@ -15,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServic
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -32,13 +32,13 @@ class CommunityAPIOffenderService(
   @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
   private val communityAPIClient: CommunityAPIClient,
 ) {
-  fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(authentication: JwtAuthenticationToken, crn: String): ServiceUserAccessResult {
+  fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(user: AuthUser, crn: String): ServiceUserAccessResult {
     val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
       .buildAndExpand(crn)
       .toString()
 
-    val client = communityAPIClient.withCustomAuth(authentication)
-    val response = client.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
+    val response = communityAPIClient.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
+
     return ServiceUserAccessResult(
       !(response.userExcluded || response.userRestricted),
       listOfNotNull(response.exclusionMessage, response.restrictionMessage),

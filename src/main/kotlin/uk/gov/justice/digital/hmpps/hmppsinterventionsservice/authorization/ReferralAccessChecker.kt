@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -15,9 +14,9 @@ class ReferralAccessChecker(
 ) {
   private val errorMessage = "user does not have access to referral"
 
-  fun forUser(referral: Referral, user: AuthUser, authentication: JwtAuthenticationToken) {
+  fun forUser(referral: Referral, user: AuthUser) {
     when {
-      userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user, authentication)
+      userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user)
       userTypeChecker.isServiceProviderUser(user) -> forServiceProviderUser(referral, user)
       else -> throw AccessError(errorMessage, listOf("invalid user type"))
     }
@@ -41,8 +40,8 @@ class ReferralAccessChecker(
     }
   }
 
-  private fun forProbationPractitionerUser(referral: Referral, user: AuthUser, authentication: JwtAuthenticationToken) {
+  private fun forProbationPractitionerUser(referral: Referral, user: AuthUser) {
     // check if the PP is allowed to access this service user's records
-    serviceUserAccessChecker.forProbationPractitionerUser(referral.serviceUserCRN, authentication)
+    serviceUserAccessChecker.forProbationPractitionerUser(referral.serviceUserCRN, user)
   }
 }
