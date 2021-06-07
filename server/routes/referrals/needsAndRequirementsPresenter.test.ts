@@ -1,20 +1,7 @@
 import NeedsAndRequirementsPresenter from './needsAndRequirementsPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
-import { ListStyle } from '../../utils/summaryList'
 
 describe('NeedsAndRequirementsPresenter', () => {
-  describe('summary', () => {
-    it('returns a summary of the service user’s details', () => {
-      const referral = draftReferralFactory.serviceCategorySelected().build()
-      const presenter = new NeedsAndRequirementsPresenter(referral)
-
-      expect(presenter.summary).toEqual([
-        { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
-        { key: 'Gender', lines: ['Male'] },
-      ])
-    })
-  })
-
   describe('errorSummary', () => {
     describe('when error is null', () => {
       it('returns null', () => {

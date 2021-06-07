@@ -1,6 +1,5 @@
 import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
-import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 
 export default class NeedsAndRequirementsPresenter {
@@ -9,12 +8,6 @@ export default class NeedsAndRequirementsPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
-
-  readonly summary: SummaryListItem[] = [
-    { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
-    { key: 'Gender', lines: ['Male'] },
-    // TODO IC-746 populate with service user data once we have it
-  ]
 
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)
