@@ -28,8 +28,8 @@ class WebClientConfiguration(
   private val webClientBuilder: WebClient.Builder
 ) {
   @Bean
-  fun assessRisksAndNeedsClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
-    return createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl)
+  fun assessRisksAndNeedsClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
+    return RestClient(createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl))
   }
 
   @Bean

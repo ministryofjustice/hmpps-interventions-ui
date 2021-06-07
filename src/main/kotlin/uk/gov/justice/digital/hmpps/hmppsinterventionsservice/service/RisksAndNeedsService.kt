@@ -4,14 +4,12 @@ import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -34,7 +32,7 @@ data class SupplementaryRiskResponse(
 @Transactional
 class RisksAndNeedsService(
   @Value("\${assess-risks-and-needs.locations.create-supplementary-risk}") private val createSupplementaryRiskLocation: String,
-  private val assessRisksAndNeedsClient: WebClient,
+  private val assessRisksAndNeedsClient: RestClient,
 ) {
   companion object : KLogging()
 
@@ -49,10 +47,7 @@ class RisksAndNeedsService(
       riskInformation,
     )
 
-    return assessRisksAndNeedsClient.post().uri(createSupplementaryRiskLocation)
-      .bodyValue(request)
-      .accept(MediaType.APPLICATION_JSON)
-      .acceptCharset(StandardCharsets.UTF_8)
+    return assessRisksAndNeedsClient.post(createSupplementaryRiskLocation, request)
       .retrieve()
       .bodyToMono(SupplementaryRiskResponse::class.java)
       .onErrorResume(WebClientResponseException::class.java) {
