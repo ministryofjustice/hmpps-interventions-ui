@@ -20,5 +20,6 @@ env:
   HMPPSAUTH_BASEURL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
   INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
+  ASSESSRISKSANDNEEDS_BASEURL: "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk"
   SENTRY_ENVIRONMENT: "research"
   APPOINTMENTS_BOOKINGS_ENABLED: false
