@@ -333,9 +333,6 @@ describe('Service provider referrals dashboard', () => {
       activities: [
         {
           id: '1',
-          desiredOutcome: {
-            id: desiredOutcomes[0].id,
-          },
           description: 'Attend training course',
           createdAt: new Date().toISOString(),
         },
@@ -356,9 +353,6 @@ describe('Service provider referrals dashboard', () => {
         ...draftActionPlanWithActivity.activities,
         {
           id: '2',
-          desiredOutcome: {
-            id: desiredOutcomes[1].id,
-          },
           description: 'Create appointment with local authority',
           createdAt: new Date().toISOString(),
         },

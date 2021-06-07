@@ -1,9 +1,7 @@
 import User from './hmppsAuth/user'
-import DesiredOutcome from './desiredOutcome'
 
 export interface Activity {
   id: string
-  desiredOutcome: DesiredOutcome
   description: string
   createdAt: string
 }

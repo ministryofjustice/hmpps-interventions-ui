@@ -89,13 +89,11 @@ describe(ReviewActionPlanPresenter, () => {
           {
             id: '1',
             description: 'description 1',
-            desiredOutcome: desiredOutcomes[0],
             createdAt: '2021-03-15T10:05:00Z',
           },
           {
             id: '2',
             description: 'description 2',
-            desiredOutcome: desiredOutcomes[0],
             createdAt: '2021-03-15T10:00:00Z',
           },
         ],
