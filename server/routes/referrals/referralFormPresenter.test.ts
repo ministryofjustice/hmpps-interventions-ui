@@ -250,10 +250,13 @@ describe('ReferralFormPresenter', () => {
   })
   describe('for a cohort referral', () => {
     const serviceCategories: ServiceCategory[] = [
-      serviceCategoryFactory.build({ name: 'accommodation' }),
-      serviceCategoryFactory.build({ name: 'social inclusion' }),
+      serviceCategoryFactory.build({ name: 'accommodation', id: '2' }),
+      serviceCategoryFactory.build({ name: 'social inclusion', id: '3' }),
     ]
-    const cohortIntervention = interventionFactory.build({ serviceCategories })
+    const cohortIntervention = interventionFactory.build({
+      serviceCategories: [...serviceCategories, serviceCategoryFactory.build({ name: 'personal wellbeing', id: '1' })],
+    })
+
     describe('select service categories section', () => {
       describe('when "needs and requirements" has been set', () => {
         it('should contain a "Not Started" label', () => {
