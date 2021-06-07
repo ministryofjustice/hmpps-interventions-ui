@@ -67,7 +67,7 @@ export default class ReferralsController {
 
     let serviceUser: DeliusServiceUser | null = null
 
-    const crn = req.body['service-user-crn']
+    const crn = req.body['service-user-crn']?.trim()
     const { interventionId } = req.params
 
     if (form.isValid) {
