@@ -13,6 +13,8 @@ import ComplexityLevel from '../../models/complexityLevel'
 import { TagArgs } from '../../utils/govukFrontendTypes'
 import DesiredOutcome from '../../models/desiredOutcome'
 import logger from '../../../log'
+import DeliusConviction from '../../models/delius/deliusConviction'
+import SentencePresenter from '../referrals/sentencePresenter'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -20,6 +22,7 @@ export default class ShowReferralPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly intervention: Intervention,
+    private readonly conviction: DeliusConviction,
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
@@ -133,9 +136,22 @@ export default class ShowReferralPresenter {
   }
 
   get interventionDetails(): SummaryListItem[] {
+    const sentencePresenter = new SentencePresenter(this.conviction)
+
     return [
       { key: 'Service type', lines: [utils.convertToProperCase(this.intervention.contractType.name)] },
-      { key: 'Sentence information', lines: ['Not currently set'] },
+      {
+        key: 'Sentence',
+        lines: [sentencePresenter.category],
+      },
+      {
+        key: 'Subcategory',
+        lines: [sentencePresenter.subcategory],
+      },
+      {
+        key: 'End of sentence date',
+        lines: [sentencePresenter.endOfSentenceDate],
+      },
       {
         key: 'Date to be completed by',
         lines: [PresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],
@@ -147,6 +163,25 @@ export default class ShowReferralPresenter {
       {
         key: 'Further information for the provider',
         lines: [this.sentReferral.referral.furtherInformation || 'N/A'],
+      },
+    ]
+  }
+
+  get sentenceInformationSummary(): SummaryListItem[] {
+    const presenter = new SentencePresenter(this.conviction)
+
+    return [
+      {
+        key: 'Sentence',
+        lines: [presenter.category],
+      },
+      {
+        key: 'Subcategory',
+        lines: [presenter.subcategory],
+      },
+      {
+        key: 'End of sentence date',
+        lines: [presenter.endOfSentenceDate],
       },
     ]
   }

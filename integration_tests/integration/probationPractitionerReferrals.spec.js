@@ -4,6 +4,7 @@ import endOfServiceReportFactory from '../../testutils/factories/endOfServiceRep
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import interventionFactory from '../../testutils/factories/intervention'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
+import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -169,12 +170,28 @@ describe('Probation practitioner referrals dashboard', () => {
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
+    const conviction = deliusConvictionFactory.build({
+      offences: [
+        {
+          mainOffence: true,
+          detail: {
+            mainCategoryDescription: 'Burglary',
+            subCategoryDescription: 'Theft act, 1968',
+          },
+        },
+      ],
+      sentence: {
+        expectedSentenceEndDate: '2025-11-15',
+      },
+    })
+
     const referral = sentReferralFactory.build({
       sentAt: '2020-09-13T13:00:00.000000Z',
       referenceNumber: 'ABCABCA2',
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        relevantSentenceId: conviction.convictionId,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -223,6 +240,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
 
     cy.login()
@@ -235,6 +253,9 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('Intervention details')
     cy.contains('Personal wellbeing')
+    cy.contains('Burglary')
+    cy.contains('Theft act, 1968')
+    cy.contains('15 November 2025')
 
     cy.contains('Accommodation service')
     cy.contains('LOW COMPLEXITY')
