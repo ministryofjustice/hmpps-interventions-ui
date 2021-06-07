@@ -55,11 +55,11 @@ env:
         name: sentry
         key: ui_dsn
 
-  - name: APPLICATIONINSIGHTS_INSTRUMENTATION_KEY
+  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     valueFrom:
       secretKeyRef:
         name: application-insights
-        key: instrumentation_key
+        key: connection_string
 
   {{ range $key, $value := .Values.env }}
   - name: {{ $key }}

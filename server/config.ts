@@ -48,7 +48,7 @@ export default {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },
   applicationInsights: {
-    instrumentationKey: get('APPLICATIONINSIGHTS_INSTRUMENTATION_KEY', 'dummy', requiredInProduction),
+    connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', 'dummy', requiredInProduction),
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
