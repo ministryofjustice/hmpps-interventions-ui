@@ -639,6 +639,34 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
         durationInMinutes: 75,
       })
     })
+
+    describe('when the interventions service responds with a 409 status code', () => {
+      it('renders a specific error message', async () => {
+        interventionsService.getActionPlanAppointment.mockResolvedValue(actionPlanAppointmentFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+
+        const error = { status: 409 }
+        interventionsService.updateActionPlanAppointment.mockRejectedValue(error)
+
+        await request(app)
+          .post(`/service-provider/action-plan/1/sessions/1/edit`)
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+          })
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
+          })
+      })
+    })
   })
 
   describe('with invalid data', () => {
