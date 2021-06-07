@@ -41,7 +41,7 @@ export default class InterventionDetailsPresenter {
     const summary = [
       {
         key: 'Type',
-        lines: ['Dynamic Framework'],
+        lines: ['Commissioned Rehabilitative Service'],
       },
       {
         key: 'Location',

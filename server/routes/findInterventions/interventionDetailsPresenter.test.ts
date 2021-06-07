@@ -129,8 +129,8 @@ three lines.`,
     }
 
     describe('Type', () => {
-      it('is “Dynamic Framework”', () => {
-        expect(linesForKey('Type', {})).toEqual(['Dynamic Framework'])
+      it('is “Commissioned Rehabilitative Service”', () => {
+        expect(linesForKey('Type', {})).toEqual(['Commissioned Rehabilitative Service'])
       })
     })
 
