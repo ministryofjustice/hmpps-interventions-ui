@@ -98,24 +98,46 @@ describe('POST /intervention/:id/refer', () => {
     })
   })
 
-  describe('when providing a CRN with blank space', () => {
-    it('trims any leading and trailing whitespace', async () => {
-      const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
-      const serviceUserCRN = ' X123456 '
-      const serviceUserCRNTrimmed = 'X123456'
+  describe('when a non standard CRN is entered', () => {
+    describe('having leading and trailing whitespace', () => {
+      it('trims any leading and trailing whitespace', async () => {
+        const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+        const serviceUserCRN = ' X123456 '
+        const serviceUserCRNTrimmed = 'X123456'
 
-      await request(app)
-        .post(`/intervention/${interventionId}/refer`)
-        .send({ 'service-user-crn': serviceUserCRN })
-        .expect(303)
-        .expect('Location', '/referrals/1/form')
+        await request(app)
+          .post(`/intervention/${interventionId}/refer`)
+          .send({ 'service-user-crn': serviceUserCRN })
+          .expect(303)
+          .expect('Location', '/referrals/1/form')
 
-      expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledWith(serviceUserCRNTrimmed)
-      expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
-        'token',
-        serviceUserCRNTrimmed,
-        interventionId
-      )
+        expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledWith(serviceUserCRNTrimmed)
+        expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
+          'token',
+          serviceUserCRNTrimmed,
+          interventionId
+        )
+      })
+    })
+    describe('having lowercase characters', () => {
+      it('transforms lowercase characters to uppercase', async () => {
+        const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+        const serviceUserCRN = 'x123456'
+        const serviceUserCRNTransformed = 'X123456'
+
+        await request(app)
+          .post(`/intervention/${interventionId}/refer`)
+          .send({ 'service-user-crn': serviceUserCRN })
+          .expect(303)
+          .expect('Location', '/referrals/1/form')
+
+        expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledWith(serviceUserCRNTransformed)
+        expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
+          'token',
+          serviceUserCRNTransformed,
+          interventionId
+        )
+      })
     })
   })
   describe('when the interventions service returns an error', () => {
