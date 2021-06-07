@@ -129,8 +129,8 @@ three lines.`,
     }
 
     describe('Type', () => {
-      it('is “Dynamic Framework”', () => {
-        expect(linesForKey('Type', {})).toEqual(['Dynamic Framework'])
+      it('is “Commissioned Rehabilitative Service”', () => {
+        expect(linesForKey('Type', {})).toEqual(['Commissioned Rehabilitative Service'])
       })
     })
 
@@ -173,7 +173,7 @@ three lines.`,
       describe('for a single-service intervention', () => {
         it('is the service category name', () => {
           expect(
-            linesForKey('Service type', {
+            linesForKey('Service category', {
               serviceCategories: [serviceCategoryFactory.build({ name: 'accommodation' })],
             })
           ).toEqual(['Accommodation'])
@@ -188,7 +188,7 @@ three lines.`,
               serviceCategoryFactory.build({ name: 'emotional wellbeing' }),
             ],
           })
-          const item = summary.find(anItem => anItem.key === 'Service types')
+          const item = summary.find(anItem => anItem.key === 'Service categories')
           expect(item).toMatchObject({ lines: ['Accommodation', 'Emotional wellbeing'], listStyle: ListStyle.bulleted })
         })
       })

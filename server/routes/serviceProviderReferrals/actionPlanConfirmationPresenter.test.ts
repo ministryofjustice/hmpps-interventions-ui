@@ -29,7 +29,7 @@ describe(ActionPlanConfirmationPresenter, () => {
           lines: ['CEF345'],
         },
         {
-          key: 'Service type',
+          key: 'Service category',
           lines: ['Social inclusion'],
         },
       ])
