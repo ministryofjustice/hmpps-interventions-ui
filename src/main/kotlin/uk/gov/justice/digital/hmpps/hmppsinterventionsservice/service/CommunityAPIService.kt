@@ -29,25 +29,6 @@ interface CommunityAPIService {
 }
 
 @Service
-class CommunityAPIOffenderService(
-  @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
-  private val communityAPIClient: CommunityAPIClient,
-) {
-  fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(user: AuthUser, crn: String): ServiceUserAccessResult {
-    val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
-      .buildAndExpand(crn)
-      .toString()
-
-    val response = communityAPIClient.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
-
-    return ServiceUserAccessResult(
-      !(response.userExcluded || response.userRestricted),
-      listOfNotNull(response.exclusionMessage, response.restrictionMessage),
-    )
-  }
-}
-
-@Service
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
@@ -270,16 +251,4 @@ data class AppointmentOutcomeRequest(
   val notes: String,
   val attended: String,
   val notifyPPOfAttendanceBehaviour: Boolean,
-)
-
-data class UserAccessResponse(
-  val userExcluded: Boolean,
-  val userRestricted: Boolean,
-  val exclusionMessage: String?,
-  val restrictionMessage: String?,
-)
-
-data class ServiceUserAccessResult(
-  val canAccess: Boolean,
-  val messages: List<String>,
 )
