@@ -171,7 +171,7 @@ three lines.`,
 
     describe('Service type', () => {
       describe('for a single-service intervention', () => {
-        it('is the service category name', () => {
+        it('is the service type name', () => {
           expect(
             linesForKey('Service type', {
               serviceCategories: [serviceCategoryFactory.build({ name: 'accommodation' })],
@@ -181,7 +181,7 @@ three lines.`,
       })
 
       describe('for a cohort intervention', () => {
-        it('has a pluralised key, and is a list of service category names', () => {
+        it('has a pluralised key, and is a list of service types names', () => {
           const summary = summaryForParams({
             serviceCategories: [
               serviceCategoryFactory.build({ name: 'accommodation' }),
