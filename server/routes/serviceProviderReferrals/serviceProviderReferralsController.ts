@@ -462,6 +462,8 @@ export default class ServiceProviderReferralsController {
                 },
               ],
             }
+          } else {
+            throw e
           }
         }
       }

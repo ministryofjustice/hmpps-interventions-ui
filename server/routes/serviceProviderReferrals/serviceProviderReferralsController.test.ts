@@ -667,6 +667,32 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
           })
       })
     })
+
+    describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
+      it('renders an error message', async () => {
+        interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+
+        const error = new Error('Failed to update appointment')
+        interventionsService.updateActionPlanAppointment.mockRejectedValue(error)
+
+        await request(app)
+          .post(`/service-provider/action-plan/1/sessions/1/edit`)
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+          })
+          .expect(500)
+          .expect(res => {
+            expect(res.text).toContain('Failed to update appointment')
+          })
+      })
+    })
   })
 
   describe('with invalid data', () => {
