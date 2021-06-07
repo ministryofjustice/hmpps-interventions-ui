@@ -29,7 +29,7 @@ describe(UpdateServiceCategoriesForm, () => {
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'service-category-ids',
           formFields: ['service-category-ids'],
-          message: 'At least one service type must be selected',
+          message: 'At least one service category must be selected',
         })
       })
     })

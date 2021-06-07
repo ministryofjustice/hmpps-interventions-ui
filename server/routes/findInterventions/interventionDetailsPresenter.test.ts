@@ -171,9 +171,9 @@ three lines.`,
 
     describe('Service type', () => {
       describe('for a single-service intervention', () => {
-        it('is the service type name', () => {
+        it('is the service category name', () => {
           expect(
-            linesForKey('Service type', {
+            linesForKey('Service category', {
               serviceCategories: [serviceCategoryFactory.build({ name: 'accommodation' })],
             })
           ).toEqual(['Accommodation'])
@@ -181,14 +181,14 @@ three lines.`,
       })
 
       describe('for a cohort intervention', () => {
-        it('has a pluralised key, and is a list of service types names', () => {
+        it('has a pluralised key, and is a list of service category names', () => {
           const summary = summaryForParams({
             serviceCategories: [
               serviceCategoryFactory.build({ name: 'accommodation' }),
               serviceCategoryFactory.build({ name: 'emotional wellbeing' }),
             ],
           })
-          const item = summary.find(anItem => anItem.key === 'Service types')
+          const item = summary.find(anItem => anItem.key === 'Service categories')
           expect(item).toMatchObject({ lines: ['Accommodation', 'Emotional wellbeing'], listStyle: ListStyle.bulleted })
         })
       })

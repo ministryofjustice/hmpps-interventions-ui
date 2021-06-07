@@ -24,7 +24,7 @@ export default class ActionPlanConfirmationPresenter {
       lines: [this.sentReferral.referenceNumber],
     },
     {
-      key: 'Service type',
+      key: 'Service category',
       lines: [utils.convertToProperCase(this.serviceCategory.name)],
     },
   ]

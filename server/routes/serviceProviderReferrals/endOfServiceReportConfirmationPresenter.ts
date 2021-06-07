@@ -19,7 +19,7 @@ export default class EndOfServiceReportConfirmationPresenter {
       lines: [this.referral.referenceNumber],
     },
     {
-      key: 'Service type',
+      key: 'Service category',
       lines: [utils.convertToProperCase(this.serviceCategory.name)],
     },
   ]

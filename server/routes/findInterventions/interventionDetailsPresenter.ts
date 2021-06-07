@@ -48,7 +48,7 @@ export default class InterventionDetailsPresenter {
         lines: [this.intervention.pccRegions.map(region => region.name).join(', ')],
       },
       {
-        key: this.intervention.serviceCategories.length > 1 ? 'Service types' : 'Service type',
+        key: this.intervention.serviceCategories.length > 1 ? 'Service categories' : 'Service category',
         lines: this.intervention.serviceCategories.map(serviceCategory =>
           utils.convertToProperCase(serviceCategory.name)
         ),
