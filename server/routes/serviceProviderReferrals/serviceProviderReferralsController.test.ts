@@ -661,7 +661,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
             'duration-hours': '1',
             'duration-minutes': '15',
           })
-          .expect(200)
+          .expect(400)
           .expect(res => {
             expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
           })

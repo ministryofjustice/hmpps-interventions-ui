@@ -451,6 +451,7 @@ export default class ServiceProviderReferralsController {
           return res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
         } catch (e) {
           if (e.status === 409) {
+            res.status(400)
             serverError = {
               errors: [
                 {
