@@ -47,6 +47,9 @@ export default {
     password: process.env.REDIS_AUTH_TOKEN,
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },
+  applicationInsights: {
+    connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', 'dummy', requiredInProduction),
+  },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120')),
