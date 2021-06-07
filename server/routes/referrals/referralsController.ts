@@ -67,7 +67,8 @@ export default class ReferralsController {
 
     let serviceUser: DeliusServiceUser | null = null
 
-    const crn = req.body['service-user-crn']
+    // We trim and change to uppercase to make user experience more pleasant. All CRNs are uppercase in delius.
+    const crn = req.body['service-user-crn']?.trim()?.toUpperCase()
     const { interventionId } = req.params
 
     if (form.isValid) {
