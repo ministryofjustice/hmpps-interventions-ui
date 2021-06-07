@@ -7,10 +7,6 @@ export default class NeedsAndRequirementsView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private get summaryListArgs() {
-    return ViewUtils.summaryListArgs(this.presenter.summary)
-  }
-
   private get additionalNeedsInformationTextareaArgs(): TextareaArgs {
     return {
       name: 'additional-needs-information',
@@ -129,7 +125,6 @@ export default class NeedsAndRequirementsView {
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
-        summaryListArgs: this.summaryListArgs,
         additionalNeedsInformationTextareaArgs: this.additionalNeedsInformationTextareaArgs,
         accessibilityNeedsTextareaArgs: this.accessibilityNeedsTextareaArgs,
         interpreterRadiosArgs: this.interpreterRadiosArgs.bind(this),

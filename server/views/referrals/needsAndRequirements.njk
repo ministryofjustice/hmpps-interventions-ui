@@ -23,13 +23,6 @@
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
-      {# TODO IC-746 remove this placeholder text #}
-      {{ govukInsetText({
-        text: "The following is hardcoded placeholder data, subject to change."
-      }) }}
-
-      {{ govukSummaryList(summaryListArgs) }}
-
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
