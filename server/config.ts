@@ -37,7 +37,7 @@ export default {
   version: Date.now().toString(),
   production,
   testMode: process.env.NODE_ENV === 'test',
-  port: get('PORT', 3000),
+  port: Number(get('PORT', 3000)),
   https: production,
   staticResourceCacheDuration: 20,
   deploymentEnvironment: get('DEPLOYMENT_ENV', 'local', requiredInProduction),

@@ -9,10 +9,11 @@ initialiseAppInsights()
 buildAppInsightsClient()
 
 import app from './server/index'
+import config from './server/config'
 import log from './log'
 
-app.listen(app.get('port'), async () => {
-  log.info(`Server listening on port ${app.get('port')}`)
+app.listen(config.port, async () => {
+  log.info(`Server listening on port ${config.port}`)
 
   if (process.env.NODE_ENV === 'development') {
     const { default: setUpMocks } = await import('./mocks')
