@@ -19,6 +19,7 @@ import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import HmppsAuthService from '../../services/hmppsAuthService'
+import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -317,11 +318,13 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         ],
       },
     })
+    const conviction = deliusConvictionFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    communityApiService.getConvictionById.mockResolvedValue(conviction)
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
@@ -343,12 +346,14 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       const deliusUser = deliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+      const conviction = deliusConvictionFactory.build()
 
       interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+      communityApiService.getConvictionById.mockResolvedValue(conviction)
 
       await request(app)
         .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)

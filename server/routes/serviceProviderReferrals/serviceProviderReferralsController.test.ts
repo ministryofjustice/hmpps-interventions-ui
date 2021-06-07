@@ -16,6 +16,7 @@ import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import interventionFactory from '../../../testutils/factories/intervention'
+import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -104,11 +105,13 @@ describe('GET /service-provider/referrals/:id/details', () => {
         ],
       },
     })
+    const conviction = deliusConvictionFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    communityApiService.getConvictionById.mockResolvedValue(conviction)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -130,12 +133,14 @@ describe('GET /service-provider/referrals/:id/details', () => {
       const deliusUser = deliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+      const conviction = deliusConvictionFactory.build()
 
       interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+      communityApiService.getConvictionById.mockResolvedValue(conviction)
 
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}/details`)

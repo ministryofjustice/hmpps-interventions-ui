@@ -6,6 +6,7 @@ import { ListStyle } from '../../utils/summaryList'
 import interventionFactory from '../../../testutils/factories/intervention'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import { TagArgs } from '../../utils/govukFrontendTypes'
+import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -19,6 +20,8 @@ describe(ShowReferralPresenter, () => {
     contractType: { code: 'PWB', name: 'Personal wellbeing' },
     serviceCategories: cohortServiceCategories,
   })
+
+  const deliusConviction = deliusConvictionFactory.build()
 
   const referralParams = {
     referral: {
@@ -40,6 +43,7 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(
         referral,
         intervention,
+        deliusConviction,
         deliusUser,
         null,
         null,
@@ -59,6 +63,7 @@ describe(ShowReferralPresenter, () => {
           const presenter = new ShowReferralPresenter(
             referral,
             intervention,
+            deliusConviction,
             deliusUser,
             null,
             null,
@@ -76,6 +81,7 @@ describe(ShowReferralPresenter, () => {
           const presenter = new ShowReferralPresenter(
             referral,
             intervention,
+            deliusConviction,
             deliusUser,
             hmppsAuthUser,
             null,
@@ -95,6 +101,7 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(
         sentReferral,
         intervention,
+        deliusConviction,
         deliusUser,
         null,
         null,
@@ -151,10 +158,26 @@ describe(ShowReferralPresenter, () => {
         },
       })
 
+      const burglaryConviction = deliusConvictionFactory.build({
+        offences: [
+          {
+            mainOffence: true,
+            detail: {
+              mainCategoryDescription: 'Burglary',
+              subCategoryDescription: 'Theft act, 1968',
+            },
+          },
+        ],
+        sentence: {
+          expectedSentenceEndDate: '2025-11-15',
+        },
+      })
+
       it('returns a summary list of intervention details', () => {
         const presenter = new ShowReferralPresenter(
           referralWithAllOptionalFields,
           intervention,
+          burglaryConviction,
           deliusUser,
           null,
           null,
@@ -164,7 +187,9 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.interventionDetails).toEqual([
           { key: 'Service type', lines: ['Accommodation'] },
-          { key: 'Sentence information', lines: ['Not currently set'] },
+          { key: 'Sentence', lines: ['Burglary'] },
+          { key: 'Subcategory', lines: ['Theft act, 1968'] },
+          { key: 'End of sentence date', lines: ['15 November 2025'] },
           { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',
@@ -219,10 +244,26 @@ describe(ShowReferralPresenter, () => {
         },
       })
 
-      it("returns a summary list of intervention details with a message for fields that haven't been set", () => {
+      const burglaryConviction = deliusConvictionFactory.build({
+        offences: [
+          {
+            mainOffence: true,
+            detail: {
+              mainCategoryDescription: 'Burglary',
+              subCategoryDescription: 'Theft act, 1968',
+            },
+          },
+        ],
+        sentence: {
+          expectedSentenceEndDate: '2025-11-15',
+        },
+      })
+
+      it('returns a summary list of intervention details', () => {
         const presenter = new ShowReferralPresenter(
           referralWithNoOptionalFields,
           intervention,
+          burglaryConviction,
           deliusUser,
           null,
           null,
@@ -232,7 +273,9 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.interventionDetails).toEqual([
           { key: 'Service type', lines: ['Accommodation'] },
-          { key: 'Sentence information', lines: ['Not currently set'] },
+          { key: 'Sentence', lines: ['Burglary'] },
+          { key: 'Subcategory', lines: ['Theft act, 1968'] },
+          { key: 'End of sentence date', lines: ['15 November 2025'] },
           { key: 'Date to be completed by', lines: ['1 April 2021'] },
           {
             key: 'Maximum number of enforceable days',
@@ -272,6 +315,7 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(
         referral,
         cohortIntervention,
+        deliusConviction,
         deliusUser,
         null,
         null,
@@ -307,6 +351,7 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(
         sentReferral,
         intervention,
+        deliusConviction,
         deliusUser,
         null,
         null,
@@ -335,6 +380,7 @@ describe(ShowReferralPresenter, () => {
       const presenter = new ShowReferralPresenter(
         sentReferral,
         intervention,
+        deliusConviction,
         deliusUser,
         null,
         null,
@@ -399,6 +445,7 @@ describe(ShowReferralPresenter, () => {
         const presenter = new ShowReferralPresenter(
           referralWithAllConditionalFields,
           intervention,
+          deliusConviction,
           deliusUser,
           null,
           null,
@@ -483,6 +530,7 @@ describe(ShowReferralPresenter, () => {
         const presenter = new ShowReferralPresenter(
           referralWithNoConditionalFields,
           intervention,
+          deliusConviction,
           deliusUser,
           null,
           null,
