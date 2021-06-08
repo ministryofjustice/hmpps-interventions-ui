@@ -423,7 +423,7 @@ describe('Service provider referrals dashboard', () => {
 
     cy.login()
 
-    cy.visit(`/service-provider/action-plan/1/sessions/1/edit`)
+    cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
 
     cy.get('#date-day').type('24')
     cy.get('#date-month').type('3')
@@ -446,7 +446,7 @@ describe('Service provider referrals dashboard', () => {
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
 
-    cy.visit(`/service-provider/action-plan/1/sessions/1/edit`)
+    cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
 
     cy.get('#date-day').should('have.value', '24')
     cy.get('#date-month').should('have.value', '3')
