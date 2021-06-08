@@ -4,18 +4,18 @@ import loginRedirectMiddleware from './loginRedirectMiddleware'
 describe('loginRedirectMiddleware', () => {
   const next = jest.fn()
   const redirectCapturingResponse = () => {
-    return ({
+    return {
       redirect: (path: string) => {
         return path
       },
-    } as unknown) as Response
+    } as unknown as Response
   }
 
   const authenticatedRequest = (authenticated: boolean) => {
-    return ({
+    return {
       isAuthenticated: () => authenticated,
       session: {},
-    } as unknown) as Request
+    } as unknown as Request
   }
 
   it('should return next when the user is already logged in', () => {

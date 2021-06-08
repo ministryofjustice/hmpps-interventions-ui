@@ -11,6 +11,16 @@ import User from '../models/hmppsAuth/user'
 
 const authConfig = config.apis.hmppsAuth
 
+// the following code defines the Express.User type which allows @types/passport
+// to correctly augment Express.Request with the LoggedInUser created below
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface User extends LoggedInUser {}
+  }
+}
+
 export default function passportSetup(app: Application, hmppsAuthService: HmppsAuthService): void {
   app.use(passport.initialize())
   app.use(passport.session())
@@ -66,7 +76,7 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
     done(null, user)
   })
 
-  passport.deserializeUser((user, done) => {
+  passport.deserializeUser((user: Express.User, done) => {
     done(null, user)
   })
 

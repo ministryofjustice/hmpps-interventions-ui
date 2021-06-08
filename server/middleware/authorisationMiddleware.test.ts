@@ -7,13 +7,13 @@ describe('authorisationMiddleware', () => {
   const next = jest.fn()
 
   function createReqWithAuth(authenticated: boolean): Request {
-    return ({
+    return {
       isAuthenticated: () => authenticated,
-    } as unknown) as Request
+    } as unknown as Request
   }
 
   function createResWithToken(authorities: string[] = []): Response {
-    return ({
+    return {
       locals: {
         user: {
           token: {
@@ -25,7 +25,7 @@ describe('authorisationMiddleware', () => {
         return template
       },
       status: jest.fn(),
-    } as unknown) as Response
+    } as unknown as Response
   }
 
   it('should return next when no required roles', () => {

@@ -95,9 +95,7 @@ export default class InterventionProgressPresenter {
     })
   }
 
-  private sessionTableParams(
-    appointment: ActionPlanAppointment
-  ): {
+  private sessionTableParams(appointment: ActionPlanAppointment): {
     text: string
     tagClass: string
     links: { text: string; href: string }[]

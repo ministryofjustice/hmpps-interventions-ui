@@ -103,8 +103,7 @@ describe('ViewUtils', () => {
               text: 'Address',
             },
             value: {
-              html:
-                '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 Test Walk</p>\n<p class="govuk-body">SY16 1AQ</p>',
+              html: '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 Test Walk</p>\n<p class="govuk-body">SY16 1AQ</p>',
             },
           },
         ],
@@ -133,8 +132,7 @@ describe('ViewUtils', () => {
             text: 'Address',
           },
           value: {
-            html:
-              '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 St James&#39;s Road</p>\n<p class="govuk-body">SY16 1AQ</p>',
+            html: '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 St James&#39;s Road</p>\n<p class="govuk-body">SY16 1AQ</p>',
           },
         },
       ],

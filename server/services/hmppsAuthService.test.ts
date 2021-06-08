@@ -21,7 +21,7 @@ interface MockRedis {
   set: jest.Mock
 }
 
-const mockRedis = (redis as unknown) as MockRedis
+const mockRedis = redis as unknown as MockRedis
 
 function givenRedisResponse(storedToken: string | null) {
   mockRedis.get.mockImplementation((key, callback) => callback(null, storedToken))

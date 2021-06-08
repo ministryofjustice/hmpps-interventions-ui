@@ -5,7 +5,7 @@ describe('tokenVerificationMiddleware', () => {
   const tokenVerifier = (verified: boolean) => jest.fn(async () => verified)
   const next = jest.fn()
   const redirectCapturingResponseWithToken = (tokenExpired: boolean) => {
-    return ({
+    return {
       redirect: (path: string) => {
         return path
       },
@@ -18,15 +18,15 @@ describe('tokenVerificationMiddleware', () => {
           },
         },
       },
-    } as unknown) as Response
+    } as unknown as Response
   }
 
   const authenticatedRequest = (authenticated: boolean) => {
-    return ({
+    return {
       isAuthenticated: () => authenticated,
       session: {},
       logout: jest.fn(),
-    } as unknown) as Request
+    } as unknown as Request
   }
 
   it('should return next when there is no authenticated user', async () => {
