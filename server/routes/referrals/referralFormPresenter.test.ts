@@ -250,10 +250,13 @@ describe('ReferralFormPresenter', () => {
   })
   describe('for a cohort referral', () => {
     const serviceCategories: ServiceCategory[] = [
-      serviceCategoryFactory.build({ name: 'accommodation' }),
-      serviceCategoryFactory.build({ name: 'social inclusion' }),
+      serviceCategoryFactory.build({ name: 'accommodation', id: '2' }),
+      serviceCategoryFactory.build({ name: 'social inclusion', id: '3' }),
     ]
-    const cohortIntervention = interventionFactory.build({ serviceCategories })
+    const cohortIntervention = interventionFactory.build({
+      serviceCategories: [...serviceCategories, serviceCategoryFactory.build({ name: 'personal wellbeing', id: '1' })],
+    })
+
     describe('select service categories section', () => {
       describe('when "needs and requirements" has been set', () => {
         it('should contain a "Not Started" label', () => {
@@ -339,6 +342,7 @@ describe('ReferralFormPresenter', () => {
           ]
           expect(presenter.sections).toEqual(expected)
         })
+
         it('should contain a "Not Started" label and "relevant-sentence" url is visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToNeedsAndRequirements(serviceCategories)
@@ -371,7 +375,8 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
-      describe('when "relevant" has been set', () => {
+
+      describe('when "relevant sentence" has been set', () => {
         it('should contain a "Not Started" label and only the first "complexity-level" url is visible', () => {
           const referral = draftReferralFactory.filledFormUpToRelevantSentence(serviceCategories).build()
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
@@ -401,7 +406,8 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
-      describe('when "complexity level" has been set for the first service', () => {
+
+      describe('when "desired outcomes" has been set for the first service', () => {
         it('should contain a "Not Started" label and only the first "complexity-level" url is visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToRelevantSentence(serviceCategories)
@@ -434,8 +440,9 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
-      describe('when "desired outcomes" has been set for the first service', () => {
-        it('should contain a "Not Started" label and the second "complexity-level" url is visible', () => {
+
+      describe('when "complexity level" has been set for the first service', () => {
+        it('should contain a "Not Started" label and the second "desired outcomes" url is visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToRelevantSentence(serviceCategories)
             .addSelectedDesiredOutcomes([serviceCategories[0]])
@@ -473,13 +480,14 @@ describe('ReferralFormPresenter', () => {
         })
       })
 
-      describe('when "complexity level" has been set for the second service', () => {
-        it('should contain a "Not Started" label and the second "desired-outcomes" url is visible', () => {
+      describe('when "desired outcomes" has been set for the second service', () => {
+        it('should contain a "Not Started" label and the second "complexity level" url is visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToRelevantSentence(serviceCategories)
             .addSelectedDesiredOutcomes(serviceCategories)
             .addSelectedComplexityLevel([serviceCategories[0]])
             .build()
+
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
@@ -511,7 +519,8 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
-      describe('when "desired outcomes" has been set for second service', () => {
+
+      describe('when "complexity level" has been set for second service', () => {
         it('should contain a "Not Started" label and "completion-deadline" url visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToRelevantSentence(serviceCategories)
@@ -555,6 +564,7 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
+
       describe('when "date completed by" has been set', () => {
         it('should contain a "Not Started" label and "enforceable-days" url visible', () => {
           const referral = draftReferralFactory.filledFormUpToCompletionDate(serviceCategories).build()
@@ -596,6 +606,7 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
+
       describe('when "enforceable days" has been set', () => {
         it('should contain a "Not Started" label and "further-information" url visible', () => {
           const referral = draftReferralFactory.filledFormUpToEnforceableDays(serviceCategories).build()
@@ -638,6 +649,7 @@ describe('ReferralFormPresenter', () => {
           expect(presenter.sections).toEqual(expected)
         })
       })
+
       describe('when all required values have been set', () => {
         it('should contain a "Completed" label and allow user to submit answers', () => {
           const referral = draftReferralFactory.filledFormUpToFurtherInformation(serviceCategories).build()

@@ -208,7 +208,9 @@ class FormSectionBuilder {
                       `service-category/${serviceCat.id}/desired-outcomes`,
                       index === 0
                         ? this.taskValues.relevantSentence
-                        : this.taskValues.complexityLevel(this.intervention.serviceCategories[index - 1].id)
+                        : this.taskValues.complexityLevel(
+                            this.referral.serviceCategoryIds!.sort((a, b) => a.localeCompare(b))[index - 1]
+                          )
                     ),
                   },
                   {
