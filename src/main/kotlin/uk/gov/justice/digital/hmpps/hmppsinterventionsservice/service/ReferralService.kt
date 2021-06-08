@@ -113,12 +113,8 @@ class ReferralService(
   }
 
   private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
-    val referrals = getSentReferralsSentBy(user)
+    val referrals = referralRepository.findByCreatedByAndSentAtIsNotNull(user)
     return referralAccessFilter.probationPractitionerReferrals(referrals, user)
-  }
-
-  private fun getSentReferralsSentBy(user: AuthUser): List<Referral> {
-    return referralRepository.findBySentBy(user)
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {

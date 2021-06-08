@@ -392,17 +392,20 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
-  fun `get sent referrals sent by PP returns filtered referrals`() {
+  fun `get sent referrals for PP returns filtered referrals`() {
     val users = listOf(userFactory.create("pp_user_1", "delius"), userFactory.create("pp_user_2", "delius"))
     users.forEach {
-      referralFactory.createSent(sentBy = it)
+      referralFactory.createSent(createdBy = it)
     }
+
+    // this one should not be part of the result set - only referrals created by the pp!
+    referralFactory.createSent(sentBy = users[0])
 
     whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
     val referrals = referralService.getSentReferralsForUser(users[0])
     assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].sentBy).isEqualTo(users[0])
+    assertThat(referrals[0].createdBy).isEqualTo(users[0])
 
     assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
   }
