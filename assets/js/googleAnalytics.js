@@ -1,5 +1,5 @@
-const analyticsId = window.gaConfig.uaId;
-let s = document.createElement('script');
+var analyticsId = window.gaConfig.uaId;
+var s = document.createElement('script');
 s.type = 'text/javascript';
 s.src = 'https://www.googletagmanager.com/gtag/js?id=' + analyticsId;
 document.getElementsByTagName('head')[0].appendChild(s);
@@ -19,3 +19,17 @@ window.gtag('config', analyticsId, {
     'page_title': document.title,
     'page_path': location.pathname.split('?')[0]
 });
+
+document.addEventListener('click', function (event) {
+
+	if (event.target.dataset.gaAction) {
+        var dataSet = event.target.dataset;
+		window.gtag('event', dataSet.gaAction, {
+            'event_category': dataSet.gaCategory,
+            'event_label': dataSet.gaLabel,
+            'value': dataSet.gaValue
+        });
+	}
+
+}, false);
+
