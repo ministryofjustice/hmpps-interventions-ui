@@ -13,6 +13,8 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
+import javax.persistence.PrimaryKeyJoinColumn
 import javax.validation.constraints.NotNull
 
 @Entity
@@ -35,6 +37,10 @@ data class Appointment(
   @NotNull val createdAt: OffsetDateTime,
   var appointmentTime: OffsetDateTime,
   var durationInMinutes: Int,
+
+  @OneToOne
+  @PrimaryKeyJoinColumn
+  var appointmentDelivery: AppointmentDelivery? = null,
 
   @Id val id: UUID,
 )

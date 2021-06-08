@@ -97,3 +97,16 @@ COMMENT ON COLUMN action_plan_activity.id IS 'service user''s action plan activi
 COMMENT ON COLUMN action_plan_activity.action_plan_id IS 'service user''s action plan unique identifier';
 COMMENT ON COLUMN action_plan_activity.description IS 'description of the activity';
 COMMENT ON COLUMN action_plan_activity.created_at IS 'when the service user''s action plan was created';
+
+COMMENT ON TABLE appointment_delivery IS 'appointment delivery details';
+COMMENT ON COLUMN appointment_delivery.appointment_id IS 'appointment''s unique identifier';
+COMMENT ON COLUMN appointment_delivery.appointment_delivery_type IS 'type to denote how the appointment is delivered';
+COMMENT ON COLUMN appointment_delivery.nps_office_code IS 'National Probation Service office code if the appointment delivery type is ''IN_PERSON_MEETING_PROBATION_OFFICE''';
+
+COMMENT ON TABLE appointment_delivery_address IS 'appointment location address if the appointment delivery type is ''IN_PERSON_MEETING_OTHER''';
+COMMENT ON COLUMN appointment_delivery_address.appointment_delivery_id IS 'appointment delivery''s unique identifier';
+COMMENT ON COLUMN appointment_delivery_address.first_address_line IS 'first address line appointment delivery address location';
+COMMENT ON COLUMN appointment_delivery_address.second_address_line IS 'second address line of appointment delivery address location';
+COMMENT ON COLUMN appointment_delivery_address.town_city IS 'town or city of appointment delivery address location';
+COMMENT ON COLUMN appointment_delivery_address.county IS 'county of appointment delivery address location';
+COMMENT ON COLUMN appointment_delivery_address.post_code IS 'postcode of appointment delivery address location';
