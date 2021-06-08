@@ -1,4 +1,5 @@
 import { setup, Contracts, defaultClient, DistributedTracingModes } from 'applicationinsights'
+import type { Request } from 'express'
 import applicationVersion from './applicationVersion'
 import config from './config'
 import logger from '../log'
@@ -28,6 +29,20 @@ function ignoreStaticAssetsProcessor(
   return true
 }
 
+function addUsernameProcessor(
+  envelope: Contracts.EnvelopeTelemetry,
+  contextObjects: { [name: string]: unknown } | undefined
+): boolean {
+  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
+    const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
+    if (userId) {
+      // eslint-disable-next-line no-param-reassign
+      envelope.tags['ai.user.authUserId'] = userId
+    }
+  }
+  return true
+}
+
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
   if (connectionString !== null) {
@@ -41,5 +56,6 @@ export default function initialiseAppInsights(): void {
 
     // custom processors to fine tune behaviour
     defaultClient.addTelemetryProcessor(ignoreStaticAssetsProcessor)
+    defaultClient.addTelemetryProcessor(addUsernameProcessor)
   }
 }
