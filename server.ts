@@ -3,10 +3,9 @@
  * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
  * In particular, applicationinsights automatically collects bunyan logs
  */
-import { initialiseAppInsights, buildAppInsightsClient } from './server/utils/azureAppInsights'
+import initialiseAppInsights from './server/azureAppInsights'
 
 initialiseAppInsights()
-buildAppInsightsClient()
 
 import app from './server/index'
 import config from './server/config'
