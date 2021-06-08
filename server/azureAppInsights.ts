@@ -4,18 +4,6 @@ import applicationVersion from './applicationVersion'
 import config from './config'
 import logger from '../log'
 
-function defaultName(): string {
-  const {
-    packageData: { name },
-  } = applicationVersion
-  return name
-}
-
-function version(): string {
-  const { buildNumber } = applicationVersion
-  return buildNumber
-}
-
 function ignoreStaticAssetsProcessor(
   envelope: Contracts.EnvelopeTelemetry,
   _contextObjects: { [name: string]: unknown } | undefined
@@ -51,8 +39,8 @@ export default function initialiseAppInsights(): void {
     setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
     // application level properties
-    defaultClient.context.tags['ai.cloud.role'] = defaultName()
-    defaultClient.context.tags['ai.application.ver'] = version()
+    defaultClient.context.tags['ai.cloud.role'] = 'interventions-ui'
+    defaultClient.context.tags['ai.application.ver'] = applicationVersion.buildNumber
 
     // custom processors to fine tune behaviour
     defaultClient.addTelemetryProcessor(ignoreStaticAssetsProcessor)
