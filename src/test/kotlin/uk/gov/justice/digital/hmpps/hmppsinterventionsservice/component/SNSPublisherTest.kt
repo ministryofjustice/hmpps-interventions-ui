@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.microsoft.applicationinsights.TelemetryClient
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
@@ -13,14 +14,20 @@ import org.junit.jupiter.api.assertThrows
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.time.OffsetDateTime
+import java.util.UUID
 
 class SNSPublisherTest {
   private val snsClient = mock<SnsClient>()
   private val objectMapper = mock<ObjectMapper>()
+  private val telemetryClient = mock<TelemetryClient>()
+
+  private val aReferralId = UUID.fromString("82138d14-3835-442b-b39b-9f8a07650bbe")
+  private val aUser = AuthUser("d7c4c3a7a7", "irrelevant", "irrelevant")
 
   val event = EventDTO(
-    "intervention.referral.sent",
+    "intervention.test.event",
     "A referral has been sent to a Service Provider",
     "http:test/abc",
     OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
@@ -28,13 +35,13 @@ class SNSPublisherTest {
   )
 
   private fun snsPublisher(enabled: Boolean): SNSPublisher {
-    return SNSPublisher(snsClient, objectMapper, enabled, "arn")
+    return SNSPublisher(snsClient, objectMapper, telemetryClient, enabled, "arn")
   }
 
   @Test
   fun `successful event published`() {
     whenever(objectMapper.writeValueAsString(event)).thenReturn("{}")
-    snsPublisher(true).publish(event)
+    snsPublisher(true).publish(aReferralId, aUser, event)
 
     val requestCaptor = argumentCaptor<PublishRequest>()
     verify(snsClient).publish(requestCaptor.capture())
@@ -43,14 +50,43 @@ class SNSPublisherTest {
   }
 
   @Test
+  fun `sends custom event to application insights on publish`() {
+    snsPublisher(true).publish(aReferralId, aUser, event)
+    verify(telemetryClient).trackEvent(
+      "InterventionsDomainEvent",
+      mapOf(
+        "event" to "intervention.test.event",
+        "referralId" to "82138d14-3835-442b-b39b-9f8a07650bbe",
+        "actorUserId" to "d7c4c3a7a7",
+      ),
+      null
+    )
+  }
+
+  @Test
+  fun `can send actor-less event to application insights on publish`() {
+    snsPublisher(true).publish(aReferralId, null, event)
+    verify(telemetryClient).trackEvent(
+      "InterventionsDomainEvent",
+      mapOf(
+        "event" to "intervention.test.event",
+        "referralId" to "82138d14-3835-442b-b39b-9f8a07650bbe",
+        "actorUserId" to null,
+      ),
+      null
+    )
+  }
+
+  @Test
   fun `thrown exception is not swallowed`() {
     whenever(snsClient.publish(any<PublishRequest>())).thenThrow(RuntimeException::class.java)
-    assertThrows<RuntimeException> { snsPublisher(true).publish(event) }
+    assertThrows<RuntimeException> { snsPublisher(true).publish(aReferralId, aUser, event) }
   }
 
   @Test
   fun `event does not publish when service is disabled`() {
-    snsPublisher(false).publish(event)
+    snsPublisher(false).publish(aReferralId, aUser, event)
     verifyZeroInteractions(snsClient)
+    verifyZeroInteractions(telemetryClient)
   }
 }
