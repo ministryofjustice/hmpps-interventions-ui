@@ -79,9 +79,12 @@ export default class InterventionProgressPresenter {
     })
   }
 
-  private sessionTableParams(
-    appointment: ActionPlanAppointment
-  ): { text: string; tagClass: string; linkText: string | null; linkHref: string | null } {
+  private sessionTableParams(appointment: ActionPlanAppointment): {
+    text: string
+    tagClass: string
+    linkText: string | null
+    linkHref: string | null
+  } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
 

@@ -116,8 +116,7 @@ describe(InterventionProgressPresenter, () => {
                 text: 'Reschedule session',
               },
               {
-                href:
-                  '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance',
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance',
                 text: 'Give feedback',
               },
             ],
@@ -147,8 +146,7 @@ describe(InterventionProgressPresenter, () => {
               },
               links: [
                 {
-                  href:
-                    '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
                   text: 'View feedback form',
                 },
               ],
@@ -162,8 +160,7 @@ describe(InterventionProgressPresenter, () => {
               },
               links: [
                 {
-                  href:
-                    '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback',
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback',
                   text: 'View feedback form',
                 },
               ],
@@ -191,8 +188,7 @@ describe(InterventionProgressPresenter, () => {
               },
               links: [
                 {
-                  href:
-                    '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
                   text: 'View feedback form',
                 },
               ],
