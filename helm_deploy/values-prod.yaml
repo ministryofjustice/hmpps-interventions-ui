@@ -22,3 +22,4 @@ env:
   TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
   TOKEN_VERIFICATION_ENABLED: true
   REDIS_TLS_ENABLED: true
+  GA_ID: G-THWB3S7TLX
