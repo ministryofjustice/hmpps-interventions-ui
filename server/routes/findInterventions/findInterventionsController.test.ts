@@ -9,9 +9,9 @@ import pccRegionFactory from '../../../testutils/factories/pccRegion'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 
 jest.mock('../../services/interventionsService')
-const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
-  InterventionsService
->
+const interventionsService = new InterventionsService(
+  apiConfig.apis.interventionsService
+) as jest.Mocked<InterventionsService>
 
 let app: Express
 

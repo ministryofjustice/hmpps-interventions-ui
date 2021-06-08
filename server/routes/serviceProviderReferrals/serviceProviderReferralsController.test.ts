@@ -22,9 +22,9 @@ jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
 
-const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
-  InterventionsService
->
+const interventionsService = new InterventionsService(
+  apiConfig.apis.interventionsService
+) as jest.Mocked<InterventionsService>
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>

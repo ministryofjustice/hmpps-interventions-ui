@@ -16,9 +16,9 @@ import interventionFactory from '../../../testutils/factories/intervention'
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 
-const interventionsService = new InterventionsService(apiConfig.apis.interventionsService) as jest.Mocked<
-  InterventionsService
->
+const interventionsService = new InterventionsService(
+  apiConfig.apis.interventionsService
+) as jest.Mocked<InterventionsService>
 const communityApiService = new CommunityApiService(new MockedHmppsAuthService()) as jest.Mocked<CommunityApiService>
 
 const serviceUser = {

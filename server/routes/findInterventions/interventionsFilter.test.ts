@@ -6,7 +6,7 @@ describe(InterventionsFilter, () => {
     it('creates a filter from the request’s query params', () => {
       const query = { 'pcc-region-ids': ['a', 'b', 'c'], gender: ['male'], age: ['18-to-25-only'] }
 
-      const filter = InterventionsFilter.fromRequest(({ query } as unknown) as Request)
+      const filter = InterventionsFilter.fromRequest({ query } as unknown as Request)
 
       expect(filter.pccRegionIds).toEqual(['a', 'b', 'c'])
       expect(filter.gender).toEqual(['male'])

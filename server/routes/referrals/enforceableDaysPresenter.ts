@@ -11,8 +11,7 @@ export default class EnforceableDaysPresenter {
 
   readonly text = {
     title: 'How many enforceable days will you use for this service?',
-    hint:
-      'Note: You are setting the maximum number of enforceable days (including RAR days). Any unused days will be given back.',
+    hint: 'Note: You are setting the maximum number of enforceable days (including RAR days). Any unused days will be given back.',
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'maximum-enforceable-days')

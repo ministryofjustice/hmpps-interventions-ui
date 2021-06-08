@@ -8,10 +8,10 @@ describe('token verification api tests', () => {
   let fakeApi: nock.Scope
   const user = LoggedInUserFactory.build()
   const verifiedRequest = (verified: boolean) => {
-    return ({
+    return {
       user,
       verified,
-    } as unknown) as VerifiableRequest
+    } as unknown as VerifiableRequest
   }
 
   beforeEach(() => {
