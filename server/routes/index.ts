@@ -9,6 +9,7 @@ import ReferralsController from './referrals/referralsController'
 import StaticContentController from './staticContent/staticContentController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
+import CommonController from './common/commonController'
 
 export interface Services {
   communityApiService: CommunityApiService
@@ -33,6 +34,7 @@ export default function routes(router: Router, services: Services): Router {
     services.hmppsAuthService
   )
   const findInterventionsController = new FindInterventionsController(services.interventionsService)
+  const commonController = new CommonController()
 
   get('/', (req, res, next) => {
     const { authSource } = res.locals.user
@@ -159,6 +161,9 @@ export default function routes(router: Router, services: Services): Router {
       })
     })
   }
+  get('/report-a-problem', (req, res) => {
+    return commonController.reportAProblem(req, res)
+  })
   get('/probation-practitioner/dashboard', (req, res) => probationPractitionerReferralsController.showMyCases(req, res))
   get('/probation-practitioner/find', (req, res) =>
     probationPractitionerReferralsController.showFindStartPage(req, res)

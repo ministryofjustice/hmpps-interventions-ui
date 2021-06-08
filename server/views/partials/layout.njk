@@ -56,3 +56,16 @@
   <script src="/assets/govukFrontendInit.js"></script>
   <script src="/assets/moj/all.js"></script>
 {% endblock %}
+
+{% block footer %}
+    {{ govukFooter({
+                     meta: {
+                       items: [
+                         {
+                           href: "/report-a-problem",
+                           text: "Report a problem"
+                         }
+                       ]
+                     }
+                   }) }}
+{% endblock %}
