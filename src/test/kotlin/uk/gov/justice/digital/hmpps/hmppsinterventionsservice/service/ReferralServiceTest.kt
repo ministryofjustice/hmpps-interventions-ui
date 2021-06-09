@@ -14,6 +14,7 @@ import org.mockito.AdditionalAnswers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
@@ -83,6 +84,7 @@ class ReferralServiceTest @Autowired constructor(
   private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
   private val authentication: JwtAuthenticationToken = mock()
   private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
+  private val communityAPIOffenderService: CommunityAPIOffenderService = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -101,6 +103,7 @@ class ReferralServiceTest @Autowired constructor(
     communityAPIReferralService,
     serviceUserAccessChecker,
     assessRisksAndNeedsService,
+    communityAPIOffenderService,
   )
 
   // reset before each test
@@ -408,6 +411,31 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(referrals[0].createdBy).isEqualTo(users[0])
 
     assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
+  }
+
+  @Test
+  fun `get sent referrals for PP handles errors from community-api`() {
+    val user = userFactory.create("pp_user_1", "delius")
+    referralFactory.createSent(createdBy = user)
+
+    whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenThrow(WebClientResponseException::class.java)
+    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+
+    val referrals = referralService.getSentReferralsForUser(user)
+    assertThat(referrals.size).isEqualTo(1)
+  }
+
+  @Test
+  fun `get sent referrals for PP includes referrals for managed offenders`() {
+    val user = userFactory.create("pp_user_1", "delius")
+    referralFactory.createSent(serviceUserCRN = "CRN129876234")
+
+    whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenReturn(listOf(Offender("CRN129876234")))
+    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+
+    val referrals = referralService.getSentReferralsForUser(user)
+    assertThat(referrals.size).isEqualTo(1)
+    assertThat(referrals[0].serviceUserCRN).isEqualTo("CRN129876234")
   }
 
   @Test

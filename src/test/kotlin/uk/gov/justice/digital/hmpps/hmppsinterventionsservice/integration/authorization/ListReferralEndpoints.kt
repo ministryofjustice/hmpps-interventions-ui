@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.authorization
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -8,12 +9,15 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.Integr
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 
 class ListReferralEndpoints : IntegrationTestBase() {
   @MockBean
   lateinit var mockHmppsAuthService: HMPPSAuthService
+
+  @MockBean lateinit var mockCommunityAPIOffenderService: CommunityAPIOffenderService
 
   private lateinit var requestFactory: RequestFactory
 
@@ -176,6 +180,7 @@ class ListReferralEndpoints : IntegrationTestBase() {
     setupAssistant.createSentReferral(ppUser = user1)
     setupAssistant.createSentReferral(ppUser = user2)
 
+    whenever(mockCommunityAPIOffenderService.getManagedOffendersForDeliusUser(any())).thenReturn(emptyList())
     val token = createEncodedTokenForUser(user1)
     val response = requestFactory.create(Request.GetSentReferrals, token).exchange()
     response.expectStatus().is2xxSuccessful
