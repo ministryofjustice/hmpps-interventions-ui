@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
@@ -17,7 +19,8 @@ class CommunityAPIReferralServiceTest {
 
   private val sentAtDefault = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
 
-  private val communityAPIReferralService = CommunityAPIReferralService(
+  private fun communityAPIReferralServiceFactory(enabled: Boolean) = CommunityAPIReferralService(
+    enabled,
     "http://testUrl",
     "/referral/sent/{id}",
     "secure/offenders/crn/{crn}/referral/start/context/{contextName}",
@@ -26,10 +29,17 @@ class CommunityAPIReferralServiceTest {
   )
 
   @Test
-  fun `Sends referral`() {
-
+  fun `does nothing when disabled`() {
     val referral = getReferral()
-    communityAPIReferralService.send(referral)
+    communityAPIReferralServiceFactory(false).send(referral)
+
+    verify(communityAPIClient, never()).makeSyncPostRequest<ReferralSentResponseDTO>(any(), any(), any())
+  }
+
+  @Test
+  fun `Sends referral`() {
+    val referral = getReferral()
+    communityAPIReferralServiceFactory(true).send(referral)
 
     verify(communityAPIClient).makeSyncPostRequest(
       "secure/offenders/crn/X123456/referral/start/context/commissioned-rehabilitation-services",
