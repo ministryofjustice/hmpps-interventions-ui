@@ -10,12 +10,6 @@ abstract class BaseAppointmentDTO(
   open val durationInMinutes: Int?,
 )
 
-data class NewAppointmentDTO(
-  val sessionNumber: Int,
-  override val appointmentTime: OffsetDateTime?,
-  override val durationInMinutes: Int?,
-) : BaseAppointmentDTO(appointmentTime, durationInMinutes)
-
 data class UpdateAppointmentDTO(
   override val appointmentTime: OffsetDateTime?,
   override val durationInMinutes: Int?,
