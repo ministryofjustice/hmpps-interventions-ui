@@ -54,7 +54,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=local,seed
       - POSTGRES_URI=postgres:5432
-      - COMMUNITY-API_BASEURL=http://community-api:8080
+      - COMMUNITYAPI_BASEURL=http://community-api:8080
       - ASSESSRISKSANDNEEDS_BASEURL=http://assess-risks-and-needs:8080
 
   postgres:
