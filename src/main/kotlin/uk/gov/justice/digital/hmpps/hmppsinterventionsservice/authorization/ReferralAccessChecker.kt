@@ -19,7 +19,7 @@ class ReferralAccessChecker(
     when {
       userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user)
       userTypeChecker.isServiceProviderUser(user) -> forServiceProviderUser(referral, user)
-      else -> throw AccessError(userTypeError, listOf("logins from ${user.authSource} are not supported"))
+      else -> throw AccessError(user, userTypeError, listOf("logins from ${user.authSource} are not supported"))
     }
   }
 
@@ -37,7 +37,7 @@ class ReferralAccessChecker(
     }
 
     if (errors.isNotEmpty()) {
-      throw AccessError(insufficientPrivilegeError, errors)
+      throw AccessError(user, insufficientPrivilegeError, errors)
     }
   }
 

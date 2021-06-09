@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 
@@ -31,7 +32,7 @@ data class FieldError(
 
 class ValidationError(override val message: String, val errors: List<FieldError>) : RuntimeException(message)
 
-class AccessError(override val message: String, val errors: List<String>) : RuntimeException(message)
+class AccessError(val user: AuthUser, override val message: String, val errors: List<String>) : RuntimeException(message)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrorResponse(
@@ -48,6 +49,16 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
 
   @ExceptionHandler(AccessError::class)
   fun handleAccessError(e: AccessError): ResponseEntity<ErrorResponse> {
+    telemetryClient.trackEvent(
+      "InterventionsAuthorizationError",
+      mapOf(
+        "userId" to e.user.id,
+        "userAuthSource" to e.user.authSource,
+        "message" to e.message,
+        "issues" to e.errors.toString()
+      ),
+      null
+    )
     return errorResponse(HttpStatus.FORBIDDEN, "access error", e.message, accessErrors = e.errors)
   }
 

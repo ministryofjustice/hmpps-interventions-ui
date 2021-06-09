@@ -70,7 +70,7 @@ class ReferralService(
 
   fun getDraftReferralForUser(id: UUID, user: AuthUser): Referral? {
     if (!userTypeChecker.isProbationPractitionerUser(user)) {
-      throw AccessError("unsupported user type", listOf("only probation practitioners can access draft referrals"))
+      throw AccessError(user, "unsupported user type", listOf("only probation practitioners can access draft referrals"))
     }
 
     val referral = referralRepository.findByIdAndSentAtIsNull(id)
@@ -99,7 +99,7 @@ class ReferralService(
       return getSentReferralsForProbationPractitionerUser(user)
     }
 
-    throw AccessError("unsupported user type", listOf("logins from ${user.authSource} are not supported"))
+    throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
 
   private fun getSentReferralsForServiceProviderUser(user: AuthUser): List<Referral> {
@@ -184,7 +184,7 @@ class ReferralService(
     endOfServiceReport: EndOfServiceReport? = null,
   ): Referral {
     if (!userTypeChecker.isProbationPractitionerUser(user)) {
-      throw AccessError("user cannot create referral", listOf("only probation practitioners can create draft referrals"))
+      throw AccessError(user, "user cannot create referral", listOf("only probation practitioners can create draft referrals"))
     }
 
     // PPs can't create referrals for service users they are not allowed to see
@@ -378,7 +378,7 @@ class ReferralService(
 
   fun getDraftReferralsForUser(user: AuthUser): List<Referral> {
     if (!userTypeChecker.isProbationPractitionerUser(user)) {
-      throw AccessError("user does not have access to referrals", listOf("only probation practitioners can access draft referrals"))
+      throw AccessError(user, "user does not have access to referrals", listOf("only probation practitioners can access draft referrals"))
     }
 
     val referrals = referralRepository.findByCreatedByIdAndSentAtIsNull(user.id)

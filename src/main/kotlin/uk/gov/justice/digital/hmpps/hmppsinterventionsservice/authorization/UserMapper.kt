@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
 @Component
@@ -26,7 +26,7 @@ class UserMapper {
     }
 
     if (errors.isNotEmpty()) {
-      throw AccessError("could not map auth token to user", errors)
+      throw AccessDeniedException("could not map auth token to user: $errors")
     }
 
     return AuthUser(id = userID, authSource = authSource, userName = userName)
