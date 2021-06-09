@@ -106,7 +106,7 @@ community-api:
     bookings:
       enabled: true
     office-location: CRSEXTL
-    referrals:
+  referrals:
       enabled: true
   integration-context: commissioned-rehabilitation-services
 
