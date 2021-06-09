@@ -130,5 +130,5 @@ aws:
 
 webclient:
   connect-timeout-seconds: 20
-  read-timeout-seconds: 5
-  write-timeout-seconds: 5
+  read-timeout-seconds: 10
+  write-timeout-seconds: 10
