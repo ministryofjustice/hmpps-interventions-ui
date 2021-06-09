@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
+import com.fasterxml.jackson.annotation.JsonValue
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
@@ -37,3 +38,14 @@ data class Appointment(
 
   @Id val id: UUID,
 )
+
+enum class Attended {
+  YES,
+  LATE,
+  NO;
+
+  @JsonValue
+  open fun toLower(): String? {
+    return this.toString().lowercase()
+  }
+}
