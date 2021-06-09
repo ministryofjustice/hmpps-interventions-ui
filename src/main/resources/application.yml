@@ -103,12 +103,12 @@ community-api:
     notification-request: "/secure/offenders/crn/{crn}/sentences/{sentenceId}/notifications/context/{contextName}"
     offender-access: "/secure/offenders/crn/{crn}/userAccess"
   appointments:
+    bookings:
+      enabled: true
     office-location: CRSEXTL
+    referrals:
+      enabled: true
   integration-context: commissioned-rehabilitation-services
-
-appointments:
-  bookings:
-    enabled: true
 
 hmppsauth:
   api:

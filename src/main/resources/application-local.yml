@@ -1,15 +1,16 @@
 notify:
   enabled: false
 
-appointments:
-  bookings:
-    enabled: false
-
 interventions-ui:
   baseurl: http://localhost:3000
 
 community-api:
   baseurl: http://localhost:8091
+  referrals:
+    enabled: false
+  appointments:
+    bookings:
+      enabled: false
 
 assess-risks-and-needs:
   baseurl: http://localhost:8094

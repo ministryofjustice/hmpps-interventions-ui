@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull
 @Service
 @Transactional
 class CommunityAPIReferralService(
+  @Value("\${community-api.referrals.enabled}") private val referralsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
@@ -23,6 +24,10 @@ class CommunityAPIReferralService(
   companion object : KLogging()
 
   fun send(referral: Referral) {
+    if (!referralsEnabled) {
+      return
+    }
+
     val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
       .path(interventionsUISentReferralLocation)
       .buildAndExpand(referral.id)

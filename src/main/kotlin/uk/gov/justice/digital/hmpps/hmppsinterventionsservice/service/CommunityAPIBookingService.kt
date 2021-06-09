@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull
 @Service
 @Transactional
 class CommunityAPIBookingService(
-  @Value("\${appointments.bookings.enabled}") private val bookingsEnabled: Boolean,
+  @Value("\${community-api.appointments.bookings.enabled}") private val bookingsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.view-appointment}") private val interventionsUIViewAppointment: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
