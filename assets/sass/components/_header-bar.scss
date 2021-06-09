@@ -87,4 +87,8 @@
 
 .refer-and-monitor-header {
   border-bottom: 0;
+
+  #user-block div:not(:last-child) {
+    border: 0;
+  }
 }
