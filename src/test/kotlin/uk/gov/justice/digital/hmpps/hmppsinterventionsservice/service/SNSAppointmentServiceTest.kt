@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -42,6 +43,7 @@ internal class SNSAppointmentServiceTest {
   fun `appointment attendance recorded event publishes message with valid DTO`() {
     snsAppointmentService.onApplicationEvent(attendanceRecordedEvent(Attended.NO))
 
+    val referralId = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd")
     val eventDTO = EventDTO(
       eventType = "intervention.session-appointment.missed",
       description = "Attendance was recorded for a session appointment",
@@ -49,11 +51,11 @@ internal class SNSAppointmentServiceTest {
       occurredAt = now,
       additionalInformation = mapOf(
         "serviceUserCRN" to "X123456",
-        "referralId" to UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd")
+        "referralId" to referralId
       ),
     )
 
-    verify(publisher).publish(eventDTO)
+    verify(publisher).publish(referralId, null, eventDTO)
   }
 
   @Test
@@ -62,7 +64,7 @@ internal class SNSAppointmentServiceTest {
     snsAppointmentService.onApplicationEvent(attendanceRecordedEvent(Attended.LATE))
 
     val eventCaptor = argumentCaptor<EventDTO>()
-    verify(publisher, times(2)).publish(eventCaptor.capture())
+    verify(publisher, times(2)).publish(eq(actionPlan.referral.id), eq(null), eventCaptor.capture())
     eventCaptor.allValues.forEach {
       assertThat(it.eventType).isEqualTo("intervention.session-appointment.attended")
     }

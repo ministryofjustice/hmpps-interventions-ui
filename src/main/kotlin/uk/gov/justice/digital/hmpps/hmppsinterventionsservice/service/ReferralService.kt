@@ -190,7 +190,7 @@ class ReferralService(
     // PPs can't create referrals for service users they are not allowed to see
     serviceUserAccessChecker.forProbationPractitionerUser(crn, user)
 
-    val intervention = interventionRepository.getOne(interventionId)
+    val intervention = interventionRepository.getById(interventionId)
     val serviceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories
     val selectedServiceCategories = if (serviceCategories.size == 1) serviceCategories.toMutableSet() else null
 
@@ -200,7 +200,7 @@ class ReferralService(
         createdAt = overrideCreatedAt ?: OffsetDateTime.now(),
         createdBy = authUserRepository.save(user),
         serviceUserCRN = crn,
-        intervention = interventionRepository.getOne(interventionId),
+        intervention = interventionRepository.getById(interventionId),
         endOfServiceReport = endOfServiceReport,
         selectedServiceCategories = selectedServiceCategories,
       )

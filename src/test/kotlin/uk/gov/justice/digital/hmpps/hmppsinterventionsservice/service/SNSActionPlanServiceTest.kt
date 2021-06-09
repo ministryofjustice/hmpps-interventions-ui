@@ -46,7 +46,11 @@ internal class SNSActionPlanServiceTest {
         "submittedBy" to actionPlanSubmittedEvent.actionPlan.submittedBy!!.userName
       )
     )
-    verify(snsPublisher).publish(snsEvent)
+    verify(snsPublisher).publish(
+      actionPlanSubmittedEvent.actionPlan.referral.id,
+      actionPlanSubmittedEvent.actionPlan.submittedBy,
+      snsEvent
+    )
   }
 
   private fun snsActionPlanService(): SNSActionPlanService {
