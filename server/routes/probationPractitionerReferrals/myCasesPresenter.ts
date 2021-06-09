@@ -13,7 +13,7 @@ export default class MyCasesPresenter {
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Referral', sort: 'none' },
     { text: 'Service user', sort: 'ascending' },
-    { text: 'Service Category', sort: 'none' },
+    { text: 'Service category', sort: 'none' },
     { text: 'Provider', sort: 'none' },
     { text: 'Caseworker', sort: 'none' },
     { text: 'Action', sort: 'none' },
