@@ -384,9 +384,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
-      {"accessErrors": [
-      "invalid user type"
-      ]}
+      {"accessErrors": ["logins from nomis are not supported"]}
       """.trimIndent()
     )
   }

@@ -12,13 +12,14 @@ class ReferralAccessChecker(
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val serviceUserAccessChecker: ServiceUserAccessChecker,
 ) {
-  private val errorMessage = "user does not have access to referral"
+  private val userTypeError = "unsupported user type"
+  private val insufficientPrivilegeError = "user does not have access to referral"
 
   fun forUser(referral: Referral, user: AuthUser) {
     when {
       userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user)
       userTypeChecker.isServiceProviderUser(user) -> forServiceProviderUser(referral, user)
-      else -> throw AccessError(errorMessage, listOf("invalid user type"))
+      else -> throw AccessError(userTypeError, listOf("logins from ${user.authSource} are not supported"))
     }
   }
 
@@ -36,7 +37,7 @@ class ReferralAccessChecker(
     }
 
     if (errors.isNotEmpty()) {
-      throw AccessError(errorMessage, errors)
+      throw AccessError(insufficientPrivilegeError, errors)
     }
   }
 
