@@ -77,9 +77,11 @@ export default {
     },
     interventionsService: {
       url: get('INTERVENTIONS_SERVICE_URL', 'http://localhost:9092', requiredInProduction),
+      // the interventions-service <-> community-api worst case timeout is 20s, this is intentionally just slightly higher
+      // fixme: this is too long
       timeout: {
-        response: 10000,
-        deadline: 10000,
+        response: 22000,
+        deadline: 22000,
       },
       agent: new AgentConfig(),
     },
