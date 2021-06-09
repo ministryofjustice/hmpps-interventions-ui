@@ -26,7 +26,7 @@ class NotifyAppointmentServiceTest {
     return AppointmentEvent(
       "source",
       type,
-      SampleData.sampleActionPlanAppointment(
+      SampleData.sampleActionPlanSession(
         id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
         actionPlan = SampleData.sampleActionPlan(
           referral = SampleData.sampleReferral(

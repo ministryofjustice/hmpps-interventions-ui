@@ -8,7 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
@@ -156,9 +156,9 @@ internal class CommunityAPIBookingServiceTest {
     verifyZeroInteractions(communityAPIClient)
   }
 
-  private fun makeAppointment(sentAt: OffsetDateTime, appointmentTime: OffsetDateTime?, durationInMinutes: Int?, deliusAppointmentId: Long? = null): ActionPlanAppointment {
+  private fun makeAppointment(sentAt: OffsetDateTime, appointmentTime: OffsetDateTime?, durationInMinutes: Int?, deliusAppointmentId: Long? = null): ActionPlanSession {
     val referral = SampleData.sampleReferral(crn = crn, relevantSentenceId = sentenceId, sentAt = sentAt, serviceProviderName = "SPN", referenceNumber = "XX123456")
-    return SampleData.sampleActionPlanAppointment(
+    return SampleData.sampleActionPlanSession(
       actionPlan = SampleData.sampleActionPlan(referral = referral),
       createdBy = SampleData.sampleAuthUser(),
       appointmentTime = appointmentTime,

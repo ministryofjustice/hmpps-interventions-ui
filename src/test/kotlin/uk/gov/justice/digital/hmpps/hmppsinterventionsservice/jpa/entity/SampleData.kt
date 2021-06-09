@@ -235,7 +235,7 @@ class SampleData {
       )
     }
 
-    fun sampleActionPlanAppointment(
+    fun sampleActionPlanSession(
       id: UUID = UUID.randomUUID(),
       actionPlan: ActionPlan,
       sessionNumber: Int = 1,
@@ -248,8 +248,8 @@ class SampleData {
       attendanceSubmittedAt: OffsetDateTime? = null,
       notifyPPOfAttendanceBehaviour: Boolean? = null,
       deliusAppointmentId: Long? = null
-    ): ActionPlanAppointment {
-      return ActionPlanAppointment(
+    ): ActionPlanSession {
+      return ActionPlanSession(
         id = id,
         actionPlan = actionPlan,
         sessionNumber = sessionNumber,

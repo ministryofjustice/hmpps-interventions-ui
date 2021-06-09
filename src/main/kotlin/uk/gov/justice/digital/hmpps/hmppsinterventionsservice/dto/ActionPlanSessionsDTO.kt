@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -25,7 +25,7 @@ data class UpdateAppointmentBehaviourDTO(
   val notifyProbationPractitioner: Boolean,
 )
 
-data class ActionPlanAppointmentDTO(
+data class ActionPlanSessionDTO(
   val id: UUID,
   val sessionNumber: Int,
   override val appointmentTime: OffsetDateTime?,
@@ -35,25 +35,25 @@ data class ActionPlanAppointmentDTO(
   val sessionFeedback: SessionFeedbackDTO,
 ) : BaseAppointmentDTO(appointmentTime, durationInMinutes) {
   companion object {
-    fun from(appointment: ActionPlanAppointment): ActionPlanAppointmentDTO {
-      return ActionPlanAppointmentDTO(
-        id = appointment.id,
-        sessionNumber = appointment.sessionNumber,
-        appointmentTime = appointment.appointmentTime,
-        durationInMinutes = appointment.durationInMinutes,
-        createdAt = appointment.createdAt,
-        createdBy = AuthUserDTO.from(appointment.createdBy),
+    fun from(session: ActionPlanSession): ActionPlanSessionDTO {
+      return ActionPlanSessionDTO(
+        id = session.id,
+        sessionNumber = session.sessionNumber,
+        appointmentTime = session.appointmentTime,
+        durationInMinutes = session.durationInMinutes,
+        createdAt = session.createdAt,
+        createdBy = AuthUserDTO.from(session.createdBy),
         sessionFeedback = SessionFeedbackDTO.from(
-          appointment.attended,
-          appointment.additionalAttendanceInformation,
-          appointment.attendanceBehaviour,
-          appointment.notifyPPOfAttendanceBehaviour,
-          appointment.attendanceSubmittedAt != null,
+          session.attended,
+          session.additionalAttendanceInformation,
+          session.attendanceBehaviour,
+          session.notifyPPOfAttendanceBehaviour,
+          session.attendanceSubmittedAt != null,
         ),
       )
     }
-    fun from(appointments: List<ActionPlanAppointment>): List<ActionPlanAppointmentDTO> {
-      return appointments.map { from(it) }
+    fun from(sessions: List<ActionPlanSession>): List<ActionPlanSessionDTO> {
+      return sessions.map { from(it) }
     }
   }
 }

@@ -5,70 +5,70 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentsService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
 import java.time.OffsetDateTime
 import java.util.UUID
 
-internal class AppointmentsControllerTest {
-  private val appointmentsService = mock<AppointmentsService>()
+internal class ActionPlanSessionControllerTest {
+  private val appointmentsService = mock<ActionPlanSessionsService>()
   private val locationMapper = mock<LocationMapper>()
 
-  private val appointmentsController = AppointmentsController(appointmentsService, locationMapper)
+  private val appointmentsController = ActionPlanSessionController(appointmentsService, locationMapper)
 
   @Test
-  fun `updates an appointment`() {
+  fun `updates a session`() {
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+    val actionPlanSession = SampleData.sampleActionPlanSession(actionPlan = actionPlan, createdBy = createdByUser)
     val sessionNumber = 1
 
     val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10)
 
     whenever(
-      appointmentsService.updateAppointment(
+      appointmentsService.updateSession(
         actionPlan.id,
         sessionNumber,
         updateAppointmentDTO.appointmentTime,
         updateAppointmentDTO.durationInMinutes
       )
-    ).thenReturn(actionPlanAppointment)
+    ).thenReturn(actionPlanSession)
 
-    val appointmentResponse = appointmentsController.updateAppointment(actionPlan.id, sessionNumber, updateAppointmentDTO)
+    val appointmentResponse = appointmentsController.updateSession(actionPlan.id, sessionNumber, updateAppointmentDTO)
 
-    assertThat(appointmentResponse).isEqualTo(ActionPlanAppointmentDTO.from(actionPlanAppointment))
+    assertThat(appointmentResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
   @Test
   fun `gets an appointment`() {
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+    val actionPlanSession = SampleData.sampleActionPlanSession(actionPlan = actionPlan, createdBy = createdByUser)
     val sessionNumber = 1
 
-    whenever(appointmentsService.getAppointment(actionPlan.id, sessionNumber)).thenReturn(actionPlanAppointment)
+    whenever(appointmentsService.getSession(actionPlan.id, sessionNumber)).thenReturn(actionPlanSession)
 
-    val appointmentResponse = appointmentsController.getAppointment(actionPlan.id, sessionNumber)
+    val appointmentResponse = appointmentsController.getSession(actionPlan.id, sessionNumber)
 
-    assertThat(appointmentResponse).isEqualTo(ActionPlanAppointmentDTO.from(actionPlanAppointment))
+    assertThat(appointmentResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
   @Test
   fun `gets a list of appointment`() {
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanAppointment = SampleData.sampleActionPlanAppointment(actionPlan = actionPlan, createdBy = createdByUser)
+    val actionPlanSession = SampleData.sampleActionPlanSession(actionPlan = actionPlan, createdBy = createdByUser)
 
-    whenever(appointmentsService.getAppointments(actionPlan.id)).thenReturn(listOf(actionPlanAppointment))
+    whenever(appointmentsService.getSessions(actionPlan.id)).thenReturn(listOf(actionPlanSession))
 
-    val appointmentsResponse = appointmentsController.getAppointments(actionPlan.id)
+    val appointmentsResponse = appointmentsController.getSessions(actionPlan.id)
 
     assertThat(appointmentsResponse.size).isEqualTo(1)
-    assertThat(appointmentsResponse.first()).isEqualTo(ActionPlanAppointmentDTO.from(actionPlanAppointment))
+    assertThat(appointmentsResponse.first()).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
   @Test
@@ -79,7 +79,7 @@ internal class AppointmentsControllerTest {
     val createdByUser = SampleData.sampleAuthUser()
     val actionPlan = SampleData.sampleActionPlan()
 
-    val updatedAppointment = SampleData.sampleActionPlanAppointment(
+    val updatedAppointment = SampleData.sampleActionPlanSession(
       actionPlan = actionPlan, createdBy = createdByUser,
       attended = Attended.YES, additionalAttendanceInformation = "more info"
     )

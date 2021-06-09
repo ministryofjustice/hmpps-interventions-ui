@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class ActionPlanAppointmentFactory(em: TestEntityManager? = null) : EntityFactory(em) {
+class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val actionPlanFactory = ActionPlanFactory(em)
 
   fun create(
@@ -22,9 +22,9 @@ class ActionPlanAppointmentFactory(em: TestEntityManager? = null) : EntityFactor
     attendanceSubmittedAt: OffsetDateTime? = null,
     notifyPPOfAttendanceBehaviour: Boolean? = null,
     sessionFeedbackSubmittedAt: OffsetDateTime? = null,
-  ): ActionPlanAppointment {
+  ): ActionPlanSession {
     return save(
-      ActionPlanAppointment(
+      ActionPlanSession(
         id = id,
         actionPlan = actionPlan,
         sessionNumber = sessionNumber,
@@ -49,9 +49,9 @@ class ActionPlanAppointmentFactory(em: TestEntityManager? = null) : EntityFactor
     attendanceSubmittedAt: OffsetDateTime? = createdAt,
     notifyPPOfAttendanceBehaviour: Boolean? = false,
     sessionFeedbackSubmittedAt: OffsetDateTime? = attendanceSubmittedAt,
-  ): ActionPlanAppointment {
+  ): ActionPlanSession {
     return save(
-      ActionPlanAppointment(
+      ActionPlanSession(
         id = id,
         actionPlan = actionPlan,
         sessionNumber = sessionNumber,

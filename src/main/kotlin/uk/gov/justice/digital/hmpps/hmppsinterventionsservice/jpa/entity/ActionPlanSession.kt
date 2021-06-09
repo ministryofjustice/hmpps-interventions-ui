@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(name = "action_plan_appointment")
 @TypeDef(name = "attended", typeClass = PostgreSQLEnumType::class)
-data class ActionPlanAppointment(
+data class ActionPlanSession(
 
   // Attributes
   @NotNull val sessionNumber: Int,

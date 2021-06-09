@@ -4,7 +4,7 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.R
 import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -19,8 +19,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
@@ -53,7 +53,7 @@ class SetupAssistant(
   private val referralRepository: ReferralRepository,
   private val interventionRepository: InterventionRepository,
   private val actionPlanRepository: ActionPlanRepository,
-  private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  private val actionPlanSessionRepository: ActionPlanSessionRepository,
   private val serviceCategoryRepository: ServiceCategoryRepository,
   private val serviceProviderRepository: ServiceProviderRepository,
   private val npsRegionRepository: NPSRegionRepository,
@@ -77,7 +77,7 @@ class SetupAssistant(
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
-    actionPlanAppointmentRepository.deleteAll()
+    actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
 
@@ -243,7 +243,7 @@ class SetupAssistant(
     )
   }
 
-  fun createActionPlanAppointment(
+  fun createActionPlanSession(
     actionPlan: ActionPlan,
     sessionNumber: Int,
     duration: Int,
@@ -252,11 +252,11 @@ class SetupAssistant(
     attendanceInfo: String? = null,
     behaviour: String? = null,
     notifyPPOfBehaviour: Boolean? = null
-  ): ActionPlanAppointment {
+  ): ActionPlanSession {
     val now = OffsetDateTime.now()
     val user = createSPUser()
-    return actionPlanAppointmentRepository.save(
-      ActionPlanAppointment(
+    return actionPlanSessionRepository.save(
+      ActionPlanSession(
         id = UUID.randomUUID(),
         sessionNumber = sessionNumber,
         attended = attended,
