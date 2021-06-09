@@ -5,6 +5,7 @@ describe(sessionStatus.forAppointment, () => {
   describe('when the appointment was not attended', () => {
     const appointment = actionPlanAppointmentFactory.build({
       sessionFeedback: {
+        submitted: true,
         attendance: {
           attended: 'no',
         },
@@ -19,6 +20,7 @@ describe(sessionStatus.forAppointment, () => {
   describe('when the appointment was attended or the user was late', () => {
     const onTimeAppointment = actionPlanAppointmentFactory.build({
       sessionFeedback: {
+        submitted: true,
         attendance: {
           attended: 'yes',
         },
@@ -27,6 +29,7 @@ describe(sessionStatus.forAppointment, () => {
 
     const lateAppointment = actionPlanAppointmentFactory.build({
       sessionFeedback: {
+        submitted: true,
         attendance: {
           attended: 'yes',
         },
@@ -42,6 +45,7 @@ describe(sessionStatus.forAppointment, () => {
   describe('when the appointment does not have feedback, but has an appointment time set', () => {
     const scheduledAppointment = actionPlanAppointmentFactory.scheduled().build({
       sessionFeedback: {
+        submitted: false,
         attendance: {
           attended: null,
           additionalAttendanceInformation: null,
@@ -53,7 +57,22 @@ describe(sessionStatus.forAppointment, () => {
       },
     })
 
-    it('returns "did not attend" status', () => {
+    it('returns "scheduled" status', () => {
+      expect(sessionStatus.forAppointment(scheduledAppointment)).toEqual(SessionStatus.scheduled)
+    })
+  })
+
+  describe('when the appointment does have feedback, but it has not been submitted', () => {
+    const scheduledAppointment = actionPlanAppointmentFactory.scheduled().build({
+      sessionFeedback: {
+        submitted: false,
+        attendance: {
+          attended: 'yes',
+        },
+      },
+    })
+
+    it('returns "scheduled" status', () => {
       expect(sessionStatus.forAppointment(scheduledAppointment)).toEqual(SessionStatus.scheduled)
     })
   })

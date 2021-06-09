@@ -9,14 +9,15 @@ export enum SessionStatus {
 
 export default {
   forAppointment: (appointment: ActionPlanAppointment): SessionStatus => {
-    const sessionFeedbackAttendance = appointment.sessionFeedback.attendance
+    if (appointment.sessionFeedback.submitted) {
+      const sessionFeedbackAttendance = appointment.sessionFeedback.attendance
+      if (sessionFeedbackAttendance.attended === 'no') {
+        return SessionStatus.didNotAttend
+      }
 
-    if (sessionFeedbackAttendance.attended === 'no') {
-      return SessionStatus.didNotAttend
-    }
-
-    if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
-      return SessionStatus.completed
+      if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
+        return SessionStatus.completed
+      }
     }
 
     if (appointment.appointmentTime) {
