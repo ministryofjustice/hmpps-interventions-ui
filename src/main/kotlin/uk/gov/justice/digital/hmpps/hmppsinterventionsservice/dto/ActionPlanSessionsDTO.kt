@@ -5,15 +5,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attende
 import java.time.OffsetDateTime
 import java.util.UUID
 
-abstract class BaseAppointmentDTO(
-  open val appointmentTime: OffsetDateTime?,
-  open val durationInMinutes: Int?,
-)
-
 data class UpdateAppointmentDTO(
-  override val appointmentTime: OffsetDateTime?,
-  override val durationInMinutes: Int?,
-) : BaseAppointmentDTO(appointmentTime, durationInMinutes)
+  val appointmentTime: OffsetDateTime,
+  val durationInMinutes: Int,
+)
 
 data class UpdateAppointmentAttendanceDTO(
   val attended: Attended,
@@ -28,27 +23,23 @@ data class UpdateAppointmentBehaviourDTO(
 data class ActionPlanSessionDTO(
   val id: UUID,
   val sessionNumber: Int,
-  override val appointmentTime: OffsetDateTime?,
-  override val durationInMinutes: Int?,
-  val createdAt: OffsetDateTime,
-  val createdBy: AuthUserDTO,
+  val appointmentTime: OffsetDateTime?,
+  val durationInMinutes: Int?,
   val sessionFeedback: SessionFeedbackDTO,
-) : BaseAppointmentDTO(appointmentTime, durationInMinutes) {
+) {
   companion object {
     fun from(session: ActionPlanSession): ActionPlanSessionDTO {
       return ActionPlanSessionDTO(
         id = session.id,
         sessionNumber = session.sessionNumber,
-        appointmentTime = session.appointmentTime,
-        durationInMinutes = session.durationInMinutes,
-        createdAt = session.createdAt,
-        createdBy = AuthUserDTO.from(session.createdBy),
+        appointmentTime = session.currentAppointment?.appointmentTime,
+        durationInMinutes = session.currentAppointment?.durationInMinutes,
         sessionFeedback = SessionFeedbackDTO.from(
-          session.attended,
-          session.additionalAttendanceInformation,
-          session.attendanceBehaviour,
-          session.notifyPPOfAttendanceBehaviour,
-          session.attendanceSubmittedAt != null,
+          session.currentAppointment?.attended,
+          session.currentAppointment?.additionalAttendanceInformation,
+          session.currentAppointment?.attendanceBehaviour,
+          session.currentAppointment?.notifyPPOfAttendanceBehaviour,
+          session.currentAppointment?.attendanceSubmittedAt != null,
         ),
       )
     }
