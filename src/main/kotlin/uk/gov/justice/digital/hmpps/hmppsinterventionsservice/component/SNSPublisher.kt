@@ -24,18 +24,22 @@ class SNSPublisher(
   fun publish(referralId: UUID, actor: AuthUser, event: EventDTO) {
     if (enabled) {
       buildRequestAndPublish(event)
-      telemetryClient.trackEvent(
-        "InterventionsDomainEvent",
-        mapOf(
-          "event" to event.eventType,
-          "referralId" to referralId.toString(),
-          "actorUserId" to actor.id,
-        ),
-        null
-      )
     } else {
       logger.debug("Event notification was not published due to sns being disabled.")
     }
+    sendCustomEvent(referralId, actor, event.eventType)
+  }
+
+  private fun sendCustomEvent(referralId: UUID, actor: AuthUser, eventType: String) {
+    telemetryClient.trackEvent(
+      "InterventionsDomainEvent",
+      mapOf(
+        "event" to eventType,
+        "referralId" to referralId.toString(),
+        "actorUserId" to actor.id,
+      ),
+      null
+    )
   }
 
   private fun buildRequestAndPublish(event: EventDTO) {
