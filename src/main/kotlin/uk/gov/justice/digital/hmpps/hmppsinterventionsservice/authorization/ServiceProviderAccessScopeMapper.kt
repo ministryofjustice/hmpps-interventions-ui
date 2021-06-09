@@ -28,11 +28,11 @@ class ServiceProviderAccessScopeMapper(
 
   fun fromUser(user: AuthUser): ServiceProviderAccessScope {
     if (!userTypeChecker.isServiceProviderUser(user)) {
-      throw AccessError(errorMessage, listOf("user is not a service provider"))
+      throw AccessError(user, errorMessage, listOf("user is not a service provider"))
     }
 
     val groups = hmppsAuthService.getUserGroups(user)
-      ?: throw AccessError(errorMessage, listOf("cannot find user in hmpps auth"))
+      ?: throw AccessError(user, errorMessage, listOf("cannot find user in hmpps auth"))
 
     val configErrors = mutableListOf<String>()
 
@@ -51,7 +51,7 @@ class ServiceProviderAccessScopeMapper(
     // FIXME we also need to remove contracts which do not belong to the user's provider
 
     if (configErrors.isNotEmpty()) {
-      throw AccessError(errorMessage, configErrors)
+      throw AccessError(user, errorMessage, configErrors)
     }
 
     // this not null assertion on serviceProvider is ugly, but it's the only way i could think

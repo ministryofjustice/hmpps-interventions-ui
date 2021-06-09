@@ -417,10 +417,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectStatus().isForbidden
     response.expectBody().json(
       """
-      {"accessErrors": [
-      "no 'auth_source' claim in token",
-      "no 'user_name' claim in token"
-      ]}
+      {"status":403,"error":"access denied",
+       "message":"could not map auth token to user: [no 'user_name' claim in token, no 'auth_source' claim in token]"}
       """.trimIndent()
     )
   }
