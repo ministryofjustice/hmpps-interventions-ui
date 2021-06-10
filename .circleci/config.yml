@@ -50,7 +50,7 @@ jobs:
           name: Validate report SQLs
           command: |
             for sqlfile in helm_deploy/hmpps-interventions-service/reports/*.sql; do
-              PGPASSWORD="$POSTGRES_PASSWORD" psql -v ON_ERROR_STOP=1 -U"postgres" "postgresql://localhost:5432/$POSTGRES_DB" -f "$sqlfile"
+              PSQL_PAGER="" PGPASSWORD="$POSTGRES_PASSWORD" psql -v ON_ERROR_STOP=1 -U"postgres" "postgresql://localhost:5432/$POSTGRES_DB" -f "$sqlfile"
             done
 
   publish_data:
