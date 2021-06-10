@@ -341,14 +341,14 @@ describe(ShowReferralPresenter, () => {
           key: 'Complexity level',
           lines: [
             'LOW COMPLEXITY',
-            'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+            'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
           ],
         },
         {
           key: 'Desired outcomes',
           lines: [
-            'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-            'Service User makes progress in obtaining accommodation',
+            'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+            'Service user makes progress in obtaining accommodation',
           ],
         },
       ])

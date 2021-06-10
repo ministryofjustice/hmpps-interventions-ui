@@ -166,15 +166,15 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Accommodation service')
     cy.contains('LOW COMPLEXITY')
-    cy.contains('Service User has some capacity and means to secure')
-    cy.contains('All barriers, as identified in the Service User Action Plan')
-    cy.contains('Service User makes progress in obtaining accommodation')
+    cy.contains('Service user has some capacity and means to secure')
+    cy.contains('All barriers, as identified in the Service user action plan')
+    cy.contains('Service user makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
     cy.contains('MEDIUM COMPLEXITY')
-    cy.contains('Service User is at risk of homelessness/is homeless')
-    cy.contains('Service User is helped to secure social or supported housing')
-    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
+    cy.contains('Service user is at risk of homelessness/is homeless')
+    cy.contains('Service user is helped to secure social or supported housing')
+    cy.contains('Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
     cy.contains("Service user's personal details")
     cy.contains('English')
@@ -259,19 +259,19 @@ describe('Service provider referrals dashboard', () => {
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         description:
-          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
       },
       {
         id: '65924ac6-9724-455b-ad30-906936291421',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-        description: 'Service User is helped to secure social or supported housing',
+        description: 'Service user is helped to secure social or supported housing',
       },
       {
         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
       },
     ]
 
@@ -463,7 +463,7 @@ describe('Service provider referrals dashboard', () => {
   })
 
   describe('Recording post session feedback', () => {
-    it('user records the Service User as having attended, and fills out behaviour screen', () => {
+    it('user records the Service user as having attended, and fills out behaviour screen', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const accommodationIntervention = interventionFactory.build({
         contractType: { code: 'SOC', name: 'Social inclusion' },
@@ -613,7 +613,7 @@ describe('Service provider referrals dashboard', () => {
         ])
     })
 
-    it('user records the Service User as having not attended, and skips behaviour screen', () => {
+    it('user records the Service user as having not attended, and skips behaviour screen', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const intervention = interventionFactory.build({
         contractType: { code: 'ACC', name: 'accommodation' },
@@ -848,19 +848,19 @@ describe('Service provider referrals dashboard', () => {
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         description:
-          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
       },
       {
         id: '65924ac6-9724-455b-ad30-906936291421',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-        description: 'Service User is helped to secure social or supported housing',
+        description: 'Service user is helped to secure social or supported housing',
       },
       {
         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
       },
     ]
 

@@ -266,15 +266,15 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('Accommodation service')
     cy.contains('LOW COMPLEXITY')
-    cy.contains('Service User has some capacity and means to secure')
-    cy.contains('All barriers, as identified in the Service User Action Plan')
-    cy.contains('Service User makes progress in obtaining accommodation')
+    cy.contains('Service user has some capacity and means to secure')
+    cy.contains('All barriers, as identified in the Service user action plan')
+    cy.contains('Service user makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
     cy.contains('MEDIUM COMPLEXITY')
-    cy.contains('Service User is at risk of homelessness/is homeless')
-    cy.contains('Service User is helped to secure social or supported housing')
-    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
+    cy.contains('Service user is at risk of homelessness/is homeless')
+    cy.contains('Service user is helped to secure social or supported housing')
+    cy.contains('Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
     cy.contains("Service user's personal details")
     cy.contains('English')
