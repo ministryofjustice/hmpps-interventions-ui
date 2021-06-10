@@ -25,13 +25,15 @@ import InterventionsService from './services/interventionsService'
 import HmppsAuthService from './services/hmppsAuthService'
 import passportSetup from './authentication/passport'
 import authErrorHandler from './authentication/authErrorHandler'
+import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 
 const RedisStore = connectRedis(session)
 
 export default function createApp(
   communityApiService: CommunityApiService,
   interventionsService: InterventionsService,
-  hmppsAuthService: HmppsAuthService
+  hmppsAuthService: HmppsAuthService,
+  assessRisksAndNeedsService: AssessRisksAndNeedsService
 ): express.Application {
   const app = express()
 
@@ -171,6 +173,7 @@ export default function createApp(
       communityApiService,
       interventionsService,
       hmppsAuthService,
+      assessRisksAndNeedsService,
     })
   )
 

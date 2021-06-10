@@ -5,6 +5,7 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 import interventionFactory from '../../testutils/factories/intervention'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
+import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -216,6 +217,10 @@ describe('Probation practitioner referrals dashboard', () => {
       },
     })
 
+    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'They are low risk.',
+    })
+
     const deliusUser = deliusUserFactory.build({
       firstName: 'Bernard',
       surname: 'Beaks',
@@ -242,6 +247,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
 
     cy.login()
 
@@ -275,9 +281,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
     cy.contains("Service user's risk information")
-    cy.contains(
-      'The Refer and Monitor an Intervention service cannot currently display this risk information. It will be available before Service Providers start using the digital service.'
-    )
+    cy.contains('They are low risk.')
     cy.contains("Service user's needs")
     cy.contains('Alex is currently sleeping on her aunt’s sofa')
     cy.contains('She uses a wheelchair')

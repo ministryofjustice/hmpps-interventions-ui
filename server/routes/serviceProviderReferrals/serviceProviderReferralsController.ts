@@ -56,12 +56,14 @@ import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmation
 import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 
 export default class ServiceProviderReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
-    private readonly hmppsAuthService: HmppsAuthService
+    private readonly hmppsAuthService: HmppsAuthService,
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
@@ -84,7 +86,8 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       req.params.id
     )
-    const [intervention, sentBy, serviceUser, conviction] = await Promise.all([
+
+    const [intervention, sentBy, serviceUser, conviction, riskInformation] = await Promise.all([
       this.interventionsService.getIntervention(
         res.locals.user.token.accessToken,
         sentReferral.referral.interventionId
@@ -95,6 +98,7 @@ export default class ServiceProviderReferralsController {
         sentReferral.referral.serviceUser.crn,
         sentReferral.referral.relevantSentenceId
       ),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId),
     ])
 
     const assignee =
@@ -125,6 +129,7 @@ export default class ServiceProviderReferralsController {
       sentReferral,
       intervention,
       conviction,
+      riskInformation,
       sentBy,
       assignee,
       formError,

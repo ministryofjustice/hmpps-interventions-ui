@@ -8,6 +8,7 @@ import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAp
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
+import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -111,6 +112,10 @@ describe('Service provider referrals dashboard', () => {
 
     const referralToSelect = sentReferrals[1]
 
+    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'They are low risk.',
+    })
+
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
@@ -118,6 +123,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
 
     cy.login()
 
@@ -175,9 +181,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
     cy.contains("Service user's risk information")
-    cy.contains(
-      'The Refer and Monitor an Intervention service cannot currently display this risk information. It will be available before Service Providers start using the digital service.'
-    )
+    cy.contains('They are low risk.')
     cy.contains("Service user's needs")
     cy.contains('Alex is currently sleeping on her aunt’s sofa')
     cy.contains('She uses a wheelchair')
@@ -203,6 +207,7 @@ describe('Service provider referrals dashboard', () => {
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
 
     cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetSentReferral(referral.id, referral)
@@ -213,6 +218,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubAssignSentReferral(referral.id, referral)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
 
     cy.login()
 

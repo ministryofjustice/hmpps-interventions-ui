@@ -7,6 +7,7 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import { TagArgs } from '../../utils/govukFrontendTypes'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -37,6 +38,8 @@ describe(ShowReferralPresenter, () => {
   })
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
+  const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the check assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)
@@ -44,6 +47,7 @@ describe(ShowReferralPresenter, () => {
         referral,
         intervention,
         deliusConviction,
+        supplementaryRiskInformation,
         deliusUser,
         null,
         null,
@@ -64,6 +68,7 @@ describe(ShowReferralPresenter, () => {
             referral,
             intervention,
             deliusConviction,
+            supplementaryRiskInformation,
             deliusUser,
             null,
             null,
@@ -82,6 +87,7 @@ describe(ShowReferralPresenter, () => {
             referral,
             intervention,
             deliusConviction,
+            supplementaryRiskInformation,
             deliusUser,
             hmppsAuthUser,
             null,
@@ -102,6 +108,7 @@ describe(ShowReferralPresenter, () => {
         sentReferral,
         intervention,
         deliusConviction,
+        supplementaryRiskInformation,
         deliusUser,
         null,
         null,
@@ -178,6 +185,7 @@ describe(ShowReferralPresenter, () => {
           referralWithAllOptionalFields,
           intervention,
           burglaryConviction,
+          supplementaryRiskInformation,
           deliusUser,
           null,
           null,
@@ -264,6 +272,7 @@ describe(ShowReferralPresenter, () => {
           referralWithNoOptionalFields,
           intervention,
           burglaryConviction,
+          supplementaryRiskInformation,
           deliusUser,
           null,
           null,
@@ -316,6 +325,7 @@ describe(ShowReferralPresenter, () => {
         referral,
         cohortIntervention,
         deliusConviction,
+        supplementaryRiskInformation,
         deliusUser,
         null,
         null,
@@ -352,6 +362,7 @@ describe(ShowReferralPresenter, () => {
         sentReferral,
         intervention,
         deliusConviction,
+        supplementaryRiskInformation,
         deliusUser,
         null,
         null,
@@ -376,11 +387,15 @@ describe(ShowReferralPresenter, () => {
 
   describe('serviceUserRisks', () => {
     it("returns a summary list of the service user's risk information", () => {
+      const lowRiskInformation = supplementaryRiskInformationFactory.build({
+        riskSummaryComments: 'Alex is low risk.',
+      })
       const sentReferral = sentReferralFactory.build(referralParams)
       const presenter = new ShowReferralPresenter(
         sentReferral,
         intervention,
         deliusConviction,
+        lowRiskInformation,
         deliusUser,
         null,
         null,
@@ -391,9 +406,7 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.serviceUserRisks).toEqual([
         {
           key: 'Additional risk information',
-          lines: [
-            'The Refer and Monitor an Intervention service cannot currently display this risk information. It will be available before Service Providers start using the digital service.',
-          ],
+          lines: ['Alex is low risk.'],
         },
       ])
     })
@@ -446,6 +459,7 @@ describe(ShowReferralPresenter, () => {
           referralWithAllConditionalFields,
           intervention,
           deliusConviction,
+          supplementaryRiskInformation,
           deliusUser,
           null,
           null,
@@ -531,6 +545,7 @@ describe(ShowReferralPresenter, () => {
           referralWithNoConditionalFields,
           intervention,
           deliusConviction,
+          supplementaryRiskInformation,
           deliusUser,
           null,
           null,
