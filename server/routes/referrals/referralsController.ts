@@ -128,7 +128,7 @@ export default class ReferralsController {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
-    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser)
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser)
     const view = new ServiceUserDetailsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -580,7 +580,7 @@ export default class ReferralsController {
       this.communityApiService.getConvictionById(referral.serviceUser.crn, referral.relevantSentenceId),
     ])
 
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, serviceUser)
     const view = new CheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

@@ -256,7 +256,7 @@ describe('GET /referrals/:id/service-user-details', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build()
     const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
-
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
@@ -1260,6 +1260,7 @@ describe('GET /referrals/:id/check-answers', () => {
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
     communityApiService.getConvictionById.mockResolvedValue(conviction)
   })
 

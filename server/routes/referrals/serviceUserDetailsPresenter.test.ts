@@ -1,5 +1,6 @@
 import { ListStyle } from '../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
+import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 
 describe(ServiceUserDetailsPresenter, () => {
   const serviceUser = {
@@ -28,15 +29,18 @@ describe(ServiceUserDetailsPresenter, () => {
     disabilities: null,
   }
 
+  const deliusServiceUser = deliusServiceUserFactory.build()
+  const nullFieldsDeliusServiceUser = deliusServiceUserFactory.build({ contactDetails: { emailAddresses: null } })
+
   describe('title', () => {
     it("returns a title for the page with the service user's name", () => {
-      const presenter = new ServiceUserDetailsPresenter(serviceUser)
+      const presenter = new ServiceUserDetailsPresenter(serviceUser, deliusServiceUser)
 
       expect(presenter.title).toEqual("Alex's information")
     })
 
     it("falls back to an empty string if the service user's name is null", () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
 
       expect(presenter.title).toEqual("Service user's information")
     })
@@ -57,6 +61,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Preferred language', lines: ['English'] },
         { key: 'Religion or belief', lines: ['Agnostic'] },
         { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
+        { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.bulleted },
       ])
     })
 
@@ -74,6 +79,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Preferred language', lines: [''] },
         { key: 'Religion or belief', lines: [''] },
         { key: 'Disabilities', lines: [], listStyle: ListStyle.noMarkers },
+        { key: 'Email address', lines: [], listStyle: ListStyle.bulleted },
       ])
     })
   })

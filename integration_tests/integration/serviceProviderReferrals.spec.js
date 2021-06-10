@@ -181,6 +181,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Agnostic')
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
+    cy.contains('jenny.jones@example.com')
     cy.contains("Service user's risk information")
     cy.contains('They are low risk.')
     cy.contains("Service user's needs")

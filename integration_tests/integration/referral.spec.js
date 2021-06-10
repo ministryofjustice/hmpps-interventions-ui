@@ -164,6 +164,7 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains('alex.river@example.com')
 
       cy.contains('Save and continue').click()
 
@@ -300,6 +301,7 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains('alex.river@example.com')
 
       cy.contains('A danger to the elderly')
 
