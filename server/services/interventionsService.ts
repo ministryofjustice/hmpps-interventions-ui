@@ -332,7 +332,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async recordAppointmentAttendance(
+  async recordActionPlanAppointmentAttendance(
     token: string,
     actionPlanId: string,
     sessionNumber: number,
@@ -347,7 +347,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async recordAppointmentBehaviour(
+  async recordActionPlanAppointmentBehavior(
     token: string,
     actionPlanId: string,
     sessionNumber: number,
@@ -362,7 +362,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async submitSessionFeedback(
+  async submitActionPlanSessionFeedback(
     token: string,
     actionPlanId: string,
     sessionNumber: number

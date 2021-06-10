@@ -511,7 +511,7 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
+        const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
           accessToken,
           actionPlanId,
           Number(sessionNumber),
@@ -560,7 +560,7 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        await this.interventionsService.recordAppointmentBehaviour(
+        await this.interventionsService.recordActionPlanAppointmentBehavior(
           accessToken,
           actionPlanId,
           Number(sessionNumber),
@@ -617,7 +617,7 @@ export default class ServiceProviderReferralsController {
     const { accessToken } = user.token
     const { actionPlanId, sessionNumber } = req.params
 
-    await this.interventionsService.submitSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+    await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
 
     return res.redirect(
       `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`

@@ -123,12 +123,12 @@ module.exports = on => {
       return interventionsService.stubSubmitActionPlan(arg.id, arg.responseJson)
     },
 
-    stubRecordAppointmentAttendance: arg => {
-      return interventionsService.stubRecordAppointmentAttendance(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
+    stubRecordActionPlanAppointmentAttendance: arg => {
+      return interventionsService.stubRecordActionPlanAppointmentAttendance(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
     },
 
-    stubRecordAppointmentBehaviour: arg => {
-      return interventionsService.stubRecordAppointmentBehaviour(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
+    stubRecordActionPlanAppointmentBehavior: arg => {
+      return interventionsService.stubRecordActionPlanAppointmentBehavior(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
     },
 
     stubGetActionPlanAppointments: arg => {
@@ -143,8 +143,8 @@ module.exports = on => {
       return interventionsService.stubUpdateActionPlanAppointment(arg.id, arg.session, arg.responseJson)
     },
 
-    stubSubmitSessionFeedback: arg => {
-      return interventionsService.stubSubmitSessionFeedback(arg.actionPlanId, arg.session, arg.responseJson)
+    stubSubmitActionPlanSessionFeedback: arg => {
+      return interventionsService.stubSubmitActionPlanSessionFeedback(arg.actionPlanId, arg.session, arg.responseJson)
     },
 
     stubGetEndOfServiceReport: arg => {

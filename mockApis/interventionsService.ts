@@ -299,7 +299,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordAppointmentAttendance = async (
+  stubRecordActionPlanAppointmentAttendance = async (
     actionPlanId: string,
     sessionNumber: string,
     responseJson: unknown
@@ -319,7 +319,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordAppointmentBehaviour = async (
+  stubRecordActionPlanAppointmentBehavior = async (
     actionPlanId: string,
     sessionNumber: string,
     responseJson: unknown
@@ -387,7 +387,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubSubmitSessionFeedback = async (
+  stubSubmitActionPlanSessionFeedback = async (
     actionPlanId: string,
     session: number,
     responseJson: unknown

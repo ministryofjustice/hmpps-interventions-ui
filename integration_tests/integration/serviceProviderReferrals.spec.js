@@ -568,7 +568,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Yes').click()
       cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
-      cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+      cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
       cy.contains('Save and continue').click()
 
@@ -577,7 +577,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
       cy.contains('No').click()
 
-      cy.stubRecordAppointmentBehaviour(actionPlan.id, 1, appointmentWithBehaviourRecorded)
+      cy.stubRecordActionPlanAppointmentBehavior(actionPlan.id, 1, appointmentWithBehaviourRecorded)
 
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithBehaviourRecorded)
 
@@ -589,7 +589,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Alex was well-behaved')
       cy.contains('No')
 
-      cy.stubSubmitSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+      cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
 
       cy.get('form').contains('Confirm').click()
 
@@ -709,7 +709,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('No').click()
       cy.contains("Add additional information about Alex's attendance").type("Alex didn't attend")
 
-      cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+      cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
@@ -719,7 +719,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('No')
       cy.contains("Alex didn't attend")
 
-      cy.stubSubmitSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+      cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
 
       cy.get('form').contains('Confirm').click()
 

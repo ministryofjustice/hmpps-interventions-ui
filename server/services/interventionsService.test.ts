@@ -2211,7 +2211,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('recordAppointmentAttendance', () => {
+  describe('recordActionPlanAppointmentAttendance', () => {
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
         state:
@@ -2251,7 +2251,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.recordAppointmentAttendance(
+      const appointment = await interventionsService.recordActionPlanAppointmentAttendance(
         token,
         '345059d4-1697-467b-8914-fedec9957279',
         2,
@@ -2265,7 +2265,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('recordAppointmentBehaviour', () => {
+  describe('recordActionPlanAppointmentBehavior', () => {
     it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
       await provider.addInteraction({
         state:
@@ -2305,7 +2305,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.recordAppointmentBehaviour(
+      const appointment = await interventionsService.recordActionPlanAppointmentBehavior(
         token,
         '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         1,
@@ -2319,7 +2319,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('submitSessionFeedback', () => {
+  describe('submitActionPlanSessionFeedback', () => {
     it('submits attendance and behaviour feedback to the PP', async () => {
       await provider.addInteraction({
         state:
@@ -2355,7 +2355,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.submitSessionFeedback(
+      const appointment = await interventionsService.submitActionPlanSessionFeedback(
         token,
         '0f5afe04-e323-4699-9423-fb6122580638',
         1
