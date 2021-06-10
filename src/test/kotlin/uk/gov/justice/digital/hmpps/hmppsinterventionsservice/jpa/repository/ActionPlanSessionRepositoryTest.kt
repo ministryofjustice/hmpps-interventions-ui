@@ -41,7 +41,7 @@ class ActionPlanSessionRepositoryTest @Autowired constructor(
     val user = authUserFactory.create(id = "referral_repository_test_user_id")
     val referral = referralFactory.createDraft(createdBy = user)
     val actionPlan = actionPlanFactory.create(referral = referral)
-    val actionPlanSession = actionPlanSessionFactory.create(actionPlan = actionPlan)
+    val actionPlanSession = actionPlanSessionFactory.createScheduled(actionPlan = actionPlan)
 
     entityManager.flush()
     entityManager.clear()
@@ -49,18 +49,5 @@ class ActionPlanSessionRepositoryTest @Autowired constructor(
     val savedSession = actionPlanSessionRepository.findById(actionPlanSession.id).get()
 
     assertThat(savedSession.id).isEqualTo(actionPlanSession.id)
-  }
-
-  @Test
-  fun `count number of attended appointments`() {
-    val actionPlan1 = actionPlanFactory.create()
-    (1..4).forEach {
-      actionPlanSessionFactory.createAttended(actionPlan = actionPlan1, sessionNumber = it)
-    }
-    val actionPlan2 = actionPlanFactory.create()
-    actionPlanSessionFactory.createAttended(actionPlan = actionPlan2)
-
-    assertThat(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan1.id)).isEqualTo(4)
-    assertThat(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan2.id)).isEqualTo(1)
   }
 }

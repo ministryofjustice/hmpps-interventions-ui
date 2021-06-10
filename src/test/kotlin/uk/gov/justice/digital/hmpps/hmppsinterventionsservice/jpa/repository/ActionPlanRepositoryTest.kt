@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
@@ -18,8 +19,22 @@ class ActionPlanRepositoryTest @Autowired constructor(
   val actionPlanRepository: ActionPlanRepository,
 ) {
   private val actionPlanFactory = ActionPlanFactory(entityManager)
+  private val actionPlanSessionFactory = ActionPlanSessionFactory(entityManager)
   private val authUserFactory = AuthUserFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
+
+  @Test
+  fun `count number of attended appointments`() {
+    val actionPlan1 = actionPlanFactory.create()
+    (1..4).forEach {
+      actionPlanSessionFactory.createAttended(actionPlan = actionPlan1, sessionNumber = it)
+    }
+    val actionPlan2 = actionPlanFactory.create()
+    actionPlanSessionFactory.createAttended(actionPlan = actionPlan2)
+
+    assertThat(actionPlanRepository.countNumberOfAttendedSessions(actionPlan1.id)).isEqualTo(4)
+    assertThat(actionPlanRepository.countNumberOfAttendedSessions(actionPlan2.id)).isEqualTo(1)
+  }
 
   @Test
   fun `existsByReferralId returns true for duplicate action plans`() {
