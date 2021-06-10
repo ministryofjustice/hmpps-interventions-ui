@@ -7,7 +7,10 @@ export default class InterventionDetailsView {
   constructor(private readonly presenter: InterventionDetailsPresenter) {}
 
   static summaryListArgs(items: SummaryListItem[]): SummaryListArgs {
-    return { ...ViewUtils.summaryListArgs(items), classes: 'govuk-summary-list--no-border' }
+    return {
+      ...ViewUtils.summaryListArgs(items),
+      classes: 'govuk-summary-list--no-border refer-and-monitor__intervention-summary-list',
+    }
   }
 
   private tabsArgs(summaryListMacro: (args: SummaryListArgs) => string): TabsArgs {
