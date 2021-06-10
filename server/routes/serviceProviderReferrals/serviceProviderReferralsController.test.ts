@@ -746,7 +746,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
 })
 
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
-  it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
+  it('renders a page with which the Service Provider can record the Service user‘s attendance', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
@@ -774,8 +774,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
-  describe('when the Service Provider marks the Service User as having attended the session', () => {
-    it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the behaviour page', async () => {
+  describe('when the Service Provider marks the Service user as having attended the session', () => {
+    it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
       const updatedAppointment = actionPlanAppointmentFactory.build({
         sessionNumber: 1,
         sessionFeedback: {
@@ -807,8 +807,8 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
     })
   })
 
-  describe('when the Service Provider marks the Service User as not having attended the session', () => {
-    it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the check-your-answers page', async () => {
+  describe('when the Service Provider marks the Service user as not having attended the session', () => {
+    it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
       const updatedAppointment = actionPlanAppointmentFactory.build({
         sessionNumber: 1,
         sessionFeedback: {
@@ -842,7 +842,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 })
 
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', () => {
-  it('renders a page with which the Service Provider can record the Service User‘s behaviour', async () => {
+  it('renders a page with which the Service Provider can record the Service user‘s behaviour', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
@@ -869,7 +869,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', () => {
-  it('makes a request to the interventions service to record the Service User‘s behaviour and redirects to the check your answers page', async () => {
+  it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check your answers page', async () => {
     const updatedAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
       sessionFeedback: {
@@ -1263,11 +1263,11 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
           desiredOutcomes: [
             {
               id: '27186755-7b67-497f-ad6f-6c0fde016f89',
-              description: 'Service User makes progress in obtaining accommodation',
+              description: 'Service user makes progress in obtaining accommodation',
             },
             {
               id: '73a836a4-0b5d-49a5-a4d7-1564876f3e69',
-              description: 'Service User is helped to secure social or supported housing',
+              description: 'Service user is helped to secure social or supported housing',
             },
           ],
         })

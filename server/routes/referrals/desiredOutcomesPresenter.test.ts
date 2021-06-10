@@ -9,19 +9,19 @@ describe('DesiredOutcomesPresenter', () => {
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         description:
-          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
       },
       {
         id: '65924ac6-9724-455b-ad30-906936291421',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-        description: 'Service User is helped to secure social or supported housing',
+        description: 'Service user is helped to secure social or supported housing',
       },
       {
         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
       },
     ],
   })
