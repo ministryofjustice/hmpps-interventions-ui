@@ -93,10 +93,10 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
   get('/service-provider/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
-    serviceProviderReferralsController.editSession(req, res)
+    serviceProviderReferralsController.editActionPlanSession(req, res)
   )
   post('/service-provider/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
-    serviceProviderReferralsController.editSession(req, res)
+    serviceProviderReferralsController.editActionPlanSession(req, res)
   )
   get(
     '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance',

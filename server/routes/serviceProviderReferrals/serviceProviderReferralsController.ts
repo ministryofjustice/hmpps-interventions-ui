@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { AppointmentUpdate } from '../../services/interventionsService'
 import { ActionPlanAppointment } from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
@@ -57,6 +57,7 @@ import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import SentReferral from '../../models/sentReferral'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -434,14 +435,48 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async editSession(req: Request, res: Response): Promise<void> {
+  async editActionPlanSession(req: Request, res: Response): Promise<void> {
     const sessionNumber = Number(req.params.sessionNumber)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
 
+    await this.scheduleAppointment(req, res, {
+      getReferral: () =>
+        this.interventionsService.getSentReferral(res.locals.user.token.accessToken, actionPlan.referralId),
+      getCurrentAppointment: () =>
+        this.interventionsService.getActionPlanAppointment(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          sessionNumber
+        ),
+      scheduleAppointment: paramsForUpdate =>
+        this.interventionsService
+          .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
+          .then(),
+      createPresenter: (appointment, formError, userInputData, serverError) =>
+        new EditSessionPresenter(appointment, formError, userInputData, serverError),
+      redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
+    })
+  }
+
+  private async scheduleAppointment<AppointmentType>(
+    req: Request,
+    res: Response,
+    config: {
+      getReferral: () => Promise<SentReferral>
+      getCurrentAppointment: () => Promise<AppointmentType>
+      scheduleAppointment: (paramsForUpdate: AppointmentUpdate) => Promise<void>
+      createPresenter: (
+        appointment: AppointmentType,
+        validationError: FormValidationError | null,
+        userInputData: Record<string, unknown> | null,
+        serverError: FormValidationError | null
+      ) => EditSessionPresenter
+      redirectTo: string
+    }
+  ): Promise<void> {
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
     let serverError: FormValidationError | null = null
-
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
 
     if (req.method === 'POST') {
       const data = await new EditSessionForm(req).data()
@@ -452,13 +487,8 @@ export default class ServiceProviderReferralsController {
         userInputData = req.body
       } else {
         try {
-          await this.interventionsService.updateActionPlanAppointment(
-            res.locals.user.token.accessToken,
-            req.params.id,
-            sessionNumber,
-            data.paramsForUpdate
-          )
-          return res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
+          await config.scheduleAppointment(data.paramsForUpdate)
+          return res.redirect(config.redirectTo)
         } catch (e) {
           if (e.status === 409) {
             res.status(400)
@@ -479,18 +509,11 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      res.locals.user.token.accessToken,
-      req.params.id,
-      sessionNumber
-    )
-    const referral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      actionPlan.referralId
-    )
+    const appointment = await config.getCurrentAppointment()
+    const referral = await config.getReferral()
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EditSessionPresenter(appointment, formError, userInputData, serverError)
+    const presenter = config.createPresenter(appointment, formError, userInputData, serverError)
     const view = new EditSessionView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
