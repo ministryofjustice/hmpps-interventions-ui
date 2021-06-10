@@ -5,6 +5,7 @@ import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
@@ -62,6 +64,7 @@ class SetupAssistant(
   private val endOfServiceReportRepository: EndOfServiceReportRepository,
   private val cancellationReasonRepository: CancellationReasonRepository,
   private val contractTypeRepository: ContractTypeRepository,
+  private val appointmentRepository: AppointmentRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -77,6 +80,7 @@ class SetupAssistant(
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
+    appointmentRepository.deleteAll()
     actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
@@ -255,23 +259,28 @@ class SetupAssistant(
   ): ActionPlanSession {
     val now = OffsetDateTime.now()
     val user = createSPUser()
-    return actionPlanSessionRepository.save(
-      ActionPlanSession(
-        id = UUID.randomUUID(),
-        sessionNumber = sessionNumber,
-        attended = attended,
-        additionalAttendanceInformation = attendanceInfo,
-        attendanceSubmittedAt = if (attended != null) now else null,
-        attendanceBehaviour = behaviour,
-        attendanceBehaviourSubmittedAt = if (behaviour != null) now else null,
-        notifyPPOfAttendanceBehaviour = notifyPPOfBehaviour,
-        appointmentTime = appointmentTime,
-        durationInMinutes = duration,
-        createdBy = user,
-        createdAt = now,
-        actionPlan = actionPlan,
-      )
+    val appointment = Appointment(
+      id = UUID.randomUUID(),
+      appointmentTime = appointmentTime,
+      durationInMinutes = duration,
+      createdBy = user,
+      createdAt = now,
+      attended = attended,
+      additionalAttendanceInformation = attendanceInfo,
+      attendanceSubmittedAt = if (attended != null) now else null,
+      attendanceBehaviour = behaviour,
+      attendanceBehaviourSubmittedAt = if (behaviour != null) now else null,
+      notifyPPOfAttendanceBehaviour = notifyPPOfBehaviour,
     )
+    appointmentRepository.save(appointment)
+
+    val session = ActionPlanSession(
+      id = UUID.randomUUID(),
+      sessionNumber = sessionNumber,
+      appointments = mutableSetOf(appointment),
+      actionPlan = actionPlan,
+    )
+    return actionPlanSessionRepository.save(session)
   }
 
   fun fillReferralFields(
