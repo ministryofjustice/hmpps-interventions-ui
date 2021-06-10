@@ -153,6 +153,12 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/end-of-service-report/:id/confirmation', (req, res) =>
     serviceProviderReferralsController.showEndOfServiceReportConfirmation(req, res)
   )
+  get('/service-provider/referrals/:id/supplier-assessment/schedule', (req, res) =>
+    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+  )
+  post('/service-provider/referrals/:id/supplier-assessment/schedule', (req, res) =>
+    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

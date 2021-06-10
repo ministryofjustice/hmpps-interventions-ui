@@ -9,6 +9,8 @@ import endOfServiceReportFactory from '../../testutils/factories/endOfServiceRep
 import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
+import appointmentFactory from '../../testutils/factories/appointment'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -1028,5 +1030,55 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Return to service progress').click()
     cy.get('#end-of-service-report-status').contains('Submitted')
+  })
+
+  describe('Supplier assessments', () => {
+    it('User schedules a supplier assessment appointment', () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
+      const referral = sentReferralFactory.build({
+        referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
+      })
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+
+      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+
+      cy.contains('Add appointment details')
+
+      cy.get('#date-day').type('24')
+      cy.get('#date-month').type('3')
+      cy.get('#date-year').type('2021')
+      cy.get('#time-hour').type('9')
+      cy.get('#time-minute').type('02')
+      cy.get('#time-part-of-day').select('AM')
+      cy.get('#duration-hours').type('1')
+      cy.get('#duration-minutes').type('15')
+
+      const scheduledAppointment = appointmentFactory.build({
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      })
+      const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.build({
+        ...supplierAssessment,
+        appointments: [scheduledAppointment],
+        currentAppointmentId: scheduledAppointment.id,
+      })
+      cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
+
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
+    })
   })
 })

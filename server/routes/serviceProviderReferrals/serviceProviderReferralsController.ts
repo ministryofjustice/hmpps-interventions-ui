@@ -58,6 +58,8 @@ import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import SentReferral from '../../models/sentReferral'
+import ScheduleActionPlanSessionPresenter from './scheduleActionPlanSessionPresenter'
+import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -453,8 +455,33 @@ export default class ServiceProviderReferralsController {
           .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) =>
-        new ScheduleAppointmentPresenter(appointment, formError, userInputData, serverError),
+        new ScheduleActionPlanSessionPresenter(appointment, formError, userInputData, serverError),
       redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
+    })
+  }
+
+  async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+    const referralId = req.params.id
+
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(
+      res.locals.user.token.accessToken,
+      referralId
+    )
+
+    await this.scheduleAppointment(req, res, {
+      getReferral: () => this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
+      getCurrentAppointment: async () => new SupplierAssessmentDecorator(supplierAssessment).currentAppointment,
+      scheduleAppointment: paramsForUpdate =>
+        this.interventionsService
+          .scheduleSupplierAssessmentAppointment(
+            res.locals.user.token.accessToken,
+            supplierAssessment.id,
+            paramsForUpdate
+          )
+          .then(),
+      createPresenter: (appointment, formError, userInputData, serverError) =>
+        new ScheduleAppointmentPresenter(appointment, formError, userInputData, serverError),
+      redirectTo: `/service-provider/referrals/${referralId}/progress`,
     })
   }
 
