@@ -79,16 +79,20 @@ class SNSAppointmentService(
     when (event.type) {
       AppointmentEventType.ATTENDANCE_RECORDED -> {
         val referral = event.actionPlanSession.actionPlan.referral
-        val eventType = "intervention.session-appointment.${when (event.actionPlanSession.attended) {
+        val appointment = event.actionPlanSession.currentAppointment
+          ?: throw RuntimeException("event triggered for session with no appointments")
+
+        val eventType = "intervention.session-appointment.${when (appointment.attended) {
           Attended.YES, Attended.LATE -> "attended"
           Attended.NO -> "missed"
           null -> throw RuntimeException("event triggered for appointment with no recorded attendance")
         }}"
+
         val snsEvent = EventDTO(
           eventType,
           "Attendance was recorded for a session appointment",
           event.detailUrl,
-          event.actionPlanSession.attendanceSubmittedAt!!,
+          appointment.attendanceSubmittedAt!!,
           mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
         )
         // FIXME we don't know who submits these -- needs explicit actor

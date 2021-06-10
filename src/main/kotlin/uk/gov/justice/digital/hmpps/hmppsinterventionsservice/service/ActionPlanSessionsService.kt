@@ -90,19 +90,21 @@ class ActionPlanSessionsService(
     return actionPlanSessionRepository.save(session)
   }
 
-  fun recordAttendance(
+  fun recordAppointmentAttendance(
     actionPlanId: UUID,
     sessionNumber: Int,
     attended: Attended,
     additionalInformation: String?
   ): ActionPlanSession {
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
+    val appointment = session.currentAppointment
+      ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't record appointment attendance; no appointments have been booked for this session")
 
-    if (session.sessionFeedbackSubmittedAt != null) {
+    if (appointment.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
 
-    setAttendanceFields(session, attended, additionalInformation)
+    setAttendanceFields(appointment, attended, additionalInformation)
     return actionPlanSessionRepository.save(session)
   }
 
@@ -113,32 +115,37 @@ class ActionPlanSessionsService(
     notifyProbationPractitioner: Boolean,
   ): ActionPlanSession {
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
+    val appointment = session.currentAppointment
+      ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't record appointment behaviour; no appointments have been booked for this session")
 
-    if (session.sessionFeedbackSubmittedAt != null) {
+    if (appointment.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
 
-    setBehaviourFields(session, behaviourDescription, notifyProbationPractitioner)
+    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner)
+    appointmentRepository.save(appointment)
     return actionPlanSessionRepository.save(session)
   }
 
-  fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int): ActionPlanSession {
+  fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): ActionPlanSession {
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
+    val appointment = session.currentAppointment
 
-    if (session.sessionFeedbackSubmittedAt != null) {
+    if (appointment?.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
 
-    if (session.attendanceSubmittedAt == null) {
+    if (appointment?.attendanceSubmittedAt == null) {
       throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "can't submit session feedback unless attendance has been recorded")
     }
 
-    session.sessionFeedbackSubmittedAt = OffsetDateTime.now()
+    appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
+    appointment.appointmentFeedbackSubmittedBy = submitter
     actionPlanSessionRepository.save(session)
 
-    appointmentEventPublisher.attendanceRecordedEvent(session, session.attended == Attended.NO)
-    appointmentEventPublisher.behaviourRecordedEvent(session, session.notifyPPOfAttendanceBehaviour!!)
-    appointmentEventPublisher.sessionFeedbackRecordedEvent(session, session.notifyPPOfAttendanceBehaviour!!)
+    appointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)
+    appointmentEventPublisher.behaviourRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
+    appointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
     return session
   }
 
@@ -151,23 +158,23 @@ class ActionPlanSessionsService(
   }
 
   private fun setAttendanceFields(
-    session: ActionPlanSession,
+    appointment: Appointment,
     attended: Attended,
     additionalInformation: String?
   ) {
-    session.attended = attended
-    additionalInformation?.let { session.additionalAttendanceInformation = additionalInformation }
-    session.attendanceSubmittedAt = OffsetDateTime.now()
+    appointment.attended = attended
+    additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
   }
 
   private fun setBehaviourFields(
-    session: ActionPlanSession,
+    appointment: Appointment,
     behaviour: String,
     notifyProbationPractitioner: Boolean,
   ) {
-    session.attendanceBehaviour = behaviour
-    session.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
-    session.notifyPPOfAttendanceBehaviour = notifyProbationPractitioner
+    appointment.attendanceBehaviour = behaviour
+    appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
+    appointment.notifyPPOfAttendanceBehaviour = notifyProbationPractitioner
   }
 
   private fun checkSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {

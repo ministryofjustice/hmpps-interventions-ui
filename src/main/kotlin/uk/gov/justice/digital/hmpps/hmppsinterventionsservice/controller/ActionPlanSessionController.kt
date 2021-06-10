@@ -65,7 +65,7 @@ class ActionPlanSessionController(
     @PathVariable sessionNumber: Int,
     @RequestBody update: UpdateAppointmentAttendanceDTO,
   ): ActionPlanSessionDTO {
-    val updatedSession = actionPlanSessionsService.recordAttendance(
+    val updatedSession = actionPlanSessionsService.recordAppointmentAttendance(
       actionPlanId, sessionNumber, update.attended, update.additionalAttendanceInformation
     )
 
@@ -78,7 +78,8 @@ class ActionPlanSessionController(
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/submit")
-  fun submitSessionFeedback(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int): ActionPlanSessionDTO {
-    return ActionPlanSessionDTO.from(actionPlanSessionsService.submitSessionFeedback(actionPlanId, sessionNumber))
+  fun submitSessionFeedback(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int, authentication: JwtAuthenticationToken): ActionPlanSessionDTO {
+    val user = userMapper.fromToken(authentication)
+    return ActionPlanSessionDTO.from(actionPlanSessionsService.submitSessionFeedback(actionPlanId, sessionNumber, user))
   }
 }
