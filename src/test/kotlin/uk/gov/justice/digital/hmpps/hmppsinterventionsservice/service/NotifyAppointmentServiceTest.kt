@@ -15,18 +15,20 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class NotifyAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
+  private val actionPlanSessionFactory = ActionPlanSessionFactory()
 
   private fun appointmentEvent(type: AppointmentEventType, notifyPP: Boolean): AppointmentEvent {
     return AppointmentEvent(
       "source",
       type,
-      SampleData.sampleActionPlanSession(
+      actionPlanSessionFactory.createAttended(
         id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
         actionPlan = SampleData.sampleActionPlan(
           referral = SampleData.sampleReferral(

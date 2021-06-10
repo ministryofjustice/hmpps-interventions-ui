@@ -54,7 +54,7 @@ internal class SNSReferralServiceTest {
       referralSentEvent.referral.sentAt!!,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"))
     )
-    verify(snsPublisher).publish(referralSentEvent.referral.id, referralSentEvent.referral.sentBy, snsEvent)
+    verify(snsPublisher).publish(referralSentEvent.referral.id, referralSentEvent.referral.sentBy!!, snsEvent)
   }
 
   @Test
@@ -67,7 +67,7 @@ internal class SNSReferralServiceTest {
       referralSentEvent.referral.sentAt!!,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"), "assignedTo" to "abc123")
     )
-    verify(snsPublisher).publish(referralAssignedEvent.referral.id, referralAssignedEvent.referral.assignedBy, snsEvent)
+    verify(snsPublisher).publish(referralAssignedEvent.referral.id, referralAssignedEvent.referral.assignedBy!!, snsEvent)
   }
 
   private fun snsReferralService(): SNSReferralService {

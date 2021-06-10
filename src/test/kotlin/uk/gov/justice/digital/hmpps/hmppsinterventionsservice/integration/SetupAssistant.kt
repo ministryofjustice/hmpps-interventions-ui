@@ -5,7 +5,6 @@ import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -34,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPS
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
@@ -71,7 +70,7 @@ class SetupAssistant(
   private val referralFactory = ReferralFactory()
   private val serviceProviderFactory = ServiceProviderFactory()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
-  private val contractTypeFactory = ContractTypeFactory()
+  private val appointmentFactory = AppointmentFactory()
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -80,10 +79,11 @@ class SetupAssistant(
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
-    appointmentRepository.deleteAll()
     actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
+
     endOfServiceReportRepository.deleteAll()
+    appointmentRepository.deleteAll()
 
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
@@ -259,8 +259,7 @@ class SetupAssistant(
   ): ActionPlanSession {
     val now = OffsetDateTime.now()
     val user = createSPUser()
-    val appointment = Appointment(
-      id = UUID.randomUUID(),
+    val appointment = appointmentFactory.create(
       appointmentTime = appointmentTime,
       durationInMinutes = duration,
       createdBy = user,

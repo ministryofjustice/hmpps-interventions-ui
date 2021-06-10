@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.same
 import com.nhaarman.mockitokotlin2.verify
@@ -225,7 +224,7 @@ internal class ActionPlanServiceTest {
 
     assertThat(submittedActionPlan).isNotNull
     verify(actionPlanValidator).validateSubmittedActionPlan(any())
-    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(any(), any())
+    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(any())
   }
 
   @Test
@@ -242,7 +241,7 @@ internal class ActionPlanServiceTest {
 
     assertThat(submittedActionPlan).isEqualTo(savedActionPlan)
     verify(actionPlanValidator).validateSubmittedActionPlan(any())
-    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(same(actionPlan), eq(authUser))
+    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(same(actionPlan))
   }
 
   @Test

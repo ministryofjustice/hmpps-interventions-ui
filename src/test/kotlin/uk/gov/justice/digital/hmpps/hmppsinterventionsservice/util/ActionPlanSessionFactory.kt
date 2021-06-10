@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.time.OffsetDateTime
@@ -11,6 +10,7 @@ import java.util.UUID
 
 class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val actionPlanFactory = ActionPlanFactory(em)
+  private val appointmentFactory = AppointmentFactory(em)
 
   fun createUnscheduled(
     id: UUID = UUID.randomUUID(),
@@ -37,16 +37,13 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     durationInMinutes: Int = 120,
     deliusAppointmentId: Long? = null,
   ): ActionPlanSession {
-    val appointment = save(
-      Appointment(
-        id = UUID.randomUUID(),
-        createdBy = createdBy,
-        createdAt = createdAt,
-        appointmentTime = appointmentTime,
-        durationInMinutes = durationInMinutes,
-        appointmentFeedbackSubmittedBy = createdBy,
-        deliusAppointmentId = deliusAppointmentId,
-      )
+    val appointment = appointmentFactory.create(
+      createdBy = createdBy,
+      createdAt = createdAt,
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      appointmentFeedbackSubmittedBy = createdBy,
+      deliusAppointmentId = deliusAppointmentId,
     )
 
     return save(
@@ -75,21 +72,18 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     appointmentFeedbackSubmittedAt: OffsetDateTime? = attendanceSubmittedAt,
     appointmentFeedbackSubmittedBy: AuthUser? = createdBy,
   ): ActionPlanSession {
-    val appointment = save(
-      Appointment(
-        id = UUID.randomUUID(),
-        createdBy = createdBy,
-        createdAt = createdAt,
-        appointmentTime = appointmentTime,
-        durationInMinutes = durationInMinutes,
-        appointmentFeedbackSubmittedBy = createdBy,
-        deliusAppointmentId = deliusAppointmentId,
-        attended = attended,
-        attendanceSubmittedAt = attendanceSubmittedAt,
-        additionalAttendanceInformation = additionalAttendanceInformation,
-        notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
-        appointmentFeedbackSubmittedAt = appointmentFeedbackSubmittedAt,
-      )
+    val appointment = appointmentFactory.create(
+      createdBy = createdBy,
+      createdAt = createdAt,
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      appointmentFeedbackSubmittedBy = createdBy,
+      deliusAppointmentId = deliusAppointmentId,
+      attended = attended,
+      attendanceSubmittedAt = attendanceSubmittedAt,
+      additionalAttendanceInformation = additionalAttendanceInformation,
+      notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
+      appointmentFeedbackSubmittedAt = appointmentFeedbackSubmittedAt,
     )
 
     return save(

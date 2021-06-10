@@ -12,7 +12,7 @@ import org.mockito.ArgumentCaptor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
@@ -22,7 +22,7 @@ import java.time.OffsetDateTime
 internal class ReferralConcluderTest {
 
   private val referralRepository: ReferralRepository = mock()
-  private val actionPlanSessionRepository: ActionPlanSessionRepository = mock()
+  private val actionPlanRepository: ActionPlanRepository = mock()
   private val referralEventPublisher: ReferralEventPublisher = mock()
 
   private val referralFactory = ReferralFactory()
@@ -30,7 +30,7 @@ internal class ReferralConcluderTest {
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
 
   private val referralConcluder = ReferralConcluder(
-    referralRepository, actionPlanSessionRepository, referralEventPublisher
+    referralRepository, actionPlanRepository, referralEventPublisher
   )
 
   @Test
@@ -47,11 +47,10 @@ internal class ReferralConcluderTest {
 
   @Test
   fun `concludes referral as cancelled when ending a referral with no appointments attended`() {
-
     val timeAtStart = OffsetDateTime.now()
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndNoAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(referralWithActionPlanAndNoAttendedAppointments.id)).thenReturn(0)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(referralWithActionPlanAndNoAttendedAppointments.id)).thenReturn(0)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndNoAttendedAppointments)
 
@@ -66,7 +65,7 @@ internal class ReferralConcluderTest {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     referralWithActionPlanAndSomeAttendedAppointments.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = OffsetDateTime.now())
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)).thenReturn(1)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(1)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttendedAppointments)
 
@@ -81,7 +80,7 @@ internal class ReferralConcluderTest {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     referralWithActionPlanAndSomeAttendedAppointments.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = OffsetDateTime.now())
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)).thenReturn(2)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(2)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttendedAppointments)
 
@@ -95,7 +94,7 @@ internal class ReferralConcluderTest {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     referralWithActionPlanAndSomeAttendedAppointments.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = null)
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)).thenReturn(1)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(1)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttendedAppointments)
 
@@ -108,7 +107,7 @@ internal class ReferralConcluderTest {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     referralWithActionPlanAndSomeAttendedAppointments.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = null)
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)).thenReturn(2)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(2)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttendedAppointments)
 
@@ -120,7 +119,7 @@ internal class ReferralConcluderTest {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)).thenReturn(1)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(1)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttendedAppointments)
 
@@ -132,7 +131,7 @@ internal class ReferralConcluderTest {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
-    whenever(actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan.id)).thenReturn(2)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(2)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttendedAppointments)
 

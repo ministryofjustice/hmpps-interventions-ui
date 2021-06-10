@@ -29,7 +29,7 @@ class AppointmentEventPublisherTest {
 
   @Test
   fun `builds an appointment attendance recorded event and publishes it`() {
-    val session = ActionPlanSessionFactory().create()
+    val session = ActionPlanSessionFactory().createScheduled()
 
     publisher.attendanceRecordedEvent(session, false)
 
@@ -46,7 +46,7 @@ class AppointmentEventPublisherTest {
 
   @Test
   fun `builds an appointment behaviour recorded event and publishes it`() {
-    val appointment = ActionPlanSessionFactory().create()
+    val appointment = ActionPlanSessionFactory().createScheduled()
 
     publisher.behaviourRecordedEvent(appointment, true)
 
@@ -63,7 +63,7 @@ class AppointmentEventPublisherTest {
 
   @Test
   fun `builds an appointment session feedback event and publishes it`() {
-    val appointment = ActionPlanSessionFactory().create(
+    val appointment = ActionPlanSessionFactory().createAttended(
       attended = LATE,
       additionalAttendanceInformation = "Behaviour was fine",
       attendanceSubmittedAt = OffsetDateTime.now()

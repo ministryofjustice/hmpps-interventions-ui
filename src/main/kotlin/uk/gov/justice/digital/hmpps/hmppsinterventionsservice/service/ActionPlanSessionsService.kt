@@ -140,7 +140,7 @@ class ActionPlanSessionsService(
     }
 
     appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
-    appointment.appointmentFeedbackSubmittedBy = submitter
+    appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
     actionPlanSessionRepository.save(session)
 
     appointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)

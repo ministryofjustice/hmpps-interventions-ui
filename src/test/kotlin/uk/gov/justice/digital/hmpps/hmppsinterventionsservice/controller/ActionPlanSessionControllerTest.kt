@@ -4,95 +4,103 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.time.OffsetDateTime
-import java.util.UUID
 
 internal class ActionPlanSessionControllerTest {
-  private val appointmentsService = mock<ActionPlanSessionsService>()
+  private val sessionsService = mock<ActionPlanSessionsService>()
   private val locationMapper = mock<LocationMapper>()
+  private val userMapper = UserMapper()
 
-  private val appointmentsController = ActionPlanSessionController(appointmentsService, locationMapper)
+  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper)
+  private val actionPlanFactory = ActionPlanFactory()
+  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val jwtTokenFactory = JwtTokenFactory()
+  private val authUserFactory = AuthUserFactory()
 
   @Test
   fun `updates a session`() {
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanSession = SampleData.sampleActionPlanSession(actionPlan = actionPlan, createdBy = createdByUser)
-    val sessionNumber = 1
+    val user = authUserFactory.create()
+    val userToken = jwtTokenFactory.create(userID = user.id, userName = user.userName, authSource = user.authSource)
+    val actionPlanSession = actionPlanSessionFactory.createScheduled(createdBy = user)
+    val actionPlanId = actionPlanSession.actionPlan.id
+    val sessionNumber = actionPlanSession.sessionNumber
 
     val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10)
 
     whenever(
-      appointmentsService.updateSession(
-        actionPlan.id,
+      sessionsService.updateSessionAppointment(
+        actionPlanId,
         sessionNumber,
         updateAppointmentDTO.appointmentTime,
-        updateAppointmentDTO.durationInMinutes
+        updateAppointmentDTO.durationInMinutes,
+        user,
       )
     ).thenReturn(actionPlanSession)
 
-    val appointmentResponse = appointmentsController.updateSession(actionPlan.id, sessionNumber, updateAppointmentDTO)
+    val sessionResponse = sessionsController.updateSessionAppointment(actionPlanId, sessionNumber, updateAppointmentDTO, userToken)
 
-    assertThat(appointmentResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+    assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
   @Test
-  fun `gets an appointment`() {
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanSession = SampleData.sampleActionPlanSession(actionPlan = actionPlan, createdBy = createdByUser)
-    val sessionNumber = 1
+  fun `gets a session`() {
+    val actionPlanSession = actionPlanSessionFactory.createScheduled()
+    val sessionNumber = actionPlanSession.sessionNumber
+    val actionPlanId = actionPlanSession.actionPlan.id
 
-    whenever(appointmentsService.getSession(actionPlan.id, sessionNumber)).thenReturn(actionPlanSession)
+    whenever(sessionsService.getSession(actionPlanId, sessionNumber)).thenReturn(actionPlanSession)
 
-    val appointmentResponse = appointmentsController.getSession(actionPlan.id, sessionNumber)
+    val sessionResponse = sessionsController.getSession(actionPlanId, sessionNumber)
 
-    assertThat(appointmentResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+    assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
   @Test
-  fun `gets a list of appointment`() {
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
-    val actionPlanSession = SampleData.sampleActionPlanSession(actionPlan = actionPlan, createdBy = createdByUser)
+  fun `gets a list of sessions`() {
+    val actionPlanSession = actionPlanSessionFactory.createScheduled()
+    val actionPlanId = actionPlanSession.actionPlan.id
 
-    whenever(appointmentsService.getSessions(actionPlan.id)).thenReturn(listOf(actionPlanSession))
+    whenever(sessionsService.getSessions(actionPlanId)).thenReturn(listOf(actionPlanSession))
 
-    val appointmentsResponse = appointmentsController.getSessions(actionPlan.id)
+    val sessionsResponse = sessionsController.getSessions(actionPlanId)
 
-    assertThat(appointmentsResponse.size).isEqualTo(1)
-    assertThat(appointmentsResponse.first()).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+    assertThat(sessionsResponse.size).isEqualTo(1)
+    assertThat(sessionsResponse.first()).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
   @Test
-  fun `updates appointment with attendance details`() {
-    val actionPlanId = UUID.randomUUID()
-    val sessionNumber = 1
+  fun `updates session appointment with attendance details`() {
     val update = UpdateAppointmentAttendanceDTO(Attended.YES, "more info")
-    val createdByUser = SampleData.sampleAuthUser()
-    val actionPlan = SampleData.sampleActionPlan()
+    val actionPlan = actionPlanFactory.create()
+    val sessionNumber = 1
 
-    val updatedAppointment = SampleData.sampleActionPlanSession(
-      actionPlan = actionPlan, createdBy = createdByUser,
-      attended = Attended.YES, additionalAttendanceInformation = "more info"
+    val updatedSession = actionPlanSessionFactory.createAttended(
+      actionPlan = actionPlan,
+      sessionNumber = sessionNumber,
+      attended = Attended.YES,
+      additionalAttendanceInformation = "more info"
     )
 
     whenever(
-      appointmentsService.recordAttendance(
-        actionPlanId, sessionNumber, update.attended,
+      sessionsService.recordAppointmentAttendance(
+        actionPlan.id, sessionNumber, update.attended,
         update.additionalAttendanceInformation
       )
-    ).thenReturn(updatedAppointment)
+    ).thenReturn(updatedSession)
 
-    val appointmentResponse = appointmentsController.recordAttendance(actionPlanId, sessionNumber, update)
+    val sessionResponse = sessionsController.recordAttendance(actionPlan.id, sessionNumber, update)
 
-    assertThat(appointmentResponse).isNotNull
+    assertThat(sessionResponse.sessionFeedback.attendance.additionalAttendanceInformation).isEqualTo("more info")
   }
 }
