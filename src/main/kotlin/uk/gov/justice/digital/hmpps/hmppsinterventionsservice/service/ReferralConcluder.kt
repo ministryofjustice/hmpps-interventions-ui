@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType.COMPLETED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType.PREMATURELY_ENDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
 import java.util.Objects.nonNull
@@ -18,7 +18,7 @@ import javax.transaction.Transactional
 @Transactional
 class ReferralConcluder(
   val referralRepository: ReferralRepository,
-  val actionPlanSessionRepository: ActionPlanSessionRepository,
+  val actionPlanRepository: ActionPlanRepository,
   val referralEventPublisher: ReferralEventPublisher,
 ) {
   companion object {
@@ -40,7 +40,7 @@ class ReferralConcluder(
     val hasActionPlan = nonNull(referral.actionPlan)
 
     val numberOfAttendedAppointments = referral.actionPlan?.let {
-      actionPlanSessionRepository.countByActionPlanIdAndAttendedIsNotNull(it.id)
+      actionPlanRepository.countNumberOfAttendedSessions(it.id)
     } ?: 0
     val hasAttendedNoAppointments = numberOfAttendedAppointments == 0
 

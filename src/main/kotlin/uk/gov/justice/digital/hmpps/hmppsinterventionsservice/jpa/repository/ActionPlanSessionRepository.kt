@@ -7,5 +7,4 @@ import java.util.UUID
 interface ActionPlanSessionRepository : JpaRepository<ActionPlanSession, UUID> {
   fun findAllByActionPlanId(actionPlanId: UUID): List<ActionPlanSession>
   fun findByActionPlanIdAndSessionNumber(actionPlanId: UUID, sessionNumber: Int): ActionPlanSession?
-  fun countByActionPlanIdAndAttendedIsNotNull(actionPlanId: UUID): Int
 }
