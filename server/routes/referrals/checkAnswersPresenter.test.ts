@@ -6,6 +6,7 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import deliusOffenceFactory from '../../../testutils/factories/deliusOffence'
 import deliusSentenceFactory from '../../../testutils/factories/deliusSentence'
 import { ListStyle } from '../../utils/summaryList'
+import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 
 describe(CheckAnswersPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
@@ -22,23 +23,7 @@ describe(CheckAnswersPresenter, () => {
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
   })
-  const deliusServiceUser = {
-    otherIds: { crn: 'X862134' },
-    offenderProfile: {
-      offenderLanguages: { primaryLanguage: 'english' },
-      ethnicity: 'Caucasian',
-      religion: 'Turtles',
-      disabilities: [],
-    },
-    title: null,
-    firstName: null,
-    surname: null,
-    dateOfBirth: null,
-    gender: null,
-    contactDetails: {
-      emailAddresses: ['alex.river@example.com', 'alex61@example.com'],
-    },
-  }
+  const deliusServiceUser = deliusServiceUserFactory.build()
   const serviceCategories = serviceCategoryFactory.buildList(3)
   const conviction = deliusConvictionFactory.build()
 
@@ -72,7 +57,12 @@ describe(CheckAnswersPresenter, () => {
           { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
           {
             key: 'Email address',
-            lines: ['alex.river@example.com', 'alex61@example.com'],
+            lines: ['alex.river@example.com'],
+            listStyle: ListStyle.bulleted,
+          },
+          {
+            key: 'Phone number',
+            lines: ['0123456789'],
             listStyle: ListStyle.bulleted,
           },
         ])

@@ -30,7 +30,9 @@ describe(ServiceUserDetailsPresenter, () => {
   }
 
   const deliusServiceUser = deliusServiceUserFactory.build()
-  const nullFieldsDeliusServiceUser = deliusServiceUserFactory.build({ contactDetails: { emailAddresses: null } })
+  const nullFieldsDeliusServiceUser = deliusServiceUserFactory.build({
+    contactDetails: { emailAddresses: null, phoneNumbers: null },
+  })
 
   describe('title', () => {
     it("returns a title for the page with the service user's name", () => {
@@ -62,6 +64,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Religion or belief', lines: ['Agnostic'] },
         { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
         { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.bulleted },
+        { key: 'Phone number', lines: ['0123456789'], listStyle: ListStyle.bulleted },
       ])
     })
 
@@ -80,7 +83,16 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Religion or belief', lines: [''] },
         { key: 'Disabilities', lines: [], listStyle: ListStyle.noMarkers },
         { key: 'Email address', lines: [], listStyle: ListStyle.bulleted },
+        { key: 'Phone number', lines: [], listStyle: ListStyle.bulleted },
       ])
+    })
+    it('returns an empty values for phone number when number is null', () => {
+      const nullNumberDeliusServiceUser = deliusServiceUserFactory.build({
+        contactDetails: { emailAddresses: null, phoneNumbers: [{ number: null, type: null }] },
+      })
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullNumberDeliusServiceUser)
+
+      expect(presenter.summary).toContainEqual({ key: 'Phone number', lines: [], listStyle: ListStyle.bulleted })
     })
   })
 })

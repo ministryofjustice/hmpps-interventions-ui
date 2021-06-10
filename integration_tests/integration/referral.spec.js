@@ -164,7 +164,8 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
-      cy.contains('alex.river@example.com')
+      cy.contains('Email address').next().contains('alex.river@example.com')
+      cy.contains('Phone number').next().contains('0123456789')
 
       cy.contains('Save and continue').click()
 

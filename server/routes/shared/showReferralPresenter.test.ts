@@ -392,6 +392,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Religion or belief', lines: ['Agnostic'] },
         { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
         { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.bulleted },
+        { key: 'Phone number', lines: ['0123456789'], listStyle: ListStyle.bulleted },
       ])
     })
   })
