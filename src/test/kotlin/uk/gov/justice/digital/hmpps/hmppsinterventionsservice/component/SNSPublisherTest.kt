@@ -64,20 +64,6 @@ class SNSPublisherTest {
   }
 
   @Test
-  fun `can send actor-less event to application insights on publish`() {
-    snsPublisher(true).publish(aReferralId, null, event)
-    verify(telemetryClient).trackEvent(
-      "InterventionsDomainEvent",
-      mapOf(
-        "event" to "intervention.test.event",
-        "referralId" to "82138d14-3835-442b-b39b-9f8a07650bbe",
-        "actorUserId" to null,
-      ),
-      null
-    )
-  }
-
-  @Test
   fun `thrown exception is not swallowed`() {
     whenever(snsClient.publish(any<PublishRequest>())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> { snsPublisher(true).publish(aReferralId, aUser, event) }

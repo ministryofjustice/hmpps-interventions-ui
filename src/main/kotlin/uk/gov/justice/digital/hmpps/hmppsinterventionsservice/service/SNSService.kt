@@ -31,7 +31,7 @@ class SNSActionPlanService(
           event.actionPlan.submittedAt!!,
           mapOf("actionPlanId" to event.actionPlan.id, "submittedBy" to (event.actionPlan.submittedBy?.userName!!))
         )
-        snsPublisher.publish(event.actionPlan.referral.id, event.actionPlan.submittedBy, snsEvent)
+        snsPublisher.publish(event.actionPlan.referral.id, event.actionPlan.submittedBy!!, snsEvent)
       }
     }
   }
@@ -53,7 +53,7 @@ class SNSReferralService(
           event.referral.sentAt!!,
           mapOf("referralId" to event.referral.id)
         )
-        snsPublisher.publish(event.referral.id, event.referral.sentBy, snsEvent)
+        snsPublisher.publish(event.referral.id, event.referral.sentBy!!, snsEvent)
       }
       ReferralEventType.ASSIGNED -> {
         val snsEvent = EventDTO(
@@ -63,7 +63,7 @@ class SNSReferralService(
           event.referral.assignedAt!!,
           mapOf("referralId" to event.referral.id, "assignedTo" to (event.referral.assignedTo?.userName!!))
         )
-        snsPublisher.publish(event.referral.id, event.referral.assignedBy, snsEvent)
+        snsPublisher.publish(event.referral.id, event.referral.assignedBy!!, snsEvent)
       }
     }
   }
@@ -95,8 +95,8 @@ class SNSAppointmentService(
           appointment.attendanceSubmittedAt!!,
           mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
         )
-        // FIXME we don't know who submits these -- needs explicit actor
-        snsPublisher.publish(referral.id, null, snsEvent)
+
+        snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
       }
     }
   }
