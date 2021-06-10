@@ -26,12 +26,16 @@ class ActionPlanSessionsService(
   val appointmentEventPublisher: AppointmentEventPublisher,
   val communityAPIBookingService: CommunityAPIBookingService,
 ) {
-  fun createSession(
+  fun createUnscheduledSessionsForActionPlan(submittedActionPlan: ActionPlan) {
+    val numberOfSessions = submittedActionPlan.numberOfSessions!!
+    for (i in 1..numberOfSessions) {
+      createSession(submittedActionPlan, i)
+    }
+  }
+
+  private fun createSession(
     actionPlan: ActionPlan,
     sessionNumber: Int,
-    appointmentTime: OffsetDateTime?,
-    durationInMinutes: Int?,
-    createdByUser: AuthUser,
   ): ActionPlanSession {
     val actionPlanId = actionPlan.id
     checkSessionIsNotDuplicate(actionPlanId, sessionNumber)
@@ -39,21 +43,10 @@ class ActionPlanSessionsService(
     val session = ActionPlanSession(
       id = UUID.randomUUID(),
       sessionNumber = sessionNumber,
-      appointmentTime = appointmentTime,
-      durationInMinutes = durationInMinutes,
-      createdBy = authUserRepository.save(createdByUser),
-      createdAt = OffsetDateTime.now(),
       actionPlan = actionPlan,
     )
 
     return actionPlanSessionRepository.save(session)
-  }
-
-  fun createUnscheduledSessionsForActionPlan(submittedActionPlan: ActionPlan, actionPlanSubmitter: AuthUser) {
-    val numberOfSessions = submittedActionPlan.numberOfSessions!!
-    for (i in 1..numberOfSessions) {
-      createSession(submittedActionPlan, i, null, null, actionPlanSubmitter)
-    }
   }
 
   fun updateSession(

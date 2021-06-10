@@ -77,7 +77,7 @@ class ActionPlanService(
     val submittedActionPlan = updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
     actionPlanValidator.validateSubmittedActionPlan(submittedActionPlan)
 
-    actionPlanSessionsService.createUnscheduledSessionsForActionPlan(submittedActionPlan, submittedByUser)
+    actionPlanSessionsService.createUnscheduledSessionsForActionPlan(submittedActionPlan)
 
     val savedSubmittedActionPlan = actionPlanRepository.save(submittedActionPlan)
     actionPlanEventPublisher.actionPlanSubmitEvent(savedSubmittedActionPlan)
