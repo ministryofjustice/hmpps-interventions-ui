@@ -88,7 +88,7 @@ export default class InterventionProgressView {
       },
     ]
 
-    if (this.presenter.allowActionPlanCreation) {
+    if (!this.presenter.actionPlanExists) {
       rows.push({
         key: { text: 'Action' },
         value: {
@@ -99,6 +99,12 @@ export default class InterventionProgressView {
                    </button>
                  </form>`,
         },
+      })
+    } else if (!this.presenter.actionPlanSubmitted) {
+      // action plan exists, but has not been submitted
+      rows.push({
+        key: { text: 'Action' },
+        value: { html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Continue</a>` },
       })
     }
 
