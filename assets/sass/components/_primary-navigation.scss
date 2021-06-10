@@ -1,0 +1,5 @@
+.refer-and-monitor__primary-navigation {
+  .moj-primary-navigation__container {
+    @include govuk-width-container(1220px);  
+  }  
+}

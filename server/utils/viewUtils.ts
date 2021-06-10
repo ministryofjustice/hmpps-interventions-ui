@@ -91,6 +91,7 @@ export default class ViewUtils {
   static primaryNav(items: PrimaryNavItem[]): Record<string, unknown> {
     return {
       label: 'Primary navigation',
+      containerClasses: 'refer-and-monitor__primary-navigation',
       items,
     }
   }

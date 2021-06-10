@@ -78,7 +78,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
-          'Service Category': 'Accommodation',
+          'Service category': 'Accommodation',
           Provider: 'Harmony Living',
           Caseworker: 'Unassigned',
           Action: 'View',
@@ -86,7 +86,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
-          'Service Category': "Womens' services",
+          'Service category': "Womens' services",
           Provider: 'Harmony Living',
           Caseworker: 'A. Caseworker',
           Action: 'View',
