@@ -235,36 +235,6 @@ class SampleData {
       )
     }
 
-    fun sampleActionPlanSession(
-      id: UUID = UUID.randomUUID(),
-      actionPlan: ActionPlan,
-      sessionNumber: Int = 1,
-      appointmentTime: OffsetDateTime? = null,
-      durationInMinutes: Int? = null,
-      createdAt: OffsetDateTime = OffsetDateTime.now(),
-      createdBy: AuthUser,
-      attended: Attended? = null,
-      additionalAttendanceInformation: String? = null,
-      attendanceSubmittedAt: OffsetDateTime? = null,
-      notifyPPOfAttendanceBehaviour: Boolean? = null,
-      deliusAppointmentId: Long? = null
-    ): ActionPlanSession {
-      return ActionPlanSession(
-        id = id,
-        actionPlan = actionPlan,
-        sessionNumber = sessionNumber,
-        appointmentTime = appointmentTime,
-        durationInMinutes = durationInMinutes,
-        createdAt = createdAt,
-        createdBy = createdBy,
-        attended = attended,
-        additionalAttendanceInformation = additionalAttendanceInformation,
-        notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
-        attendanceSubmittedAt = attendanceSubmittedAt,
-        deliusAppointmentId = deliusAppointmentId
-      )
-    }
-
     fun sampleServiceProvider(
       id: AuthGroupID = "HARMONY_LIVING",
       name: String = "Harmony Living",
