@@ -502,4 +502,90 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubRecordSupplierAssessmentAppointmentAttendance = async (
+    referralId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/supplier-assessment-appointment/record-attendance`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  stubRecordSupplierAssessmentAppointmentBehavior = async (
+    referralId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/supplier-assessment-appointment/record-behaviour`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  stubGetSupplierAssessmentAppointment = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/supplier-assessment-appointment`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  stubUpdateSupplierAssessmentAppointment = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'PATCH',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/supplier-assessment-appointment`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  stubSubmitSupplierAssessmentSessionFeedback = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/supplier-assessment-appointment/submit`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }

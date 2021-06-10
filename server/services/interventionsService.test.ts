@@ -12,6 +12,7 @@ import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
+import appointmentFactory from '../../testutils/factories/appointment'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -2560,6 +2561,230 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns cancellation reasons', async () => {
       expect(await interventionsService.getReferralCancellationReasons(token)).toMatchObject(reasons)
+    })
+  })
+
+  describe('getSupplierAssessmentAppointment', () => {
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 120,
+    })
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a sent referral with ID 80fb9e6d-1d0e-4204-9c5f-f86970d25c50 exists',
+        uponReceiving:
+          'a GET request for the supplier assessment appointment on sent referral with ID 80fb9e6d-1d0e-4204-9c5f-f86970d25c50',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/80fb9e6d-1d0e-4204-9c5f-f86970d25c50/supplier-assessment-appointment',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns the requested supplier assessment appointment', async () => {
+      const fetchedAppointment = await interventionsService.getSupplierAssessmentAppointment(
+        token,
+        '80fb9e6d-1d0e-4204-9c5f-f86970d25c50'
+      )
+      expect(fetchedAppointment.appointmentTime).toEqual('2021-05-13T12:30:00Z')
+      expect(fetchedAppointment.durationInMinutes).toEqual(120)
+    })
+  })
+
+  describe('updateSupplierAssessmentAppointment', () => {
+    describe('with non-null values', () => {
+      it('returns an updated supplier assessment appointment', async () => {
+        const appointment = appointmentFactory.build({
+          appointmentTime: '2021-05-13T12:30:00Z',
+          durationInMinutes: 60,
+        })
+
+        await provider.addInteraction({
+          state: 'a sent referral with ID fae5df9d-41a9-4be6-98f7-0f1378e85ba1 exists',
+          uponReceiving:
+            'a PATCH request to update the change the duration to an hour for the initial assessment appointment of the sent referral with ID fae5df9d-41a9-4be6-98f7-0f1378e85ba1',
+          withRequest: {
+            method: 'PATCH',
+            path: '/sent-referral/fae5df9d-41a9-4be6-98f7-0f1378e85ba1/supplier-assessment-appointment',
+            body: {
+              durationInMinutes: 60,
+            },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          // note - this is an exact match
+          willRespondWith: {
+            status: 200,
+            body: appointment,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.updateSupplierAssessmentAppointment(
+            token,
+            'fae5df9d-41a9-4be6-98f7-0f1378e85ba1',
+            {
+              durationInMinutes: 60,
+            }
+          )
+        ).toMatchObject(appointment)
+      })
+    })
+  })
+
+  describe('recordSupplierAssessmentAppointmentAttendance', () => {
+    it('returns an updated supplier assessment appointment with the service user‘s attendance', async () => {
+      await provider.addInteraction({
+        state:
+          'a sent referral with ID 060946a4-1574-4581-b539-5df69303c595 exists and no feedback has been recorded for its supplier assessment appointment',
+        uponReceiving:
+          'a POST request to set the attendance for the supplier assessment appointment on sent referral with ID 060946a4-1574-4581-b539-5df69303c595',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/060946a4-1574-4581-b539-5df69303c595/supplier-assessment-appointment/record-attendance',
+          body: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            appointmentTime: '2021-05-13T12:30:00Z',
+            durationInMinutes: 60,
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
+              behaviour: {
+                behaviourDescription: null,
+                notifyProbationPractitioner: null,
+              },
+              submitted: false,
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.recordSupplierAssessmentAppointmentAttendance(
+        token,
+        '060946a4-1574-4581-b539-5df69303c595',
+        {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        }
+      )
+      expect(appointment.sessionFeedback!.attendance!.attended).toEqual('late')
+      expect(appointment.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+    })
+  })
+
+  describe('recordSupplierAssessmentAppointmentBehavior', () => {
+    it('returns an updated supplier assessment appointment with the service user‘s behaviour', async () => {
+      await provider.addInteraction({
+        state: 'a sent referral with ID 184c1150-bbfb-4875-903b-b6e14ae0eb49 exists',
+        uponReceiving:
+          'a POST request to set the behaviour for the supplier assessment appointment on sent referral with ID 184c1150-bbfb-4875-903b-b6e14ae0eb49',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/184c1150-bbfb-4875-903b-b6e14ae0eb49/supplier-assessment-appointment/record-behaviour',
+          body: {
+            behaviourDescription: 'Alex was well behaved',
+            notifyProbationPractitioner: false,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            appointmentTime: '2021-05-13T12:30:00Z',
+            durationInMinutes: 120,
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was well behaved',
+                notifyProbationPractitioner: false,
+              },
+              submitted: false,
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.recordSupplierAssessmentAppointmentBehavior(
+        token,
+        '184c1150-bbfb-4875-903b-b6e14ae0eb49',
+        {
+          behaviourDescription: 'Alex was well behaved',
+          notifyProbationPractitioner: false,
+        }
+      )
+      expect(appointment.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
+      expect(appointment.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+    })
+  })
+
+  describe('submitSupplierAssessmentSessionFeedback', () => {
+    it('submits attendance and behaviour feedback to the PP', async () => {
+      await provider.addInteraction({
+        state: 'a sent referral with ID 3776fd0a-1ee7-47a0-b016-071c986e6f94 exists',
+        uponReceiving:
+          'a POST request to submit the feedback for the supplier assessment for sent referral with ID 3776fd0a-1ee7-47a0-b016-071c986e6f94',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/3776fd0a-1ee7-47a0-b016-071c986e6f94/supplier-assessment-appointment/submit',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            appointmentTime: '2021-05-13T12:30:00Z',
+            durationInMinutes: 120,
+            sessionFeedback: {
+              attendance: {
+                attended: 'late',
+                additionalAttendanceInformation: 'Alex missed the bus',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was well behaved',
+                notifyProbationPractitioner: false,
+              },
+              submitted: true,
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.submitSupplierAssessmentSessionFeedback(
+        token,
+        '3776fd0a-1ee7-47a0-b016-071c986e6f94'
+      )
+      expect(appointment.sessionFeedback!.submitted).toEqual(true)
     })
   })
 })
