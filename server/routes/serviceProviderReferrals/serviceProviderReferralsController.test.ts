@@ -942,7 +942,11 @@ describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNu
         `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
       )
 
-    expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith('token', actionPlanId, sessionNumber)
+    expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith(
+      'token',
+      actionPlanId,
+      sessionNumber
+    )
   })
 })
 
