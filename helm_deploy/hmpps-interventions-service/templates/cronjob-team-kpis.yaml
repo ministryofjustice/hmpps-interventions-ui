@@ -1,9 +1,19 @@
+{{- if .Values.env_details.post_stats_to_team_slack -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kpi-scripts
+data:
+{{ (.Files.Glob "reports/*.sh").AsConfig | indent 2 }}
+
+---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: data-extractor-reporting
+  name: team-kpis
 spec:
-  schedule: "0 1 * * *"
+  schedule: "0 0 * * *"
   jobTemplate:
     spec:
       template:
@@ -14,18 +24,33 @@ spec:
             configMap:
               name: data-extractor-reports
               defaultMode: 0755
+          - name: kpi-scripts
+            configMap:
+              name: kpi-scripts
+              defaultMode: 0755
           containers:
           - name: data-extractor-reporting
             image: ministryofjustice/data-engineering-data-extractor:develop
-            args: ["mkdir -p 'export/csv/reports' && psql -v ON_ERROR_STOP=1 --file=/reports/crs_performance_report.sql > 'export/csv/reports/crs_performance_report.csv' && transfer_local_to_s3.sh"]
+            args: ["psql -v ON_ERROR_STOP=1 --tuples-only --expanded --file=/reports/team_kpi_report.sql > 'export/team_kpi_report' && /scripts/send_to_slack.sh 'export/team_kpi_report'"]
             volumeMounts:
             - name: data-extractor-reports
-              mountPath: /reports/crs_performance_report.sql
+              mountPath: /reports/team_kpi_report.sql
               readOnly: true
-              subPath: crs_performance_report.sql
+              subPath: team_kpi_report.sql
+            - name: kpi-scripts
+              mountPath: /scripts/send_to_slack.sh
+              readOnly: true
+              subPath: send_to_slack.sh
             env:
               - name: USE_STATIC_LOCATION
                 value: "true"
+              - name: ENVIRONMENT
+                value: {{ .Values.env.SENTRY_ENVIRONMENT | quote }}
+              - name: SLACK_WEBHOOK
+                valueFrom:
+                  secretKeyRef:
+                    name: statistician-slack
+                    key: webhook-url
               - name: PGHOST
                 valueFrom:
                   secretKeyRef:
@@ -46,20 +71,4 @@ spec:
                   secretKeyRef:
                     name: postgres
                     key: database_password
-              - name: S3_DESTINATION
-                valueFrom:
-                  secretKeyRef:
-                    name: reporting-s3-bucket
-                    key: destination_bucket
-              - name: AWS_ACCESS_KEY_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: reporting-s3-bucket
-                    key: access_key_id
-              - name: AWS_SECRET_ACCESS_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: reporting-s3-bucket
-                    key: secret_access_key
-              - name: AWS_DEFAULT_REGION
-                value: eu-west-2
+{{- end }}
