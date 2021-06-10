@@ -6,10 +6,12 @@ import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -25,6 +27,7 @@ class ActionPlanSessionsService(
   val authUserRepository: AuthUserRepository,
   val appointmentEventPublisher: AppointmentEventPublisher,
   val communityAPIBookingService: CommunityAPIBookingService,
+  val appointmentRepository: AppointmentRepository,
 ) {
   fun createUnscheduledSessionsForActionPlan(submittedActionPlan: ActionPlan) {
     val numberOfSessions = submittedActionPlan.numberOfSessions!!
@@ -49,19 +52,41 @@ class ActionPlanSessionsService(
     return actionPlanSessionRepository.save(session)
   }
 
-  fun updateSession(
+  fun updateSessionAppointment(
     actionPlanId: UUID,
     sessionNumber: Int,
-    appointmentTime: OffsetDateTime?,
-    durationInMinutes: Int?
+    appointmentTime: OffsetDateTime,
+    durationInMinutes: Int,
+    updatedBy: AuthUser,
   ): ActionPlanSession {
-
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
-    communityAPIBookingService.book(session, appointmentTime, durationInMinutes)?.let {
-      session.deliusAppointmentId = it
+    val existingAppointment = session.currentAppointment
+
+    val deliusAppointmentId = communityAPIBookingService.book(
+      session.actionPlan.referral,
+      existingAppointment,
+      appointmentTime,
+      durationInMinutes
+    )
+
+    if (existingAppointment == null) {
+      val appointment = Appointment(
+        id = UUID.randomUUID(),
+        createdBy = authUserRepository.save(updatedBy),
+        createdAt = OffsetDateTime.now(),
+        appointmentTime = appointmentTime,
+        durationInMinutes = durationInMinutes,
+        deliusAppointmentId = deliusAppointmentId,
+      )
+      appointmentRepository.save(appointment)
+      session.appointments.add(appointment)
+    } else {
+      existingAppointment.appointmentTime = appointmentTime
+      existingAppointment.durationInMinutes = durationInMinutes
+      existingAppointment.deliusAppointmentId = deliusAppointmentId
+      appointmentRepository.save(existingAppointment)
     }
 
-    mergeSession(session, appointmentTime, durationInMinutes)
     return actionPlanSessionRepository.save(session)
   }
 
@@ -152,19 +177,9 @@ class ActionPlanSessionsService(
   }
 
   private fun getActionPlanSessionOrThrowException(actionPlanId: UUID, sessionNumber: Int): ActionPlanSession =
-
     getActionPlanSession(actionPlanId, sessionNumber)
       ?: throw EntityNotFoundException("Action plan session not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
 
   private fun getActionPlanSession(actionPlanId: UUID, sessionNumber: Int) =
     actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
-
-  private fun mergeSession(
-    session: ActionPlanSession,
-    appointmentTime: OffsetDateTime?,
-    durationInMinutes: Int?
-  ) {
-    appointmentTime?.let { session.appointmentTime = it }
-    durationInMinutes?.let { session.durationInMinutes = it }
-  }
 }

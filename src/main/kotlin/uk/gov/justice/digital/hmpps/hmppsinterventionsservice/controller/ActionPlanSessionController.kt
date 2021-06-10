@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
@@ -17,20 +19,23 @@ import java.util.UUID
 @RestController
 class ActionPlanSessionController(
   val actionPlanSessionsService: ActionPlanSessionsService,
-  val locationMapper: LocationMapper
+  val locationMapper: LocationMapper,
+  val userMapper: UserMapper,
 ) {
   @PatchMapping("/action-plan/{id}/appointment/{sessionNumber}")
-  fun updateSession(
+  fun updateSessionAppointment(
     @PathVariable(name = "id") actionPlanId: UUID,
     @PathVariable sessionNumber: Int,
     @RequestBody updateAppointmentDTO: UpdateAppointmentDTO,
+    authentication: JwtAuthenticationToken,
   ): ActionPlanSessionDTO {
-
-    val actionPlanSession = actionPlanSessionsService.updateSession(
+    val user = userMapper.fromToken(authentication)
+    val actionPlanSession = actionPlanSessionsService.updateSessionAppointment(
       actionPlanId,
       sessionNumber,
       updateAppointmentDTO.appointmentTime,
-      updateAppointmentDTO.durationInMinutes
+      updateAppointmentDTO.durationInMinutes,
+      user,
     )
     return ActionPlanSessionDTO.from(actionPlanSession)
   }
