@@ -119,7 +119,7 @@ class CommunityAPIReferralEventService(
 
   private fun postNotificationRequest(endOfServiceReport: EndOfServiceReport?) {
 
-    endOfServiceReport?.submittedAt?: run {
+    endOfServiceReport?.submittedAt ?: run {
       throw IllegalStateException("End of service report not submitted so should not get to this point")
     }
 

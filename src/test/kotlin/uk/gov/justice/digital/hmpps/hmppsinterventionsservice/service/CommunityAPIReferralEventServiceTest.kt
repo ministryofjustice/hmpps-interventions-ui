@@ -180,7 +180,8 @@ class CommunityAPIReferralEventServiceTest {
         relevantSentenceId = 123456789,
         serviceProviderName = "Harmony Living",
         sentAt = sentAtDefault,
-        concludedAt = concludedAtDefault),
+        concludedAt = concludedAtDefault
+      ),
       submittedAt = submittedAtDefault
     )
 }
