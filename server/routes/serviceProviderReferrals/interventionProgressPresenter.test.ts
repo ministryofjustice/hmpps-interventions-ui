@@ -212,40 +212,6 @@ describe(InterventionProgressPresenter, () => {
       })
     })
 
-    describe('actionPlanStatus', () => {
-      describe('when there is no action plan', () => {
-        it('returns “Not submitted”', () => {
-          const referral = sentReferralFactory.build()
-          const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
-
-          expect(presenter.text).toMatchObject({ actionPlanStatus: 'Not submitted' })
-        })
-      })
-
-      describe('when the action plan has not been submitted', () => {
-        it('returns “Not submitted”', () => {
-          const referral = sentReferralFactory.build()
-          const intervention = interventionFactory.build()
-          const actionPlan = actionPlanFactory.notSubmitted().build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
-
-          expect(presenter.text).toMatchObject({ actionPlanStatus: 'Not submitted' })
-        })
-      })
-
-      describe('when the action plan has been submitted', () => {
-        it('returns “Submitted”', () => {
-          const referral = sentReferralFactory.build()
-          const intervention = interventionFactory.build()
-          const actionPlan = actionPlanFactory.submitted().build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
-
-          expect(presenter.text).toMatchObject({ actionPlanStatus: 'Submitted' })
-        })
-      })
-    })
-
     describe('endOfServiceReportStatus', () => {
       describe('when there is no end of service report', () => {
         it('returns “Not submitted”', () => {
@@ -281,48 +247,59 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
-  describe('actionPlanStatusStyle', () => {
+  describe('actionPlanStatus', () => {
     describe('when there is no action plan', () => {
-      it('returns the inactive style', () => {
+      it('returns the correct status', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
 
-        expect(presenter.actionPlanStatusStyle).toEqual('inactive')
+        expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
       })
     })
 
     describe('when the action plan has not been submitted', () => {
-      it('returns the active style', () => {
+      it('returns the correct status', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.notSubmitted().build()
         const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
 
-        expect(presenter.actionPlanStatusStyle).toEqual('inactive')
+        expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
       })
     })
 
     describe('when the action plan has been submitted', () => {
-      it('returns the active style', () => {
+      it('returns the correct status', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.submitted().build()
         const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
 
-        expect(presenter.actionPlanStatusStyle).toEqual('active')
+        expect(presenter.text.actionPlanStatus).toEqual('Under review')
+      })
+    })
+
+    describe('when the action plan has been approved', () => {
+      it('returns the correct status', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.approved().build()
+        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+
+        expect(presenter.text.actionPlanStatus).toEqual('Approved')
       })
     })
   })
 
-  describe('actionPlanExists', () => {
+  describe('actionPlanCreated', () => {
     describe('when there is no action plan', () => {
       it('returns true', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
 
-        expect(presenter.actionPlanExists).toEqual(false)
+        expect(presenter.actionPlanCreated).toEqual(false)
       })
     })
 
@@ -333,7 +310,7 @@ describe(InterventionProgressPresenter, () => {
         const actionPlan = actionPlanFactory.notSubmitted().build()
         const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
 
-        expect(presenter.actionPlanExists).toEqual(true)
+        expect(presenter.actionPlanCreated).toEqual(true)
       })
     })
   })

@@ -46,18 +46,30 @@ export default class InterventionProgressPresenter {
 
   readonly text = {
     title: utils.convertToTitleCase(this.intervention.contractType.name),
-    actionPlanStatus: this.actionPlanSubmitted ? 'Submitted' : 'Not submitted',
+    actionPlanStatus: this.actionPlanStatus,
+    actionPlanSubmittedDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.submittedAt || null),
+    // fixme: we don't have immediate access to the full name of the user without looking it up ahead of time
+    // actionPlanSubmitter: this.actionPlan?.submittedBy.username\
+    actionPlanApprovalDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.approvedAt || null),
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
   }
 
-  readonly actionPlanStatusStyle: 'active' | 'inactive' = this.actionPlanSubmitted ? 'active' : 'inactive'
-
-  get actionPlanSubmitted(): boolean {
-    return this.actionPlan?.submittedAt != null
+  private get actionPlanStatus(): string {
+    if (this.actionPlanApproved) {
+      return 'Approved'
+    }
+    if (this.actionPlanUnderReview) {
+      return 'Under review'
+    }
+    return 'Not submitted'
   }
 
-  get actionPlanExists(): boolean {
+  get actionPlanCreated(): boolean {
     return this.actionPlan !== null
+  }
+
+  get actionPlanUnderReview(): boolean {
+    return this.actionPlan?.submittedAt != null && !this.actionPlanApproved
   }
 
   get actionPlanApproved(): boolean {

@@ -88,9 +88,10 @@ export default class InterventionProgressView {
       },
     ]
 
-    if (!this.presenter.actionPlanExists) {
+    if (!this.presenter.actionPlanCreated) {
+      // action plan doesn't exist; show link to create one
       rows.push({
-        key: { text: 'Action' },
+        key: { text: 'To do' },
         value: {
           html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
                    <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
@@ -100,18 +101,53 @@ export default class InterventionProgressView {
                  </form>`,
         },
       })
-    } else if (!this.presenter.actionPlanSubmitted) {
+    } else if (this.presenter.actionPlanCreated && !this.presenter.actionPlanUnderReview) {
       // action plan exists, but has not been submitted
       rows.push({
-        key: { text: 'Action' },
-        value: { html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Continue</a>` },
+        key: { text: 'To do' },
+        value: { html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Submit action plan</a>` },
+      })
+    } else if (this.presenter.actionPlanUnderReview) {
+      // action plan has been submitted; show link to view it
+      rows.push({
+        key: { text: 'Submitted date' },
+        value: { text: this.presenter.text.actionPlanSubmittedDate },
+      })
+      // FIXME: the 'view action plan' page doesn't exist yet!
+      rows.push({
+        key: { text: 'To do' },
+        value: { html: `<a href="#" class="govuk-link">View action plan</a>` },
+      })
+    } else if (this.presenter.actionPlanApproved) {
+      // action plan has been approved; show link to view it
+      rows.push({
+        key: { text: 'Submitted date' },
+        value: { text: this.presenter.text.actionPlanSubmittedDate },
+      })
+      rows.push({
+        key: { text: 'Approval date' },
+        value: { text: this.presenter.text.actionPlanApprovalDate },
+      })
+      // FIXME: the 'view action plan' page doesn't exist yet!
+      rows.push({
+        key: { text: 'To do' },
+        value: { html: `<a href="#" class="govuk-link">View action plan</a>` },
       })
     }
 
     return { rows }
   }
 
-  private readonly actionPlanTagClass = this.presenter.actionPlanStatusStyle === 'active' ? '' : 'govuk-tag--grey'
+  private get actionPlanTagClass(): string {
+    switch (this.presenter.text.actionPlanStatus) {
+      case 'Approved':
+        return 'govuk-tag--green'
+      case 'Under review':
+        return 'govuk-tag- govuk-tag--red'
+      default:
+        return 'govuk-tag--grey'
+    }
+  }
 
   private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
