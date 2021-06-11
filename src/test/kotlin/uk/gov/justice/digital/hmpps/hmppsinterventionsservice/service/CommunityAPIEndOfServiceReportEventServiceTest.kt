@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
@@ -19,7 +19,7 @@ class CommunityAPIEndOfServiceReportEventServiceTest {
   private val sentAtDefault = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
   private val submittedAtDefault = OffsetDateTime.of(2020, 2, 2, 2, 2, 2, 2, ZoneOffset.UTC)
 
-  val communityAPIService = CommunityAPIEndOfServiceReportEventService(
+  private val communityAPIService = CommunityAPIEndOfServiceReportEventService(
     "http://testUrl",
     "/probation-practitioner/end-of-service-report/{id}",
     "/secure/offenders/crn/{crn}/sentence/{sentenceId}/notifications/context/{contextName}",
@@ -28,22 +28,12 @@ class CommunityAPIEndOfServiceReportEventServiceTest {
   )
 
   @Test
-  fun `notify submitted end of service report`() {
+  fun `nothing is notified as its done as part of the referral end event`() {
 
     val event = getEvent(SUBMITTED)
     communityAPIService.onApplicationEvent(event)
 
-    verify(communityAPIClient).makeAsyncPostRequest(
-      "/secure/offenders/crn/X123456/sentence/1234/notifications/context/commissioned-rehabilitation-services",
-      NotificationCreateRequestDTO(
-        "ACC",
-        sentAtDefault,
-        event.endOfServiceReport.referral.id,
-        submittedAtDefault,
-        "End of Service Report Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
-          "http://testUrl/probation-practitioner/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
-      )
-    )
+    verifyZeroInteractions(communityAPIClient)
   }
 
   private fun getEvent(
