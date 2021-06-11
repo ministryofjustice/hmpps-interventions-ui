@@ -60,6 +60,10 @@ export default class InterventionProgressPresenter {
     return this.actionPlan !== null
   }
 
+  get actionPlanApproved(): boolean {
+    return this.actionPlan?.approvedAt != null
+  }
+
   get referralEnded(): boolean {
     return this.referral.endRequestedAt !== null
   }
