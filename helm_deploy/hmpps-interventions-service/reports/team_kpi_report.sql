@@ -1,5 +1,6 @@
 WITH counts AS (
-    SELECT count(r.id) FILTER ( WHERE r.sent_at IS NULL )                   AS count_of_draft_referrals,
+    SELECT count(r.id)                                                      AS count_of_started_referrals,
+           count(r.id) FILTER ( WHERE r.sent_at IS NULL )                   AS count_of_draft_referrals,
            count(r.id) FILTER ( WHERE r.sent_at IS NOT NULL )               AS count_of_sent_referrals,
            count(r.id) FILTER ( WHERE r.concluded_at IS NOT NULL )          AS count_of_concluded_referrals,
            count(r.id) FILTER ( WHERE r.sent_at IS NOT NULL AND
@@ -24,7 +25,8 @@ WITH counts AS (
          FROM referral
          WHERE sent_at IS NOT NULL)
 
-SELECT counts.count_of_draft_referrals,
+SELECT counts.count_of_started_referrals,
+       counts.count_of_draft_referrals,
        counts.count_of_sent_referrals,
        counts.count_of_concluded_referrals,
        counts.count_of_live_referrals,
@@ -33,8 +35,8 @@ SELECT counts.count_of_draft_referrals,
        counts.count_of_early_end_referrals,
        counts.count_of_pp_users_sending_referrals,
        case
-           when counts.count_of_draft_referrals = 0 then 0.0
-           else 100.0 * counts.count_of_sent_referrals / counts.count_of_draft_referrals
+           when counts.count_of_started_referrals = 0 then 0.0
+           else 100.0 * counts.count_of_sent_referrals / counts.count_of_started_referrals
            end AS completion_rate_percent,
        times.avg_completion_time,
        times.p50_completion_time,
