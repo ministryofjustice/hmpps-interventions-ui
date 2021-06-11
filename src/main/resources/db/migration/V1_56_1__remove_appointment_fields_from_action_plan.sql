@@ -18,4 +18,5 @@ create table action_plan_session_appointments (
 insert into action_plan_session
     select id, session_number, action_plan_id from action_plan_appointment;
 
-drop table action_plan_appointment;
+alter table action_plan_appointment
+    rename to deprecated_action_plan_appointment;
