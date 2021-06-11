@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.lang.IllegalStateException
@@ -25,25 +24,6 @@ interface CommunityAPIService {
     val contractTypeName = referral.intervention.dynamicFrameworkContract.contractType.name
     val primeProviderName = referral.intervention.dynamicFrameworkContract.primeProvider.name
     return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
-  }
-}
-
-@Service
-class CommunityAPIOffenderService(
-  @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
-  private val communityAPIClient: CommunityAPIClient,
-) {
-  fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(user: AuthUser, crn: String): ServiceUserAccessResult {
-    val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
-      .buildAndExpand(crn)
-      .toString()
-
-    val response = communityAPIClient.makeSyncGetRequest(userAccessPath, UserAccessResponse::class.java)
-
-    return ServiceUserAccessResult(
-      !(response.userExcluded || response.userRestricted),
-      listOfNotNull(response.exclusionMessage, response.restrictionMessage),
-    )
   }
 }
 
@@ -270,16 +250,4 @@ data class AppointmentOutcomeRequest(
   val notes: String,
   val attended: String,
   val notifyPPOfAttendanceBehaviour: Boolean,
-)
-
-data class UserAccessResponse(
-  val userExcluded: Boolean,
-  val userRestricted: Boolean,
-  val exclusionMessage: String?,
-  val restrictionMessage: String?,
-)
-
-data class ServiceUserAccessResult(
-  val canAccess: Boolean,
-  val messages: List<String>,
 )

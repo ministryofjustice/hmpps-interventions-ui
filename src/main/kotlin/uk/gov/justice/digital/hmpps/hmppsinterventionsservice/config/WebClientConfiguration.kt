@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import java.time.Duration
 
 @Configuration
@@ -27,11 +28,12 @@ class WebClientConfiguration(
   private val webClientBuilder: WebClient.Builder
 ) {
   @Bean
-  fun assessRisksAndNeedsClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
-    return createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl)
+  fun assessRisksAndNeedsClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
+    return RestClient(createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl))
   }
 
   @Bean
+  @Deprecated("usage of newer 'RestClient' interface is preferred")
   fun communityApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
     return createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl)
   }
@@ -39,6 +41,11 @@ class WebClientConfiguration(
   @Bean
   fun hmppsAuthApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
     return createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl)
+  }
+
+  @Bean
+  fun communityApiRestClient(communityApiWebClient: WebClient): RestClient {
+    return RestClient(communityApiWebClient)
   }
 
   @Bean
