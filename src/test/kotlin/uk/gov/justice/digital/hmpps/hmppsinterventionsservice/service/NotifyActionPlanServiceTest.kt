@@ -44,6 +44,7 @@ class NotifyActionPlanServiceTest {
   private fun notifyService(): NotifyActionPlanService {
     return NotifyActionPlanService(
       "template",
+      "template",
       "http://example.com",
       "/action-plan/{id}",
       emailSender,

@@ -89,7 +89,9 @@ class ActionPlanService(
     actionPlan.approvedBy = authUserRepository.save(user)
 
     actionPlanSessionsService.createUnscheduledSessionsForActionPlan(actionPlan)
-    return actionPlanRepository.save(actionPlan)
+    val approvedActionPlan = actionPlanRepository.save(actionPlan)
+    actionPlanEventPublisher.actionPlanSubmitEvent(approvedActionPlan)
+    return approvedActionPlan
   }
 
   fun getActionPlan(id: UUID): ActionPlan {

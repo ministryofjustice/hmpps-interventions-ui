@@ -26,6 +26,7 @@ interface NotifyService {
 @Service
 class NotifyActionPlanService(
   @Value("\${notify.templates.action-plan-submitted}") private val actionPlanSubmittedTemplateID: String,
+  @Value("\${notify.templates.action-plan-approved}") private val actionPlanApprovedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmitActionPlanLocation: String,
   private val emailSender: EmailSender,
@@ -36,13 +37,26 @@ class NotifyActionPlanService(
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
-        val userDetail = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
+        val recipient = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
         val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
         emailSender.sendEmail(
           actionPlanSubmittedTemplateID,
-          userDetail.email,
+          recipient.email,
           mapOf(
-            "submitterFirstName" to userDetail.firstName,
+            "submitterFirstName" to recipient.firstName,
+            "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
+            "actionPlanUrl" to location.toString(),
+          )
+        )
+      }
+      ActionPlanEventType.APPROVED -> {
+        val recipient = hmppsAuthService.getUserDetail(event.actionPlan.submittedBy!!)
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
+        emailSender.sendEmail(
+          actionPlanSubmittedTemplateID,
+          recipient.email,
+          mapOf(
+            "submitterFirstName" to recipient.firstName,
             "referenceNumber" to event.actionPlan.referral.referenceNumber!!,
             "actionPlanUrl" to location.toString(),
           )

@@ -33,6 +33,16 @@ class SNSActionPlanService(
         )
         snsPublisher.publish(event.actionPlan.referral.id, event.actionPlan.submittedBy!!, snsEvent)
       }
+      ActionPlanEventType.APPROVED -> {
+        val snsEvent = EventDTO(
+          "intervention.action-plan.approved",
+          "An action plan has been approved",
+          event.detailUrl,
+          event.actionPlan.approvedAt!!,
+          mapOf("actionPlanId" to event.actionPlan.id, "approvedBy" to (event.actionPlan.approvedBy?.userName!!))
+        )
+        snsPublisher.publish(event.actionPlan.referral.id, event.actionPlan.approvedBy!!, snsEvent)
+      }
     }
   }
 }

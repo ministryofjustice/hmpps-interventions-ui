@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 
 enum class ActionPlanEventType {
   SUBMITTED,
+  APPROVED,
 }
 
 class ActionPlanEvent(source: Any, val type: ActionPlanEventType, val actionPlan: ActionPlan, val detailUrl: String) : ApplicationEvent(source) {
@@ -25,6 +26,10 @@ class ActionPlanEventPublisher(
 
   fun actionPlanSubmitEvent(actionPlan: ActionPlan) {
     applicationEventPublisher.publishEvent(ActionPlanEvent(this, ActionPlanEventType.SUBMITTED, actionPlan, createDetailUrl(actionPlan)))
+  }
+
+  fun actionPlanApprovedEvent(actionPlan: ActionPlan) {
+    applicationEventPublisher.publishEvent(ActionPlanEvent(this, ActionPlanEventType.APPROVED, actionPlan, createDetailUrl(actionPlan)))
   }
 
   private fun createDetailUrl(actionPlan: ActionPlan): String {
