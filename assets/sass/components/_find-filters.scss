@@ -1,8 +1,15 @@
 .find-filters--scrollable {
-  max-height: 450px;
-  overflow-x: scroll;
+  margin-bottom: 0;
 
   input {
     height: 100%;
+  }
+}
+
+.refer-and-monitor__filters {
+  .govuk-form-group {
+    margin-bottom: 35px;
+    max-height: 450px;
+    overflow-y: auto;
   }
 }

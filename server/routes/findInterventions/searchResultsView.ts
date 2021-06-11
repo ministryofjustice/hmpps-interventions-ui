@@ -50,7 +50,10 @@ export default class SearchResultsView {
   }
 
   static summaryListArgs(items: SummaryListItem[]): SummaryListArgs {
-    return { ...ViewUtils.summaryListArgs(items), classes: 'govuk-summary-list--no-border' }
+    return {
+      ...ViewUtils.summaryListArgs(items),
+      classes: 'govuk-summary-list--no-border refer-and-monitor__intervention-summary-list',
+    }
   }
 
   private searchSummarySummaryListArgs = ViewUtils.summaryListArgs(this.presenter.summary.summary)
