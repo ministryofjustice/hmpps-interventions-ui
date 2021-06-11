@@ -1,0 +1,35 @@
+.key-details-bar {
+  background-color: govuk-colour('blue');
+
+  .govuk-body,
+  .govuk-body-l {
+    color: govuk-colour('white');
+  }
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.key-details-bar .key-details-bar__key-details {
+  padding: 20px 0;
+  position: relative;
+}
+
+.key-details-bar .key-details-bar__key-details .key-details-bar__name {
+  line-height: 1.04167;
+  line-height: 1.11111;
+  margin-inline-start: 0;
+  margin-right: 10px;
+}
+
+.key-details-bar .key-details-bar__key-details .key-details-bar__bottom-block {
+  margin-top: 6px;
+  padding-top: 10px;
+}
+@media (min-width: 40.0625em) {
+  .key-details-bar .key-details-bar__key-details .key-details-bar__name {
+    font-size: 1.675rem;
+    line-height: 1.11111;
+  }
+}

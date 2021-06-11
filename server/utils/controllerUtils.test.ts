@@ -33,7 +33,7 @@ describe(ControllerUtils, () => {
           foo: '1',
           bar: '2',
           headerPresenter: expect.anything(),
-          serviceUserNotificationBannerArgs: expect.anything(),
+          serviceUserBannerPresenter: expect.anything(),
         })
       })
     })

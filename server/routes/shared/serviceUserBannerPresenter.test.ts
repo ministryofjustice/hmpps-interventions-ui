@@ -12,7 +12,7 @@ describe(ServiceUserBannerPresenter, () => {
 
       serviceUser.contactDetails.emailAddresses = null
       const presenterWithoutEmail = new ServiceUserBannerPresenter(serviceUser)
-      expect(presenterWithoutEmail.serviceUserEmail).toEqual('Email address not found')
+      expect(presenterWithoutEmail.serviceUserEmail).toEqual('Not found')
     })
   })
 
@@ -26,7 +26,7 @@ describe(ServiceUserBannerPresenter, () => {
 
       serviceUser.contactDetails.phoneNumbers = null
       const presenterWithoutMobile = new ServiceUserBannerPresenter(serviceUser)
-      expect(presenterWithoutMobile.serviceUserMobile).toEqual('Mobile number not found')
+      expect(presenterWithoutMobile.serviceUserMobile).toEqual('Not found')
     })
   })
 
@@ -52,6 +52,15 @@ describe(ServiceUserBannerPresenter, () => {
 
       const presenter = new ServiceUserBannerPresenter(serviceUser)
       expect(presenter.name).toEqual('Tom Jones')
+    })
+  })
+
+  describe('crn', () => {
+    it('returns the service user crn', () => {
+      const serviceUser = serviceUserFactory.build({ otherIds: { crn: 'X123456' } })
+      const presenter = new ServiceUserBannerPresenter(serviceUser)
+
+      expect(presenter.crn).toEqual('X123456')
     })
   })
 })

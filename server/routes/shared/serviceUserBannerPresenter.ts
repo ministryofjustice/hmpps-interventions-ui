@@ -20,12 +20,12 @@ export default class ServiceUserBannerPresenter {
       return emailAddresses[0]
     }
 
-    return 'Email address not found'
+    return 'Not found'
   }
 
   get serviceUserMobile(): string {
     const { phoneNumbers } = this.serviceUser.contactDetails
-    const notFoundMessage = 'Mobile number not found'
+    const notFoundMessage = 'Not found'
 
     if (phoneNumbers) {
       const mobileNumber = phoneNumbers.find(phoneNumber => phoneNumber.type === 'MOBILE')
@@ -34,5 +34,9 @@ export default class ServiceUserBannerPresenter {
     }
 
     return notFoundMessage
+  }
+
+  get crn(): string {
+    return this.serviceUser.otherIds.crn
   }
 }
