@@ -10,11 +10,13 @@ import StaticContentController from './staticContent/staticContentController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CommonController from './common/commonController'
+import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
 
 export interface Services {
   communityApiService: CommunityApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
+  assessRisksAndNeedsService: AssessRisksAndNeedsService
 }
 
 export default function routes(router: Router, services: Services): Router {
@@ -24,14 +26,16 @@ export default function routes(router: Router, services: Services): Router {
   const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
     services.interventionsService,
     services.communityApiService,
-    services.hmppsAuthService
+    services.hmppsAuthService,
+    services.assessRisksAndNeedsService
   )
   const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
   const staticContentController = new StaticContentController()
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
     services.communityApiService,
-    services.hmppsAuthService
+    services.hmppsAuthService,
+    services.assessRisksAndNeedsService
   )
   const findInterventionsController = new FindInterventionsController(services.interventionsService)
   const commonController = new CommonController()

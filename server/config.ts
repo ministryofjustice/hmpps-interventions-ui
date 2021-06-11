@@ -64,6 +64,14 @@ export default {
       },
       agent: new AgentConfig(),
     },
+    assessRisksAndNeedsApi: {
+      url: get('ASSESS_RISKS_AND_NEEDS_API_URL', 'http://localhost:8094', requiredInProduction),
+      timeout: {
+        response: Number(get('ASSESS_RISKS_AND_NEEDS_API_TIMEOUT_RESPONSE', 20000)),
+        deadline: Number(get('ASSESS_RISKS_AND_NEEDS_API_TIMEOUT_DEADLINE', 20000)),
+      },
+      agent: new AgentConfig(),
+    },
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://hmpps-auth:8090/auth', requiredInProduction),
       timeout: {

@@ -17,23 +17,30 @@ import actionPlanAppointmentFactory from '../../../testutils/factories/actionPla
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import interventionFactory from '../../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
+import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
+jest.mock('../../services/assessRisksAndNeedsService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
+
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
+
+const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService, hmppsAuthService },
+    overrides: { interventionsService, communityApiService, hmppsAuthService, assessRisksAndNeedsService },
     userType: AppSetupUserType.serviceProvider,
   })
 })
@@ -87,6 +94,9 @@ describe('GET /service-provider/referrals/:id/details', () => {
   it('displays information about the referral and service user', async () => {
     const intervention = interventionFactory.build()
     const sentReferral = sentReferralFactory.unassigned().build()
+    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'Alex is low risk to others.',
+    })
     const deliusUser = deliusUserFactory.build({
       firstName: 'Bernard',
       surname: 'Beaks',
@@ -112,6 +122,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -123,6 +134,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain('alex.river@example.com')
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Alex is low risk to others.')
       })
   })
 
@@ -134,6 +146,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
       const conviction = deliusConvictionFactory.build()
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
 
       interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
@@ -141,6 +154,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
       communityApiService.getConvictionById.mockResolvedValue(conviction)
+      assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
 
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}/details`)

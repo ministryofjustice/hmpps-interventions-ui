@@ -1,6 +1,5 @@
 import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
-import { Readable } from 'stream'
 
 import Logger from 'bunyan'
 import sanitiseError from '../sanitisedError'
@@ -14,6 +13,7 @@ interface GetRequest {
   headers?: Record<string, string>
   responseType?: string
   raw?: boolean
+  token?: string | null
 }
 
 interface PostRequest {
@@ -22,12 +22,7 @@ interface PostRequest {
   responseType?: string
   data?: Record<string, unknown>
   raw?: boolean
-}
-
-interface StreamRequest {
-  path?: string
-  headers?: Record<string, string>
-  errorLogger?: (e: UnsanitisedError) => void
+  token?: string | null
 }
 
 export default class RestClient {
@@ -35,7 +30,11 @@ export default class RestClient {
 
   logger: Logger
 
-  constructor(private readonly name: string, private readonly config: ApiConfig, private readonly token: string) {
+  constructor(
+    private readonly name: string,
+    private readonly config: ApiConfig,
+    private readonly token: string | null = null // deprecated: should now be passed to method call e.g. GET, POST
+  ) {
     this.agent = config.url.startsWith('https') ? new HttpsAgent(config.agent) : new Agent(config.agent)
     this.logger = loggerFactory({ client: name }, 'interventions.restClient')
   }
@@ -52,16 +51,24 @@ export default class RestClient {
     this.logger.warn({ err: error }, 'rest client error')
   }
 
-  async get({ path, query = '', headers = {}, responseType = '', raw = false }: GetRequest): Promise<unknown> {
+  async get({
+    path,
+    query = '',
+    headers = {},
+    responseType = '',
+    raw = false,
+    token = this.token,
+  }: GetRequest): Promise<unknown> {
     this.logger.info(
       {
         path,
         query: JSON.stringify(query),
       },
-      'making authenticated GET request'
+      this.logger.info({ path }, this.logMessage(token, 'GET'))
     )
+
     try {
-      const result = await superagent
+      const unauthenticatedRequest = superagent
         .get(`${this.apiUrl()}${path}`)
         .agent(this.agent)
         .retry(2, (err, res) => {
@@ -76,10 +83,12 @@ export default class RestClient {
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
         .query(query)
-        .auth(this.token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
+
+      const result =
+        token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
 
       return raw ? result : result.body
     } catch (error) {
@@ -88,18 +97,28 @@ export default class RestClient {
     }
   }
 
-  async post({ path, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<unknown> {
-    this.logger.info({ path }, 'making authenticated POST request')
+  async post({
+    path,
+    headers = {},
+    responseType = '',
+    data = {},
+    raw = false,
+    token = this.token,
+  }: PostRequest = {}): Promise<unknown> {
+    this.logger.info({ path }, this.logMessage(token, 'POST'))
+
     try {
-      const result = await superagent
+      const unauthenticatedRequest = superagent
         .post(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
         .retry(0)
-        .auth(this.token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
+
+      const result =
+        token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
 
       return raw ? result : result.body
     } catch (error) {
@@ -109,10 +128,18 @@ export default class RestClient {
   }
 
   // This is copied from the post method above
-  async patch({ path, headers = {}, responseType = '', data = {}, raw = false }: PostRequest = {}): Promise<unknown> {
-    this.logger.info({ path }, 'making authenticated PATCH request')
+  async patch({
+    path,
+    headers = {},
+    responseType = '',
+    data = {},
+    raw = false,
+    token = this.token,
+  }: PostRequest = {}): Promise<unknown> {
+    this.logger.info({ path }, this.logMessage(token, 'PATCH'))
+
     try {
-      const result = await superagent
+      const unauthenticatedRequest = superagent
         .patch(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
@@ -120,10 +147,12 @@ export default class RestClient {
           if (err) this.logger.info({ code: err.code, message: err.message }, 'retry handler found API error')
           return undefined // retry handler only for logging retries, not to influence retry logic
         })
-        .auth(this.token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
+
+      const result =
+        token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
 
       return raw ? result : result.body
     } catch (error) {
@@ -132,32 +161,7 @@ export default class RestClient {
     }
   }
 
-  async stream({ path, headers = {}, errorLogger = this.defaultErrorLogger }: StreamRequest = {}): Promise<unknown> {
-    this.logger.info({ path }, 'making authenticated streaming GET request')
-    return new Promise((resolve, reject) => {
-      superagent
-        .get(`${this.apiUrl()}${path}`)
-        .agent(this.agent)
-        .auth(this.token, { type: 'bearer' })
-        .retry(2, (err, res) => {
-          if (err) this.logger.info({ code: err.code, message: err.message }, 'retry handler found API error')
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
-        .timeout(this.timeoutConfig())
-        .set(headers)
-        .end((error, response) => {
-          if (error) {
-            errorLogger(error)
-            reject(error)
-          } else if (response) {
-            const s = new Readable()
-            // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-empty-function
-            s._read = () => {}
-            s.push(response.body)
-            s.push(null)
-            resolve(s)
-          }
-        })
-    })
+  private logMessage(token: string | null, httpVerb: string) {
+    return `Making ${token === null ? 'unauthenticated' : 'authenticated'} ${httpVerb} request`
   }
 }

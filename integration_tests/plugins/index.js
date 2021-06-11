@@ -3,12 +3,14 @@ import AuthServiceMocks from '../../mockApis/auth'
 import TokenVerificationMocks from '../../mockApis/tokenVerification'
 import CommunityApiMocks from '../../mockApis/communityApi'
 import InterventionsServiceMocks from '../../mockApis/interventionsService'
+import AssessRisksAndNeedsServiceMocks from '../../mockApis/assessRisksAndNeedsService'
 
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
 const tokenVerification = new TokenVerificationMocks(wiremock)
 const communityApi = new CommunityApiMocks(wiremock)
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
+const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock)
 
 module.exports = on => {
   on('task', {
@@ -167,6 +169,10 @@ module.exports = on => {
 
     stubGetReferralCancellationReasons: arg => {
       return interventionsService.stubGetReferralCancellationReasons(arg.responseJson)
+    },
+
+    stubGetSupplementaryRiskInformation: arg => {
+      return assessRisksAndNeedsService.stubGetSupplementaryRiskInformation(arg.riskId, arg.responseJson)
     },
   })
 }

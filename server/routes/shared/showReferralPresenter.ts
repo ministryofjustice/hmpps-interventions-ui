@@ -15,6 +15,7 @@ import DesiredOutcome from '../../models/desiredOutcome'
 import logger from '../../../log'
 import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from '../referrals/sentencePresenter'
+import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -23,6 +24,7 @@ export default class ShowReferralPresenter {
     private readonly sentReferral: SentReferral,
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
+    private readonly riskInformation: SupplementaryRiskInformation,
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
@@ -194,9 +196,7 @@ export default class ShowReferralPresenter {
     return [
       {
         key: 'Additional risk information',
-        lines: [
-          'The Refer and Monitor an Intervention service cannot currently display this risk information. It will be available before Service Providers start using the digital service.',
-        ],
+        lines: [this.riskInformation.riskSummaryComments],
       },
     ]
   }
