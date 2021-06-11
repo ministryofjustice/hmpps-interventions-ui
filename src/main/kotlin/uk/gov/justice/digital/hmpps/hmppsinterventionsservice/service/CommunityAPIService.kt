@@ -82,6 +82,10 @@ class CommunityAPIReferralEventService(
       ReferralEventType.COMPLETED,
       -> {
 
+        // This should be an independent event based notification
+        // However a race condition arises with the referral end
+        // notification. To Avoid a NSI not found in community-api
+        // this must be sent and processed before referral end
         postNotificationRequest(event.referral.endOfServiceReport)
 
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
