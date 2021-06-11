@@ -9,6 +9,7 @@ import {
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
+import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
 export default class InterventionProgressView {
   constructor(private readonly presenter: InterventionProgressPresenter) {}
@@ -158,11 +159,15 @@ export default class InterventionProgressView {
         return [
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
-          { text: tagMacro(row.tagArgs as TagArgs) },
+          { text: this.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
           { html: this.linkHtml(row.links) },
         ]
       }),
     }
+  }
+
+  private sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string) {
+    return tagMacro({ text: presenter.text, classes: presenter.tagClass })
   }
 
   private linkHtml(links: { text: string; href: string }[]): string {

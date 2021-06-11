@@ -4,6 +4,8 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import SessionStatusPresenter from '../shared/sessionStatusPresenter'
+import { SessionStatus } from '../../utils/sessionStatus'
 
 describe(InterventionProgressPresenter, () => {
   describe('referralEnded', () => {
@@ -75,10 +77,7 @@ describe(InterventionProgressPresenter, () => {
           {
             sessionNumber: 1,
             appointmentTime: '',
-            tagArgs: {
-              text: 'not scheduled',
-              classes: 'govuk-tag--grey',
-            },
+            statusPresenter: new SessionStatusPresenter(SessionStatus.notScheduled),
             links: [
               {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
@@ -106,10 +105,7 @@ describe(InterventionProgressPresenter, () => {
           {
             sessionNumber: 1,
             appointmentTime: '07 Dec 2020, 13:00',
-            tagArgs: {
-              text: 'scheduled',
-              classes: 'govuk-tag--blue',
-            },
+            statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
             links: [
               {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
@@ -140,10 +136,7 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 1,
               appointmentTime: '',
-              tagArgs: {
-                text: 'completed',
-                classes: 'govuk-tag--green',
-              },
+              statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
               links: [
                 {
                   href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
@@ -154,10 +147,7 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 2,
               appointmentTime: '',
-              tagArgs: {
-                text: 'completed',
-                classes: 'govuk-tag--green',
-              },
+              statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
               links: [
                 {
                   href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback',
@@ -182,10 +172,7 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 1,
               appointmentTime: '',
-              tagArgs: {
-                text: 'did not attend',
-                classes: 'govuk-tag--purple',
-              },
+              statusPresenter: new SessionStatusPresenter(SessionStatus.didNotAttend),
               links: [
                 {
                   href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',

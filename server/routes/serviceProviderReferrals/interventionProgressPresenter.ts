@@ -16,7 +16,7 @@ interface EndedFields {
 interface ProgressSessionTableRow {
   sessionNumber: number
   appointmentTime: string
-  tagArgs: { text: string; classes: string }
+  statusPresenter: SessionStatusPresenter
   links: { text: string; href: string }[]
 }
 
@@ -107,15 +107,13 @@ export default class InterventionProgressPresenter {
       return {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
-        tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
-        links: sessionTableParams.links.map(link => ({ text: link.text, href: link.href })),
+        ...sessionTableParams,
       }
     })
   }
 
   private sessionTableParams(appointment: ActionPlanAppointment): {
-    text: string
-    tagClass: string
+    statusPresenter: SessionStatusPresenter
     links: { text: string; href: string }[]
   } {
     const status = sessionStatus.forAppointment(appointment)
@@ -127,56 +125,48 @@ export default class InterventionProgressPresenter {
     const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
     const giveFeedbackHref = `/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance`
 
+    let links: { text: string; href: string }[] = []
+
     switch (status) {
       case SessionStatus.didNotAttend:
-        return {
-          text: presenter.text,
-          tagClass: presenter.tagClass,
-          links: [
-            {
-              text: 'View feedback form',
-              href: viewHref,
-            },
-          ],
-        }
+        links = [
+          {
+            text: 'View feedback form',
+            href: viewHref,
+          },
+        ]
+        break
       case SessionStatus.completed:
-        return {
-          text: presenter.text,
-          tagClass: presenter.tagClass,
-          links: [
-            {
-              text: 'View feedback form',
-              href: viewHref,
-            },
-          ],
-        }
+        links = [
+          {
+            text: 'View feedback form',
+            href: viewHref,
+          },
+        ]
+        break
       case SessionStatus.scheduled:
-        return {
-          text: presenter.text,
-          tagClass: presenter.tagClass,
-          links: [
-            {
-              text: 'Reschedule session',
-              href: editHref,
-            },
-            {
-              text: 'Give feedback',
-              href: giveFeedbackHref,
-            },
-          ],
-        }
+        links = [
+          {
+            text: 'Reschedule session',
+            href: editHref,
+          },
+          {
+            text: 'Give feedback',
+            href: giveFeedbackHref,
+          },
+        ]
+        break
       default:
-        return {
-          text: presenter.text,
-          tagClass: presenter.tagClass,
-          links: [
-            {
-              text: 'Edit session details',
-              href: editHref,
-            },
-          ],
-        }
+        links = [
+          {
+            text: 'Edit session details',
+            href: editHref,
+          },
+        ]
+        break
     }
+
+    return { statusPresenter: presenter, links }
   }
 
   readonly createEndOfServiceReportFormAction = `/service-provider/referrals/${this.referral.id}/end-of-service-report`
