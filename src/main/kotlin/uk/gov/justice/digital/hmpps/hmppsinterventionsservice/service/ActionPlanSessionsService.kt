@@ -7,10 +7,15 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryAddress
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
@@ -28,6 +33,8 @@ class ActionPlanSessionsService(
   val appointmentEventPublisher: AppointmentEventPublisher,
   val communityAPIBookingService: CommunityAPIBookingService,
   val appointmentRepository: AppointmentRepository,
+  val appointmentDeliveryRepository: AppointmentDeliveryRepository,
+  val appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository,
 ) {
   fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan) {
     val numberOfSessions = approvedActionPlan.numberOfSessions!!
@@ -58,7 +65,11 @@ class ActionPlanSessionsService(
     appointmentTime: OffsetDateTime,
     durationInMinutes: Int,
     updatedBy: AuthUser,
+    // TODO: remove optional when front-end changes are complete
+    appointmentDeliveryType: AppointmentDeliveryType? = null,
+    appointmentDeliveryAddressLines: List<String>? = null,
   ): ActionPlanSession {
+
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
 
@@ -70,7 +81,7 @@ class ActionPlanSessionsService(
     )
 
     if (existingAppointment == null) {
-      val appointment = Appointment(
+      var appointment = Appointment(
         id = UUID.randomUUID(),
         createdBy = authUserRepository.save(updatedBy),
         createdAt = OffsetDateTime.now(),
@@ -78,15 +89,23 @@ class ActionPlanSessionsService(
         durationInMinutes = durationInMinutes,
         deliusAppointmentId = deliusAppointmentId,
       )
-      appointmentRepository.save(appointment)
+      appointmentRepository.saveAndFlush(appointment)
+
+//       TODO: remove optional when front-end changes are complete
+      if (appointmentDeliveryType != null) {
+        populateAppointmentDelivery(appointment, appointmentDeliveryType, appointmentDeliveryAddressLines)
+      }
       session.appointments.add(appointment)
     } else {
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
-      appointmentRepository.save(existingAppointment)
+      appointmentRepository.saveAndFlush(existingAppointment)
+      // TODO: remove optional when front-end changes are complete
+      if (appointmentDeliveryType != null) {
+        populateAppointmentDelivery(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddressLines)
+      }
     }
-
     return actionPlanSessionRepository.save(session)
   }
 
@@ -193,4 +212,44 @@ class ActionPlanSessionsService(
 
   private fun getActionPlanSession(actionPlanId: UUID, sessionNumber: Int) =
     actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
+
+  private fun populateAppointmentDelivery(appointment: Appointment, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressLines: List<String>?) {
+    var appointmentDelivery = appointment.appointmentDelivery
+    if (appointmentDelivery == null) {
+      appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
+    }
+    appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
+    when (appointmentDeliveryType) {
+      AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE -> appointmentDelivery.npsOfficeCode = appointmentDeliveryAddressLines!!.first()
+    }
+
+    appointment.appointmentDelivery = appointmentDelivery
+    appointmentRepository.saveAndFlush(appointment)
+
+    if (appointmentDeliveryType == AppointmentDeliveryType.IN_PERSON_MEETING_OTHER) {
+      appointmentDelivery.appointmentDeliveryAddress = populateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressLines!!)
+      appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
+    }
+  }
+
+  private fun populateAppointmentDeliveryAddress(appointmentDelivery: AppointmentDelivery, appointmentDeliveryAddressLines: List<String>): AppointmentDeliveryAddress {
+    var appointmentDeliveryAddress = appointmentDelivery.appointmentDeliveryAddress
+    if (appointmentDeliveryAddress == null) {
+      appointmentDeliveryAddress = AppointmentDeliveryAddress(
+        appointmentDeliveryId = appointmentDelivery.appointmentId,
+        firstAddressLine = appointmentDeliveryAddressLines.elementAt(0),
+        secondAddressLine = appointmentDeliveryAddressLines.elementAt(1),
+        townCity = appointmentDeliveryAddressLines.elementAt(2),
+        county = appointmentDeliveryAddressLines.elementAt(3),
+        postCode = appointmentDeliveryAddressLines.elementAt(4)
+      )
+    } else {
+      appointmentDeliveryAddress.firstAddressLine = appointmentDeliveryAddressLines.elementAt(0)
+      appointmentDeliveryAddress.secondAddressLine = appointmentDeliveryAddressLines.elementAt(1)
+      appointmentDeliveryAddress.townCity = appointmentDeliveryAddressLines.elementAt(2)
+      appointmentDeliveryAddress.county = appointmentDeliveryAddressLines.elementAt(3)
+      appointmentDeliveryAddress.postCode = appointmentDeliveryAddressLines.elementAt(4)
+    }
+    return appointmentDeliveryAddress
+  }
 }

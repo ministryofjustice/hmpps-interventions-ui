@@ -9,6 +9,9 @@ import java.util.UUID
 data class UpdateAppointmentDTO(
   val appointmentTime: OffsetDateTime,
   val durationInMinutes: Int,
+  // TODO: remove optional when front-end changes are complete
+  val appointmentDeliveryType: AppointmentDeliveryType? = null,
+  val appointmentDeliveryAddress: List<String>? = null,
 )
 
 data class UpdateAppointmentAttendanceDTO(
@@ -40,7 +43,7 @@ data class ActionPlanSessionDTO(
             val address = appointmentDelivery.appointmentDeliveryAddress
             if (address != null) {
 
-              listOfNotNull(address.firstAddressLine, address.secondAddressLine?: "", address.townCity, address.county, address.postCode)
+              listOfNotNull(address.firstAddressLine, address.secondAddressLine ?: "", address.townCity, address.county, address.postCode)
             } else null
           } else null
         }

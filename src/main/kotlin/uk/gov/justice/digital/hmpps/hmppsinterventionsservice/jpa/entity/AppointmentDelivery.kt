@@ -4,6 +4,7 @@ import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import java.util.UUID
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -21,7 +22,7 @@ data class AppointmentDelivery(
   @Enumerated(EnumType.STRING)
   @NotNull var appointmentDeliveryType: AppointmentDeliveryType,
   var npsOfficeCode: String? = null,
-  @OneToOne
+  @OneToOne(cascade = [CascadeType.ALL])
   @PrimaryKeyJoinColumn
   var appointmentDeliveryAddress: AppointmentDeliveryAddress? = null,
 )

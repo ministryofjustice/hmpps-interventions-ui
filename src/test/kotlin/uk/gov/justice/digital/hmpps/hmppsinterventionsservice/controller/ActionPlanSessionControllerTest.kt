@@ -10,20 +10,23 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Location
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.ActionPlanSessionValidator
 import java.time.OffsetDateTime
 
 internal class ActionPlanSessionControllerTest {
   private val sessionsService = mock<ActionPlanSessionsService>()
   private val locationMapper = mock<LocationMapper>()
+  private val actionPlanSessionValidator = mock<ActionPlanSessionValidator>()
   private val userMapper = UserMapper()
 
-  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper)
+  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper, actionPlanSessionValidator)
   private val actionPlanFactory = ActionPlanFactory()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val jwtTokenFactory = JwtTokenFactory()
@@ -37,7 +40,7 @@ internal class ActionPlanSessionControllerTest {
     val actionPlanId = actionPlanSession.actionPlan.id
     val sessionNumber = actionPlanSession.sessionNumber
 
-    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10)
+    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, null)
 
     whenever(
       sessionsService.updateSessionAppointment(
@@ -46,6 +49,8 @@ internal class ActionPlanSessionControllerTest {
         updateAppointmentDTO.appointmentTime,
         updateAppointmentDTO.durationInMinutes,
         user,
+        AppointmentDeliveryType.PHONE_CALL,
+        null
       )
     ).thenReturn(actionPlanSession)
 

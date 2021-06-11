@@ -17,9 +17,12 @@ import org.mockito.ArgumentMatchers
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
@@ -38,7 +41,8 @@ internal class ActionPlanSessionsServiceTest {
   private val appointmentEventPublisher: AppointmentEventPublisher = mock()
   private val communityAPIBookingService: CommunityAPIBookingService = mock()
   private val appointmentRepository: AppointmentRepository = mock()
-
+  private val appointmentDeliveryRepository: AppointmentDeliveryRepository = mock()
+  private val appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository = mock()
   private val actionPlanFactory = ActionPlanFactory()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val authUserFactory = AuthUserFactory()
@@ -47,6 +51,7 @@ internal class ActionPlanSessionsServiceTest {
     actionPlanSessionRepository, actionPlanRepository,
     authUserRepository, appointmentEventPublisher,
     communityAPIBookingService, appointmentRepository,
+    appointmentDeliveryRepository, appointmentDeliveryAddressRepository
   )
 
   @Test
@@ -91,6 +96,8 @@ internal class ActionPlanSessionsServiceTest {
       appointmentTime,
       durationInMinutes,
       user,
+      AppointmentDeliveryType.PHONE_CALL,
+      null
     )
 
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
@@ -118,6 +125,8 @@ internal class ActionPlanSessionsServiceTest {
       newTime,
       newDuration,
       user,
+      AppointmentDeliveryType.PHONE_CALL,
+      null
     )
 
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(newTime)
@@ -154,11 +163,13 @@ internal class ActionPlanSessionsServiceTest {
       appointmentTime,
       durationInMinutes,
       createdByUser,
+      AppointmentDeliveryType.PHONE_CALL,
+      null
     )
 
     assertThat(updatedSession).isEqualTo(session)
     verify(communityAPIBookingService).book(referral, session.currentAppointment, appointmentTime, durationInMinutes)
-    verify(appointmentRepository).save(
+    verify(appointmentRepository, times(2)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == 999L
       }
@@ -186,9 +197,11 @@ internal class ActionPlanSessionsServiceTest {
       appointmentTime,
       durationInMinutes,
       createdByUser,
+      AppointmentDeliveryType.PHONE_CALL,
+      null
     )
 
-    verify(appointmentRepository).save(
+    verify(appointmentRepository, times(2)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == null
       }
@@ -211,6 +224,8 @@ internal class ActionPlanSessionsServiceTest {
         appointmentTime,
         durationInMinutes,
         authUserFactory.create(),
+        AppointmentDeliveryType.PHONE_CALL,
+        null
       )
     }
     assertThat(exception.message).isEqualTo("Action plan session not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
