@@ -13,7 +13,7 @@ export default class ScheduleAppointmentPresenter {
   ) {}
 
   readonly text = {
-    title: 'Add appointment details',
+    title: this.currentAppointment ? 'Change appointment details' : 'Add appointment details',
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)

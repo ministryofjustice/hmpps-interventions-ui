@@ -3,10 +3,22 @@ import appointmentFactory from '../../../testutils/factories/appointment'
 
 describe(ScheduleAppointmentPresenter, () => {
   describe('text', () => {
-    it('returns text to be displayed', () => {
-      const presenter = new ScheduleAppointmentPresenter(appointmentFactory.build())
+    describe('title', () => {
+      describe('when the session has not yet been scheduled', () => {
+        it('returns an appropriate title', () => {
+          const presenter = new ScheduleAppointmentPresenter(null)
 
-      expect(presenter.text).toEqual({ title: 'Add appointment details' })
+          expect(presenter.text).toEqual({ title: 'Add appointment details' })
+        })
+      })
+
+      describe('when the session has already been scheduled', () => {
+        it('returns an appropriate title', () => {
+          const presenter = new ScheduleAppointmentPresenter(appointmentFactory.build())
+
+          expect(presenter.text).toEqual({ title: 'Change appointment details' })
+        })
+      })
     })
   })
 
