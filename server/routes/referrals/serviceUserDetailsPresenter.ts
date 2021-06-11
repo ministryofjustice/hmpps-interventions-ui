@@ -12,14 +12,25 @@ export default class ServiceUserDetailsPresenter {
 
   readonly title = `${this.serviceUser.firstName || 'Service user'}'s information`
 
-  get summary(): SummaryListItem[] {
-    // required to force type erasure of type null[] from list of (string[] | null[])
-    function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-      return value !== null && value !== undefined
-    }
-    const phoneNumbers: string[] | undefined = this.deliusServiceUserDetails.contactDetails.phoneNumbers
+  // required to force type erasure of type null[] from list of (string[] | null[])
+  private notEmpty(value: string | null | undefined): value is string {
+    return value !== null && value !== undefined
+  }
+
+  private findUniqueNumbers(): string[] {
+    let phoneNumbers: string[] | undefined = this.deliusServiceUserDetails.contactDetails.phoneNumbers
       ?.map(phoneNumber => phoneNumber.number)
-      ?.filter(notEmpty)
+      ?.filter(this.notEmpty)
+    // only unique
+    phoneNumbers = phoneNumbers?.filter((item, pos) => {
+      return phoneNumbers?.indexOf(item) === pos
+    })
+    return phoneNumbers ?? []
+  }
+
+  get summary(): SummaryListItem[] {
+    const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
+    const phoneNumbers = this.findUniqueNumbers()
     const summary = [
       { key: 'CRN', lines: [this.serviceUser.crn] },
       { key: 'Title', lines: [this.serviceUser.title ?? ''] },
@@ -32,14 +43,14 @@ export default class ServiceUserDetailsPresenter {
       { key: 'Religion or belief', lines: [this.serviceUser.religionOrBelief ?? ''] },
       { key: 'Disabilities', lines: this.serviceUser.disabilities ?? [], listStyle: ListStyle.noMarkers },
       {
-        key: 'Email address',
-        lines: this.deliusServiceUserDetails.contactDetails.emailAddresses ?? [],
-        listStyle: ListStyle.bulleted,
+        key: emails.length > 1 ? 'Email addresses' : 'Email address',
+        lines: emails,
+        listStyle: ListStyle.noMarkers,
       },
       {
-        key: 'Phone number',
-        lines: phoneNumbers ?? [],
-        listStyle: ListStyle.bulleted,
+        key: phoneNumbers.length > 1 ? 'Phone numbers' : 'Phone number',
+        lines: phoneNumbers,
+        listStyle: ListStyle.noMarkers,
       },
     ]
     return summary

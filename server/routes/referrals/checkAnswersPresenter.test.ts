@@ -23,7 +23,17 @@ describe(CheckAnswersPresenter, () => {
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
   })
-  const deliusServiceUser = deliusServiceUserFactory.build()
+  const deliusServiceUser = deliusServiceUserFactory.build({
+    contactDetails: {
+      emailAddresses: ['alex.river@example.com'],
+      phoneNumbers: [
+        {
+          number: '0123456789',
+          type: 'MOBILE',
+        },
+      ],
+    },
+  })
   const serviceCategories = serviceCategoryFactory.buildList(3)
   const conviction = deliusConvictionFactory.build()
 
@@ -58,12 +68,12 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Email address',
             lines: ['alex.river@example.com'],
-            listStyle: ListStyle.bulleted,
+            listStyle: ListStyle.noMarkers,
           },
           {
             key: 'Phone number',
             lines: ['0123456789'],
-            listStyle: ListStyle.bulleted,
+            listStyle: ListStyle.noMarkers,
           },
         ])
       })

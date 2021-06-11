@@ -100,10 +100,14 @@ describe('Service provider referrals dashboard', () => {
       surname: 'Jones',
       dateOfBirth: '1980-01-01',
       contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
+        emailAddresses: ['jenny.jones@example.com', 'JJ@example.com'],
         phoneNumbers: [
           {
             number: '07123456789',
+            type: 'MOBILE',
+          },
+          {
+            number: '0798765432',
             type: 'MOBILE',
           },
         ],
@@ -181,8 +185,12 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Agnostic')
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
-    cy.contains('Email address').next().contains('jenny.jones@example.com')
-    cy.contains('Phone number').next().contains('07123456789')
+    cy.contains("Service user's personal details")
+      .next()
+      .contains('Email address')
+      .next()
+      .contains('jenny.jones@example.com')
+    cy.contains("Service user's personal details").next().contains('Phone number').next().contains('07123456789')
     cy.contains("Service user's risk information")
     cy.contains('They are low risk.')
     cy.contains("Service user's needs")
