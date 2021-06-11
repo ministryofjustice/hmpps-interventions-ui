@@ -23,4 +23,17 @@ class SupplierAssessmentFactory(em: TestEntityManager? = null) : EntityFactory(e
       )
     )
   }
+
+  fun createWithNoAppointment(
+    id: UUID = UUID.randomUUID(),
+    referral: Referral = referralFactory.createDraft(),
+  ): SupplierAssessment {
+    return save(
+      SupplierAssessment(
+        id = id,
+        referral = referral,
+        appointments = mutableSetOf(),
+      )
+    )
+  }
 }

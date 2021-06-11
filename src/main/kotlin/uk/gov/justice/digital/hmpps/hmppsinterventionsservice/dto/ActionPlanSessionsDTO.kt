@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
@@ -8,10 +9,10 @@ import java.util.UUID
 
 data class UpdateAppointmentDTO(
   val appointmentTime: OffsetDateTime,
-  val durationInMinutes: Int,
   // TODO: remove optional when front-end changes are complete
   val appointmentDeliveryType: AppointmentDeliveryType? = null,
   val appointmentDeliveryAddress: List<String>? = null,
+  @JsonProperty(required = true) val durationInMinutes: Int,
 )
 
 data class UpdateAppointmentAttendanceDTO(
