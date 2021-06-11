@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
@@ -95,9 +96,8 @@ class ActionPlanService(
   }
 
   fun getActionPlan(id: UUID): ActionPlan {
-    return actionPlanRepository.findById(id).orElseThrow {
-      throw EntityNotFoundException("action plan not found [id=$id]")
-    }
+    return actionPlanRepository.findByIdOrNull(id)
+      ?: throw EntityNotFoundException("action plan not found [id=$id]")
   }
 
   fun getActionPlanByReferral(referralId: UUID): ActionPlan {
