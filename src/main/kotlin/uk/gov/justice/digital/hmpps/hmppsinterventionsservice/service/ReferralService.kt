@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessFilter
@@ -52,6 +53,7 @@ class ReferralService(
   val communityAPIReferralService: CommunityAPIReferralService,
   val serviceUserAccessChecker: ServiceUserAccessChecker,
   val assessRisksAndNeedsService: RisksAndNeedsService,
+  val communityAPIOffenderService: CommunityAPIOffenderService,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -113,12 +115,20 @@ class ReferralService(
   }
 
   private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
-    val referrals = getSentReferralsSentBy(user)
-    return referralAccessFilter.probationPractitionerReferrals(referrals, user)
-  }
+    val referralsStartedByPP = referralRepository.findByCreatedByAndSentAtIsNotNull(user)
+    val referralsManagedByPP = try {
+      communityAPIOffenderService.getManagedOffendersForDeliusUser(user)
+    } catch (e: WebClientResponseException) {
+      // don't stop users seeing their own referrals just because delius is not playing nice
+      logger.error(
+        "failed to get managed offenders for user {}",
+        e,
+        kv("username", user.userName),
+      )
+      emptyList()
+    }.flatMap { referralRepository.findByServiceUserCRNAndSentAtIsNotNull(it.crnNumber) }
 
-  private fun getSentReferralsSentBy(user: AuthUser): List<Referral> {
-    return referralRepository.findBySentBy(user)
+    return referralAccessFilter.probationPractitionerReferrals(referralsStartedByPP + referralsManagedByPP, user)
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {
