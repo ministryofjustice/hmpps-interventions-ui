@@ -226,17 +226,19 @@ class CommunityAPIAppointmentEventService(
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(interventionsUISessionFeedbackLocation)
-          .buildAndExpand(event.appointment.actionPlan.referral.id, event.appointment.sessionNumber)
+          .buildAndExpand(event.actionPlanSession.actionPlan.referral.id, event.actionPlanSession.sessionNumber)
           .toString()
 
+        val appointment = event.actionPlanSession.currentAppointment!!
+
         val request = AppointmentOutcomeRequest(
-          getNotes(event.appointment.actionPlan.referral, url, "Session Feedback Recorded"),
-          event.appointment.attended!!.name,
-          event.appointment.notifyPPOfAttendanceBehaviour ?: false
+          getNotes(event.actionPlanSession.actionPlan.referral, url, "Session Feedback Recorded"),
+          appointment.attended!!.name,
+          appointment.notifyPPOfAttendanceBehaviour ?: false
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
-          .buildAndExpand(event.appointment.actionPlan.referral.serviceUserCRN, event.appointment.deliusAppointmentId, integrationContext)
+          .buildAndExpand(event.actionPlanSession.actionPlan.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)

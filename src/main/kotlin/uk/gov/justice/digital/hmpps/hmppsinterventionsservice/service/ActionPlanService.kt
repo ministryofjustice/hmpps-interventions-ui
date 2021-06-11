@@ -23,7 +23,7 @@ class ActionPlanService(
   val actionPlanRepository: ActionPlanRepository,
   val actionPlanValidator: ActionPlanValidator,
   val actionPlanEventPublisher: ActionPlanEventPublisher,
-  val appointmentsService: AppointmentsService,
+  val actionPlanSessionsService: ActionPlanSessionsService,
 ) {
 
   fun createDraftActionPlan(
@@ -77,7 +77,7 @@ class ActionPlanService(
     val submittedActionPlan = updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
     actionPlanValidator.validateSubmittedActionPlan(submittedActionPlan)
 
-    appointmentsService.createUnscheduledAppointmentsForActionPlan(submittedActionPlan, submittedByUser)
+    actionPlanSessionsService.createUnscheduledSessionsForActionPlan(submittedActionPlan)
 
     val savedSubmittedActionPlan = actionPlanRepository.save(submittedActionPlan)
     actionPlanEventPublisher.actionPlanSubmitEvent(savedSubmittedActionPlan)

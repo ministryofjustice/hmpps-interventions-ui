@@ -4,7 +4,7 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.R
 import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -19,8 +19,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
@@ -32,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPS
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
@@ -53,7 +54,7 @@ class SetupAssistant(
   private val referralRepository: ReferralRepository,
   private val interventionRepository: InterventionRepository,
   private val actionPlanRepository: ActionPlanRepository,
-  private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  private val actionPlanSessionRepository: ActionPlanSessionRepository,
   private val serviceCategoryRepository: ServiceCategoryRepository,
   private val serviceProviderRepository: ServiceProviderRepository,
   private val npsRegionRepository: NPSRegionRepository,
@@ -62,13 +63,14 @@ class SetupAssistant(
   private val endOfServiceReportRepository: EndOfServiceReportRepository,
   private val cancellationReasonRepository: CancellationReasonRepository,
   private val contractTypeRepository: ContractTypeRepository,
+  private val appointmentRepository: AppointmentRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
   private val referralFactory = ReferralFactory()
   private val serviceProviderFactory = ServiceProviderFactory()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
-  private val contractTypeFactory = ContractTypeFactory()
+  private val appointmentFactory = AppointmentFactory()
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -77,9 +79,11 @@ class SetupAssistant(
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
-    actionPlanAppointmentRepository.deleteAll()
+    actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
+
     endOfServiceReportRepository.deleteAll()
+    appointmentRepository.deleteAll()
 
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
@@ -243,7 +247,7 @@ class SetupAssistant(
     )
   }
 
-  fun createActionPlanAppointment(
+  fun createActionPlanSession(
     actionPlan: ActionPlan,
     sessionNumber: Int,
     duration: Int,
@@ -252,26 +256,30 @@ class SetupAssistant(
     attendanceInfo: String? = null,
     behaviour: String? = null,
     notifyPPOfBehaviour: Boolean? = null
-  ): ActionPlanAppointment {
+  ): ActionPlanSession {
     val now = OffsetDateTime.now()
     val user = createSPUser()
-    return actionPlanAppointmentRepository.save(
-      ActionPlanAppointment(
-        id = UUID.randomUUID(),
-        sessionNumber = sessionNumber,
-        attended = attended,
-        additionalAttendanceInformation = attendanceInfo,
-        attendanceSubmittedAt = if (attended != null) now else null,
-        attendanceBehaviour = behaviour,
-        attendanceBehaviourSubmittedAt = if (behaviour != null) now else null,
-        notifyPPOfAttendanceBehaviour = notifyPPOfBehaviour,
-        appointmentTime = appointmentTime,
-        durationInMinutes = duration,
-        createdBy = user,
-        createdAt = now,
-        actionPlan = actionPlan,
-      )
+    val appointment = appointmentFactory.create(
+      appointmentTime = appointmentTime,
+      durationInMinutes = duration,
+      createdBy = user,
+      createdAt = now,
+      attended = attended,
+      additionalAttendanceInformation = attendanceInfo,
+      attendanceSubmittedAt = if (attended != null) now else null,
+      attendanceBehaviour = behaviour,
+      attendanceBehaviourSubmittedAt = if (behaviour != null) now else null,
+      notifyPPOfAttendanceBehaviour = notifyPPOfBehaviour,
     )
+    appointmentRepository.save(appointment)
+
+    val session = ActionPlanSession(
+      id = UUID.randomUUID(),
+      sessionNumber = sessionNumber,
+      appointments = mutableSetOf(appointment),
+      actionPlan = actionPlan,
+    )
+    return actionPlanSessionRepository.save(session)
   }
 
   fun fillReferralFields(

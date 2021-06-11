@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.same
 import com.nhaarman.mockitokotlin2.verify
@@ -35,7 +34,7 @@ internal class ActionPlanServiceTest {
   private val actionPlanRepository: ActionPlanRepository = mock()
   private val actionPlanValidator: ActionPlanValidator = mock()
   private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
-  private val appointmentsService: AppointmentsService = mock()
+  private val actionPlanSessionsService: ActionPlanSessionsService = mock()
   private val desiredOutcomeRepository: DesiredOutcomeRepository = mock()
 
   private val actionPlanService = ActionPlanService(
@@ -44,7 +43,7 @@ internal class ActionPlanServiceTest {
     actionPlanRepository,
     actionPlanValidator,
     actionPlanEventPublisher,
-    appointmentsService,
+    actionPlanSessionsService,
   )
 
   @Test
@@ -225,11 +224,11 @@ internal class ActionPlanServiceTest {
 
     assertThat(submittedActionPlan).isNotNull
     verify(actionPlanValidator).validateSubmittedActionPlan(any())
-    verify(appointmentsService).createUnscheduledAppointmentsForActionPlan(any(), any())
+    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(any())
   }
 
   @Test
-  fun `creates unscheduled appointments`() {
+  fun `creates unscheduled sessions`() {
     val actionPlanId = UUID.randomUUID()
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId, numberOfSessions = 2)
     val authUser = AuthUser("CRN123", "auth", "user")
@@ -242,7 +241,7 @@ internal class ActionPlanServiceTest {
 
     assertThat(submittedActionPlan).isEqualTo(savedActionPlan)
     verify(actionPlanValidator).validateSubmittedActionPlan(any())
-    verify(appointmentsService).createUnscheduledAppointmentsForActionPlan(same(actionPlan), eq(authUser))
+    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(same(actionPlan))
   }
 
   @Test

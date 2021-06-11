@@ -21,7 +21,7 @@ class SNSPublisher(
 ) {
   companion object : KLogging()
 
-  fun publish(referralId: UUID, actor: AuthUser?, event: EventDTO) {
+  fun publish(referralId: UUID, actor: AuthUser, event: EventDTO) {
     if (enabled) {
       buildRequestAndPublish(event)
       telemetryClient.trackEvent(
@@ -29,7 +29,7 @@ class SNSPublisher(
         mapOf(
           "event" to event.eventType,
           "referralId" to referralId.toString(),
-          "actorUserId" to actor?.id,
+          "actorUserId" to actor.id,
         ),
         null
       )

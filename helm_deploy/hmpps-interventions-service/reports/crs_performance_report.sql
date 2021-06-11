@@ -1,15 +1,19 @@
 COPY (
   WITH attended_sessions AS (
-      select count(action_plan_id) AS attended, action_plan_id
-      from action_plan_appointment
+      select count(app.id) AS attended, min(app.appointment_time) as first_appointment, aps.action_plan_id
+      from appointment app
+        join action_plan_session_appointments apsa on app.id = apsa.appointments_id
+        join action_plan_session aps on apsa.action_plan_session_id = aps.id
       where attended in ('YES', 'LATE')
-      group by action_plan_id
+      group by aps.action_plan_id
   ),
   attempted_sessions AS (
-      select count(action_plan_id) AS attempted, action_plan_id
-      from action_plan_appointment
+      select count(app.id) AS attempted, aps.action_plan_id
+      from appointment app
+        join action_plan_session_appointments apsa on app.id = apsa.appointments_id
+        join action_plan_session aps on apsa.action_plan_session_id = aps.id
       where attended IS NOT NULL
-      group by action_plan_id
+      group by aps.action_plan_id
   )
   SELECT
     r.reference_number      AS referral_ref,
@@ -25,11 +29,7 @@ COPY (
     TIMESTAMP WITH TIME ZONE '3000-01-01+00' AS date_saa_attended,                  -- default value, coming later
     ap.submitted_at         AS date_first_action_plan_submitted,
     TIMESTAMP WITH TIME ZONE '3000-01-01+00' AS date_of_first_action_plan_approval, -- default value, coming later
-    (
-      select min(app.appointment_time)
-      from action_plan_appointment app
-      where app.action_plan_id = ap.id and attended in ('YES', 'LATE')
-    )                       AS date_of_first_session,
+    shows.first_appointment AS date_of_first_session,
     (
       select count(o.desired_outcome_id)
       from referral_desired_outcome o
@@ -41,6 +41,8 @@ COPY (
     r.concluded_at          AS date_intervention_ended,
     (
       CASE
+        -- ❗️ need to confirm if we need to only select the 'latest' of the session appointment
+        -- example: session no.2. has (yesterday: missed, today: pending) appointment -- do we say 1 or 0?
         WHEN r.concluded_at IS NOT NULL AND eosr.id IS NULL THEN 'cancelled'
         WHEN r.concluded_at IS NOT NULL AND eosr.id IS NOT NULL AND ap.number_of_sessions > atts.attempted THEN 'ended'
         WHEN r.concluded_at IS NOT NULL AND eosr.id IS NOT NULL AND ap.number_of_sessions = atts.attempted THEN 'completed'

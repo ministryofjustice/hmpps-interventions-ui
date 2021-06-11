@@ -13,37 +13,29 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.ManyToOne
-import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name = "action_plan_appointment")
 @TypeDef(name = "attended", typeClass = PostgreSQLEnumType::class)
-data class ActionPlanAppointment(
-
-  // Attributes
-  @NotNull val sessionNumber: Int,
-  @Type(type = "attended")
-  @Enumerated(EnumType.STRING)
-  var attended: Attended? = null,
+data class Appointment(
+  @Type(type = "attended") @Enumerated(EnumType.STRING) var attended: Attended? = null,
   var additionalAttendanceInformation: String? = null,
   var attendanceSubmittedAt: OffsetDateTime? = null,
+
   var attendanceBehaviour: String? = null,
   var attendanceBehaviourSubmittedAt: OffsetDateTime? = null,
   var notifyPPOfAttendanceBehaviour: Boolean? = null,
-  var sessionFeedbackSubmittedAt: OffsetDateTime? = null,
 
-  // Activities
-  var appointmentTime: OffsetDateTime? = null,
-  var durationInMinutes: Int? = null,
+  var appointmentFeedbackSubmittedAt: OffsetDateTime? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var appointmentFeedbackSubmittedBy: AuthUser? = null,
+
   var deliusAppointmentId: Long? = null,
 
-  // Status
   @NotNull @ManyToOne @Fetch(FetchMode.JOIN) val createdBy: AuthUser,
   @NotNull val createdAt: OffsetDateTime,
+  var appointmentTime: OffsetDateTime,
+  var durationInMinutes: Int,
 
-  // Required
-  @NotNull @ManyToOne val actionPlan: ActionPlan,
   @Id val id: UUID,
 )
 
@@ -54,6 +46,6 @@ enum class Attended {
 
   @JsonValue
   open fun toLower(): String? {
-    return this.toString().toLowerCase()
+    return this.toString().lowercase()
   }
 }

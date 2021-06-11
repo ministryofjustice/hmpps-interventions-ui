@@ -5,17 +5,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanAppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
 
 @RepositoryTest
-class ActionPlanAppointmentRepositoryTest @Autowired constructor(
+class ActionPlanSessionRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val actionPlanRepository: ActionPlanRepository,
-  val actionPlanAppointmentRepository: ActionPlanAppointmentRepository,
+  val actionPlanSessionRepository: ActionPlanSessionRepository,
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
@@ -24,11 +24,11 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
   private val authUserFactory = AuthUserFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
   private val actionPlanFactory = ActionPlanFactory(entityManager)
-  private val actionPlanAppointmentFactory = ActionPlanAppointmentFactory(entityManager)
+  private val actionPlanSessionFactory = ActionPlanSessionFactory(entityManager)
 
   @BeforeEach
   fun setup() {
-    actionPlanAppointmentRepository.deleteAll()
+    actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
     referralRepository.deleteAll()
@@ -37,30 +37,17 @@ class ActionPlanAppointmentRepositoryTest @Autowired constructor(
   }
 
   @Test
-  fun `can retrieve an action plan appointment`() {
+  fun `can retrieve an action plan session`() {
     val user = authUserFactory.create(id = "referral_repository_test_user_id")
     val referral = referralFactory.createDraft(createdBy = user)
     val actionPlan = actionPlanFactory.create(referral = referral)
-    val actionPlanAppointment = actionPlanAppointmentFactory.create(actionPlan = actionPlan)
+    val actionPlanSession = actionPlanSessionFactory.createScheduled(actionPlan = actionPlan)
 
     entityManager.flush()
     entityManager.clear()
 
-    val savedAppointment = actionPlanAppointmentRepository.findById(actionPlanAppointment.id).get()
+    val savedSession = actionPlanSessionRepository.findById(actionPlanSession.id).get()
 
-    assertThat(savedAppointment.id).isEqualTo(actionPlanAppointment.id)
-  }
-
-  @Test
-  fun `count number of attended appointments`() {
-    val actionPlan1 = actionPlanFactory.create()
-    (1..4).forEach {
-      actionPlanAppointmentFactory.createAttended(actionPlan = actionPlan1, sessionNumber = it)
-    }
-    val actionPlan2 = actionPlanFactory.create()
-    actionPlanAppointmentFactory.createAttended(actionPlan = actionPlan2)
-
-    assertThat(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan1.id)).isEqualTo(4)
-    assertThat(actionPlanAppointmentRepository.countByActionPlanIdAndAttendedIsNotNull(actionPlan2.id)).isEqualTo(1)
+    assertThat(savedSession.id).isEqualTo(actionPlanSession.id)
   }
 }

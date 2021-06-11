@@ -12,8 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -22,6 +22,7 @@ internal class SNSAppointmentServiceTest {
   private val publisher = mock<SNSPublisher>()
   private val snsAppointmentService = SNSAppointmentService(publisher)
 
+  private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val actionPlan = ActionPlanFactory().create(
     referral = ReferralFactory().createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"))
   )
@@ -29,11 +30,12 @@ internal class SNSAppointmentServiceTest {
   private fun attendanceRecordedEvent(attendance: Attended) = AppointmentEvent(
     "source",
     AppointmentEventType.ATTENDANCE_RECORDED,
-    SampleData.sampleActionPlanAppointment(
+    actionPlanSessionFactory.createAttended(
       actionPlan = actionPlan,
       createdBy = actionPlan.createdBy,
       attended = attendance,
       attendanceSubmittedAt = now,
+      appointmentFeedbackSubmittedBy = actionPlan.createdBy,
     ),
     "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1",
     false,
@@ -55,7 +57,7 @@ internal class SNSAppointmentServiceTest {
       ),
     )
 
-    verify(publisher).publish(referralId, null, eventDTO)
+    verify(publisher).publish(referralId, actionPlan.createdBy, eventDTO)
   }
 
   @Test
@@ -64,7 +66,7 @@ internal class SNSAppointmentServiceTest {
     snsAppointmentService.onApplicationEvent(attendanceRecordedEvent(Attended.LATE))
 
     val eventCaptor = argumentCaptor<EventDTO>()
-    verify(publisher, times(2)).publish(eq(actionPlan.referral.id), eq(null), eventCaptor.capture())
+    verify(publisher, times(2)).publish(eq(actionPlan.referral.id), eq(actionPlan.createdBy), eventCaptor.capture())
     eventCaptor.allValues.forEach {
       assertThat(it.eventType).isEqualTo("intervention.session-appointment.attended")
     }

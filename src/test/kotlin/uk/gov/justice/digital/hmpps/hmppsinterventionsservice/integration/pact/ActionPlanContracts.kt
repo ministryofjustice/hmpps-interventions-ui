@@ -11,7 +11,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   @State("an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance")
   fun `create an empty action plan with 1 appointment that has had attendance recorded`() {
     val actionPlan = setupAssistant.createActionPlan(id = UUID.fromString("81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d"), numberOfSessions = 1)
-    setupAssistant.createActionPlanAppointment(
+    setupAssistant.createActionPlanSession(
       actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"),
       Attended.LATE, "Alex missed the bus",
     )
@@ -23,9 +23,9 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   )
   fun `create a submitted action plan with 3 appointments`() {
     val actionPlan = setupAssistant.createActionPlan(id = UUID.fromString("e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d"), numberOfSessions = 3)
-    setupAssistant.createActionPlanAppointment(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"))
-    setupAssistant.createActionPlanAppointment(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"))
-    setupAssistant.createActionPlanAppointment(actionPlan, 3, 120, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"))
+    setupAssistant.createActionPlanSession(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"))
+    setupAssistant.createActionPlanSession(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"))
+    setupAssistant.createActionPlanSession(actionPlan, 3, 120, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"))
   }
 
   @State(
@@ -34,8 +34,8 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   )
   fun `create an empty draft plan with 2 2 hours appointments`() {
     val actionPlan = setupAssistant.createActionPlan(id = UUID.fromString("345059d4-1697-467b-8914-fedec9957279"), numberOfSessions = 2)
-    setupAssistant.createActionPlanAppointment(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"))
-    setupAssistant.createActionPlanAppointment(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"))
+    setupAssistant.createActionPlanSession(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"))
+    setupAssistant.createActionPlanSession(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"))
   }
 
   @State("an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted")
@@ -95,7 +95,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       numberOfSessions = 1,
     )
 
-    setupAssistant.createActionPlanAppointment(
+    setupAssistant.createActionPlanSession(
       actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"),
       Attended.LATE, "Alex missed the bus",
       behaviour = "Alex was well behaved",

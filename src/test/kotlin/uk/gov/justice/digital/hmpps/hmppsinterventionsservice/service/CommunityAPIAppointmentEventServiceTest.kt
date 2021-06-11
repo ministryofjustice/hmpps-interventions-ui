@@ -10,12 +10,15 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class CommunityAPIAppointmentEventServiceTest {
 
   private val communityAPIClient = mock<CommunityAPIClient>()
+
+  private val actionPlanSessionFactory = ActionPlanSessionFactory()
 
   @Test
   fun `got service successfully`() {
@@ -27,13 +30,13 @@ class CommunityAPIAppointmentEventServiceTest {
       "commissioned-rehabilitation-services",
       communityAPIClient
     )
-    appointmentEvent.appointment.actionPlan.referral.referenceNumber = "X123456"
+    appointmentEvent.actionPlanSession.actionPlan.referral.referenceNumber = "X123456"
 
     communityAPIService.onApplicationEvent(appointmentEvent)
 
     val urlCaptor = argumentCaptor<String>()
     val payloadCaptor = argumentCaptor<Any>()
-    val referralId = appointmentEvent.appointment.actionPlan.referral.id
+    val referralId = appointmentEvent.actionPlanSession.actionPlan.referral.id
     verify(communityAPIClient).makeAsyncPostRequest(urlCaptor.capture(), payloadCaptor.capture())
     assertThat(urlCaptor.firstValue).isEqualTo("/secure/offenders/crn/CRN123/appointments/123456/outcome/context/commissioned-rehabilitation-services")
     assertThat(payloadCaptor.firstValue.toString()).isEqualTo(
@@ -49,7 +52,7 @@ class CommunityAPIAppointmentEventServiceTest {
   private val appointmentEvent = AppointmentEvent(
     "source",
     SESSION_FEEDBACK_RECORDED,
-    SampleData.sampleActionPlanAppointment(
+    actionPlanSessionFactory.createAttended(
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       actionPlan = SampleData.sampleActionPlan(),
       sessionNumber = 1,

@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanAppointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.transaction.Transactional
@@ -25,37 +26,30 @@ class CommunityAPIBookingService(
 ) : CommunityAPIService {
   companion object : KLogging()
 
-  fun book(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Long? {
+  fun book(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int): Long? {
     if (!bookingsEnabled) {
       return null
     }
 
-    return processingBooking(existingAppointment, appointmentTime, durationInMinutes)
+    return processingBooking(referral, existingAppointment, appointmentTime, durationInMinutes)
   }
 
-  private fun processingBooking(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Long? {
-
-    val referral = existingAppointment.actionPlan.referral
-
-    when {
-      isInitialBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
-        val appointmentRequestDTO = buildAppointmentCreateRequestDTO(existingAppointment, appointmentTime!!, durationInMinutes!!)
-        return makeBooking(referral.serviceUserCRN, referral.relevantSentenceId!!, appointmentRequestDTO, communityApiBookAppointmentLocation)
+  private fun processingBooking(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int): Long? {
+    return existingAppointment?.let {
+      if (!isRescheduleBooking(existingAppointment, appointmentTime, durationInMinutes)) {
+        // nothing to do !
+        return existingAppointment.deliusAppointmentId
       }
 
-      isRescheduleBooking(existingAppointment, appointmentTime, durationInMinutes) -> {
-        val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime!!, durationInMinutes!!)
-        return makeBooking(referral.serviceUserCRN, existingAppointment.deliusAppointmentId!!, appointmentRequestDTO, communityApiRescheduleAppointmentLocation)
-      }
-
-      else -> {}
+      val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime, durationInMinutes)
+      makeBooking(referral.serviceUserCRN, it.deliusAppointmentId!!, appointmentRequestDTO, communityApiRescheduleAppointmentLocation)
+    } ?: run {
+      val appointmentRequestDTO = buildAppointmentCreateRequestDTO(referral, appointmentTime, durationInMinutes)
+      makeBooking(referral.serviceUserCRN, referral.relevantSentenceId!!, appointmentRequestDTO, communityApiBookAppointmentLocation)
     }
-
-    return null
   }
 
   private fun makeBooking(serviceCrn: String, contextId: Long, appointmentRequestDTO: AppointmentRequestDTO, communityApiUrl: String): Long {
-
     val communityApiBookAppointmentPath = UriComponentsBuilder.fromPath(communityApiUrl)
       .buildAndExpand(serviceCrn, contextId, integrationContext)
       .toString()
@@ -66,23 +60,22 @@ class CommunityAPIBookingService(
     return response.appointmentId
   }
 
-  private fun buildAppointmentCreateRequestDTO(appointment: ActionPlanAppointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): AppointmentCreateRequestDTO {
-    val resourceUrl = buildReferralResourceUrl(appointment)
+  private fun buildAppointmentCreateRequestDTO(referral: Referral, appointmentTime: OffsetDateTime, durationInMinutes: Int): AppointmentCreateRequestDTO {
+    val resourceUrl = buildReferralResourceUrl(referral)
 
     return AppointmentCreateRequestDTO(
-      contractType = appointment.actionPlan.referral.intervention.dynamicFrameworkContract.contractType.code,
-      referralStart = appointment.actionPlan.referral.sentAt!!,
-      referralId = appointment.actionPlan.referral.id,
+      contractType = referral.intervention.dynamicFrameworkContract.contractType.code,
+      referralStart = referral.sentAt!!,
+      referralId = referral.id,
       appointmentStart = appointmentTime,
       appointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
       officeLocationCode = officeLocation,
-      notes = getNotes(appointment.actionPlan.referral, resourceUrl, "Appointment"),
+      notes = getNotes(referral, resourceUrl, "Appointment"),
       countsTowardsRarDays = true, // Fixme: For assessment booking this should be false and will pass in when assessment booking is done
     )
   }
 
   private fun buildAppointmentRescheduleRequestDTO(appointmentTime: OffsetDateTime, durationInMinutes: Int): AppointmentRescheduleRequestDTO {
-
     return AppointmentRescheduleRequestDTO(
       updatedAppointmentStart = appointmentTime,
       updatedAppointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
@@ -90,27 +83,18 @@ class CommunityAPIBookingService(
     )
   }
 
-  private fun buildReferralResourceUrl(existingAppointment: ActionPlanAppointment): String {
+  private fun buildReferralResourceUrl(referral: Referral): String {
     return UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
       .path(interventionsUIViewAppointment)
-      .buildAndExpand(existingAppointment.actionPlan.referral.id)
+      .buildAndExpand(referral.id)
       .toString()
   }
 
-  fun isInitialBooking(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Boolean =
-    isTimingSpecified(appointmentTime, durationInMinutes) &&
-      !isTimingSpecified(existingAppointment.appointmentTime, existingAppointment.durationInMinutes)
+  fun isRescheduleBooking(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
+    isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes)
 
-  fun isRescheduleBooking(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Boolean =
-    isTimingSpecified(appointmentTime, durationInMinutes) &&
-      isTimingSpecified(existingAppointment.appointmentTime, existingAppointment.durationInMinutes) &&
-      isDifferentTimings(existingAppointment, appointmentTime!!, durationInMinutes!!)
-
-  fun isTimingSpecified(appointmentTime: OffsetDateTime?, durationInMinutes: Int?): Boolean =
-    appointmentTime != null && durationInMinutes != null
-
-  fun isDifferentTimings(existingAppointment: ActionPlanAppointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
-    !existingAppointment.appointmentTime!!.isEqual(appointmentTime) || existingAppointment.durationInMinutes != durationInMinutes
+  fun isDifferentTimings(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
+    !existingAppointment.appointmentTime.isEqual(appointmentTime) || existingAppointment.durationInMinutes != durationInMinutes
 }
 
 abstract class AppointmentRequestDTO

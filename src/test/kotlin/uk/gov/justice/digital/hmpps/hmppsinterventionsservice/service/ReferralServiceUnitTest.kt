@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanAppointmentRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
@@ -53,7 +53,7 @@ class ReferralServiceUnitTest {
   private val referralConcluder: ReferralConcluder = mock()
   private val referralReferenceGenerator: ReferralReferenceGenerator = mock()
   private val cancellationReasonRepository: CancellationReasonRepository = mock()
-  private val actionPlanAppointmentRepository: ActionPlanAppointmentRepository = mock()
+  private val actionPlanSessionRepository: ActionPlanSessionRepository = mock()
   private val serviceCategoryRepository: ServiceCategoryRepository = mock()
   private val referralAccessChecker: ReferralAccessChecker = mock()
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper = mock()
@@ -74,7 +74,7 @@ class ReferralServiceUnitTest {
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
-    actionPlanAppointmentRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
+    actionPlanSessionRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
     serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,
     assessRisksAndNeedsService,
   )

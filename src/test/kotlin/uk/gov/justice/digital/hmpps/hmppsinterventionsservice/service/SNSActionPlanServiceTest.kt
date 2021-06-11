@@ -48,7 +48,7 @@ internal class SNSActionPlanServiceTest {
     )
     verify(snsPublisher).publish(
       actionPlanSubmittedEvent.actionPlan.referral.id,
-      actionPlanSubmittedEvent.actionPlan.submittedBy,
+      actionPlanSubmittedEvent.actionPlan.submittedBy!!,
       snsEvent
     )
   }

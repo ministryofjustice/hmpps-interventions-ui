@@ -93,7 +93,7 @@ class NotifyAppointmentService(
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: AppointmentEvent) {
     if (event.notifyPP) {
-      val referral = event.appointment.actionPlan.referral
+      val referral = event.actionPlanSession.actionPlan.referral
       val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
       val location = generateResourceUrl(
         interventionsUIBaseURL,
