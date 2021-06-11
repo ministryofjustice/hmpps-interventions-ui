@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPS
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.SupplierAssessmentRepository
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test", "local")
@@ -45,6 +46,7 @@ abstract class IntegrationTestBase {
   @Autowired protected lateinit var cancellationReasonRepository: CancellationReasonRepository
   @Autowired protected lateinit var contractTypeRepository: ContractTypeRepository
   @Autowired protected lateinit var appointmentRepository: AppointmentRepository
+  @Autowired protected lateinit var supplierAssessmentRepository: SupplierAssessmentRepository
   protected lateinit var setupAssistant: SetupAssistant
 
   @BeforeEach
@@ -64,6 +66,7 @@ abstract class IntegrationTestBase {
       cancellationReasonRepository,
       contractTypeRepository,
       appointmentRepository,
+      supplierAssessmentRepository
     )
     setupAssistant.cleanAll()
   }
