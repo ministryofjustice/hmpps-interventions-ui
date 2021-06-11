@@ -144,8 +144,12 @@ class ActionPlanSessionsService(
     actionPlanSessionRepository.save(session)
 
     appointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)
-    appointmentEventPublisher.behaviourRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
-    appointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
+
+    if (appointment.attendanceBehaviourSubmittedAt != null) { // excluding the case of non attendance
+      appointmentEventPublisher.behaviourRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
+    }
+
+    appointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
     return session
   }
 

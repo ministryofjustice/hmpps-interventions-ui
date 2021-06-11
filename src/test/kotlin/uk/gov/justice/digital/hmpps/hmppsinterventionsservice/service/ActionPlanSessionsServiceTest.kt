@@ -406,4 +406,38 @@ internal class ActionPlanSessionsServiceTest {
       actionPlanSessionsService.recordBehaviour(actionPlanId, 1, "bad", false)
     }
   }
+
+  @Test
+  fun `session feedback can be submitted when session not attended`() {
+    val session = actionPlanSessionFactory.createScheduled()
+    val actionPlanId = session.actionPlan.id
+    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+      session
+    )
+    whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
+
+    actionPlanSessionsService.recordAppointmentAttendance(actionPlanId, 1, Attended.NO, "")
+    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.actionPlan.createdBy)
+
+    verify(actionPlanSessionRepository, atLeastOnce()).save(session)
+    verify(appointmentEventPublisher).attendanceRecordedEvent(session, true)
+    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+  }
+
+  @Test
+  fun `session feedback can be submitted when session is attended and there is no behaviour feedback`() {
+    val session = actionPlanSessionFactory.createScheduled()
+    val actionPlanId = session.actionPlan.id
+    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+      session
+    )
+    whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
+
+    actionPlanSessionsService.recordAppointmentAttendance(actionPlanId, 1, Attended.YES, "")
+    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.actionPlan.createdBy)
+
+    verify(actionPlanSessionRepository, atLeastOnce()).save(session)
+    verify(appointmentEventPublisher).attendanceRecordedEvent(session, false)
+    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+  }
 }
