@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
@@ -53,17 +54,20 @@ internal class ActionPlanSessionControllerTest {
     assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
   }
 
-  @Test
-  fun `gets a session`() {
-    val actionPlanSession = actionPlanSessionFactory.createScheduled()
-    val sessionNumber = actionPlanSession.sessionNumber
-    val actionPlanId = actionPlanSession.actionPlan.id
+  @Nested
+  inner class GetSession {
+    @Test
+    fun `gets a session`() {
+      val actionPlanSession = actionPlanSessionFactory.createScheduled()
+      val sessionNumber = actionPlanSession.sessionNumber
+      val actionPlanId = actionPlanSession.actionPlan.id
 
-    whenever(sessionsService.getSession(actionPlanId, sessionNumber)).thenReturn(actionPlanSession)
+      whenever(sessionsService.getSession(actionPlanId, sessionNumber)).thenReturn(actionPlanSession)
 
-    val sessionResponse = sessionsController.getSession(actionPlanId, sessionNumber)
+      val sessionResponse = sessionsController.getSession(actionPlanId, sessionNumber)
 
-    assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+      assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+    }
   }
 
   @Test

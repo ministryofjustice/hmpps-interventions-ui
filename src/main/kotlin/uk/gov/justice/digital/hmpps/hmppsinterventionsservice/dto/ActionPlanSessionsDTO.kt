@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -25,15 +26,33 @@ data class ActionPlanSessionDTO(
   val sessionNumber: Int,
   val appointmentTime: OffsetDateTime?,
   val durationInMinutes: Int?,
+  val appointmentDeliveryType: AppointmentDeliveryType?,
+  val appointmentDeliveryAddress: List<String>?,
   val sessionFeedback: SessionFeedbackDTO,
 ) {
   companion object {
     fun from(session: ActionPlanSession): ActionPlanSessionDTO {
+      val appointmentDelivery = session.currentAppointment?.appointmentDelivery
+      val address = when (appointmentDelivery?.appointmentDeliveryType) {
+        AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE -> listOfNotNull(appointmentDelivery?.npsOfficeCode)
+        AppointmentDeliveryType.IN_PERSON_MEETING_OTHER -> {
+          if (appointmentDelivery?.appointmentDeliveryAddress !== null) {
+            val address = appointmentDelivery.appointmentDeliveryAddress
+            if (address != null) {
+
+              listOfNotNull(address.firstAddressLine, address.secondAddressLine?: "", address.townCity, address.county, address.postCode)
+            } else null
+          } else null
+        }
+        else -> null
+      }
       return ActionPlanSessionDTO(
         id = session.id,
         sessionNumber = session.sessionNumber,
         appointmentTime = session.currentAppointment?.appointmentTime,
         durationInMinutes = session.currentAppointment?.durationInMinutes,
+        appointmentDeliveryType = session.currentAppointment?.appointmentDelivery?.appointmentDeliveryType,
+        appointmentDeliveryAddress = address,
         sessionFeedback = SessionFeedbackDTO.from(
           session.currentAppointment?.attended,
           session.currentAppointment?.additionalAttendanceInformation,
