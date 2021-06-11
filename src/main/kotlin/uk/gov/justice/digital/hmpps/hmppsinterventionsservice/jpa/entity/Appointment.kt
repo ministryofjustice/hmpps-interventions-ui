@@ -53,6 +53,6 @@ enum class Attended {
 
   @JsonValue
   open fun toLower(): String? {
-    return this.toString().lowercase()
+    return this.toString().toLowerCase()
   }
 }
