@@ -296,17 +296,5 @@ class SampleData {
     ): AuthUser {
       return AuthUser(id, authSource, userName)
     }
-
-    fun sampleCancellationReason(
-      id: String = "MIS",
-      description: String = "Referral was made by mistake"
-    ): CancellationReason {
-      return CancellationReason(id, description)
-    }
-
-    fun persistPCCRegion(em: TestEntityManager, pccRegion: PCCRegion): PCCRegion {
-      em.persist(pccRegion.npsRegion)
-      return em.persistAndFlush(pccRegion)
-    }
   }
 }
