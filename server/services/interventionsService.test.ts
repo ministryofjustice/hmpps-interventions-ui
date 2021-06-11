@@ -2125,6 +2125,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
+              appointmentTime: '2021-05-13T12:30:00Z',
               durationInMinutes: 60,
             },
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
@@ -2141,6 +2142,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         expect(
           await interventionsService.updateActionPlanAppointment(token, '345059d4-1697-467b-8914-fedec9957279', 2, {
+            appointmentTime: '2021-05-13T12:30:00Z',
             durationInMinutes: 60,
           })
         ).toMatchObject(actionPlanAppointment)

@@ -8,7 +8,7 @@ import errorMessages from '../../utils/errorMessages'
 export default class EditSessionForm {
   constructor(private readonly request: Request) {}
 
-  async data(): Promise<FormData<Partial<ActionPlanAppointmentUpdate>>> {
+  async data(): Promise<FormData<ActionPlanAppointmentUpdate>> {
     const [dateResult, durationResult] = await Promise.all([
       new TwelveHourBritishDateTimeInput(this.request, 'date', 'time', errorMessages.editSession.time).validate(),
       new DurationInput(this.request, 'duration', errorMessages.editSession.duration).validate(),
@@ -24,8 +24,8 @@ export default class EditSessionForm {
     return {
       error: null,
       paramsForUpdate: {
-        appointmentTime: dateResult.value.toISOString() ?? null,
-        durationInMinutes: durationResult.value.minutes ?? null,
+        appointmentTime: dateResult.value.toISOString(),
+        durationInMinutes: durationResult.value.minutes!,
       },
     }
   }
