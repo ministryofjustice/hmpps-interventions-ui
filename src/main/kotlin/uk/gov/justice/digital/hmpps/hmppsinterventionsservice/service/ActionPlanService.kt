@@ -85,6 +85,13 @@ class ActionPlanService(
     return savedSubmittedActionPlan
   }
 
+  fun approveActionPlan(id: UUID, user: AuthUser): ActionPlan {
+    val actionPlan = getActionPlan(id)
+    actionPlan.approvedAt = OffsetDateTime.now()
+    actionPlan.approvedBy = authUserRepository.save(user)
+    return actionPlanRepository.save(actionPlan)
+  }
+
   fun getActionPlan(id: UUID): ActionPlan {
     return actionPlanRepository.findById(id).orElseThrow {
       throw EntityNotFoundException("action plan not found [id=$id]")

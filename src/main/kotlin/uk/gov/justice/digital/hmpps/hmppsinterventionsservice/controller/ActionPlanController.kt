@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
@@ -25,7 +27,8 @@ class ActionPlanController(
   val actionPlanMapper: ActionPlanMapper,
   val userMapper: UserMapper,
   val actionPlanService: ActionPlanService,
-  val locationMapper: LocationMapper
+  val locationMapper: LocationMapper,
+  val userTypeChecker: UserTypeChecker,
 ) {
 
   @PostMapping("/draft-action-plan")
@@ -100,5 +103,16 @@ class ActionPlanController(
   ): ActionPlanDTO {
     val actionPlan = actionPlanService.getActionPlanByReferral(referralId)
     return ActionPlanDTO.from(actionPlan)
+  }
+
+  @PostMapping("/action-plan/{id}/approve")
+  fun approveActionPlan(@PathVariable id: UUID, authentication: JwtAuthenticationToken): ActionPlanDTO {
+    val user = userMapper.fromToken(authentication)
+
+    if (!userTypeChecker.isProbationPractitionerUser(user)) {
+      throw AccessError(user, "could not approve action plan", listOf("only probation practitioners can approve action plans"))
+    }
+
+    return ActionPlanDTO.from(actionPlanService.approveActionPlan(id, user))
   }
 }

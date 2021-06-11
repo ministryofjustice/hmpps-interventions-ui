@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
@@ -35,8 +36,15 @@ internal class ActionPlanControllerTest {
   private val userMapper = mock<UserMapper>()
   private val actionPlanService = mock<ActionPlanService>()
   private val locationMapper = mock<LocationMapper>()
+  private val userTypeChecker = mock<UserTypeChecker>()
 
-  private val actionPlanController = ActionPlanController(actionPlanMapper, userMapper, actionPlanService, locationMapper)
+  private val actionPlanController = ActionPlanController(
+    actionPlanMapper,
+    userMapper,
+    actionPlanService,
+    locationMapper,
+    userTypeChecker,
+  )
 
   @Test
   fun `throws error if an action plan already exists for the referral`() {
