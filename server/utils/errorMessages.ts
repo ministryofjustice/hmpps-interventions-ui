@@ -27,6 +27,8 @@ export default {
   },
   relevantSentence: {
     empty: 'Select the relevant sentence',
+    noConvictionsFound: (crn: string) =>
+      `No convictions were found in Delius for CRN ${crn}. The error has been logged.`,
   },
   desiredOutcomes: {
     empty: 'Select desired outcomes',

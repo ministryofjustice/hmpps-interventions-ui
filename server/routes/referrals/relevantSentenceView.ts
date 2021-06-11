@@ -1,4 +1,4 @@
-import { RadiosArgs } from '../../utils/govukFrontendTypes'
+import { NotificationBannerArgs, RadiosArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import RelevantSentencePresenter from './relevantSentencePresenter'
 
@@ -30,6 +30,13 @@ export default class RelevantSentenceView {
     }
   }
 
+  get noConvictionsNotificationBannerArgs(): NotificationBannerArgs {
+    return {
+      titleText: 'There is a problem',
+      text: this.presenter.noConvictionsErrorMessage,
+    }
+  }
+
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
@@ -39,6 +46,7 @@ export default class RelevantSentenceView {
         presenter: this.presenter,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        noConvictionsNotificationBannerArgs: this.noConvictionsNotificationBannerArgs,
       },
     ]
   }

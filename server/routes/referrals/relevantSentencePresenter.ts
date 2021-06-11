@@ -5,6 +5,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import Intervention from '../../models/intervention'
 import utils from '../../utils/utils'
 import SentencePresenter from './sentencePresenter'
+import errorMessages from '../../utils/errorMessages'
 
 export default class RelevantSentencePresenter {
   constructor(
@@ -19,9 +20,15 @@ export default class RelevantSentencePresenter {
     this.intervention.contractType.name
   )} referral`
 
+  private readonly hasNoConvictions = this.convictions.length < 1
+
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'relevant-sentence-id')
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
+
+  readonly noConvictionsErrorMessage = this.hasNoConvictions
+    ? errorMessages.relevantSentence.noConvictionsFound(this.referral.serviceUser.crn)
+    : null
 
   get relevantSentenceFields(): {
     presenter: SentencePresenter

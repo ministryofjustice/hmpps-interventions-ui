@@ -169,4 +169,25 @@ describe(RelevantSentencePresenter, () => {
       })
     })
   })
+
+  describe('noConvictionsErrorMessage', () => {
+    describe('when no convictions are passed in', () => {
+      it('returns a user-friendly error message', () => {
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, [])
+
+        expect(presenter.noConvictionsErrorMessage).toEqual(
+          `No convictions were found in Delius for CRN ${draftReferral.serviceUser.crn}. The error has been logged.`
+        )
+      })
+    })
+
+    describe('when at least one conviction is passed in', () => {
+      it('returns null', () => {
+        const convictions = deliusConvictionFactory.buildList(2)
+        const presenter = new RelevantSentencePresenter(draftReferral, intervention, convictions)
+
+        expect(presenter.noConvictionsErrorMessage).toBeNull()
+      })
+    })
+  })
 })

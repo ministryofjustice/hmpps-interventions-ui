@@ -869,14 +869,16 @@ describe('GET /referrals/:id/relevant-sentence', () => {
       })
   })
 
-  it('renders an error when no convictions are found for that service user', async () => {
+  it('renders the page with an error message when no convictions are found for that service user', async () => {
     communityApiService.getActiveConvictionsByCRN.mockResolvedValue([])
 
     await request(app)
       .get('/referrals/1/relevant-sentence')
-      .expect(500)
+      .expect(404)
       .expect(res => {
-        expect(res.text).toContain(`No active convictions found for service user ${serviceUserCRN}`)
+        expect(res.text).toContain(
+          `No convictions were found in Delius for CRN ${serviceUserCRN}. The error has been logged.`
+        )
       })
   })
 })

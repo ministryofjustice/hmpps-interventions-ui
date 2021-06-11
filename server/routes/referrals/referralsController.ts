@@ -163,11 +163,17 @@ export default class ReferralsController {
     const [intervention, serviceUser, convictions] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
+      this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn).catch(e => {
+        if (e.status === 404) {
+          return []
+        }
+        throw e
+      }),
     ])
 
     if (convictions.length < 1) {
-      throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+      res.status(404)
+      logger.error(`No convictions found for user with CRN ${referral.serviceUser.crn}`)
     }
 
     const presenter = new RelevantSentencePresenter(referral, intervention, convictions)

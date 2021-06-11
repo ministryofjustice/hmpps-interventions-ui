@@ -11,13 +11,21 @@
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
-      <form method="post">
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      {% if presenter.noConvictionsErrorMessage %}
+        <h1 class="govuk-fieldset__legend--xl govuk-!-margin-bottom-8">{{ presenter.title }}</h1>
+        {{ govukNotificationBanner(noConvictionsNotificationBannerArgs) }}
+        <form action="/">
+          {{ govukButton({ text: "Back to dashboard" }) }}
+        </form>
+      {% else %}
+        <form method="post">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-        {{ govukRadios(radioButtonArgs) }}
+          {{ govukRadios(radioButtonArgs) }}
 
-        {{ govukButton({ text: "Save and continue" }) }}
-      </form>
+          {{ govukButton({ text: "Save and continue" }) }}
+        </form>
+      {% endif %}
     </div>
   </div>
 {% endblock %}
