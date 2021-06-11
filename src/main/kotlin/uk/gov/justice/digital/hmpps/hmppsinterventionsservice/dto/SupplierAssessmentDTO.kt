@@ -1,10 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class SupplierAssessmentDTO(
+data class SupplierAssessmentDTO(
   val id: UUID,
   val appointmentTime: OffsetDateTime?,
   val durationInMinutes: Int?,
@@ -23,6 +24,22 @@ class SupplierAssessmentDTO(
     }
     fun from(supplierAssessment: List<SupplierAssessment>): List<SupplierAssessmentDTO> {
       return supplierAssessment.map { from(it) }
+    }
+  }
+}
+
+data class SupplierAssessmentAppointmentDTO(
+  val id: UUID,
+  val appointmentTime: OffsetDateTime?,
+  val durationInMinutes: Int?,
+) {
+  companion object {
+    fun from(appointment: Appointment): SupplierAssessmentAppointmentDTO {
+      return SupplierAssessmentAppointmentDTO(
+        id = appointment.id,
+        appointmentTime = appointment.appointmentTime,
+        durationInMinutes = appointment.durationInMinutes
+      )
     }
   }
 }

@@ -87,11 +87,8 @@ class ReferralServiceTest @Autowired constructor(
   private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
   private val authentication: JwtAuthenticationToken = mock()
   private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
-<<<<<<< HEAD
   private val communityAPIOffenderService: CommunityAPIOffenderService = mock()
-=======
   private val supplierAssessmentService: SupplierAssessmentService = mock()
->>>>>>> create supplier assessment automatically when sending a referral
 
   private val referralService = ReferralService(
     referralRepository,

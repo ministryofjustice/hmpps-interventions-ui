@@ -62,11 +62,8 @@ class ReferralServiceUnitTest {
   private val userTypeChecker: UserTypeChecker = mock()
   private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
   private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
-<<<<<<< HEAD
   private val communityAPIOffenderService: CommunityAPIOffenderService = mock()
-=======
   private val supplierAssessmentService: SupplierAssessmentService = mock()
->>>>>>> create supplier assessment automatically when sending a referral
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
