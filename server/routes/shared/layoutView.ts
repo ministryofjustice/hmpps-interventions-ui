@@ -1,5 +1,6 @@
 import ServiceUserBannerView from './serviceUserBannerView'
 import LayoutPresenter from './layoutPresenter'
+import config from '../../config'
 
 export interface PageContentView {
   renderArgs: [string, Record<string, unknown>]
@@ -18,6 +19,7 @@ export default class LayoutView {
       {
         ...(this.serviceUserBannerView?.locals ?? {}),
         headerPresenter: this.presenter.headerPresenter,
+        googleAnalyticsTrackingId: config.googleAnalyticsTrackingId,
         ...this.content.renderArgs[1],
       },
     ]
