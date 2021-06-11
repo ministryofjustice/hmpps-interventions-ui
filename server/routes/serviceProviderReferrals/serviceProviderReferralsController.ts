@@ -159,10 +159,11 @@ export default class ServiceProviderReferralsController {
         ? Promise.resolve(null)
         : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
 
-    const [intervention, actionPlan, serviceUser] = await Promise.all([
+    const [intervention, actionPlan, serviceUser, supplierAssessment] = await Promise.all([
       interventionPromise,
       actionPlanPromise,
       serviceUserPromise,
+      this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, sentReferral.id),
     ])
 
     let actionPlanAppointments: ActionPlanAppointment[] = []
@@ -173,7 +174,13 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlan, actionPlanAppointments)
+    const presenter = new InterventionProgressPresenter(
+      sentReferral,
+      intervention,
+      actionPlan,
+      actionPlanAppointments,
+      supplierAssessment
+    )
     const view = new InterventionProgressView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

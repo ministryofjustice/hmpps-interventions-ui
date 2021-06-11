@@ -316,6 +316,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubGetActionPlanAppointments(draftActionPlan.id, actionPlanAppointments)
+    cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
 
     cy.login()
 
@@ -431,6 +432,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+    cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
 
     cy.login()
 
@@ -518,6 +520,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -668,6 +671,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -801,6 +805,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetActionPlanAppointments(actionPlan.id, appointmentsWithSubmittedFeedback)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
       cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
+      cy.stubGetSupplierAssessment(referralParams.id, supplierAssessmentFactory.build())
     })
     it('allows users to know if, when and why an intervention was cancelled', () => {
       const endedReferral = sentReferralFactory
@@ -910,6 +915,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubCreateDraftEndOfServiceReport(draftEndOfServiceReport)
     cy.stubGetEndOfServiceReport(draftEndOfServiceReport.id, draftEndOfServiceReport)
     cy.stubGetActionPlanAppointments(actionPlan.id, [])
+    cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
 
     cy.login()
 
@@ -1036,7 +1042,7 @@ describe('Service provider referrals dashboard', () => {
     it('User schedules a supplier assessment appointment', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const intervention = interventionFactory.build()
-      const referral = sentReferralFactory.build({
+      const referral = sentReferralFactory.assigned().build({
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const supplierAssessment = supplierAssessmentFactory.justCreated.build()
@@ -1051,7 +1057,9 @@ describe('Service provider referrals dashboard', () => {
 
       cy.login()
 
-      cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+      cy.get('#supplier-assessment-status').contains('not scheduled')
+      cy.contains('Schedule initial assessment').click()
 
       cy.contains('Add appointment details')
 
@@ -1079,6 +1087,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
+      cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
     })
   })
 })

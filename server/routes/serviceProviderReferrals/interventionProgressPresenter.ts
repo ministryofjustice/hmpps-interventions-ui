@@ -6,6 +6,8 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
+import SupplierAssessment from '../../models/supplierAssessment'
+import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 
 interface EndedFields {
   endRequestedAt: string | null
@@ -27,7 +29,8 @@ export default class InterventionProgressPresenter {
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
     private readonly actionPlan: ActionPlan | null,
-    private readonly actionPlanAppointments: ActionPlanAppointment[]
+    private readonly actionPlanAppointments: ActionPlanAppointment[],
+    private readonly supplierAssessment: SupplierAssessment
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
@@ -181,5 +184,21 @@ export default class InterventionProgressPresenter {
 
   get allowEndOfServiceReportCreation(): boolean {
     return this.referral.endOfServiceReport === null
+  }
+
+  private readonly supplierAssessmentStatus = sessionStatus.forAppointment(
+    new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
+  )
+
+  get supplierAssessmentLink(): { text: string; href: string; hiddenText?: string } {
+    return {
+      text: 'Schedule',
+      hiddenText: ' initial assessment',
+      href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+    }
+  }
+
+  get supplierAssessmentStatusPresenter(): SessionStatusPresenter {
+    return new SessionStatusPresenter(this.supplierAssessmentStatus)
   }
 }
