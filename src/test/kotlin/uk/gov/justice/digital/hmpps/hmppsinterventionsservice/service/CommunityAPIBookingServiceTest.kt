@@ -54,7 +54,7 @@ internal class CommunityAPIBookingServiceTest {
 
   @Test
   fun `requests booking for a new appointment`() {
-    val now = OffsetDateTime.now()
+    val now = now()
 
     val uri = "/appt/X1/123/CRS"
     val notes = "Appointment for Accommodation Referral XX123456 with Prime Provider SPN\n" +
