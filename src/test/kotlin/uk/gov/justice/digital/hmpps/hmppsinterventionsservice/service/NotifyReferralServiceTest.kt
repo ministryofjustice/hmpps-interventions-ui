@@ -60,7 +60,11 @@ class NotifyReferralServiceTest {
   fun `referral sent event generates valid url and sends an email`() {
     notifyService().onApplicationEvent(referralSentEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
-    verify(emailSender).sendEmail(eq("referralSentTemplateID"), eq("harmony@example.com"), personalisationCaptor.capture())
+    verify(emailSender).sendEmail(
+      eq("referralSentTemplateID"),
+      eq("shs-incoming@provider.example.com"),
+      personalisationCaptor.capture()
+    )
     assertThat(personalisationCaptor.firstValue["organisationName"]).isEqualTo("Harmony Living")
     assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS8762AC")
     assertThat(personalisationCaptor.firstValue["referralUrl"]).isEqualTo("http://example.com/referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080")

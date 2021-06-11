@@ -15,6 +15,7 @@ data class Intervention(
 
   @NotNull val title: String,
   @NotNull val description: String,
+  @NotNull val incomingReferralDistributionEmail: String,
 
   @NotNull @OneToOne @JoinColumn(name = "dynamic_framework_contract_id")
   val dynamicFrameworkContract: DynamicFrameworkContract,

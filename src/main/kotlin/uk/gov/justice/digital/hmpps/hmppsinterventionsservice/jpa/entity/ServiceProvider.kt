@@ -11,7 +11,6 @@ data class ServiceProvider(
   // Service Provider id maps to the hmpps-auth field Group#groupCode
   @NotNull @Id val id: AuthGroupID,
   @NotNull val name: String,
-  @NotNull val incomingReferralDistributionEmail: String,
 ) {
   override fun hashCode(): Int {
     return id.hashCode()

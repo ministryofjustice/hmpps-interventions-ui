@@ -18,6 +18,7 @@ class InterventionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       • Bulleted list
       • With indentation and unicode
     """,
+    incomingReferralDistributionEmail: String = "shs-incoming@provider.example.com",
     contract: DynamicFrameworkContract? = null,
   ): Intervention {
     return save(
@@ -26,6 +27,7 @@ class InterventionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         createdAt = createdAt ?: OffsetDateTime.now(),
         title = title,
         description = description,
+        incomingReferralDistributionEmail = incomingReferralDistributionEmail,
         dynamicFrameworkContract = contract ?: dynamicFrameworkContractFactory.create(),
       )
     )

@@ -142,13 +142,13 @@ class NotifyReferralService(
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
-
       ReferralEventType.SENT -> {
         val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
-        val serviceProvider = event.referral.intervention.dynamicFrameworkContract.primeProvider
+        val intervention = event.referral.intervention
+        val serviceProvider = intervention.dynamicFrameworkContract.primeProvider
         emailSender.sendEmail(
           referralSentTemplateID,
-          serviceProvider.incomingReferralDistributionEmail,
+          intervention.incomingReferralDistributionEmail,
           mapOf(
             "organisationName" to serviceProvider.name,
             "referenceNumber" to event.referral.referenceNumber!!,

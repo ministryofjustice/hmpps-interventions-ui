@@ -28,7 +28,7 @@ internal class CommunityAPIBookingServiceTest {
     relevantSentenceId = 123L,
     referenceNumber = "XX123456",
     intervention = interventionFactory.create(
-      contract = dynamicFrameworkContractFactory.create(primeProvider = ServiceProvider("SPN", "SPN", ""))
+      contract = dynamicFrameworkContractFactory.create(primeProvider = ServiceProvider("SPN", "SPN"))
     )
   )
 

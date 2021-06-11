@@ -31,7 +31,6 @@ COMMENT ON COLUMN pcc_region.nps_region_id IS 'the ID of the National Probation 
 COMMENT ON TABLE service_provider IS 'service provider details';
 COMMENT ON COLUMN service_provider.id IS 'service provider unique identifier, used in hmpps-auth as group code';
 COMMENT ON COLUMN service_provider.name IS 'service provider name';
-COMMENT ON COLUMN service_provider.incoming_referral_distribution_email IS 'service provider email address';
 
 COMMENT ON TABLE intervention IS 'intervention details';
 COMMENT ON COLUMN intervention.id IS 'intervention unique identifier';
@@ -39,6 +38,7 @@ COMMENT ON COLUMN intervention.dynamic_framework_contract_id IS 'dynamic framewo
 COMMENT ON COLUMN intervention.created_at IS 'when the record was added';
 COMMENT ON COLUMN intervention.title IS 'intervention name';
 COMMENT ON COLUMN intervention.description IS 'intervention description';
+COMMENT ON COLUMN intervention.incoming_referral_distribution_email IS 'email address receiving notifications about new referrals';
 
 COMMENT ON TABLE referral IS 'referral details';
 COMMENT ON COLUMN referral.id IS 'referral unique identifier';
