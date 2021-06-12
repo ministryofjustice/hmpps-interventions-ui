@@ -6,7 +6,7 @@ import path from 'path'
 
 import allRoutes, { Services } from '../index'
 import nunjucksSetup from '../../utils/nunjucksSetup'
-import errorHandler from '../../errorHandler'
+import createErrorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
 import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
@@ -46,8 +46,8 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use('/', route)
-  app.use((req, res, next) => next(createError(404, 'Not found')))
-  app.use(errorHandler(production))
+  app.use((req, res, next) => next(createError(404)))
+  app.use(createErrorHandler(production))
 
   return app
 }

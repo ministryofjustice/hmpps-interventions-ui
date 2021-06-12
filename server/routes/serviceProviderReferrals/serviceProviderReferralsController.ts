@@ -697,6 +697,7 @@ export default class ServiceProviderReferralsController {
       desiredOutcome => desiredOutcome.desiredOutcomesIds
     )
     if (desiredOutcomeNumber > desiredOutcomeIds.length) {
+      // wat
       throw createError(404, 'Outcome number is out of bounds')
     }
 

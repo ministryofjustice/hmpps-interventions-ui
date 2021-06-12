@@ -1,0 +1,20 @@
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+    HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+    {% block content %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
+                <p class="govuk-body">Try again later.</p>
+                {% if error %}
+                    <p class="govuk-body">Message: {{ error.message }}</p>
+                    <pre class="govuk-body">{{ error.stack }}</pre>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}

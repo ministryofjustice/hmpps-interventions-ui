@@ -7,7 +7,7 @@ export default class StaticContentController {
   private static pages: { path: string; template: string; description: string }[] = [
     {
       path: '/example-static-page',
-      template: 'pages/exampleStaticPage',
+      template: 'staticContent/exampleStaticPage',
       description: 'Example static page',
     },
   ]
