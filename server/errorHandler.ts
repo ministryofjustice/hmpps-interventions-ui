@@ -1,46 +1,49 @@
 import type { Request, Response, NextFunction } from 'express'
-import createError from 'http-errors'
+import createError, { HttpError } from 'http-errors'
 import ControllerUtils from './utils/controllerUtils'
+import logger from '../log'
 
 export default function createErrorHandler(production: boolean) {
   return (err: Error, req: Request, res: Response, next: NextFunction): void => {
-    // logger.error(
-    //   {
-    //     err: error,
-    //     user: res.locals.user?.username,
-    //     url: req.originalUrl,
-    //   },
-    //   'Error handling request'
-    // )
-    //
     if (res.headersSent) {
       return next(err)
     }
 
-    if (createError.isHttpError(err)) {
-      // errors with specific codes raised within the application
-      switch (err.status) {
-        case 403: {
-          res.status(403)
-          return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', {}] }, null)
-        }
-        case 404: {
-          res.status(404)
-          return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/notFound', {}] }, null)
-        }
-        default:
-          res.status(err.status)
+    // authorization errors cause a special error page to be displayed
+    if (createError.isHttpError(err) && err.status === 403) {
+      res.status(403)
+
+      const args: Record<string, unknown> = { message: err.message }
+
+      // 403 responses from the interventions service contain further information in the
+      // response; if it's present, the authError template surfaces this to the end user
+      if (err.response) {
+        args.message = err.response.body?.message || args.message
+        args.accessErrors = err.response.body?.accessErrors
       }
-    } else {
-      // other uncaught errors
-      res.status(500)
+
+      return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', args] }, null)
     }
 
-    let args = {}
+    logger.error(
+      {
+        err,
+        user: req.user?.username,
+        url: req.originalUrl,
+      },
+      'unhandled error'
+    )
+
+    res.status(500)
+
+    const args: Record<string, unknown> = {
+      userMessage: (err as HttpError).response?.body?.userMessage,
+    }
+
     if (!production) {
-      args = { error: { message: err.message, stack: err.stack } }
+      args.err = { message: err.message, stack: err.stack, response: (err as HttpError).response?.text }
     }
 
-    return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/uncaughtError', args] }, null)
+    return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/unhandledError', args] }, null)
   }
 }

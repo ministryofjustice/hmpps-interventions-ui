@@ -12,7 +12,6 @@ import flash from 'connect-flash'
 import redis from 'redis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
-import createError from 'http-errors'
 import indexRoutes from './routes'
 import healthcheck from './services/healthCheck'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -24,6 +23,7 @@ import InterventionsService from './services/interventionsService'
 import HmppsAuthService from './services/hmppsAuthService'
 import passportSetup from './authentication/passport'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
+import ControllerUtils from './utils/controllerUtils'
 
 const RedisStore = connectRedis(session)
 
@@ -175,11 +175,15 @@ export default function createApp(
     })
   )
 
-  // final regular middleware catches 404s and delegates to the error handler}
-  app.use((req, res, next) => next(createError(404)))
+  // final regular middleware is for handling 404s
+  app.use((req, res, next) => {
+    res.status(404)
+    return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/notFound', {}] }, null)
+  })
 
   // The Sentry error handler must be before any other error middleware and after all controllers
   app.use(Sentry.Handlers.errorHandler())
+
   app.use(createErrorHandler(config.production))
 
   return app

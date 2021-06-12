@@ -1,25 +1,28 @@
-import { InterventionsServiceError, InterventionsServiceValidationError } from '../services/interventionsService'
+import createError from 'http-errors'
+import { InterventionsServiceValidationError } from '../services/interventionsService'
 import interventionsServiceErrorMessages from './interventionsServiceErrorMessages'
 import { FormValidationError } from './formValidationError'
 
 const dateFormFields = ['completion-deadline']
 
-// This re-throws the error if `interventionsServiceError` is not a validation error.
-export default function createFormValidationErrorOrRethrow(
-  interventionsServiceError: InterventionsServiceError
-): FormValidationError {
-  if (interventionsServiceError.validationErrors === undefined) {
-    throw interventionsServiceError
+// This re-throws the error if `err` is not an interventions service validation error.
+export default function createFormValidationErrorOrRethrow(err: Error): FormValidationError {
+  if (createError.isHttpError(err)) {
+    if (err.response?.body?.validationErrors) {
+      const validationErrors = err.response.body.validationErrors as InterventionsServiceValidationError[]
+      return {
+        errors: validationErrors.map(it => {
+          return {
+            formFields: formFieldsForServiceField(it.field),
+            errorSummaryLinkedField: errorSummaryLinkedFieldForServiceField(it.field),
+            message: messageForServiceValidationError(it),
+          }
+        }),
+      }
+    }
   }
 
-  const errors = interventionsServiceError.validationErrors.map(validationError => {
-    return {
-      formFields: formFieldsForServiceField(validationError.field),
-      errorSummaryLinkedField: errorSummaryLinkedFieldForServiceField(validationError.field),
-      message: messageForServiceValidationError(validationError),
-    }
-  })
-  return { errors }
+  throw err
 }
 
 function kebabCaseFromLowerCamelCase(val: string): string {
