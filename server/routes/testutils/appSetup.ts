@@ -1,7 +1,6 @@
 import express, { Router, Express } from 'express'
 import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
-import createError from 'http-errors'
 import path from 'path'
 
 import allRoutes, { Services } from '../index'
@@ -46,7 +45,6 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use('/', route)
-  app.use((req, res, next) => next(createError(404)))
   app.use(createErrorHandler(production))
 
   return app
