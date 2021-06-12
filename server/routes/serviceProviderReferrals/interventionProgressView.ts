@@ -111,7 +111,7 @@ export default class InterventionProgressView {
       // action plan has been submitted; show link to view it
       rows.push({
         key: { text: 'Submitted date' },
-        value: { text: this.presenter.text.actionPlanSubmittedDate },
+        value: { text: this.presenter.text.actionPlanSubmittedDate, classes: 'action-plan-submitted-date' },
       })
       // FIXME: the 'view action plan' page doesn't exist yet!
       rows.push({
@@ -122,7 +122,7 @@ export default class InterventionProgressView {
       // action plan has been approved; show link to view it
       rows.push({
         key: { text: 'Submitted date' },
-        value: { text: this.presenter.text.actionPlanSubmittedDate },
+        value: { text: this.presenter.text.actionPlanSubmittedDate, classes: 'action-plan-submitted-date' },
       })
       rows.push({
         key: { text: 'Approval date' },

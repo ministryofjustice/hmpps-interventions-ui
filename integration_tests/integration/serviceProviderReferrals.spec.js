@@ -317,6 +317,7 @@ describe('Service provider referrals dashboard', () => {
     cy.login()
 
     cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+    cy.get('#action-plan-status').contains('Not submitted')
     cy.contains('Create action plan').click()
 
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
@@ -404,7 +405,8 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Return to service progress').click()
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
-    cy.get('#action-plan-status').contains('Submitted')
+    cy.get('#action-plan-status').contains('Under review')
+    cy.get('.action-plan-submitted-date').contains(/\d{1,2} [A-Z][a-z]{2} \d{4}/)
   })
 
   it('User schedules and views an action plan appointment', () => {
