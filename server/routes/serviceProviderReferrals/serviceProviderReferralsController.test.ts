@@ -1119,7 +1119,7 @@ describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () 
   })
 
   describe('when the outcome number is greater than the number of desired outcomes in the referral', () => {
-    it('returns a 404', async () => {
+    it('returns a 400 status code', async () => {
       const serviceCategory = serviceCategoryFactory.build()
       const referral = sentReferralFactory.build({
         referral: { desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: ['1', '2', '3'] }] },
@@ -1129,7 +1129,7 @@ describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () 
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
 
-      await request(app).get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/4`).expect(404)
+      await request(app).get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/4`).expect(400)
     })
   })
 })
@@ -1231,7 +1231,7 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
     })
 
     describe('when the outcome number is greater than the number of desired outcomes in the referral', () => {
-      it('returns a 404 and doesn’t try to update the end of service report', async () => {
+      it('returns a 400 and doesn’t try to update the end of service report', async () => {
         const serviceCategory = serviceCategoryFactory.build()
         const referral = sentReferralFactory.build({
           referral: {
@@ -1251,7 +1251,7 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
             'progression-comments': 'Some progression comments',
             'additional-task-comments': 'Some additional task comments',
           })
-          .expect(404)
+          .expect(400)
 
         expect(interventionsService.updateDraftEndOfServiceReport).not.toHaveBeenCalled()
       })

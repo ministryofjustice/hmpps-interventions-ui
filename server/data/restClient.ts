@@ -87,7 +87,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, query, path, verb: 'GET' }, 'rest client error')
-      throw createError(error.status, error)
+      throw createError(error.status, error, { external: true })
     }
   }
 
@@ -117,7 +117,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, path, verb: 'POST' }, 'rest client error')
-      throw createError(error.status, error)
+      throw createError(error.status, error, { external: true })
     }
   }
 
@@ -151,7 +151,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, path, verb: 'PATCH' }, 'rest client error')
-      throw createError(error.status, error)
+      throw createError(error.status, error, { external: true })
     }
   }
 

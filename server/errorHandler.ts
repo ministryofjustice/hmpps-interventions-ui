@@ -9,20 +9,27 @@ export default function createErrorHandler(production: boolean) {
       return next(err)
     }
 
-    // authorization errors cause a special error page to be displayed
-    if (createError.isHttpError(err) && err.status === 403) {
-      res.status(403)
+    if (createError.isHttpError(err)) {
+      // authorization errors cause a special error page to be displayed
+      if (err.status === 403) {
+        res.status(403)
 
-      const args: Record<string, unknown> = { message: err.message }
+        const args: Record<string, unknown> = { message: err.message }
 
-      // 403 responses from the interventions service contain further information in the
-      // response; if it's present, the authError template surfaces this to the end user
-      if (err.response) {
-        args.message = err.response.body?.message || args.message
-        args.accessErrors = err.response.body?.accessErrors
+        // 403 responses from the interventions service contain further information in the
+        // response; if it's present, the authError template surfaces this to the end user
+        if (err.response) {
+          args.message = err.response.body?.message || args.message
+          args.accessErrors = err.response.body?.accessErrors
+        }
+
+        return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', args] }, null)
       }
 
-      return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', args] }, null)
+      // do not propagate external error codes by default (e.g. 404s from interventions service)
+      res.status(err.external === true ? 500 : err.status)
+    } else {
+      res.status(500)
     }
 
     logger.error(
@@ -33,8 +40,6 @@ export default function createErrorHandler(production: boolean) {
       },
       'unhandled error'
     )
-
-    res.status(500)
 
     const args: Record<string, unknown> = {
       userMessage: (err as HttpError).response?.body?.userMessage,
