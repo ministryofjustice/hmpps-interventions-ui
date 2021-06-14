@@ -8,13 +8,11 @@ class ServiceProviderFactory(em: TestEntityManager? = null) : EntityFactory(em) 
   fun create(
     id: AuthGroupID = "HARMONY_LIVING",
     name: String = "Harmony Living",
-    incomingReferralDistributionEmail: String = "harmony@example.com",
   ): ServiceProvider {
     return save(
       ServiceProvider(
         id = id,
         name = name,
-        incomingReferralDistributionEmail = incomingReferralDistributionEmail
       )
     )
   }

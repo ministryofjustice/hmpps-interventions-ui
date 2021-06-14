@@ -158,9 +158,9 @@ class InterventionServiceTest @Autowired constructor(
 
     // build map of service providers
     val serviceProviders = mapOf(
-      "harmonyLiving" to serviceProviderFactory.create("HARMONY_LIVING", "Harmony Living", "contact@harmonyliving.com"),
-      "homeTrust" to serviceProviderFactory.create("HOME_TRUST", "Home Trust", "manager@hometrust.com"),
-      "liveWell" to serviceProviderFactory.create("LIVE_WELL", "Live Well", "contact@livewell.com")
+      "harmonyLiving" to serviceProviderFactory.create("HARMONY_LIVING", "Harmony Living"),
+      "homeTrust" to serviceProviderFactory.create("HOME_TRUST", "Home Trust"),
+      "liveWell" to serviceProviderFactory.create("LIVE_WELL", "Live Well")
     )
 
     val npsRegion = npsRegionFactory.create()

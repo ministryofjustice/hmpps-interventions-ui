@@ -29,11 +29,9 @@ class SampleData {
         ServiceProviderFactory(em).create(
           id = it.id,
           name = it.name,
-          incomingReferralDistributionEmail = it.incomingReferralDistributionEmail,
         )
       }
 
-//      em.persist(intervention.dynamicFrameworkContract.contractEligibility)
       em.persist(intervention.dynamicFrameworkContract.contractType)
       em.persist(intervention.dynamicFrameworkContract)
       return em.persistAndFlush(intervention)
@@ -108,6 +106,7 @@ class SampleData {
         • Bulleted list
         • With indentation and unicode
       """,
+      incomingReferralDistributionEmail: String = "acc-inbox@provider.example.com",
       dynamicFrameworkContract: DynamicFrameworkContract,
       id: UUID? = null,
       createdAt: OffsetDateTime? = null,
@@ -117,6 +116,7 @@ class SampleData {
         createdAt = createdAt ?: OffsetDateTime.now(),
         title = title,
         description = description,
+        incomingReferralDistributionEmail = incomingReferralDistributionEmail,
         dynamicFrameworkContract = dynamicFrameworkContract,
       )
     }
@@ -238,9 +238,8 @@ class SampleData {
     fun sampleServiceProvider(
       id: AuthGroupID = "HARMONY_LIVING",
       name: String = "Harmony Living",
-      emailAddress: String = "contact@harmonyLiving.com",
     ): ServiceProvider {
-      return ServiceProvider(id, name, emailAddress)
+      return ServiceProvider(id, name)
     }
 
     fun sampleServiceCategory(
@@ -296,18 +295,6 @@ class SampleData {
       userName: String = "user"
     ): AuthUser {
       return AuthUser(id, authSource, userName)
-    }
-
-    fun sampleCancellationReason(
-      id: String = "MIS",
-      description: String = "Referral was made by mistake"
-    ): CancellationReason {
-      return CancellationReason(id, description)
-    }
-
-    fun persistPCCRegion(em: TestEntityManager, pccRegion: PCCRegion): PCCRegion {
-      em.persist(pccRegion.npsRegion)
-      return em.persistAndFlush(pccRegion)
     }
   }
 }
