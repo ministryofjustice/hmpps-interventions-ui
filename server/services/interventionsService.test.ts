@@ -1754,11 +1754,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         {
           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
           description: 'Attend training course',
-          desiredOutcome: {
-            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-            description:
-              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          },
           createdAt: '2020-12-07T20:45:21.986389Z',
         },
       ]
@@ -1812,11 +1807,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         {
           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
           description: 'Attend training course',
-          desiredOutcome: {
-            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-            description:
-              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          },
           createdAt: '2020-12-07T20:45:21.986389Z',
         },
       ]
