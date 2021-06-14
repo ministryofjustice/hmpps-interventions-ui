@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import InterventionsService from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
@@ -167,7 +168,9 @@ export default class ReferralsController {
     ])
 
     if (convictions.length < 1) {
-      throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+      throw createError(500, `No active convictions found for service user ${referral.serviceUser.crn}`, {
+        userMessage: `No convictions were found in nDelius for ${referral.serviceUser.crn}.`,
+      })
     }
 
     const presenter = new RelevantSentencePresenter(referral, intervention, convictions)
@@ -214,7 +217,9 @@ export default class ReferralsController {
       ])
 
       if (convictions.length < 1) {
-        throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+        throw createError(500, `No active convictions found for service user ${referral.serviceUser.crn}`, {
+          userMessage: `No convictions were found in nDelius for ${referral.serviceUser.crn}.`,
+        })
       }
 
       const presenter = new RelevantSentencePresenter(referral, intervention, convictions, error)
