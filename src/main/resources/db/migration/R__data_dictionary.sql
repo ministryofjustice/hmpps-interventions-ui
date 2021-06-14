@@ -89,6 +89,8 @@ COMMENT ON COLUMN action_plan.created_by_id IS 'who the service user''s action p
 COMMENT ON COLUMN action_plan.created_at IS 'when the service user''s action plan was created';
 COMMENT ON COLUMN action_plan.submitted_at IS 'when the service user''s action plan was submitted for approval';
 COMMENT ON COLUMN action_plan.submitted_by_id IS 'who submitted the service user''s action plan';
+COMMENT ON COLUMN action_plan.approved_at IS 'when the service user''s action plan was approved';
+COMMENT ON COLUMN action_plan.approved_by_id IS 'who approved the service user''s action plan';
 
 COMMENT ON TABLE action_plan_activity IS 'service user''s action plan activity details';
 COMMENT ON COLUMN action_plan_activity.id IS 'service user''s action plan activity unique identifier';

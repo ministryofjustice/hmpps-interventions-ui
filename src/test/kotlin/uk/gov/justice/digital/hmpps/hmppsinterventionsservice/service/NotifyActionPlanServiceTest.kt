@@ -13,15 +13,18 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.APPROVED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class NotifyActionPlanServiceTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
+  private val actionPlanFactory = ActionPlanFactory()
 
   private val actionPlanSubmittedEvent = ActionPlanEvent(
     "source",
@@ -41,8 +44,19 @@ class NotifyActionPlanServiceTest {
     "http://localhost:8080/action-plan/42c7d267-0776-4272-a8e8-a673bfe30d0d",
   )
 
+  private val actionPlanApprovedEvent = ActionPlanEvent(
+    "source",
+    APPROVED,
+    actionPlanFactory.createApproved(
+      id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
+      submittedBy = AuthUser("abc123", "auth", "abc123"),
+    ),
+    "http://localhost:8080/action-plan/42c7d267-0776-4272-a8e8-a673bfe30d0d",
+  )
+
   private fun notifyService(): NotifyActionPlanService {
     return NotifyActionPlanService(
+      "template",
       "template",
       "http://example.com",
       "/action-plan/{id}",
@@ -61,13 +75,37 @@ class NotifyActionPlanServiceTest {
   }
 
   @Test
-  fun `referral assigned event does not swallow hmpps auth errors`() {
+  fun `action plan approved event does not send email when user details are not available`() {
+    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    assertThrows<RuntimeException> {
+      notifyService().onApplicationEvent(actionPlanApprovedEvent)
+    }
+    verifyZeroInteractions(emailSender)
+  }
+
+  @Test
+  fun `action plan approved event generates valid url and sends an email`() {
+    val event = actionPlanApprovedEvent
+    val actionPlan = event.actionPlan
+    whenever(hmppsAuthService.getUserDetail(actionPlan.submittedBy!!))
+      .thenReturn(UserDetail("tom", "tom@tom.tom"))
+
+    notifyService().onApplicationEvent(actionPlanApprovedEvent)
+    val personalisationCaptor = argumentCaptor<Map<String, String>>()
+    verify(emailSender).sendEmail(eq("template"), eq("tom@tom.tom"), personalisationCaptor.capture())
+    assertThat(personalisationCaptor.firstValue["submitterFirstName"]).isEqualTo("tom")
+    assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo(actionPlan.referral.referenceNumber)
+    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/action-plan/42c7d267-0776-4272-a8e8-a673bfe30d0d")
+  }
+
+  @Test
+  fun `action plan submitted event does not swallow hmpps auth errors`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenThrow(UnverifiedEmailException::class.java)
     assertThrows<UnverifiedEmailException> { notifyService().onApplicationEvent(actionPlanSubmittedEvent) }
   }
 
   @Test
-  fun `referral assigned event generates valid url and sends an email`() {
+  fun `action plan submitted event generates valid url and sends an email`() {
     whenever(hmppsAuthService.getUserDetail(AuthUser("abc999", "auth", "abc999")))
       .thenReturn(UserDetail("tom", "tom@tom.tom"))
 

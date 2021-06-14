@@ -29,10 +29,10 @@ class ActionPlanSessionsService(
   val communityAPIBookingService: CommunityAPIBookingService,
   val appointmentRepository: AppointmentRepository,
 ) {
-  fun createUnscheduledSessionsForActionPlan(submittedActionPlan: ActionPlan) {
-    val numberOfSessions = submittedActionPlan.numberOfSessions!!
+  fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan) {
+    val numberOfSessions = approvedActionPlan.numberOfSessions!!
     for (i in 1..numberOfSessions) {
-      createSession(submittedActionPlan, i)
+      createSession(approvedActionPlan, i)
     }
   }
 

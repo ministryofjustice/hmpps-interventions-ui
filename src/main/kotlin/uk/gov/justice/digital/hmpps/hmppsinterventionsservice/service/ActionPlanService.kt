@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
@@ -77,18 +78,26 @@ class ActionPlanService(
     val submittedActionPlan = updateDraftActionPlanAsSubmitted(draftActionPlan, submittedByUser)
     actionPlanValidator.validateSubmittedActionPlan(submittedActionPlan)
 
-    actionPlanSessionsService.createUnscheduledSessionsForActionPlan(submittedActionPlan)
-
     val savedSubmittedActionPlan = actionPlanRepository.save(submittedActionPlan)
     actionPlanEventPublisher.actionPlanSubmitEvent(savedSubmittedActionPlan)
 
     return savedSubmittedActionPlan
   }
 
+  fun approveActionPlan(id: UUID, user: AuthUser): ActionPlan {
+    val actionPlan = getActionPlan(id)
+    actionPlan.approvedAt = OffsetDateTime.now()
+    actionPlan.approvedBy = authUserRepository.save(user)
+
+    actionPlanSessionsService.createUnscheduledSessionsForActionPlan(actionPlan)
+    val approvedActionPlan = actionPlanRepository.save(actionPlan)
+    actionPlanEventPublisher.actionPlanSubmitEvent(approvedActionPlan)
+    return approvedActionPlan
+  }
+
   fun getActionPlan(id: UUID): ActionPlan {
-    return actionPlanRepository.findById(id).orElseThrow {
-      throw EntityNotFoundException("action plan not found [id=$id]")
-    }
+    return actionPlanRepository.findByIdOrNull(id)
+      ?: throw EntityNotFoundException("action plan not found [id=$id]")
   }
 
   fun getActionPlanByReferral(referralId: UUID): ActionPlan {

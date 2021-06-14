@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.mockito.AdditionalAnswers
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
@@ -59,25 +60,14 @@ internal class ActionPlanServiceTest {
     whenever(referralRepository.getOne(referralId)).thenReturn(referral)
     whenever(
       actionPlanRepository.save(
-        ArgumentMatchers.argThat { (
-          numberOfSessionsArg,
-          activitiesArg,
-          createdByArg,
-          _,
-          submittedByArg,
-          submittedAtArg,
-          referralArg,
-          _
-        ) ->
-          (
-            numberOfSessionsArg == numberOfSessions &&
-              activitiesArg.size == activities.size &&
-              activitiesArg.first() == activities.first() &&
-              createdByArg == authUser &&
-              submittedAtArg == null &&
-              submittedByArg == null &&
-              referralArg.equals(referral)
-            )
+        ArgumentMatchers.argThat {
+          it.numberOfSessions == numberOfSessions &&
+            it.activities.size == activities.size &&
+            it.activities.first() == activities.first() &&
+            it.createdBy == authUser &&
+            it.submittedAt == null &&
+            it.submittedBy == null &&
+            it.referral == referral
         }
       )
     ).thenReturn(SampleData.sampleActionPlan())
@@ -194,27 +184,17 @@ internal class ActionPlanServiceTest {
     whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(actionPlanId)).thenReturn(actionPlan)
     whenever(
       actionPlanRepository.save(
-        ArgumentMatchers.argThat { (
-          numberOfSessionsArg,
-          activitiesArg,
-          createdByArg,
-          createdAtArg,
-          submittedByArg,
-          submittedAtArg,
-          referralArg,
-          idArg,
-        ) ->
-          (
-            numberOfSessionsArg == actionPlan.numberOfSessions &&
-              activitiesArg.size == actionPlan.activities.size &&
-              activitiesArg.first() == actionPlan.activities.first() &&
-              createdByArg == actionPlan.createdBy &&
-              createdAtArg == actionPlan.createdAt &&
-              submittedAtArg!!.isAfter(timeBeforeSubmit) &&
-              submittedByArg!! == authUser &&
-              referralArg == actionPlan.referral &&
-              idArg == actionPlanId
-            )
+        ArgumentMatchers.argThat {
+          it.numberOfSessions == actionPlan.numberOfSessions &&
+            it.activities.size == actionPlan.activities.size &&
+            it.activities.first() == actionPlan.activities.first() &&
+            it.createdAt == actionPlan.createdAt &&
+            it.createdBy == actionPlan.createdBy &&
+            it.submittedAt!!.isAfter(timeBeforeSubmit) &&
+            it.submittedBy == authUser &&
+            it.approvedAt == null &&
+            it.approvedBy == null &&
+            it.referral == actionPlan.referral
         }
       )
     ).thenReturn(SampleData.sampleActionPlan())
@@ -224,23 +204,20 @@ internal class ActionPlanServiceTest {
 
     assertThat(submittedActionPlan).isNotNull
     verify(actionPlanValidator).validateSubmittedActionPlan(any())
-    verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(any())
   }
 
   @Test
-  fun `creates unscheduled sessions`() {
+  fun `action plan approval sets approved and creates unscheduled sessions`() {
     val actionPlanId = UUID.randomUUID()
     val actionPlan = SampleData.sampleActionPlan(id = actionPlanId, numberOfSessions = 2)
     val authUser = AuthUser("CRN123", "auth", "user")
-    whenever(actionPlanRepository.findByIdAndSubmittedAtIsNull(actionPlanId)).thenReturn(actionPlan)
-    val savedActionPlan = SampleData.sampleActionPlan()
-    whenever(actionPlanRepository.save(any())).thenReturn(savedActionPlan)
-    whenever(authUserRepository.save(any())).thenReturn(SampleData.sampleAuthUser())
+    whenever(actionPlanRepository.findById(actionPlanId)).thenReturn(of(actionPlan))
+    whenever(authUserRepository.save(any())).then(AdditionalAnswers.returnsFirstArg<AuthUser>())
+    whenever(actionPlanRepository.save(any())).then(AdditionalAnswers.returnsFirstArg<ActionPlan>())
 
-    val submittedActionPlan = actionPlanService.submitDraftActionPlan(actionPlanId, authUser)
-
-    assertThat(submittedActionPlan).isEqualTo(savedActionPlan)
-    verify(actionPlanValidator).validateSubmittedActionPlan(any())
+    val approvedActionPlan = actionPlanService.approveActionPlan(actionPlanId, authUser)
+    assertThat(approvedActionPlan.approvedAt).isNotNull
+    assertThat(approvedActionPlan.approvedBy).isEqualTo(authUser)
     verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(same(actionPlan))
   }
 

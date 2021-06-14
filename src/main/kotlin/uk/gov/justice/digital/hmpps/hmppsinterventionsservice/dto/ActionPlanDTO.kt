@@ -13,7 +13,9 @@ data class ActionPlanDTO(
   val createdBy: AuthUserDTO,
   val createdAt: OffsetDateTime,
   val submittedBy: AuthUserDTO?,
-  val submittedAt: OffsetDateTime?
+  val submittedAt: OffsetDateTime?,
+  val approvedBy: AuthUserDTO?,
+  val approvedAt: OffsetDateTime?
 ) {
   companion object {
     fun from(actionPlan: ActionPlan): ActionPlanDTO {
@@ -26,6 +28,8 @@ data class ActionPlanDTO(
         createdAt = actionPlan.createdAt,
         submittedBy = actionPlan.submittedBy?.let { AuthUserDTO.from(it) },
         submittedAt = actionPlan.submittedAt,
+        approvedBy = actionPlan.approvedBy?.let { AuthUserDTO.from(it) },
+        approvedAt = actionPlan.approvedAt,
       )
     }
   }
