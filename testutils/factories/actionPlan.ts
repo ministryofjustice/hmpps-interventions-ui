@@ -1,6 +1,7 @@
 import { Factory } from 'fishery'
 import ActionPlan from '../../server/models/actionPlan'
 import actionPlanActivityFactory from './actionPlanActivity'
+import hmppsAuthUserFactory from './hmppsAuthUser'
 
 class ActionPlanFactory extends Factory<ActionPlan> {
   notSubmitted() {
@@ -9,6 +10,10 @@ class ActionPlanFactory extends Factory<ActionPlan> {
 
   submitted() {
     return this.params({ submittedAt: new Date().toISOString() })
+  }
+
+  approved() {
+    return this.submitted().params({ approvedAt: new Date().toISOString(), approvedBy: hmppsAuthUserFactory.build() })
   }
 
   justCreated(referralId: string) {
@@ -37,4 +42,6 @@ export default ActionPlanFactory.define(({ sequence }) => ({
   activities: [],
   submittedAt: null,
   submittedBy: null,
+  approvedAt: null,
+  approvedBy: null,
 }))

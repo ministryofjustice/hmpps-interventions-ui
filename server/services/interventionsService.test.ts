@@ -1720,6 +1720,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             numberOfSessions: null,
             submittedAt: null,
             submittedBy: null,
+            approvedAt: null,
+            approvedBy: null,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -1735,6 +1737,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         numberOfSessions: null,
         submittedAt: null,
         submittedBy: null,
+        approvedAt: null,
+        approvedBy: null,
       })
     })
 
@@ -1775,6 +1779,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             activities,
             submittedAt: '2021-03-09T15:08:38Z',
             submittedBy: user,
+            approvedAt: null,
+            approvedBy: null,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -1789,6 +1795,66 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         activities,
         submittedAt: '2021-03-09T15:08:38Z',
         submittedBy: user,
+        approvedAt: null,
+        approvedBy: null,
+      })
+    })
+
+    it('returns an existing approved action plan', async () => {
+      const actionPlanId = 'f3ade2c5-075a-4235-9826-eed289e4d17a'
+      const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
+      const user = {
+        authSource: 'auth',
+        userId: 'BB9C99F7-13EA-43D0-960A-768DC8FA0D91',
+        username: 'SP_USER_1',
+      }
+      const activities = [
+        {
+          id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+          description: 'Attend training course',
+          desiredOutcome: {
+            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+            description:
+              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          },
+          createdAt: '2020-12-07T20:45:21.986389Z',
+        },
+      ]
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has been approved`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            referralId,
+            activities,
+            submittedAt: '2021-03-09T15:08:38Z',
+            submittedBy: user,
+            approvedAt: '2021-03-09T15:08:38Z',
+            approvedBy: user,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      expect(actionPlan).toMatchObject({
+        id: actionPlanId,
+        referralId,
+        activities,
+        submittedAt: '2021-03-09T15:08:38Z',
+        submittedBy: user,
+        approvedAt: '2021-03-09T15:08:38Z',
+        approvedBy: user,
       })
     })
   })
@@ -1948,6 +2014,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         authSource: 'delius',
       },
       submittedAt: '2020-12-08T20:47:21.986389Z',
+      approvedBy: null,
+      approvedAt: null,
     }
 
     beforeEach(async () => {
@@ -1972,7 +2040,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
-    it('returns a sent referral', async () => {
+    it('returns a submitted action plan', async () => {
       expect(await interventionsService.submitActionPlan(token, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')).toMatchObject(
         submittedActionPlan
       )

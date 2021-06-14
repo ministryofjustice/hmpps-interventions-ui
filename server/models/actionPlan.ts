@@ -38,4 +38,6 @@ export default interface ActionPlan {
   activities: Activity[]
   submittedBy: User | null
   submittedAt: string | null
+  approvedBy: User | null
+  approvedAt: string | null
 }
