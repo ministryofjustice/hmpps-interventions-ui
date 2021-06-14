@@ -53,6 +53,23 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
     )
   }
 
+  @State("an action plan exists with ID f3ade2c5-075a-4235-9826-eed289e4d17a, and it has been approved")
+  fun `create an action plan that has been approved`() {
+    setupAssistant.createActionPlan(
+      id = UUID.fromString("f3ade2c5-075a-4235-9826-eed289e4d17a"),
+      submittedBy = setupAssistant.createSPUser(),
+      submittedAt = OffsetDateTime.now(),
+      approvedBy = setupAssistant.createPPUser(),
+      approvedAt = OffsetDateTime.now(),
+      activities = mutableListOf(
+        ActionPlanActivity(
+          description = "Attend training course",
+          desiredOutcome = setupAssistant.randomDesiredOutcome(),
+        )
+      )
+    )
+  }
+
   @State("There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan")
   fun `create sent referral 8b423e17 with action plan`() {
     val referral = setupAssistant.createSentReferral(id = UUID.fromString("8b423e17-9b60-4cc2-a927-8941ac76fdf9"))

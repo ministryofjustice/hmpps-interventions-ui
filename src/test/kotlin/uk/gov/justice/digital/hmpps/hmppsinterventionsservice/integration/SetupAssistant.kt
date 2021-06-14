@@ -231,7 +231,9 @@ class SetupAssistant(
     createdAt: OffsetDateTime = OffsetDateTime.now(),
     createdBy: AuthUser = createSPUser(),
     submittedAt: OffsetDateTime? = null,
-    submittedBy: AuthUser? = null
+    submittedBy: AuthUser? = null,
+    approvedAt: OffsetDateTime? = null,
+    approvedBy: AuthUser? = null,
   ): ActionPlan {
     return actionPlanRepository.save(
       ActionPlan(
@@ -243,6 +245,8 @@ class SetupAssistant(
         numberOfSessions = numberOfSessions,
         submittedAt = submittedAt,
         submittedBy = submittedBy,
+        approvedAt = approvedAt,
+        approvedBy = approvedBy,
       )
     )
   }
