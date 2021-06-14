@@ -116,15 +116,11 @@ pp_user_ids_with_username = [
     ('2500228092', 'Refer_Monitor_Probation_Practitioner'),
 ]
 
-service_category_reference_codes = {
-    '428ee70f-3001-4399-95a6-ad25eaaede16': 'AC',
-    'ca374ac3-84eb-4b91-bea7-9005398f426f': 'ED',
-    '96a63c39-4371-4f17-a6ec-265755f0cf7b': 'FI',
-    '76bcdb97-1dea-41c1-a4f8-899d88e5d679': 'DR',
-    'b84f4eb7-4db0-477e-8c59-21027b3262c5': 'LI',
-    '9556a399-3529-4993-8030-41db2090555e': 'FA',
-    '8221a81c-08b2-4262-9c1a-0ab3c82cec8c': 'EM',
-    'c036826e-f077-49a5-8b33-601dca7ad479': 'SO',
+contract_type_reference_codes = {
+    '72e60faf-b8e5-4699-9d7c-aef631cca71b': 'AC',
+    'b402486d-991e-4977-9291-073a3526d60f': 'ED',
+    'f9b59d2c-c60b-4eb0-8469-04c975d2e2ee': 'PE',
+    'b74c3f1d-2c53-45c0-bd23-d61befaf00af': 'WO',
 }
 
 service_category_complexity_levels = {
@@ -241,6 +237,13 @@ intervention_ids = [
     '5f0a4d93-c26e-439d-b261-0d8d6338e77f',
     '11f06a1d-da75-4ca3-bb39-b7e848fb7612',
 ]
+
+intervention_contract_types = {
+    '0e4dcc37-e3f5-4c44-b043-887dda3a2baa': 'f9b59d2c-c60b-4eb0-8469-04c975d2e2ee',
+    'ecdc6c7e-f04b-49b1-871d-3f9618555c3d': 'b402486d-991e-4977-9291-073a3526d60f',
+    '5f0a4d93-c26e-439d-b261-0d8d6338e77f': '72e60faf-b8e5-4699-9d7c-aef631cca71b',
+    '11f06a1d-da75-4ca3-bb39-b7e848fb7612': 'b402486d-991e-4977-9291-073a3526d60f',
+}
 
 intervention_service_categories = {
     '0e4dcc37-e3f5-4c44-b043-887dda3a2baa': '8221a81c-08b2-4262-9c1a-0ab3c82cec8c',
@@ -413,11 +416,11 @@ def random_when_unavailable():
     return f'{day_of_the_week}s between {start_time}:00 and {end_time}:00 due to {reason}.'
 
 
-def generate_reference_number(service_category_id):
+def generate_reference_number(contract_type_id):
     # don't care about ambiguous pairs right now
     letters = lambda k: ''.join(random.choices(string.ascii_uppercase, k=k))
     numbers = lambda k: ''.join(random.choices(string.digits, k=k))
-    return f'{letters(2)}{numbers(4)}{service_category_reference_codes[service_category_id]}'
+    return f'{letters(2)}{numbers(4)}{contract_type_reference_codes[contract_type_id]}'
 
 
 if __name__ == '__main__':
@@ -480,10 +483,7 @@ if __name__ == '__main__':
         created_by_id = random.choice(pp_user_ids_with_username)[0]
         service_usercrn = random.choice(list(su_details.keys()))
         intervention_id = random.choice(intervention_ids)
-        service_category_id = intervention_service_categories[intervention_id]
         organization = intervention_organizations[intervention_id]
-
-        complexity_levelid = random.choice(service_category_complexity_levels[service_category_id])
         completion_deadline = random_date_between(*COMPLETION_DEADLINE_RANGE)
 
         needs_interpreter = random_bool()
@@ -498,7 +498,7 @@ if __name__ == '__main__':
         fields.extend([referral_id, created_at, created_by_id, service_usercrn, intervention_id])
 
         # draft fields
-        fields.extend([complexity_levelid, completion_deadline])
+        fields.extend([completion_deadline])
         fields.extend(['', '', '', ''])
         fields.extend([needs_interpreter, interpreter_language])
         fields.extend([has_additional_responsibilities, when_unavailable])
@@ -506,7 +506,7 @@ if __name__ == '__main__':
 
         # sent fields
         if (i >= NUM_DRAFT_REFERRALS):
-            reference_number = generate_reference_number(service_category_id)
+            reference_number = generate_reference_number(intervention_contract_types[intervention_id])
             sent_at = created_at # this doesn't really matter
             sent_by_id = created_by_id
 
@@ -534,8 +534,8 @@ if __name__ == '__main__':
     with open(migrations_dir('V100_4_0__referrals.sql'), 'w') as f:
         f.write("""insert into referral
             (id, created_at, created_by_id, service_usercrn, intervention_id,
-            complexity_levelid, completion_deadline,
-            further_information, accessibility_needs, additional_needs_information, additional_risk_information,
+            completion_deadline,
+            further_information, accessibility_needs, additional_needs_information, draft_supplementary_risk,
             needs_interpreter, interpreter_language,
             has_additional_responsibilities, when_unavailable,
             maximum_enforceable_days,
@@ -546,7 +546,6 @@ if __name__ == '__main__':
         """)
 
         f.write(sql_values(referrals))
-
 
     # argh these magic numbers are the worst, this is getting out of control...
     referral_service_user_data = [[referral[0]] + list(su_details[referral[3]].values()) for referral in referrals]
@@ -559,18 +558,33 @@ if __name__ == '__main__':
 
         f.write(sql_values(referral_service_user_data))
 
+    referral_service_categories = []
+    for r in referrals:
+        service_category = intervention_service_categories[r[4]]
+        referral_service_categories.append([r[0], service_category])
+
     referral_desired_outcomes = []
     for r in referrals:
         service_category = intervention_service_categories[r[4]]
         desired_outcomes_for_service_category = service_category_desired_outcomes[service_category]
         desired_outcomes = random.sample(desired_outcomes_for_service_category, k=random.randint(1, len(desired_outcomes_for_service_category)))
         for desired_outcome in desired_outcomes:
-            referral_desired_outcomes.append([r[0], desired_outcome])
+            referral_desired_outcomes.append([r[0], desired_outcome, service_category])
 
-    with open(migrations_dir('V100_4_2__referral_desired_outcomes.sql'), 'w') as f:
-        f.write("""insert into referral_desired_outcome
-            (referral_id, desired_outcome_id)
-        values
-        """)
+    referral_complexities = []
+    for r in referrals:
+        service_category = intervention_service_categories[r[4]]
+        complexity = random.choice(service_category_complexity_levels[service_category])
+        referral_complexities.append([r[0], complexity, service_category])
 
+    with open(migrations_dir('V100_4_2__referral_categories_outcomes_complexities.sql'), 'w') as f:
+        f.write("""INSERT INTO referral_selected_service_category (referral_id, service_category_id) VALUES""")
+        f.write(sql_values(referral_service_categories))
+        f.write("\n")
+
+        f.write("""INSERT INTO referral_desired_outcome (referral_id, desired_outcome_id, service_category_id) VALUES""")
         f.write(sql_values(referral_desired_outcomes))
+        f.write("\n")
+
+        f.write("""INSERT INTO referral_complexity_level_ids (referral_id, complexity_level_ids, complexity_level_ids_key) VALUES""")
+        f.write(sql_values(referral_complexities))
