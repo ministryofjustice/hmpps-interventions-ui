@@ -1,0 +1,18 @@
+<section class="key-details-bar" aria-label="Key details">
+  <div class="key-details-bar__key-details govuk-width-container govuk-body">
+    <div class="prisoner-info">
+      <div class="key-details-bar__top-block">
+        <span class="govuk-visually-hidden">Name:</span>
+        <span class="key-details-bar__name govuk-body-l govuk-!-margin-right-6"><strong>
+        {{ serviceUserBannerPresenter.name | escape  }}</strong></span>
+        <span
+        class="govuk-body"><strong>CRN: </strong>{{ serviceUserBannerPresenter.crn | escape }}</span>
+      </div>
+      <div class="key-details-bar__bottom-block">
+        <span class="govuk-body"><strong>Date of birth: </strong>{{ serviceUserBannerPresenter.dateOfBirth | escape }}</span> |
+        <span class="govuk-body"><strong>Contact number: </strong>{{ serviceUserBannerPresenter.serviceUserMobile | escape }}</span> |
+        <span class="govuk-body"><strong>Email address: </strong>{{ serviceUserBannerPresenter.serviceUserEmail | escape }}</span>
+      </div>
+    </div>
+  </div>
+</section>

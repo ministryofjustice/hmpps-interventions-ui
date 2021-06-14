@@ -29,10 +29,6 @@
 {% block pageTitle %}HMPPS Interventions{% endblock %}
 
 {% block content %} 
-  {% if serviceUserNotificationBannerArgs %}
-    {{ govukNotificationBanner(serviceUserNotificationBannerArgs) }}
-  {% endif %}
-
   {% block pageContent %}
   {% endblock %}
 {% endblock %}
@@ -49,6 +45,9 @@
   }) }}
 
   {% block primaryNav %}{% endblock %}
+  {% if serviceUserBannerPresenter %}
+    {% include "./serviceUserBanner.njk" %}
+  {% endif %}
 {% endblock %}
 
 {% block bodyStart %}

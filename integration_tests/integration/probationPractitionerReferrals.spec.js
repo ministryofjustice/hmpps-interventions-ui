@@ -255,7 +255,8 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('This intervention is not yet assigned to a caseworker')
 
-    cy.contains('07123456789 | jenny.jones@example.com')
+    cy.contains('07123456789')
+    cy.contains('jenny.jones@example.com')
 
     cy.contains('Intervention details')
     cy.contains('Personal wellbeing')
