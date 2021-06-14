@@ -16,23 +16,23 @@ REFERRAL_CREATION_RANGE = (datetime.date(2021, 1, 1), datetime.date.today())
 COMPLETION_DEADLINE_RANGE = (datetime.date(2021, 6, 24), datetime.date(2022, 6, 24))
 
 service_providers = [
-    ('HARMONY_LIVING', 'Harmony Living', 'harmony@example.com'),
-    ('BETTER_LTD', 'Better Ltd.', 'better@example.com'),
-    ('HELPING_HANDS', 'Helping Hands', 'helping-hands@example.com'),
-    ('HOME_TRUST', 'Home Trust', 'home-trust@example.com'),
-    ('NEW_BEGINNINGS', 'New Beginnings Ltd.', 'new-beginnings@example.com'),
-    ('SAFE_LIVING', 'Safe Living Ltd.', 'safe-living@example.com'),
+    ('HARMONY_LIVING', 'Harmony Living'),
+    ('BETTER_LTD', 'Better Ltd.'),
+    ('HELPING_HANDS', 'Helping Hands'),
+    ('HOME_TRUST', 'Home Trust'),
+    ('NEW_BEGINNINGS', 'New Beginnings Ltd.'),
+    ('SAFE_LIVING', 'Safe Living Ltd.'),
 ]
 
 contracts = [
-   # emotional wellbeing service in cleveland
-   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '0001','8221a81c-08b2-4262-9c1a-0ab3c82cec8c', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
+   # Personal Wellbeing service in cleveland
+   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '0001','f9b59d2c-c60b-4eb0-8469-04c975d2e2ee', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
    # ETE service for all of yorkshire
-   ('21ef4732-73e6-486b-832c-9f49165d40ab', '0002','ca374ac3-84eb-4b91-bea7-9005398f426f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
+   ('21ef4732-73e6-486b-832c-9f49165d40ab', '0002','b402486d-991e-4977-9291-073a3526d60f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
    # accommodation service for the midlands
-   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '0003','428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '0003','72e60faf-b8e5-4699-9d7c-aef631cca71b', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
    # ETE service for the midlands
-   ('9653676a-a51f-48cf-8541-444af11fe18b', '0004','ca374ac3-84eb-4b91-bea7-9005398f426f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   ('9653676a-a51f-48cf-8541-444af11fe18b', '0004','b402486d-991e-4977-9291-073a3526d60f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
 ]
 
 interventions = [
@@ -42,6 +42,7 @@ interventions = [
         '2021-03-19',
         'Emotional Wellbeing',
         'Supporting services users around all areas of PW to enhance motivation and allow opportunity for SU change. The project consists of various external 1:1/group work activity across the region which directly link to SU outcome expectation.',
+        'better@example.com',
     ),
     (
         'ecdc6c7e-f04b-49b1-871d-3f9618555c3d',
@@ -59,6 +60,7 @@ We source and manage a range of voluntary placements with a diverse range of lar
 Our Community Partnership Network engages with employers and colleges across the region to ensure we have access to the latest jobs, courses and opportunities that we can signpost people to and support them to get there.
 
 We focus on the individual, provide wrap around support at the appropriate level and our aim is to motivate, mentor and to enable people to make a 'step change' in their lives.''',
+        'safe-living@example.com',
     ),
     (
         '5f0a4d93-c26e-439d-b261-0d8d6338e77f',
@@ -76,6 +78,7 @@ Interventions may include:
   • referrals to housing providers and/or the local authority
   • support to access the private rented sector
   • building independence through the delivery of group work and courses (e.g. how to be a good tenant)''',
+        'harmony@example.com',
     ),
     (
         '11f06a1d-da75-4ca3-bb39-b7e848fb7612',
@@ -91,6 +94,7 @@ Interventions may include:
 • Careers advice, including selecting appropriate sectors reflecting offending type, differing methods of securing work inc use of technology to increase during and post-Lockdowns
 • Further advice on how/when to disclose convictions to potential employers
 • The opportunity receive support from people with lived experience''',
+        'new-beginnings@example.com',
     ),
 ]
 
@@ -426,7 +430,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_0__service_providers.sql'), 'w') as f:
         f.write("""insert into service_provider
-            (id, name, incoming_referral_distribution_email)
+            (id, name)
         values
         """)
 
@@ -434,7 +438,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_1__df_contracts.sql'), 'w') as f:
         f.write("""insert into dynamic_framework_contract
-            (id, contract_reference, service_category_id, prime_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
+            (id, contract_reference, contract_type_id, prime_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
         values
         """)
 
@@ -442,7 +446,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_2__interventions.sql'), 'w') as f:
         f.write("""insert into intervention
-            (id, dynamic_framework_contract_id, created_at, title, description)
+            (id, dynamic_framework_contract_id, created_at, title, description, incoming_referral_distribution_email)
         values
         """)
         f.write(sql_values(interventions))

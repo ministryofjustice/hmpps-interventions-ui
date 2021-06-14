@@ -1,9 +1,9 @@
 insert into service_provider
-            (id, name, incoming_referral_distribution_email)
+            (id, name)
         values
-        ('HARMONY_LIVING','Harmony Living','harmony@example.com'),
-('BETTER_LTD','Better Ltd.','better@example.com'),
-('HELPING_HANDS','Helping Hands','helping-hands@example.com'),
-('HOME_TRUST','Home Trust','home-trust@example.com'),
-('NEW_BEGINNINGS','New Beginnings Ltd.','new-beginnings@example.com'),
-('SAFE_LIVING','Safe Living Ltd.','safe-living@example.com');
+        ('HARMONY_LIVING','Harmony Living'),
+('BETTER_LTD','Better Ltd.'),
+('HELPING_HANDS','Helping Hands'),
+('HOME_TRUST','Home Trust'),
+('NEW_BEGINNINGS','New Beginnings Ltd.'),
+('SAFE_LIVING','Safe Living Ltd.');
