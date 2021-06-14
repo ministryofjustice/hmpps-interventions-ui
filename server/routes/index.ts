@@ -162,6 +162,12 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/referrals/:id/supplier-assessment', (req, res) =>
     serviceProviderReferralsController.showSupplierAssessmentAppointment(req, res)
   )
+  get('/service-provider/referrals/:id/supplier-assessment/scheduled-confirmation', (req, res) =>
+    serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: false })
+  )
+  get('/service-provider/referrals/:id/supplier-assessment/rescheduled-confirmation', (req, res) =>
+    serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

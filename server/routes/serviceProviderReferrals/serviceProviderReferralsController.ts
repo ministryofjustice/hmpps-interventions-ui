@@ -62,6 +62,8 @@ import ScheduleActionPlanSessionPresenter from './scheduleActionPlanSessionPrese
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import SupplierAssessmentAppointmentPresenter from './supplierAssessmentAppointmentPresenter'
 import SupplierAssessmentAppointmentView from './supplierAssessmentAppointmentView'
+import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
+import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -469,6 +471,22 @@ export default class ServiceProviderReferralsController {
     })
   }
 
+  async showSupplierAssessmentAppointmentConfirmation(
+    req: Request,
+    res: Response,
+    { isReschedule }: { isReschedule: boolean }
+  ): Promise<void> {
+    const referralId = req.params.id
+
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SupplierAssessmentAppointmentConfirmationPresenter(referral, isReschedule)
+    const view = new SupplierAssessmentAppointmentConfirmationView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
     const referralId = req.params.id
 
@@ -476,6 +494,8 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       referralId
     )
+
+    const hasExistingAppointment = supplierAssessment.currentAppointmentId !== null
 
     await this.scheduleAppointment(req, res, {
       getReferral: () => this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
@@ -490,7 +510,9 @@ export default class ServiceProviderReferralsController {
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) =>
         new ScheduleAppointmentPresenter(appointment, formError, userInputData, serverError),
-      redirectTo: `/service-provider/referrals/${referralId}/progress`,
+      redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
+        hasExistingAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
+      }`,
     })
   }
 

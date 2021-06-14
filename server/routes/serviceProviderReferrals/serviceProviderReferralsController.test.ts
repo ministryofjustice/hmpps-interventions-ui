@@ -1512,43 +1512,86 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
 
 describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', () => {
   describe('with valid data', () => {
-    it('schedules the appointment on the interventions service and redirects to the intervention progress page', async () => {
-      const referral = sentReferralFactory.build()
-      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+    describe('when there is no existing appointment scheduled', () => {
+      it('schedules the appointment on the interventions service and redirects to the confirmation page', async () => {
+        const referral = sentReferralFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-      const scheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-03-24T09:02:02Z',
-        durationInMinutes: 75,
-      })
-
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
-
-      await request(app)
-        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
-        .type('form')
-        .send({
-          'date-day': '24',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-        })
-        .expect(302)
-        .expect('Location', `/service-provider/referrals/${referral.id}/progress`)
-
-      expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
-        'token',
-        supplierAssessment.id,
-        {
-          appointmentTime: '2021-03-24T09:02:00.000Z',
+        const scheduledAppointment = appointmentFactory.build({
+          appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
-        }
-      )
+        })
+
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+
+        await request(app)
+          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+          .type('form')
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+          })
+          .expect(302)
+          .expect('Location', `/service-provider/referrals/${referral.id}/supplier-assessment/scheduled-confirmation`)
+
+        expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
+          'token',
+          supplierAssessment.id,
+          {
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+          }
+        )
+      })
+    })
+
+    describe('when there is an existing appointment scheduled', () => {
+      it('schedules the appointment on the interventions service and redirects to the rescheduled-confirmation page', async () => {
+        const referral = sentReferralFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
+
+        const scheduledAppointment = appointmentFactory.build({
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+        })
+
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+
+        await request(app)
+          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+          .type('form')
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+          })
+          .expect(302)
+          .expect('Location', `/service-provider/referrals/${referral.id}/supplier-assessment/rescheduled-confirmation`)
+
+        expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
+          'token',
+          supplierAssessment.id,
+          {
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+          }
+        )
+      })
     })
 
     describe('when the interventions service responds with a 409 status code', () => {
@@ -1631,6 +1674,32 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
 
       expect(interventionsService.scheduleSupplierAssessmentAppointment).not.toHaveBeenCalled()
     })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/scheduled-confirmation', () => {
+  it('displays a confirmation page', async () => {
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Initial assessment appointment added')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/scheduled-confirmation', () => {
+  it('displays a confirmation page', async () => {
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Initial assessment appointment added')
+      })
   })
 })
 

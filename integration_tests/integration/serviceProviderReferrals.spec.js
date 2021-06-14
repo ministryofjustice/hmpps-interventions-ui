@@ -1082,9 +1082,17 @@ describe('Service provider referrals dashboard', () => {
         currentAppointmentId: scheduledAppointment.id,
       })
       cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
-      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
       cy.contains('Save and continue').click()
+      // We need to switch out the response _after_ the update, since the
+      // redirect to the correct confirmation page depends on the pre-update
+      // state. The best way to handle this would be using Wiremock scenarios
+      // to trigger a state transition upon the PUT, but it would take a decent
+      // chunk of work on our mocks that I don’t want to do now.
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
+
+      cy.get('h1').contains('Initial assessment appointment added')
+      cy.contains('Return to progress').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
@@ -1161,9 +1169,13 @@ describe('Service provider referrals dashboard', () => {
         supplierAssessmentWithRescheduledAppointment.id,
         scheduledAppointment
       )
-      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithRescheduledAppointment)
 
       cy.contains('Save and continue').click()
+      // See comment in previous test about why we do this after the update
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
+
+      cy.get('h1').contains('Initial assessment appointment updated')
+      cy.contains('Return to progress').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
