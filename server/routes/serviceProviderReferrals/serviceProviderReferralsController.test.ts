@@ -789,7 +789,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
       const actionPlan = actionPlanFactory.build()
 
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
       await request(app)
         .post(
@@ -822,7 +822,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
       const actionPlan = actionPlanFactory.build()
 
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
       await request(app)
         .post(
@@ -883,7 +883,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
     const actionPlan = actionPlanFactory.build()
 
-    interventionsService.recordAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+    interventionsService.recordActionPlanAppointmentBehavior.mockResolvedValue(updatedAppointment)
 
     await request(app)
       .post(
@@ -942,7 +942,11 @@ describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNu
         `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
       )
 
-    expect(interventionsService.submitSessionFeedback).toHaveBeenCalledWith('token', actionPlanId, sessionNumber)
+    expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith(
+      'token',
+      actionPlanId,
+      sessionNumber
+    )
   })
 })
 

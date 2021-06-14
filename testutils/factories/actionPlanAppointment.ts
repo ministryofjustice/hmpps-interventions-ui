@@ -1,48 +1,27 @@
 import { Factory } from 'fishery'
-import { ActionPlanAppointment, Attended } from '../../server/models/actionPlan'
+import { ActionPlanAppointment } from '../../server/models/actionPlan'
+import { Attended } from '../../server/models/appointmentAttendance'
+import appointmentFactory from './appointment'
 
 class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
   newlyCreated() {
-    return this.params({})
+    return this.params({ ...appointmentFactory.newlyCreated().build() })
   }
 
   scheduled() {
     return this.params({
-      appointmentTime: new Date().toISOString(),
-      durationInMinutes: 60,
+      ...appointmentFactory.scheduled().build(),
     })
   }
 
   attended(attendance: Attended) {
     return this.params({
-      sessionFeedback: {
-        attendance: {
-          attended: attendance,
-          additionalAttendanceInformation: '',
-        },
-        behaviour: {
-          behaviourDescription: '',
-          notifyProbationPractitioner: false,
-        },
-        submitted: true,
-      },
+      ...appointmentFactory.attended(attendance).build(),
     })
   }
 }
 
 export default ActionPlanAppointmentFactory.define(() => ({
+  ...appointmentFactory.build(),
   sessionNumber: 1,
-  appointmentTime: null,
-  durationInMinutes: null,
-  sessionFeedback: {
-    attendance: {
-      attended: null,
-      additionalAttendanceInformation: null,
-    },
-    behaviour: {
-      behaviourDescription: null,
-      notifyProbationPractitioner: null,
-    },
-    submitted: false,
-  },
 }))
