@@ -60,6 +60,8 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import SentReferral from '../../models/sentReferral'
 import ScheduleActionPlanSessionPresenter from './scheduleActionPlanSessionPresenter'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
+import SupplierAssessmentAppointmentPresenter from './supplierAssessmentAppointmentPresenter'
+import SupplierAssessmentAppointmentView from './supplierAssessmentAppointmentView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -490,6 +492,28 @@ export default class ServiceProviderReferralsController {
         new ScheduleAppointmentPresenter(appointment, formError, userInputData, serverError),
       redirectTo: `/service-provider/referrals/${referralId}/progress`,
     })
+  }
+
+  async showSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
+
+      this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, referralId),
+    ])
+
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to view supplier assessment without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment)
+    const view = new SupplierAssessmentAppointmentView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   private async scheduleAppointment<AppointmentType>(

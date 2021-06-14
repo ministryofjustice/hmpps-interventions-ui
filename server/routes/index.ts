@@ -159,6 +159,9 @@ export default function routes(router: Router, services: Services): Router {
   post('/service-provider/referrals/:id/supplier-assessment/schedule', (req, res) =>
     serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
   )
+  get('/service-provider/referrals/:id/supplier-assessment', (req, res) =>
+    serviceProviderReferralsController.showSupplierAssessmentAppointment(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

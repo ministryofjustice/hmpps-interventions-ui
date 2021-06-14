@@ -1633,3 +1633,30 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
     })
   })
 })
+
+describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
+  it('shows a summary of the current supplier assessment appointment', async () => {
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    const appointments = [
+      ...appointmentFactory.buildList(2),
+      appointmentFactory.newlyBooked().build({
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      }),
+    ]
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments,
+      currentAppointmentId: appointments[2].id,
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('24 March 2021')
+        expect(res.text).toContain('9:02am to 10:17am')
+      })
+  })
+})

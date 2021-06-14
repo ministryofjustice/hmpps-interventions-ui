@@ -191,10 +191,19 @@ export default class InterventionProgressPresenter {
   )
 
   get supplierAssessmentLink(): { text: string; href: string; hiddenText?: string } {
-    return {
-      text: 'Schedule',
-      hiddenText: ' initial assessment',
-      href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+    switch (this.supplierAssessmentStatus) {
+      case SessionStatus.notScheduled:
+        return {
+          text: 'Schedule',
+          hiddenText: ' initial assessment',
+          href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+        }
+      case SessionStatus.scheduled:
+      default:
+        return {
+          text: 'View appointment details',
+          href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
+        }
     }
   }
 

@@ -1039,7 +1039,7 @@ describe('Service provider referrals dashboard', () => {
   })
 
   describe('Supplier assessments', () => {
-    it('User schedules a supplier assessment appointment', () => {
+    it('User schedules and views a supplier assessment appointment', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const intervention = interventionFactory.build()
       const referral = sentReferralFactory.assigned().build({
@@ -1088,6 +1088,12 @@ describe('Service provider referrals dashboard', () => {
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+
+      cy.contains('View appointment details').click()
+      cy.get('h1').contains('View appointment details')
+
+      cy.contains('24 March 2021')
+      cy.contains('9:02am to 10:17am')
     })
 
     it('User reschedules a supplier assessment appointment', () => {
@@ -1115,9 +1121,13 @@ describe('Service provider referrals dashboard', () => {
 
       cy.login()
 
-      cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
 
-      cy.contains('Change appointment details')
+      cy.contains('View appointment details').click()
+
+      cy.contains('Change appointment details').click()
+
+      cy.get('h1').contains('Change appointment details')
 
       cy.get('#date-day').should('have.value', '24')
       cy.get('#date-month').should('have.value', '3')
