@@ -26,9 +26,6 @@ interface CommunityAPIService {
     val primeProviderName = referral.intervention.dynamicFrameworkContract.primeProvider.name
     return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
   }
-
-  fun camelCase(word: String) =
-    word.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
 
 @Service
@@ -171,7 +168,7 @@ class CommunityAPIActionPlanEventService(
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
-        postNotificationRequest(event, url, event.actionPlan.submittedAt!!)
+        postNotificationRequest(event, url, "Submitted", event.actionPlan.submittedAt!!)
       }
       ActionPlanEventType.APPROVED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
@@ -179,15 +176,14 @@ class CommunityAPIActionPlanEventService(
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
-        postNotificationRequest(event, url, event.actionPlan.approvedAt!!)
+        postNotificationRequest(event, url, "Approved", event.actionPlan.approvedAt!!)
       }
     }
   }
 
-  private fun postNotificationRequest(event: ActionPlanEvent, url: String, eventTime: OffsetDateTime) {
+  private fun postNotificationRequest(event: ActionPlanEvent, url: String, status: String, eventTime: OffsetDateTime) {
 
     val referral = event.actionPlan.referral
-    val status = camelCase(event.type.name)
 
     val request = NotificationCreateRequestDTO(
       referral.intervention.dynamicFrameworkContract.contractType.code,
