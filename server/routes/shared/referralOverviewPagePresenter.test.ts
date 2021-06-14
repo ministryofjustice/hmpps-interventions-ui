@@ -47,7 +47,7 @@ describe(ReferralOverviewPagePresenter, () => {
       const sentReferral = sentReferralFactory.build()
       const presenter = new ReferralOverviewPagePresenter(ReferralOverviewPageSection.Details, sentReferral.id, prefix)
 
-      expect(presenter.dashboardURL).toEqual(`/${prefix}/referrals/dashboard`)
+      expect(presenter.dashboardURL).toEqual(`/${prefix}/dashboard`)
     })
   })
 })
