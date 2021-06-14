@@ -42,7 +42,7 @@ export default function createErrorHandler(production: boolean) {
     )
 
     const args: Record<string, unknown> = {
-      userMessage: (err as HttpError).response?.body?.userMessage,
+      userMessage: (err as HttpError).userMessage || (err as HttpError).response?.body?.userMessage,
     }
 
     if (!production) {
