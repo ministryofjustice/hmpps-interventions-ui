@@ -9,9 +9,14 @@ import {
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
+import ActionPlanDetailsView from '../shared/actionPlanDetailsView'
 
 export default class InterventionProgressView {
-  constructor(private readonly presenter: InterventionProgressPresenter) {}
+  actionPlanDetailsView: ActionPlanDetailsView
+
+  constructor(private readonly presenter: InterventionProgressPresenter) {
+    this.actionPlanDetailsView = new ActionPlanDetailsView(presenter.actionPlanDetailsPresenter)
+  }
 
   get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
     let cancellationReasonHTML = ''
@@ -81,7 +86,7 @@ export default class InterventionProgressView {
         value: {
           text: tagMacro({
             text: this.presenter.actionPlanDetailsPresenter.text.actionPlanStatus,
-            classes: this.actionPlanTagClass,
+            classes: this.actionPlanDetailsView.actionPlanTagClass,
             attributes: { id: 'action-plan-status' },
           }),
         },
@@ -152,17 +157,6 @@ export default class InterventionProgressView {
     }
 
     return { rows }
-  }
-
-  private get actionPlanTagClass(): string {
-    switch (this.presenter.actionPlanDetailsPresenter.text.actionPlanStatus) {
-      case 'Approved':
-        return 'govuk-tag--green'
-      case 'Under review':
-        return 'govuk-tag- govuk-tag--red'
-      default:
-        return 'govuk-tag--grey'
-    }
   }
 
   private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
