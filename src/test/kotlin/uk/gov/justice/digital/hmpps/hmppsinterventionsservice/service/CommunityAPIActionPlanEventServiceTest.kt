@@ -20,6 +20,7 @@ class CommunityAPIActionPlanEventServiceTest {
 
   private val sentAtDefault = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
   private val submittedAtDefault = OffsetDateTime.of(2020, 2, 2, 2, 2, 2, 2, ZoneOffset.UTC)
+  private val approvedAtDefault = OffsetDateTime.of(2020, 3, 3, 3, 3, 3, 3, ZoneOffset.UTC)
 
   private val actionPlanFactory = ActionPlanFactory()
   private val referralFactory = ReferralFactory()
@@ -64,7 +65,7 @@ class CommunityAPIActionPlanEventServiceTest {
         "ACC",
         sentAtDefault,
         event.actionPlan.referral.id,
-        submittedAtDefault,
+        approvedAtDefault,
         "Action Plan Approved for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
           "http://testUrl/probation-practitioner/approved-action-plan/${event.actionPlan.referral.id}",
       )
@@ -80,6 +81,7 @@ class CommunityAPIActionPlanEventServiceTest {
       actionPlanFactory.create(
         id = UUID.fromString("120b1a45-8ac7-4920-b05b-acecccf4734b"),
         submittedAt = submittedAtDefault,
+        approvedAt = approvedAtDefault,
         referral = referralFactory.createSent(
           serviceUserCRN = "X123456",
           relevantSentenceId = 1234L,
