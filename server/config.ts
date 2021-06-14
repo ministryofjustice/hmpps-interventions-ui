@@ -41,7 +41,7 @@ export default {
   https: production,
   staticResourceCacheDuration: 20,
   deploymentEnvironment: get('DEPLOYMENT_ENV', 'local', requiredInProduction),
-  uaId: get('GA_ID', '', requiredInProduction),
+  googleAnalyticsTrackingId: get('GA_ID', '', requiredInProduction),
   redis: {
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT) || 6379,
