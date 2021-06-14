@@ -57,9 +57,15 @@ jobs:
             sudo apt update
             sudo apt install postgresql-client
       - run:
-          name: Run all migrations and seeds
+          name: Run migrations and local seeds
           command: |
-            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db"
+            flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration,src/main/resources/db/local"
+      - run:
+          name: Run migrations and research seeds
+          command: |
+            flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration,src/main/resources/db/research"
       - run:
           name: Validate report SQLs
           command: |
