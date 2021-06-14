@@ -302,7 +302,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
       },
     })
     const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
-      activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
+      activities: [{ id: '1', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' }],
     })
 
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
@@ -383,7 +383,6 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
         .type('form')
         .send({
           description: '',
-          'desired-outcome-id': '8eb52caf-b462-4100-a0e9-7022d2551c92',
         })
         .expect(400)
         .expect(res => {
@@ -427,8 +426,8 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
     it('redirects to the next page of the action plan journey', async () => {
       const actionPlan = actionPlanFactory.build({
         activities: [
-          { id: '1', desiredOutcome: desiredOutcomes[0], createdAt: new Date().toISOString(), description: '' },
-          { id: '2', desiredOutcome: desiredOutcomes[1], createdAt: new Date().toISOString(), description: '' },
+          { id: '1', createdAt: new Date().toISOString(), description: '' },
+          { id: '2', createdAt: new Date().toISOString(), description: '' },
         ],
       })
 
@@ -545,7 +544,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
       },
     })
     const draftActionPlan = actionPlanFactory.readyToSubmit(referral.id).build({
-      activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
+      activities: [{ id: '1', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' }],
       numberOfSessions: 10,
     })
 
