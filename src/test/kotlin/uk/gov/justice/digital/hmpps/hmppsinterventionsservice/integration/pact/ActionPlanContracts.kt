@@ -47,7 +47,6 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       activities = mutableListOf(
         ActionPlanActivity(
           description = "Attend training course",
-          desiredOutcome = setupAssistant.randomDesiredOutcome(),
         )
       )
     )
@@ -64,7 +63,6 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       activities = mutableListOf(
         ActionPlanActivity(
           description = "Attend training course",
-          desiredOutcome = setupAssistant.randomDesiredOutcome(),
         )
       )
     )
@@ -99,7 +97,6 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       activities = mutableListOf(
         ActionPlanActivity(
           description = "Attend training course",
-          desiredOutcome = setupAssistant.randomDesiredOutcome(),
         )
       )
     )

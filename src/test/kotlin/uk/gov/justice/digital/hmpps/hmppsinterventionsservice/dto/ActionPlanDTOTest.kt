@@ -25,7 +25,6 @@ class ActionPlanDTOTest(@Autowired private val json: JacksonTester<ActionPlanDTO
       createdAt = planCreatedAt,
       submittedBy = AuthUser("submitter", "auth", "submitterName"),
       submittedAt = planSubmittedAt,
-      desiredOutcome = SampleData.sampleDesiredOutcome(id = UUID.fromString("333ED289-8412-41A9-8291-45E33E60276C")),
       activityId = UUID.fromString("444ED289-8412-41A9-8291-45E33E60276C"),
       activityCreatedAt = activityCreatedAt
     )
@@ -40,10 +39,6 @@ class ActionPlanDTOTest(@Autowired private val json: JacksonTester<ActionPlanDTO
         "activities": [
           {
             "id": "444ed289-8412-41a9-8291-45e33e60276c",
-            "desiredOutcome": {
-              "id": "333ed289-8412-41a9-8291-45e33e60276c",
-              "description": "Outcome 1"
-            },
             "description": "Some text to describe activity",
             "createdAt": "2020-12-04T10:42:44Z"
           }

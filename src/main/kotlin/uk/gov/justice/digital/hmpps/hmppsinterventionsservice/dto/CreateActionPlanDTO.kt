@@ -9,6 +9,5 @@ data class CreateActionPlanDTO(
 )
 
 data class CreateActionPlanActivityDTO(
-  val desiredOutcomeId: UUID,
   val description: String
 )

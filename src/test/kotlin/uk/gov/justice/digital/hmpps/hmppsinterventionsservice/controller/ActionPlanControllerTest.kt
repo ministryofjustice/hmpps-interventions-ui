@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
@@ -20,26 +19,23 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPl
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.net.URI
-import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.EntityExistsException
 
 internal class ActionPlanControllerTest {
-
+  private val actionPlanFactory = ActionPlanFactory()
   private val tokenFactory = JwtTokenFactory()
-  private val actionPlanMapper = mock<ActionPlanMapper>()
   private val userMapper = mock<UserMapper>()
   private val actionPlanService = mock<ActionPlanService>()
   private val locationMapper = mock<LocationMapper>()
   private val userTypeChecker = mock<UserTypeChecker>()
 
   private val actionPlanController = ActionPlanController(
-    actionPlanMapper,
     userMapper,
     actionPlanService,
     locationMapper,
@@ -69,7 +65,6 @@ internal class ActionPlanControllerTest {
     val uri = URI.create("http://localhost/1234")
 
     whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activitiesDTO)).thenReturn(activities)
     whenever(actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)).thenReturn(actionPlan)
     whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", actionPlanDTO.id)).thenReturn(uri)
 
@@ -81,35 +76,27 @@ internal class ActionPlanControllerTest {
 
   @Test
   fun `successfully update a draft action plan containing an activity`() {
-    val draftActionPlanId = UUID.randomUUID()
-    val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "Des Out", UUID.randomUUID())
-    val activityDTO = CreateActionPlanActivityDTO(desiredOutcome.id, "Description")
-    val activityUpdate = ActionPlanActivity("Description", OffsetDateTime.now(), desiredOutcome)
-    whenever(actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(activityDTO)).thenReturn(activityUpdate)
+    val actionPlan = actionPlanFactory.create()
+    val activityDTO = CreateActionPlanActivityDTO("Description")
 
-    val updatedActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
-    whenever(actionPlanService.updateActionPlan(draftActionPlanId, 1, activityUpdate)).thenReturn(updatedActionPlan)
+    whenever(actionPlanService.updateActionPlan(eq(actionPlan.id), eq(1), any())).thenReturn(actionPlan)
 
     val updateActionPlanDTO = UpdateActionPlanDTO(1, activityDTO)
+    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(actionPlan.id, updateActionPlanDTO)
 
-    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, updateActionPlanDTO)
-
-    assertThat(draftActionPlanResponse).isEqualTo(ActionPlanDTO.from(updatedActionPlan))
+    assertThat(draftActionPlanResponse).isEqualTo(ActionPlanDTO.from(actionPlan))
   }
 
   @Test
   fun `successfully update a draft action plan without an activity`() {
-    val draftActionPlanId = UUID.randomUUID()
+    val actionPlan = actionPlanFactory.create()
 
-    val updatedActionPlan = SampleData.sampleActionPlan(id = draftActionPlanId)
-    whenever(actionPlanService.updateActionPlan(draftActionPlanId, 1, null)).thenReturn(updatedActionPlan)
+    whenever(actionPlanService.updateActionPlan(actionPlan.id, 1, null)).thenReturn(actionPlan)
 
     val updateActionPlanDTO = UpdateActionPlanDTO(1, null)
+    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(actionPlan.id, updateActionPlanDTO)
 
-    val draftActionPlanResponse = actionPlanController.updateDraftActionPlan(draftActionPlanId, updateActionPlanDTO)
-
-    verifyZeroInteractions(actionPlanMapper)
-    assertThat(draftActionPlanResponse).isEqualTo(ActionPlanDTO.from(updatedActionPlan))
+    assertThat(draftActionPlanResponse).isEqualTo(ActionPlanDTO.from(actionPlan))
   }
 
   @Test

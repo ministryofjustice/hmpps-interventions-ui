@@ -13,18 +13,17 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.User
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.ActionPlanMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.util.UUID
 import javax.persistence.EntityExistsException
 
 @RestController
 class ActionPlanController(
-  val actionPlanMapper: ActionPlanMapper,
   val userMapper: UserMapper,
   val actionPlanService: ActionPlanService,
   val locationMapper: LocationMapper,
@@ -42,14 +41,11 @@ class ActionPlanController(
       throw EntityExistsException("action plan already exists for referral [referralId=$referralId]")
     }
 
-    val createdByUser = userMapper.fromToken(authentication)
-    val createActionPlanActivities = actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(createActionPlanDTO.activities)
-
     val draftActionPlan = actionPlanService.createDraftActionPlan(
       referralId,
       createActionPlanDTO.numberOfSessions,
-      createActionPlanActivities,
-      createdByUser
+      createActionPlanDTO.activities.map { ActionPlanActivity(description = it.description) },
+      userMapper.fromToken(authentication)
     )
 
     val actionPlanDTO = ActionPlanDTO.from(draftActionPlan)
@@ -75,8 +71,11 @@ class ActionPlanController(
     @PathVariable id: UUID,
     @RequestBody update: UpdateActionPlanDTO,
   ): ActionPlanDTO {
-    val newActivity = update.newActivity?.let { actionPlanMapper.mapActionPlanActivityDtoToActionPlanActivity(it) }
-    val updatedActionPlan = actionPlanService.updateActionPlan(id, update.numberOfSessions, newActivity)
+    val updatedActionPlan = actionPlanService.updateActionPlan(
+      id,
+      update.numberOfSessions,
+      update.newActivity?.let { ActionPlanActivity(description = it.description) },
+    )
 
     return ActionPlanDTO.from(updatedActionPlan)
   }
