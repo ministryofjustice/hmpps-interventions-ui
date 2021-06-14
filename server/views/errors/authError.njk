@@ -1,0 +1,26 @@
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+    HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+    {% block content %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">Sorry, you are not authorized to access this page</h1>
+                <p class="govuk-body">The following issues have been identified:</p>
+                {% if message %}
+                    <p class="govuk-body"><strong>{{ message }}</strong></p>
+                {% endif %}
+                {% if accessErrors %}
+                    <ul class="govuk-list govuk-list--bullet">
+                        {% for err in accessErrors %}
+                            <li>{{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}

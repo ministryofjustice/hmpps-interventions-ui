@@ -402,13 +402,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         })
       ).rejects.toMatchObject({
         status: 400,
-        message: 'Bad Request',
-        validationErrors: [
-          {
-            field: 'completionDeadline',
-            error: 'DATE_MUST_BE_IN_THE_FUTURE',
-          },
-        ],
       })
     })
 

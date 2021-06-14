@@ -13,7 +13,6 @@ import endOfServiceReportFactory from '../../../testutils/factories/endOfService
 
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
-import authUtils from '../../utils/authUtils'
 import interventionFactory from '../../../testutils/factories/intervention'
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
@@ -84,7 +83,6 @@ describe('GET /probation-practitioner/dashboard', () => {
       }),
     ]
 
-    authUtils.getProbationPractitionerUserId = jest.fn()
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferralsForUserToken.mockResolvedValue(referrals)
 

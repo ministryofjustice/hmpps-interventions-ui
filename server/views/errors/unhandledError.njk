@@ -1,0 +1,29 @@
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+    HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+    {% block content %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
+                
+                {% if userMessage %}
+                    <p class="govuk-body">{{ userMessage }}</p>
+                {% endif %}
+
+                <p class="govuk-body">The error has been logged.</p>
+
+                {% if err %}
+                    <p class="govuk-body"><strong>Message:</strong> {{ err.message }}</p>
+                    <pre class="govuk-body"><strong>Stack:</strong> {{ err.stack }}</pre>
+                    {% if err.response %}
+                        <pre class="govuk-body"><strong>Downstream response:</strong> {{ err.response }}</pre>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+{% endblock %}

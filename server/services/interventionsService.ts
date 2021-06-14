@@ -1,7 +1,6 @@
 import RestClient from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
-import { SanitisedError } from '../sanitisedError'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import CalendarDay from '../utils/calendarDay'
 import User from '../models/hmppsAuth/user'
@@ -16,8 +15,6 @@ import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
-
-export type InterventionsServiceError = SanitisedError & { validationErrors?: InterventionsServiceValidationError[] }
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -65,21 +62,6 @@ export default class InterventionsService {
     return new RestClient('Interventions Service API Client', this.config, token)
   }
 
-  private createServiceError(error: unknown): InterventionsServiceError {
-    // TODO IC-620 validate this data properly
-    const sanitisedError = error as SanitisedError
-
-    const bodyObject = sanitisedError.data as Record<string, unknown>
-    if ('validationErrors' in bodyObject) {
-      return {
-        ...sanitisedError,
-        validationErrors: bodyObject.validationErrors as InterventionsServiceValidationError[],
-      }
-    }
-
-    return sanitisedError
-  }
-
   serializeDeliusServiceUser(deliusServiceUser: DeliusServiceUser | null): ServiceUser {
     if (!deliusServiceUser) {
       return {} as ServiceUser
@@ -116,43 +98,30 @@ export default class InterventionsService {
     logger.info({ id }, 'Getting draft referral')
 
     const restClient = this.createRestClient(token)
-
-    try {
-      return (await restClient.get({
-        path: `/draft-referral/${id}`,
-        headers: { Accept: 'application/json' },
-      })) as DraftReferral
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.get({
+      path: `/draft-referral/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as DraftReferral
   }
 
   async createDraftReferral(token: string, crn: string, interventionId: string): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.post({
-        path: `/draft-referral`,
-        headers: { Accept: 'application/json' },
-        data: { serviceUserCrn: crn, interventionId },
-      })) as DraftReferral
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.post({
+      path: `/draft-referral`,
+      headers: { Accept: 'application/json' },
+      data: { serviceUserCrn: crn, interventionId },
+    })) as DraftReferral
   }
 
   async patchDraftReferral(token: string, id: string, patch: Partial<DraftReferral>): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.patch({
-        path: `/draft-referral/${id}`,
-        headers: { Accept: 'application/json' },
-        data: patch,
-      })) as DraftReferral
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.patch({
+      path: `/draft-referral/${id}`,
+      headers: { Accept: 'application/json' },
+      data: patch,
+    })) as DraftReferral
   }
 
   async setDesiredOutcomesForServiceCategory(
@@ -162,15 +131,11 @@ export default class InterventionsService {
   ): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.patch({
-        path: `/draft-referral/${referralId}/desired-outcomes`,
-        headers: { Accept: 'application/json' },
-        data: desiredOutcomes,
-      })) as DraftReferral
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.patch({
+      path: `/draft-referral/${referralId}/desired-outcomes`,
+      headers: { Accept: 'application/json' },
+      data: desiredOutcomes,
+    })) as DraftReferral
   }
 
   async setComplexityLevelForServiceCategory(
@@ -180,28 +145,20 @@ export default class InterventionsService {
   ): Promise<DraftReferral> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.patch({
-        path: `/draft-referral/${referralId}/complexity-level`,
-        headers: { Accept: 'application/json' },
-        data: complexityLevel,
-      })) as DraftReferral
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.patch({
+      path: `/draft-referral/${referralId}/complexity-level`,
+      headers: { Accept: 'application/json' },
+      data: complexityLevel,
+    })) as DraftReferral
   }
 
   async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.get({
-        path: `/service-category/${id}`,
-        headers: { Accept: 'application/json' },
-      })) as ServiceCategory
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.get({
+      path: `/service-category/${id}`,
+      headers: { Accept: 'application/json' },
+    })) as ServiceCategory
   }
 
   async getDraftReferralsForUserToken(token: string): Promise<DraftReferral[]> {
@@ -287,15 +244,11 @@ export default class InterventionsService {
   async createDraftActionPlan(token: string, referralId: string): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.post({
-        path: '/draft-action-plan',
-        headers: { Accept: 'application/json' },
-        data: { referralId },
-      })) as ActionPlan
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.post({
+      path: '/draft-action-plan',
+      headers: { Accept: 'application/json' },
+      data: { referralId },
+    })) as ActionPlan
   }
 
   async getActionPlan(token: string, id: string): Promise<ActionPlan> {
@@ -314,15 +267,11 @@ export default class InterventionsService {
   ): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.patch({
-        path: `/draft-action-plan/${id}`,
-        headers: { Accept: 'application/json' },
-        data: patch,
-      })) as ActionPlan
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.patch({
+      path: `/draft-action-plan/${id}`,
+      headers: { Accept: 'application/json' },
+      data: patch,
+    })) as ActionPlan
   }
 
   async submitActionPlan(token: string, id: string): Promise<ActionPlan> {
@@ -429,15 +378,11 @@ export default class InterventionsService {
   async createDraftEndOfServiceReport(token: string, referralId: string): Promise<EndOfServiceReport> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.post({
-        path: '/draft-end-of-service-report',
-        headers: { Accept: 'application/json' },
-        data: { referralId },
-      })) as EndOfServiceReport
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.post({
+      path: '/draft-end-of-service-report',
+      headers: { Accept: 'application/json' },
+      data: { referralId },
+    })) as EndOfServiceReport
   }
 
   async getEndOfServiceReport(token: string, id: string): Promise<EndOfServiceReport> {
@@ -456,15 +401,11 @@ export default class InterventionsService {
   ): Promise<EndOfServiceReport> {
     const restClient = this.createRestClient(token)
 
-    try {
-      return (await restClient.patch({
-        path: `/draft-end-of-service-report/${id}`,
-        headers: { Accept: 'application/json' },
-        data: patch,
-      })) as EndOfServiceReport
-    } catch (e) {
-      throw this.createServiceError(e)
-    }
+    return (await restClient.patch({
+      path: `/draft-end-of-service-report/${id}`,
+      headers: { Accept: 'application/json' },
+      data: patch,
+    })) as EndOfServiceReport
   }
 
   async submitEndOfServiceReport(token: string, id: string): Promise<EndOfServiceReport> {

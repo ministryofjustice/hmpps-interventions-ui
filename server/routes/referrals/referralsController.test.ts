@@ -1,5 +1,6 @@
 import request from 'supertest'
 import { Express } from 'express'
+import createError from 'http-errors'
 import InterventionsService from '../../services/interventionsService'
 import ServiceUser from '../../models/serviceUser'
 import CommunityApiService from '../../services/communityApiService'
@@ -547,9 +548,15 @@ describe('POST /referrals/:id/completion-deadline', () => {
     })
 
     it('updates the referral on the backend and returns a 400, rendering the question page with an error message, if the API call fails with a validation error', async () => {
-      interventionsService.patchDraftReferral.mockRejectedValue({
-        validationErrors: [{ field: 'completionDeadline', error: 'DATE_MUST_BE_IN_THE_FUTURE' }],
-      })
+      interventionsService.patchDraftReferral.mockRejectedValue(
+        createError(400, 'bad request', {
+          response: {
+            body: {
+              validationErrors: [{ field: 'completionDeadline', error: 'DATE_MUST_BE_IN_THE_FUTURE' }],
+            },
+          },
+        })
+      )
 
       await request(app)
         .post('/referrals/1/completion-deadline')

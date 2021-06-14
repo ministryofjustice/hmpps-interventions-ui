@@ -1,9 +1,10 @@
+import createError from 'http-errors'
 import createFormValidationErrorOrRethrow from './interventionsFormError'
 
 describe(createFormValidationErrorOrRethrow, () => {
   describe('with an error with no validationErrors key', () => {
     it('re-throws the error', () => {
-      const error = { status: 400, message: 'Bad thing happened' }
+      const error = Error('something went wrong')
 
       try {
         createFormValidationErrorOrRethrow(error)
@@ -17,16 +18,18 @@ describe(createFormValidationErrorOrRethrow, () => {
     })
   })
 
-  describe('with an error with validationErrors key', () => {
+  describe('with an http error with validationErrors in the response body', () => {
     it('returns a validation error', () => {
-      const error = {
-        status: 400,
-        message: 'Validation error',
-        validationErrors: [
-          { field: 'myFirstField', error: 'SOME_ERROR_CODE_1' },
-          { field: 'mySecondField', error: 'SOME_ERROR_CODE_2' },
-        ],
-      }
+      const error = createError(400, 'validation error', {
+        response: {
+          body: {
+            validationErrors: [
+              { field: 'myFirstField', error: 'SOME_ERROR_CODE_1' },
+              { field: 'mySecondField', error: 'SOME_ERROR_CODE_2' },
+            ],
+          },
+        },
+      })
 
       expect(createFormValidationErrorOrRethrow(error)).toEqual({
         errors: [
@@ -46,11 +49,13 @@ describe(createFormValidationErrorOrRethrow, () => {
 
     describe('when the error is for a date field', () => {
       it('returns an error for the day, month and year fields', () => {
-        const error = {
-          status: 400,
-          message: 'Validation error',
-          validationErrors: [{ field: 'completionDeadline', error: 'SOME_ERROR_CODE' }],
-        }
+        const error = createError(400, 'validation error', {
+          response: {
+            body: {
+              validationErrors: [{ field: 'completionDeadline', error: 'SOME_ERROR_CODE' }],
+            },
+          },
+        })
 
         expect(createFormValidationErrorOrRethrow(error)).toEqual({
           errors: [
@@ -66,11 +71,13 @@ describe(createFormValidationErrorOrRethrow, () => {
 
     describe('when the field and error correspond to a known message', () => {
       it('inserts that error message', () => {
-        const error = {
-          status: 400,
-          message: 'Validation error',
-          validationErrors: [{ field: 'completionDeadline', error: 'DATE_MUST_BE_IN_THE_FUTURE' }],
-        }
+        const error = createError(400, 'validation error', {
+          response: {
+            body: {
+              validationErrors: [{ field: 'completionDeadline', error: 'DATE_MUST_BE_IN_THE_FUTURE' }],
+            },
+          },
+        })
 
         expect(createFormValidationErrorOrRethrow(error)).toEqual({
           errors: [
