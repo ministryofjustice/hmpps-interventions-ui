@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfSe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.lang.IllegalStateException
 import java.time.OffsetDateTime
+import java.util.Locale
 import java.util.UUID
 
 interface CommunityAPIService {
@@ -25,6 +26,9 @@ interface CommunityAPIService {
     val primeProviderName = referral.intervention.dynamicFrameworkContract.primeProvider.name
     return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
   }
+
+  fun camelCase(word: String) =
+    word.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
 
 @Service
@@ -151,7 +155,8 @@ class CommunityAPIEndOfServiceReportEventService(
 @Service
 class CommunityAPIActionPlanEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUIActionPlanLocation: String,
+  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmittedActionPlanLocation: String,
+  @Value("\${interventions-ui.locations.approved-action-plan}") private val interventionsUIApprovedActionPlanLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -160,28 +165,36 @@ class CommunityAPIActionPlanEventService(
 
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
-      ActionPlanEventType.SUBMITTED,
-      -> {
+      ActionPlanEventType.SUBMITTED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUIActionPlanLocation)
+          .path(interventionsUISubmittedActionPlanLocation)
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
-        postNotificationRequest(event, url)
+        postNotificationRequest(event, url, event.actionPlan.submittedAt!!)
+      }
+      ActionPlanEventType.APPROVED -> {
+        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(interventionsUIApprovedActionPlanLocation)
+          .buildAndExpand(event.actionPlan.referral.id)
+          .toString()
+
+        postNotificationRequest(event, url, event.actionPlan.approvedAt!!)
       }
     }
   }
 
-  private fun postNotificationRequest(event: ActionPlanEvent, url: String) {
+  private fun postNotificationRequest(event: ActionPlanEvent, url: String, eventTime: OffsetDateTime) {
 
     val referral = event.actionPlan.referral
+    val status = camelCase(event.type.name)
 
     val request = NotificationCreateRequestDTO(
       referral.intervention.dynamicFrameworkContract.contractType.code,
       referral.sentAt!!,
       referral.id,
-      event.actionPlan.submittedAt!!,
-      getNotes(referral, url, "Action Plan Submitted"),
+      eventTime,
+      getNotes(referral, url, "Action Plan $status"),
     )
 
     val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPINotificationLocation)

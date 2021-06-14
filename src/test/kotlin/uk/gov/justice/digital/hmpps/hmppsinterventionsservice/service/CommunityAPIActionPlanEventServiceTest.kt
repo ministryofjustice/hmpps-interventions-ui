@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFacto
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.APPROVED
 
 class CommunityAPIActionPlanEventServiceTest {
 
@@ -26,6 +27,7 @@ class CommunityAPIActionPlanEventServiceTest {
   val communityAPIService = CommunityAPIActionPlanEventService(
     "http://testUrl",
     "/probation-practitioner/submit-action-plan/{id}",
+    "/probation-practitioner/approved-action-plan/{id}",
     "/secure/offenders/crn/{crn}/sentence/{sentenceId}/notifications/context/{contextName}",
     "commissioned-rehabilitation-services",
     communityAPIClient
@@ -46,6 +48,25 @@ class CommunityAPIActionPlanEventServiceTest {
         submittedAtDefault,
         "Action Plan Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
           "http://testUrl/probation-practitioner/submit-action-plan/${event.actionPlan.referral.id}",
+      )
+    )
+  }
+
+  @Test
+  fun `notify approved action plan`() {
+
+    val event = getEvent(APPROVED)
+    communityAPIService.onApplicationEvent(event)
+
+    verify(communityAPIClient).makeAsyncPostRequest(
+      "/secure/offenders/crn/X123456/sentence/1234/notifications/context/commissioned-rehabilitation-services",
+      NotificationCreateRequestDTO(
+        "ACC",
+        sentAtDefault,
+        event.actionPlan.referral.id,
+        submittedAtDefault,
+        "Action Plan Approved for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
+          "http://testUrl/probation-practitioner/approved-action-plan/${event.actionPlan.referral.id}",
       )
     )
   }
