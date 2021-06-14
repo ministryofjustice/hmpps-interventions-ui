@@ -30,6 +30,7 @@ export interface InterventionsFilterParams {
 
 interface UpdateActivityParams {
   description: string
+  desiredOutcomeId: string
 }
 
 export interface UpdateDraftActionPlanParams {

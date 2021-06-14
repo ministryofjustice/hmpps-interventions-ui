@@ -14,8 +14,13 @@ export default class AddActionPlanActivitiesForm {
     return {
       newActivity: {
         description: this.request.body.description,
+        desiredOutcomeId: this.desiredOutcomeId,
       },
     }
+  }
+
+  private get desiredOutcomeId(): string {
+    return this.request.body['desired-outcome-id']
   }
 
   get isValid(): boolean {

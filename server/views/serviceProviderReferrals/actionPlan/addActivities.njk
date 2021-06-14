@@ -19,6 +19,7 @@
 
   <form method="post" action="{{ presenter.addActivityAction }}">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <input type="hidden" name="desired-outcome-id" value="{{ presenter.firstDesiredOutcomeId }}">
 
     {{ govukTextarea(addActivityTextareaArgs) }}
 

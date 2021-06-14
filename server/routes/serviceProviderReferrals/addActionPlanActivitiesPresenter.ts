@@ -27,6 +27,9 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly errorSummary = PresenterUtils.errorSummary(this.errors)
 
+  // Temporary fix until we update the contracts to stop storing activities against a specific outcome - this will be removed in future
+  readonly firstDesiredOutcomeId = this.desiredOutcomesIds[0]
+
   readonly text = {
     title: `Add activity ${this.activityNumber} to action plan`,
     referredOutcomesHeader: `Referred outcomes for ${this.sentReferral.referral.serviceUser.firstName}`,

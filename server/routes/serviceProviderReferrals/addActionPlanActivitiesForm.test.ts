@@ -7,12 +7,14 @@ describe(AddActionPlanActivitiesForm, () => {
       const form = await AddActionPlanActivitiesForm.createForm({
         body: {
           description: 'Attend a training course',
+          'desired-outcome-id': '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
         },
       } as Request)
 
       expect(form.activityParamsForUpdate).toEqual({
         newActivity: {
           description: 'Attend a training course',
+          desiredOutcomeId: '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
         },
       })
     })
@@ -24,6 +26,7 @@ describe(AddActionPlanActivitiesForm, () => {
         const form = await AddActionPlanActivitiesForm.createForm({
           body: {
             description: 'Attend a training course',
+            'desired-outcome-id': '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
           },
         } as Request)
 
@@ -36,6 +39,7 @@ describe(AddActionPlanActivitiesForm, () => {
         const form = await AddActionPlanActivitiesForm.createForm({
           body: {
             description: '',
+            'desired-outcome-id': '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
           },
         } as Request)
 
@@ -50,6 +54,7 @@ describe(AddActionPlanActivitiesForm, () => {
         const form = await AddActionPlanActivitiesForm.createForm({
           body: {
             description: 'Attend a training course',
+            'desired-outcome-id': '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
           },
         } as Request)
 
@@ -62,6 +67,7 @@ describe(AddActionPlanActivitiesForm, () => {
         const form = await AddActionPlanActivitiesForm.createForm({
           body: {
             description: '',
+            'desired-outcome-id': '29843fdf-8b88-4b08-a0f9-dfbd3208fd2e',
           },
         } as Request)
 

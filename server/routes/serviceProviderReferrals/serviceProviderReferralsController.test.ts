@@ -341,6 +341,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
       .type('form')
       .send({
         description: 'Attend training course',
+        'desired-outcome-id': '8eb52caf-b462-4100-a0e9-7022d2551c92',
       })
       .expect(302)
       .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
@@ -348,6 +349,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
     expect(interventionsService.updateDraftActionPlan).toHaveBeenCalledWith('token', draftActionPlan.id, {
       newActivity: {
         description: 'Attend training course',
+        desiredOutcomeId: '8eb52caf-b462-4100-a0e9-7022d2551c92',
       },
     })
   })

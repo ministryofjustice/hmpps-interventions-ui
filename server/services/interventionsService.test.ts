@@ -1873,6 +1873,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: {
             newActivity: {
               description: 'Attend training course',
+              desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
             },
           },
         },
@@ -1899,6 +1900,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
         newActivity: {
           description: 'Attend training course',
+          desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         },
       })
 
