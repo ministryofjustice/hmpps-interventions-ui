@@ -50,7 +50,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
     val referral = referralFactory.createDraft(
       complexityLevelIds = mutableMapOf(),
       desiredOutcomes = emptyList(),
-      selectedServiceCategories = emptySet(),
+      selectedServiceCategories = mutableSetOf(),
     )
 
     val out = json.write(DraftReferralDTO.from(referral))
@@ -73,7 +73,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
     val referral = referralFactory.createDraft(
       complexityLevelIds = mutableMapOf(serviceCategory.id to complexityLevelUUID),
       desiredOutcomes = listOf(DesiredOutcome(desiredOutcomeUUID, "", serviceCategory.id)),
-      selectedServiceCategories = setOf(serviceCategory),
+      selectedServiceCategories = mutableSetOf(serviceCategory),
     )
 
     val out = json.write(DraftReferralDTO.from(referral))
@@ -195,7 +195,7 @@ class DraftReferralDTOTest(@Autowired private val json: JacksonTester<DraftRefer
       val serviceCat3 = serviceCategoryFactory.create(id = uuid3)
       val serviceCat4 = serviceCategoryFactory.create(id = uuid4)
       val serviceCat5 = serviceCategoryFactory.create(id = uuid5)
-      val referral = referralFactory.createDraft(selectedServiceCategories = setOf(serviceCat5, serviceCat3, serviceCat4, serviceCat2, serviceCat1))
+      val referral = referralFactory.createDraft(selectedServiceCategories = mutableSetOf(serviceCat5, serviceCat3, serviceCat4, serviceCat2, serviceCat1))
       val referralDTO = DraftReferralDTO.from(referral)
 
       assertThat(referralDTO.serviceCategoryIds).hasSize(5)
