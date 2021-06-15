@@ -214,7 +214,7 @@ class CommunityAPIAppointmentEventService(
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(interventionsUISessionFeedbackLocation)
-          .buildAndExpand(event.actionPlanSession.actionPlan.referral.id, event.actionPlanSession.sessionNumber)
+          .buildAndExpand(event.actionPlanSession.actionPlan.id, event.actionPlanSession.sessionNumber)
           .toString()
 
         val appointment = event.actionPlanSession.currentAppointment!!

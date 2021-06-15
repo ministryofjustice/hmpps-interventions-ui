@@ -36,13 +36,13 @@ class CommunityAPIAppointmentEventServiceTest {
 
     val urlCaptor = argumentCaptor<String>()
     val payloadCaptor = argumentCaptor<Any>()
-    val referralId = appointmentEvent.actionPlanSession.actionPlan.referral.id
+    val actionPlanId = appointmentEvent.actionPlanSession.actionPlan.id
     verify(communityAPIClient).makeAsyncPostRequest(urlCaptor.capture(), payloadCaptor.capture())
     assertThat(urlCaptor.firstValue).isEqualTo("/secure/offenders/crn/CRN123/appointments/123456/outcome/context/commissioned-rehabilitation-services")
     assertThat(payloadCaptor.firstValue.toString()).isEqualTo(
       AppointmentOutcomeRequest(
         "Session Feedback Recorded for Accommodation Referral X123456 with Prime Provider Service Provider\n" +
-          "http://baseUrl/probation-practitioner/action-plan/$referralId/appointment/1/post-session-feedback",
+          "http://baseUrl/probation-practitioner/action-plan/$actionPlanId/appointment/1/post-session-feedback",
         "LATE",
         true
       ).toString()
