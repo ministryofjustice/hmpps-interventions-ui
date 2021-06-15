@@ -486,11 +486,25 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#time-part-of-day').select('AM')
     cy.get('#duration-hours').type('1')
     cy.get('#duration-minutes').type('15')
+    cy.contains('In-person meeting - Other locations').click()
+    cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
+    cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
+    cy.get('#method-other-location-address-town-or-city').type('Blackpool')
+    cy.get('#method-other-location-address-county').type('Lancashire')
+    cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
     const scheduledAppointment = actionPlanAppointmentFactory.build({
       ...appointment,
       appointmentTime: '2021-03-24T09:02:02Z',
       durationInMinutes: 75,
+      appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+      appointmentDeliveryAddress: [
+        'Harmony Living Office, Room 4',
+        '44 Bouverie Road',
+        'Blackpool',
+        'Lancashire',
+        'SY4 0RE',
+      ],
     })
     cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
     cy.stubUpdateActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
@@ -510,6 +524,11 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
     cy.get('#duration-hours').should('have.value', '1')
     cy.get('#duration-minutes').should('have.value', '15')
+    cy.get('#method-other-location-address-line-1').should('have.value', 'Harmony Living Office, Room 4')
+    cy.get('#method-other-location-address-line-2').should('have.value', '44 Bouverie Road')
+    cy.get('#method-other-location-address-town-or-city').should('have.value', 'Blackpool')
+    cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
+    cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
   })
 
   describe('Recording post session feedback', () => {

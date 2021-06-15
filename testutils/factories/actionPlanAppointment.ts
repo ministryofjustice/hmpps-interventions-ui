@@ -34,6 +34,8 @@ export default ActionPlanAppointmentFactory.define(() => ({
   sessionNumber: 1,
   appointmentTime: null,
   durationInMinutes: null,
+  appointmentDeliveryType: null,
+  appointmentDeliveryAddress: null,
   sessionFeedback: {
     attendance: {
       attended: null,

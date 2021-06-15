@@ -108,6 +108,12 @@ describe(EditSessionPresenter, () => {
             hours: { value: '', hasError: false },
             minutes: { value: '', hasError: false },
           },
+          meetingMethod: null,
+          addressLine1: null,
+          addressLine2: null,
+          addressTownOrCity: null,
+          addressCounty: null,
+          addressPostCode: null,
         })
       })
     })
@@ -117,6 +123,14 @@ describe(EditSessionPresenter, () => {
         const actionPlan = actionPlanAppointmentFactory.build({
           appointmentTime: '2021-03-24T10:30:00Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: [
+            'Harmony Living Office, Room 4',
+            '44 Bouverie Road',
+            'Blackpool',
+            'Lancashire',
+            'SY4 0RE',
+          ],
         })
         const presenter = new EditSessionPresenter(actionPlan)
 
@@ -141,6 +155,12 @@ describe(EditSessionPresenter, () => {
             hours: { value: '1', hasError: false },
             minutes: { value: '15', hasError: false },
           },
+          meetingMethod: 'IN_PERSON_MEETING_OTHER',
+          addressLine1: 'Harmony Living Office, Room 4',
+          addressLine2: '44 Bouverie Road',
+          addressTownOrCity: 'Blackpool',
+          addressCounty: 'Lancashire',
+          addressPostCode: 'SY4 0RE',
         })
       })
     })

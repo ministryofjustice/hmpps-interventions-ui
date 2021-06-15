@@ -6,16 +6,31 @@ export interface Activity {
   createdAt: string
 }
 
+export interface Address {
+  firstAddressLine: string
+  secondAddressLine: string | null
+  townOrCity: string
+  county: string
+  postCode: string
+}
 export interface ActionPlanAppointment {
   sessionNumber: number
   appointmentTime: string | null
   durationInMinutes: number | null
+  appointmentDeliveryType: AppointmentDeliveryType | null
+  appointmentDeliveryAddress: Address | null
   sessionFeedback: {
     attendance: AppointmentAttendance
     behaviour: AppointmentBehaviour
     submitted: boolean
   }
 }
+
+export type AppointmentDeliveryType =
+  | 'PHONE_CALL'
+  | 'VIDEO_CALL'
+  | 'IN_PERSON_MEETING_PROBATION_OFFICE'
+  | 'IN_PERSON_MEETING_OTHER'
 
 export type Attended = 'yes' | 'no' | 'late' | null
 
