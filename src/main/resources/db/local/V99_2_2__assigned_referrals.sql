@@ -35,7 +35,7 @@ values ('F6D6710F-8812-43D0-96F9-C0BDE9FF66F9', '21EA6AFE-C437-4018-9260-BF1A829
        ('7F8EBDFF-E127-475B-986F-635288CED216', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 2),
        ('C6AA09D1-3BA2-4069-AFFB-1E9F98CDFF8D', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 3);
 
-insert into action_plan_session_appointments (action_plan_session_id, appointments_id)
+insert into action_plan_session_appointment (action_plan_session_id, appointment_id)
 values ('847E253C-DC48-4914-9E5E-771694BB9C01', '1b79fba2-42ae-4acb-89ce-571e8ff10719'),
        ('7F8EBDFF-E127-475B-986F-635288CED216', '82e2fbbe-1bb4-4967-8ee6-81aa072fd44b');
 
