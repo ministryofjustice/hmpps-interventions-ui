@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.APPROVED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -19,6 +20,7 @@ class CommunityAPIActionPlanEventServiceTest {
 
   private val sentAtDefault = OffsetDateTime.of(2020, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
   private val submittedAtDefault = OffsetDateTime.of(2020, 2, 2, 2, 2, 2, 2, ZoneOffset.UTC)
+  private val approvedAtDefault = OffsetDateTime.of(2020, 3, 3, 3, 3, 3, 3, ZoneOffset.UTC)
 
   private val actionPlanFactory = ActionPlanFactory()
   private val referralFactory = ReferralFactory()
@@ -26,6 +28,7 @@ class CommunityAPIActionPlanEventServiceTest {
   val communityAPIService = CommunityAPIActionPlanEventService(
     "http://testUrl",
     "/probation-practitioner/submit-action-plan/{id}",
+    "/probation-practitioner/approved-action-plan/{id}",
     "/secure/offenders/crn/{crn}/sentence/{sentenceId}/notifications/context/{contextName}",
     "commissioned-rehabilitation-services",
     communityAPIClient
@@ -50,6 +53,25 @@ class CommunityAPIActionPlanEventServiceTest {
     )
   }
 
+  @Test
+  fun `notify approved action plan`() {
+
+    val event = getEvent(APPROVED)
+    communityAPIService.onApplicationEvent(event)
+
+    verify(communityAPIClient).makeAsyncPostRequest(
+      "/secure/offenders/crn/X123456/sentence/1234/notifications/context/commissioned-rehabilitation-services",
+      NotificationCreateRequestDTO(
+        "ACC",
+        sentAtDefault,
+        event.actionPlan.referral.id,
+        approvedAtDefault,
+        "Action Plan Approved for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
+          "http://testUrl/probation-practitioner/approved-action-plan/${event.actionPlan.referral.id}",
+      )
+    )
+  }
+
   private fun getEvent(
     ActionPlanEventType: ActionPlanEventType
   ): ActionPlanEvent =
@@ -59,6 +81,7 @@ class CommunityAPIActionPlanEventServiceTest {
       actionPlanFactory.create(
         id = UUID.fromString("120b1a45-8ac7-4920-b05b-acecccf4734b"),
         submittedAt = submittedAtDefault,
+        approvedAt = approvedAtDefault,
         referral = referralFactory.createSent(
           serviceUserCRN = "X123456",
           relevantSentenceId = 1234L,

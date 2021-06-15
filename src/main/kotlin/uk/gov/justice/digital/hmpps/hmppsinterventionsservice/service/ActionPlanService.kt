@@ -91,7 +91,7 @@ class ActionPlanService(
 
     actionPlanSessionsService.createUnscheduledSessionsForActionPlan(actionPlan)
     val approvedActionPlan = actionPlanRepository.save(actionPlan)
-    actionPlanEventPublisher.actionPlanSubmitEvent(approvedActionPlan)
+    actionPlanEventPublisher.actionPlanApprovedEvent(approvedActionPlan)
     return approvedActionPlan
   }
 

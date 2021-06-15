@@ -30,9 +30,9 @@ interface CommunityAPIService {
 @Service
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
-  @Value("\${interventions-ui.locations.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
-  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.probation-links.sent-referral}") private val interventionsUISentReferralLocation: String,
+  @Value("\${interventions-ui.probation-links.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
+  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
   @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
@@ -134,7 +134,7 @@ class CommunityAPIReferralEventService(
 @Service
 class CommunityAPIEndOfServiceReportEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -151,7 +151,8 @@ class CommunityAPIEndOfServiceReportEventService(
 @Service
 class CommunityAPIActionPlanEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUIActionPlanLocation: String,
+  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUISubmittedActionPlanLocation: String,
+  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUIApprovedActionPlanLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -160,19 +161,26 @@ class CommunityAPIActionPlanEventService(
 
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
-      ActionPlanEventType.SUBMITTED,
-      -> {
+      ActionPlanEventType.SUBMITTED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUIActionPlanLocation)
+          .path(interventionsUISubmittedActionPlanLocation)
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
-        postNotificationRequest(event, url)
+        postNotificationRequest(event, url, "Submitted", event.actionPlan.submittedAt!!)
+      }
+      ActionPlanEventType.APPROVED -> {
+        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(interventionsUIApprovedActionPlanLocation)
+          .buildAndExpand(event.actionPlan.referral.id)
+          .toString()
+
+        postNotificationRequest(event, url, "Approved", event.actionPlan.approvedAt!!)
       }
     }
   }
 
-  private fun postNotificationRequest(event: ActionPlanEvent, url: String) {
+  private fun postNotificationRequest(event: ActionPlanEvent, url: String, status: String, eventTime: OffsetDateTime) {
 
     val referral = event.actionPlan.referral
 
@@ -180,8 +188,8 @@ class CommunityAPIActionPlanEventService(
       referral.intervention.dynamicFrameworkContract.contractType.code,
       referral.sentAt!!,
       referral.id,
-      event.actionPlan.submittedAt!!,
-      getNotes(referral, url, "Action Plan Submitted"),
+      eventTime,
+      getNotes(referral, url, "Action Plan $status"),
     )
 
     val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPINotificationLocation)
@@ -194,7 +202,7 @@ class CommunityAPIActionPlanEventService(
 @Service
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
+  @Value("\${interventions-ui.probation-links.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -206,7 +214,7 @@ class CommunityAPIAppointmentEventService(
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(interventionsUISessionFeedbackLocation)
-          .buildAndExpand(event.actionPlanSession.actionPlan.referral.id, event.actionPlanSession.sessionNumber)
+          .buildAndExpand(event.actionPlanSession.actionPlan.id, event.actionPlanSession.sessionNumber)
           .toString()
 
         val appointment = event.actionPlanSession.currentAppointment!!

@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull
 class CommunityAPIBookingService(
   @Value("\${community-api.appointments.bookings.enabled}") private val bookingsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.view-appointment}") private val interventionsUIViewAppointment: String,
+  @Value("\${interventions-ui.probation-links.view-appointment}") private val interventionsUIViewAppointment: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
   @Value("\${community-api.locations.reschedule-appointment}") private val communityApiRescheduleAppointmentLocation: String,
   @Value("\${community-api.appointments.office-location}") private val officeLocation: String,

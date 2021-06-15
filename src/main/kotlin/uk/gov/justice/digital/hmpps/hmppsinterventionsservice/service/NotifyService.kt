@@ -70,7 +70,7 @@ class NotifyActionPlanService(
 class NotifyEndOfServiceReportService(
   @Value("\${notify.templates.end-of-service-report-submitted}") private val endOfServiceReportSubmittedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUISubmitEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUISubmitEndOfServiceReportLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<EndOfServiceReportEvent>, NotifyService {
@@ -100,7 +100,7 @@ class NotifyAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.pp-referral-progress}") private val interventionsUiPPReferralProgressLocation: String,
+  @Value("\${interventions-ui.probation-links.pp-referral-progress}") private val interventionsUiPPReferralProgressLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<AppointmentEvent>, NotifyService {

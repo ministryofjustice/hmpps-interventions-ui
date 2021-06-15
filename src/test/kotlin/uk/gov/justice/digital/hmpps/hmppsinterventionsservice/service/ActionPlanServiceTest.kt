@@ -218,6 +218,7 @@ internal class ActionPlanServiceTest {
     val approvedActionPlan = actionPlanService.approveActionPlan(actionPlanId, authUser)
     assertThat(approvedActionPlan.approvedAt).isNotNull
     assertThat(approvedActionPlan.approvedBy).isEqualTo(authUser)
+    verify(actionPlanEventPublisher).actionPlanApprovedEvent(same(actionPlan))
     verify(actionPlanSessionsService).createUnscheduledSessionsForActionPlan(same(actionPlan))
   }
 

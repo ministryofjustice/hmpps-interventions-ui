@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull
 class CommunityAPIReferralService(
   @Value("\${community-api.referrals.enabled}") private val referralsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
+  @Value("\${interventions-ui.probation-links.sent-referral}") private val interventionsUISentReferralLocation: String,
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   val communityAPIClient: CommunityAPIClient,
