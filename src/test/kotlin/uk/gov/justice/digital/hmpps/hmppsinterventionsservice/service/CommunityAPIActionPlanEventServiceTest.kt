@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.APPROVED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.SUBMITTED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType.APPROVED
 
 class CommunityAPIActionPlanEventServiceTest {
 
