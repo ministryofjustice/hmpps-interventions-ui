@@ -71,13 +71,16 @@ export default function createApp(
             'code.jquery.com',
             // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
-            'www.googletagmanager.com',
-            'www.google-analytics.com',
+            'https://www.google-analytics.com',
+            'https://ssl.google-analytics.com',
+            'https://www.googletagmanager.com/',
             // Used to allow inline script to set Google Analytics uaId in `layout.njk`
             `'nonce-${nonce}'`,
           ],
           styleSrc: ["'self'", 'code.jquery.com'],
           fontSrc: ["'self'"],
+          imgSrc: ["'self'", 'https://www.google-analytics.com'],
+          connectSrc: ["'self'", 'https://www.google-analytics.com'],
         },
       },
     })
