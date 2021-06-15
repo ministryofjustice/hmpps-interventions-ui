@@ -151,6 +151,7 @@ export default class EditSessionView {
           classes: 'govuk-fieldset__legend--l',
         },
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.meetingMethod.errorMessage),
       hint: {
         text: 'Select one option.',
       },
@@ -158,17 +159,17 @@ export default class EditSessionView {
         {
           value: 'PHONE_CALL',
           text: 'Phone call',
-          checked: this.presenter.fields.meetingMethod === 'PHONE_CALL',
+          checked: this.presenter.fields.meetingMethod.value === 'PHONE_CALL',
         },
         {
           value: 'VIDEO_CALL',
           text: 'Video call',
-          checked: this.presenter.fields.meetingMethod === 'VIDEO_CALL',
+          checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
         },
         {
           value: 'IN_PERSON_MEETING_OTHER',
           text: 'In-person meeting - Other locations',
-          checked: this.presenter.fields.meetingMethod === 'IN_PERSON_MEETING_OTHER',
+          checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
           conditional: {
             html: otherLocationHTML,
           },

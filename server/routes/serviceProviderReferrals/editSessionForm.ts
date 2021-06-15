@@ -4,20 +4,35 @@ import TwelveHourBritishDateTimeInput from '../../utils/forms/inputs/twelveHourB
 import { FormData } from '../../utils/forms/formData'
 import DurationInput from '../../utils/forms/inputs/durationInput'
 import errorMessages from '../../utils/errorMessages'
+import MeetingMethodInput from '../../utils/forms/inputs/meetingMethodInput'
+import AddressInput from '../../utils/forms/inputs/addressInput'
+import { FormValidationResult } from '../../utils/forms/formValidationResult'
+import { Address } from '../../models/actionPlan'
 
 export default class EditSessionForm {
   constructor(private readonly request: Request) {}
 
   async data(): Promise<FormData<ActionPlanAppointmentUpdate>> {
-    const [dateResult, durationResult] = await Promise.all([
+    const [dateResult, durationResult, appointmentDeliveryType] = await Promise.all([
       new TwelveHourBritishDateTimeInput(this.request, 'date', 'time', errorMessages.editSession.time).validate(),
       new DurationInput(this.request, 'duration', errorMessages.editSession.duration).validate(),
+      new MeetingMethodInput(this.request, 'meeting-method').validate(),
     ])
+    let appointmentDeliveryAddress: FormValidationResult<Address | null> = { value: null, error: null }
+    if (appointmentDeliveryType.value === 'IN_PERSON_MEETING_OTHER') {
+      appointmentDeliveryAddress = await new AddressInput(this.request, 'method-other-location').validate()
+    }
 
-    if (dateResult.error || durationResult.error) {
+    if (dateResult.error || durationResult.error || appointmentDeliveryType.error) {
       return {
         paramsForUpdate: null,
-        error: { errors: [...(dateResult.error?.errors ?? []), ...(durationResult.error?.errors ?? [])] },
+        error: {
+          errors: [
+            ...(dateResult.error?.errors ?? []),
+            ...(durationResult.error?.errors ?? []),
+            ...(appointmentDeliveryType.error?.errors ?? []),
+          ],
+        },
       }
     }
 
@@ -26,6 +41,8 @@ export default class EditSessionForm {
       paramsForUpdate: {
         appointmentTime: dateResult.value.toISOString(),
         durationInMinutes: durationResult.value.minutes!,
+        appointmentDeliveryType: appointmentDeliveryType.value!,
+        appointmentDeliveryAddress: appointmentDeliveryAddress.value,
       },
     }
   }

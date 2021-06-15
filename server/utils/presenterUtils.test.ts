@@ -560,6 +560,42 @@ describe(PresenterUtils, () => {
     })
   })
 
+  describe('meetingMethod', () => {
+    describe('when there is no user input data', () => {
+      describe('and the model has a null value', () => {
+        it('returns a null value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.meetingMethodValue(null, 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: null })
+        })
+      })
+      describe('and the model has a value', () => {
+        it('returns the model value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.meetingMethodValue('PHONE_CALL', 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: 'PHONE_CALL' })
+        })
+      })
+    })
+
+    describe('when there is user input data', () => {
+      describe('and the data is valid', () => {
+        it('returns a meeting method', () => {
+          const utils = new PresenterUtils({ 'meeting-method': 'PHONE_CALL' })
+          const value = utils.meetingMethodValue(null, 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: 'PHONE_CALL' })
+        })
+      })
+      describe('and the data is invalid', () => {
+        it('returns a null value', () => {
+          const utils = new PresenterUtils({ 'meeting-method': 'INVALID' })
+          const value = utils.meetingMethodValue(null, 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: null })
+        })
+      })
+    })
+  })
+
   describe('.errorSummary', () => {
     describe('with null error', () => {
       it('returns null', () => {

@@ -2186,6 +2186,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           await interventionsService.updateActionPlanAppointment(token, '345059d4-1697-467b-8914-fedec9957279', 2, {
             appointmentTime: '2021-05-13T12:30:00Z',
             durationInMinutes: 60,
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
           })
         ).toMatchObject(actionPlanAppointment)
       })

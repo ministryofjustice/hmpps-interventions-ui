@@ -10,7 +10,13 @@ import Intervention from '../models/intervention'
 import PCCRegion from '../models/pccRegion'
 import CancellationReason from '../models/cancellationReason'
 import ServiceCategory from '../models/serviceCategory'
-import ActionPlan, { ActionPlanAppointment, AppointmentAttendance, AppointmentBehaviour } from '../models/actionPlan'
+import ActionPlan, {
+  ActionPlanAppointment,
+  Address,
+  AppointmentAttendance,
+  AppointmentBehaviour,
+  AppointmentDeliveryType,
+} from '../models/actionPlan'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
@@ -40,6 +46,8 @@ export interface UpdateDraftActionPlanParams {
 export interface ActionPlanAppointmentUpdate {
   appointmentTime: string
   durationInMinutes: number
+  appointmentDeliveryType: AppointmentDeliveryType
+  appointmentDeliveryAddress: Address | null
 }
 
 export interface CreateEndOfServiceReportOutcome {

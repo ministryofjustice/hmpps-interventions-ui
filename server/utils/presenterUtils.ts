@@ -7,6 +7,7 @@ import utils from './utils'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 import ComplexityLevel from '../models/complexityLevel'
 import { TagArgs } from './govukFrontendTypes'
+import { AppointmentDeliveryType } from '../models/actionPlan'
 
 interface DateTimeComponentInputPresenter {
   value: string
@@ -36,6 +37,11 @@ interface TwelveHourTimeInputPresenter {
   hour: DateTimeComponentInputPresenter
   minute: DateTimeComponentInputPresenter
   partOfDay: PartOfDayInputPresenter
+}
+
+interface MeetingMethodInputPresenter {
+  errorMessage: string | null
+  value: AppointmentDeliveryType | null
 }
 
 export default class PresenterUtils {
@@ -103,6 +109,27 @@ export default class PresenterUtils {
         value: yearValue,
         hasError: PresenterUtils.hasError(error, yearKey),
       },
+    }
+  }
+
+  meetingMethodValue(
+    modelValue: AppointmentDeliveryType | null,
+    userInputKey: string,
+    error: FormValidationError | null
+  ): MeetingMethodInputPresenter {
+    const errorMessage = PresenterUtils.errorMessage(error, userInputKey)
+    let appointmentDeliveryType: AppointmentDeliveryType | null = null
+    if (this.userInputData === null) {
+      appointmentDeliveryType = modelValue
+    } else {
+      const radioButtonValue = this.userInputData['meeting-method']
+      if (['PHONE_CALL', 'VIDEO_CALL', 'IN_PERSON_MEETING_OTHER'].includes(radioButtonValue as string)) {
+        appointmentDeliveryType = radioButtonValue as AppointmentDeliveryType
+      }
+    }
+    return {
+      errorMessage,
+      value: appointmentDeliveryType,
     }
   }
 

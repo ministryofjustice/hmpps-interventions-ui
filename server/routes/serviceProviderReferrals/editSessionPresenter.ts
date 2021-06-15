@@ -1,4 +1,4 @@
-import { ActionPlanAppointment, AppointmentDeliveryType } from '../../models/actionPlan'
+import { ActionPlanAppointment } from '../../models/actionPlan'
 import CalendarDay from '../../utils/calendarDay'
 import Duration from '../../utils/duration'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -45,26 +45,11 @@ export default class EditSessionPresenter {
       'duration',
       this.validationError
     ),
-    meetingMethod: this.chosenAppointmentDeliveryType(this.appointment.appointmentDeliveryType),
+    meetingMethod: this.utils.meetingMethodValue(
+      this.appointment.appointmentDeliveryType,
+      'meeting-method',
+      this.validationError
+    ),
     address: this.appointment.appointmentDeliveryAddress,
-  }
-
-  private chosenAppointmentDeliveryType(
-    existingModelValue: AppointmentDeliveryType | null
-  ): AppointmentDeliveryType | null {
-    if (this.userInputData === null) {
-      return existingModelValue
-    }
-    const radioButtonValue = this.userInputData['meeting-method']
-    switch (radioButtonValue) {
-      case 'PHONE_CALL':
-        return 'PHONE_CALL'
-      case 'VIDEO_CALL':
-        return 'PHONE_CALL'
-      case 'IN_PERSON_MEETING_OTHER':
-        return 'IN_PERSON_MEETING_OTHER'
-      default:
-        return null
-    }
   }
 }
