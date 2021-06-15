@@ -38,7 +38,7 @@ class NotifyActionPlanService(
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
         val recipient = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
           actionPlanSubmittedTemplateID,
           recipient.email,
@@ -51,9 +51,9 @@ class NotifyActionPlanService(
       }
       ActionPlanEventType.APPROVED -> {
         val recipient = hmppsAuthService.getUserDetail(event.actionPlan.submittedBy!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
-          actionPlanSubmittedTemplateID,
+          actionPlanApprovedTemplateID,
           recipient.email,
           mapOf(
             "submitterFirstName" to recipient.firstName,

@@ -1,4 +1,3 @@
-
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
@@ -51,7 +50,7 @@ class NotifyActionPlanServiceTest {
       id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
       submittedBy = AuthUser("abc123", "auth", "abc123"),
     ),
-    "http://localhost:8080/action-plan/42c7d267-0776-4272-a8e8-a673bfe30d0d",
+    "http://localhost:8080/referrals/42c7d267-0776-4272-a8e8-a673bfe30d0d",
   )
 
   private fun notifyService(): NotifyActionPlanService {
@@ -59,7 +58,7 @@ class NotifyActionPlanServiceTest {
       "template",
       "template",
       "http://example.com",
-      "/action-plan/{id}",
+      "/referrals/{id}",
       emailSender,
       hmppsAuthService,
     )
@@ -95,7 +94,7 @@ class NotifyActionPlanServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("tom@tom.tom"), personalisationCaptor.capture())
     assertThat(personalisationCaptor.firstValue["submitterFirstName"]).isEqualTo("tom")
     assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo(actionPlan.referral.referenceNumber)
-    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/action-plan/42c7d267-0776-4272-a8e8-a673bfe30d0d")
+    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/referrals/${actionPlan.referral.id}")
   }
 
   @Test
@@ -114,6 +113,6 @@ class NotifyActionPlanServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("tom@tom.tom"), personalisationCaptor.capture())
     assertThat(personalisationCaptor.firstValue["submitterFirstName"]).isEqualTo("tom")
     assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/action-plan/42c7d267-0776-4272-a8e8-a673bfe30d0d")
+    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/referrals/${actionPlanSubmittedEvent.actionPlan.referral.id}")
   }
 }
