@@ -328,7 +328,20 @@ class ReferralService(
     referralRepository.saveAndFlush(referral)
 
     update.serviceCategoryIds?.let { serviceCategoryIds ->
-      referral.selectedServiceCategories = serviceCategoryRepository.findByIdIn(serviceCategoryIds)
+      val updatedServiceCategories = serviceCategoryRepository.findByIdIn(serviceCategoryIds)
+      // the following code looks like a strange way to do this ...
+      // however we have to be very intentional about updating the service categories,
+      // rather than replacing the collection entirely. in the former case, hibernate
+      // runs an update as you would expect. in the latter case, hibernate deletes the
+      // entity entirely and creates a new one. this causes SQL constraint violations
+      // because these service category ids are referenced in the selected complexity
+      // level and desired outcomes tables.
+      referral.selectedServiceCategories?.let {
+        it.removeIf { true }
+        it.addAll(updatedServiceCategories)
+      } ?: run {
+        referral.selectedServiceCategories = updatedServiceCategories.toMutableSet()
+      }
     }
     return referralRepository.save(referral)
   }
