@@ -16,23 +16,23 @@ REFERRAL_CREATION_RANGE = (datetime.date(2021, 1, 1), datetime.date.today())
 COMPLETION_DEADLINE_RANGE = (datetime.date(2021, 6, 24), datetime.date(2022, 6, 24))
 
 service_providers = [
-    ('HARMONY_LIVING', 'Harmony Living', 'harmony@example.com'),
-    ('BETTER_LTD', 'Better Ltd.', 'better@example.com'),
-    ('HELPING_HANDS', 'Helping Hands', 'helping-hands@example.com'),
-    ('HOME_TRUST', 'Home Trust', 'home-trust@example.com'),
-    ('NEW_BEGINNINGS', 'New Beginnings Ltd.', 'new-beginnings@example.com'),
-    ('SAFE_LIVING', 'Safe Living Ltd.', 'safe-living@example.com'),
+    ('HARMONY_LIVING', 'Harmony Living'),
+    ('BETTER_LTD', 'Better Ltd.'),
+    ('HELPING_HANDS', 'Helping Hands'),
+    ('HOME_TRUST', 'Home Trust'),
+    ('NEW_BEGINNINGS', 'New Beginnings Ltd.'),
+    ('SAFE_LIVING', 'Safe Living Ltd.'),
 ]
 
 contracts = [
-   # emotional wellbeing service in cleveland
-   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '0001','8221a81c-08b2-4262-9c1a-0ab3c82cec8c', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
+   # Personal Wellbeing service in cleveland
+   ('952eb687-a4a7-43b1-9d93-1b1a0c8cee5e', '0001','f9b59d2c-c60b-4eb0-8469-04c975d2e2ee', 'BETTER_LTD', '2021-06-24', '2022-06-24', None, 'cleveland', False, True, 18, None),
    # ETE service for all of yorkshire
-   ('21ef4732-73e6-486b-832c-9f49165d40ab', '0002','ca374ac3-84eb-4b91-bea7-9005398f426f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
+   ('21ef4732-73e6-486b-832c-9f49165d40ab', '0002','b402486d-991e-4977-9291-073a3526d60f', 'SAFE_LIVING', '2021-06-24', '2022-06-24', 'C', None, False, True, 18, None),
    # accommodation service for the midlands
-   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '0003','428ee70f-3001-4399-95a6-ad25eaaede16', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   ('7f5a2fb5-e3af-4395-9f38-c7c23dd8bec0', '0003','72e60faf-b8e5-4699-9d7c-aef631cca71b', 'HARMONY_LIVING', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
    # ETE service for the midlands
-   ('9653676a-a51f-48cf-8541-444af11fe18b', '0004','ca374ac3-84eb-4b91-bea7-9005398f426f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
+   ('9653676a-a51f-48cf-8541-444af11fe18b', '0004','b402486d-991e-4977-9291-073a3526d60f', 'NEW_BEGINNINGS', '2021-06-24', '2022-06-24', 'F', None, False, True, 18, None),
 ]
 
 interventions = [
@@ -42,6 +42,7 @@ interventions = [
         '2021-03-19',
         'Emotional Wellbeing',
         'Supporting services users around all areas of PW to enhance motivation and allow opportunity for SU change. The project consists of various external 1:1/group work activity across the region which directly link to SU outcome expectation.',
+        'better@example.com',
     ),
     (
         'ecdc6c7e-f04b-49b1-871d-3f9618555c3d',
@@ -59,6 +60,7 @@ We source and manage a range of voluntary placements with a diverse range of lar
 Our Community Partnership Network engages with employers and colleges across the region to ensure we have access to the latest jobs, courses and opportunities that we can signpost people to and support them to get there.
 
 We focus on the individual, provide wrap around support at the appropriate level and our aim is to motivate, mentor and to enable people to make a 'step change' in their lives.''',
+        'safe-living@example.com',
     ),
     (
         '5f0a4d93-c26e-439d-b261-0d8d6338e77f',
@@ -76,6 +78,7 @@ Interventions may include:
   • referrals to housing providers and/or the local authority
   • support to access the private rented sector
   • building independence through the delivery of group work and courses (e.g. how to be a good tenant)''',
+        'harmony@example.com',
     ),
     (
         '11f06a1d-da75-4ca3-bb39-b7e848fb7612',
@@ -91,6 +94,7 @@ Interventions may include:
 • Careers advice, including selecting appropriate sectors reflecting offending type, differing methods of securing work inc use of technology to increase during and post-Lockdowns
 • Further advice on how/when to disclose convictions to potential employers
 • The opportunity receive support from people with lived experience''',
+        'new-beginnings@example.com',
     ),
 ]
 
@@ -112,15 +116,11 @@ pp_user_ids_with_username = [
     ('2500228092', 'Refer_Monitor_Probation_Practitioner'),
 ]
 
-service_category_reference_codes = {
-    '428ee70f-3001-4399-95a6-ad25eaaede16': 'AC',
-    'ca374ac3-84eb-4b91-bea7-9005398f426f': 'ED',
-    '96a63c39-4371-4f17-a6ec-265755f0cf7b': 'FI',
-    '76bcdb97-1dea-41c1-a4f8-899d88e5d679': 'DR',
-    'b84f4eb7-4db0-477e-8c59-21027b3262c5': 'LI',
-    '9556a399-3529-4993-8030-41db2090555e': 'FA',
-    '8221a81c-08b2-4262-9c1a-0ab3c82cec8c': 'EM',
-    'c036826e-f077-49a5-8b33-601dca7ad479': 'SO',
+contract_type_reference_codes = {
+    '72e60faf-b8e5-4699-9d7c-aef631cca71b': 'AC',
+    'b402486d-991e-4977-9291-073a3526d60f': 'ED',
+    'f9b59d2c-c60b-4eb0-8469-04c975d2e2ee': 'PE',
+    'b74c3f1d-2c53-45c0-bd23-d61befaf00af': 'WO',
 }
 
 service_category_complexity_levels = {
@@ -237,6 +237,13 @@ intervention_ids = [
     '5f0a4d93-c26e-439d-b261-0d8d6338e77f',
     '11f06a1d-da75-4ca3-bb39-b7e848fb7612',
 ]
+
+intervention_contract_types = {
+    '0e4dcc37-e3f5-4c44-b043-887dda3a2baa': 'f9b59d2c-c60b-4eb0-8469-04c975d2e2ee',
+    'ecdc6c7e-f04b-49b1-871d-3f9618555c3d': 'b402486d-991e-4977-9291-073a3526d60f',
+    '5f0a4d93-c26e-439d-b261-0d8d6338e77f': '72e60faf-b8e5-4699-9d7c-aef631cca71b',
+    '11f06a1d-da75-4ca3-bb39-b7e848fb7612': 'b402486d-991e-4977-9291-073a3526d60f',
+}
 
 intervention_service_categories = {
     '0e4dcc37-e3f5-4c44-b043-887dda3a2baa': '8221a81c-08b2-4262-9c1a-0ab3c82cec8c',
@@ -409,11 +416,11 @@ def random_when_unavailable():
     return f'{day_of_the_week}s between {start_time}:00 and {end_time}:00 due to {reason}.'
 
 
-def generate_reference_number(service_category_id):
+def generate_reference_number(contract_type_id):
     # don't care about ambiguous pairs right now
     letters = lambda k: ''.join(random.choices(string.ascii_uppercase, k=k))
     numbers = lambda k: ''.join(random.choices(string.digits, k=k))
-    return f'{letters(2)}{numbers(4)}{service_category_reference_codes[service_category_id]}'
+    return f'{letters(2)}{numbers(4)}{contract_type_reference_codes[contract_type_id]}'
 
 
 if __name__ == '__main__':
@@ -426,7 +433,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_0__service_providers.sql'), 'w') as f:
         f.write("""insert into service_provider
-            (id, name, incoming_referral_distribution_email)
+            (id, name)
         values
         """)
 
@@ -434,7 +441,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_1__df_contracts.sql'), 'w') as f:
         f.write("""insert into dynamic_framework_contract
-            (id, contract_reference, service_category_id, prime_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
+            (id, contract_reference, contract_type_id, prime_provider_id, start_date, end_date, nps_region_id, pcc_region_id, allows_female, allows_male, minimum_age, maximum_age)
         values
         """)
 
@@ -442,7 +449,7 @@ if __name__ == '__main__':
 
     with open(migrations_dir('V100_2__interventions.sql'), 'w') as f:
         f.write("""insert into intervention
-            (id, dynamic_framework_contract_id, created_at, title, description)
+            (id, dynamic_framework_contract_id, created_at, title, description, incoming_referral_distribution_email)
         values
         """)
         f.write(sql_values(interventions))
@@ -476,10 +483,7 @@ if __name__ == '__main__':
         created_by_id = random.choice(pp_user_ids_with_username)[0]
         service_usercrn = random.choice(list(su_details.keys()))
         intervention_id = random.choice(intervention_ids)
-        service_category_id = intervention_service_categories[intervention_id]
         organization = intervention_organizations[intervention_id]
-
-        complexity_levelid = random.choice(service_category_complexity_levels[service_category_id])
         completion_deadline = random_date_between(*COMPLETION_DEADLINE_RANGE)
 
         needs_interpreter = random_bool()
@@ -494,7 +498,7 @@ if __name__ == '__main__':
         fields.extend([referral_id, created_at, created_by_id, service_usercrn, intervention_id])
 
         # draft fields
-        fields.extend([complexity_levelid, completion_deadline])
+        fields.extend([completion_deadline])
         fields.extend(['', '', '', ''])
         fields.extend([needs_interpreter, interpreter_language])
         fields.extend([has_additional_responsibilities, when_unavailable])
@@ -502,7 +506,7 @@ if __name__ == '__main__':
 
         # sent fields
         if (i >= NUM_DRAFT_REFERRALS):
-            reference_number = generate_reference_number(service_category_id)
+            reference_number = generate_reference_number(intervention_contract_types[intervention_id])
             sent_at = created_at # this doesn't really matter
             sent_by_id = created_by_id
 
@@ -530,8 +534,8 @@ if __name__ == '__main__':
     with open(migrations_dir('V100_4_0__referrals.sql'), 'w') as f:
         f.write("""insert into referral
             (id, created_at, created_by_id, service_usercrn, intervention_id,
-            complexity_levelid, completion_deadline,
-            further_information, accessibility_needs, additional_needs_information, additional_risk_information,
+            completion_deadline,
+            further_information, accessibility_needs, additional_needs_information, draft_supplementary_risk,
             needs_interpreter, interpreter_language,
             has_additional_responsibilities, when_unavailable,
             maximum_enforceable_days,
@@ -542,7 +546,6 @@ if __name__ == '__main__':
         """)
 
         f.write(sql_values(referrals))
-
 
     # argh these magic numbers are the worst, this is getting out of control...
     referral_service_user_data = [[referral[0]] + list(su_details[referral[3]].values()) for referral in referrals]
@@ -555,18 +558,33 @@ if __name__ == '__main__':
 
         f.write(sql_values(referral_service_user_data))
 
+    referral_service_categories = []
+    for r in referrals:
+        service_category = intervention_service_categories[r[4]]
+        referral_service_categories.append([r[0], service_category])
+
     referral_desired_outcomes = []
     for r in referrals:
         service_category = intervention_service_categories[r[4]]
         desired_outcomes_for_service_category = service_category_desired_outcomes[service_category]
         desired_outcomes = random.sample(desired_outcomes_for_service_category, k=random.randint(1, len(desired_outcomes_for_service_category)))
         for desired_outcome in desired_outcomes:
-            referral_desired_outcomes.append([r[0], desired_outcome])
+            referral_desired_outcomes.append([r[0], desired_outcome, service_category])
 
-    with open(migrations_dir('V100_4_2__referral_desired_outcomes.sql'), 'w') as f:
-        f.write("""insert into referral_desired_outcome
-            (referral_id, desired_outcome_id)
-        values
-        """)
+    referral_complexities = []
+    for r in referrals:
+        service_category = intervention_service_categories[r[4]]
+        complexity = random.choice(service_category_complexity_levels[service_category])
+        referral_complexities.append([r[0], complexity, service_category])
 
+    with open(migrations_dir('V100_4_2__referral_categories_outcomes_complexities.sql'), 'w') as f:
+        f.write("""INSERT INTO referral_selected_service_category (referral_id, service_category_id) VALUES""")
+        f.write(sql_values(referral_service_categories))
+        f.write("\n")
+
+        f.write("""INSERT INTO referral_desired_outcome (referral_id, desired_outcome_id, service_category_id) VALUES""")
         f.write(sql_values(referral_desired_outcomes))
+        f.write("\n")
+
+        f.write("""INSERT INTO referral_complexity_level_ids (referral_id, complexity_level_ids, complexity_level_ids_key) VALUES""")
+        f.write(sql_values(referral_complexities))

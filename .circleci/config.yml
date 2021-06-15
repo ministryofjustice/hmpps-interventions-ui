@@ -21,16 +21,18 @@ _snyk_options: &snyk_options
   snyk-fail-build: true
   snyk-args: --policy-path=.snyk --configuration-matching='^((?!test).)*$'
 
+_db_docker_config: &db_docker_config
+  - image: cimg/openjdk:11.0
+    environment:
+      POSTGRES_DB: circle_test
+  - image: circleci/postgres:10-alpine-ram
+    environment:
+      POSTGRES_PASSWORD: password
+
 jobs:
   validate:
     executor: hmpps/java
-    docker:
-      - image: cimg/openjdk:11.0
-        environment:
-          POSTGRES_DB: circle_test
-      - image: circleci/postgres:10-alpine-ram
-        environment:
-          POSTGRES_PASSWORD: password
+    docker: *db_docker_config
     steps:
       - checkout
       - gradle/with_cache:
@@ -41,11 +43,29 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
+
+  validate_db:
+    executor: hmpps/java
+    docker: *db_docker_config
+    steps:
+      - checkout
       - run:
-          name: Setup for SQL validation
+          name: Setup flyway and psql
           command: |
+            wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.7.0/flyway-commandline-7.7.0-linux-x64.tar.gz | \
+              tar xvz && sudo ln -s `pwd`/flyway-7.7.0/flyway /usr/local/bin
             sudo apt update
             sudo apt install postgresql-client
+      - run:
+          name: Run migrations and local seeds
+          command: |
+            flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration,src/main/resources/db/local"
+      - run:
+          name: Run migrations and research seeds
+          command: |
+            flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration,src/main/resources/db/research"
       - run:
           name: Validate report SQLs
           command: |
@@ -55,13 +75,7 @@ jobs:
 
   publish_data:
     executor: hmpps/java
-    docker:
-      - image: cimg/openjdk:11.0
-        environment:
-          POSTGRES_DB: circle_test
-      - image: circleci/postgres:10-alpine-ram
-        environment:
-          POSTGRES_PASSWORD: password
+    docker: *db_docker_config
     steps:
       - checkout
       - mem/recall:
@@ -196,6 +210,7 @@ workflows:
     unless: << pipeline.parameters.only_pacts >>
     jobs:
       - validate
+      - validate_db
       - publish_data:
           requires:
             - build_docker
@@ -242,6 +257,7 @@ workflows:
                 - main
           requires:
             - validate
+            - validate_db
             - publish_data
             - build_and_publish_docker
             - helm_lint
