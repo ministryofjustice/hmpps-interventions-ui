@@ -84,12 +84,16 @@ notify:
     end-of-service-report-submitted: "f79cb53f-dc5c-42aa-947e-f599f9ad7942"
 
 interventions-ui:
+  # Service Provider Links
   locations:
     sent-referral: "/service-provider/referrals/{id}/details"
     cancelled-referral: "/service-provider/referrals/{id}/details"
     submit-action-plan: "/service-provider/referrals/{id}/progress" # fixme
-    approved-action-plan: "/service-provider/referrals/{id}/progress" # fixme
     appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
+  probation-links:
+    sent-referral: "/probation-practitioner/referrals/{id}/details"
+    cancelled-referral: "/probation-practitioner/referrals/{id}/details"
+    action-plan: "/probation-practitioner/referrals/{id}/progress"
     view-appointment: "/probation-practitioner/referrals/{id}/progress"
     pp-referral-progress: "/probation-practitioner/referrals/{id}/progress"
     submit-end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"

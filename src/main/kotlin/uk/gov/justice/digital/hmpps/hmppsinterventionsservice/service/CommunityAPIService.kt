@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfSe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.lang.IllegalStateException
 import java.time.OffsetDateTime
-import java.util.Locale
 import java.util.UUID
 
 interface CommunityAPIService {
@@ -31,9 +30,9 @@ interface CommunityAPIService {
 @Service
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
-  @Value("\${interventions-ui.locations.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
-  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.probation-links.sent-referral}") private val interventionsUISentReferralLocation: String,
+  @Value("\${interventions-ui.probation-links.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
+  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
   @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
@@ -135,7 +134,7 @@ class CommunityAPIReferralEventService(
 @Service
 class CommunityAPIEndOfServiceReportEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -152,8 +151,8 @@ class CommunityAPIEndOfServiceReportEventService(
 @Service
 class CommunityAPIActionPlanEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmittedActionPlanLocation: String,
-  @Value("\${interventions-ui.locations.approved-action-plan}") private val interventionsUIApprovedActionPlanLocation: String,
+  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUISubmittedActionPlanLocation: String,
+  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUIApprovedActionPlanLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -203,7 +202,7 @@ class CommunityAPIActionPlanEventService(
 @Service
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
+  @Value("\${interventions-ui.probation-links.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
