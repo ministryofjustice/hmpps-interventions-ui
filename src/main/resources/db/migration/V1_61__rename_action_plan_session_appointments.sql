@@ -1,0 +1,2 @@
+alter table action_plan_session_appointments rename to action_plan_session_appointment;
+alter table action_plan_session_appointment rename column appointments_id to appointment_id;

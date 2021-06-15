@@ -5,12 +5,20 @@ import org.hibernate.annotations.FetchMode
 import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity
 data class ActionPlanSession(
+
+  @JoinTable(
+    name = "action_plan_session_appointment",
+    joinColumns = [JoinColumn(name = "action_plan_session_id")],
+    inverseJoinColumns = [JoinColumn(name = "appointment_id")]
+  )
   @NotNull @OneToMany @Fetch(FetchMode.JOIN) val appointments: MutableSet<Appointment> = mutableSetOf(),
   @NotNull val sessionNumber: Int,
 
