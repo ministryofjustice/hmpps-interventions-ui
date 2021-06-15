@@ -7,23 +7,18 @@ import java.util.UUID
 
 data class SupplierAssessmentDTO(
   val id: UUID,
-  val appointmentTime: OffsetDateTime?,
-  val durationInMinutes: Int?,
-  val createdAt: OffsetDateTime,
-  val createdBy: AuthUserDTO,
+  val appointments: MutableSet<Appointment>,
+  val currentAppointmentId: UUID,
+  val referralId: UUID,
 ) {
   companion object {
     fun from(supplierAssessment: SupplierAssessment): SupplierAssessmentDTO {
       return SupplierAssessmentDTO(
         id = supplierAssessment.id,
-        appointmentTime = supplierAssessment.appointment.appointmentTime,
-        durationInMinutes = supplierAssessment.appointment.durationInMinutes,
-        createdAt = supplierAssessment.appointment.createdAt,
-        createdBy = AuthUserDTO.from(supplierAssessment.appointment.createdBy),
+        appointments = supplierAssessment.appointments,
+        currentAppointmentId = supplierAssessment.currentAppointment.id,
+        referralId = supplierAssessment.referral.id
       )
-    }
-    fun from(supplierAssessment: List<SupplierAssessment>): List<SupplierAssessmentDTO> {
-      return supplierAssessment.map { from(it) }
     }
   }
 }

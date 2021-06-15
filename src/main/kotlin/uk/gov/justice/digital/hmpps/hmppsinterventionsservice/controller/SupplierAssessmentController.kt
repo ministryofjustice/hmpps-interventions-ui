@@ -41,21 +41,4 @@ class SupplierAssessmentController(
       )
     )
   }
-
-  @GetMapping("sent-referral/{id}/supplier-assessment-appointment")
-  fun getSupplierAssessmentAppointment(
-    @PathVariable id: UUID,
-    authentication: JwtAuthenticationToken,
-  ): SupplierAssessmentAppointmentDTO {
-    val user = userMapper.fromToken(authentication)
-
-    val sentReferral = referralService.getSentReferralForUser(id, user)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
-
-    if (sentReferral.supplierAssessment!!.appointments.size == 0) {
-      throw ResponseStatusException(HttpStatus.NOT_FOUND, "no appointment found for supplier assessment [id=${sentReferral.supplierAssessment!!.id}]")
-    }
-
-    return SupplierAssessmentAppointmentDTO.from(sentReferral.supplierAssessment!!.appointment)
-  }
 }

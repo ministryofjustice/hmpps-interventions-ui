@@ -46,7 +46,7 @@ class SupplierAssessmentServiceTest {
     whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessmentFactory.create())
     whenever(referralRepository.save(any())).thenReturn(referral)
 
-    val response = supplierAssessmentService.createInitialAssessment(referral)
+    val response = supplierAssessmentService.createSupplierAssessment(referral)
 
     val argumentCaptor = argumentCaptor<SupplierAssessment>()
     verify(supplierAssessmentRepository, atLeastOnce()).save(argumentCaptor.capture())
@@ -89,7 +89,7 @@ class SupplierAssessmentServiceTest {
 
     whenever(authUserRepository.save(any())).thenReturn(createdByUser)
     whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessmentFactory.create())
-    whenever(appointmentRepository.save(any())).thenReturn(referral.supplierAssessment!!.appointment)
+    whenever(appointmentRepository.save(any())).thenReturn(referral.supplierAssessment!!.currentAppointment)
 
     supplierAssessmentService.updateSupplierAssessmentAppointment(referral, durationInMinutes, appointmentTime, createdByUser)
 
@@ -98,7 +98,7 @@ class SupplierAssessmentServiceTest {
     val arguments = argumentCaptor.firstValue
 
     assertThat(arguments.appointments.size).isEqualTo(1)
-    assertThat(arguments.appointment.durationInMinutes).isEqualTo(durationInMinutes)
-    assertThat(arguments.appointment.appointmentTime).isEqualTo(appointmentTime)
+    assertThat(arguments.currentAppointment.durationInMinutes).isEqualTo(durationInMinutes)
+    assertThat(arguments.currentAppointment.appointmentTime).isEqualTo(appointmentTime)
   }
 }

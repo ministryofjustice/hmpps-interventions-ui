@@ -21,7 +21,7 @@ class SupplierAssessmentService(
   val appointmentRepository: AppointmentRepository,
   val authUserRepository: AuthUserRepository,
 ) {
-  fun createInitialAssessment(
+  fun createSupplierAssessment(
     referral: Referral,
   ): Referral {
     referral.supplierAssessment = supplierAssessmentRepository.save(
@@ -52,8 +52,8 @@ class SupplierAssessmentService(
         )
       )
     } else {
-      referral.supplierAssessment!!.appointment.durationInMinutes = durationInMinutes
-      referral.supplierAssessment!!.appointment.appointmentTime = appointmentTime
+      referral.supplierAssessment!!.currentAppointment.durationInMinutes = durationInMinutes
+      referral.supplierAssessment!!.currentAppointment.appointmentTime = appointmentTime
     }
     return supplierAssessmentRepository.save(referral.supplierAssessment!!)
   }

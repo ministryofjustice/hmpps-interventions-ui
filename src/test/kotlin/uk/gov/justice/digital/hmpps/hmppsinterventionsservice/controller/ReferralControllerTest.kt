@@ -24,15 +24,18 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SupplierAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.SupplierAssessmentFactory
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
 internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
+//  private val supplierAssessmentService = mock<SupplierAssessmentService>()
   private val userMapper = UserMapper()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
@@ -41,6 +44,7 @@ internal class ReferralControllerTest {
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
+  private val supplierAssessmentFactory = SupplierAssessmentFactory()
 
   @Test
   fun `createDraftReferral handles EntityNotFound exceptions from InterventionsService`() {
@@ -154,5 +158,48 @@ internal class ReferralControllerTest {
     whenever(referralService.getCancellationReasons()).thenReturn(cancellationReasons)
     val response = referralController.getCancellationReasons()
     assertThat(response).isEqualTo(cancellationReasons)
+  }
+
+
+  @Test
+  fun `get supplier assessment appointment`() {
+    val referral = referralFactory.createSent()
+    referral.supplierAssessment = supplierAssessmentFactory.create()
+    val token = tokenFactory.create()
+
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
+
+    val response = referralController.getSupplierAssessmentAppointment(referral.id, token)
+
+    assertThat(response).isNotNull
+  }
+
+  @Test
+  fun `no sent referral found for get supplier assessment appointment `() {
+    val referralId = UUID.randomUUID()
+    val token = tokenFactory.create()
+
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
+
+    val e = assertThrows<ResponseStatusException> {
+      referralController.getSupplierAssessmentAppointment(referralId, token)
+    }
+    assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
+    assertThat(e.message).contains("sent referral not found [id=$referralId]")
+  }
+
+  @Test
+  fun `get appointment for supplier assessment with no appointment`() {
+    val referral = referralFactory.createSent()
+    referral.supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
+    val token = tokenFactory.create()
+
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
+
+    val e = assertThrows<ResponseStatusException> {
+      referralController.getSupplierAssessmentAppointment(referral.id, token)
+    }
+    assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
+    assertThat(e.message).contains("no appointment found for supplier assessment [id=${referral.supplierAssessment!!.id}]")
   }
 }

@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFacto
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.SupplierAssessmentFactory
 import java.time.OffsetDateTime
-import java.util.UUID
 
 class SupplierAssessmentControllerTest {
   private val userMapper = mock<UserMapper>()
@@ -46,55 +45,5 @@ class SupplierAssessmentControllerTest {
     val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
 
     assertThat(response).isNotNull
-    assertThat(response.appointmentTime).isEqualTo(supplierAssessment.appointment.appointmentTime)
-    assertThat(response.durationInMinutes).isEqualTo(supplierAssessment.appointment.durationInMinutes)
-  }
-
-  @Test
-  fun `get supplier assessment appointment`() {
-    val referral = referralFactory.createSent()
-    referral.supplierAssessment = supplierAssessmentFactory.create()
-    val user = authUserFactory.create()
-    val token = tokenFactory.create()
-
-    whenever(userMapper.fromToken(token)).thenReturn(user)
-    whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
-
-    val response = supplierAssessmentController.getSupplierAssessmentAppointment(referral.id, token)
-
-    assertThat(response).isNotNull
-  }
-
-  @Test
-  fun `no sent referral found for get supplier assessment appointment `() {
-    val referralId = UUID.randomUUID()
-    val user = authUserFactory.create()
-    val token = tokenFactory.create()
-
-    whenever(userMapper.fromToken(token)).thenReturn(user)
-    whenever(referralService.getSentReferralForUser(referralId, user)).thenReturn(null)
-
-    val e = assertThrows<ResponseStatusException> {
-      supplierAssessmentController.getSupplierAssessmentAppointment(referralId, token)
-    }
-    assertThat(e.status).isEqualTo(org.springframework.http.HttpStatus.NOT_FOUND)
-    assertThat(e.message).contains("sent referral not found [id=$referralId]")
-  }
-
-  @Test
-  fun `get appointment for supplier assessment with no appointment`() {
-    val referral = referralFactory.createSent()
-    referral.supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
-    val user = authUserFactory.create()
-    val token = tokenFactory.create()
-
-    whenever(userMapper.fromToken(token)).thenReturn(user)
-    whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
-
-    val e = assertThrows<ResponseStatusException> {
-      supplierAssessmentController.getSupplierAssessmentAppointment(referral.id, token)
-    }
-    assertThat(e.status).isEqualTo(org.springframework.http.HttpStatus.NOT_FOUND)
-    assertThat(e.message).contains("no appointment found for supplier assessment [id=${referral.supplierAssessment!!.id}]")
   }
 }

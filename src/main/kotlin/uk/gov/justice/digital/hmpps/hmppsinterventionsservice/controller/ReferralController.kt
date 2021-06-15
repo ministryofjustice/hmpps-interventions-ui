@@ -24,6 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SelectedDesire
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SupplierAssessmentAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SupplierAssessmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.Views
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -180,6 +182,23 @@ class ReferralController(
   @GetMapping("/referral-cancellation-reasons")
   fun getCancellationReasons(): List<CancellationReason> {
     return referralService.getCancellationReasons()
+  }
+
+  @GetMapping("sent-referral/{id}/supplier-assessment")
+  fun getSupplierAssessmentAppointment(
+    @PathVariable id: UUID,
+    authentication: JwtAuthenticationToken,
+  ): SupplierAssessmentDTO {
+    val user = userMapper.fromToken(authentication)
+
+    val sentReferral = referralService.getSentReferralForUser(id, user)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
+
+    if (sentReferral.supplierAssessment!!.appointments.size == 0) {
+      throw ResponseStatusException(HttpStatus.NOT_FOUND, "no appointment found for supplier assessment [id=${sentReferral.supplierAssessment!!.id}]")
+    }
+
+    return SupplierAssessmentDTO.from(sentReferral.supplierAssessment!!)
   }
 
   private fun getDraftReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
