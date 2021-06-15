@@ -44,11 +44,11 @@ describe('Referral form', () => {
     desiredOutcomes: [
       {
         id: '1',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '2',
-        description: 'Service User is prevented from becoming homeless',
+        description: 'Service user is prevented from becoming homeless',
       },
     ],
     complexityLevels: [
@@ -228,8 +228,8 @@ describe('Referral form', () => {
 
       cy.get('h1').contains('What are the desired outcomes for the Accommodation service?')
 
-      cy.contains('Service User makes progress in obtaining accommodation').click()
-      cy.contains('Service User is prevented from becoming homeless').click()
+      cy.contains('Service user makes progress in obtaining accommodation').click()
+      cy.contains('Service user is prevented from becoming homeless').click()
 
       cy.contains('Save and continue').click()
 
@@ -315,8 +315,8 @@ describe('Referral form', () => {
       cy.contains('Accommodation referral details')
       cy.contains('Low complexity')
       cy.contains('Info about low complexity')
-      cy.contains('Service User makes progress in obtaining accommodation')
-      cy.contains('Service User is prevented from becoming homeless')
+      cy.contains('Service user makes progress in obtaining accommodation')
+      cy.contains('Service user is prevented from becoming homeless')
 
       cy.contains('24 August 2021')
 
@@ -337,16 +337,16 @@ describe('Referral form', () => {
         desiredOutcomes: [
           {
             id: '3',
-            description: 'Service User develops and sustains social networks to reduce initial social isolation.',
+            description: 'Service user develops and sustains social networks to reduce initial social isolation.',
           },
           {
             id: '4',
-            description: 'Service User secures early post-release engagement with community based services.',
+            description: 'Service user secures early post-release engagement with community based services.',
           },
           {
             id: '5',
             description:
-              'Service User develops resilience and perseverance to cope with challenges and barriers on return to the community.',
+              'Service user develops resilience and perseverance to cope with challenges and barriers on return to the community.',
           },
         ],
         complexityLevels: [
@@ -547,8 +547,8 @@ describe('Referral form', () => {
       )
       cy.get('h1').contains('What are the desired outcomes for the Accommodation service?')
 
-      cy.contains('Service User makes progress in obtaining accommodation').click()
-      cy.contains('Service User is prevented from becoming homeless').click()
+      cy.contains('Service user makes progress in obtaining accommodation').click()
+      cy.contains('Service user is prevented from becoming homeless').click()
 
       cy.contains('Save and continue').click()
 
@@ -567,10 +567,10 @@ describe('Referral form', () => {
         `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[1]}/desired-outcomes`
       )
       cy.get('h1').contains('What are the desired outcomes for the Social inclusion service?')
-      cy.contains('Service User develops and sustains social networks to reduce initial social isolation.').click()
-      cy.contains('Service User secures early post-release engagement with community based services.').click()
+      cy.contains('Service user develops and sustains social networks to reduce initial social isolation.').click()
+      cy.contains('Service user secures early post-release engagement with community based services.').click()
       cy.contains(
-        'Service User develops resilience and perseverance to cope with challenges and barriers on return to the community.'
+        'Service user develops resilience and perseverance to cope with challenges and barriers on return to the community.'
       ).click()
 
       cy.contains('Save and continue').click()

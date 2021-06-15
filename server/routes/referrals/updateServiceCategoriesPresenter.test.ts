@@ -4,7 +4,7 @@ import UpdateServiceCategoriesPresenter from './updateServiceCategoriesPresenter
 
 describe(UpdateServiceCategoriesPresenter, () => {
   describe('text', () => {
-    it("contains a title including the Service User's name", () => {
+    it("contains a title including the Service user's name", () => {
       const referral = draftReferral.serviceUserSelected().build()
       const serviceCategoriesFromIntervention = serviceCategory.buildList(2)
 

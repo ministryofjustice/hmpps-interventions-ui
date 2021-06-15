@@ -43,7 +43,7 @@ describe(ServiceUserDetailsPresenter, () => {
   })
 
   describe('summary', () => {
-    it('returns an array of summary list items for each field on the Service User', () => {
+    it('returns an array of summary list items for each field on the Service user', () => {
       const presenter = new ServiceUserDetailsPresenter(serviceUser)
 
       expect(presenter.summary).toEqual([
@@ -60,7 +60,7 @@ describe(ServiceUserDetailsPresenter, () => {
       ])
     })
 
-    it('returns an empty values in lines for nullable fields on the Service User', () => {
+    it('returns an empty values in lines for nullable fields on the Service user', () => {
       const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser)
 
       expect(presenter.summary).toEqual([
