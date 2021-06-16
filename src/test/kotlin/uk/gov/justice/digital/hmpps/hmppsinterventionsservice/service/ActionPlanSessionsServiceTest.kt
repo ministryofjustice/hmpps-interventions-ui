@@ -358,28 +358,45 @@ internal class ActionPlanSessionsServiceTest {
   }
 
   @Test
-  fun `session feedback can be submitted and stores timestamp and emits application events`() {
+  fun `session feedback can be submitted and stores time and actor`() {
     val session = actionPlanSessionFactory.createScheduled()
     val actionPlanId = session.actionPlan.id
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
       session
     )
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
-
     actionPlanSessionsService.recordAppointmentAttendance(actionPlanId, 1, Attended.YES, "")
     actionPlanSessionsService.recordBehaviour(actionPlanId, 1, "bad", true)
-    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.actionPlan.createdBy)
+
+    val submitter = authUserFactory.create(userName = "test-submitter")
+    whenever(authUserRepository.save(submitter)).thenReturn(submitter)
+    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, submitter)
 
     val sessionCaptor = argumentCaptor<ActionPlanSession>()
     verify(actionPlanSessionRepository, atLeastOnce()).save(sessionCaptor.capture())
     sessionCaptor.allValues.forEach {
       if (it == sessionCaptor.lastValue) {
         assertThat(it.currentAppointment?.appointmentFeedbackSubmittedAt != null)
+        assertThat(it.currentAppointment?.appointmentFeedbackSubmittedBy?.userName).isEqualTo(submitter.userName)
       } else {
         assertThat(it.currentAppointment?.appointmentFeedbackSubmittedAt == null)
+        assertThat(it.currentAppointment?.appointmentFeedbackSubmittedBy == null)
       }
     }
+  }
 
+  @Test
+  fun `session feedback emits application events`() {
+    val session = actionPlanSessionFactory.createScheduled()
+    val actionPlanId = session.actionPlan.id
+    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+      session
+    )
+    whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
+    actionPlanSessionsService.recordAppointmentAttendance(actionPlanId, 1, Attended.YES, "")
+    actionPlanSessionsService.recordBehaviour(actionPlanId, 1, "bad", true)
+
+    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.actionPlan.createdBy)
     verify(appointmentEventPublisher).attendanceRecordedEvent(session, false)
     verify(appointmentEventPublisher).behaviourRecordedEvent(session, true)
     verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(session, true)

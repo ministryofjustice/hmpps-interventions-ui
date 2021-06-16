@@ -77,13 +77,13 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
       createdAt = createdAt,
       appointmentTime = appointmentTime,
       durationInMinutes = durationInMinutes,
-      appointmentFeedbackSubmittedBy = createdBy,
       deliusAppointmentId = deliusAppointmentId,
       attended = attended,
       attendanceSubmittedAt = attendanceSubmittedAt,
       additionalAttendanceInformation = additionalAttendanceInformation,
       notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
       appointmentFeedbackSubmittedAt = appointmentFeedbackSubmittedAt,
+      appointmentFeedbackSubmittedBy = appointmentFeedbackSubmittedBy,
     )
 
     return save(
