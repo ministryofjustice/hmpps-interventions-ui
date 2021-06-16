@@ -1,12 +1,8 @@
-import AppointmentAttendance from './appointmentAttendance'
-import AppointmentBehaviour from './appointmentBehaviour'
+import SessionFeedback from './sessionFeedback'
 
 export default interface Appointment {
-  appointmentTime: string | null
-  durationInMinutes: number | null
-  sessionFeedback: {
-    attendance: AppointmentAttendance
-    behaviour: AppointmentBehaviour
-    submitted: boolean
-  }
+  id: string
+  appointmentTime: string
+  durationInMinutes: number
+  sessionFeedback: SessionFeedback
 }

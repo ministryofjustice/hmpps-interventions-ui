@@ -3,15 +3,8 @@ import Appointment from '../../server/models/appointment'
 import { Attended } from '../../server/models/appointmentAttendance'
 
 class AppointmentFactory extends Factory<Appointment> {
-  newlyCreated() {
+  newlyBooked() {
     return this.params({})
-  }
-
-  scheduled() {
-    return this.params({
-      appointmentTime: new Date().toISOString(),
-      durationInMinutes: 60,
-    })
   }
 
   attended(attendance: Attended) {
@@ -31,9 +24,10 @@ class AppointmentFactory extends Factory<Appointment> {
   }
 }
 
-export default AppointmentFactory.define(() => ({
-  appointmentTime: null,
-  durationInMinutes: null,
+export default AppointmentFactory.define(({ sequence }) => ({
+  id: sequence.toString(),
+  appointmentTime: new Date().toISOString(),
+  durationInMinutes: 60,
   sessionFeedback: {
     attendance: {
       attended: null,

@@ -5,23 +5,25 @@ import appointmentFactory from './appointment'
 
 class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
   newlyCreated() {
-    return this.params({ ...appointmentFactory.newlyCreated().build() })
+    return this
   }
 
   scheduled() {
     return this.params({
-      ...appointmentFactory.scheduled().build(),
+      ...appointmentFactory.newlyBooked().build(),
     })
   }
 
   attended(attendance: Attended) {
     return this.params({
-      ...appointmentFactory.attended(attendance).build(),
+      sessionFeedback: appointmentFactory.attended(attendance).build().sessionFeedback,
     })
   }
 }
 
 export default ActionPlanAppointmentFactory.define(() => ({
-  ...appointmentFactory.build(),
+  appointmentTime: null,
+  durationInMinutes: null,
+  sessionFeedback: appointmentFactory.newlyBooked().build().sessionFeedback,
   sessionNumber: 1,
 }))
