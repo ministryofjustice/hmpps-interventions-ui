@@ -55,7 +55,6 @@ class ActionPlanRepositoryTest @Autowired constructor(
     assertThat(savedPlan.get().activities.size).isEqualTo(1)
 
     val savedPlanFirstActivity = savedPlan.get().activities.first()
-    assertThat(actionPlanFirstActivity.desiredOutcome.id).isEqualTo(savedPlanFirstActivity.desiredOutcome.id)
     assertThat(actionPlanFirstActivity.description).isEqualTo(savedPlanFirstActivity.description)
   }
 
@@ -68,7 +67,7 @@ class ActionPlanRepositoryTest @Autowired constructor(
     val desiredOutcome = SampleData.sampleDesiredOutcome(description = "Removing Barriers", serviceCategoryId = serviceCategory.id)
     entityManager.persist(desiredOutcome)
 
-    val actionPlan = SampleData.sampleActionPlan(referral = referral, desiredOutcome = desiredOutcome, createdBy = user)
+    val actionPlan = SampleData.sampleActionPlan(referral = referral, createdBy = user)
     actionPlanRepository.save(actionPlan)
     entityManager.flush()
 

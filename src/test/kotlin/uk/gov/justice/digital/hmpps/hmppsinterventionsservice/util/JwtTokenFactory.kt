@@ -10,8 +10,13 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
 class JwtTokenFactory {
+  fun create(authUser: AuthUser): JwtAuthenticationToken {
+    return create(userID = authUser.id, authSource = authUser.authSource, userName = authUser.userName)
+  }
+
   fun create(
     userID: String = "user",
     authSource: String = "authSource",

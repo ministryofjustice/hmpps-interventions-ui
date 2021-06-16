@@ -6,7 +6,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import java.util.UUID
 
 class DesiredOutcomesFactory(em: TestEntityManager? = null) : EntityFactory(em) {
-  fun create(serviceCategory: ServiceCategory, number: Int): List<DesiredOutcome> {
+  private val serviceCategoryFactory = ServiceCategoryFactory(em)
+  fun create(
+    serviceCategory: ServiceCategory = serviceCategoryFactory.create(),
+    number: Int
+  ): List<DesiredOutcome> {
     return (1..number).map {
       save(DesiredOutcome(id = UUID.randomUUID(), "", serviceCategoryId = serviceCategory.id))
     }

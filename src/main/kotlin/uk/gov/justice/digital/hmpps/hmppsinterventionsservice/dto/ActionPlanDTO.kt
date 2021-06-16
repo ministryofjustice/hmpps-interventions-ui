@@ -37,7 +37,6 @@ data class ActionPlanDTO(
 
 data class ActionPlanActivityDTO(
   val id: UUID,
-  val desiredOutcome: DesiredOutcomeDTO,
   val description: String,
   val createdAt: OffsetDateTime
 ) {
@@ -45,7 +44,6 @@ data class ActionPlanActivityDTO(
     fun from(actionPlanActivity: ActionPlanActivity): ActionPlanActivityDTO {
       return ActionPlanActivityDTO(
         id = actionPlanActivity.id,
-        desiredOutcome = DesiredOutcomeDTO.from(actionPlanActivity.desiredOutcome),
         description = actionPlanActivity.description,
         createdAt = actionPlanActivity.createdAt
       )

@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -52,8 +51,7 @@ internal class ActionPlanServiceTest {
     val referralId = UUID.randomUUID()
     val numberOfSessions = 5
     val authUser = AuthUser("CRN123", "auth", "user")
-    val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "outcome", UUID.randomUUID())
-    val activities = listOf(ActionPlanActivity("description", OffsetDateTime.now(), desiredOutcome))
+    val activities = listOf(ActionPlanActivity("description", OffsetDateTime.now()))
     val referral = SampleData.sampleReferral("CRN123", "Service Provider")
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
@@ -145,8 +143,7 @@ internal class ActionPlanServiceTest {
       )
     ).thenReturn(updatedDraftActionPlan)
 
-    val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "Des Out", UUID.randomUUID())
-    val newActivity = ActionPlanActivity("Description", OffsetDateTime.now(), desiredOutcome)
+    val newActivity = ActionPlanActivity("Description", OffsetDateTime.now())
 
     val updatedDraftActionPlanResponse = actionPlanService.updateActionPlan(draftActionPlanId, null, newActivity)
 
@@ -256,8 +253,8 @@ internal class ActionPlanServiceTest {
 
   @Test
   fun `update action plan activity`() {
-    val activity1 = SampleData.sampleActionPlanActivity(desiredOutcome = SampleData.sampleDesiredOutcome())
-    val activity2 = SampleData.sampleActionPlanActivity(desiredOutcome = SampleData.sampleDesiredOutcome())
+    val activity1 = SampleData.sampleActionPlanActivity()
+    val activity2 = SampleData.sampleActionPlanActivity()
     val actionPlan = SampleData.sampleActionPlan(activities = listOf(activity1, activity2))
     val updatedDescription = "updated description"
     val argument: ArgumentCaptor<ActionPlan> = ArgumentCaptor.forClass(ActionPlan::class.java)
@@ -271,9 +268,7 @@ internal class ActionPlanServiceTest {
     val savedActionPlan = argument.value
     assertThat(savedActionPlan.activities[0].description == updatedDescription)
     assertThat(
-      savedActionPlan.activities[1].description == SampleData.sampleActionPlanActivity(
-        desiredOutcome = SampleData.sampleDesiredOutcome()
-      ).description
+      savedActionPlan.activities[1].description == SampleData.sampleActionPlanActivity().description
     )
   }
 }

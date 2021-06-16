@@ -95,6 +95,5 @@ COMMENT ON COLUMN action_plan.approved_by_id IS 'who approved the service user''
 COMMENT ON TABLE action_plan_activity IS 'service user''s action plan activity details';
 COMMENT ON COLUMN action_plan_activity.id IS 'service user''s action plan activity unique identifier';
 COMMENT ON COLUMN action_plan_activity.action_plan_id IS 'service user''s action plan unique identifier';
-COMMENT ON COLUMN action_plan_activity.desired_outcome_id IS 'desired outcome unique identifier';
 COMMENT ON COLUMN action_plan_activity.description IS 'description of the activity';
 COMMENT ON COLUMN action_plan_activity.created_at IS 'when the service user''s action plan was created';
