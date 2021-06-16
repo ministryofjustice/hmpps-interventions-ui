@@ -64,9 +64,9 @@ class ReferralService(
   fun getSentReferralForUser(id: UUID, user: AuthUser): Referral? {
     val referral = referralRepository.findByIdAndSentAtIsNotNull(id)
 
-//    referral?.let {
-//      referralAccessChecker.forUser(it, user)
-//    }
+    referral?.let {
+      referralAccessChecker.forUser(it, user)
+    }
 
     return referral
   }
