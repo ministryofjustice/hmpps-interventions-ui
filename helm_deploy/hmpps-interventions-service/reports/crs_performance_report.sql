@@ -2,7 +2,7 @@ COPY (
   WITH attended_sessions AS (
       select count(app.id) AS attended, min(app.appointment_time) as first_appointment, aps.action_plan_id
       from appointment app
-        join action_plan_session_appointments apsa on app.id = apsa.appointments_id
+        join action_plan_session_appointment apsa on app.id = apsa.appointment_id
         join action_plan_session aps on apsa.action_plan_session_id = aps.id
       where attended in ('YES', 'LATE')
       group by aps.action_plan_id
@@ -10,7 +10,7 @@ COPY (
   attempted_sessions AS (
       select count(app.id) AS attempted, aps.action_plan_id
       from appointment app
-        join action_plan_session_appointments apsa on app.id = apsa.appointments_id
+        join action_plan_session_appointment apsa on app.id = apsa.appointment_id
         join action_plan_session aps on apsa.action_plan_session_id = aps.id
       where attended IS NOT NULL
       group by aps.action_plan_id
