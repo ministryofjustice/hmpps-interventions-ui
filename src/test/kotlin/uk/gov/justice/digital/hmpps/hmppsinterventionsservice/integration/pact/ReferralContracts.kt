@@ -72,7 +72,7 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
     val intervention = setupAssistant.createIntervention(dynamicFrameworkContract = contract)
     setupAssistant.createDraftReferral(
       id = UUID.fromString("d496e4a7-7cc1-44ea-ba67-c295084f1962"), intervention = intervention,
-      selectedServiceCategories = setOf(setupAssistant.serviceCategory(UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")))
+      selectedServiceCategories = mutableSetOf(setupAssistant.serviceCategory(UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16")))
     )
   }
 

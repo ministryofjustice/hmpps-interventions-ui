@@ -532,4 +532,29 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId2)
     assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(0)
   }
+
+  @Test
+  fun `ensure that service categories constraint is not thrown when service categories is reselected with an already selected desired outcome`() {
+    val serviceCategoryId = UUID.randomUUID()
+    val desiredOutcome = DesiredOutcome(UUID.randomUUID(), "title", serviceCategoryId = serviceCategoryId)
+    val serviceCategory = serviceCategoryFactory.create(id = serviceCategoryId, desiredOutcomes = mutableListOf(desiredOutcome))
+
+    val contractType = contractTypeFactory.create(serviceCategories = setOf(serviceCategory))
+    val referral = referralFactory.createDraft(
+      intervention = interventionFactory.create(
+        contract = dynamicFrameworkContractFactory.create(
+          contractType = contractType
+        )
+      ),
+      selectedServiceCategories = setOf(serviceCategory).toMutableSet(),
+      desiredOutcomes = listOf(desiredOutcome).toMutableList(),
+    )
+    referralService.updateDraftReferral(referral, DraftReferralDTO(serviceCategoryIds = listOf(serviceCategoryId)))
+
+    referralRepository.flush()
+    val updatedReferral = referralRepository.findById(referral.id).get()
+    assertThat(updatedReferral!!.selectedServiceCategories).hasSize(1)
+    assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId)
+    assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(1)
+  }
 }

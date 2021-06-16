@@ -163,7 +163,7 @@ class SetupAssistant(
     createdBy: AuthUser = createPPUser(),
     createdAt: OffsetDateTime = OffsetDateTime.now(),
     serviceUserCRN: String = "X123456",
-    selectedServiceCategories: Set<ServiceCategory>? = null,
+    selectedServiceCategories: MutableSet<ServiceCategory>? = null,
   ): Referral {
     return referralRepository.save(
       referralFactory.createDraft(
@@ -315,7 +315,7 @@ class SetupAssistant(
     relevantSentenceId: Long = 2600295124,
     whenUnavailable: String = "She works Mondays 9am - midday",
   ): Referral {
-    referral.selectedServiceCategories = selectedServiceCategories.toSet()
+    referral.selectedServiceCategories = selectedServiceCategories.toMutableSet()
     // required to satisfy foreign key constrains on desired outcomes and complexity levels
     referralRepository.saveAndFlush(referral)
 
