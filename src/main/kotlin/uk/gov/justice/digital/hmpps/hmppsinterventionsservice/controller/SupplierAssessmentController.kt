@@ -23,10 +23,11 @@ class SupplierAssessmentController(
     authentication: JwtAuthenticationToken,
   ): AppointmentDTO {
     val user = userMapper.fromToken(authentication)
+    val supplierAssessment = supplierAssessmentService.getSupplierAssessmentById(id)
 
     return AppointmentDTO.from(
       supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(
-        id,
+        supplierAssessment,
         updateAppointmentDTO.durationInMinutes,
         updateAppointmentDTO.appointmentTime,
         user

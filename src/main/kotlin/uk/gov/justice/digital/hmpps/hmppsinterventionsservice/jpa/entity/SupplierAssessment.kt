@@ -23,8 +23,8 @@ data class SupplierAssessment(
     joinColumns = [JoinColumn(name = "supplier_assessment_id")],
     inverseJoinColumns = [JoinColumn(name = "appointment_id")]
   )
-  @NotNull @OneToMany @Fetch(FetchMode.JOIN) val appointments: MutableSet<Appointment> = mutableSetOf(),
-) {
-  val currentAppointment: Appointment
+  @NotNull @OneToMany @Fetch(FetchMode.JOIN) override val appointments: MutableSet<Appointment> = mutableSetOf(),
+) : Engagement {
+  override val currentAppointment: Appointment
     get() = appointments.maxByOrNull { it.createdAt }!!
 }
