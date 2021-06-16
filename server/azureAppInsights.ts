@@ -4,14 +4,20 @@ import applicationVersion from './applicationVersion'
 import config from './config'
 import logger from '../log'
 
-function ignoreStaticAssetsProcessor(
+function ignoreExcludedRequestsProcessor(
   envelope: Contracts.EnvelopeTelemetry,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
   if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
     const requestData = envelope.data.baseData
-    if (requestData instanceof Contracts.RequestData && requestData.name.startsWith('GET /assets/')) {
-      return false
+    if (requestData instanceof Contracts.RequestData) {
+      const { excludedRequests } = config.applicationInsights
+      for (let i = 0; i < excludedRequests.length; i += 1) {
+        const pattern = excludedRequests[i]
+        if (requestData.name.match(pattern) !== null) {
+          return false
+        }
+      }
     }
   }
   return true
@@ -31,6 +37,21 @@ function addUsernameProcessor(
   return true
 }
 
+function errorStatusCodeProcessor(
+  envelope: Contracts.EnvelopeTelemetry,
+  _contextObjects: { [name: string]: unknown } | undefined
+): boolean {
+  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
+    if (envelope.data.baseData !== undefined) {
+      // eslint-disable-next-line no-param-reassign
+      envelope.data.baseData.success = !(
+        envelope.data.baseData.responseCode in config.applicationInsights.errorStatusCodes
+      )
+    }
+  }
+  return true
+}
+
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
   if (connectionString !== null) {
@@ -39,11 +60,12 @@ export default function initialiseAppInsights(): void {
     setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
     // application level properties
-    defaultClient.context.tags['ai.cloud.role'] = 'interventions-ui'
+    defaultClient.context.tags['ai.cloud.role'] = config.applicationInsights.cloudRoleName
     defaultClient.context.tags['ai.application.ver'] = applicationVersion.buildNumber
 
     // custom processors to fine tune behaviour
-    defaultClient.addTelemetryProcessor(ignoreStaticAssetsProcessor)
+    defaultClient.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
     defaultClient.addTelemetryProcessor(addUsernameProcessor)
+    defaultClient.addTelemetryProcessor(errorStatusCodeProcessor)
   }
 }
