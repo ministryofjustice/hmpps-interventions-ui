@@ -1,4 +1,5 @@
 import ActionPlanDetailsPresenter from './actionPlanDetailsPresenter'
+import { InsetTextArgs, SummaryListArgs, SummaryListArgsRow, TagArgs } from '../../utils/govukFrontendTypes'
 
 export default class ActionPlanDetailsView {
   constructor(private readonly presenter: ActionPlanDetailsPresenter) {}
@@ -6,6 +7,13 @@ export default class ActionPlanDetailsView {
   private readonly backLinkArgs = {
     text: 'Back',
     href: this.presenter.interventionProgressURL,
+  }
+
+  insetTextActivityArgs(index: number, description: string): InsetTextArgs {
+    return {
+      html: `<h3 class="govuk-heading-m govuk-!-font-weight-bold">Activity ${index}</h3><p class="govuk-body">${description}</p>`,
+      classes: 'app-inset-text--grey',
+    }
   }
 
   get actionPlanTagClass(): string {
@@ -19,12 +27,38 @@ export default class ActionPlanDetailsView {
     }
   }
 
+  private actionPlanSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs {
+    const rows: SummaryListArgsRow[] = [
+      {
+        key: { text: 'Action plan status' },
+        value: {
+          text: tagMacro({
+            text: this.presenter.text.actionPlanStatus,
+            classes: this.actionPlanTagClass,
+            attributes: { id: 'action-plan-status' },
+          }),
+        },
+      },
+      {
+        key: { text: 'Submitted date' },
+        value: {
+          text: this.presenter.text.actionPlanSubmittedDate,
+          classes: 'action-plan-submitted-date',
+        },
+      },
+    ]
+
+    return { rows }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'shared/actionPlan',
       {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
+        actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
+        insetTextActivityArgs: this.insetTextActivityArgs.bind(this),
       },
     ]
   }

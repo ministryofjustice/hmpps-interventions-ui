@@ -128,7 +128,6 @@ export default class InterventionProgressView {
           classes: 'action-plan-submitted-date',
         },
       })
-      // FIXME: the 'view action plan' page doesn't exist yet!
       rows.push({
         key: { text: 'To do' },
         value: {

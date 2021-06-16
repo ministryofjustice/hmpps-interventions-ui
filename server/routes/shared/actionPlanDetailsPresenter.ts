@@ -21,6 +21,15 @@ export default class ActionPlanDetailsPresenter {
     actionPlanStatus: this.actionPlanStatus,
     actionPlanSubmittedDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.submittedAt || null),
     actionPlanApprovalDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.approvedAt || null),
+    actionPlanNumberOfSessions: this.actionPlan?.numberOfSessions,
+  }
+
+  get activities(): string[] {
+    return (
+      this.actionPlan?.activities?.map(it => {
+        return it.description
+      }) || []
+    )
   }
 
   private get actionPlanStatus(): string {
