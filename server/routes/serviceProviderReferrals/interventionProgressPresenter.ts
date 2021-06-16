@@ -189,6 +189,10 @@ export default class InterventionProgressPresenter {
     return !!this.referral.endOfServiceReport?.submittedAt
   }
 
+  get canSubmitEndOfServiceReport(): boolean {
+    return this.referralAssigned && !this.endOfServiceReportSubmitted
+  }
+
   private get endOfServiceReportStarted(): boolean {
     return this.referral.endOfServiceReport !== null && !this.endOfServiceReportSubmitted
   }

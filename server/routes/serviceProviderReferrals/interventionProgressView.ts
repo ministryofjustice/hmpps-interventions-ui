@@ -190,7 +190,7 @@ export default class InterventionProgressView {
       },
     ]
 
-    if (!this.presenter.endOfServiceReportSubmitted) {
+    if (this.presenter.canSubmitEndOfServiceReport) {
       rows.push({
         key: { text: 'Action' },
         value: {
