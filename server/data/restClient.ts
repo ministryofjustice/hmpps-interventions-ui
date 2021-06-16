@@ -155,6 +155,40 @@ export default class RestClient {
     }
   }
 
+  // This is copied from the post method above
+  async put({
+    path,
+    headers = {},
+    responseType = '',
+    data = {},
+    raw = false,
+    token = this.token,
+  }: PostRequest = {}): Promise<unknown> {
+    this.logger.info({ path }, this.logMessage(token, 'PUT'))
+
+    try {
+      const unauthenticatedRequest = superagent
+        .put(`${this.apiUrl()}${path}`)
+        .send(data)
+        .agent(this.agent)
+        .retry(2, (err, res) => {
+          if (err) this.logger.info({ code: err.code, message: err.message }, 'retry handler found API error')
+          return undefined // retry handler only for logging retries, not to influence retry logic
+        })
+        .set(headers)
+        .responseType(responseType)
+        .timeout(this.timeoutConfig())
+
+      const result =
+        token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
+
+      return raw ? result : result.body
+    } catch (error) {
+      this.logger.warn({ err: error, path, verb: 'PUT' }, 'rest client error')
+      throw createError(error.status, error, { external: true })
+    }
+  }
+
   private logMessage(token: string | null, httpVerb: string) {
     return `Making ${token === null ? 'unauthenticated' : 'authenticated'} ${httpVerb} request`
   }
