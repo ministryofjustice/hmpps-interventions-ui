@@ -2629,46 +2629,45 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('updateSupplierAssessmentAppointment', () => {
-    describe('with non-null values', () => {
-      it('returns an updated supplier assessment appointment', async () => {
-        const appointment = appointmentFactory.build({
-          appointmentTime: '2021-05-13T12:30:00Z',
-          durationInMinutes: 60,
-        })
-
-        await provider.addInteraction({
-          state: 'a sent referral with ID fae5df9d-41a9-4be6-98f7-0f1378e85ba1 exists',
-          uponReceiving:
-            'a PATCH request to update the change the duration to an hour for the initial assessment appointment of the sent referral with ID fae5df9d-41a9-4be6-98f7-0f1378e85ba1',
-          withRequest: {
-            method: 'PATCH',
-            path: '/sent-referral/fae5df9d-41a9-4be6-98f7-0f1378e85ba1/supplier-assessment-appointment',
-            body: {
-              durationInMinutes: 60,
-            },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-          },
-          // note - this is an exact match
-          willRespondWith: {
-            status: 200,
-            body: appointment,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        })
-
-        expect(
-          await interventionsService.updateSupplierAssessmentAppointment(
-            token,
-            'fae5df9d-41a9-4be6-98f7-0f1378e85ba1',
-            {
-              durationInMinutes: 60,
-            }
-          )
-        ).toMatchObject(appointment)
+  describe('scheduleSupplierAssessmentAppointment', () => {
+    it('returns a supplier assessment appointment', async () => {
+      const appointment = appointmentFactory.build({
+        appointmentTime: '2021-05-13T12:30:00Z',
+        durationInMinutes: 60,
       })
+
+      await provider.addInteraction({
+        state: 'a supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770 exists',
+        uponReceiving:
+          'a PUT request to schedule an appointment the supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770',
+        withRequest: {
+          method: 'PUT',
+          path: '/supplier-assessment/77f6c5cf-9772-4731-9a9a-97f2f53f2770/schedule-appointment',
+          body: {
+            appointmentTime: '2021-05-13T12:30:00Z',
+            durationInMinutes: 60,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      expect(
+        await interventionsService.scheduleSupplierAssessmentAppointment(
+          token,
+          '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
+          {
+            appointmentTime: '2021-05-13T12:30:00Z',
+            durationInMinutes: 60,
+          }
+        )
+      ).toMatchObject(appointment)
     })
   })
 

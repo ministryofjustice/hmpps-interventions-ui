@@ -454,14 +454,14 @@ export default class InterventionsService {
     })) as SupplierAssessment
   }
 
-  async updateSupplierAssessmentAppointment(
+  async scheduleSupplierAssessmentAppointment(
     token: string,
-    referralId: string,
+    supplierAssessmentId: string,
     appointmentUpdate: Partial<AppointmentUpdate>
   ): Promise<Appointment> {
     const restClient = this.createRestClient(token)
-    return (await restClient.patch({
-      path: `/sent-referral/${referralId}/supplier-assessment-appointment`,
+    return (await restClient.put({
+      path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
       headers: { Accept: 'application/json' },
       data: { ...appointmentUpdate },
     })) as Appointment
