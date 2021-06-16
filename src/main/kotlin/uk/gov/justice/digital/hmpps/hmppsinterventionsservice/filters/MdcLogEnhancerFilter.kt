@@ -13,11 +13,13 @@ class MdcLogEnhancerFilter : OncePerRequestFilter() {
     // this is the place to add more request specific log fields...
 
     MDC.put("hostname", req.localAddr)
+    MDC.put("req_id", req.getHeader("X-Request-Id"))
     try {
       chain.doFilter(req, res)
     } finally {
       // and don't forget to clear them out at the end of each request!
       MDC.remove("hostname")
+      MDC.remove("req_id")
     }
   }
 }
