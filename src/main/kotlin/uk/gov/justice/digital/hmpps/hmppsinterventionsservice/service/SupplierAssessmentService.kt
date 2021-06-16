@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
@@ -34,7 +36,7 @@ class SupplierAssessmentService(
     return referralRepository.save(referral)
   }
 
-  fun scheduleOrUpdateSupplierAssessmentAppointment(
+  fun createOrUpdateSupplierAssessmentAppointment(
     supplierAssessmentId: UUID,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
@@ -42,13 +44,22 @@ class SupplierAssessmentService(
   ): Appointment {
     val supplierAssessment = getSupplierAssessmentById(supplierAssessmentId)
 
-    if (supplierAssessment.appointments.size == 0) {
-      scheduleSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser)
-    } else {
-      updateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime)
+    val noAppointment = supplierAssessment.appointments.size == 0
+    if (noAppointment) {
+      return scheduleSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser)
     }
-    supplierAssessmentRepository.save(supplierAssessment)
-    return supplierAssessment.currentAppointment
+
+    val appointmentWithoutAttendanceRecorded = supplierAssessment.currentAppointment.attended == null
+    if (appointmentWithoutAttendanceRecorded) {
+      return updateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime)
+    }
+
+    val appointmentWithNonAttendance = supplierAssessment.currentAppointment.attended == Attended.NO
+    if (appointmentWithNonAttendance) {
+      return scheduleSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser)
+    }
+
+    throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
   }
 
   private fun scheduleSupplierAssessmentAppointment(
@@ -56,27 +67,29 @@ class SupplierAssessmentService(
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser
-  ) {
-    supplierAssessment.appointments.add(
-      appointmentRepository.save(
-        Appointment(
-          id = UUID.randomUUID(),
-          appointmentTime = appointmentTime,
-          durationInMinutes = durationInMinutes,
-          createdBy = authUserRepository.save(createdByUser),
-          createdAt = OffsetDateTime.now()
-        )
-      )
+  ): Appointment {
+    val appointment = Appointment(
+      id = UUID.randomUUID(),
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      createdBy = authUserRepository.save(createdByUser),
+      createdAt = OffsetDateTime.now()
     )
+    supplierAssessment.appointments.add(
+      appointmentRepository.save(appointment)
+    )
+    supplierAssessmentRepository.save(supplierAssessment)
+    return appointment
   }
 
   private fun updateSupplierAssessmentAppointment(
     supplierAssessment: SupplierAssessment,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime
-  ) {
+  ): Appointment {
     supplierAssessment.currentAppointment.durationInMinutes = durationInMinutes
     supplierAssessment.currentAppointment.appointmentTime = appointmentTime
+    return appointmentRepository.save(supplierAssessment.currentAppointment)
   }
 
   fun getSupplierAssessmentById(supplierAssessmentId: UUID): SupplierAssessment {

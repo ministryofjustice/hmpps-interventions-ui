@@ -25,7 +25,7 @@ class SupplierAssessmentController(
     val user = userMapper.fromToken(authentication)
 
     return AppointmentDTO.from(
-      supplierAssessmentService.scheduleOrUpdateSupplierAssessmentAppointment(
+      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(
         id,
         updateAppointmentDTO.durationInMinutes,
         updateAppointmentDTO.appointmentTime,
