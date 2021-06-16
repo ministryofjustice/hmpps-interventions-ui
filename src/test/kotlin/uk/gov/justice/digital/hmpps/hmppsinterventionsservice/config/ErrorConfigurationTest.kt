@@ -30,9 +30,9 @@ internal class ErrorConfigurationTest {
 
     val responseBody = response.body
     assertThat(responseBody.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
-    assertThat(responseBody.error).isEqualTo("web client request exception")
+    assertThat(responseBody.error).isEqualTo("Call to dependency request exception")
     assertThat(responseBody.message).isEqualTo("An Error; nested exception is java.lang.IllegalStateException: An Error")
-    assertThat(responseBody.userMessage).isEqualTo("Delius is experiencing issues. Please try again later and if the issue persists contact Support")
+    assertThat(responseBody.userMessage).isEqualTo("System is experiencing issues. Please try again later and if the issue persists contact Support")
   }
 
   @Test
@@ -44,9 +44,9 @@ internal class ErrorConfigurationTest {
 
     val responseBody = response.body
     assertThat(responseBody.status).isEqualTo(BAD_REQUEST.value())
-    assertThat(responseBody.error).isEqualTo("web client response exception")
+    assertThat(responseBody.error).isEqualTo("Call to dependency response exception")
     assertThat(responseBody.message).isEqualTo("An Error")
-    assertThat(responseBody.userMessage).isEqualTo("A problem has been encountered. Please contact Support")
+    assertThat(responseBody.userMessage).isEqualTo("Problem has been encountered. Please contact Support")
   }
 
   @Test
@@ -55,9 +55,9 @@ internal class ErrorConfigurationTest {
     assertThat(errorConfiguration.userMessageForWebClientException(null)).isNull()
     assertThat(errorConfiguration.userMessageForWebClientException(CONFLICT)).isNull()
     assertThat(errorConfiguration.userMessageForWebClientException(BAD_REQUEST))
-      .isEqualTo("A problem has been encountered. Please contact Support")
+      .isEqualTo("Problem has been encountered. Please contact Support")
     assertThat(errorConfiguration.userMessageForWebClientException(SERVICE_UNAVAILABLE))
-      .isEqualTo("Delius is experiencing issues. Please try again later and if the issue persists contact Support")
+      .isEqualTo("System is experiencing issues. Please try again later and if the issue persists contact Support")
     assertThat(errorConfiguration.userMessageForWebClientException(MOVED_PERMANENTLY)).isNull()
   }
 }
