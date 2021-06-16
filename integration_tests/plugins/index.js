@@ -191,8 +191,8 @@ module.exports = on => {
       return interventionsService.stubRecordSupplierAssessmentAppointmentBehavior(arg.referralId, arg.responseJson)
     },
 
-    stubGetSupplierAssessmentAppointment: arg => {
-      return interventionsService.stubGetSupplierAssessmentAppointment(arg.referralId, arg.responseJson)
+    stubGetSupplierAssessment: arg => {
+      return interventionsService.stubGetSupplierAssessment(arg.referralId, arg.responseJson)
     },
 
     stubUpdateSupplierAssessmentAppointment: arg => {

@@ -18,6 +18,7 @@ import SentReferral from '../models/sentReferral'
 import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import Appointment from '../models/appointment'
+import SupplierAssessment from '../models/supplierAssessment'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -445,12 +446,12 @@ export default class InterventionsService {
     })) as CancellationReason[]
   }
 
-  async getSupplierAssessmentAppointment(token: string, referralId: string): Promise<Appointment> {
+  async getSupplierAssessment(token: string, referralId: string): Promise<SupplierAssessment> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
-      path: `/sent-referral/${referralId}/supplier-assessment-appointment`,
+      path: `/sent-referral/${referralId}/supplier-assessment`,
       headers: { Accept: 'application/json' },
-    })) as Appointment
+    })) as SupplierAssessment
   }
 
   async updateSupplierAssessmentAppointment(

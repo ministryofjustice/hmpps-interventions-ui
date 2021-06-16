@@ -13,6 +13,7 @@ import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAp
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import appointmentFactory from '../../testutils/factories/appointment'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -2564,39 +2565,67 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getSupplierAssessmentAppointment', () => {
-    const appointment = appointmentFactory.build({
-      appointmentTime: '2021-05-13T12:30:00Z',
-      durationInMinutes: 120,
-    })
+  describe('getSupplierAssessment', () => {
+    it('returns the referral’s supplier assessment', async () => {
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [],
+      })
 
-    beforeEach(async () => {
       await provider.addInteraction({
-        state: 'a sent referral with ID 80fb9e6d-1d0e-4204-9c5f-f86970d25c50 exists',
+        state:
+          'a sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa exists, and a supplier assessment appointment has not yet been booked for it',
         uponReceiving:
-          'a GET request for the supplier assessment appointment on sent referral with ID 80fb9e6d-1d0e-4204-9c5f-f86970d25c50',
+          'a GET request for the supplier assessment appointment on sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa',
         withRequest: {
           method: 'GET',
-          path: '/sent-referral/80fb9e6d-1d0e-4204-9c5f-f86970d25c50/supplier-assessment-appointment',
+          path: '/sent-referral/cbf2f82b-4581-4fe1-9de1-1b52465f1afa/supplier-assessment',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(appointment),
+          body: Matchers.like(supplierAssessment),
           headers: {
             'Content-Type': 'application/json',
           },
         },
       })
+
+      const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
+        token,
+        'cbf2f82b-4581-4fe1-9de1-1b52465f1afa'
+      )
+      expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
     })
 
-    it('returns the requested supplier assessment appointment', async () => {
-      const fetchedAppointment = await interventionsService.getSupplierAssessmentAppointment(
+    it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: appointmentFactory.newlyBooked().buildList(1),
+      })
+
+      await provider.addInteraction({
+        state:
+          'a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a supplier assessment appointment booked with no feedback yet submitted',
+        uponReceiving:
+          'a GET request for the supplier assessment appointment on sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/a38d9184-5498-4049-af16-3d8eb2547962/supplier-assessment',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(supplierAssessment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
         token,
-        '80fb9e6d-1d0e-4204-9c5f-f86970d25c50'
+        'a38d9184-5498-4049-af16-3d8eb2547962'
       )
-      expect(fetchedAppointment.appointmentTime).toEqual('2021-05-13T12:30:00Z')
-      expect(fetchedAppointment.durationInMinutes).toEqual(120)
+      expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
     })
   })
 
