@@ -4,8 +4,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
@@ -26,7 +24,7 @@ class SupplierAssessmentControllerTest {
   private val referralFactory = ReferralFactory()
   private val supplierAssessmentFactory = SupplierAssessmentFactory()
 
-  private val supplierAssessmentController = SupplierAssessmentController(supplierAssessmentService, referralService, userMapper)
+  private val supplierAssessmentController = SupplierAssessmentController(supplierAssessmentService, userMapper)
 
   @Test
   fun `update supplier assessment appointment details`() {
@@ -40,7 +38,7 @@ class SupplierAssessmentControllerTest {
 
     whenever(userMapper.fromToken(token)).thenReturn(user)
     whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
-    whenever(supplierAssessmentService.updateSupplierAssessmentAppointment(referral, durationInMinutes, appointmentTime, user)).thenReturn(supplierAssessment)
+    whenever(supplierAssessmentService.scheduleOrUpdateSupplierAssessmentAppointment(referral.id, durationInMinutes, appointmentTime, user)).thenReturn(supplierAssessment.currentAppointment)
 
     val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
 

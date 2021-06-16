@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SupplierAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -159,7 +158,6 @@ internal class ReferralControllerTest {
     val response = referralController.getCancellationReasons()
     assertThat(response).isEqualTo(cancellationReasons)
   }
-
 
   @Test
   fun `get supplier assessment appointment`() {

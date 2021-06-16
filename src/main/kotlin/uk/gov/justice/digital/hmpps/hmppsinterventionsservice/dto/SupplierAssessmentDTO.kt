@@ -7,7 +7,7 @@ import java.util.UUID
 
 data class SupplierAssessmentDTO(
   val id: UUID,
-  val appointments: MutableSet<Appointment>,
+  val appointments: List<AppointmentDTO>,
   val currentAppointmentId: UUID,
   val referralId: UUID,
 ) {
@@ -15,7 +15,7 @@ data class SupplierAssessmentDTO(
     fun from(supplierAssessment: SupplierAssessment): SupplierAssessmentDTO {
       return SupplierAssessmentDTO(
         id = supplierAssessment.id,
-        appointments = supplierAssessment.appointments,
+        appointments = AppointmentDTO.from(supplierAssessment.appointments),
         currentAppointmentId = supplierAssessment.currentAppointment.id,
         referralId = supplierAssessment.referral.id
       )

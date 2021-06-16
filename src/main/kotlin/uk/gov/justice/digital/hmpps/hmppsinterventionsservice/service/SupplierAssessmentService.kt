@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ref
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.SupplierAssessmentRepository
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Service
@@ -33,28 +34,54 @@ class SupplierAssessmentService(
     return referralRepository.save(referral)
   }
 
-  fun updateSupplierAssessmentAppointment(
-    referral: Referral,
+  fun scheduleOrUpdateSupplierAssessmentAppointment(
+    supplierAssessmentId: UUID,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser
-  ): SupplierAssessment {
-    if (referral.supplierAssessment!!.appointments.size == 0) {
-      referral.supplierAssessment!!.appointments.add(
-        appointmentRepository.save(
-          Appointment(
-            id = UUID.randomUUID(),
-            appointmentTime = appointmentTime,
-            durationInMinutes = durationInMinutes,
-            createdBy = authUserRepository.save(createdByUser),
-            createdAt = OffsetDateTime.now()
-          )
+  ): Appointment {
+    val supplierAssessment = getSupplierAssessmentById(supplierAssessmentId)
+
+    if (supplierAssessment.appointments.size == 0) {
+      scheduleSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser)
+    } else {
+      updateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime)
+    }
+    supplierAssessmentRepository.save(supplierAssessment)
+    return supplierAssessment.currentAppointment
+  }
+
+  private fun scheduleSupplierAssessmentAppointment(
+    supplierAssessment: SupplierAssessment,
+    durationInMinutes: Int,
+    appointmentTime: OffsetDateTime,
+    createdByUser: AuthUser
+  ) {
+    supplierAssessment.appointments.add(
+      appointmentRepository.save(
+        Appointment(
+          id = UUID.randomUUID(),
+          appointmentTime = appointmentTime,
+          durationInMinutes = durationInMinutes,
+          createdBy = authUserRepository.save(createdByUser),
+          createdAt = OffsetDateTime.now()
         )
       )
-    } else {
-      referral.supplierAssessment!!.currentAppointment.durationInMinutes = durationInMinutes
-      referral.supplierAssessment!!.currentAppointment.appointmentTime = appointmentTime
+    )
+  }
+
+  private fun updateSupplierAssessmentAppointment(
+    supplierAssessment: SupplierAssessment,
+    durationInMinutes: Int,
+    appointmentTime: OffsetDateTime
+  ) {
+    supplierAssessment.currentAppointment.durationInMinutes = durationInMinutes
+    supplierAssessment.currentAppointment.appointmentTime = appointmentTime
+  }
+
+  fun getSupplierAssessmentById(supplierAssessmentId: UUID): SupplierAssessment {
+    return supplierAssessmentRepository.findById(supplierAssessmentId).orElseThrow {
+      throw EntityNotFoundException("Supplier Assessment not found [id=$supplierAssessmentId]")
     }
-    return supplierAssessmentRepository.save(referral.supplierAssessment!!)
   }
 }

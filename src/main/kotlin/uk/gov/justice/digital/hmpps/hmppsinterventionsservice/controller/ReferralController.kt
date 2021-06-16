@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SelectedDesire
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SupplierAssessmentAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SupplierAssessmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.Views
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
