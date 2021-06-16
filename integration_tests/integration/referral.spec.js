@@ -8,7 +8,22 @@ import interventionFactory from '../../testutils/factories/intervention'
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 
 describe('Referral form', () => {
-  const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+  const deliusServiceUser = deliusServiceUserFactory.build({
+    firstName: 'Alex',
+    contactDetails: {
+      emailAddresses: ['alex.river@example.com', 'a.r@example.com'],
+      phoneNumbers: [
+        {
+          number: '0123456789',
+          type: 'MOBILE',
+        },
+        {
+          number: '9876543210',
+          type: 'MOBILE',
+        },
+      ],
+    },
+  })
   const convictionWithSentenceToSelect = deliusConvictionFactory.build({
     convictionId: 123456789,
     active: true,
@@ -164,6 +179,8 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains("Alex's information").next().contains('Email address').next().contains('alex.river@example.com')
+      cy.contains("Alex's information").next().contains('Phone number').next().contains('0123456789')
 
       cy.contains('Save and continue').click()
 
@@ -300,6 +317,7 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains('alex.river@example.com')
 
       cy.contains('A danger to the elderly')
 

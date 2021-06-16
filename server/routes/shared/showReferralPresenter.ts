@@ -16,6 +16,7 @@ import logger from '../../../log'
 import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from '../referrals/sentencePresenter'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -29,7 +30,8 @@ export default class ShowReferralPresenter {
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
     subNavUrlPrefix: 'service-provider' | 'probation-practitioner',
-    readonly canAssignReferral: boolean
+    readonly canAssignReferral: boolean,
+    private readonly deliusServiceUser: DeliusServiceUser
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -189,7 +191,7 @@ export default class ShowReferralPresenter {
   }
 
   get serviceUserDetails(): SummaryListItem[] {
-    return new ServiceUserDetailsPresenter(this.sentReferral.referral.serviceUser).summary
+    return new ServiceUserDetailsPresenter(this.sentReferral.referral.serviceUser, this.deliusServiceUser).summary
   }
 
   get serviceUserRisks(): SummaryListItem[] {
