@@ -31,26 +31,24 @@ function addUsernameProcessor(
     const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
     if (userId) {
       // eslint-disable-next-line no-param-reassign
-      envelope.tags['ai.user.authUserId'] = userId
+      envelope.tags[defaultClient.context.keys.userAuthUserId] = userId
     }
   }
   return true
 }
 
-function errorStatusCodeProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
-  _contextObjects: { [name: string]: unknown } | undefined
-): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
-    if (envelope.data.baseData !== undefined) {
-      // eslint-disable-next-line no-param-reassign
-      envelope.data.baseData.success = !(
-        envelope.data.baseData.responseCode in config.applicationInsights.errorStatusCodes
-      )
-    }
-  }
-  return true
-}
+// function errorStatusCodeProcessor(
+//   envelope: Contracts.EnvelopeTelemetry,
+//   _contextObjects: { [name: string]: unknown } | undefined
+// ): boolean {
+//   if (envelope.data.baseType === Contracts.TelemetryTypeString.Request && envelope.data.baseData !== undefined) {
+//     // eslint-disable-next-line no-param-reassign
+//     envelope.data.baseData.success = !(
+//       envelope.data.baseData.responseCode in config.applicationInsights.errorStatusCodes
+//     )
+//   }
+//   return true
+// }
 
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
@@ -60,12 +58,11 @@ export default function initialiseAppInsights(): void {
     setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
     // application level properties
-    defaultClient.context.tags['ai.cloud.role'] = config.applicationInsights.cloudRoleName
-    defaultClient.context.tags['ai.application.ver'] = applicationVersion.buildNumber
+    defaultClient.context.tags[defaultClient.context.keys.cloudRole] = config.applicationInsights.cloudRoleName
+    defaultClient.context.tags[defaultClient.context.keys.applicationVersion] = applicationVersion.buildNumber
 
     // custom processors to fine tune behaviour
     defaultClient.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
     defaultClient.addTelemetryProcessor(addUsernameProcessor)
-    defaultClient.addTelemetryProcessor(errorStatusCodeProcessor)
   }
 }
