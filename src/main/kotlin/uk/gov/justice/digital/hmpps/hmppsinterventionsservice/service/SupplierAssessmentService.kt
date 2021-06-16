@@ -5,12 +5,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.SupplierAssessmentRepository
 import java.time.OffsetDateTime
 import java.util.UUID
-import javax.persistence.EntityManager
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
@@ -19,7 +17,7 @@ import javax.transaction.Transactional
 class SupplierAssessmentService(
   val supplierAssessmentRepository: SupplierAssessmentRepository,
   val referralRepository: ReferralRepository,
-  val engagementService: EngagementService,
+  val appointmentService: AppointmentService,
 ) {
   fun createSupplierAssessment(
     referral: Referral,
@@ -39,7 +37,10 @@ class SupplierAssessmentService(
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser
   ): Appointment{
-    return engagementService.createOrUpdateEngagement(supplierAssessment, durationInMinutes, appointmentTime, createdByUser)
+    val appointment = appointmentService.createOrUpdateAppointment(supplierAssessment.currentAppointment, durationInMinutes, appointmentTime, createdByUser)
+    supplierAssessment.appointments.add(appointment)
+    supplierAssessmentRepository.save(supplierAssessment)
+    return appointment
   }
 
   fun getSupplierAssessmentById(supplierAssessmentId: UUID): SupplierAssessment {

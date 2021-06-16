@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Engagement
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
@@ -14,36 +13,35 @@ import javax.transaction.Transactional
 
 @Service
 @Transactional
-class EngagementService(
+class AppointmentService(
   val entityManager: EntityManager,
   val appointmentRepository: AppointmentRepository,
   val authUserRepository: AuthUserRepository,
 ) {
-  fun createOrUpdateEngagement(
-    engagement: Engagement,
+  fun createOrUpdateAppointment(
+    appointment: Appointment?,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser
   ): Appointment {
-    val noAppointment = engagement.appointments.size == 0
+    val noAppointment = appointment == null
     if (noAppointment) {
-      return createAppointment(engagement, durationInMinutes, appointmentTime, createdByUser)
+      return createAppointment(durationInMinutes, appointmentTime, createdByUser)
     }
 
-    val appointmentWithoutAttendanceRecorded = engagement.currentAppointment.attended == null
+    val appointmentWithoutAttendanceRecorded = appointment!!.attended == null
     if (appointmentWithoutAttendanceRecorded) {
-      return updateAppointment(engagement, durationInMinutes, appointmentTime)
+      return updateAppointment(appointment, durationInMinutes, appointmentTime)
     }
 
-    val appointmentWithNonAttendance = engagement.currentAppointment.attended == Attended.NO
+    val appointmentWithNonAttendance = appointment.attended == Attended.NO
     if (appointmentWithNonAttendance) {
-      return createAppointment(engagement, durationInMinutes, appointmentTime, createdByUser)
+      return createAppointment(durationInMinutes, appointmentTime, createdByUser)
     }
     throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
   }
 
   private fun createAppointment(
-    engagement: Engagement,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser,
@@ -55,20 +53,17 @@ class EngagementService(
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now()
     )
-    engagement.appointments.add(
-      appointmentRepository.save(appointment)
-    )
-    entityManager.persist(engagement)
+    appointmentRepository.save(appointment)
     return appointment
   }
 
   private fun updateAppointment(
-    engagement: Engagement,
+    appointment: Appointment,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime
   ): Appointment {
-    engagement.currentAppointment.durationInMinutes = durationInMinutes
-    engagement.currentAppointment.appointmentTime = appointmentTime
-    return appointmentRepository.save(engagement.currentAppointment)
+    appointment.durationInMinutes = durationInMinutes
+    appointment.appointmentTime = appointmentTime
+    return appointmentRepository.save(appointment)
   }
 }

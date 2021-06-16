@@ -8,7 +8,7 @@ import java.util.UUID
 data class SupplierAssessmentDTO(
   val id: UUID,
   val appointments: List<AppointmentDTO>,
-  val currentAppointmentId: UUID,
+  val currentAppointmentId: UUID?,
   val referralId: UUID,
 ) {
   companion object {
@@ -16,7 +16,7 @@ data class SupplierAssessmentDTO(
       return SupplierAssessmentDTO(
         id = supplierAssessment.id,
         appointments = AppointmentDTO.from(supplierAssessment.appointments),
-        currentAppointmentId = supplierAssessment.currentAppointment.id,
+        currentAppointmentId = supplierAssessment.currentAppointment?.id,
         referralId = supplierAssessment.referral.id
       )
     }
