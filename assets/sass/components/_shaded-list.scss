@@ -1,0 +1,10 @@
+.refer-and-monitor__shaded-list-item {
+  background-color: govuk-colour('light-grey');
+  border-left: 5px solid govuk-colour('blue');
+  margin-bottom: 30px;
+  padding: 15px;
+
+  .govuk-body:last-child {
+    margin-bottom: 5px;
+  }
+}
