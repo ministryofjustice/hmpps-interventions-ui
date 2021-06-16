@@ -50,6 +50,10 @@ export default class EditSessionPresenter {
       'meeting-method',
       this.validationError
     ),
-    address: this.appointment.appointmentDeliveryAddress,
+    address: this.utils.addressValue(
+      this.appointment.appointmentDeliveryAddress,
+      'method-other-location',
+      this.validationError
+    ),
   }
 }

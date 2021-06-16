@@ -487,7 +487,7 @@ describe('Service provider referrals dashboard', () => {
         cy.get('#time-part-of-day').select('AM')
         cy.get('#duration-hours').type('1')
         cy.get('#duration-minutes').type('15')
-        cy.contains('In-person meeting - Other locations').click()
+        cy.contains('In-person meeting').click()
         cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
         cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
         cy.get('#method-other-location-address-town-or-city').type('Blackpool')
@@ -499,13 +499,13 @@ describe('Service provider referrals dashboard', () => {
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-          appointmentDeliveryAddress: [
-            'Harmony Living Office, Room 4',
-            '44 Bouverie Road',
-            'Blackpool',
-            'Lancashire',
-            'SY4 0RE',
-          ],
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY4 0RE',
+          },
         })
         cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
         cy.stubUpdateActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
@@ -549,6 +549,24 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('There is a problem').next().contains('Select a meeting method')
         })
       })
+
+      describe("when the user doesn't enter an address", () => {
+        it('should show an error', () => {
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.get('#date-day').type('24')
+          cy.get('#date-month').type('3')
+          cy.get('#date-year').type('2021')
+          cy.get('#time-hour').type('9')
+          cy.get('#time-minute').type('02')
+          cy.get('#time-part-of-day').select('AM')
+          cy.get('#duration-hours').type('1')
+          cy.get('#duration-minutes').type('15')
+          cy.contains('In-person meeting').click()
+          cy.contains('Save and continue').click()
+          cy.contains('There is a problem').next().contains('Enter a value for address line 1')
+          cy.contains('There is a problem').next().contains('Enter a postcode')
+        })
+      })
     })
   })
 
@@ -579,11 +597,13 @@ describe('Service provider referrals dashboard', () => {
           sessionNumber: 1,
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
         actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-03-31T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
       ]
 
@@ -729,11 +749,13 @@ describe('Service provider referrals dashboard', () => {
           sessionNumber: 1,
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
         actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-03-31T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
       ]
 

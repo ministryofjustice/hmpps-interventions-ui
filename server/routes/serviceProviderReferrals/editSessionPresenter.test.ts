@@ -109,7 +109,13 @@ describe(EditSessionPresenter, () => {
             minutes: { value: '', hasError: false },
           },
           meetingMethod: { value: null, errorMessage: null },
-          address: null,
+          address: {
+            value: null,
+            errors: {
+              firstAddressLine: null,
+              postcode: null,
+            },
+          },
         })
       })
     })
@@ -153,11 +159,17 @@ describe(EditSessionPresenter, () => {
           },
           meetingMethod: { value: 'IN_PERSON_MEETING_OTHER', errorMessage: null },
           address: {
-            firstAddressLine: 'Harmony Living Office, Room 4',
-            secondAddressLine: '44 Bouverie Road',
-            townOrCity: 'Blackpool',
-            county: 'Lancashire',
-            postCode: 'SY4 0RE',
+            value: {
+              firstAddressLine: 'Harmony Living Office, Room 4',
+              secondAddressLine: '44 Bouverie Road',
+              townOrCity: 'Blackpool',
+              county: 'Lancashire',
+              postCode: 'SY4 0RE',
+            },
+            errors: {
+              firstAddressLine: null,
+              postcode: null,
+            },
           },
         })
       })

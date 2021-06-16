@@ -6,8 +6,16 @@ import FormUtils from '../../formUtils'
 import { AppointmentDeliveryType } from '../../../models/actionPlan'
 import PresenterUtils from '../../presenterUtils'
 
+export interface MeetingMethodErrorMessages {
+  empty: string
+}
+
 export default class MeetingMethodInput {
-  constructor(private readonly request: Request, private readonly key: string) {}
+  constructor(
+    private readonly request: Request,
+    private readonly key: string,
+    private readonly errorMessages: MeetingMethodErrorMessages
+  ) {}
 
   private readonly utils = new PresenterUtils(this.request.body)
 
@@ -28,9 +36,7 @@ export default class MeetingMethodInput {
   }
 
   private get validations(): ExpressValidator.ValidationChain[] {
-    return [
-      ExpressValidator.body(this.key).notEmpty({ ignore_whitespace: true }).withMessage('Select a meeting method'),
-    ]
+    return [ExpressValidator.body(this.key).notEmpty({ ignore_whitespace: true }).withMessage(this.errorMessages.empty)]
   }
 
   private extractErrors(result: ExpressValidator.Result): FormValidationError | null {

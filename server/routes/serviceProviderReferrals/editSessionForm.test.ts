@@ -88,6 +88,7 @@ describe('EditSessionForm', () => {
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
               appointmentDeliveryAddress: {
                 firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '',
                 townOrCity: 'Blackpool',
                 county: 'Lancashire',
                 postCode: 'SY4 0RE',

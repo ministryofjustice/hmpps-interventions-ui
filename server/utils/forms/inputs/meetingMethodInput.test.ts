@@ -4,7 +4,7 @@ import MeetingMethodInput from './meetingMethodInput'
 
 describe(AddressInput, () => {
   const errorMessages = {
-    empty: 'empty',
+    empty: 'Select a meeting method',
   }
   describe('validate', () => {
     describe('with valid data', () => {

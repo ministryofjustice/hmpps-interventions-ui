@@ -2156,6 +2156,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           sessionNumber: 2,
           appointmentTime: '2021-05-13T12:30:00Z',
           durationInMinutes: 60,
+          appointmentDeliveryAddress: null,
+          appointmentDeliveryType: null,
         })
 
         await provider.addInteraction({

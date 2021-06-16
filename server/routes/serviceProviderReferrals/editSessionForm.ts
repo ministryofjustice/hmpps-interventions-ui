@@ -16,14 +16,18 @@ export default class EditSessionForm {
     const [dateResult, durationResult, appointmentDeliveryType] = await Promise.all([
       new TwelveHourBritishDateTimeInput(this.request, 'date', 'time', errorMessages.editSession.time).validate(),
       new DurationInput(this.request, 'duration', errorMessages.editSession.duration).validate(),
-      new MeetingMethodInput(this.request, 'meeting-method').validate(),
+      new MeetingMethodInput(this.request, 'meeting-method', errorMessages.editSession.meetingMethod).validate(),
     ])
     let appointmentDeliveryAddress: FormValidationResult<Address | null> = { value: null, error: null }
     if (appointmentDeliveryType.value === 'IN_PERSON_MEETING_OTHER') {
-      appointmentDeliveryAddress = await new AddressInput(this.request, 'method-other-location').validate()
+      appointmentDeliveryAddress = await new AddressInput(
+        this.request,
+        'method-other-location',
+        errorMessages.editSession.address
+      ).validate()
     }
 
-    if (dateResult.error || durationResult.error || appointmentDeliveryType.error) {
+    if (dateResult.error || durationResult.error || appointmentDeliveryType.error || appointmentDeliveryAddress.error) {
       return {
         paramsForUpdate: null,
         error: {
@@ -31,6 +35,7 @@ export default class EditSessionForm {
             ...(dateResult.error?.errors ?? []),
             ...(durationResult.error?.errors ?? []),
             ...(appointmentDeliveryType.error?.errors ?? []),
+            ...(appointmentDeliveryAddress.error?.errors ?? []),
           ],
         },
       }

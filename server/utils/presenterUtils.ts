@@ -7,7 +7,7 @@ import utils from './utils'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 import ComplexityLevel from '../models/complexityLevel'
 import { TagArgs } from './govukFrontendTypes'
-import { AppointmentDeliveryType } from '../models/actionPlan'
+import { Address, AppointmentDeliveryType } from '../models/actionPlan'
 
 interface DateTimeComponentInputPresenter {
   value: string
@@ -42,6 +42,14 @@ interface TwelveHourTimeInputPresenter {
 interface MeetingMethodInputPresenter {
   errorMessage: string | null
   value: AppointmentDeliveryType | null
+}
+
+export interface AddressInputPresenter {
+  value: Address | null
+  errors: {
+    firstAddressLine: string | null
+    postcode: string | null
+  }
 }
 
 export default class PresenterUtils {
@@ -108,6 +116,41 @@ export default class PresenterUtils {
       year: {
         value: yearValue,
         hasError: PresenterUtils.hasError(error, yearKey),
+      },
+    }
+  }
+
+  addressValue(
+    modelValue: Address | null,
+    userInputKey: string,
+    error: FormValidationError | null
+  ): AddressInputPresenter {
+    let address: Address | null
+    if (this.userInputData === null) {
+      address = modelValue
+    } else {
+      const [firstAddressLine, secondAddressLine, townOrCity, county, postCode] = [
+        'address-line-1',
+        'address-line-2',
+        'address-town-or-city',
+        'address-county',
+        'address-postcode',
+      ]
+        .map(suffix => `${userInputKey}-${suffix}`)
+        .map(key => (this.userInputData![key] as string) ?? '')
+      address = {
+        firstAddressLine,
+        secondAddressLine,
+        townOrCity,
+        county,
+        postCode,
+      }
+    }
+    return {
+      value: address,
+      errors: {
+        firstAddressLine: PresenterUtils.errorMessage(error, `${userInputKey}-address-line-1`),
+        postcode: PresenterUtils.errorMessage(error, `${userInputKey}-address-postcode`),
       },
     }
   }

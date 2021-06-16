@@ -148,7 +148,7 @@ export default class EditSessionView {
         legend: {
           text: 'Method',
           isPageHeading: false,
-          classes: 'govuk-fieldset__legend--l',
+          classes: 'govuk-fieldset__legend--m',
         },
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.meetingMethod.errorMessage),
@@ -168,7 +168,7 @@ export default class EditSessionView {
         },
         {
           value: 'IN_PERSON_MEETING_OTHER',
-          text: 'In-person meeting - Other locations',
+          text: 'In-person meeting',
           checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
           conditional: {
             html: otherLocationHTML,

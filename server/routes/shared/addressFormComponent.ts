@@ -1,10 +1,11 @@
 import { InputArgs } from '../../utils/govukFrontendTypes'
-import { Address } from '../../models/actionPlan'
+import { AddressInputPresenter } from '../../utils/presenterUtils'
+import ViewUtils from '../../utils/viewUtils'
 
 export default class AddressFormComponent {
-  constructor(private address: Address | null = null, private key: string) {}
+  constructor(private address: AddressInputPresenter, private key: string) {}
 
-  get inputArgs(): Record<string, unknown> {
+  get inputArgs(): Record<string, InputArgs> {
     return {
       firstAddressLineInputArgs: this.firstAddressLineInputArgs,
       secondAddressLineInputArgs: this.secondAddressLineInputArgs,
@@ -19,9 +20,10 @@ export default class AddressFormComponent {
       label: {
         html: 'Address line 1<span class="govuk-visually-hidden">line 1 of 2</span>',
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.address.errors.firstAddressLine),
       id: `${this.key}-address-line-1`,
-      name: 'address-line-1',
-      value: this.address?.firstAddressLine,
+      name: `${this.key}-address-line-1`,
+      value: this.address.value?.firstAddressLine,
     }
   }
 
@@ -31,32 +33,32 @@ export default class AddressFormComponent {
         html: 'Address line 2 (optional) <span class="govuk-visually-hidden">line 2 of 2</span>',
       },
       id: `${this.key}-address-line-2`,
-      name: 'address-line-2',
-      value: this.address?.secondAddressLine,
+      name: `${this.key}-address-line-2`,
+      value: this.address.value?.secondAddressLine,
     }
   }
 
   private get townOrCityInputArgs(): InputArgs {
     return {
       label: {
-        text: 'Town or city',
+        text: 'Town or city (optional)',
       },
       classes: 'govuk-!-width-two-thirds',
       id: `${this.key}-address-town-or-city`,
-      name: 'address-town-or-city',
-      value: this.address?.townOrCity,
+      name: `${this.key}-address-town-or-city`,
+      value: this.address.value?.townOrCity,
     }
   }
 
   private get countyInputArgs(): InputArgs {
     return {
       label: {
-        text: 'County',
+        text: 'County (optional)',
       },
       classes: 'govuk-!-width-two-thirds',
       id: `${this.key}-address-county`,
-      name: 'address-county',
-      value: this.address?.county,
+      name: `${this.key}-address-county`,
+      value: this.address.value?.county,
     }
   }
 
@@ -65,10 +67,11 @@ export default class AddressFormComponent {
       label: {
         text: 'Postcode',
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.address.errors.postcode),
       classes: 'govuk-input--width-10',
       id: `${this.key}-address-postcode`,
-      name: 'address-postcode',
-      value: this.address?.postCode,
+      name: `${this.key}-address-postcode`,
+      value: this.address.value?.postCode,
     }
   }
 }
