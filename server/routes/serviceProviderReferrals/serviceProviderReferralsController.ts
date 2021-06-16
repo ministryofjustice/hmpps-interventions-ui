@@ -58,7 +58,7 @@ import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import ActionPlanDetailsPresenter from '../shared/actionPlanDetailsPresenter'
-import ActionPlanDetailsView from '../shared/actionPlanDetailsView'
+import ActionPlanSummaryView from '../shared/actionPlanSummaryView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -860,7 +860,7 @@ export default class ServiceProviderReferralsController {
     ])
 
     const presenter = new ActionPlanDetailsPresenter(actionPlan, sentReferral, 'service-provider')
-    const view = new ActionPlanDetailsView(presenter)
+    const view = new ActionPlanSummaryView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

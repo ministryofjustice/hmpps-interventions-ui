@@ -1,7 +1,7 @@
 import ActionPlanDetailsPresenter from './actionPlanDetailsPresenter'
 import { SummaryListArgs, SummaryListArgsRow, TagArgs } from '../../utils/govukFrontendTypes'
 
-export default class ActionPlanDetailsView {
+export default class ActionPlanSummaryView {
   constructor(private readonly presenter: ActionPlanDetailsPresenter) {}
 
   private readonly backLinkArgs = {
@@ -14,7 +14,7 @@ export default class ActionPlanDetailsView {
       case 'Approved':
         return 'govuk-tag--green'
       case 'Under review':
-        return 'govuk-tag- govuk-tag--red'
+        return 'govuk-tag--red'
       default:
         return 'govuk-tag--grey'
     }
