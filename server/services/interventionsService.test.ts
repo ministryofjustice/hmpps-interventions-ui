@@ -2671,8 +2671,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('recordSupplierAssessmentAppointmentAttendance', () => {
-    it('returns an updated supplier assessment appointment with the service user‘s attendance', async () => {
+  describe('recordAppointmentAttendance', () => {
+    it('returns an updated appointment with the service user‘s attendance', async () => {
       const appointment = appointmentFactory.build({
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 60,
@@ -2690,13 +2690,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state:
-          'a sent referral with ID 060946a4-1574-4581-b539-5df69303c595 exists and no feedback has been recorded for its supplier assessment appointment',
+        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists and no feedback has been recorded',
         uponReceiving:
-          'a POST request to set the attendance for the supplier assessment appointment on sent referral with ID 060946a4-1574-4581-b539-5df69303c595',
+          'a PUT request to set the attendance for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
         withRequest: {
-          method: 'POST',
-          path: '/sent-referral/060946a4-1574-4581-b539-5df69303c595/supplier-assessment-appointment/record-attendance',
+          method: 'PUT',
+          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-attendance',
           body: {
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
@@ -2712,9 +2711,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordSupplierAssessmentAppointmentAttendance(
+      const result = await interventionsService.recordAppointmentAttendance(
         token,
-        '060946a4-1574-4581-b539-5df69303c595',
+        '578e9360-8938-4fea-8889-19a3309ad840',
         {
           attended: 'late',
           additionalAttendanceInformation: 'Alex missed the bus',
@@ -2725,8 +2724,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('recordSupplierAssessmentAppointmentBehavior', () => {
-    it('returns an updated supplier assessment appointment with the service user‘s behaviour', async () => {
+  describe('recordAppointmentBehavior', () => {
+    it('returns an supplier with the service user‘s behaviour', async () => {
       const appointment = appointmentFactory.build({
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 120,
@@ -2744,12 +2743,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state: 'a sent referral with ID 184c1150-bbfb-4875-903b-b6e14ae0eb49 exists',
+        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists',
         uponReceiving:
-          'a POST request to set the behaviour for the supplier assessment appointment on sent referral with ID 184c1150-bbfb-4875-903b-b6e14ae0eb49',
+          'a PUT request to set the behaviour for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
         withRequest: {
-          method: 'POST',
-          path: '/sent-referral/184c1150-bbfb-4875-903b-b6e14ae0eb49/supplier-assessment-appointment/record-behaviour',
+          method: 'PUT',
+          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-behaviour',
           body: {
             behaviourDescription: 'Alex was well behaved',
             notifyProbationPractitioner: false,
@@ -2765,9 +2764,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordSupplierAssessmentAppointmentBehavior(
+      const result = await interventionsService.recordAppointmentBehavior(
         token,
-        '184c1150-bbfb-4875-903b-b6e14ae0eb49',
+        '578e9360-8938-4fea-8889-19a3309ad840',
         {
           behaviourDescription: 'Alex was well behaved',
           notifyProbationPractitioner: false,
@@ -2778,7 +2777,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('submitSupplierAssessmentSessionFeedback', () => {
+  describe('submitAppointmentFeedback', () => {
     it('submits attendance and behaviour feedback to the PP', async () => {
       const appointment = appointmentFactory.build({
         appointmentTime: '2021-05-13T12:30:00Z',
@@ -2797,12 +2796,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state: 'a sent referral with ID 3776fd0a-1ee7-47a0-b016-071c986e6f94 exists',
+        state: 'an appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb exists',
         uponReceiving:
-          'a POST request to submit the feedback for the supplier assessment for sent referral with ID 3776fd0a-1ee7-47a0-b016-071c986e6f94',
+          'a POST request to submit the feedback for the appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb',
         withRequest: {
           method: 'POST',
-          path: '/sent-referral/3776fd0a-1ee7-47a0-b016-071c986e6f94/supplier-assessment-appointment/submit',
+          path: '/appointment/86c422b4-4c55-42ec-b9a6-3ae1ab000adb/submit-feedback',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -2814,10 +2813,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.submitSupplierAssessmentSessionFeedback(
-        token,
-        '3776fd0a-1ee7-47a0-b016-071c986e6f94'
-      )
+      const result = await interventionsService.submitAppointmentFeedback(token, '86c422b4-4c55-42ec-b9a6-3ae1ab000adb')
       expect(result.sessionFeedback!.submitted).toEqual(true)
     })
   })
