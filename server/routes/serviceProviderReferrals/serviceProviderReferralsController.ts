@@ -28,9 +28,9 @@ import ActionPlanConfirmationView from './actionPlanConfirmationView'
 import AddActionPlanNumberOfSessionsView from './actionPlanNumberOfSessionsView'
 import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessionsPresenter'
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
-import EditSessionPresenter from './editSessionPresenter'
-import EditSessionView from './editSessionView'
-import EditSessionForm from './editSessionForm'
+import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
+import ScheduleAppointmentView from './scheduleAppointmentView'
+import ScheduleAppointmentForm from './scheduleAppointmentForm'
 import PostSessionAttendanceFeedbackView from './postSessionAttendanceFeedbackView'
 import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
 import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
@@ -453,7 +453,7 @@ export default class ServiceProviderReferralsController {
           .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) =>
-        new EditSessionPresenter(appointment, formError, userInputData, serverError),
+        new ScheduleAppointmentPresenter(appointment, formError, userInputData, serverError),
       redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
     })
   }
@@ -470,7 +470,7 @@ export default class ServiceProviderReferralsController {
         validationError: FormValidationError | null,
         userInputData: Record<string, unknown> | null,
         serverError: FormValidationError | null
-      ) => EditSessionPresenter
+      ) => ScheduleAppointmentPresenter
       redirectTo: string
     }
   ): Promise<void> {
@@ -479,7 +479,7 @@ export default class ServiceProviderReferralsController {
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new EditSessionForm(req).data()
+      const data = await new ScheduleAppointmentForm(req).data()
 
       if (data.error) {
         res.status(400)
@@ -514,7 +514,7 @@ export default class ServiceProviderReferralsController {
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = config.createPresenter(appointment, formError, userInputData, serverError)
-    const view = new EditSessionView(presenter)
+    const view = new ScheduleAppointmentView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

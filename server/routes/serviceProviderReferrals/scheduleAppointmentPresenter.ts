@@ -5,7 +5,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import ClockTime from '../../utils/clockTime'
 import { FormValidationError } from '../../utils/formValidationError'
 
-export default class EditSessionPresenter {
+export default class ScheduleAppointmentPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly validationError: FormValidationError | null = null,

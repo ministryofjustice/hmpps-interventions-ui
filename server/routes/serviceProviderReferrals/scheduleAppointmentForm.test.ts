@@ -1,7 +1,7 @@
-import EditSessionForm from './editSessionForm'
+import ScheduleAppointmentForm from './scheduleAppointmentForm'
 import TestUtils from '../../../testutils/testUtils'
 
-describe('EditSessionForm', () => {
+describe(ScheduleAppointmentForm, () => {
   describe('data', () => {
     describe('with valid data', () => {
       it('returns a paramsForUpdate with the completionDeadline key and an ISO-formatted date', async () => {
@@ -16,7 +16,7 @@ describe('EditSessionForm', () => {
           'duration-minutes': '30',
         })
 
-        const data = await new EditSessionForm(request).data()
+        const data = await new ScheduleAppointmentForm(request).data()
 
         expect(data.paramsForUpdate).toEqual({ appointmentTime: '2021-09-12T12:05:00.000Z', durationInMinutes: 90 })
       })
@@ -35,7 +35,7 @@ describe('EditSessionForm', () => {
           'duration-minutes': '',
         })
 
-        const data = await new EditSessionForm(request).data()
+        const data = await new ScheduleAppointmentForm(request).data()
 
         expect(data.error).toEqual({
           errors: [

@@ -1,11 +1,11 @@
-import EditSessionPresenter from './editSessionPresenter'
+import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 
-describe(EditSessionPresenter, () => {
+describe(ScheduleAppointmentPresenter, () => {
   describe('text', () => {
     it('returns text to be displayed', () => {
       const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-      const presenter = new EditSessionPresenter(appointment)
+      const presenter = new ScheduleAppointmentPresenter(appointment)
 
       expect(presenter.text).toEqual({ title: 'Add session 1 details' })
     })
@@ -15,7 +15,7 @@ describe(EditSessionPresenter, () => {
     describe('when a server error is passed in', () => {
       it('displays the message from the server error', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-        const presenter = new EditSessionPresenter(
+        const presenter = new ScheduleAppointmentPresenter(
           appointment,
           {
             errors: [
@@ -52,7 +52,7 @@ describe(EditSessionPresenter, () => {
     describe('when a standard validation error is passed in', () => {
       it('displays the message from the server error', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-        const presenter = new EditSessionPresenter(
+        const presenter = new ScheduleAppointmentPresenter(
           appointment,
           {
             errors: [
@@ -74,7 +74,7 @@ describe(EditSessionPresenter, () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-        const presenter = new EditSessionPresenter(appointment)
+        const presenter = new ScheduleAppointmentPresenter(appointment)
 
         expect(presenter.errorSummary).toEqual(null)
       })
@@ -85,7 +85,7 @@ describe(EditSessionPresenter, () => {
     describe('with a newly-created appointment', () => {
       it('returns empty fields', () => {
         const actionPlan = actionPlanAppointmentFactory.newlyCreated().build()
-        const presenter = new EditSessionPresenter(actionPlan)
+        const presenter = new ScheduleAppointmentPresenter(actionPlan)
 
         expect(presenter.fields).toEqual({
           date: {
@@ -118,7 +118,7 @@ describe(EditSessionPresenter, () => {
           appointmentTime: '2021-03-24T10:30:00Z',
           durationInMinutes: 75,
         })
-        const presenter = new EditSessionPresenter(actionPlan)
+        const presenter = new ScheduleAppointmentPresenter(actionPlan)
 
         expect(presenter.fields).toEqual({
           date: {

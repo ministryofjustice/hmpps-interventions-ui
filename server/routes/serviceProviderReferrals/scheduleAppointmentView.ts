@@ -1,13 +1,13 @@
 import { DateInputArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import EditSessionPresenter from './editSessionPresenter'
+import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 
-export default class EditSessionView {
-  constructor(private readonly presenter: EditSessionPresenter) {}
+export default class ScheduleAppointmentView {
+  constructor(private readonly presenter: ScheduleAppointmentPresenter) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/editSession',
+      'serviceProviderReferrals/scheduleAppointment',
       {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,
