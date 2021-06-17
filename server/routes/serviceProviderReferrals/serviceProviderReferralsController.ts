@@ -859,8 +859,8 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ActionPlanDetailsPresenter(actionPlan, sentReferral, 'service-provider')
-    const view = new ActionPlanSummaryView(presenter)
+    const presenter = new ActionPlanDetailsPresenter(sentReferral, actionPlan, 'service-provider')
+    const view = new ActionPlanSummaryView(presenter, false)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

@@ -15,7 +15,7 @@ export default class InterventionProgressView {
   actionPlanSummaryView: ActionPlanSummaryView
 
   constructor(private readonly presenter: InterventionProgressPresenter) {
-    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanDetailsPresenter)
+    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanDetailsPresenter, true)
   }
 
   get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
@@ -77,85 +77,6 @@ export default class InterventionProgressView {
         },
       ],
     }
-  }
-
-  private actionPlanSummaryListArgs(tagMacro: (args: TagArgs) => string, csrfToken: string): SummaryListArgs {
-    const rows: SummaryListArgsRow[] = [
-      {
-        key: { text: 'Action plan status' },
-        value: {
-          text: tagMacro({
-            text: this.presenter.actionPlanDetailsPresenter.text.actionPlanStatus,
-            classes: this.actionPlanSummaryView.actionPlanTagClass,
-            attributes: { id: 'action-plan-status' },
-          }),
-        },
-      },
-    ]
-
-    if (!this.presenter.actionPlanDetailsPresenter.actionPlanCreated) {
-      // action plan doesn't exist; show link to create one
-      rows.push({
-        key: { text: 'To do' },
-        value: {
-          html: `<form method="post" action="${ViewUtils.escape(
-            this.presenter.actionPlanDetailsPresenter.createActionPlanFormAction
-          )}">
-                   <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
-                   <button class="govuk-button govuk-button--secondary">
-                     Create action plan
-                   </button>
-                 </form>`,
-        },
-      })
-    } else if (
-      this.presenter.actionPlanDetailsPresenter.actionPlanCreated &&
-      !this.presenter.actionPlanDetailsPresenter.actionPlanUnderReview
-    ) {
-      // action plan exists, but has not been submitted
-      rows.push({
-        key: { text: 'To do' },
-        value: {
-          html: `<a href="${this.presenter.actionPlanDetailsPresenter.actionPlanFormUrl}" class="govuk-link">Submit action plan</a>`,
-        },
-      })
-    } else if (this.presenter.actionPlanDetailsPresenter.actionPlanUnderReview) {
-      // action plan has been submitted; show link to view it
-      rows.push({
-        key: { text: 'Submitted date' },
-        value: {
-          text: this.presenter.actionPlanDetailsPresenter.text.actionPlanSubmittedDate,
-          classes: 'action-plan-submitted-date',
-        },
-      })
-      rows.push({
-        key: { text: 'To do' },
-        value: {
-          html: `<a href="${this.presenter.actionPlanDetailsPresenter.viewActionPlanUrl}" class="govuk-link">View action plan</a>`,
-        },
-      })
-    } else if (this.presenter.actionPlanDetailsPresenter.actionPlanApproved) {
-      // action plan has been approved; show link to view it
-      rows.push({
-        key: { text: 'Submitted date' },
-        value: {
-          text: this.presenter.actionPlanDetailsPresenter.text.actionPlanSubmittedDate,
-          classes: 'action-plan-submitted-date',
-        },
-      })
-      rows.push({
-        key: { text: 'Approval date' },
-        value: { text: this.presenter.actionPlanDetailsPresenter.text.actionPlanApprovalDate },
-      })
-      rows.push({
-        key: { text: 'To do' },
-        value: {
-          html: `<a href="${this.presenter.actionPlanDetailsPresenter.viewActionPlanUrl}" class="govuk-link">View action plan</a>`,
-        },
-      })
-    }
-
-    return { rows }
   }
 
   private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
@@ -226,7 +147,9 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
-        actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
+        actionPlanSummaryListArgs: this.actionPlanSummaryView.actionPlanSummaryListArgs.bind(
+          this.actionPlanSummaryView
+        ),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
