@@ -57,8 +57,8 @@ import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
-import ActionPlanDetailsPresenter from '../shared/actionPlanDetailsPresenter'
-import ActionPlanDetailsView from '../shared/actionPlanDetailsView'
+import ActionPlanPresenter from '../shared/actionPlanPresenter'
+import ActionPlanView from '../shared/actionPlanView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -859,8 +859,8 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ActionPlanDetailsPresenter(sentReferral, actionPlan, 'service-provider')
-    const view = new ActionPlanDetailsView(presenter)
+    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'service-provider')
+    const view = new ActionPlanView(presenter, false)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
