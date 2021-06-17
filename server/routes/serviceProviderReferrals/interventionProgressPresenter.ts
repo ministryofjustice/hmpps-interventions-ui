@@ -38,7 +38,7 @@ export default class InterventionProgressPresenter {
       referral.id,
       subNavUrlPrefix
     )
-    this.actionPlanDetailsPresenter = new ActionPlanDetailsPresenter(actionPlan, subNavUrlPrefix)
+    this.actionPlanDetailsPresenter = new ActionPlanDetailsPresenter(referral, actionPlan, subNavUrlPrefix)
   }
 
   get referralAssigned(): boolean {
