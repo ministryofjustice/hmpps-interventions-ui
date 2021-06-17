@@ -220,8 +220,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "removed provider 'BETTER_LTD' from scope: group does not exist in the reference data",
-      "removed contract '0002' from scope: group does not exist in the reference data",
+      "unidentified provider 'BETTER_LTD': group does not exist in the reference data",
+      "unidentified contract '0002': group does not exist in the reference data",
       "no valid service provider groups associated with user",
       "no valid contract groups associated with user"
       ]}
@@ -334,7 +334,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "removed contract '0002' from scope: group does not exist in the reference data",
+      "unidentified contract '0002': group does not exist in the reference data",
       "no valid contract groups associated with user"
       ]}
       """.trimIndent()

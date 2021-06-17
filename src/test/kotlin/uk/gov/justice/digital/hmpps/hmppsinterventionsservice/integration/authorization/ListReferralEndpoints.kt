@@ -166,8 +166,8 @@ class ListReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "removed provider 'HOME_TRUST' from scope: group does not exist in the reference data",
-      "removed contract '0999' from scope: group does not exist in the reference data",
+      "unidentified provider 'HOME_TRUST': group does not exist in the reference data",
+      "unidentified contract '0999': group does not exist in the reference data",
       "no valid service provider groups associated with user",
       "no valid contract groups associated with user"
       ]}

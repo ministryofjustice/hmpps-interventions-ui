@@ -103,18 +103,18 @@ class ServiceProviderAccessScopeMapper(
 
   private fun getProviders(providerGroups: List<String>, configErrors: MutableList<String>): List<ServiceProvider> {
     val providers = serviceProviderRepository.findAllById(providerGroups)
-    val removedProviders = providerGroups.subtract(providers.map { it.id })
-    removedProviders.forEach { undefinedProvider ->
-      configErrors.add("removed provider '$undefinedProvider' from scope: group does not exist in the reference data")
+    val unidentifiedProviders = providerGroups.subtract(providers.map { it.id })
+    unidentifiedProviders.forEach { undefinedProvider ->
+      configErrors.add("unidentified provider '$undefinedProvider': group does not exist in the reference data")
     }
     return providers
   }
 
   private fun getContracts(contractGroups: List<String>, configErrors: MutableList<String>): List<DynamicFrameworkContract> {
     val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
-    val removedContracts = contractGroups.subtract(contracts.map { it.contractReference })
-    removedContracts.forEach { undefinedContract ->
-      configErrors.add("removed contract '$undefinedContract' from scope: group does not exist in the reference data")
+    val unidentifiedContracts = contractGroups.subtract(contracts.map { it.contractReference })
+    unidentifiedContracts.forEach { undefinedContract ->
+      configErrors.add("unidentified contract '$undefinedContract': group does not exist in the reference data")
     }
     return contracts
   }
