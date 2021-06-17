@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -38,7 +39,8 @@ class SupplierAssessmentControllerTest {
 
     whenever(userMapper.fromToken(token)).thenReturn(user)
     whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
-    whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(referral.id, durationInMinutes, appointmentTime, user)).thenReturn(supplierAssessment.currentAppointment)
+    whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
+    whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user)).thenReturn(supplierAssessment.currentAppointment)
 
     val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
 

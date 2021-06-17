@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -36,7 +37,7 @@ class SupplierAssessmentService(
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser
-  ): Appointment{
+  ): Appointment {
     val appointment = appointmentService.createOrUpdateAppointment(supplierAssessment.currentAppointment, durationInMinutes, appointmentTime, createdByUser)
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.save(supplierAssessment)
@@ -44,8 +45,7 @@ class SupplierAssessmentService(
   }
 
   fun getSupplierAssessmentById(supplierAssessmentId: UUID): SupplierAssessment {
-    return supplierAssessmentRepository.findById(supplierAssessmentId).orElseThrow {
-      throw EntityNotFoundException("Supplier Assessment not found [id=$supplierAssessmentId]")
-    }
+    return supplierAssessmentRepository.findByIdOrNull(supplierAssessmentId)
+      ?: throw EntityNotFoundException("Supplier Assessment not found [id=$supplierAssessmentId]")
   }
 }

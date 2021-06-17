@@ -8,13 +8,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.App
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
 import java.util.UUID
-import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @Service
 @Transactional
 class AppointmentService(
-  val entityManager: EntityManager,
   val appointmentRepository: AppointmentRepository,
   val authUserRepository: AuthUserRepository,
 ) {

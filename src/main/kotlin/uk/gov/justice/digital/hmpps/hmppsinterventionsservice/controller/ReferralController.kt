@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.Views
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
@@ -193,11 +194,18 @@ class ReferralController(
     val sentReferral = referralService.getSentReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
 
-    if (sentReferral.supplierAssessment!!.appointments.size == 0) {
-      throw ResponseStatusException(HttpStatus.NOT_FOUND, "no appointment found for supplier assessment [id=${sentReferral.supplierAssessment!!.id}]")
+    val supplierAssessment = getSupplierAssessment(sentReferral)
+    if (supplierAssessment.appointments.size == 0) {
+      throw ResponseStatusException(HttpStatus.NOT_FOUND, "no appointment found for supplier assessment [id=${supplierAssessment.id}]")
     }
+    return SupplierAssessmentDTO.from(supplierAssessment)
+  }
 
-    return SupplierAssessmentDTO.from(sentReferral.supplierAssessment!!)
+  private fun getSupplierAssessment(sentReferral: Referral): SupplierAssessment {
+    return sentReferral.supplierAssessment ?: throw ResponseStatusException(
+      HttpStatus.NOT_FOUND,
+      "Supplier assessment does not exist for referral[id=${sentReferral.id}]"
+    )
   }
 
   private fun getDraftReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
