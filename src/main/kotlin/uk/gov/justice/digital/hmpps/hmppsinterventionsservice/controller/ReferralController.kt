@@ -195,9 +195,6 @@ class ReferralController(
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
 
     val supplierAssessment = getSupplierAssessment(sentReferral)
-    if (supplierAssessment.appointments.size == 0) {
-      throw ResponseStatusException(HttpStatus.NOT_FOUND, "no appointment found for supplier assessment [id=${supplierAssessment.id}]")
-    }
     return SupplierAssessmentDTO.from(supplierAssessment)
   }
 

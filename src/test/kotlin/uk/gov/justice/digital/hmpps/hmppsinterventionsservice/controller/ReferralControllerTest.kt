@@ -34,7 +34,6 @@ import javax.persistence.EntityNotFoundException
 internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
-//  private val supplierAssessmentService = mock<SupplierAssessmentService>()
   private val userMapper = UserMapper()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
@@ -184,20 +183,5 @@ internal class ReferralControllerTest {
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
     assertThat(e.message).contains("sent referral not found [id=$referralId]")
-  }
-
-  @Test
-  fun `get appointment for supplier assessment with no appointment`() {
-    val referral = referralFactory.createSent()
-    referral.supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
-    val token = tokenFactory.create()
-
-    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
-
-    val e = assertThrows<ResponseStatusException> {
-      referralController.getSupplierAssessmentAppointment(referral.id, token)
-    }
-    assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
-    assertThat(e.message).contains("no appointment found for supplier assessment [id=${referral.supplierAssessment!!.id}]")
   }
 }

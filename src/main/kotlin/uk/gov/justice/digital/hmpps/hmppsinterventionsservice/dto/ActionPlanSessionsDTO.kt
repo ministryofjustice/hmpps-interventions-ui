@@ -9,10 +9,10 @@ import java.util.UUID
 
 data class UpdateAppointmentDTO(
   val appointmentTime: OffsetDateTime,
+  @JsonProperty(required = true) val durationInMinutes: Int,
   // TODO: remove optional when front-end changes are complete
   val appointmentDeliveryType: AppointmentDeliveryType? = null,
   val appointmentDeliveryAddress: List<String>? = null,
-  @JsonProperty(required = true) val durationInMinutes: Int,
 )
 
 data class UpdateAppointmentAttendanceDTO(
