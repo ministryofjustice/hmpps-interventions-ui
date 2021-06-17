@@ -6,7 +6,7 @@ export default class ActionPlanPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly actionPlan: ActionPlan | null,
-    private readonly userType: 'service-provider' | 'probation-practitioner'
+    readonly userType: 'service-provider' | 'probation-practitioner'
   ) {}
 
   readonly interventionProgressURL = `/${this.userType}/referrals/${this.referral.id}/progress`
@@ -37,7 +37,7 @@ export default class ActionPlanPresenter {
       return 'Approved'
     }
     if (this.actionPlanUnderReview) {
-      return 'Under review'
+      return 'Awaiting approval'
     }
     return 'Not submitted'
   }

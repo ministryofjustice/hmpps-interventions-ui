@@ -410,7 +410,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Return to service progress').click()
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
-    cy.get('#action-plan-status').contains('Under review')
+    cy.get('#action-plan-status').contains('Awaiting approval')
     cy.get('.action-plan-submitted-date').contains(/\d{1,2} [A-Z][a-z]{2} \d{4}/)
   })
 

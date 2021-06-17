@@ -6,6 +6,13 @@
 
 {% block referralPageSection %}
 
+  <h2 class="govuk-heading-m">Service user's action plan</h2>
+  <p class="govuk-body">
+    This is the action plan created by the service provider. When there are changes submitted by the service provider, you will need to review it and decide if you want to approve it.
+  </p>
+
+  {{ govukSummaryList(actionPlanSummaryListArgs(govukTag)) }}
+
   <h2 class="govuk-heading-m">Intervention sessions</h2>
   <p class="govuk-body">
     These show the progress of each intervention session.
@@ -15,7 +22,7 @@
     {{ govukTable(sessionTableArgs(govukTag)) }}
   {% else %}
     <p class="govuk-body">
-      Sessions will appear here when the action plan is ready.
+      Sessions will appear here when the action plan is approved.
     </p>
 
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
