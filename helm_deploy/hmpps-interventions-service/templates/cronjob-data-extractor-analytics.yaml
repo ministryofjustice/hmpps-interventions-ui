@@ -54,3 +54,5 @@ spec:
                     key: secret_access_key
               - name: AWS_DEFAULT_REGION
                 value: eu-west-2
+          - name: SAVE_EVENTS_LOG
+            value: "true"
