@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -11,8 +10,15 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 
 data class ServiceProviderAccessScope(
-  val serviceProvider: ServiceProvider,
-  val contracts: List<DynamicFrameworkContract>,
+  val serviceProviders: Set<ServiceProvider>,
+  val contracts: Set<DynamicFrameworkContract>,
+)
+
+private data class WorkingScope(
+  val authGroups: List<String>,
+  val providers: MutableSet<ServiceProvider> = mutableSetOf(),
+  val contracts: MutableSet<DynamicFrameworkContract> = mutableSetOf(),
+  val errors: MutableList<String> = mutableListOf(),
 )
 
 @Component
@@ -34,63 +40,82 @@ class ServiceProviderAccessScopeMapper(
     val groups = hmppsAuthService.getUserGroups(user)
       ?: throw AccessError(user, errorMessage, listOf("cannot find user in hmpps auth"))
 
-    val configErrors = mutableListOf<String>()
+    // order is important as each step can mutate WorkingScope
+    val workingScope = WorkingScope(authGroups = groups)
 
-    val serviceProviderGroups = groups
+    resolveProviders(workingScope)
+    resolveContracts(workingScope)
+    removeInaccessibleContracts(workingScope)
+
+    blockUsersWithoutProviders(workingScope)
+    blockUsersWithoutContracts(workingScope)
+
+    if (workingScope.errors.isNotEmpty()) {
+      throw AccessError(user, errorMessage, workingScope.errors)
+    }
+
+    return ServiceProviderAccessScope(
+      serviceProviders = workingScope.providers,
+      contracts = workingScope.contracts,
+    )
+  }
+
+  private fun resolveProviders(scope: WorkingScope) {
+    val serviceProviderGroups = scope.authGroups
       .filter { it.startsWith(serviceProviderGroupPrefix) }
       .map { it.removePrefix(serviceProviderGroupPrefix) }
 
-    val serviceProvider = getServiceProvider(serviceProviderGroups, configErrors)
+    val providers = getProviders(serviceProviderGroups, scope.errors)
+    scope.providers.addAll(providers)
+  }
 
-    val contractGroups = groups
+  private fun resolveContracts(scope: WorkingScope) {
+    val contractGroups = scope.authGroups
       .filter { it.startsWith(contractGroupPrefix) }
       .map { it.removePrefix(contractGroupPrefix) }
 
-    val contracts = getContracts(contractGroups, configErrors)
-
-    // FIXME we also need to remove contracts which do not belong to the user's provider
-
-    if (configErrors.isNotEmpty()) {
-      throw AccessError(user, errorMessage, configErrors)
-    }
-
-    // this not null assertion on serviceProvider is ugly, but it's the only way i could think
-    // of to allow all the errors to be processed in a sensible way above.
-    return ServiceProviderAccessScope(serviceProvider = serviceProvider!!, contracts = contracts)
+    val contracts = getContracts(contractGroups, scope.errors)
+    scope.contracts.addAll(contracts)
   }
 
-  private fun getServiceProvider(serviceProviderGroups: List<String>, configErrors: MutableList<String>): ServiceProvider? {
-    return when {
-      serviceProviderGroups.isEmpty() -> {
-        configErrors.add("no service provider groups associated with user")
-        null
-      }
-      serviceProviderGroups.size > 1 -> {
-        configErrors.add("more than one service provider group associated with user")
-        null
-      }
-      else -> {
-        val providerGroupCode = serviceProviderGroups[0]
-        val provider = serviceProviderRepository.findByIdOrNull(providerGroupCode)
-        if (provider == null) {
-          configErrors.add("service provider id '$providerGroupCode' does not exist in the interventions database")
-        }
-        provider
-      }
+  private fun removeInaccessibleContracts(userScope: WorkingScope) {
+    val contractsNotAssociatedWithUserProviders = userScope.contracts.filter { contract ->
+      val providersOnContract = setOf(contract.primeProvider).union(contract.subcontractorProviders)
+      userScope.providers.intersect(providersOnContract).isEmpty()
     }
+    contractsNotAssociatedWithUserProviders.forEach {
+      userScope.errors.add("contract '${it.contractReference}' is not accessible to providers ${userScope.providers.map { p -> p.id }}")
+    }
+    userScope.contracts.subtract(contractsNotAssociatedWithUserProviders)
+  }
+
+  private fun blockUsersWithoutContracts(scope: WorkingScope) {
+    if (scope.contracts.isEmpty()) {
+      scope.errors.add("no valid contract groups associated with user")
+    }
+  }
+
+  private fun blockUsersWithoutProviders(scope: WorkingScope) {
+    if (scope.providers.isEmpty()) {
+      scope.errors.add("no valid service provider groups associated with user")
+    }
+  }
+
+  private fun getProviders(providerGroups: List<String>, configErrors: MutableList<String>): List<ServiceProvider> {
+    val providers = serviceProviderRepository.findAllById(providerGroups)
+    val unidentifiedProviders = providerGroups.subtract(providers.map { it.id })
+    unidentifiedProviders.forEach { undefinedProvider ->
+      configErrors.add("unidentified provider '$undefinedProvider': group does not exist in the reference data")
+    }
+    return providers
   }
 
   private fun getContracts(contractGroups: List<String>, configErrors: MutableList<String>): List<DynamicFrameworkContract> {
-    return if (contractGroups.isEmpty()) {
-      configErrors.add("no contract groups associated with user")
-      emptyList()
-    } else {
-      val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
-      val removedContracts = contractGroups.subtract(contracts.map(DynamicFrameworkContract::contractReference))
-      for (removedContract in removedContracts) {
-        configErrors.add("contract '$removedContract' does not exist in the interventions database")
-      }
-      contracts
+    val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
+    val unidentifiedContracts = contractGroups.subtract(contracts.map { it.contractReference })
+    unidentifiedContracts.forEach { undefinedContract ->
+      configErrors.add("unidentified contract '$undefinedContract': group does not exist in the reference data")
     }
+    return contracts
   }
 }

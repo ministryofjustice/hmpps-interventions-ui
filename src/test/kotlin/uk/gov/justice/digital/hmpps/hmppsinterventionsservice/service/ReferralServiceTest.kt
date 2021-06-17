@@ -7,6 +7,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -29,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Desired
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -438,70 +441,53 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(referrals[0].serviceUserCRN).isEqualTo("CRN129876234")
   }
 
-  @Test
-  fun `get sent referrals for prime provider returns filtered referrals`() {
-    // setup 2 users and 2 providers with a contract and referral for each provider
-    val users = listOf(userFactory.create("sp_user_1", "auth"), userFactory.create("sp_user_2", "auth"))
-    val spOrgs = listOf(serviceProviderFactory.create("sp_org_1"), serviceProviderFactory.create("sp_org_2"))
-    spOrgs.forEach {
-      val intervention = interventionFactory.create(
-        contract = contractFactory.create(
-          primeProvider = it
-        )
-      )
-      referralFactory.createSent(intervention = intervention)
+  @Nested
+  @DisplayName("get sent referrals with a provider user")
+  inner class GetSentReferralsSPUser {
+    private lateinit var otherPrime: ServiceProvider
+    private lateinit var otherSub: ServiceProvider
+
+    private fun userWithProviders(providers: List<ServiceProvider>): AuthUser {
+      val user = userFactory.create("test_user", "auth")
+      whenever(serviceProviderAccessScopeMapper.fromUser(user))
+        .thenReturn(ServiceProviderAccessScope(providers.toSet(), setOf()))
+      return user
     }
 
-    // the first user works for the first provider
-    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(ServiceProviderAccessScope(spOrgs[0], listOf()))
-    // the second user works for a different provider entirely
-    whenever(serviceProviderAccessScopeMapper.fromUser(users[1])).thenReturn(
-      ServiceProviderAccessScope(serviceProviderFactory.create("missing"), listOf())
-    )
-    // no access restrictions for the purpose of this test
-    whenever(referralAccessFilter.serviceProviderReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
-
-    // the first user sees referrals for their provider
-    val referrals = referralService.getSentReferralsForUser(users[0])
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].intervention.dynamicFrameworkContract.primeProvider).isEqualTo(spOrgs[0])
-
-    // the second user doesn't see any referrals (because there aren't any for their provider)
-    assertThat(referralService.getSentReferralsForUser(users[1])).isEmpty()
-  }
-
-  @Test
-  fun `get sent referrals for subcontractor provider returns filtered referrals`() {
-    // setup 2 users and 2 subcontractor providers with a contract and referral for each provider
-    val users = listOf(userFactory.create("sp_user_1", "auth"), userFactory.create("sp_user_2", "auth"))
-    val spPrimeOrg = serviceProviderFactory.create("prime_org")
-    val spSubOrgs = listOf(serviceProviderFactory.create("sub_org_1"), serviceProviderFactory.create("sub_org_2"))
-    spSubOrgs.forEach {
+    private fun newReferralWithProviders(prime: ServiceProvider, vararg subs: ServiceProvider): Referral {
       val intervention = interventionFactory.create(
-        contract = contractFactory.create(
-          primeProvider = spPrimeOrg,
-          subcontractorProviders = setOf(it)
-        )
+        contract = contractFactory.create(primeProvider = prime, subcontractorProviders = subs.toSet())
       )
-      referralFactory.createSent(intervention = intervention)
+      return referralFactory.createSent(intervention = intervention)
     }
 
-    // the first user works for the first provider
-    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(ServiceProviderAccessScope(spSubOrgs[0], listOf()))
-    // the second user works for a different provider entirely
-    whenever(serviceProviderAccessScopeMapper.fromUser(users[1])).thenReturn(
-      ServiceProviderAccessScope(serviceProviderFactory.create("missing"), listOf())
-    )
-    // no access restrictions for the purpose of this test
-    whenever(referralAccessFilter.serviceProviderReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+    @BeforeEach
+    fun setup() {
+      // do not test access restrictions in these tests; only test selection of referrals
+      whenever(referralAccessFilter.serviceProviderReferrals(any(), any()))
+        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
-    // the first user sees referrals for their provider
-    val referrals = referralService.getSentReferralsForUser(users[0])
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].intervention.dynamicFrameworkContract.subcontractorProviders).contains(spSubOrgs[0])
+      otherPrime = serviceProviderFactory.create("other_prime")
+      otherSub = serviceProviderFactory.create("other_sub")
+    }
 
-    // the second user doesn't see any referrals (because there aren't any for their provider)
-    assertThat(referralService.getSentReferralsForUser(users[1])).isEmpty()
+    @Test
+    fun `user with multiple providers can see referrals where the providers are subcontractors`() {
+      val userProviders = listOf("test_org_1", "test_org_2").map(serviceProviderFactory::create)
+
+      val primeRef1 = newReferralWithProviders(userProviders[0])
+      val primeRef2 = newReferralWithProviders(userProviders[1])
+      val subRef1 = newReferralWithProviders(otherPrime, userProviders[0])
+      val subRef2 = newReferralWithProviders(otherPrime, userProviders[1])
+      val noAccess = newReferralWithProviders(otherPrime, otherSub)
+
+      val multiSubUser = userWithProviders(userProviders)
+
+      val result = referralService.getSentReferralsForUser(multiSubUser)
+      assertThat(result).doesNotContain(noAccess)
+      assertThat(result).containsAll(listOf(primeRef1, primeRef2, subRef1, subRef2))
+      assertThat(result.size).isEqualTo(4)
+    }
   }
 
   @Test
@@ -528,7 +514,7 @@ class ReferralServiceTest @Autowired constructor(
 
     referralRepository.flush()
     val updatedReferral = referralRepository.findById(referral.id).get()
-    assertThat(updatedReferral!!.selectedServiceCategories).hasSize(1)
+    assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
     assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId2)
     assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(0)
   }
@@ -553,7 +539,7 @@ class ReferralServiceTest @Autowired constructor(
 
     referralRepository.flush()
     val updatedReferral = referralRepository.findById(referral.id).get()
-    assertThat(updatedReferral!!.selectedServiceCategories).hasSize(1)
+    assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
     assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId)
     assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(1)
   }

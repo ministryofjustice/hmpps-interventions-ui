@@ -220,8 +220,10 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "service provider id 'BETTER_LTD' does not exist in the interventions database",
-      "contract '0002' does not exist in the interventions database"
+      "unidentified provider 'BETTER_LTD': group does not exist in the reference data",
+      "unidentified contract '0002': group does not exist in the reference data",
+      "no valid service provider groups associated with user",
+      "no valid contract groups associated with user"
       ]}
       """.trimIndent()
     )
@@ -260,13 +262,52 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "user's organization is not eligible to access this referral",
+      "user does not have the required provider group to access this referral",
       "user does not have the required contract group to access this referral"
       ]}
       """.trimIndent()
     )
   }
 
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
+  @MethodSource("sentReferralRequests")
+  fun `sp user has one of the providers required to access the referral but not the contract`(request: Request) {
+    val user = setupAssistant.createSPUser()
+
+    setUserGroups(
+      user,
+      listOf(
+        "INT_SP_BETTER_LTD",
+        "INT_SP_HARMONY_LIVING",
+        "INT_CR_0002",
+      )
+    )
+
+    setupAssistant.createDynamicFrameworkContract(
+      contractReference = "0002",
+      primeProviderId = "BETTER_LTD",
+      subContractorServiceProviderIds = setOf()
+    )
+
+    val contract = setupAssistant.createDynamicFrameworkContract(
+      contractReference = "0001",
+      primeProviderId = "HARMONY_LIVING",
+      subContractorServiceProviderIds = setOf()
+    )
+
+    val referral = createSentReferral(contract)
+    val token = createEncodedTokenForUser(user)
+
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
+    response.expectStatus().isForbidden
+    response.expectBody().json(
+      """
+      {"accessErrors": [
+      "user does not have the required contract group to access this referral"
+      ]}
+      """.trimIndent()
+    )
+  }
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
   fun `sp user works for subcontractor provider but is missing required contract group`(request: Request) {
@@ -293,7 +334,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "contract '0002' does not exist in the interventions database"
+      "unidentified contract '0002': group does not exist in the reference data",
+      "no valid contract groups associated with user"
       ]}
       """.trimIndent()
     )
@@ -318,8 +360,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "no service provider groups associated with user",
-      "no contract groups associated with user"
+      "no valid service provider groups associated with user",
+      "no valid contract groups associated with user"
       ]}
       """.trimIndent()
     )
@@ -327,34 +369,46 @@ class SingleReferralEndpoints : IntegrationTestBase() {
 
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
-  fun `sp user has more than one service provider group in hmpps auth`(request: Request) {
+  fun `sp users with multiple providers can access all referrals with those providers and contracts`(request: Request) {
     val user = setupAssistant.createSPUser()
     setUserGroups(
       user,
       listOf(
         "INT_SP_HARMONY_LIVING",
         "INT_SP_BETTER_LTD",
-        "INT_CR_0001"
+        "INT_CR_0001",
+        "INT_CR_0002",
+        "INT_CR_0003",
       )
     )
 
-    val contract = setupAssistant.createDynamicFrameworkContract(
+    val contract1 = setupAssistant.createDynamicFrameworkContract(
       contractReference = "0001",
       primeProviderId = "HARMONY_LIVING",
       subContractorServiceProviderIds = setOf("BETTER_LTD")
     )
-    val referral = createSentReferral(contract)
+    val contract2 = setupAssistant.createDynamicFrameworkContract(
+      contractReference = "0002",
+      primeProviderId = "BETTER_LTD",
+    )
+    val contract3 = setupAssistant.createDynamicFrameworkContract(
+      contractReference = "0003",
+      primeProviderId = "DONT_HAVE_THIS_GROUP",
+      subContractorServiceProviderIds = setOf("BETTER_LTD")
+    )
+    val referral1 = createSentReferral(contract1)
+    val referral2 = createSentReferral(contract2)
+    val referral3 = createSentReferral(contract3)
     val token = createEncodedTokenForUser(user)
 
-    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
-    response.expectStatus().isForbidden
-    response.expectBody().json(
-      """
-      {"accessErrors": [
-      "more than one service provider group associated with user"
-      ]}
-      """.trimIndent()
-    )
+    val checkReferral1 = requestFactory.create(request, token, referral1.id.toString()).exchange()
+    checkReferral1.expectStatus().is2xxSuccessful
+
+    val checkReferral2 = requestFactory.create(request, token, referral2.id.toString()).exchange()
+    checkReferral2.expectStatus().is2xxSuccessful
+
+    val checkReferral3 = requestFactory.create(request, token, referral3.id.toString()).exchange()
+    checkReferral3.expectStatus().is2xxSuccessful
   }
 
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")

@@ -166,8 +166,10 @@ class ListReferralEndpoints : IntegrationTestBase() {
     response.expectBody().json(
       """
       {"accessErrors": [
-      "service provider id 'HOME_TRUST' does not exist in the interventions database",
-      "contract '0999' does not exist in the interventions database"
+      "unidentified provider 'HOME_TRUST': group does not exist in the reference data",
+      "unidentified contract '0999': group does not exist in the reference data",
+      "no valid service provider groups associated with user",
+      "no valid contract groups associated with user"
       ]}
       """.trimIndent()
     )
