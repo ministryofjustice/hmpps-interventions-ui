@@ -8,11 +8,14 @@ import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
+import javax.persistence.PrimaryKeyJoinColumn
 import javax.validation.constraints.NotNull
 
 @Entity
@@ -35,6 +38,10 @@ data class Appointment(
   @NotNull val createdAt: OffsetDateTime,
   var appointmentTime: OffsetDateTime,
   var durationInMinutes: Int,
+
+  @OneToOne(cascade = [CascadeType.ALL])
+  @PrimaryKeyJoinColumn
+  var appointmentDelivery: AppointmentDelivery? = null,
 
   @Id val id: UUID,
 )
