@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 
 data class ServiceProviderAccessScope(
-  val serviceProvider: ServiceProvider,
+  val serviceProviders: List<ServiceProvider>,
   val contracts: List<DynamicFrameworkContract>,
 )
 
@@ -40,21 +40,23 @@ class ServiceProviderAccessScopeMapper(
     val groups = hmppsAuthService.getUserGroups(user)
       ?: throw AccessError(user, errorMessage, listOf("cannot find user in hmpps auth"))
 
-    val workingScope = WorkingScope(authGroups = groups,)
+    // order is important as each step can mutate WorkingScope
+    val workingScope = WorkingScope(authGroups = groups)
+
     resolveProviders(workingScope)
     resolveContracts(workingScope)
-    assertExactlyOneProvider(workingScope)
-    assertAtLeastOneContract(workingScope)
-    // FIXME we also need to remove contracts which do not belong to the user's provider
+    removeInaccessibleContracts(workingScope)
+
+    blockUsersWithoutProviders(workingScope)
+    blockUsersWithoutContracts(workingScope)
 
     if (workingScope.errors.isNotEmpty()) {
       throw AccessError(user, errorMessage, workingScope.errors)
     }
 
-    // this implicit not null assertion on serviceProvider is ugly but `assertExactlyOneProvider` makes sure it is possible
     return ServiceProviderAccessScope(
-      serviceProvider = workingScope.providers.first(),
-      contracts = workingScope.contracts
+      serviceProviders = workingScope.providers,
+      contracts = workingScope.contracts,
     )
   }
 
@@ -76,18 +78,25 @@ class ServiceProviderAccessScopeMapper(
     scope.contracts.addAll(contracts)
   }
 
-  private fun assertAtLeastOneContract(scope: WorkingScope) {
+  private fun removeInaccessibleContracts(scope: WorkingScope) {
+    val orphanContracts = scope.contracts.filterNot {
+      scope.providers.contains(it.primeProvider) || it.subcontractorProviders.intersect(scope.providers).isNotEmpty()
+    }
+    orphanContracts.forEach {
+      scope.errors.add("contract '${it.contractReference}' is not accessible to providers ${scope.providers.map { p -> p.id }}")
+    }
+    scope.contracts.removeAll(orphanContracts)
+  }
+
+  private fun blockUsersWithoutContracts(scope: WorkingScope) {
     if (scope.contracts.isEmpty()) {
       scope.errors.add("no valid contract groups associated with user")
     }
   }
 
-  private fun assertExactlyOneProvider(scope: WorkingScope) {
+  private fun blockUsersWithoutProviders(scope: WorkingScope) {
     if (scope.providers.isEmpty()) {
       scope.errors.add("no valid service provider groups associated with user")
-    }
-    if (scope.providers.size > 1) {
-      scope.errors.add("more than one service provider group associated with user")
     }
   }
 

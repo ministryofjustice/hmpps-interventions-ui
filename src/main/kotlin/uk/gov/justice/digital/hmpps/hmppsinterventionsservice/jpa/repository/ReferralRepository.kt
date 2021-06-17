@@ -8,8 +8,8 @@ import java.util.UUID
 
 interface ReferralRepository : JpaRepository<Referral, UUID> {
   // queries for service providers
-  fun findAllByInterventionDynamicFrameworkContractPrimeProviderAndSentAtIsNotNull(provider: ServiceProvider): List<Referral>
-  fun findAllByInterventionDynamicFrameworkContractSubcontractorProvidersAndSentAtIsNotNull(provider: ServiceProvider): List<Referral>
+  fun findAllByInterventionDynamicFrameworkContractPrimeProviderInAndSentAtIsNotNull(providers: List<ServiceProvider>): List<Referral>
+  fun findAllByInterventionDynamicFrameworkContractSubcontractorProvidersInAndSentAtIsNotNull(providers: List<ServiceProvider>): List<Referral>
 
   // queries for sent referrals
   fun findByIdAndSentAtIsNotNull(id: UUID): Referral?

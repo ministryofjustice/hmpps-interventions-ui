@@ -453,10 +453,12 @@ class ReferralServiceTest @Autowired constructor(
     }
 
     // the first user works for the first provider
-    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(ServiceProviderAccessScope(spOrgs[0], listOf()))
+    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(
+      ServiceProviderAccessScope(listOf(spOrgs[0]), listOf())
+    )
     // the second user works for a different provider entirely
     whenever(serviceProviderAccessScopeMapper.fromUser(users[1])).thenReturn(
-      ServiceProviderAccessScope(serviceProviderFactory.create("missing"), listOf())
+      ServiceProviderAccessScope(listOf(serviceProviderFactory.create("missing")), listOf())
     )
     // no access restrictions for the purpose of this test
     whenever(referralAccessFilter.serviceProviderReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
@@ -487,10 +489,12 @@ class ReferralServiceTest @Autowired constructor(
     }
 
     // the first user works for the first provider
-    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(ServiceProviderAccessScope(spSubOrgs[0], listOf()))
+    whenever(serviceProviderAccessScopeMapper.fromUser(users[0])).thenReturn(
+      ServiceProviderAccessScope(listOf(spSubOrgs[0]), listOf())
+    )
     // the second user works for a different provider entirely
     whenever(serviceProviderAccessScopeMapper.fromUser(users[1])).thenReturn(
-      ServiceProviderAccessScope(serviceProviderFactory.create("missing"), listOf())
+      ServiceProviderAccessScope(listOf(serviceProviderFactory.create("missing")), listOf())
     )
     // no access restrictions for the purpose of this test
     whenever(referralAccessFilter.serviceProviderReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
@@ -528,7 +532,7 @@ class ReferralServiceTest @Autowired constructor(
 
     referralRepository.flush()
     val updatedReferral = referralRepository.findById(referral.id).get()
-    assertThat(updatedReferral!!.selectedServiceCategories).hasSize(1)
+    assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
     assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId2)
     assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(0)
   }
@@ -553,7 +557,7 @@ class ReferralServiceTest @Autowired constructor(
 
     referralRepository.flush()
     val updatedReferral = referralRepository.findById(referral.id).get()
-    assertThat(updatedReferral!!.selectedServiceCategories).hasSize(1)
+    assertThat(updatedReferral.selectedServiceCategories).hasSize(1)
     assertThat(updatedReferral.selectedServiceCategories!!.elementAt(0).id).isEqualTo(serviceCategoryId)
     assertThat(updatedReferral.selectedDesiredOutcomes).hasSize(1)
   }

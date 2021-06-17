@@ -28,8 +28,8 @@ class ReferralAccessChecker(
     val eligibleServiceProviders = eligibleProviderMapper.fromReferral(referral)
     val errors = mutableListOf<String>()
 
-    if (!eligibleServiceProviders.contains(userScope.serviceProvider)) {
-      errors.add("user's organization is not eligible to access this referral")
+    if (eligibleServiceProviders.intersect(userScope.serviceProviders).isEmpty()) {
+      errors.add("user does not have the required provider group to access this referral")
     }
 
     if (!userScope.contracts.contains(referral.intervention.dynamicFrameworkContract)) {
