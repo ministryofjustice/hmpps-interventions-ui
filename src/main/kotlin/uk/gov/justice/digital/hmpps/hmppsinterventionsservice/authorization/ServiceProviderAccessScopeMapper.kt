@@ -78,14 +78,15 @@ class ServiceProviderAccessScopeMapper(
     scope.contracts.addAll(contracts)
   }
 
-  private fun removeInaccessibleContracts(scope: WorkingScope) {
-    val orphanContracts = scope.contracts.filterNot {
-      scope.providers.contains(it.primeProvider) || it.subcontractorProviders.intersect(scope.providers).isNotEmpty()
+  private fun removeInaccessibleContracts(userScope: WorkingScope) {
+    val contractsNotAssociatedWithUserProviders = userScope.contracts.filter { contract ->
+      val providersOnContract = setOf(contract.primeProvider).union(contract.subcontractorProviders)
+      userScope.providers.intersect(providersOnContract).isEmpty()
     }
-    orphanContracts.forEach {
-      scope.errors.add("contract '${it.contractReference}' is not accessible to providers ${scope.providers.map { p -> p.id }}")
+    contractsNotAssociatedWithUserProviders.forEach {
+      userScope.errors.add("contract '${it.contractReference}' is not accessible to providers ${userScope.providers.map { p -> p.id }}")
     }
-    scope.contracts.removeAll(orphanContracts)
+    userScope.contracts.subtract(contractsNotAssociatedWithUserProviders)
   }
 
   private fun blockUsersWithoutContracts(scope: WorkingScope) {
