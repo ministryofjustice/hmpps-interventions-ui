@@ -301,6 +301,20 @@ export default class ProbationPractitionerReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async approveActionPlan(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not approve action plan for referral with id '${sentReferral.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    await this.interventionsService.approveActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
+    return res.redirect(`/probation-practitioner/referrals/${sentReferral.id}/action-plan/approved`)
+  }
+
   async actionPlanApproved(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)

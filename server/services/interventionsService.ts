@@ -440,4 +440,12 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as CancellationReason[]
   }
+
+  async approveActionPlan(token: string, actionPlanId: string): Promise<void> {
+    const restClient = this.createRestClient(token)
+    await restClient.post({
+      path: `/action-plan/${actionPlanId}/approve`,
+      headers: { Accept: 'application/json' },
+    })
+  }
 }
