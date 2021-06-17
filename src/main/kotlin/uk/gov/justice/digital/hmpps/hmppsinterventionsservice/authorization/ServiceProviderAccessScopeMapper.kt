@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -13,6 +12,13 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthS
 data class ServiceProviderAccessScope(
   val serviceProvider: ServiceProvider,
   val contracts: List<DynamicFrameworkContract>,
+)
+
+private data class WorkingScope(
+  val authGroups: List<String>,
+  val providers: MutableList<ServiceProvider> = mutableListOf(),
+  val contracts: MutableList<DynamicFrameworkContract> = mutableListOf(),
+  val errors: MutableList<String> = mutableListOf(),
 )
 
 @Component
@@ -34,63 +40,72 @@ class ServiceProviderAccessScopeMapper(
     val groups = hmppsAuthService.getUserGroups(user)
       ?: throw AccessError(user, errorMessage, listOf("cannot find user in hmpps auth"))
 
-    val configErrors = mutableListOf<String>()
+    val workingScope = WorkingScope(authGroups = groups,)
+    resolveProviders(workingScope)
+    resolveContracts(workingScope)
+    assertExactlyOneProvider(workingScope)
+    assertAtLeastOneContract(workingScope)
+    // FIXME we also need to remove contracts which do not belong to the user's provider
 
-    val serviceProviderGroups = groups
+    if (workingScope.errors.isNotEmpty()) {
+      throw AccessError(user, errorMessage, workingScope.errors)
+    }
+
+    // this implicit not null assertion on serviceProvider is ugly but `assertExactlyOneProvider` makes sure it is possible
+    return ServiceProviderAccessScope(
+      serviceProvider = workingScope.providers.first(),
+      contracts = workingScope.contracts
+    )
+  }
+
+  private fun resolveProviders(scope: WorkingScope) {
+    val serviceProviderGroups = scope.authGroups
       .filter { it.startsWith(serviceProviderGroupPrefix) }
       .map { it.removePrefix(serviceProviderGroupPrefix) }
 
-    val serviceProvider = getServiceProvider(serviceProviderGroups, configErrors)
+    val providers = getProviders(serviceProviderGroups, scope.errors)
+    scope.providers.addAll(providers)
+  }
 
-    val contractGroups = groups
+  private fun resolveContracts(scope: WorkingScope) {
+    val contractGroups = scope.authGroups
       .filter { it.startsWith(contractGroupPrefix) }
       .map { it.removePrefix(contractGroupPrefix) }
 
-    val contracts = getContracts(contractGroups, configErrors)
-
-    // FIXME we also need to remove contracts which do not belong to the user's provider
-
-    if (configErrors.isNotEmpty()) {
-      throw AccessError(user, errorMessage, configErrors)
-    }
-
-    // this not null assertion on serviceProvider is ugly, but it's the only way i could think
-    // of to allow all the errors to be processed in a sensible way above.
-    return ServiceProviderAccessScope(serviceProvider = serviceProvider!!, contracts = contracts)
+    val contracts = getContracts(contractGroups, scope.errors)
+    scope.contracts.addAll(contracts)
   }
 
-  private fun getServiceProvider(serviceProviderGroups: List<String>, configErrors: MutableList<String>): ServiceProvider? {
-    return when {
-      serviceProviderGroups.isEmpty() -> {
-        configErrors.add("no service provider groups associated with user")
-        null
-      }
-      serviceProviderGroups.size > 1 -> {
-        configErrors.add("more than one service provider group associated with user")
-        null
-      }
-      else -> {
-        val providerGroupCode = serviceProviderGroups[0]
-        val provider = serviceProviderRepository.findByIdOrNull(providerGroupCode)
-        if (provider == null) {
-          configErrors.add("service provider id '$providerGroupCode' does not exist in the interventions database")
-        }
-        provider
-      }
+  private fun assertAtLeastOneContract(scope: WorkingScope) {
+    if (scope.contracts.isEmpty()) {
+      scope.errors.add("no valid contract groups associated with user")
     }
+  }
+
+  private fun assertExactlyOneProvider(scope: WorkingScope) {
+    if (scope.providers.isEmpty()) {
+      scope.errors.add("no valid service provider groups associated with user")
+    }
+    if (scope.providers.size > 1) {
+      scope.errors.add("more than one service provider group associated with user")
+    }
+  }
+
+  private fun getProviders(providerGroups: List<String>, configErrors: MutableList<String>): List<ServiceProvider> {
+    val providers = serviceProviderRepository.findAllById(providerGroups)
+    val removedProviders = providerGroups.subtract(providers.map { it.id })
+    removedProviders.forEach { undefinedProvider ->
+      configErrors.add("removed provider '$undefinedProvider' from scope: group does not exist in the reference data")
+    }
+    return providers
   }
 
   private fun getContracts(contractGroups: List<String>, configErrors: MutableList<String>): List<DynamicFrameworkContract> {
-    return if (contractGroups.isEmpty()) {
-      configErrors.add("no contract groups associated with user")
-      emptyList()
-    } else {
-      val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
-      val removedContracts = contractGroups.subtract(contracts.map(DynamicFrameworkContract::contractReference))
-      for (removedContract in removedContracts) {
-        configErrors.add("contract '$removedContract' does not exist in the interventions database")
-      }
-      contracts
+    val contracts = dynamicFrameworkContractRepository.findAllByContractReferenceIn(contractGroups)
+    val removedContracts = contractGroups.subtract(contracts.map { it.contractReference })
+    removedContracts.forEach { undefinedContract ->
+      configErrors.add("removed contract '$undefinedContract' from scope: group does not exist in the reference data")
     }
+    return contracts
   }
 }
