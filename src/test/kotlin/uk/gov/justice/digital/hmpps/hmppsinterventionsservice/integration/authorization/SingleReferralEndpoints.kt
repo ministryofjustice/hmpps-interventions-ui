@@ -271,6 +271,45 @@ class SingleReferralEndpoints : IntegrationTestBase() {
 
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("sentReferralRequests")
+  fun `sp user has one of the providers required to access the referral but not the contract`(request: Request) {
+    val user = setupAssistant.createSPUser()
+
+    setUserGroups(
+      user,
+      listOf(
+        "INT_SP_BETTER_LTD",
+        "INT_SP_HARMONY_LIVING",
+        "INT_CR_0002",
+      )
+    )
+
+    setupAssistant.createDynamicFrameworkContract(
+      contractReference = "0002",
+      primeProviderId = "BETTER_LTD",
+      subContractorServiceProviderIds = setOf()
+    )
+
+    val contract = setupAssistant.createDynamicFrameworkContract(
+      contractReference = "0001",
+      primeProviderId = "HARMONY_LIVING",
+      subContractorServiceProviderIds = setOf()
+    )
+
+    val referral = createSentReferral(contract)
+    val token = createEncodedTokenForUser(user)
+
+    val response = requestFactory.create(request, token, referral.id.toString()).exchange()
+    response.expectStatus().isForbidden
+    response.expectBody().json(
+      """
+      {"accessErrors": [
+      "user does not have the required contract group to access this referral"
+      ]}
+      """.trimIndent()
+    )
+  }
+  @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
+  @MethodSource("sentReferralRequests")
   fun `sp user works for subcontractor provider but is missing required contract group`(request: Request) {
     val user = setupAssistant.createSPUser()
 
