@@ -6,7 +6,7 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
-import ActionPlanDetailsPresenter from '../shared/actionPlanDetailsPresenter'
+import ActionPlanPresenter from '../shared/actionPlanPresenter'
 
 interface EndedFields {
   endRequestedAt: string | null
@@ -24,7 +24,7 @@ interface ProgressSessionTableRow {
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
-  actionPlanDetailsPresenter: ActionPlanDetailsPresenter
+  actionPlanPresenter: ActionPlanPresenter
 
   constructor(
     private readonly referral: SentReferral,
@@ -38,7 +38,7 @@ export default class InterventionProgressPresenter {
       referral.id,
       subNavUrlPrefix
     )
-    this.actionPlanDetailsPresenter = new ActionPlanDetailsPresenter(referral, actionPlan, subNavUrlPrefix)
+    this.actionPlanPresenter = new ActionPlanPresenter(referral, actionPlan, subNavUrlPrefix)
   }
 
   get referralAssigned(): boolean {

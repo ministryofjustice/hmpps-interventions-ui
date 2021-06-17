@@ -2,18 +2,18 @@ import ActionPlan from '../../models/actionPlan'
 import DateUtils from '../../utils/dateUtils'
 import SentReferral from '../../models/sentReferral'
 
-export default class ActionPlanDetailsPresenter {
+export default class ActionPlanPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly actionPlan: ActionPlan | null,
-    private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
+    private readonly userType: 'service-provider' | 'probation-practitioner'
   ) {}
 
-  readonly interventionProgressURL = `/${this.subNavUrlPrefix}/referrals/${this.referral.id}/progress`
+  readonly interventionProgressURL = `/${this.userType}/referrals/${this.referral.id}/progress`
+
+  readonly viewActionPlanUrl = `/${this.userType}/referrals/${this.referral.id}/action-plan`
 
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
-
-  readonly viewActionPlanUrl = `/service-provider/referrals/${this.referral.id}/action-plan`
 
   readonly actionPlanFormUrl = `/service-provider/action-plan/${this.actionPlan?.id}/add-activities`
 
@@ -46,8 +46,12 @@ export default class ActionPlanDetailsPresenter {
     return this.actionPlan !== null
   }
 
+  get actionPlanSubmitted(): boolean {
+    return this.actionPlan?.submittedAt != null
+  }
+
   get actionPlanUnderReview(): boolean {
-    return this.actionPlan?.submittedAt != null && !this.actionPlanApproved
+    return this.actionPlanSubmitted && !this.actionPlanApproved
   }
 
   get actionPlanApproved(): boolean {
