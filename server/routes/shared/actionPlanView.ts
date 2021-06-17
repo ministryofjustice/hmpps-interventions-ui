@@ -21,7 +21,7 @@ export default class ActionPlanView {
     switch (this.presenter.text.actionPlanStatus) {
       case 'Approved':
         return 'govuk-tag--green'
-      case 'Under review':
+      case 'Awaiting approval':
         return 'govuk-tag- govuk-tag--red'
       default:
         return 'govuk-tag--grey'
@@ -60,30 +60,32 @@ export default class ActionPlanView {
     }
 
     if (this.includeSummaryTodo) {
-      if (!this.presenter.actionPlanCreated) {
-        rows.push({
-          key: { text: 'Action' },
-          value: {
-            html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
-                     <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken!)}">
-                     <button class="govuk-button govuk-button--secondary">Create action plan</button>
-                   </form>`,
-          },
-        })
-      } else if (!this.presenter.actionPlanSubmitted) {
-        rows.push({
-          key: { text: 'Action' },
-          value: {
-            html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Submit action plan</a>`,
-          },
-        })
-      } else {
+      if (this.presenter.actionPlanSubmitted) {
         rows.push({
           key: { text: 'Action' },
           value: {
             html: `<a href="${this.presenter.viewActionPlanUrl}" class="govuk-link">View action plan</a>`,
           },
         })
+      } else if (this.presenter.userType === 'service-provider') {
+        if (!this.presenter.actionPlanCreated) {
+          rows.push({
+            key: { text: 'Action' },
+            value: {
+              html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
+                     <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken!)}">
+                     <button class="govuk-button govuk-button--secondary">Create action plan</button>
+                   </form>`,
+            },
+          })
+        } else if (!this.presenter.actionPlanSubmitted) {
+          rows.push({
+            key: { text: 'Action' },
+            value: {
+              html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Submit action plan</a>`,
+            },
+          })
+        }
       }
     }
 

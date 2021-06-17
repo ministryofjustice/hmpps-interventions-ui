@@ -86,7 +86,7 @@ export default class ProbationPractitionerReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlanAppointments)
+    const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlanAppointments, actionPlan)
     const view = new InterventionProgressView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

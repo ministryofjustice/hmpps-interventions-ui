@@ -38,7 +38,7 @@ describe(InterventionProgressPresenter, () => {
         const actionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
         const presenter = new ActionPlanPresenter(referral, actionPlan, 'service-provider')
 
-        expect(presenter.text.actionPlanStatus).toEqual('Under review')
+        expect(presenter.text.actionPlanStatus).toEqual('Awaiting approval')
       })
     })
 
