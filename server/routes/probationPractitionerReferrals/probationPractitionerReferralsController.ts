@@ -300,4 +300,27 @@ export default class ProbationPractitionerReferralsController {
     const view = new ActionPlanView(presenter, false)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
+
+  async actionPlanApproved(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    ControllerUtils.renderWithLayout(
+      res,
+      {
+        renderArgs: [
+          'probationPractitionerReferrals/actionPlanApproved',
+          {
+            backButtonArgs: {
+              text: 'Return to intervention progress',
+              href: `/probation-practitioner/referrals/${sentReferral.id}/progress`,
+            },
+          },
+        ],
+      },
+      serviceUser
+    )
+  }
 }
