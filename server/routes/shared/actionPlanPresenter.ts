@@ -17,11 +17,14 @@ export default class ActionPlanPresenter {
 
   readonly actionPlanFormUrl = `/service-provider/action-plan/${this.actionPlan?.id}/add-activities`
 
+  readonly actionPlanApprovalUrl = `/probation-practitioner/referrals/${this.referral.id}/action-plan/approve`
+
   readonly text = {
     actionPlanStatus: this.actionPlanStatus,
     actionPlanSubmittedDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.submittedAt || null),
     actionPlanApprovalDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.approvedAt || null),
     actionPlanNumberOfSessions: this.actionPlan?.numberOfSessions,
+    spEmailAddress: this.actionPlan?.submittedBy?.username?.toLowerCase(),
   }
 
   get activities(): string[] {
@@ -56,5 +59,9 @@ export default class ActionPlanPresenter {
 
   get actionPlanApproved(): boolean {
     return this.actionPlan?.approvedAt != null
+  }
+
+  get showApprovalForm(): boolean {
+    return this.userType === 'probation-practitioner' && this.actionPlanUnderReview
   }
 }
