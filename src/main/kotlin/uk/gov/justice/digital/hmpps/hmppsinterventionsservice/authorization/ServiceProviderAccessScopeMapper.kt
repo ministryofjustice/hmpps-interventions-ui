@@ -10,14 +10,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 
 data class ServiceProviderAccessScope(
-  val serviceProviders: List<ServiceProvider>,
-  val contracts: List<DynamicFrameworkContract>,
+  val serviceProviders: Set<ServiceProvider>,
+  val contracts: Set<DynamicFrameworkContract>,
 )
 
 private data class WorkingScope(
   val authGroups: List<String>,
-  val providers: MutableList<ServiceProvider> = mutableListOf(),
-  val contracts: MutableList<DynamicFrameworkContract> = mutableListOf(),
+  val providers: MutableSet<ServiceProvider> = mutableSetOf(),
+  val contracts: MutableSet<DynamicFrameworkContract> = mutableSetOf(),
   val errors: MutableList<String> = mutableListOf(),
 )
 
