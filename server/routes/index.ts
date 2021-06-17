@@ -243,6 +243,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/referrals/:id/action-plan', (req, res) =>
     serviceProviderReferralsController.viewActionPlan(req, res)
   )
+  get('/probation-practitioner/referrals/:id/action-plan', (req, res) =>
+    probationPractitionerReferralsController.viewActionPlan(req, res)
+  )
 
   return router
 }

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService from '../../services/interventionsService'
 import { ActionPlanAppointment } from '../../models/actionPlan'
@@ -25,6 +26,8 @@ import ShowReferralPresenter from '../shared/showReferralPresenter'
 import ShowReferralView from '../shared/showReferralView'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import ActionPlanPresenter from '../shared/actionPlanPresenter'
+import ActionPlanView from '../shared/actionPlanView'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -275,6 +278,26 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategories)
     const view = new EndOfServiceReportView(presenter)
 
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewActionPlan(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not view action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    const [actionPlan, serviceUser] = await Promise.all([
+      this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'probation-practitioner')
+    const view = new ActionPlanView(presenter, false)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }
