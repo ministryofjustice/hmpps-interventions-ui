@@ -1,0 +1,31 @@
+{% extends "../partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% block pageTitle %}
+    HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+    {% block content %}
+    <div class="govuk-!-width-two-thirds">
+        {{ govukBackLink(backLinkArgs) }}
+        <h1 class="govuk-heading-l">View action plan</h1>
+
+        {{ govukSummaryList(actionPlanSummaryListArgs(govukTag)) }}
+
+        <h2 class="govuk-heading-m">Desired outcomes and activities</h2>
+
+        <ul class="govuk-list">
+        {% for activity in presenter.activities %}
+            <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity)) }}</li>
+        {% endfor %}
+        </ul>
+
+        <h2 class="govuk-heading-m">Suggested number of sessions for the action plan</h2>
+        <p class="govuk-body">Suggested number of sessions: {{ presenter.text.actionPlanNumberOfSessions }}</p>
+    </div>
+    {% endblock %}
+{% endblock %}

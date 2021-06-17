@@ -57,6 +57,8 @@ import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import ActionPlanDetailsPresenter from '../shared/actionPlanDetailsPresenter'
+import ActionPlanDetailsView from '../shared/actionPlanDetailsView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -839,6 +841,26 @@ export default class ServiceProviderReferralsController {
     const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategories[0])
     const view = new EndOfServiceReportConfirmationView(presenter)
 
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewActionPlan(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not view action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    const [actionPlan, serviceUser] = await Promise.all([
+      this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const presenter = new ActionPlanDetailsPresenter(sentReferral, actionPlan, 'service-provider')
+    const view = new ActionPlanDetailsView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

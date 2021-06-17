@@ -240,5 +240,9 @@ export default function routes(router: Router, services: Services): Router {
     findInterventionsController.viewInterventionDetails(req, res)
   )
 
+  get('/service-provider/referrals/:id/action-plan', (req, res) =>
+    serviceProviderReferralsController.viewActionPlan(req, res)
+  )
+
   return router
 }
