@@ -80,7 +80,7 @@ describe(sessionStatus.forAppointment, () => {
   describe('when the appointment has not yet been scheduled', () => {
     const unscheduledAppointment = actionPlanAppointmentFactory.newlyCreated().build()
 
-    it('returns "did not attend" status', () => {
+    it('returns "not scheduled" status', () => {
       expect(sessionStatus.forAppointment(unscheduledAppointment)).toEqual(SessionStatus.notScheduled)
     })
   })
