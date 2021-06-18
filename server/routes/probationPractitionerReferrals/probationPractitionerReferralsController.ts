@@ -311,7 +311,7 @@ export default class ProbationPractitionerReferralsController {
       })
     }
 
-    await this.interventionsService.approveActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
+    await this.interventionsService.approveActionPlan(accessToken, sentReferral.actionPlanId)
     return res.redirect(`/probation-practitioner/referrals/${sentReferral.id}/action-plan/approved`)
   }
 
