@@ -138,6 +138,32 @@ internal class ReferralConcluderTest {
     verifyZeroInteractions(referralRepository, referralEventPublisher)
   }
 
+  @Test
+  fun `should flag end of service report as required when at least one session has been attended`() {
+
+    val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
+    val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(1)
+
+    val eosrRequired = referralConcluder.requiresEosr(referralWithActionPlanAndSomeAttendedAppointments)
+
+    assertThat(eosrRequired).isTrue
+    verifyZeroInteractions(referralRepository, referralEventPublisher)
+  }
+
+  @Test
+  fun `should not flag end of service report as required when no sessions have been attended`() {
+
+    val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
+    val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
+    whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(0)
+
+    val eosrRequired = referralConcluder.requiresEosr(referralWithActionPlanAndSomeAttendedAppointments)
+
+    assertThat(eosrRequired).isFalse
+    verifyZeroInteractions(referralRepository, referralEventPublisher)
+  }
+
   private fun verifyEventPublished(referralWithNoActionPlan: Referral, value: ReferralEventType) {
     verify(referralEventPublisher).referralConcludedEvent(same(referralWithNoActionPlan), same(value))
   }

@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
+import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
@@ -22,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralReq
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
@@ -33,11 +37,12 @@ import javax.persistence.EntityNotFoundException
 
 internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
+  private val referralConcluder = mock<ReferralConcluder>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
   private val userMapper = UserMapper()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
-    referralService, serviceCategoryService, userMapper, cancellationReasonMapper
+    referralService, referralConcluder, serviceCategoryService, userMapper, cancellationReasonMapper
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
@@ -126,7 +131,9 @@ internal class ReferralControllerTest {
 
     val user = AuthUser("CRN123", "auth", "user")
     val token = tokenFactory.create(user.id, user.authSource, user.userName)
-    whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(referralFactory.createEnded(endRequestedComments = "comment"))
+    val endedReferral = referralFactory.createEnded(endRequestedComments = "comment")
+    whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(endedReferral)
+    whenever(referralConcluder.requiresEosr(endedReferral)).thenReturn(true)
 
     referralController.endSentReferral(referral.id, endReferralDTO, token)
     verify(referralService).requestReferralEnd(referral, user, cancellationReason, "comment")
@@ -183,5 +190,77 @@ internal class ReferralControllerTest {
     }
     assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
     assertThat(e.message).contains("sent referral not found [id=$referralId]")
+  }
+
+  @Nested
+  inner class SetsEndOfServiceReportRequired {
+    private val user = authUserFactory.create()
+    private val token = tokenFactory.create(userID = user.id, userName = user.userName, authSource = user.authSource)
+
+    @Test
+    fun `is set after sending a referral`() {
+      val request = MockHttpServletRequest()
+      RequestContextHolder.setRequestAttributes(ServletRequestAttributes(request))
+
+      val draftReferral = referralFactory.createDraft()
+      val sentReferral = referralFactory.createSent()
+      whenever(referralService.getDraftReferralForUser(draftReferral.id, user)).thenReturn(draftReferral)
+      whenever(referralService.sendDraftReferral(draftReferral, user)).thenReturn(sentReferral)
+      whenever(referralConcluder.requiresEosr(sentReferral)).thenReturn(false)
+      val sentReferralResponse = referralController.sendDraftReferral(
+        draftReferral.id,
+        token,
+      )
+      assertThat(sentReferralResponse.body.id).isEqualTo(sentReferral.id)
+      assertThat(sentReferralResponse.body.eosrRequired).isFalse
+    }
+
+    @Test
+    fun `is set when getting a set referral`() {
+      val referral = referralFactory.createSent()
+      whenever(referralService.getSentReferralForUser(eq(referral.id), any())).thenReturn(referral)
+      whenever(referralConcluder.requiresEosr(referral)).thenReturn(false)
+      val sentReferral = referralController.getSentReferral(
+        referral.id,
+        token,
+      )
+      assertThat(sentReferral.id).isEqualTo(referral.id)
+      assertThat(sentReferral.eosrRequired).isFalse
+    }
+
+    @Test
+    fun `is set after assigning a referral`() {
+      val referral = referralFactory.createSent()
+      val assignedToUser = authUserFactory.create(id = "to")
+      whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
+      whenever(referralService.assignSentReferral(any(), any(), any())).thenReturn(referral)
+      whenever(referralConcluder.requiresEosr(referral)).thenReturn(false)
+      val assignedReferral = referralController.assignSentReferral(
+        UUID.randomUUID(),
+        ReferralAssignmentDTO(AuthUserDTO.from(assignedToUser)),
+        tokenFactory.create(userID = "by")
+      )
+      assertThat(assignedReferral.id).isEqualTo(referral.id)
+      assertThat(assignedReferral.eosrRequired).isFalse
+    }
+
+    @Test
+    fun `is set after ending a referral`() {
+      val referral = referralFactory.createSent()
+      val endReferralDTO = EndReferralRequestDTO("AAA", "comment")
+      val cancellationReason = CancellationReason("AAA", "description")
+
+      whenever(cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(any())).thenReturn(cancellationReason)
+      whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
+
+      val user = AuthUser("CRN123", "auth", "user")
+      val token = tokenFactory.create(user.id, user.authSource, user.userName)
+      val endedReferral = referralFactory.createEnded(endRequestedComments = "comment")
+      whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(endedReferral)
+      whenever(referralConcluder.requiresEosr(referral)).thenReturn(true)
+
+      val response = referralController.endSentReferral(referral.id, endReferralDTO, token)
+      assertThat(response.eosrRequired).isTrue
+    }
   }
 }

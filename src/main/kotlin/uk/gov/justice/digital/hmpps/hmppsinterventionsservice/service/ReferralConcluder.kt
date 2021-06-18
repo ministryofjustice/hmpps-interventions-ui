@@ -35,13 +35,15 @@ class ReferralConcluder(
     }
   }
 
+  fun requiresEosr(referral: Referral): Boolean {
+    return getNumberOfAttendedAppointments(referral) > 0
+  }
+
   private fun getConcludedEventType(referral: Referral): ReferralEventType? {
 
     val hasActionPlan = nonNull(referral.actionPlan)
 
-    val numberOfAttendedAppointments = referral.actionPlan?.let {
-      actionPlanRepository.countNumberOfAttendedSessions(it.id)
-    } ?: 0
+    val numberOfAttendedAppointments = getNumberOfAttendedAppointments(referral)
     val hasAttendedNoAppointments = numberOfAttendedAppointments == 0
 
     val totalNumberOfAppointments = referral.actionPlan?.numberOfSessions ?: 0
@@ -63,5 +65,11 @@ class ReferralConcluder(
       return COMPLETED
 
     return null
+  }
+
+  private fun getNumberOfAttendedAppointments(referral: Referral): Int {
+    return referral.actionPlan?.let {
+      actionPlanRepository.countNumberOfAttendedSessions(it.id)
+    } ?: 0
   }
 }

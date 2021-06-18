@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralReq
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SelectedDesiredOutcomesDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralSummaryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SupplierAssessmentDTO
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
@@ -38,6 +40,7 @@ import javax.persistence.EntityNotFoundException
 @RestController
 class ReferralController(
   private val referralService: ReferralService,
+  private val referralConcluder: ReferralConcluder,
   private val serviceCategoryService: ServiceCategoryService,
   private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
@@ -60,7 +63,8 @@ class ReferralController(
       userName = referralAssignment.assignedTo.username,
     )
     return SentReferralDTO.from(
-      referralService.assignSentReferral(sentReferral, assignedBy, assignedTo)
+      referralService.assignSentReferral(sentReferral, assignedBy, assignedTo),
+      referralConcluder.requiresEosr(sentReferral)
     )
   }
 
@@ -81,22 +85,23 @@ class ReferralController(
 
     return ResponseEntity
       .created(location)
-      .body(SentReferralDTO.from(sentReferral))
+      .body(SentReferralDTO.from(sentReferral, referralConcluder.requiresEosr(sentReferral)))
   }
 
   @JsonView(Views.SentReferral::class)
   @GetMapping("/sent-referral/{id}")
   fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
-    return SentReferralDTO.from(getSentReferralForAuthenticatedUser(authentication, id))
+    val referral = getSentReferralForAuthenticatedUser(authentication, id)
+    return SentReferralDTO.from(referral, referralConcluder.requiresEosr(referral))
   }
 
   @JsonView(Views.SentReferral::class)
   @GetMapping("/sent-referrals")
   fun getSentReferrals(
     authentication: JwtAuthenticationToken,
-  ): List<SentReferralDTO> {
+  ): List<SentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
-    return referralService.getSentReferralsForUser(user).map { SentReferralDTO.from(it) }
+    return referralService.getSentReferralsForUser(user).map { SentReferralSummaryDTO.from(it) }
   }
 
   @JsonView(Views.SentReferral::class)
@@ -107,7 +112,10 @@ class ReferralController(
     val cancellationReason = cancellationReasonMapper.mapCancellationReasonIdToCancellationReason(endReferralRequest.reasonCode)
 
     val user = userMapper.fromToken(authentication)
-    return SentReferralDTO.from(referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments))
+    return SentReferralDTO.from(
+      referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments),
+      referralConcluder.requiresEosr(sentReferral),
+    )
   }
 
   @PostMapping("/draft-referral")

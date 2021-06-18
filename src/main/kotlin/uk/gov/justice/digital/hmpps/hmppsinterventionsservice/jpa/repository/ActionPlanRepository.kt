@@ -12,7 +12,8 @@ interface ActionPlanRepository : JpaRepository<ActionPlan, UUID> {
 
   @Query(
     "select count(sesh) from ActionPlanSession sesh join sesh.appointments appt " +
-      "where sesh.actionPlan.id = :actionPlanId and (appt.attended = 'YES' or appt.attended = 'LATE')"
+      "where sesh.actionPlan.id = :actionPlanId and (appt.attended = 'YES' or appt.attended = 'LATE') " +
+      "and appt.appointmentFeedbackSubmittedAt is not null"
   )
   fun countNumberOfAttendedSessions(actionPlanId: UUID): Int
 }
