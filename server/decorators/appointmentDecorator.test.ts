@@ -46,6 +46,28 @@ describe(AppointmentDecorator, () => {
     })
   })
 
+  describe('britishEndsAtTime', () => {
+    it('returns the time at which the appointment takes place in Britain', () => {
+      const appointment = appointmentFactory.build({ appointmentTime: '2021-02-25T10:30:05Z', durationInMinutes: 80 })
+      const decorator = new AppointmentDecorator(appointment)
+
+      expect(decorator.britishEndsAtTime).toEqual({
+        hour: 11,
+        minute: 50,
+        second: 5,
+      })
+    })
+
+    describe('when the appointment does not have a time and duration', () => {
+      it('returns null', () => {
+        const appointment = actionPlanAppointmentFactory.newlyCreated().build()
+        const decorator = new AppointmentDecorator(appointment)
+
+        expect(decorator.britishEndsAtTime).toBeNull()
+      })
+    })
+  })
+
   describe('duration', () => {
     it('returns the duration of the appointment', () => {
       const appointment = appointmentFactory.build({ durationInMinutes: 60 })
