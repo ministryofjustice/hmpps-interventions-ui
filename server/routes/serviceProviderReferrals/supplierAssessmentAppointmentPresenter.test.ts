@@ -42,4 +42,12 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
       })
     })
   })
+
+  describe('backLinkHref', () => {
+    it('returns the URL of the intervention progress page', () => {
+      const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointmentFactory.build())
+
+      expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
+    })
+  })
 })

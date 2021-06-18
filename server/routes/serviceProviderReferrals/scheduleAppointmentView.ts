@@ -1,4 +1,4 @@
-import { DateInputArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
+import { BackLinkArgs, DateInputArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 
@@ -15,6 +15,7 @@ export default class ScheduleAppointmentView {
         durationDateInputArgs: this.durationDateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         serverError: this.serverError,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
@@ -132,6 +133,13 @@ export default class ScheduleAppointmentView {
           value: this.presenter.fields.duration.minutes.value,
         },
       ],
+    }
+  }
+
+  private get backLinkArgs(): BackLinkArgs {
+    return {
+      text: 'Back',
+      href: this.presenter.backLinkHref,
     }
   }
 }

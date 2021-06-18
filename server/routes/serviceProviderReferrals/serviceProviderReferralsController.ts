@@ -451,10 +451,13 @@ export default class ServiceProviderReferralsController {
   async editActionPlanSession(req: Request, res: Response): Promise<void> {
     const sessionNumber = Number(req.params.sessionNumber)
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
     await this.scheduleAppointment(req, res, {
-      getReferral: () =>
-        this.interventionsService.getSentReferral(res.locals.user.token.accessToken, actionPlan.referralId),
+      getReferral: async () => referral,
       getCurrentAppointment: () =>
         this.interventionsService.getActionPlanAppointment(
           res.locals.user.token.accessToken,
@@ -466,7 +469,7 @@ export default class ServiceProviderReferralsController {
           .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) =>
-        new ScheduleActionPlanSessionPresenter(appointment, formError, userInputData, serverError),
+        new ScheduleActionPlanSessionPresenter(referral, appointment, formError, userInputData, serverError),
       redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
     })
   }
@@ -489,6 +492,7 @@ export default class ServiceProviderReferralsController {
 
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
     const referralId = req.params.id
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
 
     const supplierAssessment = await this.interventionsService.getSupplierAssessment(
       res.locals.user.token.accessToken,
@@ -498,7 +502,7 @@ export default class ServiceProviderReferralsController {
     const hasExistingAppointment = supplierAssessment.currentAppointmentId !== null
 
     await this.scheduleAppointment(req, res, {
-      getReferral: () => this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
+      getReferral: async () => referral,
       getCurrentAppointment: async () => new SupplierAssessmentDecorator(supplierAssessment).currentAppointment,
       scheduleAppointment: paramsForUpdate =>
         this.interventionsService
@@ -508,8 +512,19 @@ export default class ServiceProviderReferralsController {
             paramsForUpdate
           )
           .then(),
-      createPresenter: (appointment, formError, userInputData, serverError) =>
-        new ScheduleAppointmentPresenter(appointment, formError, userInputData, serverError),
+      createPresenter: (appointment, formError, userInputData, serverError) => {
+        const overrideBackLinkHref = hasExistingAppointment
+          ? `/service-provider/referrals/${referralId}/supplier-assessment`
+          : undefined
+        return new ScheduleAppointmentPresenter(
+          referral,
+          appointment,
+          formError,
+          userInputData,
+          serverError,
+          overrideBackLinkHref
+        )
+      },
       redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
         hasExistingAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
       }`,

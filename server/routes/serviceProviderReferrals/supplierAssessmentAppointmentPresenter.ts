@@ -30,4 +30,6 @@ export default class SupplierAssessmentAppointmentPresenter {
           text: 'Change appointment details',
         }
       : null
+
+  readonly backLinkHref = `/service-provider/referrals/${this.referral.id}/progress`
 }

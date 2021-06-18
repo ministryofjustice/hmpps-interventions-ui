@@ -1,12 +1,15 @@
 import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import appointmentFactory from '../../../testutils/factories/appointment'
+import sentReferralFactory from '../../../testutils/factories/sentReferral'
 
 describe(ScheduleAppointmentPresenter, () => {
+  const referral = sentReferralFactory.build()
+
   describe('text', () => {
     describe('title', () => {
       describe('when the session has not yet been scheduled', () => {
         it('returns an appropriate title', () => {
-          const presenter = new ScheduleAppointmentPresenter(null)
+          const presenter = new ScheduleAppointmentPresenter(referral, null)
 
           expect(presenter.text).toEqual({ title: 'Add appointment details' })
         })
@@ -14,7 +17,7 @@ describe(ScheduleAppointmentPresenter, () => {
 
       describe('when the session has already been scheduled', () => {
         it('returns an appropriate title', () => {
-          const presenter = new ScheduleAppointmentPresenter(appointmentFactory.build())
+          const presenter = new ScheduleAppointmentPresenter(referral, appointmentFactory.build())
 
           expect(presenter.text).toEqual({ title: 'Change appointment details' })
         })
@@ -27,6 +30,7 @@ describe(ScheduleAppointmentPresenter, () => {
       it('displays the message from the server error', () => {
         const appointment = appointmentFactory.build()
         const presenter = new ScheduleAppointmentPresenter(
+          referral,
           appointment,
           {
             errors: [
@@ -64,6 +68,7 @@ describe(ScheduleAppointmentPresenter, () => {
       it('displays the message from the server error', () => {
         const appointment = appointmentFactory.build()
         const presenter = new ScheduleAppointmentPresenter(
+          referral,
           appointment,
           {
             errors: [
@@ -85,7 +90,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
         const appointment = appointmentFactory.build()
-        const presenter = new ScheduleAppointmentPresenter(appointment)
+        const presenter = new ScheduleAppointmentPresenter(referral, appointment)
 
         expect(presenter.errorSummary).toEqual(null)
       })
@@ -95,7 +100,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('fields', () => {
     describe('with a null appointment', () => {
       it('returns empty fields', () => {
-        const presenter = new ScheduleAppointmentPresenter(null)
+        const presenter = new ScheduleAppointmentPresenter(referral, null)
 
         expect(presenter.fields).toEqual({
           date: {
@@ -128,7 +133,7 @@ describe(ScheduleAppointmentPresenter, () => {
           appointmentTime: '2021-03-24T10:30:00Z',
           durationInMinutes: 75,
         })
-        const presenter = new ScheduleAppointmentPresenter(appointment)
+        const presenter = new ScheduleAppointmentPresenter(referral, appointment)
 
         expect(presenter.fields).toEqual({
           date: {
@@ -152,6 +157,24 @@ describe(ScheduleAppointmentPresenter, () => {
             minutes: { value: '15', hasError: false },
           },
         })
+      })
+    })
+  })
+
+  describe('backLinkHref', () => {
+    describe('when overrideBackLinkHref is not provided to the constructor', () => {
+      it('returns the URL of the intervention progress page', () => {
+        const presenter = new ScheduleAppointmentPresenter(referral, null)
+
+        expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
+      })
+    })
+
+    describe('when overrideBackLinkHref is provided to the constructor', () => {
+      it('returns the overrideBacklinkHref', () => {
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, null, null, '/example-href')
+
+        expect(presenter.backLinkHref).toEqual('/example-href')
       })
     })
   })

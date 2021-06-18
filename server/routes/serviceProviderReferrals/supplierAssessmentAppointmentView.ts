@@ -1,4 +1,4 @@
-import { SummaryListArgs } from '../../utils/govukFrontendTypes'
+import { BackLinkArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import SupplierAssessmentAppointmentPresenter from './supplierAssessmentAppointmentPresenter'
 
@@ -22,12 +22,20 @@ export default class SupplierAssessmentAppointmentView {
     return args
   }
 
+  private get backLinkArgs(): BackLinkArgs {
+    return {
+      text: 'Back',
+      href: this.presenter.backLinkHref,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/supplierAssessmentAppointment',
       {
         presenter: this.presenter,
         summaryListArgs: this.summaryListArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
