@@ -376,3 +376,57 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     })
   })
 })
+
+describe('GET /probation-practitioner/referrals/:id/action-plan', () => {
+  it('displays information about the action plan and service user', async () => {
+    const sentReferral = sentReferralFactory.assigned().build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const actionPlan = actionPlanFactory.submitted().build({ referralId: sentReferral.id })
+    sentReferral.actionPlanId = actionPlan.id
+
+    interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/${sentReferral.id}/action-plan`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('X123456') // su details banner
+        expect(res.text).toContain('Action plan status')
+        expect(res.text).toContain('Awaiting approval')
+        expect(res.text).toContain('Do you want to approve this action plan?')
+      })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () => {
+  it('calls interventions service to approve action plan', async () => {
+    const sentReferral = sentReferralFactory.assigned().build({ actionPlanId: '724bf133-65cb-43d4-bff9-ca692ad1d381' })
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+
+    await request(app).post(`/probation-practitioner/referrals/${sentReferral.id}/action-plan/approve`).expect(302)
+    expect(interventionsService.approveActionPlan.mock.calls.length).toBe(1)
+    expect(interventionsService.approveActionPlan.mock.calls[0][1]).toBe('724bf133-65cb-43d4-bff9-ca692ad1d381')
+  })
+})
+
+describe('GET /probation-practitioner/referrals/:id/action-plan/approved', () => {
+  it('displays a panel and link back to the intervention progress page', async () => {
+    const sentReferral = sentReferralFactory.assigned().build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/${sentReferral.id}/action-plan/approved`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('X123456') // su details banner
+        expect(res.text).toContain('Action plan approved')
+        expect(res.text).toContain('Return to intervention progress')
+        expect(res.text).toContain(`/probation-practitioner/referrals/${sentReferral.id}/progress`)
+      })
+  })
+})

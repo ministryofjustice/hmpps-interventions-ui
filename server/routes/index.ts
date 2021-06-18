@@ -244,5 +244,15 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.viewActionPlan(req, res)
   )
 
+  get('/probation-practitioner/referrals/:id/action-plan', (req, res) =>
+    probationPractitionerReferralsController.viewActionPlan(req, res)
+  )
+  post('/probation-practitioner/referrals/:id/action-plan/approve', (req, res) =>
+    probationPractitionerReferralsController.approveActionPlan(req, res)
+  )
+  get('/probation-practitioner/referrals/:id/action-plan/approved', (req, res) =>
+    probationPractitionerReferralsController.actionPlanApproved(req, res)
+  )
+
   return router
 }
