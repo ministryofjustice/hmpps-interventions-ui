@@ -2008,6 +2008,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('approveActionPlan', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted',
+        uponReceiving: 'a POST request to approve the action plan with ID 7a165933-d851-48c1-9ab0-ff5b8da12695',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/7a165933-d851-48c1-9ab0-ff5b8da12695/approve',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+        },
+      })
+    })
+    it('returns successfully', async () => {
+      await interventionsService.approveActionPlan(token, '7a165933-d851-48c1-9ab0-ff5b8da12695')
+    })
+  })
+
   describe('getActionPlanAppointments', () => {
     const actionPlanAppointments = [
       actionPlanAppointmentFactory.build({
