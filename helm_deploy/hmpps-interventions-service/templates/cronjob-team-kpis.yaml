@@ -31,6 +31,7 @@ spec:
           containers:
           - name: data-extractor-reporting
             image: ministryofjustice/data-engineering-data-extractor:develop
+            imagePullPolicy: Always
             args:
               - |
                 psql -v ON_ERROR_STOP=1 --tuples-only --expanded --file=/reports/team_kpi_report.sql > 'export/team_kpi_report' \
