@@ -477,16 +477,17 @@ class ReferralServiceTest @Autowired constructor(
 
       val primeRef1 = newReferralWithProviders(userProviders[0])
       val primeRef2 = newReferralWithProviders(userProviders[1])
-      val subRef1 = newReferralWithProviders(otherPrime, userProviders[0])
-      val subRef2 = newReferralWithProviders(otherPrime, userProviders[1])
+      val primeAndSubRef = newReferralWithProviders(userProviders[0], userProviders[1])
+      val refWithAllProvidersBeingSubs = newReferralWithProviders(otherPrime, userProviders[0], userProviders[1])
+      val subRef = newReferralWithProviders(otherPrime, userProviders[1])
       val noAccess = newReferralWithProviders(otherPrime, otherSub)
 
       val multiSubUser = userWithProviders(userProviders)
 
       val result = referralService.getSentReferralsForUser(multiSubUser)
       assertThat(result).doesNotContain(noAccess)
-      assertThat(result).containsAll(listOf(primeRef1, primeRef2, subRef1, subRef2))
-      assertThat(result.size).isEqualTo(4)
+      assertThat(result).containsAll(listOf(primeRef1, primeRef2, primeAndSubRef, refWithAllProvidersBeingSubs, subRef))
+      assertThat(result.size).isEqualTo(5)
     }
   }
 
