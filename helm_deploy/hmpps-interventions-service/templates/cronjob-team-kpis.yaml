@@ -53,8 +53,6 @@ spec:
               readOnly: true
               subPath: send_to_slack.sh
             env:
-              - name: USE_STATIC_LOCATION
-                value: "true"
               - name: ENVIRONMENT
                 value: {{ .Values.env.SENTRY_ENVIRONMENT | quote }}
               - name: SLACK_WEBHOOK
