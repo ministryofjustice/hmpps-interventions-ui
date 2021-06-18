@@ -44,6 +44,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       id = UUID.fromString("7a165933-d851-48c1-9ab0-ff5b8da12695"),
       submittedBy = setupAssistant.createSPUser(),
       submittedAt = OffsetDateTime.now(),
+      numberOfSessions = 1,
       activities = mutableListOf(
         ActionPlanActivity(
           description = "Attend training course",
