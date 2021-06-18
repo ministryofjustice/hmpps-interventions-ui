@@ -227,4 +227,58 @@ class AppointmentServiceTest {
     }
     assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
   }
+
+  @Test
+  fun `appointment behaviour can be updated`() {
+    val appointmentId = UUID.randomUUID()
+    val behaviourDescription = "description"
+    val notifyProbationPractitioner = true
+    val appointment = appointmentFactory.create(id = appointmentId)
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+    whenever(appointmentRepository.save(any())).thenReturn(appointment)
+
+    appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner)
+
+    val argumentCaptor = argumentCaptor<Appointment>()
+    verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
+    val arguments = argumentCaptor.firstValue
+
+    assertThat(arguments.id).isEqualTo(appointmentId)
+    assertThat(arguments.attendanceBehaviour).isEqualTo(behaviourDescription)
+    assertThat(arguments.notifyPPOfAttendanceBehaviour).isEqualTo(notifyProbationPractitioner)
+    assertThat(arguments.attendanceBehaviourSubmittedAt).isNotNull
+  }
+
+  @Test
+  fun `appointment behaviour cannot be updated if feedback has been submitted`() {
+    val appointmentId = UUID.randomUUID()
+    val behaviourDescription = "description"
+    val notifyProbationPractitioner = true
+    val feedbackSubmittedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+    val appointment = appointmentFactory.create(id = appointmentId, appointmentFeedbackSubmittedAt = feedbackSubmittedAt)
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+
+    val error = assertThrows<ResponseStatusException> {
+      appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner)
+    }
+    assertThat(error.message).contains("Feedback has already been submitted for this appointment [id=$appointmentId]")
+  }
+
+  @Test
+  fun `appointment behaviour cannot be updated if appointment cannot be found`() {
+    val appointmentId = UUID.randomUUID()
+    val behaviourDescription = "description"
+    val notifyProbationPractitioner = true
+    val appointment = appointmentFactory.create(id = appointmentId)
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(empty())
+
+    val error = assertThrows<EntityNotFoundException> {
+      appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner)
+    }
+    assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
+  }
 }

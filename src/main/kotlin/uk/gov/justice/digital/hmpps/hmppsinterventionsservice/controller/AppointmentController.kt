@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
@@ -16,7 +17,6 @@ class AppointmentController(
   private val appointmentService: AppointmentService,
   val userMapper: UserMapper,
 ) {
-
   @PutMapping("/appointment/{id}/record-behaviour")
   fun recordAppointmentBehaviour(
     @PathVariable id: UUID,
