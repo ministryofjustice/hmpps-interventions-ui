@@ -1,6 +1,6 @@
 import User from './hmppsAuth/user'
 import DesiredOutcome from './desiredOutcome'
-import Appointment from './appointment'
+import SessionFeedback from './sessionFeedback'
 
 export interface Activity {
   id: string
@@ -9,8 +9,11 @@ export interface Activity {
   createdAt: string
 }
 
-export interface ActionPlanAppointment extends Appointment {
+export interface ActionPlanAppointment {
   sessionNumber: number
+  appointmentTime: string | null
+  durationInMinutes: number | null
+  sessionFeedback: SessionFeedback
 }
 
 export default interface ActionPlan {

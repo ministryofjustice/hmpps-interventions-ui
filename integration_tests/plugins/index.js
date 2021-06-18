@@ -183,24 +183,24 @@ module.exports = on => {
       return assessRisksAndNeedsService.stubGetSupplementaryRiskInformation(arg.riskId, arg.responseJson)
     },
 
-    stubRecordSupplierAssessmentAppointmentAttendance: arg => {
-      return interventionsService.stubRecordSupplierAssessmentAppointmentAttendance(arg.referralId, arg.responseJson)
+    stubRecordAppointmentAttendance: arg => {
+      return interventionsService.stubRecordAppointmentAttendance(arg.referralId, arg.responseJson)
     },
 
-    stubRecordSupplierAssessmentAppointmentBehavior: arg => {
-      return interventionsService.stubRecordSupplierAssessmentAppointmentBehavior(arg.referralId, arg.responseJson)
+    stubRecordAppointmentBehavior: arg => {
+      return interventionsService.stubRecordAppointmentBehavior(arg.id, arg.responseJson)
     },
 
-    stubGetSupplierAssessmentAppointment: arg => {
-      return interventionsService.stubGetSupplierAssessmentAppointment(arg.referralId, arg.responseJson)
+    stubGetSupplierAssessment: arg => {
+      return interventionsService.stubGetSupplierAssessment(arg.referralId, arg.responseJson)
     },
 
-    stubUpdateSupplierAssessmentAppointment: arg => {
-      return interventionsService.stubUpdateSupplierAssessmentAppointment(arg.referralId, arg.responseJson)
+    stubScheduleSupplierAssessmentAppointment: arg => {
+      return interventionsService.stubScheduleSupplierAssessmentAppointment(arg.supplierAssessmentId, arg.responseJson)
     },
 
-    stubSubmitSupplierAssessmentSessionFeedback: arg => {
-      return interventionsService.stubSubmitSupplierAssessmentSessionFeedback(arg.referralId, arg.responseJson)
+    stubSubmitAppointmentFeedback: arg => {
+      return interventionsService.stubSubmitAppointmentFeedback(arg.id, arg.responseJson)
     },
   })
 }
