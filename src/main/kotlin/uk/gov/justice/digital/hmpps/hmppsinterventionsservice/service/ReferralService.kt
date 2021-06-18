@@ -107,11 +107,11 @@ class ReferralService(
   private fun getSentReferralsForServiceProviderUser(user: AuthUser): List<Referral> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
 
-    val referrals = referralRepository.findAllByInterventionDynamicFrameworkContractPrimeProviderInAndSentAtIsNotNull(serviceProviders) +
+    val referrals = referralRepository.findAllByInterventionDynamicFrameworkContractPrimeProviderInAndSentAtIsNotNull(serviceProviders)
       // todo: query for referrals where the service provider has been granted nominated access only
-      referralRepository.findAllByInterventionDynamicFrameworkContractSubcontractorProvidersInAndSentAtIsNotNull(serviceProviders)
+      .union(referralRepository.findAllByInterventionDynamicFrameworkContractSubcontractorProvidersInAndSentAtIsNotNull(serviceProviders))
 
-    return referralAccessFilter.serviceProviderReferrals(referrals, user)
+    return referralAccessFilter.serviceProviderReferrals(referrals.toList(), user)
   }
 
   private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
