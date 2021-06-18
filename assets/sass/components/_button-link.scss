@@ -1,0 +1,16 @@
+@mixin button-link {
+  @include govuk-link-common;
+  background: none;
+  border: 0;
+  color: $govuk-link-colour;
+  cursor: pointer;
+  font-size: inherit;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.govuk-summary-list {
+  button {
+    @include button-link;
+  }
+}
