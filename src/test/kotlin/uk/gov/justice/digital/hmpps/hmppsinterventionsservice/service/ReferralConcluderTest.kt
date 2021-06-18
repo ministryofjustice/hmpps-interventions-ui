@@ -145,9 +145,9 @@ internal class ReferralConcluderTest {
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(1)
 
-    val eosrRequired = referralConcluder.requiresEosr(referralWithActionPlanAndSomeAttendedAppointments)
+    val endOfServiceReportRequired = referralConcluder.requiresEndOfServiceReport(referralWithActionPlanAndSomeAttendedAppointments)
 
-    assertThat(eosrRequired).isTrue
+    assertThat(endOfServiceReportRequired).isTrue
     verifyZeroInteractions(referralRepository, referralEventPublisher)
   }
 
@@ -158,9 +158,9 @@ internal class ReferralConcluderTest {
     val referralWithActionPlanAndSomeAttendedAppointments = referralFactory.createSent(actionPlan = actionPlan)
     whenever(actionPlanRepository.countNumberOfAttendedSessions(actionPlan.id)).thenReturn(0)
 
-    val eosrRequired = referralConcluder.requiresEosr(referralWithActionPlanAndSomeAttendedAppointments)
+    val endOfServiceReportRequired = referralConcluder.requiresEndOfServiceReport(referralWithActionPlanAndSomeAttendedAppointments)
 
-    assertThat(eosrRequired).isFalse
+    assertThat(endOfServiceReportRequired).isFalse
     verifyZeroInteractions(referralRepository, referralEventPublisher)
   }
 

@@ -35,7 +35,7 @@ class ReferralConcluder(
     }
   }
 
-  fun requiresEosr(referral: Referral): Boolean {
+  fun requiresEndOfServiceReport(referral: Referral): Boolean {
     return countSessionsWithAttendanceRecorded(referral) > 0
   }
 

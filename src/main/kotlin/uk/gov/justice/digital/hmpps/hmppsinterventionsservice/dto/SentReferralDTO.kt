@@ -18,10 +18,10 @@ class SentReferralDTO(
   val endOfServiceReport: EndOfServiceReportDTO?,
   val concludedAt: OffsetDateTime?,
   val supplementaryRiskId: UUID,
-  val eosrRequired: Boolean,
+  val endOfServiceReportRequired: Boolean,
 ) {
   companion object {
-    fun from(referral: Referral, eosrRequired: Boolean): SentReferralDTO {
+    fun from(referral: Referral, endOfServiceReportRequired: Boolean): SentReferralDTO {
       return SentReferralDTO(
         id = referral.id,
         sentAt = referral.sentAt!!,
@@ -36,7 +36,7 @@ class SentReferralDTO(
         endOfServiceReport = referral.endOfServiceReport?.let { EndOfServiceReportDTO.from(it) },
         concludedAt = referral.concludedAt,
         supplementaryRiskId = referral.supplementaryRiskId!!,
-        eosrRequired = eosrRequired,
+        endOfServiceReportRequired = endOfServiceReportRequired,
       )
     }
   }

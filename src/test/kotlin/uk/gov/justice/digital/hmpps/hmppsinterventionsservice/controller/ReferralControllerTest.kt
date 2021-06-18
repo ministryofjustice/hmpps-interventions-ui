@@ -133,7 +133,7 @@ internal class ReferralControllerTest {
     val token = tokenFactory.create(user.id, user.authSource, user.userName)
     val endedReferral = referralFactory.createEnded(endRequestedComments = "comment")
     whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(endedReferral)
-    whenever(referralConcluder.requiresEosr(endedReferral)).thenReturn(true)
+    whenever(referralConcluder.requiresEndOfServiceReport(endedReferral)).thenReturn(true)
 
     referralController.endSentReferral(referral.id, endReferralDTO, token)
     verify(referralService).requestReferralEnd(referral, user, cancellationReason, "comment")
@@ -206,26 +206,26 @@ internal class ReferralControllerTest {
       val sentReferral = referralFactory.createSent()
       whenever(referralService.getDraftReferralForUser(draftReferral.id, user)).thenReturn(draftReferral)
       whenever(referralService.sendDraftReferral(draftReferral, user)).thenReturn(sentReferral)
-      whenever(referralConcluder.requiresEosr(sentReferral)).thenReturn(false)
+      whenever(referralConcluder.requiresEndOfServiceReport(sentReferral)).thenReturn(false)
       val sentReferralResponse = referralController.sendDraftReferral(
         draftReferral.id,
         token,
       )
       assertThat(sentReferralResponse.body.id).isEqualTo(sentReferral.id)
-      assertThat(sentReferralResponse.body.eosrRequired).isFalse
+      assertThat(sentReferralResponse.body.endOfServiceReportRequired).isFalse
     }
 
     @Test
     fun `is set when getting a set referral`() {
       val referral = referralFactory.createSent()
       whenever(referralService.getSentReferralForUser(eq(referral.id), any())).thenReturn(referral)
-      whenever(referralConcluder.requiresEosr(referral)).thenReturn(false)
+      whenever(referralConcluder.requiresEndOfServiceReport(referral)).thenReturn(false)
       val sentReferral = referralController.getSentReferral(
         referral.id,
         token,
       )
       assertThat(sentReferral.id).isEqualTo(referral.id)
-      assertThat(sentReferral.eosrRequired).isFalse
+      assertThat(sentReferral.endOfServiceReportRequired).isFalse
     }
 
     @Test
@@ -234,14 +234,14 @@ internal class ReferralControllerTest {
       val assignedToUser = authUserFactory.create(id = "to")
       whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(referral)
       whenever(referralService.assignSentReferral(any(), any(), any())).thenReturn(referral)
-      whenever(referralConcluder.requiresEosr(referral)).thenReturn(false)
+      whenever(referralConcluder.requiresEndOfServiceReport(referral)).thenReturn(false)
       val assignedReferral = referralController.assignSentReferral(
         UUID.randomUUID(),
         ReferralAssignmentDTO(AuthUserDTO.from(assignedToUser)),
         tokenFactory.create(userID = "by")
       )
       assertThat(assignedReferral.id).isEqualTo(referral.id)
-      assertThat(assignedReferral.eosrRequired).isFalse
+      assertThat(assignedReferral.endOfServiceReportRequired).isFalse
     }
 
     @Test
@@ -257,10 +257,10 @@ internal class ReferralControllerTest {
       val token = tokenFactory.create(user.id, user.authSource, user.userName)
       val endedReferral = referralFactory.createEnded(endRequestedComments = "comment")
       whenever(referralService.requestReferralEnd(any(), any(), any(), any())).thenReturn(endedReferral)
-      whenever(referralConcluder.requiresEosr(referral)).thenReturn(true)
+      whenever(referralConcluder.requiresEndOfServiceReport(referral)).thenReturn(true)
 
       val response = referralController.endSentReferral(referral.id, endReferralDTO, token)
-      assertThat(response.eosrRequired).isTrue
+      assertThat(response.endOfServiceReportRequired).isTrue
     }
   }
 }
