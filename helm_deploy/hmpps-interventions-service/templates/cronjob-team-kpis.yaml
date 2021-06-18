@@ -31,12 +31,22 @@ spec:
           containers:
           - name: data-extractor-reporting
             image: ministryofjustice/data-engineering-data-extractor:develop
-            args: ["psql -v ON_ERROR_STOP=1 --tuples-only --expanded --file=/reports/team_kpi_report.sql > 'export/team_kpi_report' && /scripts/send_to_slack.sh 'export/team_kpi_report'"]
+            args:
+              - |
+                psql -v ON_ERROR_STOP=1 --tuples-only --expanded --file=/reports/team_kpi_report.sql > 'export/team_kpi_report' \
+                  && /scripts/send_to_slack.sh 'export/team_kpi_details_report'
+              - |
+                psql -v ON_ERROR_STOP=1 --pset="footer=off" --file=/reports/team_kpi_details_report.sql > 'export/team_kpi_details_report' \
+                  && /scripts/send_to_slack.sh 'export/team_kpi_details_report'
             volumeMounts:
             - name: data-extractor-reports
               mountPath: /reports/team_kpi_report.sql
               readOnly: true
               subPath: team_kpi_report.sql
+            - name: data-extractor-reports
+              mountPath: /reports/team_kpi_details_report.sql
+              readOnly: true
+              subPath: team_kpi_details_report.sql
             - name: kpi-scripts
               mountPath: /scripts/send_to_slack.sh
               readOnly: true
