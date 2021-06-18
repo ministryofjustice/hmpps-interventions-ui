@@ -1,12 +1,15 @@
 import ActionPlan from '../../models/actionPlan'
 import DateUtils from '../../utils/dateUtils'
 import SentReferral from '../../models/sentReferral'
+import { FormValidationError } from '../../utils/formValidationError'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export default class ActionPlanPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly actionPlan: ActionPlan | null,
-    readonly userType: 'service-provider' | 'probation-practitioner'
+    readonly userType: 'service-provider' | 'probation-practitioner',
+    private readonly validationError: FormValidationError | null = null
   ) {}
 
   readonly interventionProgressURL = `/${this.userType}/referrals/${this.referral.id}/progress`
@@ -25,6 +28,12 @@ export default class ActionPlanPresenter {
     actionPlanApprovalDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.approvedAt || null),
     actionPlanNumberOfSessions: this.actionPlan?.numberOfSessions,
     spEmailAddress: this.actionPlan?.submittedBy?.username?.toLowerCase(),
+  }
+
+  readonly errorSummary = PresenterUtils.errorSummary(this.validationError)
+
+  readonly fieldErrors = {
+    confirmApproval: PresenterUtils.errorMessage(this.validationError, 'confirm-approval'),
   }
 
   get activities(): string[] {
