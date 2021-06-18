@@ -316,4 +316,12 @@ export default class PresenterUtils {
       classes: 'govuk-tag--grey',
     }
   }
+
+  static formattedTime(time: ClockTime): string {
+    return `${time.twelveHourClockHour}:${time.minute.toString().padStart(2, '0')}${time.partOfDay}`
+  }
+
+  static formattedTimeRange(startsAt: ClockTime, endsAt: ClockTime): string {
+    return `${this.formattedTime(startsAt)} to ${this.formattedTime(endsAt)}`
+  }
 }
