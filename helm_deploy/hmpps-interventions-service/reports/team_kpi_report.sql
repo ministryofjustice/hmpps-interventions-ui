@@ -12,7 +12,8 @@ WITH counts AS (
                                       r.end_requested_at IS NOT NULL AND
                                       eosr.submitted_at IS NOT NULL )       AS count_of_early_end_referrals,
            count(r.id) FILTER ( WHERE r.end_requested_reason_code = 'MIS' ) AS count_of_mistaken_referrals,
-           count(r.sent_by_id)                                              AS count_of_pp_users_sending_referrals
+           count(DISTINCT r.created_by_id)                                  AS count_of_pp_users_starting_referrals,
+           count(DISTINCT r.sent_by_id)                                     AS count_of_pp_users_sending_referrals
     FROM referral r
              LEFT JOIN end_of_service_report eosr ON r.id = eosr.referral_id),
 
@@ -33,6 +34,7 @@ SELECT counts.count_of_started_referrals,
        counts.count_of_cancelled_referrals,
        counts.count_of_mistaken_referrals,
        counts.count_of_early_end_referrals,
+       counts.count_of_pp_users_starting_referrals,
        counts.count_of_pp_users_sending_referrals,
        case
            when counts.count_of_started_referrals = 0 then 0.0
