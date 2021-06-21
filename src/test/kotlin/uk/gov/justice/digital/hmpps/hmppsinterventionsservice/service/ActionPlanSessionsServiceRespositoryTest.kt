@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
@@ -68,7 +69,7 @@ class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
     @Nested
     inner class AppointmentDelivery {
 
-      private fun callUpdateSessionAppointment(actionPlanId: UUID, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressLines: List<String>?): ActionPlanSession {
+      private fun callUpdateSessionAppointment(actionPlanId: UUID, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddress: AddressDTO?): ActionPlanSession {
         return actionPlanSessionsService.updateSessionAppointment(
           actionPlanId = actionPlanId,
           sessionNumber = 1,
@@ -76,7 +77,7 @@ class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
           durationInMinutes = 1,
           updatedBy = userFactory.create(),
           appointmentDeliveryType = appointmentDeliveryType,
-          appointmentDeliveryAddressLines = appointmentDeliveryAddressLines,
+          appointmentDeliveryAddress = appointmentDeliveryAddress,
         )
       }
       @Test
@@ -118,26 +119,6 @@ class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
         assertThat(updatedSession.appointments.first().appointmentDelivery).isNotNull()
         assertThat(updatedSession.appointments.first().appointmentDelivery?.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.VIDEO_CALL)
       }
-      @Test
-      fun `can update existing appointment with an nps office code`() {
-        val actionPlanSession = actionPlanSessionFactory.createScheduled()
-        testSettingNPSOffice(actionPlanSession)
-      }
-
-      @Test
-      fun `can create new appointment with with an nps office code`() {
-        val actionPlanSession = actionPlanSessionFactory.createUnscheduled()
-        testSettingNPSOffice(actionPlanSession)
-      }
-
-      private fun testSettingNPSOffice(actionPlanSession: ActionPlanSession) {
-        callUpdateSessionAppointment(actionPlanSession.actionPlan.id, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, listOf("ABC"))
-        var updatedSession = actionPlanSessionRepository.findById(actionPlanSession.id).get()
-        assertThat(updatedSession.appointments).hasSize(1)
-        assertThat(updatedSession.appointments.first().appointmentDelivery).isNotNull()
-        assertThat(updatedSession.appointments.first().appointmentDelivery?.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
-        assertThat(updatedSession.appointments.first().appointmentDelivery?.npsOfficeCode).isEqualTo("ABC")
-      }
 
       @Nested
       inner class WithAppointmentDeliveryAddress {
@@ -155,7 +136,7 @@ class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
         }
 
         private fun testSettingNonNPSOffice(actionPlanSession: ActionPlanSession) {
-          callUpdateSessionAppointment(actionPlanSession.actionPlan.id, AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, listOf("A", "B", "C", "D", "E"))
+          callUpdateSessionAppointment(actionPlanSession.actionPlan.id, AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, AddressDTO("A", "B", "C", "D", "E"))
           var updatedSession = actionPlanSessionRepository.findById(actionPlanSession.id).get()
           assertThat(updatedSession.appointments).hasSize(1)
           assertThat(updatedSession.appointments.first().appointmentDelivery).isNotNull()

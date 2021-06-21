@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
@@ -67,7 +68,7 @@ class ActionPlanSessionsService(
     updatedBy: AuthUser,
     // TODO: remove optional when front-end changes are complete
     appointmentDeliveryType: AppointmentDeliveryType? = null,
-    appointmentDeliveryAddressLines: List<String>? = null,
+    appointmentDeliveryAddress: AddressDTO? = null,
   ): ActionPlanSession {
 
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
@@ -93,7 +94,7 @@ class ActionPlanSessionsService(
 
 //       TODO: remove optional when front-end changes are complete
       if (appointmentDeliveryType != null) {
-        populateAppointmentDelivery(appointment, appointmentDeliveryType, appointmentDeliveryAddressLines)
+        populateAppointmentDelivery(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
       }
       session.appointments.add(appointment)
     } else {
@@ -103,7 +104,7 @@ class ActionPlanSessionsService(
       appointmentRepository.saveAndFlush(existingAppointment)
       // TODO: remove optional when front-end changes are complete
       if (appointmentDeliveryType != null) {
-        populateAppointmentDelivery(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddressLines)
+        populateAppointmentDelivery(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
       }
     }
     return actionPlanSessionRepository.save(session)
@@ -213,42 +214,39 @@ class ActionPlanSessionsService(
   private fun getActionPlanSession(actionPlanId: UUID, sessionNumber: Int) =
     actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
 
-  private fun populateAppointmentDelivery(appointment: Appointment, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressLines: List<String>?) {
+  private fun populateAppointmentDelivery(appointment: Appointment, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressDTO: AddressDTO?) {
     var appointmentDelivery = appointment.appointmentDelivery
     if (appointmentDelivery == null) {
       appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
     }
     appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
-    when (appointmentDeliveryType) {
-      AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE -> appointmentDelivery.npsOfficeCode = appointmentDeliveryAddressLines!!.first()
-    }
 
     appointment.appointmentDelivery = appointmentDelivery
     appointmentRepository.saveAndFlush(appointment)
 
     if (appointmentDeliveryType == AppointmentDeliveryType.IN_PERSON_MEETING_OTHER) {
-      appointmentDelivery.appointmentDeliveryAddress = populateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressLines!!)
+      appointmentDelivery.appointmentDeliveryAddress = populateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressDTO!!)
       appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
     }
   }
 
-  private fun populateAppointmentDeliveryAddress(appointmentDelivery: AppointmentDelivery, appointmentDeliveryAddressLines: List<String>): AppointmentDeliveryAddress {
+  private fun populateAppointmentDeliveryAddress(appointmentDelivery: AppointmentDelivery, appointmentDeliveryAddressDTO: AddressDTO): AppointmentDeliveryAddress {
     var appointmentDeliveryAddress = appointmentDelivery.appointmentDeliveryAddress
     if (appointmentDeliveryAddress == null) {
       appointmentDeliveryAddress = AppointmentDeliveryAddress(
         appointmentDeliveryId = appointmentDelivery.appointmentId,
-        firstAddressLine = appointmentDeliveryAddressLines.elementAt(0),
-        secondAddressLine = appointmentDeliveryAddressLines.elementAt(1),
-        townCity = appointmentDeliveryAddressLines.elementAt(2),
-        county = appointmentDeliveryAddressLines.elementAt(3),
-        postCode = appointmentDeliveryAddressLines.elementAt(4)
+        firstAddressLine = appointmentDeliveryAddressDTO.firstAddressLine,
+        secondAddressLine = appointmentDeliveryAddressDTO.secondAddressLine,
+        townCity = appointmentDeliveryAddressDTO.townOrCity,
+        county = appointmentDeliveryAddressDTO.county,
+        postCode = appointmentDeliveryAddressDTO.postCode
       )
     } else {
-      appointmentDeliveryAddress.firstAddressLine = appointmentDeliveryAddressLines.elementAt(0)
-      appointmentDeliveryAddress.secondAddressLine = appointmentDeliveryAddressLines.elementAt(1)
-      appointmentDeliveryAddress.townCity = appointmentDeliveryAddressLines.elementAt(2)
-      appointmentDeliveryAddress.county = appointmentDeliveryAddressLines.elementAt(3)
-      appointmentDeliveryAddress.postCode = appointmentDeliveryAddressLines.elementAt(4)
+      appointmentDeliveryAddress.firstAddressLine = appointmentDeliveryAddressDTO.firstAddressLine
+      appointmentDeliveryAddress.secondAddressLine = appointmentDeliveryAddressDTO.secondAddressLine
+      appointmentDeliveryAddress.townCity = appointmentDeliveryAddressDTO.townOrCity
+      appointmentDeliveryAddress.county = appointmentDeliveryAddressDTO.county
+      appointmentDeliveryAddress.postCode = appointmentDeliveryAddressDTO.postCode
     }
     return appointmentDeliveryAddress
   }

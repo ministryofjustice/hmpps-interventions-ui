@@ -86,4 +86,10 @@ internal class ActionPlanSessionsDTOTest {
     assertThat(sessionDTO.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_OTHER)
     assertThat(sessionDTO.appointmentDeliveryAddress).isEqualTo(listOf("Harmony Living Office, Room 4", "", "Blackpool", "Lancashire", "SY4 0RE"))
   }
+
+  @Test
+  fun `post codes are normalized`() {
+    val addressDTO = AddressDTO("firstline", "secondLine", "town", "county", "  a9   9aa  ")
+    assertThat(addressDTO.postCode).isEqualTo("A99AA")
+  }
 }
