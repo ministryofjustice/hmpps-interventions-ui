@@ -29,7 +29,11 @@ export default function routes(router: Router, services: Services): Router {
     services.hmppsAuthService,
     services.assessRisksAndNeedsService
   )
-  const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
+  const referralsController = new ReferralsController(
+    services.interventionsService,
+    services.communityApiService,
+    services.assessRisksAndNeedsService
+  )
   const staticContentController = new StaticContentController()
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,

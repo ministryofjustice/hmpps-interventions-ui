@@ -6,6 +6,7 @@ import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
+import riskSummaryFactory from '../../testutils/factories/riskSummary'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build({
@@ -134,6 +135,7 @@ describe('Referral form', () => {
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
+      cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
 
       cy.login()
 
@@ -442,6 +444,7 @@ describe('Referral form', () => {
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
+      cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
 
       cy.login()
 

@@ -45,11 +45,13 @@ import EnforceableDaysForm from './enforceableDaysForm'
 import EnforceableDaysPresenter from './enforceableDaysPresenter'
 import EnforceableDaysView from './enforceableDaysView'
 import RiskInformationForm from './riskInformationForm'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 
 export default class ReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService
+    private readonly communityApiService: CommunityApiService,
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
@@ -479,8 +481,12 @@ export default class ReferralsController {
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
-    const presenter = new RiskInformationPresenter(referral)
+    const [serviceUser, riskSummary] = await Promise.all([
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
+    ])
+
+    const presenter = new RiskInformationPresenter(referral, riskSummary)
     const view = new RiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -511,9 +517,12 @@ export default class ReferralsController {
         res.locals.user.token.accessToken,
         req.params.id
       )
-      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+      const [serviceUser, riskSummary] = await Promise.all([
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+        this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
+      ])
 
-      const presenter = new RiskInformationPresenter(referral, error, req.body)
+      const presenter = new RiskInformationPresenter(referral, riskSummary, error, req.body)
       const view = new RiskInformationView(presenter)
 
       res.status(400)

@@ -8,19 +8,24 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import apiConfig from '../../config'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import interventionFactory from '../../../testutils/factories/intervention'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
+import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
+jest.mock('../../services/assessRisksAndNeedsService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
 const serviceUser = {
   crn: 'X123456',
@@ -39,7 +44,7 @@ let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, communityApiService, assessRisksAndNeedsService },
     userType: AppSetupUserType.probationPractitioner,
   })
 
@@ -284,8 +289,18 @@ describe('POST /referrals/:id/confirm-service-user-details', () => {
 describe('GET /referrals/:id/risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    const riskSummary = riskSummaryFactory.build()
 
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  beforeAll(() => {
+    apiConfig.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+  })
+
+  afterAll(() => {
+    apiConfig.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
   })
 
   it('renders a form page', async () => {
@@ -294,9 +309,24 @@ describe('GET /referrals/:id/risk-information', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Geoffrey’s risk information')
+        expect(res.text).toContain('Risk in community')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('HIGH')
+        expect(res.text).toContain('Prisoners')
+        expect(res.text).toContain('LOW')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get risk summary call fails', async () => {
+    assessRisksAndNeedsService.getRiskSummary.mockRejectedValue(new Error('failed to get risk summary'))
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('failed to get risk summary')
+      })
   })
 
   it('renders an error when the get referral call fails', async () => {
@@ -314,7 +344,9 @@ describe('GET /referrals/:id/risk-information', () => {
 describe('POST /referrals/:id/risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    const riskSummary = riskSummaryFactory.build()
 
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
