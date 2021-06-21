@@ -14,11 +14,11 @@ export default class RiskInformationView {
       id: 'additional-risk-information',
       label: {
         text: this.presenter.text.additionalRiskInformation.label,
-        classes: 'govuk-label--s',
+        classes: this.presenter.text.additionalRiskInformation.labelClasses,
       },
       value: this.presenter.fields.additionalRiskInformation,
       hint: {
-        text: 'Provide relevant risk information to share with the service provider.',
+        text: this.presenter.text.additionalRiskInformation.hint,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.additionalRiskInformation.errorMessage),
     }
