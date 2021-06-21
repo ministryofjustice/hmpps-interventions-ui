@@ -291,7 +291,7 @@ describe('GET /referrals/:id/risk-information', () => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
     const riskSummary = riskSummaryFactory.build()
 
-    assessRisksAndNeedsService.getRiskSummaryScores.mockResolvedValue(riskSummary)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
@@ -312,7 +312,7 @@ describe('GET /referrals/:id/risk-information', () => {
   })
 
   it('renders an error when the get risk summary call fails', async () => {
-    assessRisksAndNeedsService.getRiskSummaryScores.mockRejectedValue(new Error('failed to get risk summary'))
+    assessRisksAndNeedsService.getRiskSummary.mockRejectedValue(new Error('failed to get risk summary'))
     await request(app)
       .get('/referrals/1/risk-information')
       .expect(500)
@@ -338,7 +338,7 @@ describe('POST /referrals/:id/risk-information', () => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
     const riskSummary = riskSummaryFactory.build()
 
-    assessRisksAndNeedsService.getRiskSummaryScores.mockResolvedValue(riskSummary)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 

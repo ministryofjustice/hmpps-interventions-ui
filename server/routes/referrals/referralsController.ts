@@ -483,7 +483,7 @@ export default class ReferralsController {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const [serviceUser, riskSummary] = await Promise.all([
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      this.assessRisksAndNeedsService.getRiskSummaryScores(referral.serviceUser.crn, res.locals.user.token.accessToken),
+      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
     ])
 
     const presenter = new RiskInformationPresenter(referral, riskSummary)
@@ -519,10 +519,7 @@ export default class ReferralsController {
       )
       const [serviceUser, riskSummary] = await Promise.all([
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-        this.assessRisksAndNeedsService.getRiskSummaryScores(
-          referral.serviceUser.crn,
-          res.locals.user.token.accessToken
-        ),
+        this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
       ])
 
       const presenter = new RiskInformationPresenter(referral, riskSummary, error, req.body)
