@@ -17,6 +17,9 @@ describe('RiskInformationPresenter', () => {
           errorMessage: null,
           label: 'Information for the service provider about Geoffrey’s risks',
         },
+        natureOfRisk: 'physically aggressive',
+        riskImminence: 'can happen at the drop of a hat',
+        whoIsAtRisk: undefined,
       })
     })
 

@@ -23,6 +23,9 @@ export default class RiskInformationPresenter {
       label: `Information for the service provider about ${this.referral.serviceUser?.firstName}’s risks`,
       errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
     },
+    whoIsAtRisk: this.riskSummary?.whoIsAtRisk,
+    natureOfRisk: this.riskSummary?.natureOfRisk,
+    riskImminence: this.riskSummary?.riskImminence,
   }
 
   readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled

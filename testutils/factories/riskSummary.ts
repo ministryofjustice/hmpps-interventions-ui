@@ -6,4 +6,6 @@ export default Factory.define<RiskSummary>(() => ({
     LOW: ['prisoners'],
     HIGH: ['children', 'known adult'],
   },
+  natureOfRisk: 'physically aggressive',
+  riskImminence: 'can happen at the drop of a hat',
 }))
