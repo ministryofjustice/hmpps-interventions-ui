@@ -11,9 +11,26 @@ interface OffenderLanguages {
   primaryLanguage: string
 }
 
+interface Address {
+  addressNumber?: string | null
+  buildingName?: string | null
+  streetName?: string | null
+  postcode?: string | null
+  town?: string | null
+  district?: string | null
+  county?: string | null
+  from?: string | null
+  to?: string | null
+  noFixedAbode?: boolean | null
+}
+
 interface ContactDetails {
   emailAddresses?: string[] | null
   phoneNumbers?: PhoneNumber[] | null
+}
+
+interface ExpandedContactDetails extends ContactDetails {
+  addresses: Address[] | null
 }
 
 interface PhoneNumber {
@@ -42,4 +59,8 @@ export default interface DeliusServiceUser {
   dateOfBirth: string | null
   gender: string | null
   contactDetails: ContactDetails
+}
+
+export interface ExpandedDeliusServiceUser extends DeliusServiceUser {
+  contactDetails: ExpandedContactDetails
 }

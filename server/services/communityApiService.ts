@@ -1,8 +1,9 @@
+import createError from 'http-errors'
 import type HmppsAuthService from './hmppsAuthService'
 import RestClient from '../data/restClient'
 import logger from '../../log'
 import DeliusUser from '../models/delius/deliusUser'
-import DeliusServiceUser from '../models/delius/deliusServiceUser'
+import DeliusServiceUser, { ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
 import DeliusConviction from '../models/delius/deliusConviction'
 
 export default class CommunityApiService {
@@ -20,6 +21,20 @@ export default class CommunityApiService {
 
     logger.info({ crn }, 'getting details for offender')
     return (await this.restClient.get({ path: `/secure/offenders/crn/${crn}`, token })) as DeliusServiceUser
+  }
+
+  async getExpandedServiceUserByCRN(crn: string): Promise<ExpandedDeliusServiceUser> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+
+    logger.info({ crn }, 'getting all details for offender')
+    try {
+      return (await this.restClient.get({
+        path: `/secure/offenders/crn/${crn}/all`,
+        token,
+      })) as ExpandedDeliusServiceUser
+    } catch (err) {
+      throw createError(err.status, err, { userMessage: 'Could not retrieve service user details from nDelius.' })
+    }
   }
 
   async getActiveConvictionsByCRN(crn: string): Promise<DeliusConviction[]> {
