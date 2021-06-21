@@ -2,6 +2,7 @@ import RestClient from '../data/restClient'
 import HmppsAuthService from './hmppsAuthService'
 import logger from '../../log'
 import { SupplementaryRiskInformation } from '../models/assessRisksAndNeeds/supplementaryRiskInformation'
+import RiskSummary from '../models/assessRisksAndNeeds/riskSummary'
 
 export default class AssessRisksAndNeedsService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -17,5 +18,11 @@ export default class AssessRisksAndNeedsService {
     })) as SupplementaryRiskInformation
   }
 
-  get;
+  async getRiskSummaryScores(crn: string, token: string): Promise<RiskSummary> {
+    logger.info({ crn }, 'getting risk summary information')
+    return (await this.restClient.get({
+      path: `/risks/crn/${crn}/summary`,
+      token,
+    })) as RiskSummary
+  }
 }

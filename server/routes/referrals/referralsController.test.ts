@@ -8,19 +8,24 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import apiConfig from '../../config'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import interventionFactory from '../../../testutils/factories/intervention'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
+import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
+jest.mock('../../services/assessRisksAndNeedsService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
 const serviceUser = {
   crn: 'X123456',
@@ -39,7 +44,7 @@ let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, communityApiService, assessRisksAndNeedsService },
     userType: AppSetupUserType.probationPractitioner,
   })
 
@@ -284,7 +289,9 @@ describe('POST /referrals/:id/confirm-service-user-details', () => {
 describe('GET /referrals/:id/risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    const riskSummary = riskSummaryFactory.build()
 
+    assessRisksAndNeedsService.getRiskSummaryScores.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
@@ -314,7 +321,9 @@ describe('GET /referrals/:id/risk-information', () => {
 describe('POST /referrals/:id/risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    const riskSummary = riskSummaryFactory.build()
 
+    assessRisksAndNeedsService.getRiskSummaryScores.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
