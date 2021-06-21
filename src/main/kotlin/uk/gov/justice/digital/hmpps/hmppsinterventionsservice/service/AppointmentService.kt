@@ -89,9 +89,30 @@ class AppointmentService(
     return appointmentRepository.save(appointment)
   }
 
+  fun recordAppointmentAttendance(appointmentId: UUID, attended: Attended, additionalAttendanceInformation: String?): Appointment {
+    val appointment = getAppointmentById(appointmentId)
+
+    if (appointment.appointmentFeedbackSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
+    }
+
+    setAttendanceFields(appointment, attended, additionalAttendanceInformation)
+    return appointmentRepository.save(appointment)
+  }
+
   private fun getAppointmentById(appointmentId: UUID): Appointment {
     return appointmentRepository.findByIdOrNull(appointmentId)
       ?: throw EntityNotFoundException("Appointment not found [id=$appointmentId]")
+  }
+
+  private fun setAttendanceFields(
+    appointment: Appointment,
+    attended: Attended,
+    additionalInformation: String?
+  ) {
+    appointment.attended = attended
+    additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
   }
 
   private fun setBehaviourFields(

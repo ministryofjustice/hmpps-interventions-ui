@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
@@ -39,6 +41,21 @@ class AppointmentControllerTest {
     whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
 
     val result = appointmentController.recordAppointmentBehaviour(appointmentId, update, token)
+
+    assertThat(result).isNotNull
+  }
+
+  @Test
+  fun `can record appointment attendance`() {
+    val appointmentId = UUID.randomUUID()
+    val attended = Attended.YES
+    val additionalAttendanceInformation = "information"
+    val update = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
+
+    val appointment = appointmentFactory.create()
+    whenever(appointmentService.recordAppointmentAttendance(any(), any(), any())).thenReturn(appointment)
+
+    val result = appointmentController.recordAttendance(appointmentId, update)
 
     assertThat(result).isNotNull
   }

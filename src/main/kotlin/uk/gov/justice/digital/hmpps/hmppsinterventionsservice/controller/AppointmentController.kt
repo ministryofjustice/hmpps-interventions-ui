@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import java.util.UUID
 
@@ -29,5 +30,17 @@ class AppointmentController(
         id, recordBehaviourDTO.behaviourDescription, recordBehaviourDTO.notifyProbationPractitioner, user
       )
     )
+  }
+
+  @PutMapping("/appointment/{id}/record-attendance")
+  fun recordAttendance(
+    @PathVariable id: UUID,
+    @RequestBody update: UpdateAppointmentAttendanceDTO,
+  ): AppointmentDTO {
+    val updatedAppointment = appointmentService.recordAppointmentAttendance(
+      id, update.attended, update.additionalAttendanceInformation
+    )
+
+    return AppointmentDTO.from(updatedAppointment)
   }
 }

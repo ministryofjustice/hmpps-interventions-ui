@@ -281,4 +281,42 @@ class AppointmentServiceTest {
     }
     assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
   }
+
+  @Test
+  fun `appointment attendance can be updated`() {
+    val appointmentId = UUID.randomUUID()
+    val attended = Attended.YES
+    val additionalAttendanceInformation = "information"
+    val appointment = appointmentFactory.create(id = appointmentId)
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+    whenever(appointmentRepository.save(any())).thenReturn(appointment)
+
+    appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation)
+
+    val argumentCaptor = argumentCaptor<Appointment>()
+    verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
+    val arguments = argumentCaptor.firstValue
+
+    assertThat(arguments.id).isEqualTo(appointmentId)
+    assertThat(arguments.attended).isEqualTo(attended)
+    assertThat(arguments.additionalAttendanceInformation).isEqualTo(additionalAttendanceInformation)
+    assertThat(arguments.attendanceSubmittedAt).isNotNull
+  }
+
+  @Test
+  fun `appointment attendance cannot be updated if appointment cannot be found`() {
+    val appointmentId = UUID.randomUUID()
+    val attended = Attended.YES
+    val additionalAttendanceInformation = "information"
+    val appointment = appointmentFactory.create(id = appointmentId)
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(empty())
+
+    val error = assertThrows<EntityNotFoundException> {
+      appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation)
+    }
+    assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
+  }
 }
