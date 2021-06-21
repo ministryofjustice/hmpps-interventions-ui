@@ -95,4 +95,18 @@ export default class ViewUtils {
       items,
     }
   }
+
+  static linkHtml(links: { text: string; href: string; hiddenText?: string }[]): string {
+    return links
+      .map(link => {
+        const hiddenLinkHtml = link.hiddenText
+          ? `<span class="govuk-visually-hidden">${ViewUtils.escape(link.hiddenText)}</span>`
+          : ''
+
+        return `<a class="govuk-link" href="${ViewUtils.escape(link.href)}">${ViewUtils.escape(
+          link.text
+        )}${hiddenLinkHtml}</a>`
+      })
+      .join('<br>')
+  }
 }

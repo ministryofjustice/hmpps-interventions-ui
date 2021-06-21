@@ -1,4 +1,4 @@
-import { TagArgs, TableArgs } from '../../utils/govukFrontendTypes'
+import ViewUtils from '../../utils/viewUtils'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import ActionPlanView from '../shared/actionPlanView'
@@ -20,18 +20,10 @@ export default class InterventionProgressView {
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
           { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: this.linkHtml(row.link) },
+          { html: row.link === null ? '' : ViewUtils.linkHtml([row.link]) },
         ]
       }),
     }
-  }
-
-  private linkHtml(link: { text: string | null; href: string | null }): string {
-    if (link.text && link.href) {
-      return `<a class="govuk-link" href="${link.href}">${link.text}</a>`
-    }
-
-    return ''
   }
 
   private endOfServiceReportTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
@@ -43,7 +35,7 @@ export default class InterventionProgressView {
         return [
           { text: `${row.caseworker}` },
           { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: `${this.linkHtml(row.link)}` },
+          { html: `${ViewUtils.linkHtml([row.link])}` },
         ]
       }),
     }

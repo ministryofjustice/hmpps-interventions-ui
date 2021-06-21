@@ -33,10 +33,7 @@ describe(InterventionProgressPresenter, () => {
               text: 'not scheduled',
               classes: 'govuk-tag--grey',
             },
-            link: {
-              text: null,
-              href: null,
-            },
+            link: null,
           },
         ])
       })
@@ -66,10 +63,7 @@ describe(InterventionProgressPresenter, () => {
               text: 'scheduled',
               classes: 'govuk-tag--blue',
             },
-            link: {
-              text: null,
-              href: null,
-            },
+            link: null,
           },
         ])
       })

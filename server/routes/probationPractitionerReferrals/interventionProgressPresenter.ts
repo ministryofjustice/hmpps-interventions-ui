@@ -12,7 +12,7 @@ interface ProgressSessionTableRow {
   sessionNumber: number
   appointmentTime: string
   tagArgs: { text: string; classes: string }
-  link: { text: string | null; href: string | null }
+  link: { text: string; href: string } | null
 }
 
 interface EndOfServiceTableRow {
@@ -79,7 +79,7 @@ export default class InterventionProgressPresenter {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
-        link: { text: sessionTableParams.linkText, href: sessionTableParams.linkHref },
+        link: sessionTableParams.link,
       }
     })
   }
@@ -87,8 +87,7 @@ export default class InterventionProgressPresenter {
   private sessionTableParams(appointment: ActionPlanAppointment): {
     text: string
     tagClass: string
-    linkText: string | null
-    linkHref: string | null
+    link: { text: string; href: string } | null
   } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
@@ -98,29 +97,31 @@ export default class InterventionProgressPresenter {
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: 'View feedback form',
-          linkHref: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          link: {
+            text: 'View feedback form',
+            href: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          },
         }
       case SessionStatus.completed:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: 'View feedback form',
-          linkHref: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          link: {
+            text: 'View feedback form',
+            href: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          },
         }
       case SessionStatus.scheduled:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: null,
-          linkHref: null,
+          link: null,
         }
       default:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: null,
-          linkHref: null,
+          link: null,
         }
     }
   }

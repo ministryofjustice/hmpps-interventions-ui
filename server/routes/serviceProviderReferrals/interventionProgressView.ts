@@ -67,7 +67,7 @@ export default class InterventionProgressView {
         {
           key: { text: 'To do' },
           value: {
-            html: this.linkHtml([this.presenter.supplierAssessmentLink]),
+            html: ViewUtils.linkHtml([this.presenter.supplierAssessmentLink]),
           },
         },
       ],
@@ -84,7 +84,7 @@ export default class InterventionProgressView {
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
           { text: this.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
-          { html: this.linkHtml(row.links) },
+          { html: ViewUtils.linkHtml(row.links) },
         ]
       }),
     }
@@ -92,20 +92,6 @@ export default class InterventionProgressView {
 
   private sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string) {
     return tagMacro({ text: presenter.text, classes: presenter.tagClass })
-  }
-
-  private linkHtml(links: { text: string; href: string; hiddenText?: string }[]): string {
-    return links
-      .map(link => {
-        const hiddenLinkHtml = link.hiddenText
-          ? `<span class="govuk-visually-hidden">${ViewUtils.escape(link.hiddenText)}</span>`
-          : ''
-
-        return `<a class="govuk-link" href="${ViewUtils.escape(link.href)}">${ViewUtils.escape(
-          link.text
-        )}${hiddenLinkHtml}</a>`
-      })
-      .join('<br>')
   }
 
   private readonly backLinkArgs = {
