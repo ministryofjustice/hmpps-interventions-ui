@@ -11,14 +11,14 @@ import InterventionDecorator from '../../decorators/interventionDecorator'
 import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from './sentencePresenter'
 import PresenterUtils from '../../utils/presenterUtils'
-import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 
 export default class CheckAnswersPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
-    private readonly deliusServiceUser: DeliusServiceUser
+    private readonly deliusServiceUser: ExpandedDeliusServiceUser
   ) {}
 
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {

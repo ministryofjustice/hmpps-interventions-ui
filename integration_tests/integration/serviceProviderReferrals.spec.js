@@ -9,6 +9,7 @@ import endOfServiceReportFactory from '../../testutils/factories/endOfServiceRep
 import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -114,6 +115,37 @@ describe('Service provider referrals dashboard', () => {
       },
     })
 
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+      ...deliusServiceUser,
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com', 'JJ@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+          {
+            number: '0798765432',
+            type: 'MOBILE',
+          },
+        ],
+        addresses: [
+          {
+            addressNumber: 'Flat 2',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2019-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
+      },
+    })
+
     const referralToSelect = sentReferrals[1]
 
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
@@ -126,6 +158,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferralsForUserToken(sentReferrals)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
 
@@ -191,6 +224,11 @@ describe('Service provider referrals dashboard', () => {
       .next()
       .contains('jenny.jones@example.com')
     cy.contains("Service user's personal details").next().contains('Phone number').next().contains('07123456789')
+    cy.contains('Flat 2 Test Walk')
+    cy.contains('London')
+    cy.contains('City of London')
+    cy.contains('Greater London')
+    cy.contains('SW16 1AQ')
     cy.contains("Service user's risk information")
     cy.contains('They are low risk.')
     cy.contains("Service user's needs")
@@ -217,6 +255,7 @@ describe('Service provider referrals dashboard', () => {
     const referral = sentReferralFactory.build(referralParams)
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
 
@@ -225,6 +264,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferralsForUserToken([referral])
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubAssignSentReferral(referral.id, referral)

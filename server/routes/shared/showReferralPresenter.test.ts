@@ -7,8 +7,8 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import { TagArgs } from '../../utils/govukFrontendTypes'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -37,7 +37,7 @@ describe(ShowReferralPresenter, () => {
     surname: 'Beaks',
     email: 'bernard.beaks@justice.gov.uk',
   })
-  const deliusServiceUser = deliusServiceUserFactory.build()
+  const deliusServiceUser = expandedDeliusServiceUserFactory.build()
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
@@ -386,6 +386,11 @@ describe(ShowReferralPresenter, () => {
         { key: 'First name', lines: ['Jenny'] },
         { key: 'Last name', lines: ['Jones'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
+        {
+          key: 'Address',
+          lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+          listStyle: ListStyle.noMarkers,
+        },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },

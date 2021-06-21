@@ -22,6 +22,7 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -312,7 +313,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       surname: 'Beaks',
       email: 'bernard.beaks@justice.gov.uk',
     })
-    const deliusServiceUser = deliusServiceUserFactory.build({
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
       firstName: 'Alex',
       surname: 'River',
       contactDetails: {
@@ -323,6 +324,20 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
             type: 'MOBILE',
           },
         ],
+        addresses: [
+          {
+            addressNumber: 'Flat 10',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2021-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
       },
     })
     const conviction = deliusConvictionFactory.build()
@@ -330,7 +345,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
 
@@ -354,14 +369,14 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       const sentReferral = sentReferralFactory.assigned().build()
       const deliusUser = deliusUserFactory.build()
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-      const deliusServiceUser = deliusServiceUserFactory.build()
+      const deliusServiceUser = expandedDeliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
       const conviction = deliusConvictionFactory.build()
 
       interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
       communityApiService.getConvictionById.mockResolvedValue(conviction)
       assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)

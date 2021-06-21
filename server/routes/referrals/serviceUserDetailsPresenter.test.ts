@@ -1,6 +1,6 @@
 import { ListStyle } from '../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 
 describe(ServiceUserDetailsPresenter, () => {
   const serviceUser = {
@@ -29,9 +29,26 @@ describe(ServiceUserDetailsPresenter, () => {
     disabilities: null,
   }
 
-  const deliusServiceUser = deliusServiceUserFactory.build()
-  const nullFieldsDeliusServiceUser = deliusServiceUserFactory.build({
-    contactDetails: { emailAddresses: null, phoneNumbers: null },
+  const deliusServiceUser = expandedDeliusServiceUserFactory.build({
+    contactDetails: {
+      addresses: [
+        {
+          addressNumber: 'Flat 10',
+          buildingName: null,
+          streetName: 'Test Walk',
+          postcode: 'SW16 1AQ',
+          town: 'London',
+          district: 'City of London',
+          county: 'Greater London',
+          from: '2021-01-01',
+          to: null,
+          noFixedAbode: false,
+        },
+      ],
+    },
+  })
+  const nullFieldsDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+    contactDetails: { emailAddresses: null, phoneNumbers: null, addresses: null },
   })
 
   describe('title', () => {
@@ -58,6 +75,11 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
+        {
+          key: 'Address',
+          lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+          listStyle: ListStyle.noMarkers,
+        },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
@@ -77,6 +99,11 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'First name', lines: [''] },
         { key: 'Last name', lines: [''] },
         { key: 'Date of birth', lines: [''] },
+        {
+          key: 'Address',
+          lines: ['Not found'],
+          listStyle: ListStyle.noMarkers,
+        },
         { key: 'Gender', lines: [''] },
         { key: 'Ethnicity', lines: [''] },
         { key: 'Preferred language', lines: [''] },
@@ -89,7 +116,7 @@ describe(ServiceUserDetailsPresenter, () => {
 
     describe('phone number validation', () => {
       it('returns an empty values for phone number when number is null', () => {
-        const nullNumberDeliusServiceUser = deliusServiceUserFactory.build({
+        const nullNumberDeliusServiceUser = expandedDeliusServiceUserFactory.build({
           contactDetails: { emailAddresses: null, phoneNumbers: [{ number: null, type: null }] },
         })
         const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullNumberDeliusServiceUser)
@@ -98,7 +125,7 @@ describe(ServiceUserDetailsPresenter, () => {
       })
 
       it('returns multiple phone numbers when provided', () => {
-        const user = deliusServiceUserFactory.build({
+        const user = expandedDeliusServiceUserFactory.build({
           contactDetails: {
             phoneNumbers: [
               { number: '123456789', type: null },
@@ -116,7 +143,7 @@ describe(ServiceUserDetailsPresenter, () => {
       })
 
       it('filters non-unique phone numbers', () => {
-        const user = deliusServiceUserFactory.build({
+        const user = expandedDeliusServiceUserFactory.build({
           contactDetails: {
             phoneNumbers: [
               { number: '123456789', type: null },
@@ -136,7 +163,7 @@ describe(ServiceUserDetailsPresenter, () => {
 
     describe('email validation', () => {
       it('returns multiple emails when provided', () => {
-        const user = deliusServiceUserFactory.build({
+        const user = expandedDeliusServiceUserFactory.build({
           contactDetails: { emailAddresses: ['alex.river@example.com', 'a.r@example.com'] },
         })
         const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user)

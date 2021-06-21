@@ -6,7 +6,7 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import deliusOffenceFactory from '../../../testutils/factories/deliusOffence'
 import deliusSentenceFactory from '../../../testutils/factories/deliusSentence'
 import { ListStyle } from '../../utils/summaryList'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 
 describe(CheckAnswersPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
@@ -23,13 +23,27 @@ describe(CheckAnswersPresenter, () => {
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
   })
-  const deliusServiceUser = deliusServiceUserFactory.build({
+  const deliusServiceUser = expandedDeliusServiceUserFactory.build({
     contactDetails: {
       emailAddresses: ['alex.river@example.com'],
       phoneNumbers: [
         {
           number: '0123456789',
           type: 'MOBILE',
+        },
+      ],
+      addresses: [
+        {
+          addressNumber: 'Flat 10',
+          buildingName: null,
+          streetName: 'Test Walk',
+          postcode: 'SW16 1AQ',
+          town: 'London',
+          district: 'City of London',
+          county: 'Greater London',
+          from: '2021-01-01',
+          to: null,
+          noFixedAbode: false,
         },
       ],
     },
@@ -60,6 +74,11 @@ describe(CheckAnswersPresenter, () => {
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name', lines: ['River'] },
           { key: 'Date of birth', lines: ['1 January 1980'] },
+          {
+            key: 'Address',
+            lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+            listStyle: ListStyle.noMarkers,
+          },
           { key: 'Gender', lines: ['Male'] },
           { key: 'Ethnicity', lines: ['British'] },
           { key: 'Preferred language', lines: ['English'] },
