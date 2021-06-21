@@ -11,7 +11,7 @@ interface OffenderLanguages {
   primaryLanguage: string
 }
 
-interface Address {
+export interface Address {
   addressNumber?: string | null
   buildingName?: string | null
   streetName?: string | null
