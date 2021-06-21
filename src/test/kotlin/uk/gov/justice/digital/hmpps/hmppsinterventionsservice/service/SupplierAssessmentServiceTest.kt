@@ -1,15 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -66,7 +68,16 @@ class SupplierAssessmentServiceTest {
     val durationInMinutes = 60
     val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
 
-    whenever(appointmentService.createOrUpdateAppointment(anyOrNull(), any(), any(), any())).thenReturn(appointment)
+    whenever(
+      appointmentService.createOrUpdateAppointment(
+        eq(supplierAssessment.referral),
+        isNull(),
+        eq(durationInMinutes),
+        eq(appointmentTime),
+        eq(SUPPLIER_ASSESSMENT),
+        eq(createdByUser)
+      )
+    ).thenReturn(appointment)
     whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
 
     supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser)

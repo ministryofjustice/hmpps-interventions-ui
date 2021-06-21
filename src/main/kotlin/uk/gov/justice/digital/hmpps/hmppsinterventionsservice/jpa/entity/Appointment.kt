@@ -68,3 +68,8 @@ enum class Attended {
     return this.toString().lowercase()
   }
 }
+
+enum class AppointmentType {
+  SERVICE_DELIVERY,
+  SUPPLIER_ASSESSMENT;
+}

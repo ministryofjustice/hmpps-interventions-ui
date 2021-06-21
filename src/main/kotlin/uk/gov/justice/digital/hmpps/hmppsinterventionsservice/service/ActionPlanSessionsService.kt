@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryAddress
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
@@ -77,7 +78,8 @@ class ActionPlanSessionsService(
       session.actionPlan.referral,
       existingAppointment,
       appointmentTime,
-      durationInMinutes
+      durationInMinutes,
+      SERVICE_DELIVERY
     )
 
     if (existingAppointment == null) {
