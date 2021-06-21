@@ -199,6 +199,22 @@ jobs:
           filepath: ./build/hmpps-interventions-service.jar
           teams: hmpps-interventions
 
+  validate_helm:
+    executor: hmpps/default_small
+    steps:
+      - checkout
+      - hmpps/k8s_setup
+      - hmpps/install_helm
+      - run:
+          name: Validate dev helm config via server dry run
+          command: |
+            wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64.tar.gz -O - |\
+              tar xz && mv yq_linux_amd64 yq
+            helm template "$CIRCLE_PROJECT_REPONAME" "$CIRCLE_PROJECT_REPONAME" --values=values-dev.yaml | \
+              ./yq e 'select(.kind != "Service" and .kind != "Ingress")' - | \
+              kubectl apply --dry-run=server -f -
+          working_directory: helm_deploy
+
 workflows:
   version: 2
   pact:
@@ -215,8 +231,7 @@ workflows:
           requires:
             - build_docker
             - build_and_publish_docker
-      - hmpps/helm_lint:
-          name: helm_lint
+      - validate_helm
       - hmpps/build_docker:
           name: build_and_publish_docker
           <<: *snyk_options
@@ -260,7 +275,7 @@ workflows:
             - validate_db
             - publish_data
             - build_and_publish_docker
-            - helm_lint
+            - validate_helm
             - vulnerability_scan_and_monitor
           context:
             - hmpps-common-vars
