@@ -44,7 +44,19 @@ data class Appointment(
   var appointmentDelivery: AppointmentDelivery? = null,
 
   @Id val id: UUID,
-)
+) {
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is Appointment) {
+      return false
+    }
+
+    return id == other.id
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+}
 
 enum class Attended {
   YES,

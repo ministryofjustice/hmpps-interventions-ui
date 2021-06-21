@@ -91,6 +91,7 @@ class Referral(
   @Id val id: UUID,
 
   @OneToOne(mappedBy = "referral") @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
+  @OneToOne(mappedBy = "referral") @Fetch(JOIN) var supplierAssessment: SupplierAssessment? = null,
 ) {
   fun getResponsibleProbationPractitioner(): AuthUser {
     // fixme: should this sentBy or createdBy?

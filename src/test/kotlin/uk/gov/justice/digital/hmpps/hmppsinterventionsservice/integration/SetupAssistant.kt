@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPS
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.SupplierAssessmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
@@ -64,6 +65,7 @@ class SetupAssistant(
   private val cancellationReasonRepository: CancellationReasonRepository,
   private val contractTypeRepository: ContractTypeRepository,
   private val appointmentRepository: AppointmentRepository,
+  private val supplierAssessmentRepository: SupplierAssessmentRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -80,6 +82,7 @@ class SetupAssistant(
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
     actionPlanSessionRepository.deleteAll()
+    supplierAssessmentRepository.deleteAll()
     actionPlanRepository.deleteAll()
 
     endOfServiceReportRepository.deleteAll()

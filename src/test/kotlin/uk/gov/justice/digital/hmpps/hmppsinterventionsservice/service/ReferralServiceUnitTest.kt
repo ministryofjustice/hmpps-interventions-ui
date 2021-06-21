@@ -63,6 +63,7 @@ class ReferralServiceUnitTest {
   private val serviceUserAccessChecker: ServiceUserAccessChecker = mock()
   private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
   private val communityAPIOffenderService: CommunityAPIOffenderService = mock()
+  private val supplierAssessmentService: SupplierAssessmentService = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
@@ -77,7 +78,7 @@ class ReferralServiceUnitTest {
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
     actionPlanSessionRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
     serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,
-    assessRisksAndNeedsService, communityAPIOffenderService,
+    assessRisksAndNeedsService, communityAPIOffenderService, supplierAssessmentService,
   )
 
   @Test
