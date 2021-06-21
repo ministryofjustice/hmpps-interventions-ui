@@ -27,7 +27,7 @@ export default class AssessRisksAndNeedsService {
         token,
       })) as RiskSummary
     } catch (err) {
-      throw createError(500, err, { userMessage: 'Could not get service user risk scores from OASys.' })
+      throw createError(err.status, err, { userMessage: 'Could not get service user risk scores from OASys.' })
     }
   }
 }
