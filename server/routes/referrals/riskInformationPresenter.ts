@@ -2,6 +2,7 @@ import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import config from '../../config'
 
 export interface RoshAnalysisTableRow {
   riskTo: string
@@ -11,7 +12,7 @@ export interface RoshAnalysisTableRow {
 export default class RiskInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
-    private readonly riskSummary: RiskSummary,
+    private readonly riskSummary: RiskSummary | null,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -23,6 +24,8 @@ export default class RiskInformationPresenter {
       errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
     },
   }
+
+  readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
@@ -40,6 +43,8 @@ export default class RiskInformationPresenter {
   }
 
   get roshAnalysisRows(): RoshAnalysisTableRow[] {
+    if (this.riskSummary === null) return []
+
     return Object.entries(this.riskSummary.riskInCommunity).flatMap(([riskScore, riskGroups]) => {
       return riskGroups.map(riskTo => {
         return { riskTo, riskScore }

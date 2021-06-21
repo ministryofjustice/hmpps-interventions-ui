@@ -7,6 +7,7 @@ import HmppsAuthService from './hmppsAuthService'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import MockRestClient from '../data/testutils/mockRestClient'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
+import config from '../config'
 
 // wraps mocking API around the class exported by the module
 jest.mock('../data/restClient')
@@ -38,6 +39,14 @@ describe(AssessRisksAndNeedsService, () => {
     const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthServiceMock, restClientMock)
 
     const riskSummary = riskSummaryFactory.build()
+
+    beforeAll(() => {
+      config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+    })
+
+    afterAll(() => {
+      config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
+    })
 
     it('makes a request to the Assess Risks and Needs API', async () => {
       restClientMock.get.mockResolvedValue(riskSummary)
