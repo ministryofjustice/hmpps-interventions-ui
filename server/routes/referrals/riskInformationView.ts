@@ -32,7 +32,12 @@ export default class RiskInformationView {
       rows: this.presenter.roshAnalysisRows.map(row => {
         return [
           { text: utils.convertToProperCase(row.riskTo) },
-          { text: tagMacro({ text: row.riskScore, classes: this.tagClassForRiskScore(row.riskScore) }) },
+          {
+            text: tagMacro({
+              text: row.riskScore.replace('_', ' '),
+              classes: this.tagClassForRiskScore(row.riskScore),
+            }),
+          },
         ]
       }),
     }
