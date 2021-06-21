@@ -1,3 +1,4 @@
+import createError from 'http-errors'
 import RestClient from '../data/restClient'
 import HmppsAuthService from './hmppsAuthService'
 import logger from '../../log'
@@ -20,9 +21,13 @@ export default class AssessRisksAndNeedsService {
 
   async getRiskSummary(crn: string, token: string): Promise<RiskSummary> {
     logger.info({ crn }, 'getting risk summary information')
-    return (await this.restClient.get({
-      path: `/risks/crn/${crn}/summary`,
-      token,
-    })) as RiskSummary
+    try {
+      return (await this.restClient.get({
+        path: `/risks/crn/${crn}/summary`,
+        token,
+      })) as RiskSummary
+    } catch (err) {
+      throw createError(500, err, { userMessage: 'Could not get service user risk scores from OASys.' })
+    }
   }
 }
