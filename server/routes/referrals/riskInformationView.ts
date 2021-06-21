@@ -1,6 +1,6 @@
 import RiskInformationPresenter from './riskInformationPresenter'
 import ViewUtils from '../../utils/viewUtils'
-import { TableArgs, TagArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
+import { DetailsArgs, TableArgs, TagArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
 import utils from '../../utils/utils'
 
 export default class RiskInformationView {
@@ -53,6 +53,27 @@ export default class RiskInformationView {
     }
   }
 
+  get riskLevelDetailsArgs(): DetailsArgs {
+    return {
+      summaryText: 'Definitions of risk levels',
+      html: `
+            <ul class="govuk-list govuk-list--bullet">
+              <li>
+                <strong>Low</strong> - Current evidence does not indicate likelihood of causing serious harm.
+              </li>
+              <li>
+                <strong>Medium</strong> - There are identifiable indicators of risk of serious harm. The person has the potential to cause serious harm but is unlikely to do so unless there is a change in circumstances.
+              </li>
+              <li>
+                <strong>High</strong> - There are identifiable indicators of risk of serious harm. The potential event could happen at any time and the impact would be serious.
+              </li>
+              <li>
+                <strong>Very high</strong> - There is an imminent risk of serious harm. The potential event is more likely than not to happen imminently and the impact would be serious.
+              </li>
+            </ul>`,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'referrals/riskInformation',
@@ -61,6 +82,7 @@ export default class RiskInformationView {
         errorSummaryArgs: this.errorSummaryArgs,
         additionalRiskInformationTextareaArgs: this.additionalRiskInformationTextareaArgs,
         roshAnalysisTableArgs: this.roshAnalysisTableArgs.bind(this),
+        riskLevelDetailsArgs: this.riskLevelDetailsArgs,
       },
     ]
   }
