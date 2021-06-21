@@ -21,7 +21,7 @@ data class AppointmentDTO(
           appointment.additionalAttendanceInformation,
           appointment.attendanceBehaviour,
           appointment.notifyPPOfAttendanceBehaviour,
-          appointment.attendanceSubmittedAt != null,
+          appointment.appointmentFeedbackSubmittedAt != null,
         ),
       )
     }

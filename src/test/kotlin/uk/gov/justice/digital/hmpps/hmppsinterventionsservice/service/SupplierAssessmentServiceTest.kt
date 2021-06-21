@@ -41,7 +41,7 @@ class SupplierAssessmentServiceTest {
   )
 
   @Test
-  fun `initial assessment can be created`() {
+  fun `supplier assessment can be created`() {
     val referral = referralFactory.createDraft()
 
     whenever(appointmentRepository.save(any())).thenReturn(appointmentFactory.create())
@@ -59,7 +59,7 @@ class SupplierAssessmentServiceTest {
   }
 
   @Test
-  fun `can create initial assessment appointment`() {
+  fun `can create supplier assessment appointment`() {
     val supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
     val appointment = appointmentFactory.create()
     val createdByUser = authUserFactory.create()
