@@ -15,8 +15,6 @@ spec:
             imagePullPolicy: Always
             args: ["extract_table_names.py && extract_pg_jsonl_snapshot.py && transfer_local_to_s3.sh"]
             env:
-              - name: PGPORT
-                value: "5432"
               - name: PGHOST
                 valueFrom:
                   secretKeyRef:
@@ -54,3 +52,5 @@ spec:
                     key: secret_access_key
               - name: AWS_DEFAULT_REGION
                 value: eu-west-2
+          - name: SAVE_EVENTS_LOG
+            value: "true"
