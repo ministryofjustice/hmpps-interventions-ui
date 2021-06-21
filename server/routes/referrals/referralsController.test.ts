@@ -301,9 +301,24 @@ describe('GET /referrals/:id/risk-information', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Geoffrey’s risk information')
+        expect(res.text).toContain('Risk in community')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('HIGH')
+        expect(res.text).toContain('Prisoners')
+        expect(res.text).toContain('LOW')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get risk summary call fails', async () => {
+    assessRisksAndNeedsService.getRiskSummaryScores.mockRejectedValue(new Error('failed to get risk summary'))
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('failed to get risk summary')
+      })
   })
 
   it('renders an error when the get referral call fails', async () => {
