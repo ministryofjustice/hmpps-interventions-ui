@@ -159,11 +159,23 @@ export default class InterventionProgressPresenter {
     ? 'active'
     : 'inactive'
 
-  private get endOfServiceReportSubmitted() {
-    return this.referral.endOfServiceReport !== null && this.referral.endOfServiceReport.submittedAt !== null
+  get endOfServiceReportSubmitted(): boolean {
+    return !!this.referral.endOfServiceReport?.submittedAt
   }
 
-  get allowEndOfServiceReportCreation(): boolean {
-    return this.referral.endOfServiceReport === null
+  get canSubmitEndOfServiceReport(): boolean {
+    return this.referralAssigned && !this.endOfServiceReportSubmitted
+  }
+
+  private get endOfServiceReportStarted(): boolean {
+    return this.referral.endOfServiceReport !== null && !this.endOfServiceReportSubmitted
+  }
+
+  get endOfServiceReportButtonActionText(): string | null {
+    if (this.endOfServiceReportSubmitted) {
+      return null
+    }
+
+    return this.endOfServiceReportStarted ? 'Continue' : 'Create'
   }
 }

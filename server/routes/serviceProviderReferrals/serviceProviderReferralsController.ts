@@ -681,12 +681,23 @@ export default class ServiceProviderReferralsController {
   }
 
   async createDraftEndOfServiceReport(req: Request, res: Response): Promise<void> {
-    const draftEndOfServiceReport = await this.interventionsService.createDraftEndOfServiceReport(
-      res.locals.user.token.accessToken,
-      req.params.id
-    )
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
 
-    res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`)
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    let draftEndOfServiceReportId = referral.endOfServiceReport?.id
+
+    if (!draftEndOfServiceReportId) {
+      const draftEndOfServiceReport = await this.interventionsService.createDraftEndOfServiceReport(
+        accessToken,
+        referralId
+      )
+
+      draftEndOfServiceReportId = draftEndOfServiceReport.id
+    }
+
+    res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReportId}/outcomes/1`)
   }
 
   async editEndOfServiceReportOutcome(req: Request, res: Response): Promise<void> {

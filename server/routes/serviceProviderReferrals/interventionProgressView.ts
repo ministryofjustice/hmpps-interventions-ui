@@ -120,14 +120,14 @@ export default class InterventionProgressView {
       },
     ]
 
-    if (this.presenter.allowEndOfServiceReportCreation) {
+    if (this.presenter.canSubmitEndOfServiceReport) {
       rows.push({
         key: { text: 'Action' },
         value: {
           html: `<form method="post" action="${ViewUtils.escape(this.presenter.createEndOfServiceReportFormAction)}">
                    <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
                    <button class="govuk-button govuk-button--secondary">
-                     Create end of service report
+                     ${this.presenter.endOfServiceReportButtonActionText} end of service report
                    </button>
                  </form>`,
         },

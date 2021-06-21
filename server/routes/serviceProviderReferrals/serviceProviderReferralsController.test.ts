@@ -1072,16 +1072,40 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/referrals/:id/end-of-service-report', () => {
-  it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
-    const endOfServiceReport = endOfServiceReportFactory.build()
-    interventionsService.createDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+  describe('when a draft end of service report does not yet exist', () => {
+    it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
+      const referral = sentReferralFactory.build({ id: '19', endOfServiceReport: null })
+      const endOfServiceReport = endOfServiceReportFactory.build()
 
-    await request(app)
-      .post(`/service-provider/referrals/19/end-of-service-report`)
-      .expect(303)
-      .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.createDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
 
-    expect(interventionsService.createDraftEndOfServiceReport).toHaveBeenCalledWith('token', '19')
+      await request(app)
+        .post(`/service-provider/referrals/19/end-of-service-report`)
+        .expect(303)
+        .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+
+      expect(interventionsService.createDraftEndOfServiceReport).toHaveBeenCalledWith('token', '19')
+    })
+  })
+
+  describe('when a draft end of service report has been created but not yet submitted', () => {
+    it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
+      const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+      const referral = sentReferralFactory.build({
+        id: '19',
+        endOfServiceReport,
+      })
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+
+      await request(app)
+        .post(`/service-provider/referrals/19/end-of-service-report`)
+        .expect(303)
+        .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+
+      expect(interventionsService.createDraftEndOfServiceReport).not.toHaveBeenCalledWith('token', '19')
+    })
   })
 })
 
