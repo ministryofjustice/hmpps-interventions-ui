@@ -64,7 +64,7 @@ class ReferralController(
     )
     return SentReferralDTO.from(
       referralService.assignSentReferral(sentReferral, assignedBy, assignedTo),
-      referralConcluder.requiresEndOfServiceReport(sentReferral)
+      referralConcluder.requiresEndOfServiceReportCreation(sentReferral)
     )
   }
 
@@ -85,14 +85,14 @@ class ReferralController(
 
     return ResponseEntity
       .created(location)
-      .body(SentReferralDTO.from(sentReferral, referralConcluder.requiresEndOfServiceReport(sentReferral)))
+      .body(SentReferralDTO.from(sentReferral, referralConcluder.requiresEndOfServiceReportCreation(sentReferral)))
   }
 
   @JsonView(Views.SentReferral::class)
   @GetMapping("/sent-referral/{id}")
   fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
     val referral = getSentReferralForAuthenticatedUser(authentication, id)
-    return SentReferralDTO.from(referral, referralConcluder.requiresEndOfServiceReport(referral))
+    return SentReferralDTO.from(referral, referralConcluder.requiresEndOfServiceReportCreation(referral))
   }
 
   @JsonView(Views.SentReferral::class)
@@ -114,7 +114,7 @@ class ReferralController(
     val user = userMapper.fromToken(authentication)
     return SentReferralDTO.from(
       referralService.requestReferralEnd(sentReferral, user, cancellationReason, endReferralRequest.comments),
-      referralConcluder.requiresEndOfServiceReport(sentReferral),
+      referralConcluder.requiresEndOfServiceReportCreation(sentReferral),
     )
   }
 

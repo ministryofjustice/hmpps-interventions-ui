@@ -32,8 +32,8 @@ class ActionPlanRepositoryTest @Autowired constructor(
     val actionPlan2 = actionPlanFactory.create()
     actionPlanSessionFactory.createAttended(actionPlan = actionPlan2)
 
-    assertThat(actionPlanRepository.countNumberOfAttendedSessions(actionPlan1.id)).isEqualTo(4)
-    assertThat(actionPlanRepository.countNumberOfAttendedSessions(actionPlan2.id)).isEqualTo(1)
+    assertThat(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan1.id)).isEqualTo(4)
+    assertThat(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan2.id)).isEqualTo(1)
   }
 
   @Test
