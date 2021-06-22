@@ -9,6 +9,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
@@ -47,6 +49,8 @@ abstract class IntegrationTestBase {
   @Autowired protected lateinit var contractTypeRepository: ContractTypeRepository
   @Autowired protected lateinit var appointmentRepository: AppointmentRepository
   @Autowired protected lateinit var supplierAssessmentRepository: SupplierAssessmentRepository
+  @Autowired protected lateinit var appointmentDeliveryRepository: AppointmentDeliveryRepository
+  @Autowired protected lateinit var appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository
   protected lateinit var setupAssistant: SetupAssistant
 
   @BeforeEach
@@ -66,7 +70,9 @@ abstract class IntegrationTestBase {
       cancellationReasonRepository,
       contractTypeRepository,
       appointmentRepository,
-      supplierAssessmentRepository
+      supplierAssessmentRepository,
+      appointmentDeliveryRepository,
+      appointmentDeliveryAddressRepository
     )
     setupAssistant.cleanAll()
   }

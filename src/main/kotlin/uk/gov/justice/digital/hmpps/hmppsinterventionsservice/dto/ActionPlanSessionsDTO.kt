@@ -25,8 +25,7 @@ data class AddressDTO private constructor(
 data class UpdateAppointmentDTO(
   val appointmentTime: OffsetDateTime,
   @JsonProperty(required = true) val durationInMinutes: Int,
-  // TODO: remove optional when front-end changes are complete
-  val appointmentDeliveryType: AppointmentDeliveryType? = null,
+  val appointmentDeliveryType: AppointmentDeliveryType,
   val appointmentDeliveryAddress: AddressDTO? = null,
 )
 

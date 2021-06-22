@@ -66,8 +66,7 @@ class ActionPlanSessionsService(
     appointmentTime: OffsetDateTime,
     durationInMinutes: Int,
     updatedBy: AuthUser,
-    // TODO: remove optional when front-end changes are complete
-    appointmentDeliveryType: AppointmentDeliveryType? = null,
+    appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
   ): ActionPlanSession {
 
@@ -91,21 +90,14 @@ class ActionPlanSessionsService(
         deliusAppointmentId = deliusAppointmentId,
       )
       appointmentRepository.saveAndFlush(appointment)
-
-//       TODO: remove optional when front-end changes are complete
-      if (appointmentDeliveryType != null) {
-        populateAppointmentDelivery(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
-      }
+      populateAppointmentDelivery(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
       session.appointments.add(appointment)
     } else {
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
       appointmentRepository.saveAndFlush(existingAppointment)
-      // TODO: remove optional when front-end changes are complete
-      if (appointmentDeliveryType != null) {
-        populateAppointmentDelivery(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
-      }
+      populateAppointmentDelivery(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
     }
     return actionPlanSessionRepository.save(session)
   }

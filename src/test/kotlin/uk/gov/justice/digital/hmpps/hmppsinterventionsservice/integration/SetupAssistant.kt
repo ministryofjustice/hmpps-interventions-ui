@@ -2,9 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
 import org.springframework.data.repository.findByIdOrNull
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -21,6 +23,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
@@ -34,6 +38,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ref
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.SupplierAssessmentRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentDeliveryAddressFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentDeliveryFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
@@ -66,6 +72,8 @@ class SetupAssistant(
   private val contractTypeRepository: ContractTypeRepository,
   private val appointmentRepository: AppointmentRepository,
   private val supplierAssessmentRepository: SupplierAssessmentRepository,
+  private val appointmentDeliveryRepository: AppointmentDeliveryRepository,
+  private val appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -73,6 +81,8 @@ class SetupAssistant(
   private val serviceProviderFactory = ServiceProviderFactory()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
   private val appointmentFactory = AppointmentFactory()
+  private val appointmentDeliveryFactory = AppointmentDeliveryFactory()
+  private val appointmentDeliveryAddressFactory = AppointmentDeliveryAddressFactory()
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -86,6 +96,8 @@ class SetupAssistant(
     actionPlanRepository.deleteAll()
 
     endOfServiceReportRepository.deleteAll()
+    appointmentDeliveryAddressRepository.deleteAll()
+    appointmentDeliveryRepository.deleteAll()
     appointmentRepository.deleteAll()
 
     referralRepository.deleteAll()
@@ -262,7 +274,9 @@ class SetupAssistant(
     attended: Attended? = null,
     attendanceInfo: String? = null,
     behaviour: String? = null,
-    notifyPPOfBehaviour: Boolean? = null
+    notifyPPOfBehaviour: Boolean? = null,
+    appointmentDeliveryType: AppointmentDeliveryType? = null,
+    appointmentDeliveryAddress: AddressDTO? = null,
   ): ActionPlanSession {
     val now = OffsetDateTime.now()
     val user = createSPUser()
@@ -279,7 +293,24 @@ class SetupAssistant(
       notifyPPOfAttendanceBehaviour = notifyPPOfBehaviour,
     )
     appointmentRepository.save(appointment)
-
+    if (appointmentDeliveryType != null) {
+      val appointmentDelivery = appointmentDeliveryFactory.create(
+        appointmentId = appointment.id,
+        appointmentDeliveryType = appointmentDeliveryType
+      )
+      appointmentDeliveryRepository.save(appointmentDelivery)
+      if (appointmentDeliveryAddress != null) {
+        val appointmentDeliveryAddress = appointmentDeliveryAddressFactory.create(
+          appointmentDeliveryId = appointmentDelivery.appointmentId,
+          firstAddressLine = appointmentDeliveryAddress.firstAddressLine,
+          secondAddressLine = appointmentDeliveryAddress.secondAddressLine,
+          townCity = appointmentDeliveryAddress.townOrCity,
+          county = appointmentDeliveryAddress.county,
+          postCode = appointmentDeliveryAddress.postCode,
+        )
+        appointmentDeliveryAddressRepository.save(appointmentDeliveryAddress)
+      }
+    }
     val session = ActionPlanSession(
       id = UUID.randomUUID(),
       sessionNumber = sessionNumber,
