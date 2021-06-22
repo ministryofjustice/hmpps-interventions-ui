@@ -93,10 +93,10 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
   get('/service-provider/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
-    serviceProviderReferralsController.editSession(req, res)
+    serviceProviderReferralsController.editActionPlanSession(req, res)
   )
   post('/service-provider/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
-    serviceProviderReferralsController.editSession(req, res)
+    serviceProviderReferralsController.editActionPlanSession(req, res)
   )
   get(
     '/service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance',
@@ -152,6 +152,21 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/service-provider/end-of-service-report/:id/confirmation', (req, res) =>
     serviceProviderReferralsController.showEndOfServiceReportConfirmation(req, res)
+  )
+  get('/service-provider/referrals/:id/supplier-assessment/schedule', (req, res) =>
+    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+  )
+  post('/service-provider/referrals/:id/supplier-assessment/schedule', (req, res) =>
+    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+  )
+  get('/service-provider/referrals/:id/supplier-assessment', (req, res) =>
+    serviceProviderReferralsController.showSupplierAssessmentAppointment(req, res)
+  )
+  get('/service-provider/referrals/:id/supplier-assessment/scheduled-confirmation', (req, res) =>
+    serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: false })
+  )
+  get('/service-provider/referrals/:id/supplier-assessment/rescheduled-confirmation', (req, res) =>
+    serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {

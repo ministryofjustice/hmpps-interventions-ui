@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { AppointmentUpdate } from '../../services/interventionsService'
 import { ActionPlanAppointment } from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
@@ -28,9 +28,9 @@ import ActionPlanConfirmationView from './actionPlanConfirmationView'
 import AddActionPlanNumberOfSessionsView from './actionPlanNumberOfSessionsView'
 import AddActionPlanNumberOfSessionsPresenter from './actionPlanNumberOfSessionsPresenter'
 import ActionPlanNumberOfSessionsForm from './actionPlanNumberOfSessionsForm'
-import EditSessionPresenter from './editSessionPresenter'
-import EditSessionView from './editSessionView'
-import EditSessionForm from './editSessionForm'
+import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
+import ScheduleAppointmentView from './scheduleAppointmentView'
+import ScheduleAppointmentForm from './scheduleAppointmentForm'
 import PostSessionAttendanceFeedbackView from './postSessionAttendanceFeedbackView'
 import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
 import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
@@ -57,6 +57,13 @@ import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import SentReferral from '../../models/sentReferral'
+import ScheduleActionPlanSessionPresenter from './scheduleActionPlanSessionPresenter'
+import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
+import SupplierAssessmentAppointmentPresenter from './supplierAssessmentAppointmentPresenter'
+import SupplierAssessmentAppointmentView from './supplierAssessmentAppointmentView'
+import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
+import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -156,10 +163,11 @@ export default class ServiceProviderReferralsController {
         ? Promise.resolve(null)
         : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
 
-    const [intervention, actionPlan, serviceUser] = await Promise.all([
+    const [intervention, actionPlan, serviceUser, supplierAssessment] = await Promise.all([
       interventionPromise,
       actionPlanPromise,
       serviceUserPromise,
+      this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, sentReferral.id),
     ])
 
     let actionPlanAppointments: ActionPlanAppointment[] = []
@@ -170,7 +178,13 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlan, actionPlanAppointments)
+    const presenter = new InterventionProgressPresenter(
+      sentReferral,
+      intervention,
+      actionPlan,
+      actionPlanAppointments,
+      supplierAssessment
+    )
     const view = new InterventionProgressView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -434,17 +448,133 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async editSession(req: Request, res: Response): Promise<void> {
+  async editActionPlanSession(req: Request, res: Response): Promise<void> {
     const sessionNumber = Number(req.params.sessionNumber)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const referral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      actionPlan.referralId
+    )
 
+    await this.scheduleAppointment(req, res, {
+      getReferral: async () => referral,
+      getCurrentAppointment: () =>
+        this.interventionsService.getActionPlanAppointment(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          sessionNumber
+        ),
+      scheduleAppointment: paramsForUpdate =>
+        this.interventionsService
+          .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
+          .then(),
+      createPresenter: (appointment, formError, userInputData, serverError) =>
+        new ScheduleActionPlanSessionPresenter(referral, appointment, formError, userInputData, serverError),
+      redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
+    })
+  }
+
+  async showSupplierAssessmentAppointmentConfirmation(
+    req: Request,
+    res: Response,
+    { isReschedule }: { isReschedule: boolean }
+  ): Promise<void> {
+    const referralId = req.params.id
+
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SupplierAssessmentAppointmentConfirmationPresenter(referral, isReschedule)
+    const view = new SupplierAssessmentAppointmentConfirmationView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
+
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(
+      res.locals.user.token.accessToken,
+      referralId
+    )
+
+    const hasExistingAppointment = supplierAssessment.currentAppointmentId !== null
+
+    await this.scheduleAppointment(req, res, {
+      getReferral: async () => referral,
+      getCurrentAppointment: async () => new SupplierAssessmentDecorator(supplierAssessment).currentAppointment,
+      scheduleAppointment: paramsForUpdate =>
+        this.interventionsService
+          .scheduleSupplierAssessmentAppointment(
+            res.locals.user.token.accessToken,
+            supplierAssessment.id,
+            paramsForUpdate
+          )
+          .then(),
+      createPresenter: (appointment, formError, userInputData, serverError) => {
+        const overrideBackLinkHref = hasExistingAppointment
+          ? `/service-provider/referrals/${referralId}/supplier-assessment`
+          : undefined
+        return new ScheduleAppointmentPresenter(
+          referral,
+          appointment,
+          formError,
+          userInputData,
+          serverError,
+          overrideBackLinkHref
+        )
+      },
+      redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
+        hasExistingAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
+      }`,
+    })
+  }
+
+  async showSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
+
+      this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, referralId),
+    ])
+
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to view supplier assessment without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment)
+    const view = new SupplierAssessmentAppointmentView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async scheduleAppointment<AppointmentType>(
+    req: Request,
+    res: Response,
+    config: {
+      getReferral: () => Promise<SentReferral>
+      getCurrentAppointment: () => Promise<AppointmentType>
+      scheduleAppointment: (paramsForUpdate: AppointmentUpdate) => Promise<void>
+      createPresenter: (
+        appointment: AppointmentType,
+        validationError: FormValidationError | null,
+        userInputData: Record<string, unknown> | null,
+        serverError: FormValidationError | null
+      ) => ScheduleAppointmentPresenter
+      redirectTo: string
+    }
+  ): Promise<void> {
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
     let serverError: FormValidationError | null = null
 
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
-
     if (req.method === 'POST') {
-      const data = await new EditSessionForm(req).data()
+      const data = await new ScheduleAppointmentForm(req).data()
 
       if (data.error) {
         res.status(400)
@@ -452,13 +582,8 @@ export default class ServiceProviderReferralsController {
         userInputData = req.body
       } else {
         try {
-          await this.interventionsService.updateActionPlanAppointment(
-            res.locals.user.token.accessToken,
-            req.params.id,
-            sessionNumber,
-            data.paramsForUpdate
-          )
-          return res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
+          await config.scheduleAppointment(data.paramsForUpdate)
+          return res.redirect(config.redirectTo)
         } catch (e) {
           if (e.status === 409) {
             res.status(400)
@@ -479,19 +604,12 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      res.locals.user.token.accessToken,
-      req.params.id,
-      sessionNumber
-    )
-    const referral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      actionPlan.referralId
-    )
+    const appointment = await config.getCurrentAppointment()
+    const referral = await config.getReferral()
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EditSessionPresenter(appointment, formError, userInputData, serverError)
-    const view = new EditSessionView(presenter)
+    const presenter = config.createPresenter(appointment, formError, userInputData, serverError)
+    const view = new ScheduleAppointmentView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

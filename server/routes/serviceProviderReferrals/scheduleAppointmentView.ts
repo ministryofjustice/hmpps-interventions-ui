@@ -1,13 +1,13 @@
-import { DateInputArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
+import { BackLinkArgs, DateInputArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import EditSessionPresenter from './editSessionPresenter'
+import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 
-export default class EditSessionView {
-  constructor(private readonly presenter: EditSessionPresenter) {}
+export default class ScheduleAppointmentView {
+  constructor(private readonly presenter: ScheduleAppointmentPresenter) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/editSession',
+      'serviceProviderReferrals/scheduleAppointment',
       {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,
@@ -15,6 +15,7 @@ export default class EditSessionView {
         durationDateInputArgs: this.durationDateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         serverError: this.serverError,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
@@ -132,6 +133,13 @@ export default class EditSessionView {
           value: this.presenter.fields.duration.minutes.value,
         },
       ],
+    }
+  }
+
+  private get backLinkArgs(): BackLinkArgs {
+    return {
+      text: 'Back',
+      href: this.presenter.backLinkHref,
     }
   }
 }

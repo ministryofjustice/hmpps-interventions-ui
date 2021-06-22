@@ -4,20 +4,35 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import SessionStatusPresenter from '../shared/sessionStatusPresenter'
+import { SessionStatus } from '../../utils/sessionStatus'
+import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 
 describe(InterventionProgressPresenter, () => {
   describe('referralEnded', () => {
     it('returns true when the referral has ended', () => {
       const referral = sentReferralFactory.endRequested().build()
       const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.referralEnded).toEqual(true)
     })
     it('returns false when the referral has not ended', () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.referralEnded).toEqual(false)
     })
@@ -27,7 +42,13 @@ describe(InterventionProgressPresenter, () => {
     it('returns ended fields when the referral has ended', () => {
       const referral = sentReferralFactory.endRequested().build()
       const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.referralEndedFields.endRequestedComments).toEqual(referral.endRequestedComments)
       expect(presenter.referralEndedFields.endRequestedReason).toEqual(referral.endRequestedReason)
@@ -36,7 +57,13 @@ describe(InterventionProgressPresenter, () => {
     it('returns null values when the referral has not ended', () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.referralEndedFields.endRequestedComments).toBeNull()
       expect(presenter.referralEndedFields.endRequestedReason).toBeNull()
@@ -48,7 +75,13 @@ describe(InterventionProgressPresenter, () => {
     it('returns the relative URL for creating a draft action plan', () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.createActionPlanFormAction).toEqual(`/service-provider/referrals/${referral.id}/action-plan`)
     })
@@ -58,7 +91,13 @@ describe(InterventionProgressPresenter, () => {
     it('returns an empty list if there are no appointments', () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.sessionTableRows).toEqual([])
     })
@@ -68,17 +107,18 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
-        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [
-          actionPlanAppointmentFactory.newlyCreated().build(),
-        ])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [actionPlanAppointmentFactory.newlyCreated().build()],
+          supplierAssessmentFactory.build()
+        )
         expect(presenter.sessionTableRows).toEqual([
           {
             sessionNumber: 1,
             appointmentTime: '',
-            tagArgs: {
-              text: 'not scheduled',
-              classes: 'govuk-tag--grey',
-            },
+            statusPresenter: new SessionStatusPresenter(SessionStatus.notScheduled),
             links: [
               {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
@@ -95,21 +135,24 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [
-          actionPlanAppointmentFactory.build({
-            sessionNumber: 1,
-            appointmentTime: '2020-12-07T13:00:00.000000Z',
-            durationInMinutes: 120,
-          }),
-        ])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [
+            actionPlanAppointmentFactory.build({
+              sessionNumber: 1,
+              appointmentTime: '2020-12-07T13:00:00.000000Z',
+              durationInMinutes: 120,
+            }),
+          ],
+          supplierAssessmentFactory.build()
+        )
         expect(presenter.sessionTableRows).toEqual([
           {
             sessionNumber: 1,
             appointmentTime: '07 Dec 2020, 13:00',
-            tagArgs: {
-              text: 'scheduled',
-              classes: 'govuk-tag--blue',
-            },
+            statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
             links: [
               {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
@@ -131,19 +174,22 @@ describe(InterventionProgressPresenter, () => {
           const referral = sentReferralFactory.build()
           const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
           const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [
-            actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
-            actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
-          ])
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            actionPlan,
+            [
+              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
+            ],
+            supplierAssessmentFactory.build()
+          )
 
           expect(presenter.sessionTableRows).toEqual([
             {
               sessionNumber: 1,
               appointmentTime: '',
-              tagArgs: {
-                text: 'completed',
-                classes: 'govuk-tag--green',
-              },
+              statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
               links: [
                 {
                   href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
@@ -154,10 +200,7 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 2,
               appointmentTime: '',
-              tagArgs: {
-                text: 'completed',
-                classes: 'govuk-tag--green',
-              },
+              statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
               links: [
                 {
                   href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback',
@@ -174,18 +217,19 @@ describe(InterventionProgressPresenter, () => {
           const referral = sentReferralFactory.build()
           const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
           const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [
-            actionPlanAppointmentFactory.attended('no').build(),
-          ])
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            actionPlan,
+            [actionPlanAppointmentFactory.attended('no').build()],
+            supplierAssessmentFactory.build()
+          )
 
           expect(presenter.sessionTableRows).toEqual([
             {
               sessionNumber: 1,
               appointmentTime: '',
-              tagArgs: {
-                text: 'did not attend',
-                classes: 'govuk-tag--purple',
-              },
+              statusPresenter: new SessionStatusPresenter(SessionStatus.didNotAttend),
               links: [
                 {
                   href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
@@ -204,7 +248,13 @@ describe(InterventionProgressPresenter, () => {
       it('returns a title to be displayed', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.text).toMatchObject({
           title: 'Accommodation',
@@ -217,7 +267,13 @@ describe(InterventionProgressPresenter, () => {
         it('returns “Not submitted”', () => {
           const referral = sentReferralFactory.build({ endOfServiceReport: null })
           const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build()
+          )
 
           expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Not submitted' })
         })
@@ -228,7 +284,13 @@ describe(InterventionProgressPresenter, () => {
           const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
           const referral = sentReferralFactory.build({ endOfServiceReport })
           const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build()
+          )
 
           expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Not submitted' })
         })
@@ -239,7 +301,13 @@ describe(InterventionProgressPresenter, () => {
           const endOfServiceReport = endOfServiceReportFactory.submitted().build()
           const referral = sentReferralFactory.build({ endOfServiceReport })
           const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build()
+          )
 
           expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Submitted' })
         })
@@ -252,7 +320,13 @@ describe(InterventionProgressPresenter, () => {
       it('returns the correct status', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
       })
@@ -263,7 +337,13 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.notSubmitted().build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
       })
@@ -274,7 +354,13 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.submitted().build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.text.actionPlanStatus).toEqual('Under review')
       })
@@ -285,7 +371,13 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.approved().build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.text.actionPlanStatus).toEqual('Approved')
       })
@@ -297,7 +389,13 @@ describe(InterventionProgressPresenter, () => {
       it('returns true', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.actionPlanCreated).toEqual(false)
       })
@@ -308,7 +406,13 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.notSubmitted().build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.actionPlanCreated).toEqual(true)
       })
@@ -320,7 +424,13 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.unassigned().build()
       const intervention = interventionFactory.build()
       const actionPlan = actionPlanFactory.submitted().build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        actionPlan,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.referralAssigned).toEqual(false)
     })
@@ -328,7 +438,13 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.assigned().build()
       const intervention = interventionFactory.build()
       const actionPlan = actionPlanFactory.submitted().build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, actionPlan, [])
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        actionPlan,
+        [],
+        supplierAssessmentFactory.build()
+      )
 
       expect(presenter.referralAssigned).toEqual(true)
     })
@@ -339,7 +455,13 @@ describe(InterventionProgressPresenter, () => {
       it('returns the inactive style', () => {
         const referral = sentReferralFactory.build({ endOfServiceReport: null })
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.endOfServiceReportStatusStyle).toEqual('inactive')
       })
@@ -350,7 +472,13 @@ describe(InterventionProgressPresenter, () => {
         const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
         const referral = sentReferralFactory.build({ endOfServiceReport })
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.endOfServiceReportStatusStyle).toEqual('inactive')
       })
@@ -361,7 +489,13 @@ describe(InterventionProgressPresenter, () => {
         const endOfServiceReport = endOfServiceReportFactory.submitted().build()
         const referral = sentReferralFactory.build({ endOfServiceReport })
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.endOfServiceReportStatusStyle).toEqual('active')
       })
@@ -373,7 +507,13 @@ describe(InterventionProgressPresenter, () => {
       it('returns true', () => {
         const referral = sentReferralFactory.build({ endOfServiceReport: null })
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.allowEndOfServiceReportCreation).toEqual(true)
       })
@@ -384,10 +524,73 @@ describe(InterventionProgressPresenter, () => {
         const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
         const referral = sentReferralFactory.build({ endOfServiceReport })
         const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, null, [])
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
         expect(presenter.allowEndOfServiceReportCreation).toEqual(false)
       })
+    })
+  })
+
+  describe('supplierAssessmentLink', () => {
+    describe('when there is no supplier appointment scheduled', () => {
+      it('returns a link to the scheduling page', () => {
+        const referral = sentReferralFactory.build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          interventionFactory.build(),
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
+
+        expect(presenter.supplierAssessmentLink).toEqual({
+          text: 'Schedule',
+          hiddenText: ' initial assessment',
+          href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule`,
+        })
+      })
+    })
+
+    describe('when there is a supplier assessment scheduled', () => {
+      it('returns a link to the view appointment page', () => {
+        const referral = sentReferralFactory.build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          interventionFactory.build(),
+          null,
+          [],
+          supplierAssessmentFactory.withSingleAppointment.build()
+        )
+
+        expect(presenter.supplierAssessmentLink).toEqual({
+          text: 'View appointment details',
+          href: `/service-provider/referrals/${referral.id}/supplier-assessment`,
+        })
+      })
+    })
+  })
+
+  describe('supplierAssessmentStatusPresenter', () => {
+    it('returns a presenter with the supplier assessment’s status', () => {
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+      const presenter = new InterventionProgressPresenter(
+        sentReferralFactory.build(),
+        interventionFactory.build(),
+        null,
+        [],
+        supplierAssessment
+      )
+
+      expect(presenter.supplierAssessmentStatusPresenter.text).toEqual('not scheduled')
     })
   })
 })
