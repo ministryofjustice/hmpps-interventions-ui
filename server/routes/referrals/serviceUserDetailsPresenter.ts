@@ -2,12 +2,13 @@ import ServiceUser from '../../models/serviceUser'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
-import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
+import ExpandedDeliusServiceUserDecorator from '../../decorators/expandedDeliusServiceUserDecorator'
 
 export default class ServiceUserDetailsPresenter {
   constructor(
     private readonly serviceUser: ServiceUser,
-    private readonly deliusServiceUserDetails: DeliusServiceUser
+    private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser
   ) {}
 
   readonly title = `${this.serviceUser.firstName || 'Service user'}'s information`
@@ -31,12 +32,18 @@ export default class ServiceUserDetailsPresenter {
   get summary(): SummaryListItem[] {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()
+    const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
     const summary = [
       { key: 'CRN', lines: [this.serviceUser.crn] },
       { key: 'Title', lines: [this.serviceUser.title ?? ''] },
       { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
       { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
       { key: 'Date of birth', lines: [this.dateOfBirth] },
+      {
+        key: 'Address',
+        lines: address || ['Not found'],
+        listStyle: ListStyle.noMarkers,
+      },
       { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
       { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
       { key: 'Preferred language', lines: [this.serviceUser.preferredLanguage ?? ''] },

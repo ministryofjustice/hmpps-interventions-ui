@@ -6,6 +6,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -242,9 +243,37 @@ describe('Probation practitioner referrals dashboard', () => {
       },
     })
 
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+      ...deliusServiceUser,
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+        addresses: [
+          {
+            addressNumber: 'Flat 2',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2019-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
+      },
+    })
+
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
@@ -257,6 +286,12 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('07123456789')
     cy.contains('jenny.jones@example.com')
+    cy.contains('Flat 2')
+    cy.contains('Test Walk')
+    cy.contains('London')
+    cy.contains('City of London')
+    cy.contains('Greater London')
+    cy.contains('SW16 1AQ')
 
     cy.contains('Intervention details')
     cy.contains('Personal wellbeing')

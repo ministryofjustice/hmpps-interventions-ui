@@ -128,7 +128,7 @@ export default class ReferralsController {
 
   async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+    const serviceUser = await this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn)
 
     const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser)
     const view = new ServiceUserDetailsView(presenter)
@@ -583,16 +583,16 @@ export default class ReferralsController {
       throw new Error('Attempting to check answers without relevant sentence selected')
     }
 
-    const [intervention, serviceUser, conviction] = await Promise.all([
+    const [intervention, expandedDeliusServiceUser, conviction] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn),
       this.communityApiService.getConvictionById(referral.serviceUser.crn, referral.relevantSentenceId),
     ])
 
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, serviceUser)
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, expandedDeliusServiceUser)
     const view = new CheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, expandedDeliusServiceUser)
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {

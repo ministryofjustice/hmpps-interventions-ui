@@ -7,6 +7,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build({
@@ -168,6 +169,28 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: false })
 
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+        ...deliusServiceUser,
+        contactDetails: {
+          addresses: [
+            {
+              addressNumber: 'Flat 2',
+              buildingName: null,
+              streetName: 'Test Walk',
+              postcode: 'SW16 1AQ',
+              town: 'London',
+              district: 'City of London',
+              county: 'Greater London',
+              from: '2019-01-01',
+              to: null,
+              noFixedAbode: false,
+            },
+          ],
+        },
+      })
+
+      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
+
       cy.contains('Confirm service user’s personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
@@ -176,6 +199,11 @@ describe('Referral form', () => {
       cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
+      cy.contains('Flat 2 Test Walk')
+      cy.contains('London')
+      cy.contains('City of London')
+      cy.contains('Greater London')
+      cy.contains('SW16 1AQ')
       cy.contains('Male')
       cy.contains('British')
       cy.contains('English')
@@ -314,6 +342,11 @@ describe('Referral form', () => {
       cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
+      cy.contains('Flat 2 Test Walk')
+      cy.contains('London')
+      cy.contains('City of London')
+      cy.contains('Greater London')
+      cy.contains('SW16 1AQ')
       cy.contains('Male')
       cy.contains('British')
       cy.contains('English')
@@ -471,6 +504,28 @@ describe('Referral form', () => {
         .disabledCohortInterventionReferralDetails()
         .checkYourAnswers({ checkAnswers: false })
 
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+        ...deliusServiceUser,
+        contactDetails: {
+          addresses: [
+            {
+              addressNumber: 'Flat 2',
+              buildingName: null,
+              streetName: 'Test Walk',
+              postcode: 'SW16 1AQ',
+              town: 'London',
+              district: 'City of London',
+              county: 'Greater London',
+              from: '2019-01-01',
+              to: null,
+              noFixedAbode: false,
+            },
+          ],
+        },
+      })
+
+      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
+
       cy.contains('Confirm service user’s personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
@@ -479,6 +534,11 @@ describe('Referral form', () => {
       cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
+      cy.contains('Flat 2 Test Walk')
+      cy.contains('London')
+      cy.contains('City of London')
+      cy.contains('Greater London')
+      cy.contains('SW16 1AQ')
       cy.contains('Male')
       cy.contains('British')
       cy.contains('English')

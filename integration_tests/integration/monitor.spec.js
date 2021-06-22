@@ -4,6 +4,7 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import interventionFactory from '../../testutils/factories/intervention'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -21,6 +22,7 @@ describe('Probation Practitioner monitor journey', () => {
         referral: { interventionId: intervention.id },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build
       const probationPractitioner = deliusUserFactory.build({
         firstName: 'John',
         surname: 'Smith',
@@ -64,6 +66,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetExpandedServiceUserByCRN(assignedReferral.referral.serviceUser.crn, expandedDeliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)

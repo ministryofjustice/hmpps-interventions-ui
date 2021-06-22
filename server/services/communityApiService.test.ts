@@ -6,6 +6,7 @@ import MockedHmppsAuthService from './testutils/hmppsAuthServiceSetup'
 import deliusServiceUser from '../../testutils/factories/deliusServiceUser'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConviction from '../../testutils/factories/deliusConviction'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 jest.mock('../data/restClient')
 
@@ -46,6 +47,26 @@ describe(CommunityApiService, () => {
 
       expect(restClientMock.get).toHaveBeenCalledWith({
         path: `/secure/offenders/crn/X123456`,
+        token: 'token',
+      })
+      expect(result).toMatchObject(serviceUser)
+    })
+  })
+
+  describe('getExpandedServiceUserByCRN', () => {
+    it('makes a request to the Community API and casts the response as an Expanded Delius Service User', async () => {
+      const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
+      const service = new CommunityApiService(hmppsAuthClientMock, restClientMock)
+      const serviceUser = expandedDeliusServiceUserFactory.build({ otherIds: { crn: 'X123456' } })
+
+      restClientMock.get.mockResolvedValue(serviceUser)
+
+      hmppsAuthClientMock.getApiClientToken.mockResolvedValue('token')
+
+      const result = await service.getExpandedServiceUserByCRN('X123456')
+
+      expect(restClientMock.get).toHaveBeenCalledWith({
+        path: `/secure/offenders/crn/X123456/all`,
         token: 'token',
       })
       expect(result).toMatchObject(serviceUser)

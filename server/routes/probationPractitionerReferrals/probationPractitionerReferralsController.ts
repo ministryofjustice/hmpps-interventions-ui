@@ -102,13 +102,13 @@ export default class ProbationPractitionerReferralsController {
       res.locals.user.token.accessToken,
       req.params.id
     )
-    const [intervention, sentBy, serviceUser, conviction, riskInformation] = await Promise.all([
+    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation] = await Promise.all([
       this.interventionsService.getIntervention(
         res.locals.user.token.accessToken,
         sentReferral.referral.interventionId
       ),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.communityApiService.getExpandedServiceUserByCRN(sentReferral.referral.serviceUser.crn),
       this.communityApiService.getConvictionById(
         sentReferral.referral.serviceUser.crn,
         sentReferral.referral.relevantSentenceId
@@ -134,10 +134,10 @@ export default class ProbationPractitionerReferralsController {
       null,
       'probation-practitioner',
       false,
-      serviceUser
+      expandedServiceUser
     )
     const view = new ShowReferralView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
   }
 
   async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
