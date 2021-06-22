@@ -34,9 +34,6 @@ export default class RiskInformationPresenter {
           hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
           errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
         },
-    whoIsAtRisk: this.riskSummary?.whoIsAtRisk,
-    natureOfRisk: this.riskSummary?.natureOfRisk,
-    riskImminence: this.riskSummary?.riskImminence,
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)

@@ -19,9 +19,6 @@ describe('RiskInformationPresenter', () => {
           hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
           labelClasses: 'govuk-label--s',
         },
-        natureOfRisk: 'physically aggressive',
-        riskImminence: 'can happen at the drop of a hat',
-        whoIsAtRisk: undefined,
       })
     })
 
