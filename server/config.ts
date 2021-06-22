@@ -50,6 +50,8 @@ export default {
   },
   applicationInsights: {
     connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', null, requiredInProduction),
+    cloudRoleName: 'interventions-ui',
+    excludedRequests: [/^GET \/assets\/.*/, /^GET \/health.*/],
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
