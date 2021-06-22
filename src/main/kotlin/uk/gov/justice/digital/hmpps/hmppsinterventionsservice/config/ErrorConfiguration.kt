@@ -27,6 +27,7 @@ enum class Code {
   INVALID_FORMAT,
   INVALID_LENGTH,
   INVALID_VALUE,
+  NOT_YET_IMPLEMENTED,
 }
 
 data class FieldError(

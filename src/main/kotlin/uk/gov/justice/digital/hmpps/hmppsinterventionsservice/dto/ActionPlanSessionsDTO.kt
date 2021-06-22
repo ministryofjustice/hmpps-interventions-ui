@@ -7,12 +7,27 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attende
 import java.time.OffsetDateTime
 import java.util.UUID
 
+data class AddressDTO private constructor(
+  val firstAddressLine: String,
+  val secondAddressLine: String? = null,
+  val townOrCity: String? = null,
+  val county: String? = null,
+  val postCode: String,
+) {
+  companion object {
+    operator fun invoke(firstAddressLine: String, secondAddressLine: String? = null, townOrCity: String? = null, county: String? = null, postCode: String): AddressDTO {
+      val normalizedPostCode = postCode.replace("\\s".toRegex(), "").uppercase()
+      return AddressDTO(firstAddressLine, secondAddressLine, townOrCity, county, normalizedPostCode)
+    }
+  }
+}
+
 data class UpdateAppointmentDTO(
   val appointmentTime: OffsetDateTime,
   @JsonProperty(required = true) val durationInMinutes: Int,
   // TODO: remove optional when front-end changes are complete
   val appointmentDeliveryType: AppointmentDeliveryType? = null,
-  val appointmentDeliveryAddress: List<String>? = null,
+  val appointmentDeliveryAddress: AddressDTO? = null,
 )
 
 data class UpdateAppointmentAttendanceDTO(
