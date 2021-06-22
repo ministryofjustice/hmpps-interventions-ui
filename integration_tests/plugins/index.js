@@ -178,5 +178,9 @@ module.exports = on => {
     stubGetRiskSummary: arg => {
       return assessRisksAndNeedsService.stubGetRiskSummary(arg.crn, arg.responseJson)
     },
+
+    stubGetRiskToSelf: arg => {
+      return assessRisksAndNeedsService.stubGetRiskToSelf(arg.crn, arg.responseJson)
+    },
   })
 }

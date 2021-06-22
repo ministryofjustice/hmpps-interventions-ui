@@ -5,3 +5,7 @@ Cypress.Commands.add('stubGetSupplementaryRiskInformation', (riskId, responseJso
 Cypress.Commands.add('stubGetRiskSummary', (crn, responseJson) => {
   cy.task('stubGetRiskSummary', { crn, responseJson })
 })
+
+Cypress.Commands.add('stubGetRiskToSelf', (crn, responseJson) => {
+  cy.task('stubGetRiskToSelf', { crn, responseJson })
+})
