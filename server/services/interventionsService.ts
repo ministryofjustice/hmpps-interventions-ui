@@ -467,6 +467,7 @@ export default class InterventionsService {
     })) as Appointment
   }
 
+  /*
   async recordAppointmentAttendance(
     token: string,
     id: string,
@@ -503,4 +504,5 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })) as Appointment
   }
+ */
 }

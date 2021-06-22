@@ -2671,6 +2671,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  /*
   describe('recordAppointmentAttendance', () => {
     it('returns an updated appointment with the service user‘s attendance', async () => {
       const appointment = appointmentFactory.build({
@@ -2817,6 +2818,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(result.sessionFeedback!.submitted).toEqual(true)
     })
   })
+  */
 })
 
 describe('serializeDeliusServiceUser', () => {
