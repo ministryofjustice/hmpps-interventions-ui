@@ -1,0 +1,4 @@
+alter table appointment
+add column attendance_behaviour_submitted_by_id text,
+
+add constraint fk_attendance_behaviour_submitted_by_id foreign key (attendance_behaviour_submitted_by_id) references auth_user

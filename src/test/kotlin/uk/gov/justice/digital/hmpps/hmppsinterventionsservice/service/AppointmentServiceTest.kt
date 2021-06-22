@@ -175,11 +175,13 @@ class AppointmentServiceTest {
     val behaviourDescription = "description"
     val notifyProbationPractitioner = true
     val appointment = appointmentFactory.create(id = appointmentId)
+    val submittedBy = authUserFactory.create()
 
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
     whenever(appointmentRepository.save(any())).thenReturn(appointment)
+    whenever(authUserRepository.save(any())).thenReturn(submittedBy)
 
-    appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner)
+    appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner, submittedBy)
 
     val argumentCaptor = argumentCaptor<Appointment>()
     verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
@@ -189,6 +191,7 @@ class AppointmentServiceTest {
     assertThat(arguments.attendanceBehaviour).isEqualTo(behaviourDescription)
     assertThat(arguments.notifyPPOfAttendanceBehaviour).isEqualTo(notifyProbationPractitioner)
     assertThat(arguments.attendanceBehaviourSubmittedAt).isNotNull
+    assertThat(arguments.attendanceBehaviourSubmittedBy).isEqualTo(submittedBy)
   }
 
   @Test
@@ -196,13 +199,14 @@ class AppointmentServiceTest {
     val appointmentId = UUID.randomUUID()
     val behaviourDescription = "description"
     val notifyProbationPractitioner = true
+    val submittedBy = authUserFactory.create()
     val feedbackSubmittedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
     val appointment = appointmentFactory.create(id = appointmentId, appointmentFeedbackSubmittedAt = feedbackSubmittedAt)
 
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
 
     val error = assertThrows<ResponseStatusException> {
-      appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner)
+      appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner, submittedBy)
     }
     assertThat(error.message).contains("Feedback has already been submitted for this appointment [id=$appointmentId]")
   }
@@ -212,13 +216,14 @@ class AppointmentServiceTest {
     val appointmentId = UUID.randomUUID()
     val behaviourDescription = "description"
     val notifyProbationPractitioner = true
+    val submittedBy = authUserFactory.create()
     val appointment = appointmentFactory.create(id = appointmentId)
 
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(empty())
 
     val error = assertThrows<EntityNotFoundException> {
-      appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner)
+      appointmentService.recordBehaviour(appointmentId, behaviourDescription, notifyProbationPractitioner, submittedBy)
     }
     assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
   }

@@ -37,7 +37,7 @@ data class UpdateAppointmentAttendanceDTO(
   val additionalAttendanceInformation: String?
 )
 
-data class UpdateAppointmentBehaviourDTO(
+data class RecordAppointmentBehaviourDTO(
   val behaviourDescription: String,
   val notifyProbationPractitioner: Boolean,
 )

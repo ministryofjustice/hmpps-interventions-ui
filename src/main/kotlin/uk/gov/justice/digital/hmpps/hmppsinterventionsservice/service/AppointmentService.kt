@@ -79,12 +79,13 @@ class AppointmentService(
     }
   }
 
-  fun recordBehaviour(appointmentId: UUID, behaviourDescription: String, notifyProbationPractitioner: Boolean): Appointment {
+
+  fun recordBehaviour(appointmentId: UUID, behaviourDescription: String, notifyProbationPractitioner: Boolean, submittedBy: AuthUser): Appointment {
     val appointment = getAppointmentById(appointmentId)
     if (appointment.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
     }
-    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner)
+    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, submittedBy)
     return appointmentRepository.save(appointment)
   }
 
@@ -97,10 +98,12 @@ class AppointmentService(
     appointment: Appointment,
     behaviour: String,
     notifyProbationPractitioner: Boolean,
+    submittedBy: AuthUser,
   ) {
     appointment.attendanceBehaviour = behaviour
     appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
     appointment.notifyPPOfAttendanceBehaviour = notifyProbationPractitioner
+    appointment.attendanceBehaviourSubmittedBy = authUserRepository.save(submittedBy)
   }
 
   private fun createAppointment(
