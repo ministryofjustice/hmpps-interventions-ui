@@ -37,12 +37,6 @@ class ActionPlanSessionValidator {
     if (addressDTO.firstAddressLine.isNullOrEmpty()) {
       errors.add(FieldError(field = "appointmentDeliveryAddress.firstAddressLine", error = Code.CANNOT_BE_EMPTY))
     }
-    if (addressDTO.townOrCity.isNullOrEmpty()) {
-      errors.add(FieldError(field = "appointmentDeliveryAddress.townOrCity", error = Code.CANNOT_BE_EMPTY))
-    }
-    if (addressDTO.county.isNullOrEmpty()) {
-      errors.add(FieldError(field = "appointmentDeliveryAddress.county", error = Code.CANNOT_BE_EMPTY))
-    }
     if (addressDTO.postCode.isNullOrEmpty()) {
       errors.add(FieldError(field = "appointmentDeliveryAddress.postCode", error = Code.CANNOT_BE_EMPTY))
     } else if (!postCodeRegex.matches(addressDTO.postCode)) {

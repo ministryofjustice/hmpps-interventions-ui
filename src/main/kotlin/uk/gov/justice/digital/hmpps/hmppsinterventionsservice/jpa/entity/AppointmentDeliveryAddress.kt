@@ -12,7 +12,7 @@ data class AppointmentDeliveryAddress(
   var appointmentDeliveryId: UUID,
   var firstAddressLine: String,
   var secondAddressLine: String? = null,
-  var townCity: String,
-  var county: String,
+  var townCity: String? = null,
+  var county: String? = null,
   var postCode: String,
 )

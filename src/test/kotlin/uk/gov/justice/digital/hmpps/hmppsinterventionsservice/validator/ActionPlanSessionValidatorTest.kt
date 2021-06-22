@@ -41,6 +41,14 @@ internal class ActionPlanSessionValidatorTest {
         }
       }
 
+      @Test
+      fun `can request valid non nps office appointment with null values for optional fields`() {
+        val updateAppointmentDTO = UpdateAppointmentDTO(appointmentTime = OffsetDateTime.now(), durationInMinutes = 1, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = AddressDTO("firstline", null, null, null, "A1 1AA"))
+        assertDoesNotThrow {
+          actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
+      }
+
       @Nested
       inner class PostCodeValidation {
 
@@ -90,8 +98,6 @@ internal class ActionPlanSessionValidatorTest {
         }
         assertThat(exception.errors).containsExactly(
           FieldError("appointmentDeliveryAddress.firstAddressLine", Code.CANNOT_BE_EMPTY),
-          FieldError("appointmentDeliveryAddress.townOrCity", Code.CANNOT_BE_EMPTY),
-          FieldError("appointmentDeliveryAddress.county", Code.CANNOT_BE_EMPTY),
           FieldError("appointmentDeliveryAddress.postCode", Code.CANNOT_BE_EMPTY),
         )
       }

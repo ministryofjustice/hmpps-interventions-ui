@@ -9,13 +9,13 @@ import java.util.UUID
 
 data class AddressDTO private constructor(
   val firstAddressLine: String,
-  val secondAddressLine: String? = "",
-  val townOrCity: String,
-  val county: String,
+  val secondAddressLine: String? = null,
+  val townOrCity: String? = null,
+  val county: String? = null,
   val postCode: String,
 ) {
   companion object {
-    operator fun invoke(firstAddressLine: String, secondAddressLine: String? = "", townOrCity: String, county: String, postCode: String,): AddressDTO {
+    operator fun invoke(firstAddressLine: String, secondAddressLine: String? = null, townOrCity: String? = null, county: String? = null, postCode: String): AddressDTO {
       val normalizedPostCode = postCode.replace("\\s".toRegex(), "").uppercase()
       return AddressDTO(firstAddressLine, secondAddressLine, townOrCity, county, normalizedPostCode)
     }
