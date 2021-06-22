@@ -310,6 +310,8 @@ describe('GET /referrals/:id/risk-information', () => {
       .expect(res => {
         expect(res.text).toContain('Geoffrey’s risk information')
         expect(res.text).toContain('Risk in community')
+        expect(res.text).toContain('Staff')
+        expect(res.text).toContain('VERY HIGH')
         expect(res.text).toContain('Children')
         expect(res.text).toContain('HIGH')
         expect(res.text).toContain('Prisoners')

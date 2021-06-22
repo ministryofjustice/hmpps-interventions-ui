@@ -16,7 +16,12 @@ describe('RiskInformationPresenter', () => {
         additionalRiskInformation: {
           errorMessage: null,
           label: 'Information for the service provider about Geoffrey’s risks',
+          hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
+          labelClasses: 'govuk-label--s',
         },
+        natureOfRisk: 'physically aggressive',
+        riskImminence: 'can happen at the drop of a hat',
+        whoIsAtRisk: undefined,
       })
     })
 
