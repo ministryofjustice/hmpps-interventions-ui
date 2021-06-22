@@ -87,7 +87,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceProvider": {"name": "Provider"}
         },
         "actionPlanId": null,
-        "endOfServiceReportRequired": false
+        "endOfServiceReportCreationRequired": false
       }
     """
     )
@@ -135,7 +135,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceProvider": {"name": "Provider"}
         },
         "actionPlanId": "${referral.actionPlan?.id}",
-        "endOfServiceReportRequired": false
+        "endOfServiceReportCreationRequired": false
       }
     """
     )
@@ -186,7 +186,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceUser": {"crn": "X123456"},
           "serviceProvider": {"name": "Harmony Living"}
         },
-        "endOfServiceReportRequired": true,
+        "endOfServiceReportCreationRequired": true,
         "endOfServiceReport": {
         "id" : "3b9ed289-8412-41a9-8291-45e33e60276c",
         "referralId": "3b9ed289-8412-41a9-8291-45e33e60276c",
@@ -228,7 +228,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
         "endRequestedAt": "2021-01-13T21:57:13Z",
         "endRequestedReason": "service user turned into a tomato",
         "endRequestedComments": null,
-        "endOfServiceReportRequired": false,
+        "endOfServiceReportCreationRequired": false,
         "concludedAt": "2021-01-13T21:57:13Z"
       }
     }

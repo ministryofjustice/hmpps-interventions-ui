@@ -212,7 +212,7 @@ internal class ReferralControllerTest {
         token,
       )
       assertThat(sentReferralResponse.body.id).isEqualTo(sentReferral.id)
-      assertThat(sentReferralResponse.body.endOfServiceReportRequired).isFalse
+      assertThat(sentReferralResponse.body.endOfServiceReportCreationRequired).isFalse
     }
 
     @Test
@@ -225,7 +225,7 @@ internal class ReferralControllerTest {
         token,
       )
       assertThat(sentReferral.id).isEqualTo(referral.id)
-      assertThat(sentReferral.endOfServiceReportRequired).isFalse
+      assertThat(sentReferral.endOfServiceReportCreationRequired).isFalse
     }
 
     @Test
@@ -241,7 +241,7 @@ internal class ReferralControllerTest {
         tokenFactory.create(userID = "by")
       )
       assertThat(assignedReferral.id).isEqualTo(referral.id)
-      assertThat(assignedReferral.endOfServiceReportRequired).isFalse
+      assertThat(assignedReferral.endOfServiceReportCreationRequired).isFalse
     }
 
     @Test
@@ -260,7 +260,7 @@ internal class ReferralControllerTest {
       whenever(referralConcluder.requiresEndOfServiceReportCreation(referral)).thenReturn(true)
 
       val response = referralController.endSentReferral(referral.id, endReferralDTO, token)
-      assertThat(response.endOfServiceReportRequired).isTrue
+      assertThat(response.endOfServiceReportCreationRequired).isTrue
     }
   }
 }
