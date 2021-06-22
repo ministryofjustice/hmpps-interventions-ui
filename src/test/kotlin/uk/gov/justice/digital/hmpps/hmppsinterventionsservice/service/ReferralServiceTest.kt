@@ -410,43 +410,47 @@ class ReferralServiceTest @Autowired constructor(
     }
 
     @Test
-    fun `get sent referrals for PP returns filtered referrals`() {
-      val users = listOf(userFactory.create("pp_user_1", "delius"), userFactory.create("pp_user_2", "delius"))
-      users.forEach {
-        referralFactory.createSent(createdBy = it)
-      }
+    fun `returns referrals started by the user`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      val startedReferrals = (1..3).map { referralFactory.createSent(createdBy = user) }
 
-      // this one should not be part of the result set - only referrals created by the pp!
-      referralFactory.createSent(sentBy = users[0])
-
-      val referrals = referralService.getSentReferralsForUser(users[0])
-      assertThat(referrals.size).isEqualTo(1)
-      assertThat(referrals[0].createdBy).isEqualTo(users[0])
-
-      assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).containsExactlyElementsOf(startedReferrals)
     }
 
     @Test
-    fun `get sent referrals for PP handles errors from community-api`() {
+    fun `must not return referrals sent by the user`() {
       val user = userFactory.create("pp_user_1", "delius")
-      referralFactory.createSent(createdBy = user)
+      val sentReferral = referralFactory.createSent(sentBy = user)
 
-      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenThrow(WebClientResponseException::class.java)
-
-      val referrals = referralService.getSentReferralsForUser(user)
-      assertThat(referrals.size).isEqualTo(1)
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).doesNotContain(sentReferral)
+      assertThat(result).isEmpty()
     }
 
     @Test
-    fun `get sent referrals for PP includes referrals for managed offenders`() {
+    fun `must not propagate errors from community-api`() {
       val user = userFactory.create("pp_user_1", "delius")
-      referralFactory.createSent(serviceUserCRN = "CRN129876234")
+      val createdReferral = referralFactory.createSent(createdBy = user)
 
-      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenReturn(listOf(Offender("CRN129876234")))
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
+        .thenThrow(WebClientResponseException::class.java)
 
-      val referrals = referralService.getSentReferralsForUser(user)
-      assertThat(referrals.size).isEqualTo(1)
-      assertThat(referrals[0].serviceUserCRN).isEqualTo("CRN129876234")
+      val result = assertDoesNotThrow { referralService.getSentReferralsForUser(user) }
+      assertThat(result).containsExactly(createdReferral)
+    }
+
+    @Test
+    fun `includes referrals for offenders managed by the user`() {
+      val someoneElse = userFactory.create("helper_pp_user", "delius")
+      val user = userFactory.create("pp_user_1", "delius")
+
+      val managedReferral = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = someoneElse)
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
+        .thenReturn(listOf(Offender("CRN129876234")))
+
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).containsExactly(managedReferral)
     }
   }
 
