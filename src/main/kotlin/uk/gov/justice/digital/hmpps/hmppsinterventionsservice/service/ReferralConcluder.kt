@@ -39,8 +39,11 @@ class ReferralConcluder(
     if (referral.endOfServiceReport != null)
       return false
 
-    val numberOfSessionsAttempted = countSessionsAttempted(referral)
     val totalNumberOfSessions = referral.actionPlan?.numberOfSessions ?: 0
+    if (totalNumberOfSessions == 0)
+      return false
+
+    val numberOfSessionsAttempted = countSessionsAttempted(referral)
     val allSessionsAttempted = totalNumberOfSessions == numberOfSessionsAttempted
     if (allSessionsAttempted)
       return true

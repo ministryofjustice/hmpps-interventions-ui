@@ -179,6 +179,17 @@ internal class ReferralConcluderTest {
   }
 
   @Test
+  fun `should not flag end of service report as required when action plan exists`() {
+
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = null)
+
+    val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
+
+    assertThat(endOfServiceReportCreationRequired).isFalse
+    verifyZeroInteractions(actionPlanRepository, referralRepository, referralEventPublisher)
+  }
+
+  @Test
   fun `should not flag end of service report as required when no sessions have been attempted`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
