@@ -452,6 +452,18 @@ class ReferralServiceTest @Autowired constructor(
       val result = referralService.getSentReferralsForUser(user)
       assertThat(result).containsExactly(managedReferral)
     }
+
+    @Test
+    fun `returns referrals both managed and started by the user only once`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      val managedAndStartedReferral = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = user)
+
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
+        .thenReturn(listOf(Offender("CRN129876234")))
+
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).containsExactly(managedAndStartedReferral)
+    }
   }
 
   @Nested
