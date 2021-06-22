@@ -79,6 +79,23 @@ export default class RiskInformationView {
     }
   }
 
+  get riskToSelfTableArgs(): TableArgs {
+    const rows = this.presenter.riskToSelfRows.map(row => {
+      return [
+        {
+          html: `Concerns in relation to ${row.riskConcern}`,
+        },
+        {
+          text: row.riskResponse,
+        },
+        {
+          text: row.riskCurrent,
+        },
+      ]
+    })
+    return { rows, firstCellIsHeader: true }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'referrals/riskInformation',
@@ -88,6 +105,7 @@ export default class RiskInformationView {
         additionalRiskInformationTextareaArgs: this.additionalRiskInformationTextareaArgs,
         roshAnalysisTableArgs: this.roshAnalysisTableArgs.bind(this),
         riskLevelDetailsArgs: this.riskLevelDetailsArgs,
+        riskToSelfTableArgs: this.riskToSelfTableArgs,
       },
     ]
   }

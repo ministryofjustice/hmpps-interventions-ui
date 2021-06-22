@@ -481,12 +481,15 @@ export default class ReferralsController {
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const [serviceUser, riskSummary] = await Promise.all([
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
+    const { crn } = referral.serviceUser
+    const { accessToken } = res.locals.user.token
+    const [serviceUser, riskSummary, riskToSelf] = await Promise.all([
+      this.communityApiService.getServiceUserByCRN(crn),
+      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+      this.assessRisksAndNeedsService.getRiskToSelf(crn, accessToken),
     ])
 
-    const presenter = new RiskInformationPresenter(referral, riskSummary)
+    const presenter = new RiskInformationPresenter(referral, riskSummary, riskToSelf)
     const view = new RiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -517,12 +520,16 @@ export default class ReferralsController {
         res.locals.user.token.accessToken,
         req.params.id
       )
-      const [serviceUser, riskSummary] = await Promise.all([
+
+      const { crn } = referral.serviceUser
+      const { accessToken } = res.locals.user.token
+      const [serviceUser, riskSummary, riskToSelf] = await Promise.all([
         this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
         this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
+        this.assessRisksAndNeedsService.getRiskToSelf(crn, accessToken),
       ])
 
-      const presenter = new RiskInformationPresenter(referral, riskSummary, error, req.body)
+      const presenter = new RiskInformationPresenter(referral, riskSummary, riskToSelf, error, req.body)
       const view = new RiskInformationView(presenter)
 
       res.status(400)

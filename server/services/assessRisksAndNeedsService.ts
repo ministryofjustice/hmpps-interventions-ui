@@ -5,6 +5,7 @@ import logger from '../../log'
 import { SupplementaryRiskInformation } from '../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../models/assessRisksAndNeeds/riskSummary'
 import config from '../config'
+import RiskToSelf from '../models/assessRisksAndNeeds/riskToSelf'
 
 export default class AssessRisksAndNeedsService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -34,6 +35,18 @@ export default class AssessRisksAndNeedsService {
       })) as RiskSummary
     } catch (err) {
       throw createError(err.status, err, { userMessage: 'Could not get service user risk scores from OASys.' })
+    }
+  }
+
+  async getRiskToSelf(crn: string, token: string): Promise<RiskToSelf> {
+    logger.info({ crn }, 'getting risk to self information')
+    try {
+      return (await this.restClient.get({
+        path: `/risks/crn/${crn}/self`,
+        token,
+      })) as RiskToSelf
+    } catch (err) {
+      throw createError(err.status, err, { userMessage: 'Could not get service user risk scores from OAsys.' })
     }
   }
 }

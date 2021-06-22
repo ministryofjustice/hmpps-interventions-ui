@@ -3,16 +3,24 @@ import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import config from '../../config'
+import RiskToSelf, { RiskResponse } from '../../models/assessRisksAndNeeds/riskToSelf'
 
 export interface RoshAnalysisTableRow {
   riskTo: string
   riskScore: string
 }
 
+export interface RiskToSelfSummaryListRow {
+  riskConcern: string
+  riskResponse: string
+  riskCurrent: string
+}
+
 export default class RiskInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly riskSummary: RiskSummary | null,
+    private readonly riskToSelf: RiskToSelf,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -62,5 +70,41 @@ export default class RiskInformationPresenter {
         return { riskTo, riskScore }
       })
     })
+  }
+
+  get riskToSelfRows(): RiskToSelfSummaryListRow[] {
+    return [
+      {
+        riskConcern: 'suicide',
+        riskResponse: this.riskResponseToText(this.riskToSelf.suicide?.risk),
+        riskCurrent: this.riskToSelf.suicide?.current || '',
+      },
+      {
+        riskConcern: 'self-harm',
+        riskResponse: this.riskResponseToText(this.riskToSelf.selfHarm?.risk),
+        riskCurrent: this.riskToSelf.selfHarm?.current || '',
+      },
+      {
+        riskConcern: 'coping in a hostel setting',
+        riskResponse: this.riskResponseToText(this.riskToSelf.hostelSetting?.risk),
+        riskCurrent: this.riskToSelf.hostelSetting?.current || '',
+      },
+      {
+        riskConcern: 'vulnerability',
+        riskResponse: this.riskResponseToText(this.riskToSelf.vulnerability?.risk),
+        riskCurrent: this.riskToSelf.vulnerability?.current || '',
+      },
+    ]
+  }
+
+  private riskResponseToText(riskResponse?: RiskResponse | null): string {
+    switch (riskResponse) {
+      case 'YES':
+        return 'Yes'
+      case 'NO':
+        return 'No'
+      default:
+        return "Don't know"
+    }
   }
 }
