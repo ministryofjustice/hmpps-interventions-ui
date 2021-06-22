@@ -129,7 +129,7 @@
     "timezone-support": "^2.0.2"
   },
   "devDependencies": {
-    "@pact-foundation/pact": "^9.13.0",
+    "@pact-foundation/pact": "^9.16.0",
     "@types/bunyan": "^1.8.6",
     "@types/bunyan-format": "^0.2.3",
     "@types/compression": "^1.7.0",
