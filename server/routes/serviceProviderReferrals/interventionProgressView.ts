@@ -126,7 +126,7 @@ export default class InterventionProgressView {
         value: {
           html: `<form method="post" action="${ViewUtils.escape(this.presenter.createEndOfServiceReportFormAction)}">
                    <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
-                   <button class="govuk-button govuk-button--secondary">
+                   <button>
                      ${this.presenter.endOfServiceReportButtonActionText} end of service report
                    </button>
                  </form>`,
