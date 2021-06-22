@@ -36,9 +36,11 @@ class AppointmentController(
   fun recordAttendance(
     @PathVariable id: UUID,
     @RequestBody update: UpdateAppointmentAttendanceDTO,
+    authentication: JwtAuthenticationToken,
   ): AppointmentDTO {
+    val submittedBy = userMapper.fromToken(authentication)
     val updatedAppointment = appointmentService.recordAppointmentAttendance(
-      id, update.attended, update.additionalAttendanceInformation
+      id, update.attended, update.additionalAttendanceInformation, submittedBy
     )
 
     return AppointmentDTO.from(updatedAppointment)

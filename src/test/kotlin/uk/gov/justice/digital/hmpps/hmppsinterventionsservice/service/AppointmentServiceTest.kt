@@ -288,11 +288,13 @@ class AppointmentServiceTest {
     val attended = Attended.YES
     val additionalAttendanceInformation = "information"
     val appointment = appointmentFactory.create(id = appointmentId)
+    val submittedBy = authUserFactory.create()
 
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
     whenever(appointmentRepository.save(any())).thenReturn(appointment)
+    whenever(authUserRepository.save(any())).thenReturn(submittedBy)
 
-    appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation)
+    appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation, submittedBy)
 
     val argumentCaptor = argumentCaptor<Appointment>()
     verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
@@ -302,6 +304,7 @@ class AppointmentServiceTest {
     assertThat(arguments.attended).isEqualTo(attended)
     assertThat(arguments.additionalAttendanceInformation).isEqualTo(additionalAttendanceInformation)
     assertThat(arguments.attendanceSubmittedAt).isNotNull
+    assertThat(arguments.attendanceSubmittedBy).isEqualTo(submittedBy)
   }
 
   @Test
@@ -310,12 +313,13 @@ class AppointmentServiceTest {
     val attended = Attended.YES
     val additionalAttendanceInformation = "information"
     val appointment = appointmentFactory.create(id = appointmentId)
+    val submittedBy = authUserFactory.create()
 
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
     whenever(appointmentRepository.findById(appointmentId)).thenReturn(empty())
 
     val error = assertThrows<EntityNotFoundException> {
-      appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation)
+      appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation, submittedBy)
     }
     assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
   }

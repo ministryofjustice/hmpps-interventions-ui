@@ -50,12 +50,15 @@ class AppointmentControllerTest {
     val appointmentId = UUID.randomUUID()
     val attended = Attended.YES
     val additionalAttendanceInformation = "information"
+    val submittedBy = authUserFactory.create()
+    val token = tokenFactory.create()
     val update = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
-
     val appointment = appointmentFactory.create()
-    whenever(appointmentService.recordAppointmentAttendance(any(), any(), any())).thenReturn(appointment)
 
-    val result = appointmentController.recordAttendance(appointmentId, update)
+    whenever(appointmentService.recordAppointmentAttendance(any(), any(), any(), any())).thenReturn(appointment)
+    whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+
+    val result = appointmentController.recordAttendance(appointmentId, update, token)
 
     assertThat(result).isNotNull
   }
