@@ -33,27 +33,6 @@
 
         {{ govukDetails(riskLevelDetailsArgs) }}
 
-        {% if presenter.text.whoIsAtRisk or presenter.text.natureOfRisk or presenter.text.riskImminence %}
-          <div class="govuk-inset-text">
-            The following information is not seen by the service provider:
-          </div>
-        {% endif %}
-
-        {% if presenter.text.whoIsAtRisk %}
-          <h3 class="govuk-heading-m">Who is at risk?</h3>
-          <p class="govuk-body">{{ presenter.text.whoIsAtRisk }}</p>
-        {% endif %}
-
-        {% if presenter.text.natureOfRisk %}
-          <h3 class="govuk-heading-m">What is the nature of the risk?</h3>
-          <p class="govuk-body">{{ presenter.text.natureOfRisk }}</p>
-        {% endif %}
-
-        {% if presenter.text.riskImminence %}
-          <h3 class="govuk-heading-m">When is the risk likely to be greatest?</h3>
-          <p class="govuk-body">{{ presenter.text.riskImminence }}</p>
-        {% endif %}
-
       {% endif %}
 
       <form method="post">
