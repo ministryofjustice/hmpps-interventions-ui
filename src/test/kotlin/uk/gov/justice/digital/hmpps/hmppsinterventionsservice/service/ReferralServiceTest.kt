@@ -399,48 +399,55 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(referralService.getDraftReferralsForUser(user)).hasSize(3)
   }
 
-  @Test
-  fun `get sent referrals for PP returns filtered referrals`() {
-    val users = listOf(userFactory.create("pp_user_1", "delius"), userFactory.create("pp_user_2", "delius"))
-    users.forEach {
-      referralFactory.createSent(createdBy = it)
+  @Nested
+  @DisplayName("get sent referrals with a probation practitioner user")
+  inner class GetSentReferralsPPUser {
+    @BeforeEach
+    fun setup() {
+      // do not test access restrictions in these tests; only test selection of referrals
+      whenever(referralAccessFilter.probationPractitionerReferrals(any(), any()))
+        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
     }
 
-    // this one should not be part of the result set - only referrals created by the pp!
-    referralFactory.createSent(sentBy = users[0])
+    @Test
+    fun `get sent referrals for PP returns filtered referrals`() {
+      val users = listOf(userFactory.create("pp_user_1", "delius"), userFactory.create("pp_user_2", "delius"))
+      users.forEach {
+        referralFactory.createSent(createdBy = it)
+      }
 
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      // this one should not be part of the result set - only referrals created by the pp!
+      referralFactory.createSent(sentBy = users[0])
 
-    val referrals = referralService.getSentReferralsForUser(users[0])
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].createdBy).isEqualTo(users[0])
+      val referrals = referralService.getSentReferralsForUser(users[0])
+      assertThat(referrals.size).isEqualTo(1)
+      assertThat(referrals[0].createdBy).isEqualTo(users[0])
 
-    assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
-  }
+      assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
+    }
 
-  @Test
-  fun `get sent referrals for PP handles errors from community-api`() {
-    val user = userFactory.create("pp_user_1", "delius")
-    referralFactory.createSent(createdBy = user)
+    @Test
+    fun `get sent referrals for PP handles errors from community-api`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      referralFactory.createSent(createdBy = user)
 
-    whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenThrow(WebClientResponseException::class.java)
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenThrow(WebClientResponseException::class.java)
 
-    val referrals = referralService.getSentReferralsForUser(user)
-    assertThat(referrals.size).isEqualTo(1)
-  }
+      val referrals = referralService.getSentReferralsForUser(user)
+      assertThat(referrals.size).isEqualTo(1)
+    }
 
-  @Test
-  fun `get sent referrals for PP includes referrals for managed offenders`() {
-    val user = userFactory.create("pp_user_1", "delius")
-    referralFactory.createSent(serviceUserCRN = "CRN129876234")
+    @Test
+    fun `get sent referrals for PP includes referrals for managed offenders`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      referralFactory.createSent(serviceUserCRN = "CRN129876234")
 
-    whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenReturn(listOf(Offender("CRN129876234")))
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenReturn(listOf(Offender("CRN129876234")))
 
-    val referrals = referralService.getSentReferralsForUser(user)
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].serviceUserCRN).isEqualTo("CRN129876234")
+      val referrals = referralService.getSentReferralsForUser(user)
+      assertThat(referrals.size).isEqualTo(1)
+      assertThat(referrals[0].serviceUserCRN).isEqualTo("CRN129876234")
+    }
   }
 
   @Nested
