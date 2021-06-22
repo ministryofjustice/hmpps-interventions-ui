@@ -13,12 +13,12 @@ describe('RiskInformationPresenter', () => {
 
       expect(presenter.text).toEqual({
         title: 'Geoffrey’s risk information',
-        additionalRiskInformation: {
-          errorMessage: null,
-          label: 'Additional risk information',
-          hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
-          labelClasses: 'govuk-label--l',
-        },
+      })
+      expect(presenter.additionalRiskInformation).toEqual({
+        errorMessage: null,
+        label: 'Additional risk information',
+        hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
+        labelClasses: 'govuk-label--l',
       })
     })
 
@@ -38,10 +38,8 @@ describe('RiskInformationPresenter', () => {
           ],
         })
 
-        expect(presenter.text).toMatchObject({
-          additionalRiskInformation: {
-            errorMessage: 'additionalRiskInformation msg',
-          },
+        expect(presenter.additionalRiskInformation).toMatchObject({
+          errorMessage: 'additionalRiskInformation msg',
         })
       })
     })
