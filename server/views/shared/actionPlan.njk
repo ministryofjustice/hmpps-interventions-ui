@@ -1,9 +1,12 @@
 {% extends "../partials/layout.njk" %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}%}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
 
 {% block pageTitle %}
     HMPPS Interventions - GOV.UK
@@ -13,6 +16,9 @@
     {% block content %}
     <div class="govuk-!-width-two-thirds">
         {{ govukBackLink(backLinkArgs) }}
+        {% if errorSummaryArgs !== null %}
+            {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
         <h1 class="govuk-heading-l">View action plan</h1>
 
         {{ govukSummaryList(actionPlanSummaryListArgs(govukTag)) }}
@@ -33,6 +39,7 @@
             <p class="govuk-body">Note: If you want to suggest any changes, contact <i>{{ presenter.text.spEmailAddress }}</i> before approving this action plan.</p>
 
             <form method="post" action="{{ presenter.actionPlanApprovalUrl }}">
+                {{ govukCheckboxes(confirmApprovalCheckboxArgs) }}
                 <input type="hidden" name="_csrf" value="{{ csrfToken }}">
                 {{ govukButton({ text: "Approve" }) }}
             </form>

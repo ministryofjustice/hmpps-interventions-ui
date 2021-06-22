@@ -28,6 +28,8 @@ import HmppsAuthService from '../../services/hmppsAuthService'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import ActionPlanPresenter from '../shared/actionPlanPresenter'
 import ActionPlanView from '../shared/actionPlanView'
+import ConfirmationCheckboxInput from '../../utils/forms/inputs/confirmationCheckboxInput'
+import errorMessages from '../../utils/errorMessages'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -282,6 +284,14 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async viewActionPlan(req: Request, res: Response): Promise<void> {
+    await this.renderViewActionPlan(req, res)
+  }
+
+  private async renderViewActionPlan(
+    req: Request,
+    res: Response,
+    formValidationError: FormValidationError | null = null
+  ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
@@ -296,12 +306,21 @@ export default class ProbationPractitionerReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'probation-practitioner')
+    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'probation-practitioner', formValidationError)
     const view = new ActionPlanView(presenter, false)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async approveActionPlan(req: Request, res: Response): Promise<void> {
+    const confirmApprovalResult = await new ConfirmationCheckboxInput(
+      req,
+      'confirm-approval',
+      'confirmed',
+      errorMessages.actionPlanApproval.notConfirmed
+    ).validate()
+    if (confirmApprovalResult.error) {
+      return this.renderViewActionPlan(req, res, confirmApprovalResult.error)
+    }
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 

@@ -1,5 +1,11 @@
 import ActionPlanPresenter from './actionPlanPresenter'
-import { InsetTextArgs, SummaryListArgs, SummaryListArgsRow, TagArgs } from '../../utils/govukFrontendTypes'
+import {
+  CheckboxesArgs,
+  InsetTextArgs,
+  SummaryListArgs,
+  SummaryListArgsRow,
+  TagArgs,
+} from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 
 export default class ActionPlanView {
@@ -9,6 +15,8 @@ export default class ActionPlanView {
     text: 'Back',
     href: this.presenter.interventionProgressURL,
   }
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   insetTextActivityArgs(index: number, description: string): InsetTextArgs {
     return {
@@ -92,14 +100,31 @@ export default class ActionPlanView {
     return { rows }
   }
 
+  get confirmApprovalCheckboxArgs(): CheckboxesArgs {
+    return {
+      idPrefix: 'confirm-approval',
+      name: 'confirm-approval[]',
+      items: [
+        {
+          value: 'confirmed',
+          text: 'I confirm that I want to approve the action plan',
+        },
+      ],
+      classes: 'govuk-checkboxes__inset--grey',
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fieldErrors.confirmApproval),
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'shared/actionPlan',
       {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
         actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
         insetTextActivityArgs: this.insetTextActivityArgs.bind(this),
+        confirmApprovalCheckboxArgs: this.confirmApprovalCheckboxArgs,
       },
     ]
   }

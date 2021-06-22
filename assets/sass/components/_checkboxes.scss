@@ -1,0 +1,11 @@
+.govuk-checkboxes__inset--grey {
+  background: #f3f2f1;
+  padding-bottom: 30px;
+  padding-left: 30px;
+  padding-top: 30px;
+
+  .govuk-checkboxes__label::before {
+    background: white;
+  }
+
+}
