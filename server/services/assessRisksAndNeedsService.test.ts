@@ -7,6 +7,7 @@ import HmppsAuthService from './hmppsAuthService'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import MockRestClient from '../data/testutils/mockRestClient'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
+import riskToSelfFactory from '../../testutils/factories/riskToSelf'
 import config from '../config'
 
 // wraps mocking API around the class exported by the module
@@ -61,6 +62,33 @@ describe(AssessRisksAndNeedsService, () => {
         await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
       } catch (err) {
         expect(err.status).toBe(404)
+        expect(err.userMessage).toBe('Could not get service user risk scores from OASys.')
+      }
+    })
+  })
+
+  describe('getRiskToSelf', () => {
+    const hmppsAuthServiceMock = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
+
+    const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
+
+    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthServiceMock, restClientMock)
+
+    const riskToSelf = riskToSelfFactory.build()
+
+    it('makes a request to the Assess Risks and Needs API', async () => {
+      restClientMock.get.mockResolvedValue(riskToSelf)
+      await assessRisksAndNeedsService.getRiskToSelf('crn123', 'token')
+
+      expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/crn/crn123/self`, token: 'token' })
+    })
+
+    it('provides a userMessage on failure', async () => {
+      restClientMock.get.mockRejectedValue(createError(500))
+      try {
+        await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
+      } catch (err) {
+        expect(err.status).toBe(500)
         expect(err.userMessage).toBe('Could not get service user risk scores from OASys.')
       }
     })
