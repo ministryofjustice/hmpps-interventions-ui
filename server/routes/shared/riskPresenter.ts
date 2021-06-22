@@ -1,5 +1,4 @@
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
-import config from '../../config'
 
 export interface RoshAnalysisTableRow {
   riskTo: string
@@ -9,7 +8,7 @@ export interface RoshAnalysisTableRow {
 export default class RiskPresenter {
   constructor(private readonly riskSummary: RiskSummary | null) {}
 
-  readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
+  readonly riskSummaryEnabled = this.riskSummary !== null
 
   get roshAnalysisHeaders(): string[] {
     return ['Risk to', 'Risk in community']

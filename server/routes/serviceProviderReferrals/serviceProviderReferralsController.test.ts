@@ -21,6 +21,7 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -98,6 +99,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'Alex is low risk to others.',
     })
+    const riskSummary = riskSummaryFactory.build()
     const deliusUser = deliusUserFactory.build({
       firstName: 'Bernard',
       surname: 'Beaks',
@@ -138,6 +140,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -150,6 +153,9 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')
         expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain("service user's Risk of Serious Harm (ROSH) levels")
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('HIGH')
       })
   })
 
@@ -170,6 +176,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
       communityApiService.getConvictionById.mockResolvedValue(conviction)
       assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
 
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}/details`)

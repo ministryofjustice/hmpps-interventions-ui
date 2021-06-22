@@ -9,6 +9,7 @@ import { TagArgs } from '../../utils/govukFrontendTypes'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -41,6 +42,7 @@ describe(ShowReferralPresenter, () => {
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+  const riskSummary = riskSummaryFactory.build()
 
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the check assignment page', () => {
@@ -55,7 +57,8 @@ describe(ShowReferralPresenter, () => {
         null,
         'service-provider',
         true,
-        deliusServiceUser
+        deliusServiceUser,
+        riskSummary
       )
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
@@ -77,7 +80,8 @@ describe(ShowReferralPresenter, () => {
             null,
             'service-provider',
             true,
-            deliusServiceUser
+            deliusServiceUser,
+            riskSummary
           )
 
           expect(presenter.text.assignedTo).toBeNull()
@@ -97,7 +101,8 @@ describe(ShowReferralPresenter, () => {
             null,
             'service-provider',
             true,
-            deliusServiceUser
+            deliusServiceUser,
+            riskSummary
           )
 
           expect(presenter.text.assignedTo).toEqual('John Smith')
@@ -119,7 +124,8 @@ describe(ShowReferralPresenter, () => {
         null,
         'service-provider',
         true,
-        deliusServiceUser
+        deliusServiceUser,
+        riskSummary
       )
 
       expect(presenter.probationPractitionerDetails).toEqual([
@@ -197,7 +203,8 @@ describe(ShowReferralPresenter, () => {
           null,
           'service-provider',
           true,
-          deliusServiceUser
+          deliusServiceUser,
+          riskSummary
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -285,7 +292,8 @@ describe(ShowReferralPresenter, () => {
           null,
           'service-provider',
           true,
-          deliusServiceUser
+          deliusServiceUser,
+          riskSummary
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -339,7 +347,8 @@ describe(ShowReferralPresenter, () => {
         null,
         'service-provider',
         true,
-        deliusServiceUser
+        deliusServiceUser,
+        riskSummary
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
@@ -377,7 +386,8 @@ describe(ShowReferralPresenter, () => {
         null,
         'service-provider',
         true,
-        deliusServiceUser
+        deliusServiceUser,
+        riskSummary
       )
 
       expect(presenter.serviceUserDetails).toEqual([
@@ -418,7 +428,8 @@ describe(ShowReferralPresenter, () => {
         null,
         'service-provider',
         true,
-        deliusServiceUser
+        deliusServiceUser,
+        riskSummary
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -483,7 +494,8 @@ describe(ShowReferralPresenter, () => {
           null,
           'service-provider',
           true,
-          deliusServiceUser
+          deliusServiceUser,
+          riskSummary
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -570,7 +582,8 @@ describe(ShowReferralPresenter, () => {
           null,
           'service-provider',
           true,
-          deliusServiceUser
+          deliusServiceUser,
+          riskSummary
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
