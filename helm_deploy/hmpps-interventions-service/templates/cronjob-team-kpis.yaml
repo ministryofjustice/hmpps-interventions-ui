@@ -35,7 +35,7 @@ spec:
             args:
               - |
                 psql -v ON_ERROR_STOP=1 --tuples-only --expanded --file=/reports/team_kpi_report.sql > 'export/team_kpi_report' \
-                  && /scripts/send_to_slack.sh 'export/team_kpi_details_report'
+                  && /scripts/send_to_slack.sh 'export/team_kpi_report'
               - |
                 psql -v ON_ERROR_STOP=1 --pset="footer=off" --file=/reports/team_kpi_details_report.sql > 'export/team_kpi_details_report' \
                   && /scripts/send_to_slack.sh 'export/team_kpi_details_report'
