@@ -29,6 +29,9 @@
 {% block pageTitle %}HMPPS Interventions{% endblock %}
 
 {% block content %} 
+  {% if broadcastMessage %}
+    {% include "./broadcastMessage.njk" %}
+  {% endif %}
   {% block pageContent %}
   {% endblock %}
 {% endblock %}
