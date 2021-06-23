@@ -49,9 +49,9 @@ export default class InterventionDetailsPresenter {
       },
       {
         key: this.intervention.serviceCategories.length > 1 ? 'Service categories' : 'Service category',
-        lines: this.intervention.serviceCategories.map(serviceCategory =>
-          utils.convertToProperCase(serviceCategory.name)
-        ),
+        lines: this.intervention.serviceCategories
+          .map(serviceCategory => utils.convertToProperCase(serviceCategory.name))
+          .sort(),
         listStyle: this.intervention.serviceCategories.length > 1 ? ListStyle.bulleted : undefined,
       },
       {
