@@ -13,7 +13,6 @@ const hmppsAuthService = new HmppsAuthService()
 const communityApiService = new CommunityApiService(hmppsAuthService, communityApiRestClient)
 const interventionsService = new InterventionsService(config.apis.interventionsService)
 const assessRisksAndNeedsService = new AssessRisksAndNeedsService(
-  hmppsAuthService,
   assessRisksAndNeedsRestClient,
   config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
 )
