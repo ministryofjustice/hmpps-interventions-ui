@@ -457,7 +457,7 @@ describe('Service provider referrals dashboard', () => {
     cy.get('.action-plan-submitted-date').contains(/\d{1,2} [A-Z][a-z]{2} \d{4}/)
   })
 
-  it('User schedules and views an action plan appointment', () => {
+  describe('User schedules and views an action plan appointment', () => {
     const serviceCategory = serviceCategoryFactory.build()
     const intervention = interventionFactory.build()
     const referral = sentReferralFactory.build({
@@ -469,51 +469,109 @@ describe('Service provider referrals dashboard', () => {
       .build({ referralId: referral.id, actionPlanId: actionPlan.id, sessionNumber: 1 })
     const deliusServiceUser = deliusServiceUserFactory.build()
 
-    cy.stubGetSentReferralsForUserToken([])
-    cy.stubGetIntervention(intervention.id, intervention)
-    cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, appointment)
-    cy.stubGetActionPlan(actionPlan.id, actionPlan)
-    cy.stubGetSentReferral(referral.id, referral)
-    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
-    cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
-
-    cy.login()
-
-    cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
-
-    cy.get('#date-day').type('24')
-    cy.get('#date-month').type('3')
-    cy.get('#date-year').type('2021')
-    cy.get('#time-hour').type('9')
-    cy.get('#time-minute').type('02')
-    cy.get('#time-part-of-day').select('AM')
-    cy.get('#duration-hours').type('1')
-    cy.get('#duration-minutes').type('15')
-
-    const scheduledAppointment = actionPlanAppointmentFactory.build({
-      ...appointment,
-      appointmentTime: '2021-03-24T09:02:02Z',
-      durationInMinutes: 75,
+    beforeEach(() => {
+      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, appointment)
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
+      cy.login()
     })
-    cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
-    cy.stubUpdateActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
+    describe('with valid inputs', () => {
+      it('should present no errors and display scheduled appointment', () => {
+        cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+        cy.get('#date-day').type('24')
+        cy.get('#date-month').type('3')
+        cy.get('#date-year').type('2021')
+        cy.get('#time-hour').type('9')
+        cy.get('#time-minute').type('02')
+        cy.get('#time-part-of-day').select('AM')
+        cy.get('#duration-hours').type('1')
+        cy.get('#duration-minutes').type('15')
+        cy.contains('In-person meeting').click()
+        cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
+        cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
+        cy.get('#method-other-location-address-town-or-city').type('Blackpool')
+        cy.get('#method-other-location-address-county').type('Lancashire')
+        cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
-    cy.contains('Save and continue').click()
+        const scheduledAppointment = actionPlanAppointmentFactory.build({
+          ...appointment,
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY4 0RE',
+          },
+        })
+        cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
+        cy.stubUpdateActionPlanAppointment(actionPlan.id, appointment.sessionNumber, scheduledAppointment)
 
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
+        cy.contains('Save and continue').click()
 
-    cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+        cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
 
-    cy.get('#date-day').should('have.value', '24')
-    cy.get('#date-month').should('have.value', '3')
-    cy.get('#date-year').should('have.value', '2021')
-    cy.get('#time-hour').should('have.value', '9')
-    cy.get('#time-minute').should('have.value', '02')
-    // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
-    cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
-    cy.get('#duration-hours').should('have.value', '1')
-    cy.get('#duration-minutes').should('have.value', '15')
+        cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+
+        cy.get('#date-day').should('have.value', '24')
+        cy.get('#date-month').should('have.value', '3')
+        cy.get('#date-year').should('have.value', '2021')
+        cy.get('#time-hour').should('have.value', '9')
+        cy.get('#time-minute').should('have.value', '02')
+        // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
+        cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
+        cy.get('#duration-hours').should('have.value', '1')
+        cy.get('#duration-minutes').should('have.value', '15')
+        cy.get('#method-other-location-address-line-1').should('have.value', 'Harmony Living Office, Room 4')
+        cy.get('#method-other-location-address-line-2').should('have.value', '44 Bouverie Road')
+        cy.get('#method-other-location-address-town-or-city').should('have.value', 'Blackpool')
+        cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
+        cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
+      })
+    })
+
+    describe('with invalid inputs', () => {
+      describe("when the user doesn't select meeting method", () => {
+        it('should show an error', () => {
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.get('#date-day').type('24')
+          cy.get('#date-month').type('3')
+          cy.get('#date-year').type('2021')
+          cy.get('#time-hour').type('9')
+          cy.get('#time-minute').type('02')
+          cy.get('#time-part-of-day').select('AM')
+          cy.get('#duration-hours').type('1')
+          cy.get('#duration-minutes').type('15')
+          cy.contains('Save and continue').click()
+          cy.contains('There is a problem').next().contains('Select a meeting method')
+        })
+      })
+
+      describe("when the user doesn't enter an address", () => {
+        it('should show an error', () => {
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.get('#date-day').type('24')
+          cy.get('#date-month').type('3')
+          cy.get('#date-year').type('2021')
+          cy.get('#time-hour').type('9')
+          cy.get('#time-minute').type('02')
+          cy.get('#time-part-of-day').select('AM')
+          cy.get('#duration-hours').type('1')
+          cy.get('#duration-minutes').type('15')
+          cy.contains('In-person meeting').click()
+          cy.contains('Save and continue').click()
+          cy.contains('There is a problem').next().contains('Enter a value for address line 1')
+          cy.contains('There is a problem').next().contains('Enter a postcode')
+        })
+      })
+    })
   })
 
   describe('Recording post session feedback', () => {
@@ -543,11 +601,13 @@ describe('Service provider referrals dashboard', () => {
           sessionNumber: 1,
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
         actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-03-31T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
       ]
 
@@ -694,11 +754,13 @@ describe('Service provider referrals dashboard', () => {
           sessionNumber: 1,
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
         actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-03-31T09:02:02Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
         }),
       ]
 
@@ -1115,10 +1177,24 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#time-part-of-day').select('AM')
       cy.get('#duration-hours').type('1')
       cy.get('#duration-minutes').type('15')
+      cy.contains('In-person meeting').click()
+      cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
+      cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
+      cy.get('#method-other-location-address-town-or-city').type('Blackpool')
+      cy.get('#method-other-location-address-county').type('Lancashire')
+      cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
       const scheduledAppointment = appointmentFactory.build({
         appointmentTime: '2021-03-24T09:02:02Z',
         durationInMinutes: 75,
+        appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+        appointmentDeliveryAddress: {
+          firstAddressLine: 'Harmony Living Office, Room 4',
+          secondAddressLine: '44 Bouverie Road',
+          townOrCity: 'Blackpool',
+          county: 'Lancashire',
+          postCode: 'SY4 0RE',
+        },
       })
       const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.build({
         ...supplierAssessment,

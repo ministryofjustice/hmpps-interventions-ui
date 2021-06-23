@@ -13,6 +13,8 @@ import ServiceCategory from '../models/serviceCategory'
 import ActionPlan, { ActionPlanAppointment } from '../models/actionPlan'
 import AppointmentAttendance from '../models/appointmentAttendance'
 import AppointmentBehaviour from '../models/appointmentBehaviour'
+import Address from '../models/address'
+import { AppointmentDeliveryType } from '../models/appointmentDeliveryType'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
@@ -44,6 +46,8 @@ export interface UpdateDraftActionPlanParams {
 export interface AppointmentUpdate {
   appointmentTime: string
   durationInMinutes: number
+  appointmentDeliveryType: AppointmentDeliveryType
+  appointmentDeliveryAddress: Address | null
 }
 
 export interface CreateEndOfServiceReportOutcome {
