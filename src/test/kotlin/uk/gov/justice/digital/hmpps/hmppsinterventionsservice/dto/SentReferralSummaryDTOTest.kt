@@ -15,7 +15,7 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 @JsonTest
-class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferralDTO>) {
+class SentReferralSummaryDTOTest(@Autowired private val json: JacksonTester<SentReferralSummaryDTO>) {
   private val referralFactory = ReferralFactory()
 
   @Test
@@ -24,26 +24,26 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     val timestamp = OffsetDateTime.now()
 
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(referral, false)
+      SentReferralSummaryDTO.from(referral)
     }
 
     referral.sentAt = timestamp
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(referral, false)
+      SentReferralSummaryDTO.from(referral)
     }
 
     referral.referenceNumber = "something"
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(referral, false)
+      SentReferralSummaryDTO.from(referral)
     }
 
     referral.sentBy = AuthUser("id", "source", "username")
     assertThrows<RuntimeException> {
-      SentReferralDTO.from(referral, false)
+      SentReferralSummaryDTO.from(referral)
     }
 
     referral.supplementaryRiskId = UUID.randomUUID()
-    assertDoesNotThrow { SentReferralDTO.from(referral, false) }
+    assertDoesNotThrow { SentReferralSummaryDTO.from(referral) }
   }
 
   @Test
@@ -67,7 +67,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.sentAt = sentAt
     referral.sentBy = sentBy
 
-    val out = json.write(SentReferralDTO.from(referral, false))
+    val out = json.write(SentReferralSummaryDTO.from(referral))
     Assertions.assertThat(out).isEqualToJson(
       """
       {
@@ -86,8 +86,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceUser": {"crn": "X123456"},
           "serviceProvider": {"name": "Provider"}
         },
-        "actionPlanId": null,
-        "endOfServiceReportCreationRequired": false
+        "actionPlanId": null
       }
     """
     )
@@ -115,7 +114,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.sentAt = sentAt
     referral.sentBy = sentBy
 
-    val out = json.write(SentReferralDTO.from(referral, false))
+    val out = json.write(SentReferralSummaryDTO.from(referral))
     Assertions.assertThat(out).isEqualToJson(
       """
       {
@@ -134,8 +133,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceUser": {"crn": "X123456"},
           "serviceProvider": {"name": "Provider"}
         },
-        "actionPlanId": "${referral.actionPlan?.id}",
-        "endOfServiceReportCreationRequired": false
+        "actionPlanId": "${referral.actionPlan?.id}"
       }
     """
     )
@@ -167,7 +165,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.sentAt = sentAt
     referral.sentBy = sentBy
 
-    val out = json.write(SentReferralDTO.from(referral, true))
+    val out = json.write(SentReferralSummaryDTO.from(referral))
     Assertions.assertThat(out).isEqualToJson(
       """
       {
@@ -186,7 +184,6 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceUser": {"crn": "X123456"},
           "serviceProvider": {"name": "Harmony Living"}
         },
-        "endOfServiceReportCreationRequired": true,
         "endOfServiceReport": {
         "id" : "3b9ed289-8412-41a9-8291-45e33e60276c",
         "referralId": "3b9ed289-8412-41a9-8291-45e33e60276c",
@@ -221,14 +218,13 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     referral.endRequestedReason = CancellationReason("TOM", "service user turned into a tomato")
     referral.concludedAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
 
-    val out = json.write(SentReferralDTO.from(referral, false))
+    val out = json.write(SentReferralSummaryDTO.from(referral))
     Assertions.assertThat(out).isEqualToJson(
       """
       {
         "endRequestedAt": "2021-01-13T21:57:13Z",
         "endRequestedReason": "service user turned into a tomato",
         "endRequestedComments": null,
-        "endOfServiceReportCreationRequired": false,
         "concludedAt": "2021-01-13T21:57:13Z"
       }
     }
