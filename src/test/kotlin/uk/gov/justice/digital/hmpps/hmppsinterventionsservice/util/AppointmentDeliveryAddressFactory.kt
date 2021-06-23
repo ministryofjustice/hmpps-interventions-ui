@@ -11,8 +11,8 @@ class AppointmentDeliveryAddressFactory(em: TestEntityManager? = null) : EntityF
     appointmentDeliveryId: UUID? = null,
     firstAddressLine: String = "Harmony Living Office, Room 4",
     secondAddressLine: String? = "44 Bouverie Road",
-    townCity: String = "Blackpool",
-    county: String = "Lancashire",
+    townCity: String? = "Blackpool",
+    county: String? = "Lancashire",
     postCode: String = "SY4 0RE",
   ): AppointmentDeliveryAddress {
     var id = appointmentDeliveryId

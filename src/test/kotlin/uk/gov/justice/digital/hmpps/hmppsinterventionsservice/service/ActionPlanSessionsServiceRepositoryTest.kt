@@ -28,7 +28,7 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 @RepositoryTest
-class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
+class ActionPlanSessionsServiceRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
@@ -80,6 +80,7 @@ class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
           appointmentDeliveryAddress = appointmentDeliveryAddress,
         )
       }
+
       @Test
       fun `can update existing appointment with a phone call delivery`() {
         val actionPlanSession = actionPlanSessionFactory.createScheduled()
@@ -122,6 +123,17 @@ class ActionPlanSessionsServiceRespositoryTest @Autowired constructor(
 
       @Nested
       inner class WithAppointmentDeliveryAddress {
+
+        // These tests are to ensure that no constraint exceptions are thrown by hibernate if appointment delivery details change
+        @Nested
+        inner class HibernateConstraintTests {
+          @Test
+          fun `can update existing appointment with exactly the same details`() {
+            val actionPlanSession = actionPlanSessionFactory.createScheduled()
+            testSettingNonNPSOffice(actionPlanSession)
+            testSettingNonNPSOffice(actionPlanSession)
+          }
+        }
 
         @Test
         fun `can update existing appointment with a non nps office delivery address`() {

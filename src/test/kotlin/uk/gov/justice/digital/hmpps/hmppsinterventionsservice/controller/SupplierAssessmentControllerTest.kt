@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SupplierAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
@@ -32,7 +33,8 @@ class SupplierAssessmentControllerTest {
     val referral = referralFactory.createSent()
     val durationInMinutes = 60
     val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
-    val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes)
+    val appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
+    val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes, appointmentDeliveryType)
     val user = authUserFactory.create()
     val token = tokenFactory.create()
     val supplierAssessment = supplierAssessmentFactory.create()

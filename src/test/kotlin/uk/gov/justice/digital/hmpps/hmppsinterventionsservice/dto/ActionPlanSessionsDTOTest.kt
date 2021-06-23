@@ -57,10 +57,9 @@ internal class ActionPlanSessionsDTOTest {
   @Test
   fun `Maps from a session with nps office address`() {
     val session = actionPlanSessionFactory.createScheduled()
-    session.appointments.first().appointmentDelivery = appointmentDeliveryFactory.create(session.appointments.first().id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = "ABC")
+    session.appointments.first().appointmentDelivery = appointmentDeliveryFactory.create(session.appointments.first().id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
     val sessionDTO = ActionPlanSessionDTO.from(session)
     assertThat(sessionDTO.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
-    assertThat(sessionDTO.appointmentDeliveryAddress).isEqualTo(listOf("ABC"))
   }
 
   @Test
@@ -72,19 +71,28 @@ internal class ActionPlanSessionsDTOTest {
     session.appointments.first().appointmentDelivery = appointmentDelivery
     val sessionDTO = ActionPlanSessionDTO.from(session)
     assertThat(sessionDTO.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_OTHER)
-    assertThat(sessionDTO.appointmentDeliveryAddress).isEqualTo(listOf("Harmony Living Office, Room 4", "44 Bouverie Road", "Blackpool", "Lancashire", "SY4 0RE"))
+    assertThat(sessionDTO.appointmentDeliveryAddress?.firstAddressLine).isEqualTo("Harmony Living Office, Room 4")
+    assertThat(sessionDTO.appointmentDeliveryAddress?.secondAddressLine).isEqualTo("44 Bouverie Road")
+    assertThat(sessionDTO.appointmentDeliveryAddress?.townOrCity).isEqualTo("Blackpool")
+    assertThat(sessionDTO.appointmentDeliveryAddress?.county).isEqualTo("Lancashire")
+    assertThat(sessionDTO.appointmentDeliveryAddress?.postCode).isEqualTo("SY40RE")
   }
 
   @Test
   fun `Maps from a session with non nps office address and second line is empty`() {
     val session = actionPlanSessionFactory.createScheduled()
     val appointmentDelivery = appointmentDeliveryFactory.create(appointmentId = session.appointments.first().id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER)
-    val appointmentDeliveryAddress = appointmentDeliveryAddressFactory.create(appointmentDeliveryId = appointmentDelivery.appointmentId, secondAddressLine = null)
+    val appointmentDeliveryAddress = appointmentDeliveryAddressFactory.create(appointmentDeliveryId = appointmentDelivery.appointmentId, secondAddressLine = null, townCity = null, county = null, postCode = "SY4 0RE")
     appointmentDelivery.appointmentDeliveryAddress = appointmentDeliveryAddress
     session.appointments.first().appointmentDelivery = appointmentDelivery
     val sessionDTO = ActionPlanSessionDTO.from(session)
     assertThat(sessionDTO.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_OTHER)
-    assertThat(sessionDTO.appointmentDeliveryAddress).isEqualTo(listOf("Harmony Living Office, Room 4", "", "Blackpool", "Lancashire", "SY4 0RE"))
+
+    assertThat(sessionDTO.appointmentDeliveryAddress?.firstAddressLine).isEqualTo("Harmony Living Office, Room 4")
+    assertThat(sessionDTO.appointmentDeliveryAddress?.secondAddressLine).isEqualTo("")
+    assertThat(sessionDTO.appointmentDeliveryAddress?.townOrCity).isNull()
+    assertThat(sessionDTO.appointmentDeliveryAddress?.county).isNull()
+    assertThat(sessionDTO.appointmentDeliveryAddress?.postCode).isEqualTo("SY40RE")
   }
 
   @Test
