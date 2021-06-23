@@ -12,7 +12,11 @@ const communityApiRestClient = new RestClient('communityApiClient', config.apis.
 const hmppsAuthService = new HmppsAuthService()
 const communityApiService = new CommunityApiService(hmppsAuthService, communityApiRestClient)
 const interventionsService = new InterventionsService(config.apis.interventionsService)
-const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthService, assessRisksAndNeedsRestClient)
+const assessRisksAndNeedsService = new AssessRisksAndNeedsService(
+  hmppsAuthService,
+  assessRisksAndNeedsRestClient,
+  config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
+)
 
 const app = createApp(communityApiService, interventionsService, hmppsAuthService, assessRisksAndNeedsService)
 

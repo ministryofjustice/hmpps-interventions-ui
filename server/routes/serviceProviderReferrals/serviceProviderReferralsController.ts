@@ -84,32 +84,23 @@ export default class ServiceProviderReferralsController {
   }
 
   async showReferral(req: Request, res: Response): Promise<void> {
-    const sentReferral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      req.params.id
-    )
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
-    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation] = await Promise.all([
-      this.interventionsService.getIntervention(
-        res.locals.user.token.accessToken,
-        sentReferral.referral.interventionId
-      ),
+    const { crn } = sentReferral.referral.serviceUser
+    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary] = await Promise.all([
+      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.communityApiService.getExpandedServiceUserByCRN(sentReferral.referral.serviceUser.crn),
-      this.communityApiService.getConvictionById(
-        sentReferral.referral.serviceUser.crn,
-        sentReferral.referral.relevantSentenceId
-      ),
+      this.communityApiService.getExpandedServiceUserByCRN(crn),
+      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId),
+      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
     ])
 
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUsername(
-            res.locals.user.token.accessToken,
-            sentReferral.assignedTo.username
-          )
+        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
 
     let formError: FormValidationError | null = null
     if (assignee === null) {
@@ -137,7 +128,8 @@ export default class ServiceProviderReferralsController {
       formError,
       'service-provider',
       true,
-      expandedServiceUser
+      expandedServiceUser,
+      riskSummary
     )
     const view = new ShowReferralView(presenter)
 

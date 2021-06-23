@@ -296,14 +296,6 @@ describe('GET /referrals/:id/risk-information', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  beforeAll(() => {
-    apiConfig.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
-  })
-
-  afterAll(() => {
-    apiConfig.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
-  })
-
   it('renders a form page', async () => {
     await request(app)
       .get('/referrals/1/risk-information')
