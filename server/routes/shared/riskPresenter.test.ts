@@ -18,4 +18,15 @@ describe(RiskPresenter, () => {
       ])
     })
   })
+
+  describe('text', () => {
+    it('contains additional risk information', () => {
+      const presenter = new RiskPresenter(riskSummary.build())
+      expect(presenter.text).toMatchObject({
+        natureOfRisk: 'physically aggressive',
+        riskImminence: 'can happen at the drop of a hat',
+        whoIsAtRisk: undefined,
+      })
+    })
+  })
 })
