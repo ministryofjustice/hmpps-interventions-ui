@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
@@ -15,6 +16,8 @@ data class AddressDTO private constructor(
   val postCode: String,
 ) {
   companion object {
+    @JvmStatic
+    @JsonCreator
     operator fun invoke(firstAddressLine: String, secondAddressLine: String? = null, townOrCity: String? = null, county: String? = null, postCode: String): AddressDTO {
       val normalizedPostCode = postCode.replace("\\s".toRegex(), "").uppercase()
       return AddressDTO(firstAddressLine, secondAddressLine, townOrCity, county, normalizedPostCode)
@@ -45,20 +48,18 @@ data class ActionPlanSessionDTO(
   val appointmentTime: OffsetDateTime?,
   val durationInMinutes: Int?,
   val appointmentDeliveryType: AppointmentDeliveryType?,
-  val appointmentDeliveryAddress: List<String>?,
+  val appointmentDeliveryAddress: AddressDTO?,
   val sessionFeedback: SessionFeedbackDTO,
 ) {
   companion object {
     fun from(session: ActionPlanSession): ActionPlanSessionDTO {
       val appointmentDelivery = session.currentAppointment?.appointmentDelivery
       val address = when (appointmentDelivery?.appointmentDeliveryType) {
-        AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE -> listOfNotNull(appointmentDelivery?.npsOfficeCode)
         AppointmentDeliveryType.IN_PERSON_MEETING_OTHER -> {
           if (appointmentDelivery?.appointmentDeliveryAddress !== null) {
             val address = appointmentDelivery.appointmentDeliveryAddress
             if (address != null) {
-
-              listOfNotNull(address.firstAddressLine, address.secondAddressLine ?: "", address.townCity, address.county, address.postCode)
+              AddressDTO(address.firstAddressLine, address.secondAddressLine ?: "", address.townCity, address.county, address.postCode)
             } else null
           } else null
         }

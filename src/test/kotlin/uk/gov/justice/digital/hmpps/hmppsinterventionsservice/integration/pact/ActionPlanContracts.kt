@@ -36,7 +36,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   )
   fun `create an empty draft plan with 2 2 hours appointments`() {
     val actionPlan = setupAssistant.createActionPlan(id = UUID.fromString("345059d4-1697-467b-8914-fedec9957279"), numberOfSessions = 2)
-    val appointmentDeliveryAddress = AddressDTO(firstAddressLine = "Harmony Living Office, Room 4", secondAddressLine = "44 Bouverie Road", townOrCity = "Blackpool", county = "Lancashire", postCode = "EC1A 1BB")
+    val appointmentDeliveryAddress = AddressDTO(firstAddressLine = "Harmony Living Office, Room 4", secondAddressLine = "44 Bouverie Road", townOrCity = "Blackpool", county = "Lancashire", postCode = "SY40RE")
     setupAssistant.createActionPlanSession(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"), appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = appointmentDeliveryAddress)
     setupAssistant.createActionPlanSession(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"), appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = appointmentDeliveryAddress)
   }
