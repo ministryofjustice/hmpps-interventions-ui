@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -69,8 +70,10 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignedBy: AuthUser? = null,
     assignedTo: AuthUser? = null,
     assignedAt: OffsetDateTime? = null,
+
+    supplierAssessment: SupplierAssessment? = null,
   ): Referral {
-    return create(
+    val referral = create(
       id = id,
       createdAt = createdAt,
       createdBy = createdBy,
@@ -89,7 +92,9 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       assignedBy = assignedBy,
       assignedTo = assignedTo,
       assignedAt = assignedAt,
+      supplierAssessment = supplierAssessment
     )
+    return referral
   }
 
   fun createEnded(
@@ -179,7 +184,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     endRequestedComments: String? = null,
 
     concludedAt: OffsetDateTime? = null,
-
+    supplierAssessment: SupplierAssessment? = null,
     endOfServiceReport: EndOfServiceReport? = null,
   ): Referral {
     val referral = save(
@@ -210,6 +215,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         endRequestedComments = endRequestedComments,
         concludedAt = concludedAt,
         endOfServiceReport = endOfServiceReport,
+        supplierAssessment = supplierAssessment,
       )
     )
     referral.selectedDesiredOutcomes = desiredOutcomes.map { SelectedDesiredOutcomesMapping(it.serviceCategoryId, it.id) }.toMutableList()

@@ -50,6 +50,7 @@ class PactTest : IntegrationTestBase() {
       ReferralContracts(setupAssistant),
       ServiceCategoryContracts(setupAssistant),
       EndOfServiceReportContracts(setupAssistant),
+      SupplierAssessmentContracts(setupAssistant),
     )
   }
 
