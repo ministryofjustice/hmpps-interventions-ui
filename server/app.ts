@@ -25,6 +25,7 @@ import HmppsAuthService from './services/hmppsAuthService'
 import passportSetup from './authentication/passport'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ControllerUtils from './utils/controllerUtils'
+import broadcastMessageConfig from './broadcast-message-config.json'
 
 const RedisStore = connectRedis(session)
 
@@ -110,6 +111,17 @@ export default function createApp(
       rolling: true,
     })
   )
+
+  // Determine whether or not to display broadcast message
+  app.use((_req, res, next) => {
+    const startTime = new Date(broadcastMessageConfig.start).getTime()
+    const endTime = new Date(broadcastMessageConfig.end).getTime()
+    const currentTime = Date.now()
+
+    res.locals.broadcastMessage =
+      currentTime >= startTime && currentTime <= endTime ? broadcastMessageConfig.message : null
+    next()
+  })
 
   // Request Processing Configuration
   app.use(bodyParser.json())
