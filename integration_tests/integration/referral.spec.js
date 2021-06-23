@@ -6,9 +6,26 @@ import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
+import riskSummaryFactory from '../../testutils/factories/riskSummary'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 describe('Referral form', () => {
-  const deliusServiceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+  const deliusServiceUser = deliusServiceUserFactory.build({
+    firstName: 'Alex',
+    contactDetails: {
+      emailAddresses: ['alex.river@example.com', 'a.r@example.com'],
+      phoneNumbers: [
+        {
+          number: '0123456789',
+          type: 'MOBILE',
+        },
+        {
+          number: '9876543210',
+          type: 'MOBILE',
+        },
+      ],
+    },
+  })
   const convictionWithSentenceToSelect = deliusConvictionFactory.build({
     convictionId: 123456789,
     active: true,
@@ -44,11 +61,11 @@ describe('Referral form', () => {
     desiredOutcomes: [
       {
         id: '1',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '2',
-        description: 'Service User is prevented from becoming homeless',
+        description: 'Service user is prevented from becoming homeless',
       },
     ],
     complexityLevels: [
@@ -119,6 +136,7 @@ describe('Referral form', () => {
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
+      cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
 
       cy.login()
 
@@ -151,6 +169,28 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: false })
 
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+        ...deliusServiceUser,
+        contactDetails: {
+          addresses: [
+            {
+              addressNumber: 'Flat 2',
+              buildingName: null,
+              streetName: 'Test Walk',
+              postcode: 'SW16 1AQ',
+              town: 'London',
+              district: 'City of London',
+              county: 'Greater London',
+              from: '2019-01-01',
+              to: null,
+              noFixedAbode: false,
+            },
+          ],
+        },
+      })
+
+      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
+
       cy.contains('Confirm service user’s personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
@@ -159,11 +199,18 @@ describe('Referral form', () => {
       cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
+      cy.contains('Flat 2 Test Walk')
+      cy.contains('London')
+      cy.contains('City of London')
+      cy.contains('Greater London')
+      cy.contains('SW16 1AQ')
       cy.contains('Male')
       cy.contains('British')
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains("Alex's information").next().contains('Email address').next().contains('alex.river@example.com')
+      cy.contains("Alex's information").next().contains('Phone number').next().contains('0123456789')
 
       cy.contains('Save and continue').click()
 
@@ -228,8 +275,8 @@ describe('Referral form', () => {
 
       cy.get('h1').contains('What are the desired outcomes for the Accommodation service?')
 
-      cy.contains('Service User makes progress in obtaining accommodation').click()
-      cy.contains('Service User is prevented from becoming homeless').click()
+      cy.contains('Service user makes progress in obtaining accommodation').click()
+      cy.contains('Service user is prevented from becoming homeless').click()
 
       cy.contains('Save and continue').click()
 
@@ -295,11 +342,17 @@ describe('Referral form', () => {
       cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
+      cy.contains('Flat 2 Test Walk')
+      cy.contains('London')
+      cy.contains('City of London')
+      cy.contains('Greater London')
+      cy.contains('SW16 1AQ')
       cy.contains('Male')
       cy.contains('British')
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains('alex.river@example.com')
 
       cy.contains('A danger to the elderly')
 
@@ -315,8 +368,8 @@ describe('Referral form', () => {
       cy.contains('Accommodation referral details')
       cy.contains('Low complexity')
       cy.contains('Info about low complexity')
-      cy.contains('Service User makes progress in obtaining accommodation')
-      cy.contains('Service User is prevented from becoming homeless')
+      cy.contains('Service user makes progress in obtaining accommodation')
+      cy.contains('Service user is prevented from becoming homeless')
 
       cy.contains('24 August 2021')
 
@@ -337,16 +390,16 @@ describe('Referral form', () => {
         desiredOutcomes: [
           {
             id: '3',
-            description: 'Service User develops and sustains social networks to reduce initial social isolation.',
+            description: 'Service user develops and sustains social networks to reduce initial social isolation.',
           },
           {
             id: '4',
-            description: 'Service User secures early post-release engagement with community based services.',
+            description: 'Service user secures early post-release engagement with community based services.',
           },
           {
             id: '5',
             description:
-              'Service User develops resilience and perseverance to cope with challenges and barriers on return to the community.',
+              'Service user develops resilience and perseverance to cope with challenges and barriers on return to the community.',
           },
         ],
         complexityLevels: [
@@ -424,6 +477,7 @@ describe('Referral form', () => {
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
+      cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
 
       cy.login()
 
@@ -450,6 +504,28 @@ describe('Referral form', () => {
         .disabledCohortInterventionReferralDetails()
         .checkYourAnswers({ checkAnswers: false })
 
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+        ...deliusServiceUser,
+        contactDetails: {
+          addresses: [
+            {
+              addressNumber: 'Flat 2',
+              buildingName: null,
+              streetName: 'Test Walk',
+              postcode: 'SW16 1AQ',
+              town: 'London',
+              district: 'City of London',
+              county: 'Greater London',
+              from: '2019-01-01',
+              to: null,
+              noFixedAbode: false,
+            },
+          ],
+        },
+      })
+
+      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
+
       cy.contains('Confirm service user’s personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
@@ -458,6 +534,11 @@ describe('Referral form', () => {
       cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
+      cy.contains('Flat 2 Test Walk')
+      cy.contains('London')
+      cy.contains('City of London')
+      cy.contains('Greater London')
+      cy.contains('SW16 1AQ')
       cy.contains('Male')
       cy.contains('British')
       cy.contains('English')
@@ -547,8 +628,8 @@ describe('Referral form', () => {
       )
       cy.get('h1').contains('What are the desired outcomes for the Accommodation service?')
 
-      cy.contains('Service User makes progress in obtaining accommodation').click()
-      cy.contains('Service User is prevented from becoming homeless').click()
+      cy.contains('Service user makes progress in obtaining accommodation').click()
+      cy.contains('Service user is prevented from becoming homeless').click()
 
       cy.contains('Save and continue').click()
 
@@ -567,10 +648,10 @@ describe('Referral form', () => {
         `/referrals/${draftReferral.id}/service-category/${completedSelectingServiceCategories.serviceCategoryIds[1]}/desired-outcomes`
       )
       cy.get('h1').contains('What are the desired outcomes for the Social inclusion service?')
-      cy.contains('Service User develops and sustains social networks to reduce initial social isolation.').click()
-      cy.contains('Service User secures early post-release engagement with community based services.').click()
+      cy.contains('Service user develops and sustains social networks to reduce initial social isolation.').click()
+      cy.contains('Service user secures early post-release engagement with community based services.').click()
       cy.contains(
-        'Service User develops resilience and perseverance to cope with challenges and barriers on return to the community.'
+        'Service user develops resilience and perseverance to cope with challenges and barriers on return to the community.'
       ).click()
 
       cy.contains('Save and continue').click()

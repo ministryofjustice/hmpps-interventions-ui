@@ -1053,46 +1053,46 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
         title: 'Low complexity',
         description:
-          'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+          'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
       },
       {
         id: '110f2405-d944-4c15-836c-0c6684e2aa78',
         title: 'Medium complexity',
         description:
-          'Service User is at risk of homelessness/is homeless, or will be on release from prison. Service User has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
+          'Service user is at risk of homelessness/is homeless, or will be on release from prison. Service user has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
       },
       {
         id: 'c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6',
         title: 'High complexity',
         description:
-          'Service User is homeless or in temporary/unstable accommodation, or will be on release from prison. Service User has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
+          'Service user is homeless or in temporary/unstable accommodation, or will be on release from prison. Service user has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
       },
     ]
     const desiredOutcomes = [
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         description:
-          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
       },
       {
         id: '65924ac6-9724-455b-ad30-906936291421',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-        description: 'Service User is helped to secure social or supported housing',
+        description: 'Service user is helped to secure social or supported housing',
       },
       {
         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
       },
       {
         id: '19d5ef58-5cfc-41fe-894c-acd705dc1325',
-        description: 'Service User is helped to sustain existing accommodation',
+        description: 'Service user is helped to sustain existing accommodation',
       },
       {
         id: 'f6f70273-16a2-4dc7-aafc-9bc74215e713',
-        description: 'Service User is prevented from becoming homeless',
+        description: 'Service user is prevented from becoming homeless',
       },
       {
         id: '449a93d7-e705-4340-9936-c859644abd52',
@@ -1101,7 +1101,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       },
       {
         id: '55a9cf76-428d-4409-8a57-aaa523f3b631',
-        description: 'Service User at risk of losing their tenancy are successfully helped to retain it',
+        description: 'Service user at risk of losing their tenancy are successfully helped to retain it',
       },
     ]
 
@@ -1756,11 +1756,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         {
           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
           description: 'Attend training course',
-          desiredOutcome: {
-            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-            description:
-              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          },
           createdAt: '2020-12-07T20:45:21.986389Z',
         },
       ]
@@ -1814,11 +1809,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         {
           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
           description: 'Attend training course',
-          desiredOutcome: {
-            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-            description:
-              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          },
           createdAt: '2020-12-07T20:45:21.986389Z',
         },
       ]
@@ -1875,7 +1865,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: {
             newActivity: {
               description: 'Attend training course',
-              desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
             },
           },
         },
@@ -1889,11 +1878,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               {
                 id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
                 description: 'Attend training course',
-                desiredOutcome: {
-                  id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-                  description:
-                    'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-                },
                 createdAt: '2020-12-07T20:45:21.986389Z',
               },
             ],
@@ -1907,7 +1891,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
         newActivity: {
           description: 'Attend training course',
-          desiredOutcomeId: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         },
       })
 
@@ -1916,10 +1899,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(draftActionPlan.numberOfSessions).toBe(null)
       expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
       expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
-      expect(draftActionPlan.activities[0].desiredOutcome.id).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
-      expect(draftActionPlan.activities[0].desiredOutcome.description).toEqual(
-        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed'
-      )
       expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
     })
 
@@ -1947,11 +1926,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               {
                 id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
                 description: 'Attend training course',
-                desiredOutcome: {
-                  id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-                  description:
-                    'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-                },
                 createdAt: '2020-12-07T20:45:21.986389Z',
               },
             ],
@@ -1976,10 +1950,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(draftActionPlan.numberOfSessions).toBe(4)
       expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
       expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
-      expect(draftActionPlan.activities[0].desiredOutcome.id).toEqual('301ead30-30a4-4c7c-8296-2768abfb59b5')
-      expect(draftActionPlan.activities[0].desiredOutcome.description).toEqual(
-        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed'
-      )
       expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
     })
   })
@@ -1993,20 +1963,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         {
           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
           description: 'Attend training course',
-          desiredOutcome: {
-            id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-            description:
-              'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-          },
           createdAt: '2020-12-07T20:45:21.986389Z',
         },
         {
           id: 'e5755c27-2c85-448b-9f6d-e3959ec9c2d0',
           description: 'Attend session',
-          desiredOutcome: {
-            id: '65924ac6-9724-455b-ad30-906936291421',
-            description: 'Service User makes progress in obtaining accommodation.',
-          },
           createdAt: '2020-12-07T20:47:21.986389Z',
         },
       ],
@@ -2046,6 +2007,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.submitActionPlan(token, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')).toMatchObject(
         submittedActionPlan
       )
+    })
+  })
+
+  describe('approveActionPlan', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted',
+        uponReceiving: 'a POST request to approve the action plan with ID 7a165933-d851-48c1-9ab0-ff5b8da12695',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/7a165933-d851-48c1-9ab0-ff5b8da12695/approve',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+        },
+      })
+    })
+    it('returns successfully', async () => {
+      await interventionsService.approveActionPlan(token, '7a165933-d851-48c1-9ab0-ff5b8da12695')
     })
   })
 

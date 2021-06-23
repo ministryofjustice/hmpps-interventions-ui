@@ -50,6 +50,8 @@ export default {
   },
   applicationInsights: {
     connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', null, requiredInProduction),
+    cloudRoleName: 'interventions-ui',
+    excludedRequests: [/^GET \/assets\/.*/, /^GET \/health.*/],
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
@@ -71,6 +73,7 @@ export default {
         deadline: Number(get('ASSESS_RISKS_AND_NEEDS_API_TIMEOUT_DEADLINE', 20000)),
       },
       agent: new AgentConfig(),
+      riskSummaryEnabled: get('ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED', false),
     },
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://hmpps-auth:8090/auth', requiredInProduction),

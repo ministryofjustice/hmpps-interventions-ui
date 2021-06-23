@@ -39,6 +39,10 @@ module.exports = on => {
       return communityApi.stubGetServiceUserByCRN(arg.crn, arg.responseJson)
     },
 
+    stubGetExpandedServiceUserByCRN: arg => {
+      return communityApi.stubGetExpandedServiceUserByCRN(arg.crn, arg.responseJson)
+    },
+
     stubGetUserByUsername: arg => {
       return communityApi.stubGetUserByUsername(arg.username, arg.responseJson)
     },
@@ -181,6 +185,10 @@ module.exports = on => {
 
     stubGetSupplementaryRiskInformation: arg => {
       return assessRisksAndNeedsService.stubGetSupplementaryRiskInformation(arg.riskId, arg.responseJson)
+    },
+
+    stubGetRiskSummary: arg => {
+      return assessRisksAndNeedsService.stubGetRiskSummary(arg.crn, arg.responseJson)
     },
 
     stubRecordAppointmentAttendance: arg => {

@@ -34,7 +34,6 @@ export interface InterventionsFilterParams {
 
 interface UpdateActivityParams {
   description: string
-  desiredOutcomeId: string
 }
 
 export interface UpdateDraftActionPlanParams {
@@ -444,6 +443,14 @@ export default class InterventionsService {
       path: '/referral-cancellation-reasons',
       headers: { Accept: 'application/json' },
     })) as CancellationReason[]
+  }
+
+  async approveActionPlan(token: string, actionPlanId: string): Promise<void> {
+    const restClient = this.createRestClient(token)
+    await restClient.post({
+      path: `/action-plan/${actionPlanId}/approve`,
+      headers: { Accept: 'application/json' },
+    })
   }
 
   async getSupplierAssessment(token: string, referralId: string): Promise<SupplierAssessment> {

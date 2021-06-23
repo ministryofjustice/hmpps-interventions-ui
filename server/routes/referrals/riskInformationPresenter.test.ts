@@ -1,5 +1,6 @@
 import RiskInformationPresenter from './riskInformationPresenter'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 
 describe('RiskInformationPresenter', () => {
   describe('text', () => {
@@ -8,13 +9,15 @@ describe('RiskInformationPresenter', () => {
         .serviceCategorySelected()
         .serviceUserSelected()
         .build({ serviceUser: { firstName: 'Geoffrey' } })
-      const presenter = new RiskInformationPresenter(referral)
+      const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build())
 
       expect(presenter.text).toEqual({
         title: 'Geoffrey’s risk information',
         additionalRiskInformation: {
           errorMessage: null,
           label: 'Information for the service provider about Geoffrey’s risks',
+          hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
+          labelClasses: 'govuk-label--s',
         },
       })
     })
@@ -25,7 +28,7 @@ describe('RiskInformationPresenter', () => {
           .serviceCategorySelected()
           .serviceUserSelected()
           .build({ serviceUser: { firstName: 'Geoffrey' } })
-        const presenter = new RiskInformationPresenter(referral, {
+        const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build(), {
           errors: [
             {
               formFields: ['additional-risk-information'],
@@ -50,7 +53,7 @@ describe('RiskInformationPresenter', () => {
     describe('when the referral has no additional risk information', () => {
       it('replays empty answers', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
-        const presenter = new RiskInformationPresenter(referral)
+        const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build())
 
         expect(presenter.fields).toEqual({
           additionalRiskInformation: '',
@@ -63,7 +66,7 @@ describe('RiskInformationPresenter', () => {
         const referral = draftReferralFactory
           .serviceUserSelected()
           .build({ additionalRiskInformation: 'Risk to the elderly' })
-        const presenter = new RiskInformationPresenter(referral)
+        const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build())
 
         expect(presenter.fields).toEqual({
           additionalRiskInformation: 'Risk to the elderly',
@@ -74,7 +77,7 @@ describe('RiskInformationPresenter', () => {
     describe('when there’s user input', () => {
       it('replays the user input', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
-        const presenter = new RiskInformationPresenter(referral, null, {
+        const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build(), null, {
           'additional-risk-information': 'Risk to the vulnerable',
         })
 
@@ -89,7 +92,7 @@ describe('RiskInformationPresenter', () => {
     describe('when error is null', () => {
       it('returns null', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
-        const presenter = new RiskInformationPresenter(referral, null)
+        const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build(), null)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -98,7 +101,7 @@ describe('RiskInformationPresenter', () => {
     describe('when error is not null', () => {
       it('returns the errors', () => {
         const referral = draftReferralFactory.serviceUserSelected().build()
-        const presenter = new RiskInformationPresenter(referral, {
+        const presenter = new RiskInformationPresenter(referral, riskSummaryFactory.build(), {
           errors: [
             {
               formFields: ['additional-risk-information'],

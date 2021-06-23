@@ -12,6 +12,7 @@ import flash from 'connect-flash'
 import redis from 'redis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
+import { randomBytes } from 'crypto'
 import indexRoutes from './routes'
 import healthcheck from './services/healthCheck'
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -55,22 +56,40 @@ export default function createApp(
   // The Sentry request handler must be the first middleware on the app
   app.use(Sentry.Handlers.requestHandler())
 
+  const nonce = randomBytes(16).toString('base64')
   // Secure code best practice - see:
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
+
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-          scriptSrc: ["'self'", 'code.jquery.com', "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='"],
+          scriptSrc: [
+            "'self'",
+            'code.jquery.com',
+            // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
+            "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+            'https://www.google-analytics.com',
+            'https://ssl.google-analytics.com',
+            'https://www.googletagmanager.com/',
+            // Used to allow inline script to set Google Analytics uaId in `layout.njk`
+            `'nonce-${nonce}'`,
+          ],
           styleSrc: ["'self'", 'code.jquery.com'],
           fontSrc: ["'self'"],
+          imgSrc: ["'self'", 'https://www.google-analytics.com'],
+          connectSrc: ["'self'", 'https://www.google-analytics.com'],
         },
       },
     })
   )
+
+  app.use((req, res, next) => {
+    res.locals.cspNonce = nonce
+    next()
+  })
 
   app.use(addRequestId())
 

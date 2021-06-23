@@ -1,9 +1,14 @@
 import { TagArgs, TableArgs } from '../../utils/govukFrontendTypes'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
+import ActionPlanView from '../shared/actionPlanView'
 
 export default class InterventionProgressView {
-  constructor(private readonly presenter: InterventionProgressPresenter) {}
+  actionPlanView: ActionPlanView
+
+  constructor(private readonly presenter: InterventionProgressPresenter) {
+    this.actionPlanView = new ActionPlanView(presenter.actionPlanPresenter, true)
+  }
 
   private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
@@ -58,6 +63,7 @@ export default class InterventionProgressView {
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
+        actionPlanSummaryListArgs: this.actionPlanView.actionPlanSummaryListArgs.bind(this.actionPlanView),
       },
     ]
   }

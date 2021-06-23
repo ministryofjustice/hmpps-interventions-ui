@@ -10,17 +10,13 @@ export default function createErrorHandler(production: boolean) {
     }
 
     if (createError.isHttpError(err)) {
-      // authorization errors cause a special error page to be displayed
-      if (err.status === 403) {
+      // authorization errors from interventions service cause a special error page to be displayed
+      if (err.status === 403 && err.response?.body?.accessErrors) {
         res.status(403)
 
-        const args: Record<string, unknown> = { message: err.message }
-
-        // 403 responses from the interventions service contain further information in the
-        // response; if it's present, the authError template surfaces this to the end user
-        if (err.response) {
-          args.message = err.response.body?.message || args.message
-          args.accessErrors = err.response.body?.accessErrors
+        const args = {
+          message: err.response?.body?.message,
+          accessErrors: err.response?.body?.accessErrors,
         }
 
         return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', args] }, null)

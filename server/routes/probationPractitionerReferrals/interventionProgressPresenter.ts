@@ -1,11 +1,12 @@
 import SentReferral from '../../models/sentReferral'
-import { ActionPlanAppointment } from '../../models/actionPlan'
+import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
+import ActionPlanPresenter from '../shared/actionPlanPresenter'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
@@ -22,16 +23,20 @@ interface EndOfServiceTableRow {
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
+  actionPlanPresenter: ActionPlanPresenter
+
   constructor(
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
-    private readonly actionPlanAppointments: ActionPlanAppointment[]
+    private readonly actionPlanAppointments: ActionPlanAppointment[],
+    private readonly actionPlan: ActionPlan | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
       referral.id,
       'probation-practitioner'
     )
+    this.actionPlanPresenter = new ActionPlanPresenter(referral, actionPlan, 'probation-practitioner')
   }
 
   get referralAssigned(): boolean {

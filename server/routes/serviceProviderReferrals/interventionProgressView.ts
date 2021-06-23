@@ -9,10 +9,15 @@ import {
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
+import ActionPlanView from '../shared/actionPlanView'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
 export default class InterventionProgressView {
-  constructor(private readonly presenter: InterventionProgressPresenter) {}
+  actionPlanView: ActionPlanView
+
+  constructor(private readonly presenter: InterventionProgressPresenter) {
+    this.actionPlanView = new ActionPlanView(presenter.actionPlanPresenter, true)
+  }
 
   get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
     let cancellationReasonHTML = ''
@@ -69,81 +74,6 @@ export default class InterventionProgressView {
     }
   }
 
-  private actionPlanSummaryListArgs(tagMacro: (args: TagArgs) => string, csrfToken: string): SummaryListArgs {
-    const rows: SummaryListArgsRow[] = [
-      {
-        key: { text: 'Action plan status' },
-        value: {
-          text: tagMacro({
-            text: this.presenter.text.actionPlanStatus,
-            classes: this.actionPlanTagClass,
-            attributes: { id: 'action-plan-status' },
-          }),
-        },
-      },
-    ]
-
-    if (!this.presenter.actionPlanCreated) {
-      // action plan doesn't exist; show link to create one
-      rows.push({
-        key: { text: 'To do' },
-        value: {
-          html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
-                   <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
-                   <button class="govuk-button govuk-button--secondary">
-                     Create action plan
-                   </button>
-                 </form>`,
-        },
-      })
-    } else if (this.presenter.actionPlanCreated && !this.presenter.actionPlanUnderReview) {
-      // action plan exists, but has not been submitted
-      rows.push({
-        key: { text: 'To do' },
-        value: { html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Submit action plan</a>` },
-      })
-    } else if (this.presenter.actionPlanUnderReview) {
-      // action plan has been submitted; show link to view it
-      rows.push({
-        key: { text: 'Submitted date' },
-        value: { text: this.presenter.text.actionPlanSubmittedDate, classes: 'action-plan-submitted-date' },
-      })
-      // FIXME: the 'view action plan' page doesn't exist yet!
-      rows.push({
-        key: { text: 'To do' },
-        value: { html: `<a href="#" class="govuk-link">View action plan</a>` },
-      })
-    } else if (this.presenter.actionPlanApproved) {
-      // action plan has been approved; show link to view it
-      rows.push({
-        key: { text: 'Submitted date' },
-        value: { text: this.presenter.text.actionPlanSubmittedDate, classes: 'action-plan-submitted-date' },
-      })
-      rows.push({
-        key: { text: 'Approval date' },
-        value: { text: this.presenter.text.actionPlanApprovalDate },
-      })
-      // FIXME: the 'view action plan' page doesn't exist yet!
-      rows.push({
-        key: { text: 'To do' },
-        value: { html: `<a href="#" class="govuk-link">View action plan</a>` },
-      })
-    }
-
-    return { rows }
-  }
-
-  private get actionPlanTagClass(): string {
-    switch (this.presenter.text.actionPlanStatus) {
-      case 'Approved':
-        return 'govuk-tag--green'
-      case 'Under review':
-        return 'govuk-tag- govuk-tag--red'
-      default:
-        return 'govuk-tag--grey'
-    }
-  }
-
   private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
       head: this.presenter.sessionTableHeaders.map((header: string) => {
@@ -197,14 +127,14 @@ export default class InterventionProgressView {
       },
     ]
 
-    if (this.presenter.allowEndOfServiceReportCreation) {
+    if (this.presenter.canSubmitEndOfServiceReport) {
       rows.push({
         key: { text: 'Action' },
         value: {
           html: `<form method="post" action="${ViewUtils.escape(this.presenter.createEndOfServiceReportFormAction)}">
                    <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken)}">
-                   <button class="govuk-button govuk-button--secondary">
-                     Create end of service report
+                   <button>
+                     ${this.presenter.endOfServiceReportButtonActionText} end of service report
                    </button>
                  </form>`,
         },
@@ -224,7 +154,7 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
-        actionPlanSummaryListArgs: this.actionPlanSummaryListArgs.bind(this),
+        actionPlanSummaryListArgs: this.actionPlanView.actionPlanSummaryListArgs.bind(this.actionPlanView),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),

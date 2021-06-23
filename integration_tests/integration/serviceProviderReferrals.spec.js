@@ -9,6 +9,7 @@ import endOfServiceReportFactory from '../../testutils/factories/endOfServiceRep
 import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import appointmentFactory from '../../testutils/factories/appointment'
 
@@ -102,11 +103,46 @@ describe('Service provider referrals dashboard', () => {
       surname: 'Jones',
       dateOfBirth: '1980-01-01',
       contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
+        emailAddresses: ['jenny.jones@example.com', 'JJ@example.com'],
         phoneNumbers: [
           {
             number: '07123456789',
             type: 'MOBILE',
+          },
+          {
+            number: '0798765432',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
+
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+      ...deliusServiceUser,
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com', 'JJ@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+          {
+            number: '0798765432',
+            type: 'MOBILE',
+          },
+        ],
+        addresses: [
+          {
+            addressNumber: 'Flat 2',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2019-01-01',
+            to: null,
+            noFixedAbode: false,
           },
         ],
       },
@@ -124,6 +160,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferralsForUserToken(sentReferrals)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
 
@@ -168,21 +205,32 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Accommodation service')
     cy.contains('LOW COMPLEXITY')
-    cy.contains('Service User has some capacity and means to secure')
-    cy.contains('All barriers, as identified in the Service User Action Plan')
-    cy.contains('Service User makes progress in obtaining accommodation')
+    cy.contains('Service user has some capacity and means to secure')
+    cy.contains('All barriers, as identified in the Service user action plan')
+    cy.contains('Service user makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
     cy.contains('MEDIUM COMPLEXITY')
-    cy.contains('Service User is at risk of homelessness/is homeless')
-    cy.contains('Service User is helped to secure social or supported housing')
-    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
+    cy.contains('Service user is at risk of homelessness/is homeless')
+    cy.contains('Service user is helped to secure social or supported housing')
+    cy.contains('Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
     cy.contains("Service user's personal details")
     cy.contains('English')
     cy.contains('Agnostic')
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
+    cy.contains("Service user's personal details")
+      .next()
+      .contains('Email address')
+      .next()
+      .contains('jenny.jones@example.com')
+    cy.contains("Service user's personal details").next().contains('Phone number').next().contains('07123456789')
+    cy.contains('Flat 2 Test Walk')
+    cy.contains('London')
+    cy.contains('City of London')
+    cy.contains('Greater London')
+    cy.contains('SW16 1AQ')
     cy.contains("Service user's risk information")
     cy.contains('They are low risk.')
     cy.contains("Service user's needs")
@@ -209,6 +257,7 @@ describe('Service provider referrals dashboard', () => {
     const referral = sentReferralFactory.build(referralParams)
     const deliusUser = deliusUserFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
 
@@ -217,6 +266,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferralsForUserToken([referral])
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubAssignSentReferral(referral.id, referral)
@@ -261,19 +311,19 @@ describe('Service provider referrals dashboard', () => {
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         description:
-          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
       },
       {
         id: '65924ac6-9724-455b-ad30-906936291421',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-        description: 'Service User is helped to secure social or supported housing',
+        description: 'Service user is helped to secure social or supported housing',
       },
       {
         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
       },
     ]
 
@@ -336,9 +386,6 @@ describe('Service provider referrals dashboard', () => {
       activities: [
         {
           id: '1',
-          desiredOutcome: {
-            id: desiredOutcomes[0].id,
-          },
           description: 'Attend training course',
           createdAt: new Date().toISOString(),
         },
@@ -359,9 +406,6 @@ describe('Service provider referrals dashboard', () => {
         ...draftActionPlanWithActivity.activities,
         {
           id: '2',
-          desiredOutcome: {
-            id: desiredOutcomes[1].id,
-          },
           description: 'Create appointment with local authority',
           createdAt: new Date().toISOString(),
         },
@@ -409,7 +453,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Return to service progress').click()
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
-    cy.get('#action-plan-status').contains('Under review')
+    cy.get('#action-plan-status').contains('Awaiting approval')
     cy.get('.action-plan-submitted-date').contains(/\d{1,2} [A-Z][a-z]{2} \d{4}/)
   })
 
@@ -473,7 +517,7 @@ describe('Service provider referrals dashboard', () => {
   })
 
   describe('Recording post session feedback', () => {
-    it('user records the Service User as having attended, and fills out behaviour screen', () => {
+    it('user records the Service user as having attended, and fills out behaviour screen', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const accommodationIntervention = interventionFactory.build({
         contractType: { code: 'SOC', name: 'Social inclusion' },
@@ -624,7 +668,7 @@ describe('Service provider referrals dashboard', () => {
         ])
     })
 
-    it('user records the Service User as having not attended, and skips behaviour screen', () => {
+    it('user records the Service user as having not attended, and skips behaviour screen', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const intervention = interventionFactory.build({
         contractType: { code: 'ACC', name: 'accommodation' },
@@ -861,19 +905,19 @@ describe('Service provider referrals dashboard', () => {
       {
         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
         description:
-          'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
       },
       {
         id: '65924ac6-9724-455b-ad30-906936291421',
-        description: 'Service User makes progress in obtaining accommodation',
+        description: 'Service user makes progress in obtaining accommodation',
       },
       {
         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-        description: 'Service User is helped to secure social or supported housing',
+        description: 'Service user is helped to secure social or supported housing',
       },
       {
         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-        description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
       },
     ]
 

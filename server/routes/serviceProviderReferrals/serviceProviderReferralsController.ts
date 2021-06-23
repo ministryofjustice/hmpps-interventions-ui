@@ -57,6 +57,8 @@ import ControllerUtils from '../../utils/controllerUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import ActionPlanPresenter from '../shared/actionPlanPresenter'
+import ActionPlanView from '../shared/actionPlanView'
 import SentReferral from '../../models/sentReferral'
 import ScheduleActionPlanSessionPresenter from './scheduleActionPlanSessionPresenter'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
@@ -94,13 +96,13 @@ export default class ServiceProviderReferralsController {
       req.params.id
     )
 
-    const [intervention, sentBy, serviceUser, conviction, riskInformation] = await Promise.all([
+    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation] = await Promise.all([
       this.interventionsService.getIntervention(
         res.locals.user.token.accessToken,
         sentReferral.referral.interventionId
       ),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.communityApiService.getExpandedServiceUserByCRN(sentReferral.referral.serviceUser.crn),
       this.communityApiService.getConvictionById(
         sentReferral.referral.serviceUser.crn,
         sentReferral.referral.relevantSentenceId
@@ -141,11 +143,12 @@ export default class ServiceProviderReferralsController {
       assignee,
       formError,
       'service-provider',
-      true
+      true,
+      expandedServiceUser
     )
     const view = new ShowReferralView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
@@ -796,12 +799,23 @@ export default class ServiceProviderReferralsController {
   }
 
   async createDraftEndOfServiceReport(req: Request, res: Response): Promise<void> {
-    const draftEndOfServiceReport = await this.interventionsService.createDraftEndOfServiceReport(
-      res.locals.user.token.accessToken,
-      req.params.id
-    )
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
 
-    res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`)
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    let draftEndOfServiceReportId = referral.endOfServiceReport?.id
+
+    if (!draftEndOfServiceReportId) {
+      const draftEndOfServiceReport = await this.interventionsService.createDraftEndOfServiceReport(
+        accessToken,
+        referralId
+      )
+
+      draftEndOfServiceReportId = draftEndOfServiceReport.id
+    }
+
+    res.redirect(303, `/service-provider/end-of-service-report/${draftEndOfServiceReportId}/outcomes/1`)
   }
 
   async editEndOfServiceReportOutcome(req: Request, res: Response): Promise<void> {
@@ -956,6 +970,26 @@ export default class ServiceProviderReferralsController {
     const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategories[0])
     const view = new EndOfServiceReportConfirmationView(presenter)
 
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewActionPlan(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not view action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    const [actionPlan, serviceUser] = await Promise.all([
+      this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'service-provider')
+    const view = new ActionPlanView(presenter, false)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
