@@ -32,7 +32,7 @@ export default class AssessRisksAndNeedsService {
     logger.info({ crn }, 'getting risk summary information')
     try {
       return (await this.restClient.get({
-        path: `/risks/crn/${crn}/summary`,
+        path: `/risks/crn/${crn}`,
         token,
       })) as RiskSummary
     } catch (err) {

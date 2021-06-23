@@ -17,7 +17,7 @@ export default class RiskPresenter {
   get roshAnalysisRows(): RoshAnalysisTableRow[] {
     if (this.riskSummary === null) return []
 
-    return Object.entries(this.riskSummary.riskInCommunity).flatMap(([riskScore, riskGroups]) => {
+    return Object.entries(this.riskSummary.summary.riskInCommunity).flatMap(([riskScore, riskGroups]) => {
       return riskGroups.map(riskTo => {
         return { riskTo, riskScore }
       })
