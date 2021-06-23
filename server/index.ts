@@ -7,9 +7,10 @@ import RestClient from './data/restClient'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 
 const assessRisksAndNeedsRestClient = new RestClient('assessRisksAndNeedsClient', config.apis.assessRisksAndNeedsApi)
+const communityApiRestClient = new RestClient('communityApiClient', config.apis.communityApi)
 
 const hmppsAuthService = new HmppsAuthService()
-const communityApiService = new CommunityApiService(hmppsAuthService)
+const communityApiService = new CommunityApiService(hmppsAuthService, communityApiRestClient)
 const interventionsService = new InterventionsService(config.apis.interventionsService)
 const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthService, assessRisksAndNeedsRestClient)
 

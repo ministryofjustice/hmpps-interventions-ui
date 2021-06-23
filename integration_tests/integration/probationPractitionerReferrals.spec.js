@@ -6,6 +6,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -242,9 +243,37 @@ describe('Probation practitioner referrals dashboard', () => {
       },
     })
 
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+      ...deliusServiceUser,
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+        addresses: [
+          {
+            addressNumber: 'Flat 2',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2019-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
+      },
+    })
+
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
@@ -257,6 +286,12 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('07123456789')
     cy.contains('jenny.jones@example.com')
+    cy.contains('Flat 2')
+    cy.contains('Test Walk')
+    cy.contains('London')
+    cy.contains('City of London')
+    cy.contains('Greater London')
+    cy.contains('SW16 1AQ')
 
     cy.contains('Intervention details')
     cy.contains('Personal wellbeing')
@@ -266,21 +301,27 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('Accommodation service')
     cy.contains('LOW COMPLEXITY')
-    cy.contains('Service User has some capacity and means to secure')
-    cy.contains('All barriers, as identified in the Service User Action Plan')
-    cy.contains('Service User makes progress in obtaining accommodation')
+    cy.contains('Service user has some capacity and means to secure')
+    cy.contains('All barriers, as identified in the Service user action plan')
+    cy.contains('Service user makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
     cy.contains('MEDIUM COMPLEXITY')
-    cy.contains('Service User is at risk of homelessness/is homeless')
-    cy.contains('Service User is helped to secure social or supported housing')
-    cy.contains('Service User is helped to secure a tenancy in the private rented sector (PRS)')
+    cy.contains('Service user is at risk of homelessness/is homeless')
+    cy.contains('Service user is helped to secure social or supported housing')
+    cy.contains('Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
     cy.contains("Service user's personal details")
     cy.contains('English')
     cy.contains('Agnostic')
     cy.contains('Autism spectrum condition')
     cy.contains('sciatica')
+    cy.contains("Service user's personal details")
+      .next()
+      .contains('Email address')
+      .next()
+      .contains('jenny.jones@example.com')
+    cy.contains("Service user's personal details").next().contains('Phone number').next().contains('07123456789')
     cy.contains("Service user's risk information")
     cy.contains('They are low risk.')
     cy.contains("Service user's needs")

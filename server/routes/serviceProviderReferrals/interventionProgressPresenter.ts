@@ -6,6 +6,7 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
+import ActionPlanPresenter from '../shared/actionPlanPresenter'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 
@@ -25,6 +26,8 @@ interface ProgressSessionTableRow {
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
+  actionPlanPresenter: ActionPlanPresenter
+
   constructor(
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
@@ -32,51 +35,22 @@ export default class InterventionProgressPresenter {
     private readonly actionPlanAppointments: ActionPlanAppointment[],
     private readonly supplierAssessment: SupplierAssessment
   ) {
+    const subNavUrlPrefix = 'service-provider'
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
       referral.id,
-      'service-provider'
+      subNavUrlPrefix
     )
+    this.actionPlanPresenter = new ActionPlanPresenter(referral, actionPlan, subNavUrlPrefix)
   }
 
   get referralAssigned(): boolean {
     return this.referral.assignedTo !== null
   }
 
-  readonly actionPlanFormUrl = `/service-provider/action-plan/${this.actionPlan?.id}/add-activities`
-
-  readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
-
   readonly text = {
     title: utils.convertToTitleCase(this.intervention.contractType.name),
-    actionPlanStatus: this.actionPlanStatus,
-    actionPlanSubmittedDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.submittedAt || null),
-    // fixme: we don't have immediate access to the full name of the user without looking it up ahead of time
-    // actionPlanSubmitter: this.actionPlan?.submittedBy.username\
-    actionPlanApprovalDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.approvedAt || null),
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
-  }
-
-  private get actionPlanStatus(): string {
-    if (this.actionPlanApproved) {
-      return 'Approved'
-    }
-    if (this.actionPlanUnderReview) {
-      return 'Under review'
-    }
-    return 'Not submitted'
-  }
-
-  get actionPlanCreated(): boolean {
-    return this.actionPlan !== null
-  }
-
-  get actionPlanUnderReview(): boolean {
-    return this.actionPlan?.submittedAt != null && !this.actionPlanApproved
-  }
-
-  get actionPlanApproved(): boolean {
-    return this.actionPlan?.approvedAt != null
   }
 
   get referralEnded(): boolean {
@@ -178,12 +152,24 @@ export default class InterventionProgressPresenter {
     ? 'active'
     : 'inactive'
 
-  private get endOfServiceReportSubmitted() {
-    return this.referral.endOfServiceReport !== null && this.referral.endOfServiceReport.submittedAt !== null
+  get endOfServiceReportSubmitted(): boolean {
+    return !!this.referral.endOfServiceReport?.submittedAt
   }
 
-  get allowEndOfServiceReportCreation(): boolean {
-    return this.referral.endOfServiceReport === null
+  get canSubmitEndOfServiceReport(): boolean {
+    return this.referralAssigned && !this.endOfServiceReportSubmitted
+  }
+
+  private get endOfServiceReportStarted(): boolean {
+    return this.referral.endOfServiceReport !== null && !this.endOfServiceReportSubmitted
+  }
+
+  get endOfServiceReportButtonActionText(): string | null {
+    if (this.endOfServiceReportSubmitted) {
+      return null
+    }
+
+    return this.endOfServiceReportStarted ? 'Continue' : 'Create'
   }
 
   private readonly supplierAssessmentStatus = sessionStatus.forAppointment(

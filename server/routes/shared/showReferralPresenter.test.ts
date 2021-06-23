@@ -8,6 +8,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import { TagArgs } from '../../utils/govukFrontendTypes'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -36,6 +37,7 @@ describe(ShowReferralPresenter, () => {
     surname: 'Beaks',
     email: 'bernard.beaks@justice.gov.uk',
   })
+  const deliusServiceUser = expandedDeliusServiceUserFactory.build()
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
@@ -52,7 +54,8 @@ describe(ShowReferralPresenter, () => {
         null,
         null,
         'service-provider',
-        true
+        true,
+        deliusServiceUser
       )
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
@@ -73,7 +76,8 @@ describe(ShowReferralPresenter, () => {
             null,
             null,
             'service-provider',
-            true
+            true,
+            deliusServiceUser
           )
 
           expect(presenter.text.assignedTo).toBeNull()
@@ -92,7 +96,8 @@ describe(ShowReferralPresenter, () => {
             hmppsAuthUser,
             null,
             'service-provider',
-            true
+            true,
+            deliusServiceUser
           )
 
           expect(presenter.text.assignedTo).toEqual('John Smith')
@@ -113,7 +118,8 @@ describe(ShowReferralPresenter, () => {
         null,
         null,
         'service-provider',
-        true
+        true,
+        deliusServiceUser
       )
 
       expect(presenter.probationPractitionerDetails).toEqual([
@@ -190,7 +196,8 @@ describe(ShowReferralPresenter, () => {
           null,
           null,
           'service-provider',
-          true
+          true,
+          deliusServiceUser
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -277,7 +284,8 @@ describe(ShowReferralPresenter, () => {
           null,
           null,
           'service-provider',
-          true
+          true,
+          deliusServiceUser
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -330,7 +338,8 @@ describe(ShowReferralPresenter, () => {
         null,
         null,
         'service-provider',
-        true
+        true,
+        deliusServiceUser
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
@@ -341,14 +350,14 @@ describe(ShowReferralPresenter, () => {
           key: 'Complexity level',
           lines: [
             'LOW COMPLEXITY',
-            'Service User has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+            'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
           ],
         },
         {
           key: 'Desired outcomes',
           lines: [
-            'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-            'Service User makes progress in obtaining accommodation',
+            'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+            'Service user makes progress in obtaining accommodation',
           ],
         },
       ])
@@ -367,7 +376,8 @@ describe(ShowReferralPresenter, () => {
         null,
         null,
         'service-provider',
-        true
+        true,
+        deliusServiceUser
       )
 
       expect(presenter.serviceUserDetails).toEqual([
@@ -376,11 +386,18 @@ describe(ShowReferralPresenter, () => {
         { key: 'First name', lines: ['Jenny'] },
         { key: 'Last name', lines: ['Jones'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
+        {
+          key: 'Address',
+          lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+          listStyle: ListStyle.noMarkers,
+        },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
         { key: 'Religion or belief', lines: ['Agnostic'] },
         { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
+        { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.noMarkers },
+        { key: 'Phone number', lines: ['0123456789'], listStyle: ListStyle.noMarkers },
       ])
     })
   })
@@ -400,7 +417,8 @@ describe(ShowReferralPresenter, () => {
         null,
         null,
         'service-provider',
-        true
+        true,
+        deliusServiceUser
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -464,7 +482,8 @@ describe(ShowReferralPresenter, () => {
           null,
           null,
           'service-provider',
-          true
+          true,
+          deliusServiceUser
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -550,7 +569,8 @@ describe(ShowReferralPresenter, () => {
           null,
           null,
           'service-provider',
-          true
+          true,
+          deliusServiceUser
         )
 
         expect(presenter.serviceUserNeeds).toEqual([

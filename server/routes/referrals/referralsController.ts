@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import InterventionsService from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
@@ -44,11 +45,13 @@ import EnforceableDaysForm from './enforceableDaysForm'
 import EnforceableDaysPresenter from './enforceableDaysPresenter'
 import EnforceableDaysView from './enforceableDaysView'
 import RiskInformationForm from './riskInformationForm'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 
 export default class ReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService
+    private readonly communityApiService: CommunityApiService,
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
@@ -125,9 +128,9 @@ export default class ReferralsController {
 
   async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+    const serviceUser = await this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn)
 
-    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser)
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser)
     const view = new ServiceUserDetailsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -167,7 +170,9 @@ export default class ReferralsController {
     ])
 
     if (convictions.length < 1) {
-      throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+      throw createError(500, `No active convictions found for service user ${referral.serviceUser.crn}`, {
+        userMessage: `No convictions were found in nDelius for ${referral.serviceUser.crn}.`,
+      })
     }
 
     const presenter = new RelevantSentencePresenter(referral, intervention, convictions)
@@ -214,7 +219,9 @@ export default class ReferralsController {
       ])
 
       if (convictions.length < 1) {
-        throw new Error(`No active convictions found for service user ${referral.serviceUser.crn}`)
+        throw createError(500, `No active convictions found for service user ${referral.serviceUser.crn}`, {
+          userMessage: `No convictions were found in nDelius for ${referral.serviceUser.crn}.`,
+        })
       }
 
       const presenter = new RelevantSentencePresenter(referral, intervention, convictions, error)
@@ -474,8 +481,12 @@ export default class ReferralsController {
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
-    const presenter = new RiskInformationPresenter(referral)
+    const [serviceUser, riskSummary] = await Promise.all([
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
+    ])
+
+    const presenter = new RiskInformationPresenter(referral, riskSummary)
     const view = new RiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -506,9 +517,12 @@ export default class ReferralsController {
         res.locals.user.token.accessToken,
         req.params.id
       )
-      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+      const [serviceUser, riskSummary] = await Promise.all([
+        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+        this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
+      ])
 
-      const presenter = new RiskInformationPresenter(referral, error, req.body)
+      const presenter = new RiskInformationPresenter(referral, riskSummary, error, req.body)
       const view = new RiskInformationView(presenter)
 
       res.status(400)
@@ -569,16 +583,16 @@ export default class ReferralsController {
       throw new Error('Attempting to check answers without relevant sentence selected')
     }
 
-    const [intervention, serviceUser, conviction] = await Promise.all([
+    const [intervention, expandedDeliusServiceUser, conviction] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn),
       this.communityApiService.getConvictionById(referral.serviceUser.crn, referral.relevantSentenceId),
     ])
 
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction)
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, expandedDeliusServiceUser)
     const view = new CheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, expandedDeliusServiceUser)
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {

@@ -4,9 +4,9 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import { SessionStatus } from '../../utils/sessionStatus'
-import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 
 describe(InterventionProgressPresenter, () => {
   describe('referralEnded', () => {
@@ -68,22 +68,6 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.referralEndedFields.endRequestedComments).toBeNull()
       expect(presenter.referralEndedFields.endRequestedReason).toBeNull()
       expect(presenter.referralEndedFields.endRequestedAt).toBeNull()
-    })
-  })
-
-  describe('createActionPlanFormAction', () => {
-    it('returns the relative URL for creating a draft action plan', () => {
-      const referral = sentReferralFactory.build()
-      const intervention = interventionFactory.build()
-      const presenter = new InterventionProgressPresenter(
-        referral,
-        intervention,
-        null,
-        [],
-        supplierAssessmentFactory.build()
-      )
-
-      expect(presenter.createActionPlanFormAction).toEqual(`/service-provider/referrals/${referral.id}/action-plan`)
     })
   })
 
@@ -315,110 +299,6 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
-  describe('actionPlanStatus', () => {
-    describe('when there is no action plan', () => {
-      it('returns the correct status', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          null,
-          [],
-          supplierAssessmentFactory.build()
-        )
-
-        expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
-      })
-    })
-
-    describe('when the action plan has not been submitted', () => {
-      it('returns the correct status', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const actionPlan = actionPlanFactory.notSubmitted().build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          actionPlan,
-          [],
-          supplierAssessmentFactory.build()
-        )
-
-        expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
-      })
-    })
-
-    describe('when the action plan has been submitted', () => {
-      it('returns the correct status', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const actionPlan = actionPlanFactory.submitted().build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          actionPlan,
-          [],
-          supplierAssessmentFactory.build()
-        )
-
-        expect(presenter.text.actionPlanStatus).toEqual('Under review')
-      })
-    })
-
-    describe('when the action plan has been approved', () => {
-      it('returns the correct status', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const actionPlan = actionPlanFactory.approved().build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          actionPlan,
-          [],
-          supplierAssessmentFactory.build()
-        )
-
-        expect(presenter.text.actionPlanStatus).toEqual('Approved')
-      })
-    })
-  })
-
-  describe('actionPlanCreated', () => {
-    describe('when there is no action plan', () => {
-      it('returns true', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          null,
-          [],
-          supplierAssessmentFactory.build()
-        )
-
-        expect(presenter.actionPlanCreated).toEqual(false)
-      })
-    })
-
-    describe('when there is an action plan', () => {
-      it('returns false', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const actionPlan = actionPlanFactory.notSubmitted().build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          actionPlan,
-          [],
-          supplierAssessmentFactory.build()
-        )
-
-        expect(presenter.actionPlanCreated).toEqual(true)
-      })
-    })
-  })
-
   describe('referralAssigned', () => {
     it('returns false when the referral has no assignee', () => {
       const referral = sentReferralFactory.unassigned().build()
@@ -502,9 +382,79 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
-  describe('allowEndOfServiceReportCreation', () => {
+  describe('canSubmitEndOfServiceReport', () => {
+    describe('when the referral has been assigned', () => {
+      describe('when there is no end of service report', () => {
+        it('returns true', () => {
+          const referral = sentReferralFactory.assigned().build({ endOfServiceReport: null })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build()
+          )
+
+          expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
+        })
+      })
+
+      describe('when there is an end of service report but it has not been submitted', () => {
+        it('returns true', () => {
+          const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+          const referral = sentReferralFactory.assigned().build({ endOfServiceReport })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build()
+          )
+
+          expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
+        })
+      })
+
+      describe('when there is an end of service report and it has been submitted', () => {
+        it('returns false', () => {
+          const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+          const referral = sentReferralFactory.assigned().build({ endOfServiceReport })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build()
+          )
+
+          expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
+        })
+      })
+    })
+
+    describe('when the referral has not been assigned', () => {
+      it('returns false', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
+
+        expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
+      })
+    })
+  })
+
+  describe('endOfServiceReportSubmitted', () => {
     describe('when there is no end of service report', () => {
-      it('returns true', () => {
+      it('returns false', () => {
         const referral = sentReferralFactory.build({ endOfServiceReport: null })
         const intervention = interventionFactory.build()
         const presenter = new InterventionProgressPresenter(
@@ -515,11 +465,11 @@ describe(InterventionProgressPresenter, () => {
           supplierAssessmentFactory.build()
         )
 
-        expect(presenter.allowEndOfServiceReportCreation).toEqual(true)
+        expect(presenter.endOfServiceReportSubmitted).toEqual(false)
       })
     })
 
-    describe('when there is an end of service report', () => {
+    describe('when there is an end of service report but it has not been submitted', () => {
       it('returns false', () => {
         const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
         const referral = sentReferralFactory.build({ endOfServiceReport })
@@ -532,7 +482,76 @@ describe(InterventionProgressPresenter, () => {
           supplierAssessmentFactory.build()
         )
 
-        expect(presenter.allowEndOfServiceReportCreation).toEqual(false)
+        expect(presenter.endOfServiceReportSubmitted).toEqual(false)
+      })
+    })
+
+    describe('when there is an end of service report and it has been submitted', () => {
+      it('returns false', () => {
+        const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+        const referral = sentReferralFactory.build({ endOfServiceReport })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
+
+        expect(presenter.endOfServiceReportSubmitted).toEqual(true)
+      })
+    })
+  })
+
+  describe('endOfServiceReportButtonActionText', () => {
+    describe('when there is no end of service report', () => {
+      it('returns Create', () => {
+        const referral = sentReferralFactory.build({ endOfServiceReport: null })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
+
+        expect(presenter.endOfServiceReportButtonActionText).toEqual('Create')
+      })
+    })
+
+    describe('when there is an end of service report but it has not been submitted', () => {
+      it('returns Continue', () => {
+        const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+        const referral = sentReferralFactory.build({ endOfServiceReport })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
+
+        expect(presenter.endOfServiceReportButtonActionText).toEqual('Continue')
+      })
+    })
+
+    describe('when there is an end of service report and it has been submitted', () => {
+      it('returns null', () => {
+        const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+        const referral = sentReferralFactory.build({ endOfServiceReport })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
+
+        expect(presenter.endOfServiceReportButtonActionText).toEqual(null)
       })
     })
   })

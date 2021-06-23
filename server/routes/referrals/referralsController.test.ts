@@ -8,19 +8,25 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import apiConfig from '../../config'
-import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import interventionFactory from '../../../testutils/factories/intervention'
+import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
+import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
+jest.mock('../../services/assessRisksAndNeedsService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new CommunityApiService(new MockedHmppsAuthService()) as jest.Mocked<CommunityApiService>
+const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
 const serviceUser = {
   crn: 'X123456',
@@ -39,7 +45,7 @@ let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, communityApiService, assessRisksAndNeedsService },
     userType: AppSetupUserType.probationPractitioner,
   })
 
@@ -256,7 +262,7 @@ describe('GET /referrals/:id/service-user-details', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build()
     const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
-
+    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
@@ -284,8 +290,18 @@ describe('POST /referrals/:id/confirm-service-user-details', () => {
 describe('GET /referrals/:id/risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    const riskSummary = riskSummaryFactory.build()
 
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  beforeAll(() => {
+    apiConfig.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+  })
+
+  afterAll(() => {
+    apiConfig.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
   })
 
   it('renders a form page', async () => {
@@ -294,9 +310,26 @@ describe('GET /referrals/:id/risk-information', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Geoffrey’s risk information')
+        expect(res.text).toContain('Risk in community')
+        expect(res.text).toContain('Staff')
+        expect(res.text).toContain('VERY HIGH')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('HIGH')
+        expect(res.text).toContain('Prisoners')
+        expect(res.text).toContain('LOW')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get risk summary call fails', async () => {
+    assessRisksAndNeedsService.getRiskSummary.mockRejectedValue(new Error('failed to get risk summary'))
+    await request(app)
+      .get('/referrals/1/risk-information')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('failed to get risk summary')
+      })
   })
 
   it('renders an error when the get referral call fails', async () => {
@@ -314,7 +347,9 @@ describe('GET /referrals/:id/risk-information', () => {
 describe('POST /referrals/:id/risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    const riskSummary = riskSummaryFactory.build()
 
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
@@ -884,6 +919,7 @@ describe('GET /referrals/:id/relevant-sentence', () => {
       .expect(500)
       .expect(res => {
         expect(res.text).toContain(`No active convictions found for service user ${serviceUserCRN}`)
+        expect(res.text).toContain(`No convictions were found in nDelius for ${serviceUserCRN}`)
       })
   })
 })
@@ -1041,19 +1077,19 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/desi
     {
       id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
       description:
-        'All barriers, as identified in the Service User Action Plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+        'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
     },
     {
       id: '65924ac6-9724-455b-ad30-906936291421',
-      description: 'Service User makes progress in obtaining accommodation',
+      description: 'Service user makes progress in obtaining accommodation',
     },
     {
       id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-      description: 'Service User is helped to secure social or supported housing',
+      description: 'Service user is helped to secure social or supported housing',
     },
     {
       id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-      description: 'Service User is helped to secure a tenancy in the private rented sector (PRS)',
+      description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
     },
   ]
 
@@ -1259,6 +1295,7 @@ describe('GET /referrals/:id/check-answers', () => {
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     communityApiService.getConvictionById.mockResolvedValue(conviction)
   })
 

@@ -13,7 +13,7 @@
   <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
   <![endif]-->
 
-  <script type="application/javascript">
+  <script{% if cspNonce %} nonce="{{ cspNonce }}"{% endif %} type="application/javascript">
       window.gaConfig = {};
       window.gaConfig.uaId = "{{ googleAnalyticsTrackingId }}";
   </script>

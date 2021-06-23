@@ -19,6 +19,22 @@ export default class CommunityApiMocks {
     })
   }
 
+  stubGetExpandedServiceUserByCRN = async (crn: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/community-api/secure/offenders/crn/${crn}/all`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubGetUserByUsername = async (username: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {

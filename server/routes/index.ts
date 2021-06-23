@@ -29,7 +29,11 @@ export default function routes(router: Router, services: Services): Router {
     services.hmppsAuthService,
     services.assessRisksAndNeedsService
   )
-  const referralsController = new ReferralsController(services.interventionsService, services.communityApiService)
+  const referralsController = new ReferralsController(
+    services.interventionsService,
+    services.communityApiService,
+    services.assessRisksAndNeedsService
+  )
   const staticContentController = new StaticContentController()
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
@@ -253,6 +257,20 @@ export default function routes(router: Router, services: Services): Router {
   get('/find-interventions', (req, res) => findInterventionsController.search(req, res))
   get('/find-interventions/intervention/:id', (req, res) =>
     findInterventionsController.viewInterventionDetails(req, res)
+  )
+
+  get('/service-provider/referrals/:id/action-plan', (req, res) =>
+    serviceProviderReferralsController.viewActionPlan(req, res)
+  )
+
+  get('/probation-practitioner/referrals/:id/action-plan', (req, res) =>
+    probationPractitionerReferralsController.viewActionPlan(req, res)
+  )
+  post('/probation-practitioner/referrals/:id/action-plan/approve', (req, res) =>
+    probationPractitionerReferralsController.approveActionPlan(req, res)
+  )
+  get('/probation-practitioner/referrals/:id/action-plan/approved', (req, res) =>
+    probationPractitionerReferralsController.actionPlanApproved(req, res)
   )
 
   return router

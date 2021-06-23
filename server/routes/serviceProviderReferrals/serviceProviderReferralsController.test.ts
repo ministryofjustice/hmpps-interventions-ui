@@ -20,6 +20,7 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
+import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import appointmentFactory from '../../../testutils/factories/appointment'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 
@@ -104,7 +105,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       surname: 'Beaks',
       email: 'bernard.beaks@justice.gov.uk',
     })
-    const deliusServiceUser = deliusServiceUserFactory.build({
+    const deliusServiceUser = expandedDeliusServiceUserFactory.build({
       firstName: 'Alex',
       surname: 'River',
       contactDetails: {
@@ -115,6 +116,20 @@ describe('GET /service-provider/referrals/:id/details', () => {
             type: 'MOBILE',
           },
         ],
+        addresses: [
+          {
+            addressNumber: 'Flat 10',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2021-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
       },
     })
     const conviction = deliusConvictionFactory.build()
@@ -122,7 +137,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
 
@@ -145,7 +160,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       const intervention = interventionFactory.build()
       const sentReferral = sentReferralFactory.assigned().build()
       const deliusUser = deliusUserFactory.build()
-      const deliusServiceUser = deliusServiceUserFactory.build()
+      const deliusServiceUser = expandedDeliusServiceUserFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
       const conviction = deliusConvictionFactory.build()
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
@@ -153,7 +168,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
       communityApiService.getConvictionById.mockResolvedValue(conviction)
       assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
@@ -305,7 +320,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
       },
     })
     const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
-      activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
+      activities: [{ id: '1', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' }],
     })
 
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
@@ -344,7 +359,6 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
       .type('form')
       .send({
         description: 'Attend training course',
-        'desired-outcome-id': '8eb52caf-b462-4100-a0e9-7022d2551c92',
       })
       .expect(302)
       .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
@@ -352,7 +366,6 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
     expect(interventionsService.updateDraftActionPlan).toHaveBeenCalledWith('token', draftActionPlan.id, {
       newActivity: {
         description: 'Attend training course',
-        desiredOutcomeId: '8eb52caf-b462-4100-a0e9-7022d2551c92',
       },
     })
   })
@@ -386,7 +399,6 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
         .type('form')
         .send({
           description: '',
-          'desired-outcome-id': '8eb52caf-b462-4100-a0e9-7022d2551c92',
         })
         .expect(400)
         .expect(res => {
@@ -430,8 +442,8 @@ describe('POST /service-provider/action-plan/:id/add-activities', () => {
     it('redirects to the next page of the action plan journey', async () => {
       const actionPlan = actionPlanFactory.build({
         activities: [
-          { id: '1', desiredOutcome: desiredOutcomes[0], createdAt: new Date().toISOString(), description: '' },
-          { id: '2', desiredOutcome: desiredOutcomes[1], createdAt: new Date().toISOString(), description: '' },
+          { id: '1', createdAt: new Date().toISOString(), description: '' },
+          { id: '2', createdAt: new Date().toISOString(), description: '' },
         ],
       })
 
@@ -548,7 +560,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
       },
     })
     const draftActionPlan = actionPlanFactory.readyToSubmit(referral.id).build({
-      activities: [{ id: '1', description: 'Do a thing', desiredOutcome, createdAt: '2021-03-01T10:00:00Z' }],
+      activities: [{ id: '1', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' }],
       numberOfSessions: 10,
     })
 
@@ -750,7 +762,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
 })
 
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
-  it('renders a page with which the Service Provider can record the Service User‘s attendance', async () => {
+  it('renders a page with which the Service Provider can record the Service user‘s attendance', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
@@ -778,8 +790,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
-  describe('when the Service Provider marks the Service User as having attended the session', () => {
-    it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the behaviour page', async () => {
+  describe('when the Service Provider marks the Service user as having attended the session', () => {
+    it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
       const updatedAppointment = actionPlanAppointmentFactory.build({
         sessionNumber: 1,
         sessionFeedback: {
@@ -811,8 +823,8 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
     })
   })
 
-  describe('when the Service Provider marks the Service User as not having attended the session', () => {
-    it('makes a request to the interventions service to record the Service User‘s attendance and redirects to the check-your-answers page', async () => {
+  describe('when the Service Provider marks the Service user as not having attended the session', () => {
+    it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
       const updatedAppointment = actionPlanAppointmentFactory.build({
         sessionNumber: 1,
         sessionFeedback: {
@@ -846,7 +858,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 })
 
 describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', () => {
-  it('renders a page with which the Service Provider can record the Service User‘s behaviour', async () => {
+  it('renders a page with which the Service Provider can record the Service user‘s behaviour', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
@@ -873,7 +885,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', () => {
-  it('makes a request to the interventions service to record the Service User‘s behaviour and redirects to the check your answers page', async () => {
+  it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check your answers page', async () => {
     const updatedAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
       sessionFeedback: {
@@ -1082,16 +1094,40 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
 })
 
 describe('POST /service-provider/referrals/:id/end-of-service-report', () => {
-  it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
-    const endOfServiceReport = endOfServiceReportFactory.build()
-    interventionsService.createDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+  describe('when a draft end of service report does not yet exist', () => {
+    it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
+      const referral = sentReferralFactory.build({ id: '19', endOfServiceReport: null })
+      const endOfServiceReport = endOfServiceReportFactory.build()
 
-    await request(app)
-      .post(`/service-provider/referrals/19/end-of-service-report`)
-      .expect(303)
-      .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.createDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
 
-    expect(interventionsService.createDraftEndOfServiceReport).toHaveBeenCalledWith('token', '19')
+      await request(app)
+        .post(`/service-provider/referrals/19/end-of-service-report`)
+        .expect(303)
+        .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+
+      expect(interventionsService.createDraftEndOfServiceReport).toHaveBeenCalledWith('token', '19')
+    })
+  })
+
+  describe('when a draft end of service report has been created but not yet submitted', () => {
+    it('creates an end of service report for that referral on the interventions service, and redirects to the first page of the service provider end of service report journey', async () => {
+      const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+      const referral = sentReferralFactory.build({
+        id: '19',
+        endOfServiceReport,
+      })
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+
+      await request(app)
+        .post(`/service-provider/referrals/19/end-of-service-report`)
+        .expect(303)
+        .expect('Location', `/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
+
+      expect(interventionsService.createDraftEndOfServiceReport).not.toHaveBeenCalledWith('token', '19')
+    })
   })
 })
 
@@ -1271,11 +1307,11 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
           desiredOutcomes: [
             {
               id: '27186755-7b67-497f-ad6f-6c0fde016f89',
-              description: 'Service User makes progress in obtaining accommodation',
+              description: 'Service user makes progress in obtaining accommodation',
             },
             {
               id: '73a836a4-0b5d-49a5-a4d7-1564876f3e69',
-              description: 'Service User is helped to secure social or supported housing',
+              description: 'Service user is helped to secure social or supported housing',
             },
           ],
         })
