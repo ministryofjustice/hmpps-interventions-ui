@@ -94,7 +94,7 @@
     ]
   },
   "dependencies": {
-    "@ministryofjustice/frontend": "0.0.21",
+    "@ministryofjustice/frontend": "0.2.4",
     "@sentry/node": "^6.7.2",
     "@types/connect-flash": "0.0.36",
     "agentkeepalive": "^4.1.3",
