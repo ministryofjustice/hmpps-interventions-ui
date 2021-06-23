@@ -72,7 +72,7 @@ describe('GET /probation-practitioner/find', () => {
 
 describe('GET /probation-practitioner/dashboard', () => {
   it('displays a dashboard page', async () => {
-    const intervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
+    const intervention = interventionFactory.build({ id: '1', title: 'accommodation services - west midlands' })
     const referrals = [
       sentReferralFactory.assigned().build({
         referral: {
@@ -93,7 +93,7 @@ describe('GET /probation-practitioner/dashboard', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Alex River')
-        expect(res.text).toContain('Accommodation')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
       })
   })
 })

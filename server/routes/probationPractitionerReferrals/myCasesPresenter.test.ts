@@ -4,8 +4,8 @@ import MyCasesPresenter from './myCasesPresenter'
 
 describe('MyCasesPresenter', () => {
   const interventions = [
-    interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } }),
-    interventionFactory.build({ id: '2', contractType: { name: "womens' services" } }),
+    interventionFactory.build({ id: '1', title: 'accommodation services - west midlands' }),
+    interventionFactory.build({ id: '2', title: "women's services - west midlands" }),
   ]
   const referrals = [
     SentReferralFactory.assigned().build({
@@ -45,17 +45,25 @@ describe('MyCasesPresenter', () => {
         expect.arrayContaining([
           { text: 'Rob Shah-Brookes', sortValue: 'shah-brookes, rob', href: null },
           { text: 'UserABC', sortValue: 'AUserABC', href: null },
-          { text: 'Accommodation', sortValue: 'accommodation', href: null },
+          {
+            text: 'Accommodation Services - West Midlands',
+            sortValue: 'accommodation services - west midlands',
+            href: null,
+          },
         ]),
         expect.arrayContaining([
           { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
           { text: 'Unassigned', sortValue: 'Unassigned', href: null },
-          { text: "Womens' services", sortValue: "womens' services", href: null },
+          { text: "Women's Services - West Midlands", sortValue: "women's services - west midlands", href: null },
         ]),
         expect.arrayContaining([
           { text: 'Jenny Catherine', sortValue: 'catherine, jenny', href: null },
           { text: 'UserABC', sortValue: 'AUserABC', href: null },
-          { text: 'Accommodation', sortValue: 'accommodation', href: null },
+          {
+            text: 'Accommodation Services - West Midlands',
+            sortValue: 'accommodation services - west midlands',
+            href: null,
+          },
         ]),
       ])
     })
