@@ -3,7 +3,10 @@ import utils from '../../utils/utils'
 import RiskPresenter from './riskPresenter'
 
 export default class RiskView {
-  constructor(private readonly presenter: RiskPresenter) {}
+  constructor(
+    private readonly presenter: RiskPresenter,
+    private readonly userType: 'probation-practitioner' | 'service-provider'
+  ) {}
 
   roshAnalysisTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {

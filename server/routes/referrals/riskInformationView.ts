@@ -6,7 +6,7 @@ import RiskView from '../shared/riskView'
 export default class RiskInformationView {
   constructor(private readonly presenter: RiskInformationPresenter) {}
 
-  private riskView = new RiskView(this.presenter.riskPresenter)
+  private riskView = new RiskView(this.presenter.riskPresenter, 'probation-practitioner')
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
