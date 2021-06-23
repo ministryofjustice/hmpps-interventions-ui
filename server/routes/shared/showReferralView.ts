@@ -68,6 +68,7 @@ export default class ShowReferralView {
         backLinkArgs: this.backLinkArgs,
         roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
         riskLevelDetailsArgs: this.riskView.riskLevelDetailsArgs,
+        furtherRiskInformation: this.riskView.furtherRiskInformation,
       },
     ]
   }

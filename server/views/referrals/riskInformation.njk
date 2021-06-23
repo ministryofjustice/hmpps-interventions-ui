@@ -33,6 +33,8 @@
 
         {{ govukDetails(riskLevelDetailsArgs) }}
 
+        {{ furtherRiskInformation | safe }}
+
       {% endif %}
 
       <form method="post">
