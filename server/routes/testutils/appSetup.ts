@@ -12,6 +12,7 @@ import InterventionsService from '../../services/interventionsService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import LoggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import config from '../../config'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -46,6 +47,8 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use('/', route)
   app.use(createErrorHandler(production))
+
+  config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
 
   return app
 }

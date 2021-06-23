@@ -4,10 +4,13 @@ import HmppsAuthService from './hmppsAuthService'
 import logger from '../../log'
 import { SupplementaryRiskInformation } from '../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../models/assessRisksAndNeeds/riskSummary'
-import config from '../config'
 
 export default class AssessRisksAndNeedsService {
-  constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
+  constructor(
+    private readonly hmppsAuthService: HmppsAuthService,
+    private readonly restClient: RestClient,
+    private readonly riskSummaryEnabled: boolean
+  ) {}
 
   async getSupplementaryRiskInformation(
     riskId: string,
@@ -21,7 +24,7 @@ export default class AssessRisksAndNeedsService {
   }
 
   async getRiskSummary(crn: string, token: string): Promise<RiskSummary | null> {
-    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+    if (!this.riskSummaryEnabled) {
       logger.info('not getting risk summary information; disabled')
       return null
     }

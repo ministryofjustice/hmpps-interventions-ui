@@ -15,9 +15,9 @@ describe('RiskInformationPresenter', () => {
         title: 'Geoffrey’s risk information',
         additionalRiskInformation: {
           errorMessage: null,
-          label: 'Information for the service provider about Geoffrey’s risks',
+          label: 'Additional risk information',
           hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
-          labelClasses: 'govuk-label--s',
+          labelClasses: 'govuk-label--l',
         },
       })
     })

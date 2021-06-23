@@ -4,6 +4,6 @@ import MockedHmppsAuthService from '../../../services/testutils/hmppsAuthService
 
 export default class MockAssessRisksAndNeedsService extends AssessRisksAndNeedsService {
   constructor() {
-    super(new MockedHmppsAuthService(), new MockRestClient())
+    super(new MockedHmppsAuthService(), new MockRestClient(), true)
   }
 }

@@ -2,7 +2,6 @@ import DraftReferral from '../../models/draftReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
-import config from '../../config'
 
 export interface RoshAnalysisTableRow {
   riskTo: string
@@ -17,7 +16,7 @@ export default class RiskInformationPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
-  readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
+  readonly riskSummaryEnabled = this.riskSummary !== null
 
   readonly text = {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,

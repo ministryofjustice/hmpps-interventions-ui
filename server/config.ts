@@ -73,7 +73,7 @@ export default {
         deadline: Number(get('ASSESS_RISKS_AND_NEEDS_API_TIMEOUT_DEADLINE', 20000)),
       },
       agent: new AgentConfig(),
-      riskSummaryEnabled: get('ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED', false),
+      riskSummaryEnabled: get('ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED', 'false') === 'true',
     },
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://hmpps-auth:8090/auth', requiredInProduction),
