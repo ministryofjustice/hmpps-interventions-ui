@@ -45,5 +45,15 @@ export default class EditSessionPresenter {
       'duration',
       this.validationError
     ),
+    meetingMethod: this.utils.meetingMethodValue(
+      this.appointment.appointmentDeliveryType,
+      'meeting-method',
+      this.validationError
+    ),
+    address: this.utils.addressValue(
+      this.appointment.appointmentDeliveryAddress,
+      'method-other-location',
+      this.validationError
+    ),
   }
 }

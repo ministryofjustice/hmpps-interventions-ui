@@ -94,6 +94,16 @@ export default {
       empty: 'Enter a duration',
       invalidDuration: 'The session duration must be a real duration',
     },
+    meetingMethod: {
+      empty: 'Select a meeting method',
+    },
+    address: {
+      addressLine1Empty: 'Enter a value for address line 1',
+      townOrCityEmpty: 'Enter a town or city',
+      countyEmpty: 'Enter a county',
+      postCodeEmpty: 'Enter a postcode',
+      postCodeInvalid: 'Enter a valid postcode',
+    },
   },
   endOfServiceReportOutcome: {
     achievementLevel: {

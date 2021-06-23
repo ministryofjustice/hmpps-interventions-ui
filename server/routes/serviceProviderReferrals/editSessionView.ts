@@ -1,9 +1,12 @@
-import { DateInputArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
+import { DateInputArgs, RadiosArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import EditSessionPresenter from './editSessionPresenter'
+import AddressFormComponent from '../shared/addressFormComponent'
 
 export default class EditSessionView {
   constructor(private readonly presenter: EditSessionPresenter) {}
+
+  addressFormView = new AddressFormComponent(this.presenter.fields.address, 'method-other-location')
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
@@ -15,6 +18,8 @@ export default class EditSessionView {
         durationDateInputArgs: this.durationDateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         serverError: this.serverError,
+        address: this.addressFormView.inputArgs,
+        meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
       },
     ]
   }
@@ -130,6 +135,44 @@ export default class EditSessionView {
           }`,
           name: 'minutes',
           value: this.presenter.fields.duration.minutes.value,
+        },
+      ],
+    }
+  }
+
+  private meetingMethodRadioInputArgs(otherLocationHTML: string): RadiosArgs {
+    return {
+      idPrefix: 'meeting-method',
+      name: 'meeting-method',
+      fieldset: {
+        legend: {
+          text: 'Method',
+          isPageHeading: false,
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.meetingMethod.errorMessage),
+      hint: {
+        text: 'Select one option.',
+      },
+      items: [
+        {
+          value: 'PHONE_CALL',
+          text: 'Phone call',
+          checked: this.presenter.fields.meetingMethod.value === 'PHONE_CALL',
+        },
+        {
+          value: 'VIDEO_CALL',
+          text: 'Video call',
+          checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
+        },
+        {
+          value: 'IN_PERSON_MEETING_OTHER',
+          text: 'In-person meeting',
+          checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
+          conditional: {
+            html: otherLocationHTML,
+          },
         },
       ],
     }
