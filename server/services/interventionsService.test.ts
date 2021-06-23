@@ -2579,8 +2579,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
+      const appointment = appointmentFactory.newlyBooked().build()
       const supplierAssessment = supplierAssessmentFactory.build({
-        appointments: appointmentFactory.newlyBooked().buildList(1),
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
       })
 
       await provider.addInteraction({
