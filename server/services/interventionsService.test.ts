@@ -2036,16 +2036,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         sessionNumber: 1,
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 120,
+        appointmentDeliveryType: 'PHONE_CALL',
       }),
       actionPlanAppointmentFactory.build({
         sessionNumber: 2,
         appointmentTime: '2021-05-20T12:30:00Z',
         durationInMinutes: 120,
+        appointmentDeliveryType: 'PHONE_CALL',
       }),
       actionPlanAppointmentFactory.build({
         sessionNumber: 3,
         appointmentTime: '2021-05-27T12:30:00Z',
         durationInMinutes: 120,
+        appointmentDeliveryType: 'PHONE_CALL',
       }),
     ]
 
@@ -2080,6 +2083,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       sessionNumber: 1,
       appointmentTime: '2021-05-13T12:30:00Z',
       durationInMinutes: 120,
+      appointmentDeliveryType: 'PHONE_CALL',
     })
 
     beforeEach(async () => {
@@ -2112,6 +2116,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(appointment.sessionNumber).toEqual(1)
       expect(appointment.appointmentTime).toEqual('2021-05-13T12:30:00Z')
       expect(appointment.durationInMinutes).toEqual(120)
+      expect(appointment.appointmentDeliveryType).toEqual('PHONE_CALL')
     })
   })
 
@@ -2158,6 +2163,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           sessionNumber: 2,
           appointmentTime: '2021-05-13T12:30:00Z',
           durationInMinutes: 60,
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY40RE',
+          },
         })
 
         await provider.addInteraction({
@@ -2171,6 +2184,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             body: {
               appointmentTime: '2021-05-13T12:30:00Z',
               durationInMinutes: 60,
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
             },
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           },
@@ -2188,6 +2209,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           await interventionsService.updateActionPlanAppointment(token, '345059d4-1697-467b-8914-fedec9957279', 2, {
             appointmentTime: '2021-05-13T12:30:00Z',
             durationInMinutes: 60,
+            appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+            appointmentDeliveryAddress: {
+              firstAddressLine: 'Harmony Living Office, Room 4',
+              secondAddressLine: '44 Bouverie Road',
+              townOrCity: 'Blackpool',
+              county: 'Lancashire',
+              postCode: 'SY40RE',
+            },
           })
         ).toMatchObject(actionPlanAppointment)
       })
@@ -2216,6 +2245,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             sessionNumber: 2,
             appointmentTime: '2021-05-13T12:30:00Z',
             durationInMinutes: 60,
+            appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+            appointmentDeliveryAddress: {
+              firstAddressLine: 'Harmony Living Office, Room 4',
+              secondAddressLine: '44 Bouverie Road',
+              townOrCity: 'Blackpool',
+              county: 'Lancashire',
+              postCode: 'SY40RE',
+            },
             sessionFeedback: {
               attendance: {
                 attended: 'late',

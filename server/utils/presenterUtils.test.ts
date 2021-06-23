@@ -3,6 +3,7 @@ import draftReferralFactory from '../../testutils/factories/draftReferral'
 import CalendarDay from './calendarDay'
 import Duration from './duration'
 import ClockTime from './clockTime'
+import { FormValidationError } from './formValidationError'
 
 describe(PresenterUtils, () => {
   describe('stringValue', () => {
@@ -555,6 +556,134 @@ describe(PresenterUtils, () => {
           expect(value.hour.hasError).toEqual(true)
           expect(value.minute.hasError).toEqual(false)
           expect(value.partOfDay.hasError).toEqual(true)
+        })
+      })
+    })
+  })
+
+  describe('meetingMethod', () => {
+    describe('when there is no user input data', () => {
+      describe('and the model has a null value', () => {
+        it('returns a null value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.meetingMethodValue(null, 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: null })
+        })
+      })
+      describe('and the model has a value', () => {
+        it('returns the model value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.meetingMethodValue('PHONE_CALL', 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: 'PHONE_CALL' })
+        })
+      })
+    })
+
+    describe('when there is user input data', () => {
+      describe('and the data is valid', () => {
+        it('returns a meeting method', () => {
+          const utils = new PresenterUtils({ 'meeting-method': 'PHONE_CALL' })
+          const value = utils.meetingMethodValue(null, 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: 'PHONE_CALL' })
+        })
+      })
+      describe('and the data is invalid', () => {
+        it('returns a null value', () => {
+          const utils = new PresenterUtils({ 'meeting-method': 'INVALID' })
+          const value = utils.meetingMethodValue(null, 'meeting-method', null)
+          expect(value).toMatchObject({ errorMessage: null, value: null })
+        })
+      })
+    })
+  })
+
+  describe('address', () => {
+    describe('when there are errors', () => {
+      it('they should be linked to the correct field', () => {
+        const utils = new PresenterUtils(null)
+        const errors: FormValidationError = {
+          errors: [
+            {
+              formFields: ['method-other-location-address-line-1'],
+              errorSummaryLinkedField: 'method-other-location-address-line-1',
+              message: 'address-line-1 error',
+            },
+            {
+              formFields: ['method-other-location-address-postcode'],
+              errorSummaryLinkedField: 'method-other-location-address-postcode',
+              message: 'address-postcode error',
+            },
+          ],
+        }
+        const value = utils.addressValue(null, 'method-other-location', errors)
+        expect(value).toMatchObject({
+          errors: {
+            firstAddressLine: 'address-line-1 error',
+            postcode: 'address-postcode error',
+          },
+        })
+      })
+    })
+
+    describe('when there is no user input data', () => {
+      describe('and the model has a null value', () => {
+        it('returns a null value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.addressValue(null, 'method-other-location', null)
+          expect(value).toMatchObject({ value: null })
+        })
+      })
+      describe('and the model has a value', () => {
+        it('returns the model value', () => {
+          const utils = new PresenterUtils(null)
+          const address = {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY4 0RE',
+          }
+          const value = utils.addressValue(address, 'method-other-location', null)
+          expect(value).toMatchObject({ value: address })
+        })
+      })
+    })
+
+    describe('when there is user input data', () => {
+      describe('and the data is valid', () => {
+        it('returns an address', () => {
+          const utils = new PresenterUtils({
+            'method-other-location-address-line-1': 'a',
+            'method-other-location-address-line-2': 'b',
+            'method-other-location-address-town-or-city': 'c',
+            'method-other-location-address-county': 'd',
+            'method-other-location-address-postcode': 'e',
+          })
+          const value = utils.addressValue(null, 'method-other-location', null)
+          expect(value).toMatchObject({
+            value: {
+              firstAddressLine: 'a',
+              secondAddressLine: 'b',
+              townOrCity: 'c',
+              county: 'd',
+              postCode: 'e',
+            },
+          })
+        })
+      })
+      describe('and the data is invalid', () => {
+        it('returns a empty values', () => {
+          const utils = new PresenterUtils({ invalid: 'INVALID' })
+          const value = utils.addressValue(null, 'method-other-location', null)
+          expect(value).toMatchObject({
+            value: {
+              firstAddressLine: '',
+              secondAddressLine: '',
+              townOrCity: '',
+              county: '',
+              postCode: '',
+            },
+          })
         })
       })
     })

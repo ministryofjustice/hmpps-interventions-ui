@@ -123,6 +123,14 @@ describe(ScheduleAppointmentPresenter, () => {
             hours: { value: '', hasError: false },
             minutes: { value: '', hasError: false },
           },
+          meetingMethod: { value: null, errorMessage: null },
+          address: {
+            value: null,
+            errors: {
+              firstAddressLine: null,
+              postcode: null,
+            },
+          },
         })
       })
     })
@@ -132,6 +140,14 @@ describe(ScheduleAppointmentPresenter, () => {
         const appointment = appointmentFactory.build({
           appointmentTime: '2021-03-24T10:30:00Z',
           durationInMinutes: 75,
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY4 0RE',
+          },
         })
         const presenter = new ScheduleAppointmentPresenter(referral, appointment)
 
@@ -155,6 +171,20 @@ describe(ScheduleAppointmentPresenter, () => {
             errorMessage: null,
             hours: { value: '1', hasError: false },
             minutes: { value: '15', hasError: false },
+          },
+          meetingMethod: { value: 'IN_PERSON_MEETING_OTHER', errorMessage: null },
+          address: {
+            value: {
+              firstAddressLine: 'Harmony Living Office, Room 4',
+              secondAddressLine: '44 Bouverie Road',
+              townOrCity: 'Blackpool',
+              county: 'Lancashire',
+              postCode: 'SY4 0RE',
+            },
+            errors: {
+              firstAddressLine: null,
+              postcode: null,
+            },
           },
         })
       })

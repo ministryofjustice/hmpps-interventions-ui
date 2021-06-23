@@ -35,6 +35,16 @@ export default class ScheduleAppointmentPresenter {
     date: this.utils.dateValue(this.appointmentDecorator?.britishDay ?? null, 'date', this.validationError),
     time: this.utils.twelveHourTimeValue(this.appointmentDecorator?.britishTime ?? null, 'time', this.validationError),
     duration: this.utils.durationValue(this.appointmentDecorator?.duration ?? null, 'duration', this.validationError),
+    meetingMethod: this.utils.meetingMethodValue(
+      this.currentAppointment?.appointmentDeliveryType ?? null,
+      'meeting-method',
+      this.validationError
+    ),
+    address: this.utils.addressValue(
+      this.currentAppointment?.appointmentDeliveryAddress ?? null,
+      'method-other-location',
+      this.validationError
+    ),
   }
 
   readonly backLinkHref = this.overrideBackLinkHref ?? `/service-provider/referrals/${this.referral.id}/progress`

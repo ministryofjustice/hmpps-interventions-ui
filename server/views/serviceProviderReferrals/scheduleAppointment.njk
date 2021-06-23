@@ -3,6 +3,8 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "components/time-input/macro.njk" import appTimeInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -36,8 +38,15 @@
           {{ govukDateInput(dateInputArgs) }}
           {{ appTimeInput(timeInputArgs) }}
           {{ govukDateInput(durationDateInputArgs) }}
+          {% set otherLocationHtml %}
+              {{ govukInput(address.firstAddressLineInputArgs) }}
+              {{ govukInput(address.secondAddressLineInputArgs) }}
+              {{ govukInput(address.townOrCityInputArgs) }}
+              {{ govukInput(address.countyInputArgs) }}
+              {{ govukInput(address.postCodeInputArgs) }}
+          {% endset -%}
+          {{ govukRadios(meetingMethodRadioInputArgs(otherLocationHtml)) }}
         </div>
-
         {{ govukButton({ text: "Save and continue" }) }}
       </form>
     </div>
