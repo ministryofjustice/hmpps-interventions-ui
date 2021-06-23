@@ -25,11 +25,13 @@ describe('Service provider referrals dashboard', () => {
 
     const personalWellbeingIntervention = interventionFactory.build({
       contractType: { code: 'PWB', name: 'Personal wellbeing' },
+      title: 'personal wellbeing - west midlands',
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
     const socialInclusionIntervention = interventionFactory.build({
       contractType: { code: 'SOC', name: 'Social inclusion' },
+      title: 'social inclusion - west midlands',
       serviceCategories: [socialInclusionServiceCategory],
     })
 
@@ -171,7 +173,7 @@ describe('Service provider referrals dashboard', () => {
       .should('deep.equal', [
         {
           'Date received': '26 Jan 2021',
-          'Intervention type': 'Social inclusion',
+          'Intervention type': 'Social Inclusion - West Midlands',
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
           Caseworker: '',
@@ -179,7 +181,7 @@ describe('Service provider referrals dashboard', () => {
         },
         {
           'Date received': '13 Sep 2020',
-          'Intervention type': 'Personal wellbeing',
+          'Intervention type': 'Personal Wellbeing - West Midlands',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
           Caseworker: '',
