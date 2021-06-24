@@ -1222,6 +1222,12 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('24 March 2021')
       cy.contains('9:02am to 10:17am')
+      cy.contains('In-person meeting')
+      cy.contains('Harmony Living Office, Room 4')
+      cy.contains('44 Bouverie Road')
+      cy.contains('Blackpool')
+      cy.contains('Lancashire')
+      cy.contains('SY4 0RE')
     })
 
     it('User reschedules a supplier assessment appointment', () => {
