@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 
 @Component
-class ActionPlanSessionValidator {
+class AppointmentValidator {
   companion object {
     val postCodeRegex = Regex("""^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}${'$'}""")
   }

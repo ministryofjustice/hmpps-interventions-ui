@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.atLeast
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -11,9 +12,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
@@ -26,6 +29,7 @@ class AppointmentServiceTest {
   private val authUserRepository: AuthUserRepository = mock()
   private val appointmentRepository: AppointmentRepository = mock()
   private val communityAPIBookingService: CommunityAPIBookingService = mock()
+  private val appointmentDeliveryRepository: AppointmentDeliveryRepository = mock()
 
   private val authUserFactory = AuthUserFactory()
   private val appointmentFactory = AppointmentFactory()
@@ -36,6 +40,7 @@ class AppointmentServiceTest {
   private val appointmentService = AppointmentService(
     appointmentRepository,
     communityAPIBookingService,
+    appointmentDeliveryRepository,
     authUserRepository,
   )
 
@@ -62,11 +67,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser)
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
 
     // Then
-    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes)
-    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId)
+    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL)
+    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.PHONE_CALL)
   }
 
   @Test
@@ -88,11 +93,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser)
+    val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
 
     // Then
-    verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes)
-    verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId)
+    verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL)
+    verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL)
   }
 
   @Test
@@ -113,11 +118,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val newAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser)
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
 
     // Then
-    verifyResponse(newAppointment, existingAppointment.id, true, additionalDeliusAppointmentId, appointmentTime, durationInMinutes)
-    verifySavedAppointment(appointmentTime, durationInMinutes, additionalDeliusAppointmentId)
+    verifyResponse(newAppointment, existingAppointment.id, true, additionalDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL)
+    verifySavedAppointment(appointmentTime, durationInMinutes, additionalDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL)
   }
 
   @Test
@@ -129,12 +134,12 @@ class AppointmentServiceTest {
     val referral = referralFactory.createSent()
 
     val error = assertThrows<IllegalStateException> {
-      appointmentService.createOrUpdateAppointment(referral, appointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser)
+      appointmentService.createOrUpdateAppointment(referral, appointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
     }
     assertThat(error.message).contains("Is it not possible to update an appointment that has already been attended")
   }
 
-  private fun verifyResponse(appointment: Appointment, originalId: UUID?, expectNewId: Boolean, deliusAppointmentId: Long, appointmentTime: OffsetDateTime?, durationInMinutes: Int) {
+  private fun verifyResponse(appointment: Appointment, originalId: UUID?, expectNewId: Boolean, deliusAppointmentId: Long, appointmentTime: OffsetDateTime?, durationInMinutes: Int, appointmentDeliveryType: AppointmentDeliveryType) {
 
     // Verifying create or update route
     if (expectNewId)
@@ -145,16 +150,18 @@ class AppointmentServiceTest {
     assertThat(appointment.deliusAppointmentId).isEqualTo(deliusAppointmentId)
     assertThat(appointment.appointmentTime).isEqualTo(appointmentTime)
     assertThat(appointment.durationInMinutes).isEqualTo(durationInMinutes)
+    assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
   }
 
-  private fun verifySavedAppointment(appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long) {
+  private fun verifySavedAppointment(appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long, appointmentDeliveryType: AppointmentDeliveryType) {
     val argumentCaptor = argumentCaptor<Appointment>()
-    verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
-    val arguments = argumentCaptor.firstValue
+    verify(appointmentRepository, atLeast(1)).saveAndFlush(argumentCaptor.capture())
+    val arguments = argumentCaptor.lastValue
 
     assertThat(arguments.id).isNotNull
     assertThat(arguments.appointmentTime).isEqualTo(appointmentTime)
     assertThat(arguments.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(arguments.deliusAppointmentId).isEqualTo(deliusAppointmentId)
+    assertThat(arguments.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
   }
 }

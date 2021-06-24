@@ -9,12 +9,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.User
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SupplierAssessmentService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.util.UUID
 
 @RestController
 class SupplierAssessmentController(
   private val supplierAssessmentService: SupplierAssessmentService,
   private val userMapper: UserMapper,
+  private val appointmentValidator: AppointmentValidator,
 ) {
   @PutMapping("/supplier-assessment/{id}/schedule-appointment")
   fun updateSupplierAssessmentAppointment(
@@ -24,13 +26,15 @@ class SupplierAssessmentController(
   ): AppointmentDTO {
     val user = userMapper.fromToken(authentication)
     val supplierAssessment = supplierAssessmentService.getSupplierAssessmentById(id)
-
+    appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
     return AppointmentDTO.from(
       supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(
         supplierAssessment,
         updateAppointmentDTO.durationInMinutes,
         updateAppointmentDTO.appointmentTime,
-        user
+        user,
+        updateAppointmentDTO.appointmentDeliveryType,
+        updateAppointmentDTO.appointmentDeliveryAddress
       )
     )
   }

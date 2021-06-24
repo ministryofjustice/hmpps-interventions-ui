@@ -17,16 +17,16 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFac
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.ActionPlanSessionValidator
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.time.OffsetDateTime
 
 internal class ActionPlanSessionControllerTest {
   private val sessionsService = mock<ActionPlanSessionsService>()
   private val locationMapper = mock<LocationMapper>()
-  private val actionPlanSessionValidator = mock<ActionPlanSessionValidator>()
+  private val appointmentValidator = mock<AppointmentValidator>()
   private val userMapper = UserMapper()
 
-  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper, actionPlanSessionValidator)
+  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper, appointmentValidator)
   private val actionPlanFactory = ActionPlanFactory()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val jwtTokenFactory = JwtTokenFactory()

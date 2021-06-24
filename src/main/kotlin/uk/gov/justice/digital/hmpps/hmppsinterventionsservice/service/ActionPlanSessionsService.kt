@@ -8,16 +8,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryAddress
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
@@ -34,9 +30,8 @@ class ActionPlanSessionsService(
   val authUserRepository: AuthUserRepository,
   val appointmentEventPublisher: AppointmentEventPublisher,
   val communityAPIBookingService: CommunityAPIBookingService,
+  val appointmentService: AppointmentService,
   val appointmentRepository: AppointmentRepository,
-  val appointmentDeliveryRepository: AppointmentDeliveryRepository,
-  val appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository,
 ) {
   fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan) {
     val numberOfSessions = approvedActionPlan.numberOfSessions!!
@@ -81,7 +76,6 @@ class ActionPlanSessionsService(
       durationInMinutes,
       SERVICE_DELIVERY
     )
-
     if (existingAppointment == null) {
       var appointment = Appointment(
         id = UUID.randomUUID(),
@@ -92,14 +86,14 @@ class ActionPlanSessionsService(
         deliusAppointmentId = deliusAppointmentId,
       )
       appointmentRepository.saveAndFlush(appointment)
-      populateAppointmentDelivery(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
       session.appointments.add(appointment)
     } else {
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
       appointmentRepository.saveAndFlush(existingAppointment)
-      populateAppointmentDelivery(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
     }
     return actionPlanSessionRepository.save(session)
   }
@@ -207,41 +201,4 @@ class ActionPlanSessionsService(
 
   private fun getActionPlanSession(actionPlanId: UUID, sessionNumber: Int) =
     actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
-
-  private fun populateAppointmentDelivery(appointment: Appointment, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressDTO: AddressDTO?) {
-    var appointmentDelivery = appointment.appointmentDelivery
-    if (appointmentDelivery == null) {
-      appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
-    }
-    appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
-
-    appointment.appointmentDelivery = appointmentDelivery
-    appointmentRepository.saveAndFlush(appointment)
-
-    if (appointmentDeliveryType == AppointmentDeliveryType.IN_PERSON_MEETING_OTHER) {
-      appointmentDelivery.appointmentDeliveryAddress = populateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressDTO!!)
-      appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
-    }
-  }
-
-  private fun populateAppointmentDeliveryAddress(appointmentDelivery: AppointmentDelivery, appointmentDeliveryAddressDTO: AddressDTO): AppointmentDeliveryAddress {
-    var appointmentDeliveryAddress = appointmentDelivery.appointmentDeliveryAddress
-    if (appointmentDeliveryAddress == null) {
-      appointmentDeliveryAddress = AppointmentDeliveryAddress(
-        appointmentDeliveryId = appointmentDelivery.appointmentId,
-        firstAddressLine = appointmentDeliveryAddressDTO.firstAddressLine,
-        secondAddressLine = appointmentDeliveryAddressDTO.secondAddressLine,
-        townCity = appointmentDeliveryAddressDTO.townOrCity,
-        county = appointmentDeliveryAddressDTO.county,
-        postCode = appointmentDeliveryAddressDTO.postCode
-      )
-    } else {
-      appointmentDeliveryAddress.firstAddressLine = appointmentDeliveryAddressDTO.firstAddressLine
-      appointmentDeliveryAddress.secondAddressLine = appointmentDeliveryAddressDTO.secondAddressLine
-      appointmentDeliveryAddress.townCity = appointmentDeliveryAddressDTO.townOrCity
-      appointmentDeliveryAddress.county = appointmentDeliveryAddressDTO.county
-      appointmentDeliveryAddress.postCode = appointmentDeliveryAddressDTO.postCode
-    }
-    return appointmentDeliveryAddress
-  }
 }

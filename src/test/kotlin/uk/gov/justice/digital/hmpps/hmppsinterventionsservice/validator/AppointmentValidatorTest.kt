@@ -13,9 +13,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import java.time.OffsetDateTime
 
-internal class ActionPlanSessionValidatorTest {
+internal class AppointmentValidatorTest {
 
-  private val actionPlanSessionValidator = ActionPlanSessionValidator()
+  private val actionPlanSessionValidator = AppointmentValidator()
 
   @Nested
   inner class ValidateUpdateAppointment {

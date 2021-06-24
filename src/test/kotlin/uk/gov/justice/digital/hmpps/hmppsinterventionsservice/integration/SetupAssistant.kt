@@ -205,7 +205,7 @@ class SetupAssistant(
   fun createSentReferral(
     id: UUID = UUID.randomUUID(),
     intervention: Intervention = createIntervention(),
-    ppUser: AuthUser = createPPUser()
+    ppUser: AuthUser = createPPUser(),
   ): Referral {
     val referral = referralRepository.save(
       referralFactory.createSent(
@@ -215,17 +215,32 @@ class SetupAssistant(
         sentBy = ppUser
       )
     )
-    referral.supplierAssessment = createSupplierAssessment(referral = referral, appointments = mutableSetOf())
+    referral.supplierAssessment = createSupplierAssessment(referral = referral)
     return referral
   }
 
   fun addSupplierAssessmentAppointment(
     supplierAssessment: SupplierAssessment,
-    appointment: Appointment = appointmentFactory.create(createdBy = createPPUser())
+    appointment: Appointment = appointmentFactory.create(createdBy = createPPUser()),
+    appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentDeliveryAddress: AddressDTO? = null
   ) {
     appointmentRepository.save(appointment)
     supplierAssessment.appointments.add(appointment)
-    supplierAssessmentRepository.save(supplierAssessment)
+    supplierAssessmentRepository.saveAndFlush(supplierAssessment)
+    val appointmentDelivery = appointmentDeliveryFactory.create(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
+    appointment.appointmentDelivery = appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
+    if (appointmentDeliveryAddress != null) {
+      val appointmentDeliveryAddress = appointmentDeliveryAddressFactory.create(
+        appointmentDeliveryId = appointmentDelivery.appointmentId,
+        firstAddressLine = appointmentDeliveryAddress.firstAddressLine,
+        secondAddressLine = appointmentDeliveryAddress.secondAddressLine,
+        townCity = appointmentDeliveryAddress.townOrCity,
+        county = appointmentDeliveryAddress.county,
+        postCode = appointmentDeliveryAddress.postCode,
+      )
+      appointmentDelivery.appointmentDeliveryAddress = appointmentDeliveryAddressRepository.save(appointmentDeliveryAddress)
+    }
   }
 
   fun createSupplierAssessment(
@@ -236,20 +251,12 @@ class SetupAssistant(
         sentBy = createPPUser(),
         intervention = createIntervention()
       )
-    ),
-    appointments: MutableSet<Appointment> = mutableSetOf(
-      appointmentRepository.save(
-        appointmentFactory.create(
-          createdBy = createPPUser()
-        )
-      )
     )
   ): SupplierAssessment {
     return supplierAssessmentRepository.save(
       SupplierAssessment(
         id = id,
         referral = referral,
-        appointments = appointments
       )
     )
   }
