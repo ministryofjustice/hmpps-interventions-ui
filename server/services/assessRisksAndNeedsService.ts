@@ -28,7 +28,12 @@ export default class AssessRisksAndNeedsService {
         token,
       })) as RiskSummary
     } catch (err) {
-      throw createError(err.status, err, { userMessage: 'Could not get service user risk scores from OASys.' })
+      if (err.status === 404) {
+        // missing (or out of date) risk information is expected and does not constitute an error
+        return null
+      }
+
+      throw createError(err.status, err, { userMessage: "Could not get service user's risk scores from OASys." })
     }
   }
 }

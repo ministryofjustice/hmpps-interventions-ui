@@ -1,4 +1,5 @@
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import config from '../../config'
 
 export interface RoshAnalysisTableRow {
   riskTo: string
@@ -8,7 +9,9 @@ export interface RoshAnalysisTableRow {
 export default class RiskPresenter {
   constructor(private readonly riskSummary: RiskSummary | null) {}
 
-  readonly riskSummaryEnabled = this.riskSummary !== null
+  readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
+
+  readonly riskSummaryNotFound = this.riskSummary === null
 
   readonly text = {
     whoIsAtRisk: this.riskSummary?.summary.whoIsAtRisk,

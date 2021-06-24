@@ -25,15 +25,23 @@
 
       {% if presenter.riskPresenter.riskSummaryEnabled %}
 
-        <p class="govuk-body">This shows the current ROSH levels and risk to self information from OASys. You can add information for the service provider.</p>
+        {% if presenter.riskPresenter.riskSummaryNotFound %}
 
-        <h2 class="govuk-heading-l">ROSH analysis</h2>
+          <p class="govuk-body">Up to date risk information for this service user was not found in OASys. You can still add additional risk information for the service provider.</p>
 
-        {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
+          {% else %}
 
-        {{ govukDetails(riskLevelDetailsArgs) }}
+          <p class="govuk-body">This shows the service user's Risk of Serious Harm (ROSH) levels from OASys. You may also add information for the service provider.</p>
 
-        {{ furtherRiskInformation | safe }}
+          <h2 class="govuk-heading-l">ROSH analysis</h2>
+
+          {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
+
+          {{ govukDetails(riskLevelDetailsArgs) }}
+
+          {{ furtherRiskInformation | safe }}
+
+        {% endif %}
 
       {% endif %}
 
