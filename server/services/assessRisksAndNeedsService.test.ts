@@ -39,14 +39,30 @@ describe(AssessRisksAndNeedsService, () => {
       expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/crn/crn123`, token: 'token' })
     })
 
-    it('provides a userMessage on failure', async () => {
-      restClientMock.get.mockRejectedValue(createError(404))
+    it('provides a userMessage on 4xx failure', async () => {
+      restClientMock.get.mockRejectedValue(createError(409))
       try {
         await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
       } catch (err) {
-        expect(err.status).toBe(404)
-        expect(err.userMessage).toBe('Could not get service user risk scores from OASys.')
+        expect(err.status).toBe(409)
+        expect(err.userMessage).toBe("Could not get service user's risk scores from OASys.")
       }
+    })
+
+    it('provides a userMessage on 5xx failure', async () => {
+      restClientMock.get.mockRejectedValue(createError(500))
+      try {
+        await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
+      } catch (err) {
+        expect(err.status).toBe(500)
+        expect(err.userMessage).toBe("Could not get service user's risk scores from OASys.")
+      }
+    })
+
+    it('return null when the risk information does not exist', async () => {
+      restClientMock.get.mockRejectedValue(createError(404))
+      const result = await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
+      expect(result).toEqual(null)
     })
   })
 

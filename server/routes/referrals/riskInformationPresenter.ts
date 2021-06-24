@@ -32,16 +32,16 @@ export default class RiskInformationPresenter {
   }
 
   get additionalRiskInformation(): Record<string, string | null> {
-    return this.riskPresenter.riskSummaryEnabled
+    return this.riskPresenter.riskSummaryNotFound
       ? {
-          label: 'Additional risk information',
-          labelClasses: 'govuk-label--l',
+          label: `Information for the service provider about ${this.referral.serviceUser?.firstName}’s risks`,
+          labelClasses: 'govuk-label--s',
           hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
           errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
         }
       : {
-          label: `Information for the service provider about ${this.referral.serviceUser?.firstName}’s risks`,
-          labelClasses: 'govuk-label--s',
+          label: 'Additional risk information',
+          labelClasses: 'govuk-label--l',
           hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
           errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
         }
