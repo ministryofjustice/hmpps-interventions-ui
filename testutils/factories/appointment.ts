@@ -23,6 +23,27 @@ class AppointmentFactory extends Factory<Appointment> {
       },
     })
   }
+
+  get phoneCall(): AppointmentFactory {
+    return this.params({ appointmentDeliveryType: 'PHONE_CALL', appointmentDeliveryAddress: null })
+  }
+
+  get videoCall(): AppointmentFactory {
+    return this.params({ appointmentDeliveryType: 'VIDEO_CALL', appointmentDeliveryAddress: null })
+  }
+
+  get inPersonOtherWithFullAddress(): AppointmentFactory {
+    return this.params({
+      appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+      appointmentDeliveryAddress: {
+        firstAddressLine: 'Harmony Living Office, Room 4',
+        secondAddressLine: '44 Bouverie Road',
+        townOrCity: 'Blackpool',
+        county: 'Lancashire',
+        postCode: 'SY40RE',
+      },
+    })
+  }
 }
 
 const defaultAppointmentDeliveryType: AppointmentDeliveryType = 'VIDEO_CALL'
