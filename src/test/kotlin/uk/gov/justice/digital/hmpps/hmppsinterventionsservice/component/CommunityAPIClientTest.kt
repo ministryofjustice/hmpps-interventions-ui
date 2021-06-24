@@ -66,7 +66,7 @@ class CommunityAPIClientTest {
   fun `makes async post request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build())
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
     )
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.empty())
 
@@ -84,7 +84,7 @@ class CommunityAPIClientTest {
   fun `makes async patch request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build())
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
     )
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.empty())
 
@@ -102,7 +102,7 @@ class CommunityAPIClientTest {
   fun `error was logged on exception during async post request`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build())
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
     )
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException::class.java)
 
@@ -117,7 +117,7 @@ class CommunityAPIClientTest {
   fun `makes sync post request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build())
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
     )
     val clientResponse: ClientResponse = ClientResponse
       .create(OK)
@@ -142,7 +142,7 @@ class CommunityAPIClientTest {
   fun `error was logged on exception during sync post request`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build())
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
     )
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException("A problem"))
 
@@ -160,7 +160,7 @@ class CommunityAPIClientTest {
   fun `propogates error response body on exception during sync post request`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build())
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
     )
     val clientResponse: ClientResponse = ClientResponse
       .create(BAD_REQUEST)

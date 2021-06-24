@@ -27,19 +27,30 @@ class WebClientConfiguration(
   @Value("\${assess-risks-and-needs.baseurl}") private val assessRisksAndNeedsBaseUrl: String,
   private val webClientBuilder: WebClient.Builder
 ) {
+  private val interventionsClientRegistrationId = "interventions-client"
+
   @Bean
   fun assessRisksAndNeedsClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
-    return RestClient(createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl))
+    return RestClient(
+      createAuthorizedWebClient(authorizedClientManager, assessRisksAndNeedsBaseUrl),
+      interventionsClientRegistrationId
+    )
   }
 
   @Bean
   fun hmppsAuthApiClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
-    return RestClient(createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl))
+    return RestClient(
+      createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl),
+      interventionsClientRegistrationId
+    )
   }
 
   @Bean
   fun communityApiClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
-    return RestClient(createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl))
+    return RestClient(
+      createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl),
+      interventionsClientRegistrationId
+    )
   }
 
   @Bean
@@ -60,7 +71,6 @@ class WebClientConfiguration(
 
   private fun createAuthorizedWebClient(clientManager: OAuth2AuthorizedClientManager, baseUrl: String): WebClient {
     val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(clientManager)
-    oauth2Client.setDefaultClientRegistrationId("interventions-client")
 
     val httpClient = HttpClient.create()
       .doOnConnected {

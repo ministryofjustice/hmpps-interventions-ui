@@ -22,7 +22,8 @@ class HMPPSAuthServiceTest {
     RestClient(
       WebClient.create(
         mockWebServer.url("/").toString()
-      )
+      ),
+      "client-registration-id"
     )
   )
 
