@@ -4,6 +4,8 @@ import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -47,7 +49,9 @@ class RisksAndNeedsService(
       riskInformation,
     )
 
-    return assessRisksAndNeedsClient.post(createSupplementaryRiskLocation, request)
+    // this endpoint requires user auth tokens for security reasons
+    val authentication = SecurityContextHolder.getContext().authentication as JwtAuthenticationToken
+    return assessRisksAndNeedsClient.post(createSupplementaryRiskLocation, request, customAuthentication = authentication)
       .retrieve()
       .bodyToMono(SupplementaryRiskResponse::class.java)
       .onErrorResume(WebClientResponseException::class.java) {
