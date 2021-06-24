@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
@@ -148,7 +149,8 @@ internal class ActionPlanSessionsServiceTest {
         referral,
         session.currentAppointment,
         appointmentTime,
-        durationInMinutes
+        durationInMinutes,
+        SERVICE_DELIVERY
       )
     ).thenReturn(999L)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(
@@ -168,7 +170,13 @@ internal class ActionPlanSessionsServiceTest {
     )
 
     assertThat(updatedSession).isEqualTo(session)
-    verify(communityAPIBookingService).book(referral, session.currentAppointment, appointmentTime, durationInMinutes)
+    verify(communityAPIBookingService).book(
+      referral,
+      session.currentAppointment,
+      appointmentTime,
+      durationInMinutes,
+      SERVICE_DELIVERY
+    )
     verify(appointmentRepository, times(2)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == 999L
@@ -186,7 +194,15 @@ internal class ActionPlanSessionsServiceTest {
     val appointmentTime = OffsetDateTime.now()
     val durationInMinutes = 15
 
-    whenever(communityAPIBookingService.book(referral, session.currentAppointment, appointmentTime, durationInMinutes)).thenReturn(null)
+    whenever(
+      communityAPIBookingService.book(
+        referral,
+        session.currentAppointment,
+        appointmentTime,
+        durationInMinutes,
+        SERVICE_DELIVERY
+      )
+    ).thenReturn(null)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
     whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)

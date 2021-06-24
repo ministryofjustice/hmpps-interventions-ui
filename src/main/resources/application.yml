@@ -94,10 +94,13 @@ interventions-ui:
     sent-referral: "/probation-practitioner/referrals/{id}/details"
     cancelled-referral: "/probation-practitioner/referrals/{id}/details"
     action-plan: "/probation-practitioner/referrals/{id}/progress"
-    view-appointment: "/probation-practitioner/referrals/{id}/progress"
     pp-referral-progress: "/probation-practitioner/referrals/{id}/progress"
     submit-end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
     session-feedback: "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback"
+  probation-appointment-links: "{
+    SERVICE_DELIVERY:'/probation-practitioner/referrals/{id}/progress',
+    SUPPLIER_ASSESSMENT:'/probation-practitioner/referrals/{id}/supplier-assessment'
+    }"
 
 community-api:
   locations:
@@ -114,6 +117,14 @@ community-api:
     bookings:
       enabled: true
     office-location: CRSEXTL
+    notes-field-qualifier: "{
+      SERVICE_DELIVERY:'Service Delivery',
+      SUPPLIER_ASSESSMENT:'Supplier Assessment'
+      }"
+    counts-towards-rar-days: "{
+      SERVICE_DELIVERY:true,
+      SUPPLIER_ASSESSMENT:false
+      }"
   referrals:
       enabled: true
   integration-context: commissioned-rehabilitation-services

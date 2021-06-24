@@ -9,6 +9,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
@@ -44,10 +46,12 @@ internal class CommunityAPIBookingServiceTest {
   private val communityAPIBookingService = CommunityAPIBookingService(
     true,
     httpBaseUrl,
-    viewUrl,
+    mapOf(AppointmentType.SERVICE_DELIVERY to viewUrl),
     bookingApiUrl,
     rescheduleApiUrl,
     crsOfficeLocation,
+    mapOf(AppointmentType.SERVICE_DELIVERY to "Service Delivery"),
+    mapOf(AppointmentType.SERVICE_DELIVERY to true),
     crsBookingsContext,
     communityAPIClient
   )
@@ -57,7 +61,7 @@ internal class CommunityAPIBookingServiceTest {
     val now = now()
 
     val uri = "/appt/X1/123/CRS"
-    val notes = "Appointment for Accommodation Referral XX123456 with Prime Provider SPN\n" +
+    val notes = "Service Delivery Appointment for Accommodation Referral XX123456 with Prime Provider SPN\n" +
       "http://url/view/${referral.id}"
     val request = AppointmentCreateRequestDTO(
       "ACC",
@@ -74,7 +78,7 @@ internal class CommunityAPIBookingServiceTest {
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
       .thenReturn(response)
 
-    val deliusAppointmentId = communityAPIBookingService.book(referral, null, now.plusMinutes(60), 60)
+    val deliusAppointmentId = communityAPIBookingService.book(referral, null, now.plusMinutes(60), 60, SERVICE_DELIVERY)
 
     assertThat(deliusAppointmentId).isEqualTo(1234L)
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
@@ -93,7 +97,7 @@ internal class CommunityAPIBookingServiceTest {
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
       .thenReturn(response)
 
-    communityAPIBookingService.book(referral, appointment, now, 45)
+    communityAPIBookingService.book(referral, appointment, now, 45, SERVICE_DELIVERY)
 
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
   }
@@ -104,7 +108,7 @@ internal class CommunityAPIBookingServiceTest {
     val deliusAppointmentId = 999L
     val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
 
-    communityAPIBookingService.book(referral, appointment, now.plusDays(1), 60)
+    communityAPIBookingService.book(referral, appointment, now.plusDays(1), 60, SERVICE_DELIVERY)
 
     verifyNoMoreInteractions(communityAPIClient)
   }
@@ -125,15 +129,42 @@ internal class CommunityAPIBookingServiceTest {
     val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(
       false,
       httpBaseUrl,
-      viewUrl,
+      mapOf(),
       bookingApiUrl,
       rescheduleApiUrl,
       crsOfficeLocation,
+      mapOf(),
+      mapOf(),
       crsBookingsContext,
       communityAPIClient
     )
 
-    communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60)
+    val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY)
+
+    assertThat(deliusAppointmentId).isNull()
+    verifyZeroInteractions(communityAPIClient)
+  }
+
+  @Test
+  fun `does nothing if not enabled and returns supplied id for existing delius appointment`() {
+    val appointment = makeAppointment(now(), now(), 60, 1234L)
+
+    val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(
+      false,
+      httpBaseUrl,
+      mapOf(),
+      bookingApiUrl,
+      rescheduleApiUrl,
+      crsOfficeLocation,
+      mapOf(),
+      mapOf(),
+      crsBookingsContext,
+      communityAPIClient
+    )
+
+    val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY)
+
+    assertThat(deliusAppointmentId).isEqualTo(1234L)
     verifyZeroInteractions(communityAPIClient)
   }
 
