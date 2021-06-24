@@ -23,7 +23,7 @@ export default class AssessRisksAndNeedsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/assess-risks-and-needs/risks/crn/${crn}/summary`,
+        urlPattern: `/assess-risks-and-needs/risks/crn/${crn}`,
       },
       response: {
         status: 200,

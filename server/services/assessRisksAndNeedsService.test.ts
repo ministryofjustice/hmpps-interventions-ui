@@ -36,7 +36,7 @@ describe(AssessRisksAndNeedsService, () => {
       restClientMock.get.mockResolvedValue(riskSummary)
       await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
 
-      expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/crn/crn123/summary`, token: 'token' })
+      expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/crn/crn123`, token: 'token' })
     })
 
     it('provides a userMessage on failure', async () => {

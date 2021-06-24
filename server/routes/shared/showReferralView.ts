@@ -11,7 +11,7 @@ interface ServiceCategorySection {
 export default class ShowReferralView {
   constructor(private readonly presenter: ShowReferralPresenter) {}
 
-  private readonly riskView = new RiskView(this.presenter.riskPresenter)
+  private readonly riskView = new RiskView(this.presenter.riskPresenter, this.presenter.userType)
 
   private readonly probationPractitionerSummaryListArgs = ViewUtils.summaryListArgs(
     this.presenter.probationPractitionerDetails
@@ -68,6 +68,7 @@ export default class ShowReferralView {
         backLinkArgs: this.backLinkArgs,
         roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
         riskLevelDetailsArgs: this.riskView.riskLevelDetailsArgs,
+        furtherRiskInformation: this.riskView.furtherRiskInformation,
       },
     ]
   }

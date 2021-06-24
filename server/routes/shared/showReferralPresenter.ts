@@ -33,7 +33,7 @@ export default class ShowReferralPresenter {
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
-    subNavUrlPrefix: 'service-provider' | 'probation-practitioner',
+    readonly userType: 'service-provider' | 'probation-practitioner',
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     private readonly riskSummary: RiskSummary | null
@@ -41,7 +41,7 @@ export default class ShowReferralPresenter {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      subNavUrlPrefix
+      userType
     )
 
     this.riskPresenter = new RiskPresenter(riskSummary)

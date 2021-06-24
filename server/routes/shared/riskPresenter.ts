@@ -10,6 +10,12 @@ export default class RiskPresenter {
 
   readonly riskSummaryEnabled = this.riskSummary !== null
 
+  readonly text = {
+    whoIsAtRisk: this.riskSummary?.summary.whoIsAtRisk,
+    natureOfRisk: this.riskSummary?.summary.natureOfRisk,
+    riskImminence: this.riskSummary?.summary.riskImminence,
+  }
+
   get roshAnalysisHeaders(): string[] {
     return ['Risk to', 'Risk in community']
   }
@@ -17,7 +23,7 @@ export default class RiskPresenter {
   get roshAnalysisRows(): RoshAnalysisTableRow[] {
     if (this.riskSummary === null) return []
 
-    return Object.entries(this.riskSummary.riskInCommunity).flatMap(([riskScore, riskGroups]) => {
+    return Object.entries(this.riskSummary.summary.riskInCommunity).flatMap(([riskScore, riskGroups]) => {
       return riskGroups.map(riskTo => {
         return { riskTo, riskScore }
       })
