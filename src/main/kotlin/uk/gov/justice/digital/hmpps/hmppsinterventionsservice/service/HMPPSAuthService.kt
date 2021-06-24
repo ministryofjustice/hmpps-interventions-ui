@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import javax.transaction.Transactional
@@ -45,14 +45,14 @@ class HMPPSAuthService(
   @Value("\${hmppsauth.api.locations.auth-user-detail}") private val authUserDetailLocation: String,
   @Value("\${hmppsauth.api.locations.user-email}") private val userEmailLocation: String,
   @Value("\${hmppsauth.api.locations.user-detail}") private val userDetailLocation: String,
-  private val hmppsAuthApiWebClient: WebClient,
+  private val hmppsAuthApiClient: RestClient,
 ) {
   fun getUserGroups(user: AuthUser): List<AuthGroupID>? {
     val url = UriComponentsBuilder.fromPath(authUserGroupsLocation)
       .buildAndExpand(user.userName)
       .toString()
 
-    return hmppsAuthApiWebClient.get().uri(url)
+    return hmppsAuthApiClient.get(url)
       .retrieve()
       .onStatus({ HttpStatus.NOT_FOUND == it }, { Mono.just(null) })
       .bodyToFlux(AuthGroupResponse::class.java)
@@ -69,7 +69,7 @@ class HMPPSAuthService(
       .buildAndExpand(user.userName)
       .toString()
 
-    val groups = hmppsAuthApiWebClient.get().uri(url)
+    val groups = hmppsAuthApiClient.get(url)
       .retrieve()
       .bodyToFlux(AuthGroupResponse::class.java)
       .collectList().block()
@@ -87,7 +87,7 @@ class HMPPSAuthService(
   fun getUserDetail(user: AuthUser): UserDetail {
     return if (user.authSource == "auth") {
       val url = UriComponentsBuilder.fromPath(authUserDetailLocation).buildAndExpand(user.userName).toString()
-      hmppsAuthApiWebClient.get().uri(url)
+      hmppsAuthApiClient.get(url)
         .retrieve()
         .bodyToMono(AuthUserDetailResponse::class.java)
         .map {
@@ -101,11 +101,11 @@ class HMPPSAuthService(
       val detailUrl = UriComponentsBuilder.fromPath(userDetailLocation).buildAndExpand(user.userName).toString()
       val emailUrl = UriComponentsBuilder.fromPath(userEmailLocation).buildAndExpand(user.userName).toString()
       Mono.zip(
-        hmppsAuthApiWebClient.get().uri(detailUrl)
+        hmppsAuthApiClient.get(detailUrl)
           .retrieve()
           .bodyToMono(UserDetailResponse::class.java)
           .map { it.name.substringBefore(' ') },
-        hmppsAuthApiWebClient.get().uri(emailUrl)
+        hmppsAuthApiClient.get(emailUrl)
           .retrieve()
           .onStatus({ it.equals(HttpStatus.NO_CONTENT) }, { Mono.error(UnverifiedEmailException()) })
           .bodyToMono(UserEmailResponse::class.java)

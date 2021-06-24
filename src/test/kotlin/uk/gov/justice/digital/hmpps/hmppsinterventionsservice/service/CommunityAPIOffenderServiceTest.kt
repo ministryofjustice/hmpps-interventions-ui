@@ -39,7 +39,8 @@ internal class CommunityAPIOffenderServiceTest {
           }
           Mono.empty()
         }
-        .build()
+        .build(),
+      "client-registration-id"
     )
   }
 
