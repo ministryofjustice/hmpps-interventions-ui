@@ -53,10 +53,13 @@ afterEach(() => {
 
 describe('GET /service-provider/dashboard', () => {
   it('displays a list of all sent referrals', async () => {
-    const accommodationIntervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
+    const accommodationIntervention = interventionFactory.build({
+      id: '1',
+      title: 'accommodation services - west midlands',
+    })
     const womensServicesIntervention = interventionFactory.build({
       id: '2',
-      contractType: { name: "women's services" },
+      title: "women's services - west midlands",
     })
 
     const sentReferrals = [
@@ -87,7 +90,7 @@ describe('GET /service-provider/dashboard', () => {
         expect(res.text).toContain('George Michael')
         expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Jenny Jones')
-        expect(res.text).toContain('Women&#39;s services')
+        expect(res.text).toContain('Women&#39;s Services - West Midlands')
       })
   })
 })

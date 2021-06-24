@@ -18,8 +18,14 @@ describe('Probation practitioner referrals dashboard', () => {
 
   it("user logs in and sees 'My cases' screen with list of sent referrals", () => {
     const serviceCategory = serviceCategoryFactory.build()
-    const accommodationIntervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const womensServicesIntervention = interventionFactory.build({ contractType: { name: "womens' services" } })
+    const accommodationIntervention = interventionFactory.build({
+      contractType: { name: 'accommodation' },
+      title: 'accommodation services - west midlands',
+    })
+    const womensServicesIntervention = interventionFactory.build({
+      contractType: { name: "women's services" },
+      title: "women's services - west midlands",
+    })
 
     const sentReferrals = [
       sentReferralFactory.build({
@@ -80,7 +86,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
-          'Service category': 'Accommodation',
+          'Intervention type': 'Accommodation Services - West Midlands',
           Provider: 'Harmony Living',
           Caseworker: 'Unassigned',
           Action: 'View',
@@ -88,7 +94,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
-          'Service category': "Womens' services",
+          'Intervention type': "Women's Services - West Midlands",
           Provider: 'Harmony Living',
           Caseworker: 'A. Caseworker',
           Action: 'View',

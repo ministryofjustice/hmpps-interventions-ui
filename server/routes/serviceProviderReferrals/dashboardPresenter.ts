@@ -41,7 +41,7 @@ export default class DashboardPresenter {
         sortValue: PresenterUtils.fullNameSortValue(serviceUser),
         href: null,
       },
-      { text: utils.convertToProperCase(interventionForReferral.contractType.name), sortValue: null, href: null },
+      { text: utils.convertToTitleCase(interventionForReferral.title), sortValue: null, href: null },
       { text: referral.assignedTo?.username ?? '', sortValue: null, href: null },
       { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referral) },
     ]

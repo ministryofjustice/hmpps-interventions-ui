@@ -6,8 +6,14 @@ describe(DashboardPresenter, () => {
   describe('tableRows', () => {
     it('returns the table’s rows', () => {
       const interventions = [
-        interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } }),
-        interventionFactory.build({ id: '2', contractType: { name: "women's services" } }),
+        interventionFactory.build({
+          id: '1',
+          title: 'accommodation services - west midlands',
+        }),
+        interventionFactory.build({
+          id: '2',
+          title: "women's services - west midlands",
+        }),
       ]
       const sentReferrals = [
         sentReferralFactory.build({
@@ -35,7 +41,7 @@ describe(DashboardPresenter, () => {
           { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
           { text: 'ABCABCA1', sortValue: null, href: null },
           { text: 'George Michael', sortValue: 'michael, george', href: null },
-          { text: 'Accommodation', sortValue: null, href: null },
+          { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
           { text: '', sortValue: null, href: null },
           { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[0].id}/details` },
         ],
@@ -43,7 +49,7 @@ describe(DashboardPresenter, () => {
           { text: '13 Sep 2020', sortValue: '2020-09-13', href: null },
           { text: 'ABCABCA2', sortValue: null, href: null },
           { text: 'Jenny Jones', sortValue: 'jones, jenny', href: null },
-          { text: "Women's services", sortValue: null, href: null },
+          { text: "Women's Services - West Midlands", sortValue: null, href: null },
           { text: '', sortValue: null, href: null },
           { text: 'View', sortValue: null, href: `/service-provider/referrals/${sentReferrals[1].id}/details` },
         ],
