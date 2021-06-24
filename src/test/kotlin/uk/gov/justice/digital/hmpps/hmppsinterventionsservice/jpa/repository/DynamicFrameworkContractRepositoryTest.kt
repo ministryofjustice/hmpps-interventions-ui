@@ -17,6 +17,8 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
+  val appointmentRepository: AppointmentRepository,
+  val supplierAssessmentRepository: SupplierAssessmentRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
   val dynamicFrameworkContractRepository: DynamicFrameworkContractRepository,
 ) {
@@ -28,6 +30,8 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
     actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
+    appointmentRepository.deleteAll()
+    supplierAssessmentRepository.deleteAll()
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
     authUserRepository.deleteAll()

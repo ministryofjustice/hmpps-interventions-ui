@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
@@ -46,6 +48,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceR
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.SupplierAssessmentFactory
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.Random
@@ -83,6 +86,7 @@ class SetupAssistant(
   private val appointmentFactory = AppointmentFactory()
   private val appointmentDeliveryFactory = AppointmentDeliveryFactory()
   private val appointmentDeliveryAddressFactory = AppointmentDeliveryAddressFactory()
+  private val supplierAssessmentFactory = SupplierAssessmentFactory()
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -198,8 +202,56 @@ class SetupAssistant(
     return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endRequestedBy = ppUser, assignedTo = spUser, endRequestedReason = endRequestedReason, endRequestedComments = endRequestedComments))
   }
 
-  fun createSentReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention(), ppUser: AuthUser = createPPUser()): Referral {
-    return referralRepository.save(referralFactory.createSent(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser))
+  fun createSentReferral(
+    id: UUID = UUID.randomUUID(),
+    intervention: Intervention = createIntervention(),
+    ppUser: AuthUser = createPPUser()
+  ): Referral {
+    val referral = referralRepository.save(
+      referralFactory.createSent(
+        id = id,
+        intervention = intervention,
+        createdBy = ppUser,
+        sentBy = ppUser
+      )
+    )
+    referral.supplierAssessment = createSupplierAssessment(referral = referral, appointments = mutableSetOf())
+    return referral
+  }
+
+  fun addSupplierAssessmentAppointment(
+    supplierAssessment: SupplierAssessment,
+    appointment: Appointment = appointmentFactory.create(createdBy = createPPUser())
+  ) {
+    appointmentRepository.save(appointment)
+    supplierAssessment.appointments.add(appointment)
+    supplierAssessmentRepository.save(supplierAssessment)
+  }
+
+  fun createSupplierAssessment(
+    id: UUID = UUID.randomUUID(),
+    referral: Referral = referralRepository.save(
+      referralFactory.createSent(
+        createdBy = createPPUser(),
+        sentBy = createPPUser(),
+        intervention = createIntervention()
+      )
+    ),
+    appointments: MutableSet<Appointment> = mutableSetOf(
+      appointmentRepository.save(
+        appointmentFactory.create(
+          createdBy = createPPUser()
+        )
+      )
+    )
+  ): SupplierAssessment {
+    return supplierAssessmentRepository.save(
+      SupplierAssessment(
+        id = id,
+        referral = referral,
+        appointments = appointments
+      )
+    )
   }
 
   fun createDynamicFrameworkContract(
@@ -233,7 +285,8 @@ class SetupAssistant(
     return referralRepository.save(
       referralFactory.createSent(
         id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser,
-        assignedTo = spUser, assignedBy = spUser, assignedAt = OffsetDateTime.now()
+        assignedTo = spUser, assignedBy = spUser, assignedAt = OffsetDateTime.now(),
+        supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
       )
     )
   }

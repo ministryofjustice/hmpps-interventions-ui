@@ -12,7 +12,7 @@ class SupplierAssessmentFactory(em: TestEntityManager? = null) : EntityFactory(e
 
   fun create(
     id: UUID = UUID.randomUUID(),
-    referral: Referral = referralFactory.createDraft(),
+    referral: Referral = referralFactory.createSent(),
     appointment: Appointment = appointmentFactory.create()
   ): SupplierAssessment {
     return save(
@@ -26,7 +26,7 @@ class SupplierAssessmentFactory(em: TestEntityManager? = null) : EntityFactory(e
 
   fun createWithNoAppointment(
     id: UUID = UUID.randomUUID(),
-    referral: Referral = referralFactory.createDraft(),
+    referral: Referral = referralFactory.createSent(),
   ): SupplierAssessment {
     return save(
       SupplierAssessment(
