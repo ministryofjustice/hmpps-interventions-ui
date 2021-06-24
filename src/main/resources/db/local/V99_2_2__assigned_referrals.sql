@@ -19,6 +19,10 @@ values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '{}', TO_DATE('2097-11-08', 'YYY
        ('B59D3599-0681-466A-82B2-F6F957E46190', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Ms', 'JUNAID', 'KHAN', 'English', 'None', 'Female'),
        ('a2a551aa-3d11-44b1-907b-42a028852bc1', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Ms', 'JUNAID', 'KHAN', 'English', 'None', 'Female');
 
+insert into supplier_assessment(id, referral_id)
+values ('b8e25260-1f74-4f65-9891-dd4f9977d253', 'BBC2FEEE-2E86-4A33-8069-DD79A606B741'),
+       ('3d7768f7-6cfa-4302-9b61-5a89300281db', 'B59D3599-0681-466A-82B2-F6F957E46190'),
+       ('088e2fd0-abb2-40af-97d8-ceb6493644a5', 'a2a551aa-3d11-44b1-907b-42a028852bc1');
 
 insert into action_plan (id, referral_id, number_of_sessions, created_by_id, created_at, submitted_by_id, submitted_at)
 values ('21EA6AFE-C437-4018-9260-BF1A829DE464', 'BBC2FEEE-2E86-4A33-8069-DD79A606B741', 2, '608955ae-52ed-44cc-884c-011597a77949', '2021-03-10 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949', '2021-03-11 17:51:34.235464+00'),
