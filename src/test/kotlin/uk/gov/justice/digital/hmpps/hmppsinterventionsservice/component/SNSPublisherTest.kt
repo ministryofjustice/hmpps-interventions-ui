@@ -73,6 +73,19 @@ class SNSPublisherTest {
   fun `event does not publish when service is disabled`() {
     snsPublisher(false).publish(aReferralId, aUser, event)
     verifyZeroInteractions(snsClient)
-    verifyZeroInteractions(telemetryClient)
+  }
+
+  @Test
+  fun `event still sends telemetry when service is disabled`() {
+    snsPublisher(false).publish(aReferralId, aUser, event)
+    verify(telemetryClient).trackEvent(
+      "InterventionsDomainEvent",
+      mapOf(
+        "event" to "intervention.test.event",
+        "referralId" to "82138d14-3835-442b-b39b-9f8a07650bbe",
+        "actorUserId" to "d7c4c3a7a7",
+      ),
+      null
+    )
   }
 }
