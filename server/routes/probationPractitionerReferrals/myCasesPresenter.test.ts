@@ -47,21 +47,21 @@ describe('MyCasesPresenter', () => {
           { text: 'UserABC', sortValue: 'AUserABC', href: null },
           {
             text: 'Accommodation Services - West Midlands',
-            sortValue: 'accommodation services - west midlands',
+            sortValue: null,
             href: null,
           },
         ]),
         expect.arrayContaining([
           { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
           { text: 'Unassigned', sortValue: 'Unassigned', href: null },
-          { text: "Women's Services - West Midlands", sortValue: "women's services - west midlands", href: null },
+          { text: "Women's Services - West Midlands", sortValue: null, href: null },
         ]),
         expect.arrayContaining([
           { text: 'Jenny Catherine', sortValue: 'catherine, jenny', href: null },
           { text: 'UserABC', sortValue: 'AUserABC', href: null },
           {
             text: 'Accommodation Services - West Midlands',
-            sortValue: 'accommodation services - west midlands',
+            sortValue: null,
             href: null,
           },
         ]),

@@ -43,7 +43,7 @@ export default class MyCasesPresenter {
       },
       {
         text: utils.convertToTitleCase(interventionForReferral.title),
-        sortValue: interventionForReferral.title,
+        sortValue: null,
         href: null,
       },
       {
