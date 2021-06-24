@@ -31,22 +31,19 @@ class AppointmentService(
     val initialAppointmentRequired = appointment == null
     if (initialAppointmentRequired) {
       val deliusAppointmentId = communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      val createdAppointment = createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser)
-      return appointmentRepository.save(createdAppointment)
+      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser)
     }
 
     val updateCurrentAppointmentRequired = appointment!!.attended == null
     if (updateCurrentAppointmentRequired) {
       val deliusAppointmentId = communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType)
-      val updatedAppointment = updateAppointment(appointment, durationInMinutes, appointmentTime, deliusAppointmentId)
-      return appointmentRepository.save(updatedAppointment)
+      return updateAppointment(appointment, durationInMinutes, appointmentTime, deliusAppointmentId)
     }
 
     val additionalAppointmentRequired = appointment.attended == Attended.NO
     if (additionalAppointmentRequired) {
       val deliusAppointmentId = communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      val additionalAppointment = createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser)
-      return appointmentRepository.save(additionalAppointment)
+      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser)
     }
 
     throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
@@ -58,13 +55,15 @@ class AppointmentService(
     deliusAppointmentId: Long?,
     createdByUser: AuthUser,
   ): Appointment {
-    return Appointment(
-      id = UUID.randomUUID(),
-      appointmentTime = appointmentTime,
-      durationInMinutes = durationInMinutes,
-      deliusAppointmentId = deliusAppointmentId,
-      createdBy = authUserRepository.save(createdByUser),
-      createdAt = OffsetDateTime.now()
+    return appointmentRepository.save(
+      Appointment(
+        id = UUID.randomUUID(),
+        appointmentTime = appointmentTime,
+        durationInMinutes = durationInMinutes,
+        deliusAppointmentId = deliusAppointmentId,
+        createdBy = authUserRepository.save(createdByUser),
+        createdAt = OffsetDateTime.now()
+      )
     )
   }
 
@@ -77,6 +76,6 @@ class AppointmentService(
     appointment.durationInMinutes = durationInMinutes
     appointment.appointmentTime = appointmentTime
     appointment.deliusAppointmentId = deliusAppointmentId
-    return appointment
+    return appointmentRepository.save(appointment)
   }
 }
