@@ -2616,7 +2616,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
-      const appointment = appointmentFactory.newlyBooked().build()
+      const appointment = appointmentFactory.newlyBooked().phoneCall.build()
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
         currentAppointmentId: appointment.id,
@@ -2624,7 +2624,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       await provider.addInteraction({
         state:
-          'a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a supplier assessment appointment booked with no feedback yet submitted',
+          'a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a phone call supplier assessment appointment booked with no feedback yet submitted',
         uponReceiving:
           'a GET request for the supplier assessment appointment on sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962',
         withRequest: {
