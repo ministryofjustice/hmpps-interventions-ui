@@ -2650,44 +2650,51 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('scheduleSupplierAssessmentAppointment', () => {
-    it('returns a supplier assessment appointment', async () => {
-      const appointment = appointmentFactory.build({
-        appointmentTime: '2021-05-13T12:30:00Z',
-        durationInMinutes: 60,
-      })
+    const appointmentParams = {
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 60,
+    }
 
-      await provider.addInteraction({
-        state: 'a supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770 exists',
-        uponReceiving:
-          'a PUT request to schedule an appointment for the supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770',
-        withRequest: {
-          method: 'PUT',
-          path: '/supplier-assessment/77f6c5cf-9772-4731-9a9a-97f2f53f2770/schedule-appointment',
-          body: {
-            appointmentTime: '2021-05-13T12:30:00Z',
-            durationInMinutes: 60,
+    describe.each([
+      [
+        'a video call appointment',
+        '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
+        appointmentFactory.videoCall.build(appointmentParams),
+      ],
+      [
+        'a phone call appointment',
+        '4567945e-73be-43f0-9021-74c4a8ce49db',
+        appointmentFactory.phoneCall.build(appointmentParams),
+      ],
+      [
+        'a face to face appointment',
+        'fb10c5fe-12ce-482f-8ca1-104974ab21f5',
+        appointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams),
+      ],
+    ])('booking %s', (_, supplierAssessmentId, appointment) => {
+      it('returns a supplier assessment appointment', async () => {
+        await provider.addInteraction({
+          state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+          uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+          withRequest: {
+            method: 'PUT',
+            path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+            body: appointment,
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like(appointment),
-          headers: {
-            'Content-Type': 'application/json',
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(appointment),
+            headers: {
+              'Content-Type': 'application/json',
+            },
           },
-        },
-      })
+        })
 
-      expect(
-        await interventionsService.scheduleSupplierAssessmentAppointment(
-          token,
-          '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
-          {
-            appointmentTime: '2021-05-13T12:30:00Z',
-            durationInMinutes: 60,
-          }
-        )
-      ).toMatchObject(appointment)
+        expect(
+          await interventionsService.scheduleSupplierAssessmentAppointment(token, supplierAssessmentId, appointment)
+        ).toMatchObject(appointment)
+      })
     })
   })
 
