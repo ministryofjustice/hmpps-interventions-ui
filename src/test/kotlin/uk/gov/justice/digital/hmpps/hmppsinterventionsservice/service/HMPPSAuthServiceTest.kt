@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
 class HMPPSAuthServiceTest {
@@ -18,8 +19,10 @@ class HMPPSAuthServiceTest {
     "/authuser/detail",
     "/user/email",
     "/user/detail",
-    WebClient.create(
-      mockWebServer.url("/").toString()
+    RestClient(
+      WebClient.create(
+        mockWebServer.url("/").toString()
+      )
     )
   )
 

@@ -32,14 +32,14 @@ class CommunityAPIOffenderService(
   @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
   @Value("\${community-api.locations.managed-offenders}") private val managedOffendersLocation: String,
   @Value("\${community-api.locations.staff-details}") private val staffDetailsLocation: String,
-  private val communityApiRestClient: RestClient,
+  private val communityApiClient: RestClient,
 ) {
   fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(user: AuthUser, crn: String): ServiceUserAccessResult {
     val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
       .buildAndExpand(crn, user.userName)
       .toString()
 
-    val response = communityApiRestClient.get(userAccessPath)
+    val response = communityApiClient.get(userAccessPath)
       .retrieve()
       .onStatus({ it.equals(HttpStatus.FORBIDDEN) }, { Mono.empty() })
       .toEntity(UserAccessResponse::class.java)
@@ -61,7 +61,7 @@ class CommunityAPIOffenderService(
       .buildAndExpand(staffIdentifier)
       .toString()
 
-    return communityApiRestClient.get(managedOffendersPath)
+    return communityApiClient.get(managedOffendersPath)
       .retrieve()
       .bodyToFlux(Offender::class.java)
       .collectList()
@@ -73,7 +73,7 @@ class CommunityAPIOffenderService(
       .buildAndExpand(user.userName)
       .toString()
 
-    return communityApiRestClient.get(staffDetailsPath)
+    return communityApiClient.get(staffDetailsPath)
       .retrieve()
       .bodyToMono(StaffDetailsResponse::class.java)
       .onErrorResume(WebClientResponseException::class.java) { e ->

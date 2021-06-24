@@ -30,6 +30,15 @@ class RestClient(
     return withDefaultHeaders(spec)
   }
 
+  fun <T> patch(uri: String, body: T): WebClient.RequestHeadersSpec<*> {
+    val spec = webClient
+      .patch()
+      .uri(uri)
+      .bodyValue(body)
+
+    return withDefaultHeaders(spec)
+  }
+
   private fun withDefaultHeaders(spec: WebClient.RequestHeadersSpec<*>): WebClient.RequestHeadersSpec<*> {
     return spec
       .accept(MediaType.APPLICATION_JSON)

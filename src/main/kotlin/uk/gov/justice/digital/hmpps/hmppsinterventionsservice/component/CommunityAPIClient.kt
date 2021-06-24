@@ -3,19 +3,17 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException.BadRequest
 import reactor.core.publisher.Mono
 
 @Component
 class CommunityAPIClient(
-  private val communityApiWebClient: WebClient,
+  private val communityApiClient: RestClient,
 ) {
   companion object : KLogging()
 
   fun makeAsyncPostRequest(uri: String, requestBody: Any) {
-    communityApiWebClient.post().uri(uri)
-      .body(Mono.just(requestBody), requestBody::class.java)
+    communityApiClient.post(uri, requestBody)
       .retrieve()
       .bodyToMono(Unit::class.java)
       .onErrorResume { e ->
@@ -26,8 +24,7 @@ class CommunityAPIClient(
   }
 
   fun makeAsyncPatchRequest(uri: String, requestBody: Any) {
-    communityApiWebClient.patch().uri(uri)
-      .body(Mono.just(requestBody), requestBody::class.java)
+    communityApiClient.patch(uri, requestBody)
       .retrieve()
       .bodyToMono(Unit::class.java)
       .onErrorResume { e ->
@@ -38,8 +35,7 @@ class CommunityAPIClient(
   }
 
   fun <T : Any> makeSyncPostRequest(uri: String, requestBody: Any, responseBodyClass: Class<T>): T {
-    return communityApiWebClient.post().uri(uri)
-      .body(Mono.just(requestBody), requestBody::class.java)
+    return communityApiClient.post(uri, requestBody)
       .retrieve()
       .bodyToMono(responseBodyClass)
       .onErrorMap { e ->
@@ -50,7 +46,7 @@ class CommunityAPIClient(
   }
 
   fun <T : Any> makeSyncGetRequest(uri: String, responseBodyClass: Class<T>): T {
-    return communityApiWebClient.get().uri(uri)
+    return communityApiClient.get(uri)
       .retrieve()
       .bodyToMono(responseBodyClass)
       .onErrorMap { e ->

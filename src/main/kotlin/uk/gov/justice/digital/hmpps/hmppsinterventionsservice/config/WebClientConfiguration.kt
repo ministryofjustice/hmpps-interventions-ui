@@ -33,19 +33,13 @@ class WebClientConfiguration(
   }
 
   @Bean
-  @Deprecated("usage of newer 'RestClient' interface is preferred")
-  fun communityApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
-    return createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl)
+  fun hmppsAuthApiClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
+    return RestClient(createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl))
   }
 
   @Bean
-  fun hmppsAuthApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager): WebClient {
-    return createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl)
-  }
-
-  @Bean
-  fun communityApiRestClient(communityApiWebClient: WebClient): RestClient {
-    return RestClient(communityApiWebClient)
+  fun communityApiClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
+    return RestClient(createAuthorizedWebClient(authorizedClientManager, communityApiBaseUrl))
   }
 
   @Bean
