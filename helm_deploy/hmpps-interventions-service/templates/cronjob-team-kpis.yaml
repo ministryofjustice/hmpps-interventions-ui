@@ -30,7 +30,7 @@ spec:
               defaultMode: 0755
           containers:
           - name: data-extractor-reporting
-            image: ministryofjustice/data-engineering-data-extractor:develop
+            image: ministryofjustice/data-engineering-data-extractor:v1
             imagePullPolicy: Always
             args:
               - |
