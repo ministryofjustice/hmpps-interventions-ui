@@ -129,7 +129,8 @@ class ReferralService(
       emptyList()
     }.flatMap { referralRepository.findByServiceUserCRNAndSentAtIsNotNull(it.crnNumber) }
 
-    return referralAccessFilter.probationPractitionerReferrals(referralsStartedByPP + referralsManagedByPP, user)
+    val ppReferrals = referralsStartedByPP.union(referralsManagedByPP).sortedBy { it.createdAt }
+    return referralAccessFilter.probationPractitionerReferrals(ppReferrals, user)
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {

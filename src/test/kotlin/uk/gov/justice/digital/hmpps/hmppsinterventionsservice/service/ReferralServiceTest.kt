@@ -399,48 +399,71 @@ class ReferralServiceTest @Autowired constructor(
     assertThat(referralService.getDraftReferralsForUser(user)).hasSize(3)
   }
 
-  @Test
-  fun `get sent referrals for PP returns filtered referrals`() {
-    val users = listOf(userFactory.create("pp_user_1", "delius"), userFactory.create("pp_user_2", "delius"))
-    users.forEach {
-      referralFactory.createSent(createdBy = it)
+  @Nested
+  @DisplayName("get sent referrals with a probation practitioner user")
+  inner class GetSentReferralsPPUser {
+    @BeforeEach
+    fun setup() {
+      // do not test access restrictions in these tests; only test selection of referrals
+      whenever(referralAccessFilter.probationPractitionerReferrals(any(), any()))
+        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
     }
 
-    // this one should not be part of the result set - only referrals created by the pp!
-    referralFactory.createSent(sentBy = users[0])
+    @Test
+    fun `returns referrals started by the user`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      val startedReferrals = (1..3).map { referralFactory.createSent(createdBy = user) }
 
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).containsExactlyElementsOf(startedReferrals)
+    }
 
-    val referrals = referralService.getSentReferralsForUser(users[0])
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].createdBy).isEqualTo(users[0])
+    @Test
+    fun `must not return referrals sent by the user`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      val sentReferral = referralFactory.createSent(sentBy = user)
 
-    assertThat(referralService.getSentReferralsForUser(AuthUser("missing", "delius", "missing"))).isEmpty()
-  }
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).doesNotContain(sentReferral)
+      assertThat(result).isEmpty()
+    }
 
-  @Test
-  fun `get sent referrals for PP handles errors from community-api`() {
-    val user = userFactory.create("pp_user_1", "delius")
-    referralFactory.createSent(createdBy = user)
+    @Test
+    fun `must not propagate errors from community-api`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      val createdReferral = referralFactory.createSent(createdBy = user)
 
-    whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenThrow(WebClientResponseException::class.java)
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
+        .thenThrow(WebClientResponseException::class.java)
 
-    val referrals = referralService.getSentReferralsForUser(user)
-    assertThat(referrals.size).isEqualTo(1)
-  }
+      val result = assertDoesNotThrow { referralService.getSentReferralsForUser(user) }
+      assertThat(result).containsExactly(createdReferral)
+    }
 
-  @Test
-  fun `get sent referrals for PP includes referrals for managed offenders`() {
-    val user = userFactory.create("pp_user_1", "delius")
-    referralFactory.createSent(serviceUserCRN = "CRN129876234")
+    @Test
+    fun `includes referrals for offenders managed by the user`() {
+      val someoneElse = userFactory.create("helper_pp_user", "delius")
+      val user = userFactory.create("pp_user_1", "delius")
 
-    whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user)).thenReturn(listOf(Offender("CRN129876234")))
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      val managedReferral = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = someoneElse)
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
+        .thenReturn(listOf(Offender("CRN129876234")))
 
-    val referrals = referralService.getSentReferralsForUser(user)
-    assertThat(referrals.size).isEqualTo(1)
-    assertThat(referrals[0].serviceUserCRN).isEqualTo("CRN129876234")
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).containsExactly(managedReferral)
+    }
+
+    @Test
+    fun `returns referrals both managed and started by the user only once`() {
+      val user = userFactory.create("pp_user_1", "delius")
+      val managedAndStartedReferral = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = user)
+
+      whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
+        .thenReturn(listOf(Offender("CRN129876234")))
+
+      val result = referralService.getSentReferralsForUser(user)
+      assertThat(result).containsExactly(managedAndStartedReferral)
+    }
   }
 
   @Nested
