@@ -2,8 +2,6 @@ import createError from 'http-errors'
 import AssessRisksAndNeedsService from './assessRisksAndNeedsService'
 
 import RestClient from '../data/restClient'
-import MockedHmppsAuthService from './testutils/hmppsAuthServiceSetup'
-import HmppsAuthService from './hmppsAuthService'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import MockRestClient from '../data/testutils/mockRestClient'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
@@ -13,29 +11,24 @@ jest.mock('../data/restClient')
 
 describe(AssessRisksAndNeedsService, () => {
   describe('getSupplementaryRiskInformation', () => {
-    const hmppsAuthServiceMock = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
-
     const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
 
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthServiceMock, restClientMock, true)
+    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, true)
 
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
 
     it('makes a request to the Assess Risks and Needs API', async () => {
-      hmppsAuthServiceMock.getApiClientToken.mockResolvedValue('testToken')
       restClientMock.get.mockResolvedValue(supplementaryRiskInformation)
-      await assessRisksAndNeedsService.getSupplementaryRiskInformation('riskId')
+      await assessRisksAndNeedsService.getSupplementaryRiskInformation('riskId', 'token')
 
-      expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/supplementary/riskId`, token: 'testToken' })
+      expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/supplementary/riskId`, token: 'token' })
     })
   })
 
   describe('getRiskSummary', () => {
-    const hmppsAuthServiceMock = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
-
     const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
 
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthServiceMock, restClientMock, true)
+    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, true)
 
     const riskSummary = riskSummaryFactory.build()
 
@@ -58,11 +51,9 @@ describe(AssessRisksAndNeedsService, () => {
   })
 
   describe('getRiskSummary when riskSummaryEnabled is false', () => {
-    const hmppsAuthServiceMock = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
-
     const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
 
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(hmppsAuthServiceMock, restClientMock, false)
+    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, false)
 
     it('returns null and does not call Assess Risks and Needs API', async () => {
       const result = await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')

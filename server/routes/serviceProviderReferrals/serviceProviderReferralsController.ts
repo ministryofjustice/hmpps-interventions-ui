@@ -93,7 +93,7 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
       this.communityApiService.getExpandedServiceUserByCRN(crn),
       this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
-      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
     ])
 
