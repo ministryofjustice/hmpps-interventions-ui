@@ -2593,7 +2593,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         state:
           'a sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa exists, and a supplier assessment appointment has not yet been booked for it',
         uponReceiving:
-          'a GET request for the supplier assessment appointment on sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa',
+          'a GET request for the supplier assessment on sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa',
         withRequest: {
           method: 'GET',
           path: '/sent-referral/cbf2f82b-4581-4fe1-9de1-1b52465f1afa/supplier-assessment',
@@ -2659,7 +2659,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       await provider.addInteraction({
         state: 'a supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770 exists',
         uponReceiving:
-          'a PUT request to schedule an appointment the supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770',
+          'a PUT request to schedule an appointment for the supplier assessment with ID 77f6c5cf-9772-4731-9a9a-97f2f53f2770',
         withRequest: {
           method: 'PUT',
           path: '/supplier-assessment/77f6c5cf-9772-4731-9a9a-97f2f53f2770/schedule-appointment',
