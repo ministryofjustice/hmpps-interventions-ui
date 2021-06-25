@@ -450,4 +450,41 @@ describe(InterventionProgressPresenter, () => {
       })
     })
   })
+
+  describe('supplierAssessmentLink', () => {
+    describe('when the supplier assessment has no appointments', () => {
+      it('returns null', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+
+        expect(presenter.supplierAssessmentLink).toBeNull()
+      })
+    })
+
+    describe('when the supplier assessment has an appointment', () => {
+      it('returns a link to a page for viewing the supplier assessment', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
+        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          supplierAssessment,
+          assignee
+        )
+
+        expect(presenter.supplierAssessmentLink).toEqual({
+          href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
+          text: 'View appointment details',
+        })
+      })
+    })
+  })
 })

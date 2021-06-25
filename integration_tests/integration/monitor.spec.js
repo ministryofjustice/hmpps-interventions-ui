@@ -8,6 +8,7 @@ import expandedDeliusServiceUserFactory from '../../testutils/factories/expanded
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
+import appointmentFactory from '../../testutils/factories/appointment'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -392,6 +393,73 @@ describe('Probation Practitioner monitor journey', () => {
       cy.visit(`/probation-practitioner/referrals/${referralWithEndRequested.id}/progress`)
 
       cy.contains('You requested to end this service on 04 Apr 2021')
+    })
+  })
+
+  describe('viewing a supplier assessment', () => {
+    it('user views scheduled supplier assessment', () => {
+      cy.stubGetSentReferralsForUserToken([])
+
+      const serviceCategory = serviceCategoryFactory.build()
+
+      const intervention = interventionFactory.build({
+        serviceCategories: [serviceCategory],
+      })
+
+      const hmppsAuthUser = hmppsAuthUserFactory.build({
+        firstName: 'Liam',
+        lastName: 'Johnson',
+        username: 'liam.johnson',
+      })
+
+      const referral = sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: intervention.id,
+          serviceCategoryIds: [serviceCategory.id],
+        },
+        assignedTo: { username: hmppsAuthUser.username },
+      })
+
+      const appointment = appointmentFactory.build({
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+        appointmentDeliveryAddress: {
+          firstAddressLine: 'Harmony Living Office, Room 4',
+          secondAddressLine: '44 Bouverie Road',
+          townOrCity: 'Blackpool',
+          county: 'Lancashire',
+          postCode: 'SY4 0RE',
+        },
+      })
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+
+      cy.login()
+
+      cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
+
+      cy.contains('View appointment details').click()
+
+      cy.get('h1').contains('View appointment details')
+
+      cy.contains('Liam Johnson')
+      cy.contains('24 March 2021')
+      cy.contains('9:02am to 10:17am')
+      cy.contains('In-person meeting')
+      cy.contains('Harmony Living Office, Room 4')
+      cy.contains('44 Bouverie Road')
+      cy.contains('Blackpool')
+      cy.contains('Lancashire')
+      cy.contains('SY4 0RE')
     })
   })
 })

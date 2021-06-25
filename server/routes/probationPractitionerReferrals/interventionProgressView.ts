@@ -30,7 +30,15 @@ export default class InterventionProgressView {
             ),
           },
         },
-      ],
+        this.presenter.supplierAssessmentLink
+          ? {
+              key: { text: 'To do' },
+              value: {
+                html: ViewUtils.linkHtml([this.presenter.supplierAssessmentLink]),
+              },
+            }
+          : null,
+      ].flatMap(val => (val === null ? [] : [val])),
     }
   }
 

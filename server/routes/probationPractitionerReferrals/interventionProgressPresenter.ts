@@ -201,4 +201,15 @@ export default class InterventionProgressPresenter {
   get supplierAssessmentCaseworker(): string {
     return this.assignee ? `${this.assignee.firstName} ${this.assignee.lastName}` : ''
   }
+
+  get supplierAssessmentLink(): { text: string; href: string } | null {
+    if (this.supplierAssessmentStatus !== SupplierAssessmentStatus.scheduled) {
+      return null
+    }
+
+    return {
+      text: 'View appointment details',
+      href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
+    }
+  }
 }
