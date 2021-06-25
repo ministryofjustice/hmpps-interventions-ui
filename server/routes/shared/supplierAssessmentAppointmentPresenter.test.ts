@@ -96,6 +96,15 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
           href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule`,
         })
       })
+
+      describe('when the readonly option is true', () => {
+        it('returns null', () => {
+          const appointment = appointmentFactory.newlyBooked().build()
+          const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, { readonly: true })
+
+          expect(presenter.actionLink).toBeNull()
+        })
+      })
     })
 
     describe('when there is already feedback recorded for the appointment', () => {

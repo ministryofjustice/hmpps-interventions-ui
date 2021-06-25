@@ -5,8 +5,16 @@ import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 
+interface SupplierAssessmentAppointmentPresenterOptions {
+  readonly?: boolean
+}
+
 export default class SupplierAssessmentAppointmentPresenter {
-  constructor(private readonly referral: SentReferral, private readonly appointment: Appointment) {}
+  constructor(
+    private readonly referral: SentReferral,
+    private readonly appointment: Appointment,
+    private readonly options: SupplierAssessmentAppointmentPresenterOptions = {}
+  ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
 
@@ -61,13 +69,18 @@ export default class SupplierAssessmentAppointmentPresenter {
     ].flatMap(val => (val === null ? [] : [val]))
   }
 
-  readonly actionLink: { href: string; text: string } | null =
-    sessionStatus.forAppointment(this.appointment) === SessionStatus.scheduled
+  get actionLink(): { href: string; text: string } | null {
+    if (this.options.readonly) {
+      return null
+    }
+
+    return sessionStatus.forAppointment(this.appointment) === SessionStatus.scheduled
       ? {
           href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
           text: 'Change appointment details',
         }
       : null
+  }
 
   readonly backLinkHref = `/service-provider/referrals/${this.referral.id}/progress`
 }
