@@ -12,7 +12,7 @@ class SupplierAssessmentContracts(private val setupAssistant: SetupAssistant) {
     setupAssistant.createSentReferral(id = UUID.fromString("cbf2f82b-4581-4fe1-9de1-1b52465f1afa"))
   }
 
-  @State("a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a supplier assessment appointment booked with no feedback yet submitted")
+  @State("a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a phone call supplier assessment appointment booked with no feedback yet submitted")
   fun `create a sent referral with supplier assessment appointment with no feedback`() {
     val referral = setupAssistant.createSentReferral(id = UUID.fromString("a38d9184-5498-4049-af16-3d8eb2547962"))
     setupAssistant.addSupplierAssessmentAppointment(referral.supplierAssessment!!, appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL)
