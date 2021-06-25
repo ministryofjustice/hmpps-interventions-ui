@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.ActionPlanSessionValidator
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.util.UUID
 
 @RestController
@@ -22,7 +22,7 @@ class ActionPlanSessionController(
   val actionPlanSessionsService: ActionPlanSessionsService,
   val locationMapper: LocationMapper,
   val userMapper: UserMapper,
-  val actionPlanSessionValidator: ActionPlanSessionValidator,
+  val appointmentValidator: AppointmentValidator,
 ) {
   @PatchMapping("/action-plan/{id}/appointment/{sessionNumber}")
   fun updateSessionAppointment(
@@ -32,7 +32,7 @@ class ActionPlanSessionController(
     authentication: JwtAuthenticationToken,
   ): ActionPlanSessionDTO {
     val user = userMapper.fromToken(authentication)
-    actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+    appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
     val actionPlanSession = actionPlanSessionsService.updateSessionAppointment(
       actionPlanId,
       sessionNumber,

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -9,9 +10,18 @@ data class AppointmentDTO(
   val appointmentTime: OffsetDateTime?,
   val durationInMinutes: Int?,
   val sessionFeedback: SessionFeedbackDTO,
+  val appointmentDeliveryType: AppointmentDeliveryType?,
+  val appointmentDeliveryAddress: AddressDTO?,
 ) {
   companion object {
     fun from(appointment: Appointment): AppointmentDTO {
+      var addressDTO: AddressDTO? = null
+      if (appointment.appointmentDelivery?.appointmentDeliveryType == AppointmentDeliveryType.IN_PERSON_MEETING_OTHER) {
+        val address = appointment.appointmentDelivery?.appointmentDeliveryAddress
+        if (address != null) {
+          addressDTO = AddressDTO(address.firstAddressLine, address.secondAddressLine, address.townCity, address.county, address.postCode)
+        }
+      }
       return AppointmentDTO(
         id = appointment.id,
         appointmentTime = appointment.appointmentTime,
@@ -23,6 +33,8 @@ data class AppointmentDTO(
           appointment.notifyPPOfAttendanceBehaviour,
           appointment.appointmentFeedbackSubmittedAt != null,
         ),
+        appointmentDeliveryType = appointment.appointmentDelivery?.appointmentDeliveryType,
+        appointmentDeliveryAddress = addressDTO
       )
     }
     fun from(appointments: MutableSet<Appointment>): List<AppointmentDTO> {

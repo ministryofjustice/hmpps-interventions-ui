@@ -2,7 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -37,7 +39,9 @@ class SupplierAssessmentService(
     supplierAssessment: SupplierAssessment,
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
-    createdByUser: AuthUser
+    createdByUser: AuthUser,
+    appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentDeliveryAddress: AddressDTO? = null,
   ): Appointment {
     val appointment = appointmentService.createOrUpdateAppointment(
       supplierAssessment.referral,
@@ -46,6 +50,8 @@ class SupplierAssessmentService(
       appointmentTime,
       SUPPLIER_ASSESSMENT,
       createdByUser,
+      appointmentDeliveryType,
+      appointmentDeliveryAddress
     )
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.save(supplierAssessment)

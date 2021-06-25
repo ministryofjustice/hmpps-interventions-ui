@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.firstValue
+import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -22,8 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
@@ -42,8 +41,7 @@ internal class ActionPlanSessionsServiceTest {
   private val appointmentEventPublisher: AppointmentEventPublisher = mock()
   private val communityAPIBookingService: CommunityAPIBookingService = mock()
   private val appointmentRepository: AppointmentRepository = mock()
-  private val appointmentDeliveryRepository: AppointmentDeliveryRepository = mock()
-  private val appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository = mock()
+  private val appointmentService: AppointmentService = mock()
   private val actionPlanFactory = ActionPlanFactory()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val authUserFactory = AuthUserFactory()
@@ -51,8 +49,7 @@ internal class ActionPlanSessionsServiceTest {
   private val actionPlanSessionsService = ActionPlanSessionsService(
     actionPlanSessionRepository, actionPlanRepository,
     authUserRepository, appointmentEventPublisher,
-    communityAPIBookingService, appointmentRepository,
-    appointmentDeliveryRepository, appointmentDeliveryAddressRepository
+    communityAPIBookingService, appointmentService, appointmentRepository,
   )
 
   @Test
@@ -101,6 +98,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
   }
@@ -130,6 +128,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(newTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(newDuration)
   }
@@ -170,6 +169,7 @@ internal class ActionPlanSessionsServiceTest {
     )
 
     assertThat(updatedSession).isEqualTo(session)
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
     verify(communityAPIBookingService).book(
       referral,
       session.currentAppointment,
@@ -177,7 +177,7 @@ internal class ActionPlanSessionsServiceTest {
       durationInMinutes,
       SERVICE_DELIVERY
     )
-    verify(appointmentRepository, times(2)).saveAndFlush(
+    verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == 999L
       }
@@ -217,7 +217,8 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentRepository, times(2)).saveAndFlush(
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == null
       }
