@@ -13,7 +13,7 @@ export default class MyCasesPresenter {
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Referral', sort: 'none' },
     { text: 'Service user', sort: 'ascending' },
-    { text: 'Service category', sort: 'none' },
+    { text: 'Intervention type', sort: 'none' },
     { text: 'Provider', sort: 'none' },
     { text: 'Caseworker', sort: 'none' },
     { text: 'Action', sort: 'none' },
@@ -42,8 +42,8 @@ export default class MyCasesPresenter {
         href: null,
       },
       {
-        text: utils.convertToProperCase(interventionForReferral.contractType.name),
-        sortValue: interventionForReferral.contractType.name,
+        text: utils.convertToTitleCase(interventionForReferral.title),
+        sortValue: null,
         href: null,
       },
       {

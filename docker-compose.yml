@@ -93,6 +93,21 @@ services:
     environment:
       - SERVER_PORT=8080
       - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
+      - ASSESSMENTAPI_BASEURL=http://offender-assessments-api:8080
+
+  offender-assessments-api:
+    image: quay.io/hmpps/offender-assessments-api:latest
+    networks:
+      - hmpps
+    container_name: offender-assessments-api
+    restart: always
+    ports:
+      - "8095:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+    environment:
+      - SERVER_PORT=8080
+      - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
 
 networks:
   hmpps:

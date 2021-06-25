@@ -191,6 +191,28 @@ three lines.`,
           const item = summary.find(anItem => anItem.key === 'Service categories')
           expect(item).toMatchObject({ lines: ['Accommodation', 'Emotional wellbeing'], listStyle: ListStyle.bulleted })
         })
+        it('sorts service categories alphabetically', () => {
+          const summary = summaryForParams({
+            serviceCategories: [
+              serviceCategoryFactory.build({ name: 'social inclusion' }),
+              serviceCategoryFactory.build({ name: 'emotional wellbeing' }),
+              serviceCategoryFactory.build({ name: 'accommodation' }),
+              serviceCategoryFactory.build({ name: 'family and significant others' }),
+              serviceCategoryFactory.build({ name: 'lifestyle and associates' }),
+            ],
+          })
+          const item = summary.find(anItem => anItem.key === 'Service categories')
+          expect(item).toMatchObject({
+            lines: [
+              'Accommodation',
+              'Emotional wellbeing',
+              'Family and significant others',
+              'Lifestyle and associates',
+              'Social inclusion',
+            ],
+            listStyle: ListStyle.bulleted,
+          })
+        })
       })
     })
 

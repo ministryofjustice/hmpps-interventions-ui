@@ -23,6 +23,7 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -71,7 +72,7 @@ describe('GET /probation-practitioner/find', () => {
 
 describe('GET /probation-practitioner/dashboard', () => {
   it('displays a dashboard page', async () => {
-    const intervention = interventionFactory.build({ id: '1', contractType: { name: 'accommodation' } })
+    const intervention = interventionFactory.build({ id: '1', title: 'accommodation services - west midlands' })
     const referrals = [
       sentReferralFactory.assigned().build({
         referral: {
@@ -92,7 +93,7 @@ describe('GET /probation-practitioner/dashboard', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Alex River')
-        expect(res.text).toContain('Accommodation')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
       })
   })
 })
@@ -348,6 +349,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
@@ -360,6 +362,11 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')
         expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain("service user's Risk of Serious Harm (ROSH) levels")
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('HIGH')
+        expect(res.text).toContain('The following information is not seen by the service provider.')
+        expect(res.text).toContain('can happen at the drop of a hat')
       })
   })
 
@@ -370,6 +377,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       const deliusUser = deliusUserFactory.build()
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const deliusServiceUser = expandedDeliusServiceUserFactory.build()
+      const riskSummary = riskSummaryFactory.build()
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
       const conviction = deliusConvictionFactory.build()
 
@@ -380,6 +388,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
       communityApiService.getConvictionById.mockResolvedValue(conviction)
       assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
 
       await request(app)
         .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)

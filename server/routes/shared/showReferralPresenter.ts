@@ -17,9 +17,13 @@ import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from '../referrals/sentencePresenter'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
+import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import RiskPresenter from './riskPresenter'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
+
+  riskPresenter: RiskPresenter
 
   constructor(
     private readonly sentReferral: SentReferral,
@@ -29,15 +33,18 @@ export default class ShowReferralPresenter {
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
-    subNavUrlPrefix: 'service-provider' | 'probation-practitioner',
+    readonly userType: 'service-provider' | 'probation-practitioner',
     readonly canAssignReferral: boolean,
-    private readonly deliusServiceUser: ExpandedDeliusServiceUser
+    private readonly deliusServiceUser: ExpandedDeliusServiceUser,
+    private readonly riskSummary: RiskSummary | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      subNavUrlPrefix
+      userType
     )
+
+    this.riskPresenter = new RiskPresenter(riskSummary)
   }
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`

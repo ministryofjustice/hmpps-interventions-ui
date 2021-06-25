@@ -1,27 +1,22 @@
 import createError from 'http-errors'
 import RestClient from '../data/restClient'
-import HmppsAuthService from './hmppsAuthService'
 import logger from '../../log'
 import { SupplementaryRiskInformation } from '../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../models/assessRisksAndNeeds/riskSummary'
-import config from '../config'
 
 export default class AssessRisksAndNeedsService {
-  constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
+  constructor(private readonly restClient: RestClient, private readonly riskSummaryEnabled: boolean) {}
 
-  async getSupplementaryRiskInformation(
-    riskId: string,
-    token: string | null = null
-  ): Promise<SupplementaryRiskInformation> {
+  async getSupplementaryRiskInformation(riskId: string, token: string): Promise<SupplementaryRiskInformation> {
     logger.info({ riskId }, 'getting supplementary risk information')
     return (await this.restClient.get({
       path: `/risks/supplementary/${riskId}`,
-      token: token || (await this.hmppsAuthService.getApiClientToken()),
+      token,
     })) as SupplementaryRiskInformation
   }
 
   async getRiskSummary(crn: string, token: string): Promise<RiskSummary | null> {
-    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+    if (!this.riskSummaryEnabled) {
       logger.info('not getting risk summary information; disabled')
       return null
     }
@@ -29,11 +24,16 @@ export default class AssessRisksAndNeedsService {
     logger.info({ crn }, 'getting risk summary information')
     try {
       return (await this.restClient.get({
-        path: `/risks/crn/${crn}/summary`,
+        path: `/risks/crn/${crn}`,
         token,
       })) as RiskSummary
     } catch (err) {
-      throw createError(err.status, err, { userMessage: 'Could not get service user risk scores from OASys.' })
+      if (err.status === 404) {
+        // missing (or out of date) risk information is expected and does not constitute an error
+        return null
+      }
+
+      throw createError(err.status, err, { userMessage: "Could not get service user's risk scores from OASys." })
     }
   }
 }

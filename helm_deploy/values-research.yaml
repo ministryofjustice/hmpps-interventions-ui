@@ -18,6 +18,7 @@ env:
   COMMUNITY_API_URL: https://community-api-secure.test.delius.probation.hmpps.dsd.io
   INTERVENTIONS_SERVICE_URL: http://hmpps-interventions-service
   ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk
+  ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED: true
   TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
   TOKEN_VERIFICATION_ENABLED: true
   REDIS_TLS_ENABLED: true
