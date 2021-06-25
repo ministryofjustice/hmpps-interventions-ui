@@ -10,7 +10,6 @@ import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
 import ActionPlanView from '../shared/actionPlanView'
-import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
 export default class InterventionProgressView {
   actionPlanView: ActionPlanView
@@ -59,7 +58,7 @@ export default class InterventionProgressView {
         {
           key: { text: 'Appointment status' },
           value: {
-            html: this.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
+            html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
               tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
             ),
           },
@@ -83,15 +82,11 @@ export default class InterventionProgressView {
         return [
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
-          { text: this.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
+          { text: ViewUtils.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
           { html: ViewUtils.linkHtml(row.links) },
         ]
       }),
     }
-  }
-
-  private sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string) {
-    return tagMacro({ text: presenter.text, classes: presenter.tagClass })
   }
 
   private readonly backLinkArgs = {

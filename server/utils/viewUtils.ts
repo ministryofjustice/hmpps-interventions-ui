@@ -1,6 +1,7 @@
 import * as nunjucks from 'nunjucks'
 import { ListStyle, SummaryListItem } from './summaryList'
-import { ErrorSummaryArgs, SummaryListArgs, TableArgs } from './govukFrontendTypes'
+import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TagArgs } from './govukFrontendTypes'
+import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
 
 export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none' }[]
 export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
@@ -108,5 +109,9 @@ export default class ViewUtils {
         )}${hiddenLinkHtml}</a>`
       })
       .join('<br>')
+  }
+
+  static sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string): string {
+    return tagMacro({ text: presenter.text, classes: presenter.tagClass })
   }
 }
