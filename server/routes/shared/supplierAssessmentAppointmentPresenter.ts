@@ -4,15 +4,18 @@ import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import { SummaryListItem } from '../../utils/summaryList'
 import PresenterUtils from '../../utils/presenterUtils'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 interface SupplierAssessmentAppointmentPresenterOptions {
   readonly?: boolean
+  includeAssignee?: boolean
 }
 
 export default class SupplierAssessmentAppointmentPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly appointment: Appointment,
+    private readonly assignee: AuthUserDetails | null,
     private readonly options: SupplierAssessmentAppointmentPresenterOptions = {}
   ) {}
 
@@ -20,6 +23,9 @@ export default class SupplierAssessmentAppointmentPresenter {
 
   get summary(): SummaryListItem[] {
     return [
+      this.assignee !== null && this.options.includeAssignee
+        ? { key: 'Caseworker', lines: [`${this.assignee.firstName} ${this.assignee.lastName}`] }
+        : null,
       { key: 'Date', lines: [PresenterUtils.govukFormattedDate(this.appointmentDecorator.britishDay!)] },
       {
         key: 'Time',

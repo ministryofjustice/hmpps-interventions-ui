@@ -542,7 +542,7 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment)
+    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
     const view = new SupplierAssessmentAppointmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
