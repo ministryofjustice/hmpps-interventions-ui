@@ -24,9 +24,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFa
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
-import java.util.UUID
 import java.util.Optional.empty
 import java.util.Optional.of
+import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
 class AppointmentServiceTest {
