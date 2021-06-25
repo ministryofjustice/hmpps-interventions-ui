@@ -24,6 +24,7 @@ import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAn
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -105,9 +106,11 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
     })
+    const supplierAssessment = supplierAssessmentFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
     await request(app)

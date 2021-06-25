@@ -7,6 +7,9 @@ import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
 import ActionPlanPresenter from '../shared/actionPlanPresenter'
+import SupplierAssessment from '../../models/supplierAssessment'
+import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
@@ -20,6 +23,13 @@ interface EndOfServiceTableRow {
   tagArgs: { text: string; classes: string }
   link: { text: string; href: string }
 }
+
+enum SupplierAssessmentStatus {
+  awaitingCaseworker,
+  notScheduled,
+  scheduled,
+}
+
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -29,7 +39,9 @@ export default class InterventionProgressPresenter {
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
     private readonly actionPlanAppointments: ActionPlanAppointment[],
-    private readonly actionPlan: ActionPlan | null
+    private readonly actionPlan: ActionPlan | null,
+    private readonly supplierAssessment: SupplierAssessment,
+    private readonly assignee: AuthUserDetails | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
@@ -152,5 +164,41 @@ export default class InterventionProgressPresenter {
     tagClass: 'govuk-tag--green',
     linkHref: `/probation-practitioner/end-of-service-report/${this.referral.endOfServiceReport?.id}`,
     linkText: 'View',
+  }
+
+  private readonly supplierAssessmentSessionStatus = sessionStatus.forAppointment(
+    new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
+  )
+
+  readonly supplierAssessmentSessionStatusPresenter = new SessionStatusPresenter(this.supplierAssessmentSessionStatus)
+
+  private get supplierAssessmentStatus(): SupplierAssessmentStatus {
+    if (this.supplierAssessmentSessionStatus !== SessionStatus.notScheduled) {
+      return SupplierAssessmentStatus.scheduled
+    }
+
+    return this.referral.assignedTo === null
+      ? SupplierAssessmentStatus.awaitingCaseworker
+      : SupplierAssessmentStatus.notScheduled
+  }
+
+  readonly shouldDisplaySupplierAssessmentSummaryList =
+    this.supplierAssessmentStatus !== SupplierAssessmentStatus.awaitingCaseworker
+
+  get supplierAssessmentMessage(): string {
+    switch (this.supplierAssessmentStatus) {
+      case SupplierAssessmentStatus.notScheduled:
+        return 'A caseworker has been assigned and will book the assessment appointment with the service user.'
+      case SupplierAssessmentStatus.awaitingCaseworker:
+        return 'Once a caseworker has been assigned the assessment will be booked.'
+      case SupplierAssessmentStatus.scheduled:
+        return 'The appointment has been scheduled by the supplier.'
+      default:
+        throw new Error('unexpected status')
+    }
+  }
+
+  get supplierAssessmentCaseworker(): string {
+    return this.assignee ? `${this.assignee.firstName} ${this.assignee.lastName}` : ''
   }
 }

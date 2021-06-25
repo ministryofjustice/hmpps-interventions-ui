@@ -6,6 +6,16 @@
 
 {% block referralPageSection %}
 
+  <h2 class="govuk-heading-m">Initial assessment appointment</h2>
+
+  <p class="govuk-body">
+  {{ presenter.supplierAssessmentMessage }}
+  </p>
+
+  {% if supplierAssessmentSummaryListArgs(govukTag) !== null %}
+    {{ govukSummaryList(supplierAssessmentSummaryListArgs(govukTag)) }}
+  {% endif %}
+
   <h2 class="govuk-heading-m">Service user's action plan</h2>
   <p class="govuk-body">
     This is the action plan created by the service provider. When there are changes submitted by the service provider, you will need to review it and decide if you want to approve it.

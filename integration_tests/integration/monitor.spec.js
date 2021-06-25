@@ -5,6 +5,9 @@ import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import interventionFactory from '../../testutils/factories/intervention'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
+import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
+import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -15,6 +18,123 @@ describe('Probation Practitioner monitor journey', () => {
   })
 
   describe('viewing the progress of an intervention', () => {
+    describe('supplier assessment', () => {
+      describe('when a caseworker has not yet been assigned', () => {
+        it('contains an appropriate message about the supplier assessment', () => {
+          cy.stubGetSentReferralsForUserToken([])
+
+          const serviceCategory = serviceCategoryFactory.build()
+
+          const intervention = interventionFactory.build({
+            serviceCategories: [serviceCategory],
+          })
+
+          const referral = sentReferralFactory.unassigned().build({
+            referral: {
+              interventionId: intervention.id,
+              serviceCategoryIds: [serviceCategory.id],
+            },
+          })
+
+          const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+          cy.stubGetSentReferral(referral.id, referral)
+          cy.stubGetIntervention(intervention.id, intervention)
+          cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+          cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+
+          cy.login()
+
+          cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
+
+          cy.contains('Once a caseworker has been assigned the assessment will be booked.')
+        })
+      })
+
+      describe('when a caseworker has been assigned but the supplier assessment has not yet been scheduled', () => {
+        it('contains an appropriate message about the supplier assessment', () => {
+          cy.stubGetSentReferralsForUserToken([])
+
+          const serviceCategory = serviceCategoryFactory.build()
+
+          const intervention = interventionFactory.build({
+            serviceCategories: [serviceCategory],
+          })
+
+          const hmppsAuthUser = hmppsAuthUserFactory.build({
+            firstName: 'Liam',
+            lastName: 'Johnson',
+            username: 'liam.johnson',
+          })
+
+          const referral = sentReferralFactory.assigned().build({
+            referral: {
+              interventionId: intervention.id,
+              serviceCategoryIds: [serviceCategory.id],
+            },
+            assignedTo: { username: hmppsAuthUser.username },
+          })
+
+          const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+          cy.stubGetSentReferral(referral.id, referral)
+          cy.stubGetIntervention(intervention.id, intervention)
+          cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+          cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+          cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+
+          cy.login()
+
+          cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
+
+          cy.contains('A caseworker has been assigned and will book the assessment appointment with the service user.')
+          cy.contains('Liam Johnson')
+          cy.get('#supplier-assessment-status').contains('not scheduled')
+        })
+      })
+
+      describe('when a caseworker has been assigned and the supplier assessment has been scheduled', () => {
+        it('contains an appropriate message about the supplier assessment', () => {
+          cy.stubGetSentReferralsForUserToken([])
+
+          const serviceCategory = serviceCategoryFactory.build()
+
+          const intervention = interventionFactory.build({
+            serviceCategories: [serviceCategory],
+          })
+
+          const hmppsAuthUser = hmppsAuthUserFactory.build({
+            firstName: 'Liam',
+            lastName: 'Johnson',
+            username: 'liam.johnson',
+          })
+
+          const referral = sentReferralFactory.assigned().build({
+            referral: {
+              interventionId: intervention.id,
+              serviceCategoryIds: [serviceCategory.id],
+            },
+            assignedTo: { username: hmppsAuthUser.username },
+          })
+
+          const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
+
+          cy.stubGetSentReferral(referral.id, referral)
+          cy.stubGetIntervention(intervention.id, intervention)
+          cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+          cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+          cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+
+          cy.login()
+
+          cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
+
+          cy.contains('The appointment has been scheduled by the supplier.')
+          cy.contains('Liam Johnson')
+          cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+        })
+      })
+    })
     it('displays the referral progress page with the status of each session', () => {
       const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const referralParams = {
@@ -68,6 +188,8 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetExpandedServiceUserByCRN(assignedReferral.referral.serviceUser.crn, expandedDeliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -141,6 +263,8 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
 
       const appointmentsWithSubmittedFeedback = [
         actionPlanAppointmentFactory.scheduled().build({
@@ -228,6 +352,8 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
       cy.stubGetReferralCancellationReasons([
         { code: 'MIS', description: 'Referral was made by mistake' },
         { code: 'MOV', description: 'Service user has moved out of delivery area' },

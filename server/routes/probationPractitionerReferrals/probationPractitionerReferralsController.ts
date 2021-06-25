@@ -76,11 +76,20 @@ export default class ProbationPractitionerReferralsController {
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
         : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
+    const supplierAssessmentPromise = this.interventionsService.getSupplierAssessment(
+      res.locals.user.token.accessToken,
+      sentReferral.id
+    )
+    const assigneePromise = sentReferral.assignedTo
+      ? this.hmppsAuthService.getSPUserByUsername(res.locals.user.token.accessToken, sentReferral.assignedTo.username)
+      : Promise.resolve(null)
 
-    const [intervention, actionPlan, serviceUser] = await Promise.all([
+    const [intervention, actionPlan, serviceUser, supplierAssessment, assignee] = await Promise.all([
       interventionPromise,
       actionPlanPromise,
       serviceUserPromise,
+      supplierAssessmentPromise,
+      assigneePromise,
     ])
 
     let actionPlanAppointments: ActionPlanAppointment[] = []
@@ -91,7 +100,14 @@ export default class ProbationPractitionerReferralsController {
       )
     }
 
-    const presenter = new InterventionProgressPresenter(sentReferral, intervention, actionPlanAppointments, actionPlan)
+    const presenter = new InterventionProgressPresenter(
+      sentReferral,
+      intervention,
+      actionPlanAppointments,
+      actionPlan,
+      supplierAssessment,
+      assignee
+    )
     const view = new InterventionProgressView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
