@@ -37,18 +37,18 @@ function addUsernameProcessor(
   return true
 }
 
-// function errorStatusCodeProcessor(
-//   envelope: Contracts.EnvelopeTelemetry,
-//   _contextObjects: { [name: string]: unknown } | undefined
-// ): boolean {
-//   if (envelope.data.baseType === Contracts.TelemetryTypeString.Request && envelope.data.baseData !== undefined) {
-//     // eslint-disable-next-line no-param-reassign
-//     envelope.data.baseData.success = !(
-//       envelope.data.baseData.responseCode in config.applicationInsights.errorStatusCodes
-//     )
-//   }
-//   return true
-// }
+function errorStatusCodeProcessor(
+  envelope: Contracts.EnvelopeTelemetry,
+  _contextObjects: { [name: string]: unknown } | undefined
+): boolean {
+  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request && envelope.data.baseData !== undefined) {
+    // only mark 5xx response codes as failures. the application serves 4xx
+    // responses to indicate authorization/validation errors and the like.
+    // eslint-disable-next-line no-param-reassign
+    envelope.data.baseData.success = envelope.data.baseData.responseCode < 500
+  }
+  return true
+}
 
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
@@ -64,5 +64,6 @@ export default function initialiseAppInsights(): void {
     // custom processors to fine tune behaviour
     defaultClient.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
     defaultClient.addTelemetryProcessor(addUsernameProcessor)
+    defaultClient.addTelemetryProcessor(errorStatusCodeProcessor)
   }
 }
