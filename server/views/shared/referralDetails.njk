@@ -31,15 +31,13 @@
 
       <h2 class="govuk-heading-m">Service user's risk information</h2>
 
-      {% if presenter.riskPresenter.riskSummaryEnabled and not presenter.riskPresenter.riskSummaryNotFound %}
+      {% if presenter.riskPresenter.riskInformationAvailable %}
 
         <p class="govuk-body">This shows the service user's Risk of Serious Harm (ROSH) levels. Additional information from the probation practitioner may also be shown.</p>
 
         {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
 
         {{ govukDetails(riskLevelDetailsArgs) }}
-
-        {{ furtherRiskInformation | safe }}
 
       {% endif %}
 

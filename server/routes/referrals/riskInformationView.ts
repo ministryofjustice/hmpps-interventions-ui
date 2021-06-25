@@ -16,7 +16,7 @@ export default class RiskInformationView {
       id: 'additional-risk-information',
       label: {
         text: this.presenter.additionalRiskInformation.label,
-        classes: this.presenter.additionalRiskInformation.labelClasses,
+        classes: 'govuk-label--l',
       },
       value: this.presenter.fields.additionalRiskInformation,
       hint: {
@@ -35,7 +35,6 @@ export default class RiskInformationView {
         additionalRiskInformationTextareaArgs: this.additionalRiskInformationTextareaArgs,
         roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
         riskLevelDetailsArgs: this.riskView.riskLevelDetailsArgs,
-        furtherRiskInformation: this.riskView.furtherRiskInformation,
       },
     ]
   }

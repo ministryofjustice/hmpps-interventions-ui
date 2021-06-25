@@ -13,6 +13,10 @@ export default class RiskPresenter {
 
   readonly riskSummaryNotFound = this.riskSummary === null
 
+  get riskInformationAvailable(): boolean {
+    return this.riskSummaryEnabled && !this.riskSummaryNotFound
+  }
+
   readonly text = {
     whoIsAtRisk: this.riskSummary?.summary.whoIsAtRisk,
     natureOfRisk: this.riskSummary?.summary.natureOfRisk,

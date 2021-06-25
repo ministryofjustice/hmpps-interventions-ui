@@ -20,6 +20,14 @@ export default class RiskInformationPresenter {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
   }
 
+  get introText(): string {
+    return `Write a description of risks that will help the service provider. Do not use any sensitive or protected information.${
+      this.riskPresenter.riskInformationAvailable
+        ? ' We will share basic risk information with the service provider, including ROSH levels, categories of those at risk, and risk to self.'
+        : ''
+    }`
+  }
+
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   private readonly utils = new PresenterUtils(this.userInputData)
@@ -32,18 +40,14 @@ export default class RiskInformationPresenter {
   }
 
   get additionalRiskInformation(): Record<string, string | null> {
-    return this.riskPresenter.riskSummaryNotFound
-      ? {
-          label: `Information for the service provider about ${this.referral.serviceUser?.firstName}’s risks`,
-          labelClasses: 'govuk-label--s',
-          hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
-          errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
-        }
-      : {
-          label: 'Additional risk information',
-          labelClasses: 'govuk-label--l',
-          hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
-          errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
-        }
+    const hintText = `Include specific advice or considerations${
+      this.riskPresenter.riskInformationAvailable ? ' from the information above' : ''
+    }; for example, exclusion zones, restraining orders, or triggers that may lead to risky behaviour. Do not include any sensitive or protected details.`
+
+    return {
+      label: 'Add information for the service provider',
+      hint: hintText,
+      errorMessage: PresenterUtils.errorMessage(this.error, 'additional-risk-information'),
+    }
   }
 }

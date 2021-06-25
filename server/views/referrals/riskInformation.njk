@@ -22,28 +22,7 @@
       {% endif %}
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-
-      {% if presenter.riskPresenter.riskSummaryEnabled %}
-
-        {% if presenter.riskPresenter.riskSummaryNotFound %}
-
-          <p class="govuk-body">Up to date risk information for this service user was not found in OASys. You can still add additional risk information for the service provider.</p>
-
-          {% else %}
-
-          <p class="govuk-body">This shows the service user's Risk of Serious Harm (ROSH) levels from OASys. You may also add information for the service provider.</p>
-
-          <h2 class="govuk-heading-l">ROSH analysis</h2>
-
-          {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
-
-          {{ govukDetails(riskLevelDetailsArgs) }}
-
-          {{ furtherRiskInformation | safe }}
-
-        {% endif %}
-
-      {% endif %}
+      <p class="govuk-body">{{ presenter.introText }}</p>
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
