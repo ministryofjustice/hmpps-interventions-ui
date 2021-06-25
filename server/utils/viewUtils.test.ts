@@ -67,6 +67,7 @@ describe('ViewUtils', () => {
     it('returns a summary list args object for passing to the govukSummaryList macro', () => {
       expect(
         ViewUtils.summaryListArgs([
+          { key: 'Risks', lines: ['No risk'], changeLink: '/risks' },
           { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
           { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.bulleted },
           { key: 'Gender', lines: ['Male'] },
@@ -76,11 +77,28 @@ describe('ViewUtils', () => {
         rows: [
           {
             key: {
+              text: 'Risks',
+            },
+            value: {
+              text: 'No risk',
+            },
+            actions: {
+              items: [
+                {
+                  href: '/risks',
+                  text: 'Change',
+                },
+              ],
+            },
+          },
+          {
+            key: {
               text: 'Needs',
             },
             value: {
               html: `<ul class="govuk-list"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
             },
+            actions: null,
           },
           {
             key: {
@@ -89,6 +107,7 @@ describe('ViewUtils', () => {
             value: {
               html: `<ul class="govuk-list govuk-list--bullet"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
             },
+            actions: null,
           },
           {
             key: {
@@ -97,6 +116,7 @@ describe('ViewUtils', () => {
             value: {
               text: 'Male',
             },
+            actions: null,
           },
           {
             key: {
@@ -105,6 +125,7 @@ describe('ViewUtils', () => {
             value: {
               html: '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 Test Walk</p>\n<p class="govuk-body">SY16 1AQ</p>',
             },
+            actions: null,
           },
         ],
       })
@@ -126,6 +147,7 @@ describe('ViewUtils', () => {
           value: {
             html: `<ul class="govuk-list"><li>Accommodation&amp;</li>\n<li>Social inclusion</li></ul>`,
           },
+          actions: null,
         },
         {
           key: {
@@ -134,6 +156,7 @@ describe('ViewUtils', () => {
           value: {
             html: '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 St James&#39;s Road</p>\n<p class="govuk-body">SY16 1AQ</p>',
           },
+          actions: null,
         },
       ],
     })
