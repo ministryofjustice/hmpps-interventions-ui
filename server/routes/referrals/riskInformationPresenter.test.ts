@@ -16,9 +16,8 @@ describe('RiskInformationPresenter', () => {
       })
       expect(presenter.additionalRiskInformation).toEqual({
         errorMessage: null,
-        label: 'Additional risk information',
-        hint: 'Give any other information that is relevant to this referral. Do not include sensitive information about the individual or third parties.',
-        labelClasses: 'govuk-label--l',
+        label: 'Add information for the service provider',
+        hint: 'Include specific advice or considerations; for example, exclusion zones, restraining orders, or triggers that may lead to risky behaviour. Do not include any sensitive or protected details.',
       })
     })
 

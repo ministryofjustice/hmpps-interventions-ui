@@ -1,5 +1,6 @@
 import RiskPresenter from './riskPresenter'
 import riskSummary from '../../../testutils/factories/riskSummary'
+import config from '../../config'
 
 describe(RiskPresenter, () => {
   describe('riskSummaryNotFound', () => {
@@ -11,6 +12,33 @@ describe(RiskPresenter, () => {
     it('is false if riskSummary is not null', () => {
       const presenter = new RiskPresenter(riskSummary.build())
       expect(presenter.riskSummaryNotFound).toEqual(false)
+    })
+  })
+
+  describe('riskInformationAvailable', () => {
+    it('is true if riskSummary is enabled in config and riskSummary is not null', () => {
+      try {
+        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+        const presenter = new RiskPresenter(riskSummary.build())
+        expect(presenter.riskInformationAvailable).toEqual(true)
+      } finally {
+        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
+      }
+    })
+
+    it('is false if riskSummary is disabled in config', () => {
+      const presenter = new RiskPresenter(riskSummary.build())
+      expect(presenter.riskInformationAvailable).toEqual(false)
+    })
+
+    it('is false if riskSummary is null', () => {
+      try {
+        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+        const presenter = new RiskPresenter(null)
+        expect(presenter.riskInformationAvailable).toEqual(false)
+      } finally {
+        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
+      }
     })
   })
 
