@@ -31,7 +31,7 @@ export default class SupplierAssessmentAppointmentView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/supplierAssessmentAppointment',
+      'shared/supplierAssessmentAppointment',
       {
         presenter: this.presenter,
         summaryListArgs: this.summaryListArgs,
