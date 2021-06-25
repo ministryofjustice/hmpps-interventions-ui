@@ -35,7 +35,6 @@ export default class RiskInformationView {
         additionalRiskInformationTextareaArgs: this.additionalRiskInformationTextareaArgs,
         roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
         riskLevelDetailsArgs: this.riskView.riskLevelDetailsArgs,
-        furtherRiskInformation: this.riskView.furtherRiskInformation,
       },
     ]
   }

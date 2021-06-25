@@ -365,8 +365,6 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         expect(res.text).toContain("service user's Risk of Serious Harm (ROSH) levels")
         expect(res.text).toContain('Children')
         expect(res.text).toContain('HIGH')
-        expect(res.text).toContain('The following information is not seen by the service provider.')
-        expect(res.text).toContain('can happen at the drop of a hat')
       })
   })
 

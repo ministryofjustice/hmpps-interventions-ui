@@ -309,8 +309,6 @@ describe('GET /referrals/:id/risk-information', () => {
         expect(res.text).toContain('HIGH')
         expect(res.text).toContain('Prisoners')
         expect(res.text).toContain('LOW')
-        expect(res.text).toContain('The following information is not seen by the service provider.')
-        expect(res.text).toContain('can happen at the drop of a hat')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
