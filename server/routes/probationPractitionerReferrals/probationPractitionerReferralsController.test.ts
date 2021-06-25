@@ -24,6 +24,8 @@ import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAn
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
+import appointmentFactory from '../../../testutils/factories/appointment'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -105,9 +107,11 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
     })
+    const supplierAssessment = supplierAssessmentFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
     await request(app)
@@ -474,6 +478,42 @@ describe('GET /probation-practitioner/referrals/:id/action-plan/approved', () =>
         expect(res.text).toContain('Action plan approved')
         expect(res.text).toContain('Return to intervention progress')
         expect(res.text).toContain(`/probation-practitioner/referrals/${sentReferral.id}/progress`)
+      })
+  })
+})
+
+describe('GET /probation-practitioner/referrals/:id/supplier-assessment', () => {
+  it('shows a summary of the current supplier assessment appointment', async () => {
+    const hmppsAuthUser = hmppsAuthUserFactory.build({
+      firstName: 'Liam',
+      lastName: 'Johnson',
+      username: 'liam.johnson',
+    })
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+
+    const referral = sentReferralFactory.build({ assignedTo: { username: hmppsAuthUser.username } })
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+
+    const appointments = [
+      ...appointmentFactory.buildList(2),
+      appointmentFactory.newlyBooked().build({
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      }),
+    ]
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments,
+      currentAppointmentId: appointments[2].id,
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/1/supplier-assessment`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Liam Johnson')
+        expect(res.text).toContain('24 March 2021')
+        expect(res.text).toContain('9:02am to 10:17am')
       })
   })
 })

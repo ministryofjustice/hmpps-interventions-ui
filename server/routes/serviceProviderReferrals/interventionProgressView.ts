@@ -10,7 +10,6 @@ import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
 import ActionPlanView from '../shared/actionPlanView'
-import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
 export default class InterventionProgressView {
   actionPlanView: ActionPlanView
@@ -59,7 +58,7 @@ export default class InterventionProgressView {
         {
           key: { text: 'Appointment status' },
           value: {
-            html: this.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
+            html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
               tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
             ),
           },
@@ -67,7 +66,7 @@ export default class InterventionProgressView {
         {
           key: { text: 'To do' },
           value: {
-            html: this.linkHtml([this.presenter.supplierAssessmentLink]),
+            html: ViewUtils.linkHtml([this.presenter.supplierAssessmentLink]),
           },
         },
       ],
@@ -83,29 +82,11 @@ export default class InterventionProgressView {
         return [
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
-          { text: this.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
-          { html: this.linkHtml(row.links) },
+          { text: ViewUtils.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
+          { html: ViewUtils.linkHtml(row.links) },
         ]
       }),
     }
-  }
-
-  private sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string) {
-    return tagMacro({ text: presenter.text, classes: presenter.tagClass })
-  }
-
-  private linkHtml(links: { text: string; href: string; hiddenText?: string }[]): string {
-    return links
-      .map(link => {
-        const hiddenLinkHtml = link.hiddenText
-          ? `<span class="govuk-visually-hidden">${ViewUtils.escape(link.hiddenText)}</span>`
-          : ''
-
-        return `<a class="govuk-link" href="${ViewUtils.escape(link.href)}">${ViewUtils.escape(
-          link.text
-        )}${hiddenLinkHtml}</a>`
-      })
-      .join('<br>')
   }
 
   private readonly backLinkArgs = {

@@ -7,12 +7,15 @@ import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
 import ActionPlanPresenter from '../shared/actionPlanPresenter'
+import SupplierAssessment from '../../models/supplierAssessment'
+import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
   appointmentTime: string
   tagArgs: { text: string; classes: string }
-  link: { text: string | null; href: string | null }
+  link: { text: string; href: string } | null
 }
 
 interface EndOfServiceTableRow {
@@ -20,6 +23,13 @@ interface EndOfServiceTableRow {
   tagArgs: { text: string; classes: string }
   link: { text: string; href: string }
 }
+
+enum SupplierAssessmentStatus {
+  awaitingCaseworker,
+  notScheduled,
+  scheduled,
+}
+
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -29,7 +39,9 @@ export default class InterventionProgressPresenter {
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
     private readonly actionPlanAppointments: ActionPlanAppointment[],
-    private readonly actionPlan: ActionPlan | null
+    private readonly actionPlan: ActionPlan | null,
+    private readonly supplierAssessment: SupplierAssessment,
+    private readonly assignee: AuthUserDetails | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
@@ -79,7 +91,7 @@ export default class InterventionProgressPresenter {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
         tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
-        link: { text: sessionTableParams.linkText, href: sessionTableParams.linkHref },
+        link: sessionTableParams.link,
       }
     })
   }
@@ -87,8 +99,7 @@ export default class InterventionProgressPresenter {
   private sessionTableParams(appointment: ActionPlanAppointment): {
     text: string
     tagClass: string
-    linkText: string | null
-    linkHref: string | null
+    link: { text: string; href: string } | null
   } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
@@ -98,29 +109,31 @@ export default class InterventionProgressPresenter {
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: 'View feedback form',
-          linkHref: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          link: {
+            text: 'View feedback form',
+            href: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          },
         }
       case SessionStatus.completed:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: 'View feedback form',
-          linkHref: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          link: {
+            text: 'View feedback form',
+            href: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+          },
         }
       case SessionStatus.scheduled:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: null,
-          linkHref: null,
+          link: null,
         }
       default:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
-          linkText: null,
-          linkHref: null,
+          link: null,
         }
     }
   }
@@ -151,5 +164,52 @@ export default class InterventionProgressPresenter {
     tagClass: 'govuk-tag--green',
     linkHref: `/probation-practitioner/end-of-service-report/${this.referral.endOfServiceReport?.id}`,
     linkText: 'View',
+  }
+
+  private readonly supplierAssessmentSessionStatus = sessionStatus.forAppointment(
+    new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
+  )
+
+  readonly supplierAssessmentSessionStatusPresenter = new SessionStatusPresenter(this.supplierAssessmentSessionStatus)
+
+  private get supplierAssessmentStatus(): SupplierAssessmentStatus {
+    if (this.supplierAssessmentSessionStatus !== SessionStatus.notScheduled) {
+      return SupplierAssessmentStatus.scheduled
+    }
+
+    return this.referral.assignedTo === null
+      ? SupplierAssessmentStatus.awaitingCaseworker
+      : SupplierAssessmentStatus.notScheduled
+  }
+
+  readonly shouldDisplaySupplierAssessmentSummaryList =
+    this.supplierAssessmentStatus !== SupplierAssessmentStatus.awaitingCaseworker
+
+  get supplierAssessmentMessage(): string {
+    switch (this.supplierAssessmentStatus) {
+      case SupplierAssessmentStatus.notScheduled:
+        return 'A caseworker has been assigned and will book the assessment appointment with the service user.'
+      case SupplierAssessmentStatus.awaitingCaseworker:
+        return 'Once a caseworker has been assigned the assessment will be booked.'
+      case SupplierAssessmentStatus.scheduled:
+        return 'The appointment has been scheduled by the supplier.'
+      default:
+        throw new Error('unexpected status')
+    }
+  }
+
+  get supplierAssessmentCaseworker(): string {
+    return this.assignee ? `${this.assignee.firstName} ${this.assignee.lastName}` : ''
+  }
+
+  get supplierAssessmentLink(): { text: string; href: string } | null {
+    if (this.supplierAssessmentStatus !== SupplierAssessmentStatus.scheduled) {
+      return null
+    }
+
+    return {
+      text: 'View appointment details',
+      href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
+    }
   }
 }

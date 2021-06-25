@@ -218,6 +218,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/probation-practitioner/referrals/:id/cancellation/confirmation', (req, res) =>
     probationPractitionerReferralsController.showCancellationConfirmationPage(req, res)
   )
+  get('/probation-practitioner/referrals/:id/supplier-assessment', (req, res) =>
+    probationPractitionerReferralsController.showSupplierAssessmentAppointment(req, res)
+  )
 
   get('/intervention/:interventionId/refer', (req, res) => referralsController.startReferral(req, res))
   post('/intervention/:interventionId/refer', (req, res) => referralsController.createReferral(req, res))

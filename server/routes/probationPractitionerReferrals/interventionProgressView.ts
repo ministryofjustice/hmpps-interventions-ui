@@ -1,4 +1,5 @@
-import { TagArgs, TableArgs } from '../../utils/govukFrontendTypes'
+import { TagArgs, TableArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
+import ViewUtils from '../../utils/viewUtils'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import ActionPlanView from '../shared/actionPlanView'
@@ -8,6 +9,37 @@ export default class InterventionProgressView {
 
   constructor(private readonly presenter: InterventionProgressPresenter) {
     this.actionPlanView = new ActionPlanView(presenter.actionPlanPresenter, true)
+  }
+
+  private supplierAssessmentSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs | null {
+    if (!this.presenter.shouldDisplaySupplierAssessmentSummaryList) {
+      return null
+    }
+
+    return {
+      rows: [
+        {
+          key: { text: 'Caseworker' },
+          value: { text: this.presenter.supplierAssessmentCaseworker },
+        },
+        {
+          key: { text: 'Appointment status' },
+          value: {
+            html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentSessionStatusPresenter, args =>
+              tagMacro({ ...args, attributes: { ...(args.attributes ?? {}), id: 'supplier-assessment-status' } })
+            ),
+          },
+        },
+        this.presenter.supplierAssessmentLink
+          ? {
+              key: { text: 'To do' },
+              value: {
+                html: ViewUtils.linkHtml([this.presenter.supplierAssessmentLink]),
+              },
+            }
+          : null,
+      ].flatMap(val => (val === null ? [] : [val])),
+    }
   }
 
   private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
@@ -20,18 +52,10 @@ export default class InterventionProgressView {
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
           { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: this.linkHtml(row.link) },
+          { html: row.link === null ? '' : ViewUtils.linkHtml([row.link]) },
         ]
       }),
     }
-  }
-
-  private linkHtml(link: { text: string | null; href: string | null }): string {
-    if (link.text && link.href) {
-      return `<a class="govuk-link" href="${link.href}">${link.text}</a>`
-    }
-
-    return ''
   }
 
   private endOfServiceReportTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
@@ -43,7 +67,7 @@ export default class InterventionProgressView {
         return [
           { text: `${row.caseworker}` },
           { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: `${this.linkHtml(row.link)}` },
+          { html: `${ViewUtils.linkHtml([row.link])}` },
         ]
       }),
     }
@@ -61,6 +85,7 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
+        supplierAssessmentSummaryListArgs: this.supplierAssessmentSummaryListArgs.bind(this),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
         actionPlanSummaryListArgs: this.actionPlanView.actionPlanSummaryListArgs.bind(this.actionPlanView),

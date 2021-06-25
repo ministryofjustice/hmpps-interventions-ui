@@ -62,8 +62,8 @@ import ActionPlanView from '../shared/actionPlanView'
 import SentReferral from '../../models/sentReferral'
 import ScheduleActionPlanSessionPresenter from './scheduleActionPlanSessionPresenter'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import SupplierAssessmentAppointmentPresenter from './supplierAssessmentAppointmentPresenter'
-import SupplierAssessmentAppointmentView from './supplierAssessmentAppointmentView'
+import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
+import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
 
@@ -542,7 +542,7 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment)
+    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
     const view = new SupplierAssessmentAppointmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
