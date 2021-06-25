@@ -12,6 +12,8 @@ import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
+import appointmentFactory from '../../testutils/factories/appointment'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -2221,7 +2223,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('recordAppointmentAttendance', () => {
+  describe('recordActionPlanAppointmentAttendance', () => {
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
         state:
@@ -2269,7 +2271,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.recordAppointmentAttendance(
+      const appointment = await interventionsService.recordActionPlanAppointmentAttendance(
         token,
         '345059d4-1697-467b-8914-fedec9957279',
         2,
@@ -2283,7 +2285,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('recordAppointmentBehaviour', () => {
+  describe('recordActionPlanAppointmentBehavior', () => {
     it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
       await provider.addInteraction({
         state:
@@ -2323,7 +2325,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.recordAppointmentBehaviour(
+      const appointment = await interventionsService.recordActionPlanAppointmentBehavior(
         token,
         '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         1,
@@ -2337,7 +2339,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('submitSessionFeedback', () => {
+  describe('submitActionPlanSessionFeedback', () => {
     it('submits attendance and behaviour feedback to the PP', async () => {
       await provider.addInteraction({
         state:
@@ -2373,7 +2375,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.submitSessionFeedback(
+      const appointment = await interventionsService.submitActionPlanSessionFeedback(
         token,
         '0f5afe04-e323-4699-9423-fb6122580638',
         1
@@ -2580,6 +2582,270 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(await interventionsService.getReferralCancellationReasons(token)).toMatchObject(reasons)
     })
   })
+
+  describe('getSupplierAssessment', () => {
+    it('returns the referral’s supplier assessment', async () => {
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [],
+      })
+
+      await provider.addInteraction({
+        state:
+          'a sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa exists, and a supplier assessment appointment has not yet been booked for it',
+        uponReceiving:
+          'a GET request for the supplier assessment on sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/cbf2f82b-4581-4fe1-9de1-1b52465f1afa/supplier-assessment',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(supplierAssessment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
+        token,
+        'cbf2f82b-4581-4fe1-9de1-1b52465f1afa'
+      )
+      expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
+    })
+
+    it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
+      const appointment = appointmentFactory.newlyBooked().phoneCall.build()
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+
+      await provider.addInteraction({
+        state:
+          'a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a phone call supplier assessment appointment booked with no feedback yet submitted',
+        uponReceiving:
+          'a GET request for the supplier assessment appointment on sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/a38d9184-5498-4049-af16-3d8eb2547962/supplier-assessment',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(supplierAssessment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
+        token,
+        'a38d9184-5498-4049-af16-3d8eb2547962'
+      )
+      expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
+    })
+  })
+
+  describe('scheduleSupplierAssessmentAppointment', () => {
+    const appointmentParams = {
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 60,
+    }
+
+    describe.each([
+      [
+        'a video call appointment',
+        '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
+        appointmentFactory.videoCall.build(appointmentParams),
+      ],
+      [
+        'a phone call appointment',
+        '4567945e-73be-43f0-9021-74c4a8ce49db',
+        appointmentFactory.phoneCall.build(appointmentParams),
+      ],
+      [
+        'a face to face appointment',
+        'fb10c5fe-12ce-482f-8ca1-104974ab21f5',
+        appointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams),
+      ],
+    ])('booking %s', (_, supplierAssessmentId, appointment) => {
+      it('returns a supplier assessment appointment', async () => {
+        await provider.addInteraction({
+          state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+          uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+          withRequest: {
+            method: 'PUT',
+            path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+            body: appointment,
+            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(appointment),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.scheduleSupplierAssessmentAppointment(token, supplierAssessmentId, appointment)
+        ).toMatchObject(appointment)
+      })
+    })
+  })
+
+  /*
+  describe('recordAppointmentAttendance', () => {
+    it('returns an updated appointment with the service user‘s attendance', async () => {
+      const appointment = appointmentFactory.build({
+        appointmentTime: '2021-05-13T12:30:00Z',
+        durationInMinutes: 60,
+        sessionFeedback: {
+          attendance: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          behaviour: {
+            behaviourDescription: null,
+            notifyProbationPractitioner: null,
+          },
+          submitted: false,
+        },
+      })
+
+      await provider.addInteraction({
+        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists and no feedback has been recorded',
+        uponReceiving:
+          'a PUT request to set the attendance for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
+        withRequest: {
+          method: 'PUT',
+          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-attendance',
+          body: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.recordAppointmentAttendance(
+        token,
+        '578e9360-8938-4fea-8889-19a3309ad840',
+        {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        }
+      )
+      expect(result.sessionFeedback!.attendance!.attended).toEqual('late')
+      expect(result.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+    })
+  })
+
+  describe('recordAppointmentBehavior', () => {
+    it('returns an supplier with the service user‘s behaviour', async () => {
+      const appointment = appointmentFactory.build({
+        appointmentTime: '2021-05-13T12:30:00Z',
+        durationInMinutes: 120,
+        sessionFeedback: {
+          attendance: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          behaviour: {
+            behaviourDescription: 'Alex was well behaved',
+            notifyProbationPractitioner: false,
+          },
+          submitted: false,
+        },
+      })
+
+      await provider.addInteraction({
+        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists',
+        uponReceiving:
+          'a PUT request to set the behaviour for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
+        withRequest: {
+          method: 'PUT',
+          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-behaviour',
+          body: {
+            behaviourDescription: 'Alex was well behaved',
+            notifyProbationPractitioner: false,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.recordAppointmentBehavior(
+        token,
+        '578e9360-8938-4fea-8889-19a3309ad840',
+        {
+          behaviourDescription: 'Alex was well behaved',
+          notifyProbationPractitioner: false,
+        }
+      )
+      expect(result.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
+      expect(result.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+    })
+  })
+
+  describe('submitAppointmentFeedback', () => {
+    it('submits attendance and behaviour feedback to the PP', async () => {
+      const appointment = appointmentFactory.build({
+        appointmentTime: '2021-05-13T12:30:00Z',
+        durationInMinutes: 120,
+        sessionFeedback: {
+          attendance: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          behaviour: {
+            behaviourDescription: 'Alex was well behaved',
+            notifyProbationPractitioner: false,
+          },
+          submitted: true,
+        },
+      })
+
+      await provider.addInteraction({
+        state: 'an appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb exists',
+        uponReceiving:
+          'a POST request to submit the feedback for the appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb',
+        withRequest: {
+          method: 'POST',
+          path: '/appointment/86c422b4-4c55-42ec-b9a6-3ae1ab000adb/submit-feedback',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.submitAppointmentFeedback(token, '86c422b4-4c55-42ec-b9a6-3ae1ab000adb')
+      expect(result.sessionFeedback!.submitted).toEqual(true)
+    })
+  })
+  */
 })
 
 describe('serializeDeliusServiceUser', () => {

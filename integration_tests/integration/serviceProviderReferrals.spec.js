@@ -10,6 +10,8 @@ import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
+import appointmentFactory from '../../testutils/factories/appointment'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -366,6 +368,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubGetActionPlanAppointments(draftActionPlan.id, actionPlanAppointments)
+    cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
 
     cy.login()
 
@@ -476,6 +479,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.login()
     })
     describe('with valid inputs', () => {
@@ -622,6 +626,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -674,7 +679,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Yes').click()
       cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
-      cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+      cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
       cy.contains('Save and continue').click()
 
@@ -683,7 +688,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
       cy.contains('No').click()
 
-      cy.stubRecordAppointmentBehaviour(actionPlan.id, 1, appointmentWithBehaviourRecorded)
+      cy.stubRecordActionPlanAppointmentBehavior(actionPlan.id, 1, appointmentWithBehaviourRecorded)
 
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithBehaviourRecorded)
 
@@ -695,7 +700,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Alex was well-behaved')
       cy.contains('No')
 
-      cy.stubSubmitSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+      cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
 
       cy.get('form').contains('Confirm').click()
 
@@ -774,6 +779,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -817,7 +823,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('No').click()
       cy.contains("Add additional information about Alex's attendance").type("Alex didn't attend")
 
-      cy.stubRecordAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+      cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
@@ -827,7 +833,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('No')
       cy.contains("Alex didn't attend")
 
-      cy.stubSubmitSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+      cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
 
       cy.get('form').contains('Confirm').click()
 
@@ -907,6 +913,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetActionPlanAppointments(actionPlan.id, appointmentsWithSubmittedFeedback)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
       cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
+      cy.stubGetSupplierAssessment(referralParams.id, supplierAssessmentFactory.build())
     })
     it('allows users to know if, when and why an intervention was cancelled', () => {
       const endedReferral = sentReferralFactory
@@ -1016,6 +1023,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubCreateDraftEndOfServiceReport(draftEndOfServiceReport)
     cy.stubGetEndOfServiceReport(draftEndOfServiceReport.id, draftEndOfServiceReport)
     cy.stubGetActionPlanAppointments(actionPlan.id, [])
+    cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
 
     cy.login()
 
@@ -1136,5 +1144,169 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Return to service progress').click()
     cy.get('#end-of-service-report-status').contains('Submitted')
+  })
+
+  describe('Supplier assessments', () => {
+    it('User schedules and views a supplier assessment appointment', () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
+      const referral = sentReferralFactory.assigned().build({
+        referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
+      })
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+
+      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+      cy.get('#supplier-assessment-status').contains('not scheduled')
+      cy.contains('Schedule initial assessment').click()
+
+      cy.contains('Add appointment details')
+
+      cy.get('#date-day').type('24')
+      cy.get('#date-month').type('3')
+      cy.get('#date-year').type('2021')
+      cy.get('#time-hour').type('9')
+      cy.get('#time-minute').type('02')
+      cy.get('#time-part-of-day').select('AM')
+      cy.get('#duration-hours').type('1')
+      cy.get('#duration-minutes').type('15')
+      cy.contains('In-person meeting').click()
+      cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
+      cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
+      cy.get('#method-other-location-address-town-or-city').type('Blackpool')
+      cy.get('#method-other-location-address-county').type('Lancashire')
+      cy.get('#method-other-location-address-postcode').type('SY4 0RE')
+
+      const scheduledAppointment = appointmentFactory.build({
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+        appointmentDeliveryAddress: {
+          firstAddressLine: 'Harmony Living Office, Room 4',
+          secondAddressLine: '44 Bouverie Road',
+          townOrCity: 'Blackpool',
+          county: 'Lancashire',
+          postCode: 'SY4 0RE',
+        },
+      })
+      const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.build({
+        ...supplierAssessment,
+        appointments: [scheduledAppointment],
+        currentAppointmentId: scheduledAppointment.id,
+      })
+      cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
+
+      cy.contains('Save and continue').click()
+      // We need to switch out the response _after_ the update, since the
+      // redirect to the correct confirmation page depends on the pre-update
+      // state. The best way to handle this would be using Wiremock scenarios
+      // to trigger a state transition upon the PUT, but it would take a decent
+      // chunk of work on our mocks that I don’t want to do now.
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
+
+      cy.get('h1').contains('Initial assessment appointment added')
+      cy.contains('Return to progress').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
+      cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+
+      cy.contains('View appointment details').click()
+      cy.get('h1').contains('View appointment details')
+
+      cy.contains('24 March 2021')
+      cy.contains('9:02am to 10:17am')
+      cy.contains('In-person meeting')
+      cy.contains('Harmony Living Office, Room 4')
+      cy.contains('44 Bouverie Road')
+      cy.contains('Blackpool')
+      cy.contains('Lancashire')
+      cy.contains('SY4 0RE')
+    })
+
+    it('User reschedules a supplier assessment appointment', () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
+      const referral = sentReferralFactory.assigned().build({
+        referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
+      })
+      const scheduledAppointment = appointmentFactory.build({
+        appointmentTime: '2021-03-24T09:02:00Z',
+        durationInMinutes: 75,
+      })
+      const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.justCreated.build({
+        appointments: [scheduledAppointment],
+        currentAppointmentId: scheduledAppointment.id,
+      })
+      const deliusServiceUser = deliusServiceUserFactory.build()
+
+      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+
+      cy.contains('View appointment details').click()
+
+      cy.contains('Change appointment details').click()
+
+      cy.get('h1').contains('Change appointment details')
+
+      cy.get('#date-day').should('have.value', '24')
+      cy.get('#date-month').should('have.value', '3')
+      cy.get('#date-year').should('have.value', '2021')
+      cy.get('#time-hour').should('have.value', '9')
+      cy.get('#time-minute').should('have.value', '02')
+      // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
+      cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
+      cy.get('#duration-hours').should('have.value', '1')
+      cy.get('#duration-minutes').should('have.value', '15')
+
+      cy.get('#date-day').clear().type('10')
+      cy.get('#date-month').clear().type('4')
+      cy.get('#date-year').clear().type('2021')
+      cy.get('#time-hour').clear().type('4')
+      cy.get('#time-minute').clear().type('15')
+      cy.get('#time-part-of-day').select('PM')
+      cy.get('#duration-hours').clear()
+      cy.get('#duration-minutes').clear().type('45')
+
+      const rescheduledAppointment = appointmentFactory.build({
+        appointmentTime: '2021-04-10T16:15:00Z',
+        durationInMinutes: 45,
+      })
+      const supplierAssessmentWithRescheduledAppointment = supplierAssessmentFactory.build({
+        ...supplierAssessmentWithScheduledAppointment,
+        appointments: [scheduledAppointment, rescheduledAppointment],
+        currentAppointmentId: rescheduledAppointment.id,
+      })
+      cy.stubScheduleSupplierAssessmentAppointment(
+        supplierAssessmentWithRescheduledAppointment.id,
+        scheduledAppointment
+      )
+
+      cy.contains('Save and continue').click()
+      // See comment in previous test about why we do this after the update
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
+
+      cy.get('h1').contains('Initial assessment appointment updated')
+      cy.contains('Return to progress').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
+      cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+    })
   })
 })

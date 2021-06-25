@@ -10,17 +10,17 @@ import Intervention from '../models/intervention'
 import PCCRegion from '../models/pccRegion'
 import CancellationReason from '../models/cancellationReason'
 import ServiceCategory from '../models/serviceCategory'
-import ActionPlan, {
-  ActionPlanAppointment,
-  Address,
-  AppointmentAttendance,
-  AppointmentBehaviour,
-  AppointmentDeliveryType,
-} from '../models/actionPlan'
+import ActionPlan, { ActionPlanAppointment } from '../models/actionPlan'
+import AppointmentAttendance from '../models/appointmentAttendance'
+import AppointmentBehaviour from '../models/appointmentBehaviour'
+import Address from '../models/address'
+import { AppointmentDeliveryType } from '../models/appointmentDeliveryType'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
+import Appointment from '../models/appointment'
+import SupplierAssessment from '../models/supplierAssessment'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -43,7 +43,7 @@ export interface UpdateDraftActionPlanParams {
   numberOfSessions?: number
 }
 
-export interface ActionPlanAppointmentUpdate {
+export interface AppointmentUpdate {
   appointmentTime: string
   durationInMinutes: number
   appointmentDeliveryType: AppointmentDeliveryType
@@ -329,7 +329,7 @@ export default class InterventionsService {
     token: string,
     actionPlanId: string,
     sessionNumber: number,
-    appointmentUpdate: ActionPlanAppointmentUpdate
+    appointmentUpdate: AppointmentUpdate
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
     return (await restClient.patch({
@@ -339,7 +339,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async recordAppointmentAttendance(
+  async recordActionPlanAppointmentAttendance(
     token: string,
     actionPlanId: string,
     sessionNumber: number,
@@ -354,7 +354,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async recordAppointmentBehaviour(
+  async recordActionPlanAppointmentBehavior(
     token: string,
     actionPlanId: string,
     sessionNumber: number,
@@ -369,7 +369,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async submitSessionFeedback(
+  async submitActionPlanSessionFeedback(
     token: string,
     actionPlanId: string,
     sessionNumber: number
@@ -456,4 +456,64 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
     })
   }
+
+  async getSupplierAssessment(token: string, referralId: string): Promise<SupplierAssessment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/sent-referral/${referralId}/supplier-assessment`,
+      headers: { Accept: 'application/json' },
+    })) as SupplierAssessment
+  }
+
+  async scheduleSupplierAssessmentAppointment(
+    token: string,
+    supplierAssessmentId: string,
+    appointmentUpdate: Partial<AppointmentUpdate>
+  ): Promise<Appointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.put({
+      path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointmentUpdate },
+    })) as Appointment
+  }
+
+  /*
+  async recordAppointmentAttendance(
+    token: string,
+    id: string,
+    appointmentAttendanceUpdate: Partial<AppointmentAttendance>
+  ): Promise<Appointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.put({
+      path: `/appointment/${id}/record-attendance`,
+      headers: { Accept: 'application/json' },
+      data: appointmentAttendanceUpdate,
+    })) as Appointment
+  }
+
+  async recordAppointmentBehavior(
+    token: string,
+    id: string,
+    appointmentBehaviourUpdate: Partial<AppointmentBehaviour>
+  ): Promise<Appointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.put({
+      path: `/appointment/${id}/record-behaviour`,
+      headers: { Accept: 'application/json' },
+      data: appointmentBehaviourUpdate,
+    })) as Appointment
+  }
+
+  async submitAppointmentFeedback(token: string, id: string): Promise<Appointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/appointment/${id}/submit-feedback`,
+      headers: { Accept: 'application/json' },
+    })) as Appointment
+  }
+ */
 }

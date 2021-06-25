@@ -127,12 +127,20 @@ module.exports = on => {
       return interventionsService.stubSubmitActionPlan(arg.id, arg.responseJson)
     },
 
-    stubRecordAppointmentAttendance: arg => {
-      return interventionsService.stubRecordAppointmentAttendance(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
+    stubRecordActionPlanAppointmentAttendance: arg => {
+      return interventionsService.stubRecordActionPlanAppointmentAttendance(
+        arg.actionPlanId,
+        arg.sessionNumber,
+        arg.responseJson
+      )
     },
 
-    stubRecordAppointmentBehaviour: arg => {
-      return interventionsService.stubRecordAppointmentBehaviour(arg.actionPlanId, arg.sessionNumber, arg.responseJson)
+    stubRecordActionPlanAppointmentBehavior: arg => {
+      return interventionsService.stubRecordActionPlanAppointmentBehavior(
+        arg.actionPlanId,
+        arg.sessionNumber,
+        arg.responseJson
+      )
     },
 
     stubGetActionPlanAppointments: arg => {
@@ -147,8 +155,8 @@ module.exports = on => {
       return interventionsService.stubUpdateActionPlanAppointment(arg.id, arg.session, arg.responseJson)
     },
 
-    stubSubmitSessionFeedback: arg => {
-      return interventionsService.stubSubmitSessionFeedback(arg.actionPlanId, arg.session, arg.responseJson)
+    stubSubmitActionPlanSessionFeedback: arg => {
+      return interventionsService.stubSubmitActionPlanSessionFeedback(arg.actionPlanId, arg.session, arg.responseJson)
     },
 
     stubGetEndOfServiceReport: arg => {
@@ -181,6 +189,26 @@ module.exports = on => {
 
     stubGetRiskSummary: arg => {
       return assessRisksAndNeedsService.stubGetRiskSummary(arg.crn, arg.responseJson)
+    },
+
+    stubRecordAppointmentAttendance: arg => {
+      return interventionsService.stubRecordAppointmentAttendance(arg.referralId, arg.responseJson)
+    },
+
+    stubRecordAppointmentBehavior: arg => {
+      return interventionsService.stubRecordAppointmentBehavior(arg.id, arg.responseJson)
+    },
+
+    stubGetSupplierAssessment: arg => {
+      return interventionsService.stubGetSupplierAssessment(arg.referralId, arg.responseJson)
+    },
+
+    stubScheduleSupplierAssessmentAppointment: arg => {
+      return interventionsService.stubScheduleSupplierAssessmentAppointment(arg.supplierAssessmentId, arg.responseJson)
+    },
+
+    stubSubmitAppointmentFeedback: arg => {
+      return interventionsService.stubSubmitAppointmentFeedback(arg.id, arg.responseJson)
     },
   })
 }

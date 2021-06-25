@@ -1,7 +1,7 @@
-import EditSessionForm from './editSessionForm'
+import ScheduleAppointmentForm from './scheduleAppointmentForm'
 import TestUtils from '../../../testutils/testUtils'
 
-describe('EditSessionForm', () => {
+describe(ScheduleAppointmentForm, () => {
   describe('data', () => {
     describe('with valid data', () => {
       describe('with a phone call appointment', () => {
@@ -18,7 +18,7 @@ describe('EditSessionForm', () => {
             'meeting-method': 'PHONE_CALL',
           })
 
-          const data = await new EditSessionForm(request).data()
+          const data = await new ScheduleAppointmentForm(request).data()
 
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
@@ -47,7 +47,7 @@ describe('EditSessionForm', () => {
             'method-other-location-address-postcode': 'SY4 0RE',
           })
 
-          const data = await new EditSessionForm(request).data()
+          const data = await new ScheduleAppointmentForm(request).data()
 
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
@@ -81,7 +81,7 @@ describe('EditSessionForm', () => {
               'method-other-location-address-postcode': 'SY4 0RE',
             })
 
-            const data = await new EditSessionForm(request).data()
+            const data = await new ScheduleAppointmentForm(request).data()
             expect(data.paramsForUpdate).toEqual({
               appointmentTime: '2021-09-12T12:05:00.000Z',
               durationInMinutes: 90,
@@ -112,7 +112,7 @@ describe('EditSessionForm', () => {
           'duration-minutes': '',
         })
 
-        const data = await new EditSessionForm(request).data()
+        const data = await new ScheduleAppointmentForm(request).data()
 
         expect(data.error).toEqual({
           errors: [

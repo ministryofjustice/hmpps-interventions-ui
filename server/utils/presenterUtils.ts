@@ -7,7 +7,8 @@ import utils from './utils'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 import ComplexityLevel from '../models/complexityLevel'
 import { TagArgs } from './govukFrontendTypes'
-import { Address, AppointmentDeliveryType } from '../models/actionPlan'
+import { AppointmentDeliveryType } from '../models/appointmentDeliveryType'
+import Address from '../models/address'
 
 interface DateTimeComponentInputPresenter {
   value: string
@@ -385,5 +386,13 @@ export default class PresenterUtils {
       text: 'UNKNOWN',
       classes: 'govuk-tag--grey',
     }
+  }
+
+  static formattedTime(time: ClockTime): string {
+    return `${time.twelveHourClockHour}:${time.minute.toString().padStart(2, '0')}${time.partOfDay}`
+  }
+
+  static formattedTimeRange(startsAt: ClockTime, endsAt: ClockTime): string {
+    return `${this.formattedTime(startsAt)} to ${this.formattedTime(endsAt)}`
   }
 }

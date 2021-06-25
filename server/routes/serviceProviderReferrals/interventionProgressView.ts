@@ -10,6 +10,7 @@ import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
 import ActionPlanView from '../shared/actionPlanView'
+import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 
 export default class InterventionProgressView {
   actionPlanView: ActionPlanView
@@ -56,24 +57,18 @@ export default class InterventionProgressView {
     return {
       rows: [
         {
-          key: { text: 'Date' },
-          value: { text: '' },
-        },
-        {
-          key: { text: 'Time' },
-          value: { text: '' },
-        },
-        {
-          key: { text: 'Address' },
-          value: { text: '' },
-        },
-        {
           key: { text: 'Appointment status' },
-          value: { html: tagMacro({ text: 'Not scheduled', classes: 'govuk-tag--grey' }) },
+          value: {
+            html: this.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
+              tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
+            ),
+          },
         },
         {
-          key: { text: 'Action' },
-          value: { html: '<a href="#" class="govuk-link">Schedule</a>' },
+          key: { text: 'To do' },
+          value: {
+            html: this.linkHtml([this.presenter.supplierAssessmentLink]),
+          },
         },
       ],
     }
@@ -88,16 +83,28 @@ export default class InterventionProgressView {
         return [
           { text: `Session ${row.sessionNumber}` },
           { text: `${row.appointmentTime}` },
-          { text: tagMacro(row.tagArgs as TagArgs) },
+          { text: this.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
           { html: this.linkHtml(row.links) },
         ]
       }),
     }
   }
 
-  private linkHtml(links: { text: string; href: string }[]): string {
+  private sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string) {
+    return tagMacro({ text: presenter.text, classes: presenter.tagClass })
+  }
+
+  private linkHtml(links: { text: string; href: string; hiddenText?: string }[]): string {
     return links
-      .map(link => `<a class="govuk-link" href="${ViewUtils.escape(link.href)}">${ViewUtils.escape(link.text)}</a>`)
+      .map(link => {
+        const hiddenLinkHtml = link.hiddenText
+          ? `<span class="govuk-visually-hidden">${ViewUtils.escape(link.hiddenText)}</span>`
+          : ''
+
+        return `<a class="govuk-link" href="${ViewUtils.escape(link.href)}">${ViewUtils.escape(
+          link.text
+        )}${hiddenLinkHtml}</a>`
+      })
       .join('<br>')
   }
 

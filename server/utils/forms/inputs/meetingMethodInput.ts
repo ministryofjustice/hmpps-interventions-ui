@@ -3,7 +3,7 @@ import * as ExpressValidator from 'express-validator'
 import { FormValidationResult } from '../formValidationResult'
 import { FormValidationError } from '../../formValidationError'
 import FormUtils from '../../formUtils'
-import { AppointmentDeliveryType } from '../../../models/actionPlan'
+import { AppointmentDeliveryType } from '../../../models/appointmentDeliveryType'
 import PresenterUtils from '../../presenterUtils'
 
 export interface MeetingMethodErrorMessages {

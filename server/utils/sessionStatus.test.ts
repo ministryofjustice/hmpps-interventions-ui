@@ -1,9 +1,10 @@
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
+import appointmentFactory from '../../testutils/factories/appointment'
 import sessionStatus, { SessionStatus } from './sessionStatus'
 
 describe(sessionStatus.forAppointment, () => {
   describe('when the appointment was not attended', () => {
-    const appointment = actionPlanAppointmentFactory.build({
+    const appointment = appointmentFactory.build({
       sessionFeedback: {
         submitted: true,
         attendance: {
@@ -18,7 +19,7 @@ describe(sessionStatus.forAppointment, () => {
   })
 
   describe('when the appointment was attended or the user was late', () => {
-    const onTimeAppointment = actionPlanAppointmentFactory.build({
+    const onTimeAppointment = appointmentFactory.build({
       sessionFeedback: {
         submitted: true,
         attendance: {
@@ -27,7 +28,7 @@ describe(sessionStatus.forAppointment, () => {
       },
     })
 
-    const lateAppointment = actionPlanAppointmentFactory.build({
+    const lateAppointment = appointmentFactory.build({
       sessionFeedback: {
         submitted: true,
         attendance: {
@@ -43,7 +44,7 @@ describe(sessionStatus.forAppointment, () => {
   })
 
   describe('when the appointment does not have feedback, but has an appointment time set', () => {
-    const scheduledAppointment = actionPlanAppointmentFactory.scheduled().build({
+    const scheduledAppointment = appointmentFactory.build({
       sessionFeedback: {
         submitted: false,
         attendance: {
@@ -63,7 +64,7 @@ describe(sessionStatus.forAppointment, () => {
   })
 
   describe('when the appointment does have feedback, but it has not been submitted', () => {
-    const scheduledAppointment = actionPlanAppointmentFactory.scheduled().build({
+    const scheduledAppointment = appointmentFactory.build({
       sessionFeedback: {
         submitted: false,
         attendance: {
@@ -80,8 +81,14 @@ describe(sessionStatus.forAppointment, () => {
   describe('when the appointment has not yet been scheduled', () => {
     const unscheduledAppointment = actionPlanAppointmentFactory.newlyCreated().build()
 
-    it('returns "did not attend" status', () => {
+    it('returns "not scheduled" status', () => {
       expect(sessionStatus.forAppointment(unscheduledAppointment)).toEqual(SessionStatus.notScheduled)
+    })
+  })
+
+  describe('when there is not yet an appointment', () => {
+    it('returns "not scheduled" status', () => {
+      expect(sessionStatus.forAppointment(null)).toEqual(SessionStatus.notScheduled)
     })
   })
 })

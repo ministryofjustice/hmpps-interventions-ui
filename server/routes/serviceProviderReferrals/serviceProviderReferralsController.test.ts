@@ -21,6 +21,8 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
+import appointmentFactory from '../../../testutils/factories/appointment'
+import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 
 jest.mock('../../services/interventionsService')
@@ -203,6 +205,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
@@ -818,7 +821,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
       const actionPlan = actionPlanFactory.build()
 
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
       await request(app)
         .post(
@@ -851,7 +854,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
       const actionPlan = actionPlanFactory.build()
 
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
       await request(app)
         .post(
@@ -912,7 +915,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/appointment/:sessionN
 
     const actionPlan = actionPlanFactory.build()
 
-    interventionsService.recordAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+    interventionsService.recordActionPlanAppointmentBehavior.mockResolvedValue(updatedAppointment)
 
     await request(app)
       .post(
@@ -971,7 +974,11 @@ describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNu
         `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
       )
 
-    expect(interventionsService.submitSessionFeedback).toHaveBeenCalledWith('token', actionPlanId, sessionNumber)
+    expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith(
+      'token',
+      actionPlanId,
+      sessionNumber
+    )
   })
 })
 
@@ -1538,6 +1545,253 @@ describe('GET /service-provider/end-of-service-report/:id/confirmation', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('End of service report submitted')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () => {
+  it('renders a form', async () => {
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add appointment details')
+      })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', () => {
+  describe('with valid data', () => {
+    describe('when there is no existing appointment scheduled', () => {
+      it('schedules the appointment on the interventions service and redirects to the confirmation page', async () => {
+        const referral = sentReferralFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+        const scheduledAppointment = appointmentFactory.build({
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+        })
+
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+
+        await request(app)
+          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+          .type('form')
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(302)
+          .expect('Location', `/service-provider/referrals/${referral.id}/supplier-assessment/scheduled-confirmation`)
+
+        expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
+          'token',
+          supplierAssessment.id,
+          {
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
+          }
+        )
+      })
+    })
+
+    describe('when there is an existing appointment scheduled', () => {
+      it('schedules the appointment on the interventions service and redirects to the rescheduled-confirmation page', async () => {
+        const referral = sentReferralFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
+
+        const scheduledAppointment = appointmentFactory.build({
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+        })
+
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+
+        await request(app)
+          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+          .type('form')
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(302)
+          .expect('Location', `/service-provider/referrals/${referral.id}/supplier-assessment/rescheduled-confirmation`)
+
+        expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
+          'token',
+          supplierAssessment.id,
+          {
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
+          }
+        )
+      })
+    })
+
+    describe('when the interventions service responds with a 409 status code', () => {
+      it('renders a specific error message', async () => {
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+        const error = { status: 409 }
+        interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
+
+        await request(app)
+          .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(400)
+          .expect(res => {
+            expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
+          })
+      })
+    })
+
+    describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
+      it('renders an error message', async () => {
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+        const error = new Error('Failed to update appointment')
+        interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
+
+        await request(app)
+          .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(500)
+          .expect(res => {
+            expect(res.text).toContain('Failed to update appointment')
+          })
+      })
+    })
+  })
+
+  describe('with invalid data', () => {
+    it('does not try to schedule an appointment on the interventions service, and renders an error message', async () => {
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+      await request(app)
+        .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .type('form')
+        .send({
+          'date-day': '32',
+          'date-month': '3',
+          'date-year': '2021',
+          'time-hour': '9',
+          'time-minute': '02',
+          'time-part-of-day': 'am',
+          'duration-hours': '1',
+          'duration-minutes': '15',
+          'meeting-method': 'PHONE_CALL',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('The session date must be a real date')
+        })
+
+      expect(interventionsService.scheduleSupplierAssessmentAppointment).not.toHaveBeenCalled()
+    })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/scheduled-confirmation', () => {
+  it('displays a confirmation page', async () => {
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Initial assessment appointment added')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/scheduled-confirmation', () => {
+  it('displays a confirmation page', async () => {
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Initial assessment appointment added')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
+  it('shows a summary of the current supplier assessment appointment', async () => {
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    const appointments = [
+      ...appointmentFactory.buildList(2),
+      appointmentFactory.newlyBooked().build({
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+      }),
+    ]
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments,
+      currentAppointmentId: appointments[2].id,
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('24 March 2021')
+        expect(res.text).toContain('9:02am to 10:17am')
       })
   })
 })

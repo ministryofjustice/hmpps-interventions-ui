@@ -74,7 +74,7 @@ export default {
     descriptionEmpty: "Enter a description of the service user's behaviour",
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
   },
-  editSession: {
+  scheduleAppointment: {
     time: {
       calendarDay: {
         dayEmpty: 'The session date must include a day',

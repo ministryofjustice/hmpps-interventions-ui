@@ -1,16 +1,16 @@
-import { DateInputArgs, RadiosArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
+import { BackLinkArgs, DateInputArgs, RadiosArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import EditSessionPresenter from './editSessionPresenter'
+import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import AddressFormComponent from '../shared/addressFormComponent'
 
-export default class EditSessionView {
-  constructor(private readonly presenter: EditSessionPresenter) {}
+export default class ScheduleAppointmentView {
+  constructor(private readonly presenter: ScheduleAppointmentPresenter) {}
 
   addressFormView = new AddressFormComponent(this.presenter.fields.address, 'method-other-location')
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/editSession',
+      'serviceProviderReferrals/scheduleAppointment',
       {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,
@@ -20,6 +20,7 @@ export default class EditSessionView {
         serverError: this.serverError,
         address: this.addressFormView.inputArgs,
         meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
@@ -175,6 +176,13 @@ export default class EditSessionView {
           },
         },
       ],
+    }
+  }
+
+  private get backLinkArgs(): BackLinkArgs {
+    return {
+      text: 'Back',
+      href: this.presenter.backLinkHref,
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import * as ExpressValidator from 'express-validator'
 import { FormValidationResult } from '../formValidationResult'
-import { Address } from '../../../models/actionPlan'
+import Address from '../../../models/address'
 import { FormValidationError } from '../../formValidationError'
 import FormUtils from '../../formUtils'
 import PresenterUtils from '../../presenterUtils'

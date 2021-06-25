@@ -1,0 +1,27 @@
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Inteventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({titleText: presenter.title }) }}
+
+      <h2 class="govuk-heading-m">What happens next?</h2>
+
+      <p class="govuk-body">
+      After the assessment is delivered you need to add feedback the same day.
+      </p>
+
+      <p class="govuk-body">
+      Note, you can change these details if the appointment needs to be moved.
+      </p>
+
+      <a href="{{ presenter.progressHref }}" class="govuk-button">Return to progress</a>
+    </div>
+  </div>
+{% endblock %}
