@@ -66,6 +66,8 @@ import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessment
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
+import ActionPlanEditConfirmationPresenter from './actionPlanEditConfirmationPresenter'
+import ActionPlanEditConfirmationView from './actionPlanEditConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -998,5 +1000,24 @@ export default class ServiceProviderReferralsController {
       throw new Error('Expected service categories are missing in intervention')
     }
     return serviceCategories
+  }
+
+  async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not edit action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanEditConfirmationPresenter(sentReferral)
+    const view = new ActionPlanEditConfirmationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }
