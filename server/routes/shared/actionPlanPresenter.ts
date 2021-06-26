@@ -22,6 +22,8 @@ export default class ActionPlanPresenter {
 
   readonly actionPlanApprovalUrl = `/probation-practitioner/referrals/${this.referral.id}/action-plan/approve`
 
+  readonly actionPlanEditConfirmationUrl = `/service-provider/referrals/${this.referral.id}/action-plan/edit`
+
   readonly text = {
     actionPlanStatus: this.actionPlanStatus,
     actionPlanSubmittedDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.submittedAt || null),
@@ -72,5 +74,9 @@ export default class ActionPlanPresenter {
 
   get showApprovalForm(): boolean {
     return this.userType === 'probation-practitioner' && this.actionPlanUnderReview
+  }
+
+  get showEditButton(): boolean {
+    return this.userType === 'service-provider' && this.actionPlanUnderReview
   }
 }
