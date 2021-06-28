@@ -31,9 +31,7 @@ context('Login', () => {
     it('the user can report a problem', () => {
       cy.contains('Report a problem').click()
       cy.location('pathname').should('equal', `/report-a-problem`)
-      cy.contains(
-        'To report a problem with this digital service, please email refer-and-monitor-feedback@digital.justice.gov.uk'
-      )
+      cy.contains('To report a problem with this digital service, please contact the helpdesk')
     })
 
     it('the user can log out', () => {
@@ -65,9 +63,7 @@ context('Login', () => {
       cy.contains(
         'To report a problem with this digital service, please contact your helpdesk who will contact the digital service team if necessary.'
       )
-      cy.contains(
-        'If your organisation does not have an IT helpdesk, please email refer-and-monitor-feedback@digital.justice.gov.uk'
-      )
+      cy.contains('If your organisation does not have an IT helpdesk, please contact the helpdesk')
     })
 
     it('the user can log out', () => {
