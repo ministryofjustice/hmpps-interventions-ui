@@ -2,7 +2,7 @@ import { Factory } from 'fishery'
 import {
   ReferralFormSingleListSectionPresenter,
   ReferralFormStatus,
-} from '../../server/routes/referrals/referralFormPresenter'
+} from '../../server/routes/referrals/form/referralFormPresenter'
 import utils from '../../server/utils/utils'
 
 class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPresenter> {
