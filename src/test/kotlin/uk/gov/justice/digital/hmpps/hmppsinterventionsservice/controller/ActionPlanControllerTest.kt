@@ -118,17 +118,6 @@ internal class ActionPlanControllerTest {
   }
 
   @Test
-  fun `gets action plan by referral id`() {
-    val actionPlan = SampleData.sampleActionPlan()
-    val referralId = actionPlan.referral.id
-    whenever(actionPlanService.getActionPlanByReferral(referralId)).thenReturn(actionPlan)
-
-    val retrievedActionPlan = actionPlanController.getActionPlanByReferral(referralId)
-
-    assertThat(retrievedActionPlan).isNotNull
-  }
-
-  @Test
   fun `update action plan activity`() {
     val actionPlan = SampleData.sampleActionPlan()
     val activityId = UUID.randomUUID()
