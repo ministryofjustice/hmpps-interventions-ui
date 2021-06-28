@@ -106,11 +106,13 @@ export default class CheckAnswersPresenter {
           {
             key: 'Complexity level',
             lines: [checkedComplexityOption?.title ?? '', '', checkedComplexityOption?.hint ?? ''],
+            changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/complexity-level`,
           },
           {
             key: 'Desired outcomes',
             lines: checkedDesiredOutcomesOptions.map(option => option.text),
             listStyle: ListStyle.bulleted,
+            changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
           },
         ],
       }
@@ -131,6 +133,7 @@ export default class CheckAnswersPresenter {
         key: 'Selected service categories',
         lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
         listStyle: ListStyle.noMarkers,
+        changeLink: `/referrals/${this.referral.id}/service-categories`,
       },
     ]
   }

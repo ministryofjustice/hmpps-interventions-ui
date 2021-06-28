@@ -57,6 +57,7 @@ describe('Referral form', () => {
   })
   const convictions = [convictionWithSentenceToSelect, deliusConvictionFactory.build()]
   const accommodationServiceCategory = serviceCategoryFactory.build({
+    id: '428ee70f-3001-4399-95a6-ad25eaaede16',
     name: 'accommodation',
     desiredOutcomes: [
       {
@@ -407,11 +408,30 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/relevant-sentence`)
 
+      // Accommodation referral details
       cy.contains('Accommodation referral details')
-      cy.contains('Low complexity')
-      cy.contains('Info about low complexity')
-      cy.contains('Service user makes progress in obtaining accommodation')
-      cy.contains('Service user is prevented from becoming homeless')
+      cy.contains('Complexity level')
+        .next()
+        .should('contain', 'Low complexity')
+        .and('contain', 'Info about low complexity')
+        .next()
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level`
+        )
+      cy.contains('Desired outcomes')
+        .next()
+        .should('contain', 'Service user makes progress in obtaining accommodation')
+        .and('contain', 'Service user is prevented from becoming homeless')
+        .next()
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
+        )
 
       cy.contains('24 August 2021')
 
@@ -428,6 +448,7 @@ describe('Referral form', () => {
   describe('for cohort referrals, when user tries to make a referral', () => {
     it('should be able to complete a cohort referral', () => {
       const socialInclusionServiceCategory = serviceCategoryFactory.build({
+        id: 'c036826e-f077-49a5-8b33-601dca7ad479',
         name: 'social inclusion',
         desiredOutcomes: [
           {
@@ -466,6 +487,7 @@ describe('Referral form', () => {
         },
       })
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
         serviceCategoryIds: null,
         interventionId: intervention.id,
         serviceProvider: {
@@ -476,6 +498,7 @@ describe('Referral form', () => {
       const completedServiceUserDetailsDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
+          id: draftReferral.id,
           serviceCategoryIds: null,
           interventionId: intervention.id,
           serviceProvider: {
@@ -487,6 +510,7 @@ describe('Referral form', () => {
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
         .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
+          id: draftReferral.id,
           interventionId: intervention.id,
           serviceProvider: {
             name: 'Harmony Living',
@@ -496,6 +520,7 @@ describe('Referral form', () => {
       const completedDraftReferral = draftReferralFactory
         .filledFormUpToFurtherInformation([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
+          id: draftReferral.id,
           interventionId: intervention.id,
           serviceProvider: {
             name: 'Harmony Living',
@@ -761,8 +786,73 @@ describe('Referral form', () => {
       cy.get('a').contains('Check your answers').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
 
-      cy.contains('Accommodation')
-      cy.contains('Social inclusion')
+      cy.contains('Service categories')
+        .next()
+        .contains('Selected service categories')
+        .next()
+        .should('contain', 'Accommodation')
+        .and('contain', 'Social inclusion')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/service-categories`)
+
+      cy.contains('Accommodation referral details')
+        .next()
+        .contains('Complexity level')
+        .next()
+        .should('contain', 'Low complexity')
+        .and('contain', 'Info about low complexity')
+        .next()
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level`
+        )
+      cy.contains('Accommodation referral details')
+        .next()
+        .contains('Desired outcomes')
+        .next()
+        .should('contain', 'Service user makes progress in obtaining accommodation')
+        .and('contain', 'Service user is prevented from becoming homeless')
+        .next()
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
+        )
+
+      cy.contains('Social inclusion referral details')
+        .next()
+        .contains('Complexity level')
+        .next()
+        .should('contain', 'Low complexity')
+        .and('contain', 'Info about low complexity')
+        .next()
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/service-category/c036826e-f077-49a5-8b33-601dca7ad479/complexity-level`
+        )
+      cy.contains('Social inclusion referral details')
+        .next()
+        .contains('Desired outcomes')
+        .next()
+        .should('contain', 'Service user develops and sustains social networks to reduce initial social isolation.')
+        .and('contain', 'Service user secures early post-release engagement with community based services.')
+        .and(
+          'contain',
+          'Service user develops resilience and perseverance to cope with challenges and barriers on return to the community.'
+        )
+        .next()
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/service-category/c036826e-f077-49a5-8b33-601dca7ad479/desired-outcomes`
+        )
 
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)

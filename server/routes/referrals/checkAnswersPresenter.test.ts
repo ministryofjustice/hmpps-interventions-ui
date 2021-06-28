@@ -271,6 +271,7 @@ describe(CheckAnswersPresenter, () => {
 
   describe('referralDetailsSections', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({
+      id: '428ee70f-3001-4399-95a6-ad25eaaede16',
       name: 'Accommodation',
       complexityLevels: [
         { id: '1', title: 'Low complexity', description: 'Low complexity accommodation description' },
@@ -292,6 +293,7 @@ describe(CheckAnswersPresenter, () => {
       ],
     })
     const eteServiceCategory = serviceCategoryFactory.build({
+      id: 'ca374ac3-84eb-4b91-bea7-9005398f426f',
       name: 'Education, training and employment',
       complexityLevels: [
         { id: '3', title: 'Low complexity', description: 'Low complexity ETE description' },
@@ -299,6 +301,7 @@ describe(CheckAnswersPresenter, () => {
       ],
     })
     const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
       complexityLevels: [
         { serviceCategoryId: accommodationServiceCategory.id, complexityLevelId: '1' },
@@ -331,6 +334,8 @@ describe(CheckAnswersPresenter, () => {
           expect(item).toEqual({
             key: 'Complexity level',
             lines: ['Low complexity', '', 'Low complexity accommodation description'],
+            changeLink:
+              '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level',
           })
         })
       })
@@ -343,6 +348,8 @@ describe(CheckAnswersPresenter, () => {
             key: 'Desired outcomes',
             lines: ['Accommodation desired outcome example 1', 'Accommodation desired outcome example 3'],
             listStyle: ListStyle.bulleted,
+            changeLink:
+              '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes',
           })
         })
       })
@@ -380,6 +387,7 @@ describe(CheckAnswersPresenter, () => {
 
       describe('with a single service category chosen in the referral', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
@@ -390,6 +398,7 @@ describe(CheckAnswersPresenter, () => {
               key: 'Selected service categories',
               lines: ['Accommodation'],
               listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
             },
           ])
         })
@@ -397,6 +406,7 @@ describe(CheckAnswersPresenter, () => {
 
       describe('with multiple service categories chosen in the referral', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
         })
 
@@ -407,6 +417,7 @@ describe(CheckAnswersPresenter, () => {
               key: 'Selected service categories',
               lines: ['Accommodation', 'Education, training and employment'],
               listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
             },
           ])
         })
