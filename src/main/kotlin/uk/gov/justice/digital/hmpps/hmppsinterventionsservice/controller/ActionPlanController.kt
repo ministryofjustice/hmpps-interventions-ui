@@ -39,7 +39,7 @@ class ActionPlanController(
       createActionPlanDTO.referralId,
       createActionPlanDTO.numberOfSessions,
       createActionPlanDTO.activities.map { ActionPlanActivity(description = it.description) },
-      userMapper.fromToken(authentication)
+      userMapper.fromToken(authentication),
     )
 
     val actionPlanDTO = ActionPlanDTO.from(draftActionPlan)

@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.User
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
@@ -44,7 +43,7 @@ internal class ActionPlanControllerTest {
   fun `saves draft action plan`() {
     val referralId = UUID.randomUUID()
     val numberOfSessions = 5
-    val activitiesDTO = emptyList<CreateActionPlanActivityDTO>()
+    val activitiesDTO = emptyList<UpdateActionPlanActivityDTO>()
     val createActionPlanDTO = CreateActionPlanDTO(referralId, 5, activitiesDTO)
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val authUser = AuthUser("CRN123", "auth", "user")
@@ -66,7 +65,7 @@ internal class ActionPlanControllerTest {
   @Test
   fun `successfully update a draft action plan containing an activity`() {
     val actionPlan = actionPlanFactory.create()
-    val activityDTO = CreateActionPlanActivityDTO("Description")
+    val activityDTO = UpdateActionPlanActivityDTO("Description")
 
     whenever(actionPlanService.updateActionPlan(eq(actionPlan.id), eq(1), any())).thenReturn(actionPlan)
 

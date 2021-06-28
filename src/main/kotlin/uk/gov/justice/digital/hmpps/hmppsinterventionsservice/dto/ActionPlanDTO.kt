@@ -51,6 +51,17 @@ data class ActionPlanActivityDTO(
   }
 }
 
+data class CreateActionPlanDTO(
+  val referralId: UUID,
+  val numberOfSessions: Int?,
+  val activities: List<UpdateActionPlanActivityDTO> = emptyList()
+)
+
+data class UpdateActionPlanDTO(
+  val numberOfSessions: Int?,
+  val newActivity: UpdateActionPlanActivityDTO?
+)
+
 data class UpdateActionPlanActivityDTO(
-  val description: String?,
+  val description: String,
 )
