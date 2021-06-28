@@ -18,8 +18,8 @@ import java.net.URI
 import java.util.UUID
 
 interface NotifyService {
-  fun generateResourceUrl(baseURL: String, path: String, id: UUID): URI {
-    return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(id).toUri()
+  fun generateResourceUrl(baseURL: String, path: String, vararg args: Any): URI {
+    return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(*args).toUri()
   }
 }
 
@@ -28,6 +28,7 @@ class NotifyActionPlanService(
   @Value("\${notify.templates.action-plan-submitted}") private val actionPlanSubmittedTemplateID: String,
   @Value("\${notify.templates.action-plan-approved}") private val actionPlanApprovedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.action-plan}") private val ppActionPlanLocation: String,
   @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmitActionPlanLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
@@ -38,7 +39,7 @@ class NotifyActionPlanService(
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
         val recipient = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, ppActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
           actionPlanSubmittedTemplateID,
           recipient.email,
