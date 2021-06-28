@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType.SESSION_FEEDBACK_RECORDED
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -30,10 +29,8 @@ interface CommunityAPIService {
 @Service
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.sent-referral}") private val interventionsUISentReferralLocation: String,
   @Value("\${interventions-ui.probation-links.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
   @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
-  @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
   @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
@@ -128,23 +125,6 @@ class CommunityAPIReferralEventService(
       .toString()
 
     communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
-  }
-}
-
-@Service
-class CommunityAPIEndOfServiceReportEventService(
-  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
-  @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
-  @Value("\${community-api.integration-context}") private val integrationContext: String,
-  private val communityAPIClient: CommunityAPIClient,
-) : ApplicationListener<EndOfServiceReportEvent>, CommunityAPIService {
-  companion object : KLogging()
-
-  override fun onApplicationEvent(event: EndOfServiceReportEvent) {
-    // Moved to referral end notification as there is a race condition arising between
-    // them. Should the referral be updated as completed before EoSR is notified,
-    // community-api will reject it saying NSI does not exist.
   }
 }
 
