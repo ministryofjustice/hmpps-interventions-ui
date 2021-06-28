@@ -14,6 +14,13 @@ values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', 'd0db50b0-4a50-4fc7-a006-9c97530
        ('B59D3599-0681-466A-82B2-F6F957E46190', 'd0db50b0-4a50-4fc7-a006-9c97530e38b2', '428ee70f-3001-4399-95a6-ad25eaaede16'),
        ('a2a551aa-3d11-44b1-907b-42a028852bc1', '8e409327-e3ab-4c91-9300-2f61a409789f', '9556a399-3529-4993-8030-41db2090555e');
 
+insert into referral_desired_outcome(referral_id, desired_outcome_id, service_category_id)
+values ('a2a551aa-3d11-44b1-907b-42a028852bc1', '868f713a-5c53-4a18-b20f-ff8f118e9c30', '9556a399-3529-4993-8030-41db2090555e'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1', '4fc163c9-f8fb-4cfd-b107-2cb13583ebf0', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1', '117832ca-f65e-4cce-9cdd-bdf666e740ea', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c'),
+       ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '65924ac6-9724-455b-ad30-906936291421', '428ee70f-3001-4399-95a6-ad25eaaede16'),
+       ('B59D3599-0681-466A-82B2-F6F957E46190', '19d5ef58-5cfc-41fe-894c-acd705dc1325', '428ee70f-3001-4399-95a6-ad25eaaede16');
+
 insert into referral_service_user_data (referral_id, disabilities, dob, ethnicity, title, first_name, last_name, preferred_language, religion_or_belief, gender)
 values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Sir', 'ANDREW', 'DAVIES', 'Yupik', 'None', 'Male'),
        ('B59D3599-0681-466A-82B2-F6F957E46190', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Ms', 'JUNAID', 'KHAN', 'English', 'None', 'Female'),
