@@ -20,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPl
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.util.UUID
-import javax.persistence.EntityExistsException
 
 @RestController
 class ActionPlanController(
@@ -35,14 +34,9 @@ class ActionPlanController(
     @RequestBody createActionPlanDTO: CreateActionPlanDTO,
     authentication: JwtAuthenticationToken
   ): ResponseEntity<ActionPlanDTO> {
-    val referralId = createActionPlanDTO.referralId
-
-    if (actionPlanService.checkActionPlanExistsForReferral(referralId)) {
-      throw EntityExistsException("action plan already exists for referral [referralId=$referralId]")
-    }
 
     val draftActionPlan = actionPlanService.createDraftActionPlan(
-      referralId,
+      createActionPlanDTO.referralId,
       createActionPlanDTO.numberOfSessions,
       createActionPlanDTO.activities.map { ActionPlanActivity(description = it.description) },
       userMapper.fromToken(authentication)

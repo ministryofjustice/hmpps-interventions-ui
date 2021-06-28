@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
@@ -25,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFac
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.net.URI
 import java.util.UUID
-import javax.persistence.EntityExistsException
 
 internal class ActionPlanControllerTest {
   private val actionPlanFactory = ActionPlanFactory()
@@ -41,15 +39,6 @@ internal class ActionPlanControllerTest {
     locationMapper,
     userTypeChecker,
   )
-
-  @Test
-  fun `throws error if an action plan already exists for the referral`() {
-    whenever(actionPlanService.checkActionPlanExistsForReferral(any())).thenReturn(true)
-    val request = CreateActionPlanDTO(UUID.randomUUID(), 3, emptyList())
-    assertThrows<EntityExistsException> {
-      actionPlanController.createDraftActionPlan(request, tokenFactory.create())
-    }
-  }
 
   @Test
   fun `saves draft action plan`() {
