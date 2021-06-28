@@ -361,27 +361,25 @@ describe('Referral form', () => {
 
       cy.contains('A danger to the elderly')
 
+      // Alex's needs and requirements
       cy.contains('Additional information about Alex’s needs (optional)')
         .next()
         .contains('Alex is currently sleeping on her aunt’s sofa')
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-
       cy.contains('Does Alex have any other mobility, disability or accessibility needs? (optional)')
         .next()
         .contains('She uses a wheelchair')
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-
       cy.contains('Does Alex need an interpreter?')
         .next()
         .contains('Yes. Spanish')
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-
       cy.contains('Does Alex have caring or employment responsibilities?')
         .next()
         .contains('Yes. She works Mondays 9am - midday')
@@ -389,9 +387,25 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
 
-      cy.contains('Burglary')
-      cy.contains('Theft act, 1968')
-      cy.contains('15 November 2025')
+      // Sentence information
+      cy.contains('Sentence')
+        .next()
+        .contains('Burglary')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/relevant-sentence`)
+      cy.contains('Subcategory')
+        .next()
+        .contains('Theft act, 1968')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/relevant-sentence`)
+      cy.contains('End of sentence date')
+        .next()
+        .contains('15 November 2025')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/relevant-sentence`)
 
       cy.contains('Accommodation referral details')
       cy.contains('Low complexity')

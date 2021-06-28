@@ -415,7 +415,7 @@ describe(CheckAnswersPresenter, () => {
   })
 
   describe('sentenceInformationSummary', () => {
-    const referral = parameterisedDraftReferralFactory.build()
+    const referral = parameterisedDraftReferralFactory.build({ id: '03e9e6cd-a45f-4dfc-adad-06301349042e' })
     const intervention = interventionFactory.build()
     const assaultConviction = deliusConvictionFactory.build({
       offences: [
@@ -438,14 +438,17 @@ describe(CheckAnswersPresenter, () => {
         {
           key: 'Sentence',
           lines: ['Common and other types of assault'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
         },
         {
           key: 'Subcategory',
           lines: ['Common assault and battery'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
         },
         {
           key: 'End of sentence date',
           lines: ['15 September 2025'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
         },
       ])
     })

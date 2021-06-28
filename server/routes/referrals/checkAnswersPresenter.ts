@@ -142,14 +142,17 @@ export default class CheckAnswersPresenter {
       {
         key: 'Sentence',
         lines: [presenter.category],
+        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
       },
       {
         key: 'Subcategory',
         lines: [presenter.subcategory],
+        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
       },
       {
         key: 'End of sentence date',
         lines: [presenter.endOfSentenceDate],
+        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
       },
     ]
   }
