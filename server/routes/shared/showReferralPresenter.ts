@@ -50,7 +50,7 @@ export default class ShowReferralPresenter {
     this.riskPresenter = new RiskPresenter(riskSummary)
   }
 
-  readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/check`
+  readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/start`
 
   readonly text = {
     assignedTo: this.assigneeFullNameOrUnassigned,

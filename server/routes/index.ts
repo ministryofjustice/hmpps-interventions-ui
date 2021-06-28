@@ -11,12 +11,14 @@ import FindInterventionsController from './findInterventions/findInterventionsCo
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CommonController from './common/commonController'
 import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
+import DraftsService from '../services/draftsService'
 
 export interface Services {
   communityApiService: CommunityApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
   assessRisksAndNeedsService: AssessRisksAndNeedsService
+  draftsService: DraftsService
 }
 
 export default function routes(router: Router, services: Services): Router {
@@ -39,7 +41,8 @@ export default function routes(router: Router, services: Services): Router {
     services.interventionsService,
     services.communityApiService,
     services.hmppsAuthService,
-    services.assessRisksAndNeedsService
+    services.assessRisksAndNeedsService,
+    services.draftsService
   )
   const findInterventionsController = new FindInterventionsController(services.interventionsService)
   const commonController = new CommonController()
@@ -61,10 +64,21 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.showInterventionProgress(req, res)
   )
   get('/service-provider/referrals/:id/assignment/check', (req, res) =>
+    // This keeps the assign button on any pre-drafts version of the referral details page working
+    serviceProviderReferralsController.backwardsCompatibilityStartAssignment(req, res)
+  )
+  post('/service-provider/referrals/:id/assignment/start', (req, res) =>
+    serviceProviderReferralsController.startAssignment(req, res)
+  )
+  get('/service-provider/referrals/:id/assignment/:draftAssignmentId/check', (req, res) =>
     serviceProviderReferralsController.checkAssignment(req, res)
   )
   post('/service-provider/referrals/:id/assignment', (req, res) =>
-    serviceProviderReferralsController.assignReferral(req, res)
+    // This keeps a submission of the any pre-drafts version of the assignment check your answers page working
+    serviceProviderReferralsController.backwardsCompatibilitySubmitAssignment(req, res)
+  )
+  post('/service-provider/referrals/:id/assignment/:draftAssignmentId/submit', (req, res) =>
+    serviceProviderReferralsController.submitAssignment(req, res)
   )
   get('/service-provider/referrals/:id/assignment/confirmation', (req, res) =>
     serviceProviderReferralsController.confirmAssignment(req, res)

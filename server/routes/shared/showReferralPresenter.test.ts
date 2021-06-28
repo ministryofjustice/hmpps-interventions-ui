@@ -49,7 +49,7 @@ describe(ShowReferralPresenter, () => {
   const defaultStaffDetails = deliusStaffDetailsFactory.build()
 
   describe('assignmentFormAction', () => {
-    it('returns the relative URL for the check assignment page', () => {
+    it('returns the relative URL for the start assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)
 
       const presenter = new ShowReferralPresenter(
@@ -67,7 +67,7 @@ describe(ShowReferralPresenter, () => {
         defaultStaffDetails
       )
 
-      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
+      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/start`)
     })
   })
 
