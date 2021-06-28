@@ -29,7 +29,7 @@ interface CommunityAPIService {
 @Service
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.referral-details}") private val ppReferralDetailsLocation: String,
   @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
@@ -49,7 +49,7 @@ class CommunityAPIReferralEventService(
       ReferralEventType.CANCELLED,
       -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUICancelledReferralLocation)
+          .path(ppReferralDetailsLocation)
           .buildAndExpand(event.referral.id)
           .toString()
 
