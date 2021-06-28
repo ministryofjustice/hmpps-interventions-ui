@@ -41,7 +41,7 @@
             <form method="post" action="{{ presenter.actionPlanApprovalUrl }}">
                 {{ govukCheckboxes(confirmApprovalCheckboxArgs) }}
                 <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-                {{ govukButton({ text: "Approve" }) }}
+                {{ govukButton({ text: "Approve", preventDoubleClick: true }) }}
             </form>
         {% endif %}
     </div>

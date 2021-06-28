@@ -82,7 +82,9 @@ export default class ActionPlanView {
             value: {
               html: `<form method="post" action="${ViewUtils.escape(this.presenter.createActionPlanFormAction)}">
                      <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken!)}">
-                     <button>Create action plan</button>
+                     <button data-module="govuk-button" data-prevent-double-click="true">
+                       Create action plan
+                     </button>
                      </form>`,
             },
           })
