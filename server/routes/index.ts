@@ -69,9 +69,9 @@ export default function routes(router: Router, services: Services): Router {
   get('/service-provider/referrals/:id/assignment/confirmation', (req, res) =>
     serviceProviderReferralsController.confirmAssignment(req, res)
   )
-  post('/service-provider/referrals/:id/action-plan', async (req, res) => {
-    await serviceProviderReferralsController.createDraftActionPlan(req, res)
-  })
+  post('/service-provider/referrals/:id/action-plan', (req, res) =>
+    serviceProviderReferralsController.createDraftActionPlan(req, res)
+  )
   get('/service-provider/action-plan/:id/add-activities', (req, res) =>
     serviceProviderReferralsController.showActionPlanAddActivitiesForm(req, res)
   )
