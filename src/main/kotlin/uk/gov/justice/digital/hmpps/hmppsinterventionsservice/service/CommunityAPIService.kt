@@ -181,7 +181,7 @@ class CommunityAPIActionPlanEventService(
 @Service
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -192,7 +192,7 @@ class CommunityAPIAppointmentEventService(
     when (event.type) {
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUISessionFeedbackLocation)
+          .path(ppSessionFeedbackLocation)
           .buildAndExpand(event.actionPlanSession.actionPlan.id, event.actionPlanSession.sessionNumber)
           .toString()
 
