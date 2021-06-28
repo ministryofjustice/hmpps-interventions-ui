@@ -17,7 +17,7 @@
       <input type="hidden" name="cancellation-reason" value="{{ hiddenFields.cancellationReason }}">
       <input type="hidden" name="cancellation-comments" value="{{ hiddenFields.cancellationComments }}">
 
-      {{ govukButton({ text: "Cancel referral" }) }}
+      {{ govukButton({ text: "Cancel referral", preventDoubleClick: true }) }}
     </form>
   </div>
 {% endblock %}

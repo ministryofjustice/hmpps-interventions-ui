@@ -28,7 +28,7 @@
           <input type="hidden" name={{ name }} value={{ value }}>
         {% endfor %}
 
-        {{ govukButton({ text: "Confirm assignment" }) }}
+        {{ govukButton({ text: "Confirm assignment", preventDoubleClick: true }) }}
       </form>
     </div>
   </div>
