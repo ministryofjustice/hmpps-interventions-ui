@@ -71,7 +71,7 @@ class NotifyActionPlanService(
 class NotifyEndOfServiceReportService(
   @Value("\${notify.templates.end-of-service-report-submitted}") private val endOfServiceReportSubmittedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUISubmitEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.end-of-service-report}") private val ppEndOfServiceReportLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<EndOfServiceReportEvent>, NotifyService {
@@ -81,7 +81,7 @@ class NotifyEndOfServiceReportService(
     when (event.type) {
       EndOfServiceReportEventType.SUBMITTED -> {
         val userDetail = hmppsAuthService.getUserDetail(event.endOfServiceReport.referral.getResponsibleProbationPractitioner())
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitEndOfServiceReportLocation, event.endOfServiceReport.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, ppEndOfServiceReportLocation, event.endOfServiceReport.id)
         emailSender.sendEmail(
           endOfServiceReportSubmittedTemplateID,
           userDetail.email,
