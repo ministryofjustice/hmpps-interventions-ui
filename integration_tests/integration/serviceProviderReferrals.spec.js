@@ -284,7 +284,10 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#email').type('john@harmonyliving.org.uk')
     cy.contains('Save and continue').click()
 
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
+    cy.location('pathname').should(
+      'match',
+      new RegExp(`/service-provider/referrals/${referral.id}/assignment/[a-z0-9-]+/check`)
+    )
     cy.get('h1').contains('Confirm the Accommodation referral assignment')
     cy.contains('John Smith')
 
@@ -294,6 +297,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
     cy.stubGetSentReferralsForUserToken([assignedReferral])
 
+    cy.get('h1').contains('Confirm the Accommodation referral assignment')
     cy.contains('Confirm assignment').click()
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)

@@ -54,7 +54,6 @@ import EndOfServiceReportCheckAnswersView from './endOfServiceReportCheckAnswers
 import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
 import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
 import ControllerUtils from '../../utils/controllerUtils'
-import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import ActionPlanPresenter from '../shared/actionPlanPresenter'
@@ -66,13 +65,19 @@ import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessment
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
+import DraftsService from '../../services/draftsService'
+
+export interface DraftAssignmentData {
+  email: string | null
+}
 
 export default class ServiceProviderReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
-    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
+    private readonly draftsService: DraftsService
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
@@ -185,9 +190,15 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async checkAssignment(req: Request, res: Response): Promise<void> {
-    const email = req.query.email as string
+  async backwardsCompatibilityStartAssignment(req: Request, res: Response): Promise<void> {
+    await this.startAssignmentWithEmail(req.query.email as string | undefined, req, res)
+  }
 
+  async startAssignment(req: Request, res: Response): Promise<void> {
+    await this.startAssignmentWithEmail(req.body.email, req, res)
+  }
+
+  async startAssignmentWithEmail(email: string | undefined, req: Request, res: Response): Promise<void> {
     if (email === undefined || email === '') {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
@@ -196,11 +207,10 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    let assignee: AuthUserDetails
     const token = await this.hmppsAuthService.getApiClientToken()
 
     try {
-      assignee = await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
+      await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
     } catch (e) {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
@@ -209,25 +219,57 @@ export default class ServiceProviderReferralsController {
       )
     }
 
+    const draftAssignment = this.draftsService.createDraft<DraftAssignmentData>('assignment', { email }, req)
+
+    return res.redirect(`/service-provider/referrals/${req.params.id}/assignment/${draftAssignment.id}/check`)
+  }
+
+  async checkAssignment(req: Request, res: Response): Promise<void> {
+    const draftAssignment = this.draftsService.fetchDraft<DraftAssignmentData>(req.params.draftAssignmentId, req)
+    const { email } = draftAssignment.data
+
+    if (email === null) {
+      throw new Error('Got unexpectedly null email')
+    }
+
+    const token = await this.hmppsAuthService.getApiClientToken()
+    const assignee = await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
     const [intervention, serviceUser] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])
 
-    const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, intervention)
+    const presenter = new CheckAssignmentPresenter(referral.id, draftAssignment.id, assignee, email, intervention)
     const view = new CheckAssignmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async assignReferral(req: Request, res: Response): Promise<void> {
+  async backwardsCompatibilitySubmitAssignment(req: Request, res: Response): Promise<void> {
     const { email } = req.body
     if (email === undefined || email === null || email === '') {
       res.sendStatus(400)
       return
     }
 
+    await this.submitAssignmentWithEmail(email, req, res)
+  }
+
+  async submitAssignment(req: Request, res: Response): Promise<void> {
+    const draftAssignment = this.draftsService.fetchDraft<DraftAssignmentData>(req.params.draftAssignmentId, req)
+
+    const { email } = draftAssignment.data
+    if (email === null) {
+      throw new Error('Got unexpectedly null email')
+    }
+
+    await this.submitAssignmentWithEmail(email, req, res)
+
+    this.draftsService.deleteDraft(draftAssignment.id, req)
+  }
+
+  async submitAssignmentWithEmail(email: string, req: Request, res: Response): Promise<void> {
     const assignee = await this.hmppsAuthService.getSPUserByEmailAddress(res.locals.user.token.accessToken, email)
 
     await this.interventionsService.assignSentReferral(res.locals.user.token.accessToken, req.params.id, {

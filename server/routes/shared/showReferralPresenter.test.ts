@@ -45,7 +45,7 @@ describe(ShowReferralPresenter, () => {
   const riskSummary = riskSummaryFactory.build()
 
   describe('assignmentFormAction', () => {
-    it('returns the relative URL for the check assignment page', () => {
+    it('returns the relative URL for the start assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)
       const presenter = new ShowReferralPresenter(
         referral,
@@ -61,7 +61,7 @@ describe(ShowReferralPresenter, () => {
         riskSummary
       )
 
-      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
+      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/start`)
     })
   })
 

@@ -26,6 +26,7 @@ import passportSetup from './authentication/passport'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ControllerUtils from './utils/controllerUtils'
 import broadcastMessageConfig from './broadcast-message-config.json'
+import DraftsService from './services/draftsService'
 
 const RedisStore = connectRedis(session)
 
@@ -33,7 +34,8 @@ export default function createApp(
   communityApiService: CommunityApiService,
   interventionsService: InterventionsService,
   hmppsAuthService: HmppsAuthService,
-  assessRisksAndNeedsService: AssessRisksAndNeedsService
+  assessRisksAndNeedsService: AssessRisksAndNeedsService,
+  draftsService: DraftsService
 ): express.Application {
   const app = express()
 
@@ -203,6 +205,7 @@ export default function createApp(
       interventionsService,
       hmppsAuthService,
       assessRisksAndNeedsService,
+      draftsService,
     })
   )
 
