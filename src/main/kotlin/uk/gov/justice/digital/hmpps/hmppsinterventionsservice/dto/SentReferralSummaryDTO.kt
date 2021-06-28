@@ -28,7 +28,7 @@ class SentReferralSummaryDTO(
         referenceNumber = referral.referenceNumber!!,
         assignedTo = referral.assignedTo?.let { AuthUserDTO.from(it) },
         referral = DraftReferralDTO.from(referral),
-        actionPlanId = referral.actionPlan?.id,
+        actionPlanId = referral.currentActionPlan?.id,
         endRequestedAt = referral.endRequestedAt,
         endRequestedReason = referral.endRequestedReason?.let { it.description },
         endRequestedComments = referral.endRequestedComments,

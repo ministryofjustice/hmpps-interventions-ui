@@ -39,7 +39,7 @@ class ReferralConcluder(
     if (referral.endOfServiceReport != null)
       return false
 
-    val totalNumberOfSessions = referral.actionPlan?.numberOfSessions ?: 0
+    val totalNumberOfSessions = referral.currentActionPlan?.numberOfSessions ?: 0
     if (totalNumberOfSessions == 0)
       return false
 
@@ -57,12 +57,12 @@ class ReferralConcluder(
 
   private fun getConcludedEventType(referral: Referral): ReferralEventType? {
 
-    val hasActionPlan = nonNull(referral.actionPlan)
+    val hasActionPlan = nonNull(referral.currentActionPlan)
 
     val numberOfAttemptedSessions = countSessionsAttempted(referral)
     val hasAttemptedNoSessions = numberOfAttemptedSessions == 0
 
-    val totalNumberOfSessions = referral.actionPlan?.numberOfSessions ?: 0
+    val totalNumberOfSessions = referral.currentActionPlan?.numberOfSessions ?: 0
     val hasAttemptedSomeSessions = totalNumberOfSessions > numberOfAttemptedSessions
     val hasAttemptedAllSessions = totalNumberOfSessions == numberOfAttemptedSessions
 
@@ -84,7 +84,7 @@ class ReferralConcluder(
   }
 
   private fun countSessionsAttempted(referral: Referral): Int {
-    return referral.actionPlan?.let {
+    return referral.currentActionPlan?.let {
       actionPlanRepository.countNumberOfAttemptedSessions(it.id)
     } ?: 0
   }

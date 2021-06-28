@@ -49,7 +49,7 @@ internal class ReferralConcluderTest {
   fun `concludes referral as cancelled when ending a referral with no sessions attempted`() {
     val timeAtStart = OffsetDateTime.now()
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndNoAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndNoAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(referralWithActionPlanAndNoAttemptedSessions.id)).thenReturn(0)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndNoAttemptedSessions)
@@ -63,7 +63,7 @@ internal class ReferralConcluderTest {
 
     val timeAtStart = OffsetDateTime.now()
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     referralWithActionPlanAndSomeAttemptedSessions.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = OffsetDateTime.now())
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(1)
 
@@ -78,7 +78,7 @@ internal class ReferralConcluderTest {
 
     val timeAtStart = OffsetDateTime.now()
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     referralWithActionPlanAndSomeAttemptedSessions.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = OffsetDateTime.now())
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(2)
 
@@ -92,7 +92,7 @@ internal class ReferralConcluderTest {
   fun `does not conclude a referral when ending a referral with some sessions attempted and an end of service report has not been submitted`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     referralWithActionPlanAndSomeAttemptedSessions.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = null)
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(1)
 
@@ -105,7 +105,7 @@ internal class ReferralConcluderTest {
   fun `does not conclude a referral when ending a referral with all sessions attempted and an end of service report has not been submitted`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     referralWithActionPlanAndSomeAttemptedSessions.endOfServiceReport = endOfServiceReportFactory.create(submittedAt = null)
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(2)
 
@@ -118,7 +118,7 @@ internal class ReferralConcluderTest {
   fun `does not conclude a referral when ending a referral with some sessions attempted and an end of service report does not exist`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(1)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttemptedSessions)
@@ -130,7 +130,7 @@ internal class ReferralConcluderTest {
   fun `does not conclude a referral when ending a referral with all sessions attempted and an end of service report does not exit`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(2)
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttemptedSessions)
@@ -143,7 +143,7 @@ internal class ReferralConcluderTest {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
     val endOfServiceReport = endOfServiceReportFactory.create()
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createEnded(actionPlan = actionPlan, endOfServiceReport = endOfServiceReport)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createEnded(actionPlans = mutableListOf(actionPlan), endOfServiceReport = endOfServiceReport)
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(1)
 
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
@@ -156,7 +156,7 @@ internal class ReferralConcluderTest {
   fun `should flag end of service report as required if it doesn't exist and when all sessions have been attempted`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createEnded(actionPlan = actionPlan, endOfServiceReport = null)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createEnded(actionPlans = mutableListOf(actionPlan), endOfServiceReport = null)
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(2)
 
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
@@ -169,7 +169,7 @@ internal class ReferralConcluderTest {
   fun `should flag end of service report as required if it doesn't exist and when at least one session has been attempted and end has been requested`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createEnded(actionPlan = actionPlan, endOfServiceReport = null)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createEnded(actionPlans = mutableListOf(actionPlan), endOfServiceReport = null)
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(1)
 
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
@@ -181,7 +181,7 @@ internal class ReferralConcluderTest {
   @Test
   fun `should not flag end of service report as required when action plan exists`() {
 
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = null)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = null)
 
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
 
@@ -193,7 +193,7 @@ internal class ReferralConcluderTest {
   fun `should not flag end of service report as required when no sessions have been attempted`() {
 
     val actionPlan = actionPlanFactory.create(numberOfSessions = 2)
-    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlan = actionPlan)
+    val referralWithActionPlanAndSomeAttemptedSessions = referralFactory.createSent(actionPlans = mutableListOf(actionPlan))
     whenever(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan.id)).thenReturn(0)
 
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)

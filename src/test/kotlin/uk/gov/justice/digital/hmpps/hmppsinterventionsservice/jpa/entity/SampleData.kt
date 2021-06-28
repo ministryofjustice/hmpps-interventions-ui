@@ -69,7 +69,7 @@ class SampleData {
       assignedTo: AuthUser? = null,
       assignedAt: OffsetDateTime = OffsetDateTime.now(),
       assignedBy: AuthUser? = null,
-      actionPlan: ActionPlan? = null,
+      actionPlans: MutableList<ActionPlan>? = null,
       endOfServiceReport: EndOfServiceReport? = null,
       concludedAt: OffsetDateTime? = null,
       intervention: Intervention = sampleIntervention(
@@ -93,7 +93,7 @@ class SampleData {
         assignedBy = assignedBy,
         intervention = intervention,
         selectedServiceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories.toMutableSet(),
-        actionPlan = actionPlan,
+        actionPlans = actionPlans,
         endOfServiceReport = endOfServiceReport,
         concludedAt = concludedAt,
       )

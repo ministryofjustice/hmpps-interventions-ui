@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
 import javax.persistence.Table
@@ -71,7 +72,7 @@ class Referral(
 
   var relevantSentenceId: Long? = null,
 
-  @OneToOne(mappedBy = "referral", optional = true) @Fetch(JOIN) var actionPlan: ActionPlan? = null,
+  @OneToMany(fetch = FetchType.LAZY) @JoinColumn(name = "referral_id") var actionPlans: MutableList<ActionPlan>? = null,
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
@@ -97,4 +98,7 @@ class Referral(
     // fixme: should this sentBy or createdBy?
     return createdBy
   }
+
+  val currentActionPlan: ActionPlan?
+    get() = actionPlans?.lastOrNull()
 }
