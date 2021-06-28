@@ -169,7 +169,13 @@ export default class CheckAnswersPresenter {
 
     return {
       title: `${this.intervention.contractType.name} completion date`,
-      summary: [{ key: 'Date', lines: [PresenterUtils.govukFormattedDate(completionDeadline)] }],
+      summary: [
+        {
+          key: 'Date',
+          lines: [PresenterUtils.govukFormattedDate(completionDeadline)],
+          changeLink: `/referrals/${this.referral.id}/completion-deadline`,
+        },
+      ],
     }
   }
 
@@ -178,6 +184,7 @@ export default class CheckAnswersPresenter {
       {
         key: 'Maximum number of enforceable days',
         lines: [this.referral.maximumEnforceableDays ? this.referral.maximumEnforceableDays.toString() : ''],
+        changeLink: `/referrals/${this.referral.id}/enforceable-days`,
       },
     ]
   }
@@ -187,6 +194,7 @@ export default class CheckAnswersPresenter {
       {
         key: 'Further information for the provider',
         lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
+        changeLink: `/referrals/${this.referral.id}/further-information`,
       },
     ]
   }

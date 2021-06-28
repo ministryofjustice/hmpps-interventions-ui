@@ -467,7 +467,10 @@ describe(CheckAnswersPresenter, () => {
 
   describe('completionDeadlineSection', () => {
     const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
-    const referral = parameterisedDraftReferralFactory.build({ completionDeadline: '2021-10-24' })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      completionDeadline: '2021-10-24',
+    })
     const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
 
     describe('title', () => {
@@ -482,6 +485,7 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Date',
             lines: ['24 October 2021'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
           },
         ])
       })
@@ -489,7 +493,10 @@ describe(CheckAnswersPresenter, () => {
   })
 
   describe('enforceableDaysSummary', () => {
-    const referral = parameterisedDraftReferralFactory.build({ maximumEnforceableDays: 15 })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      maximumEnforceableDays: 15,
+    })
 
     it('states the maximum number of enforceable days to use', () => {
       const presenter = new CheckAnswersPresenter(
@@ -503,6 +510,7 @@ describe(CheckAnswersPresenter, () => {
         {
           key: 'Maximum number of enforceable days',
           lines: ['15'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
         },
       ])
     })
@@ -510,7 +518,10 @@ describe(CheckAnswersPresenter, () => {
 
   describe('furtherInformationSummary', () => {
     describe('when the referral’s further information is not empty', () => {
-      const referral = parameterisedDraftReferralFactory.build({ furtherInformation: 'Some further information' })
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: 'Some further information',
+      })
 
       it('contains the referral’s further information', () => {
         const presenter = new CheckAnswersPresenter(
@@ -524,13 +535,17 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Further information for the provider',
             lines: ['Some further information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
           },
         ])
       })
     })
 
     describe('when the referral’s further information is empty', () => {
-      const referral = parameterisedDraftReferralFactory.build({ furtherInformation: '' })
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: '',
+      })
 
       it('states that there is no further information', () => {
         const presenter = new CheckAnswersPresenter(
@@ -544,6 +559,7 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Further information for the provider',
             lines: ['None'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
           },
         ])
       })
