@@ -30,7 +30,7 @@ interface CommunityAPIService {
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.referral-details}") private val ppReferralDetailsLocation: String,
-  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.end-of-service-report}") private val ppEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
@@ -66,7 +66,7 @@ class CommunityAPIReferralEventService(
         postNotificationRequest(event.referral.endOfServiceReport)
 
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUIEndOfServiceReportLocation)
+          .path(ppEndOfServiceReportLocation)
           .buildAndExpand(event.referral.endOfServiceReport!!.id)
           .toString()
 
@@ -101,7 +101,7 @@ class CommunityAPIReferralEventService(
     }
 
     val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-      .path(interventionsUIEndOfServiceReportLocation)
+      .path(ppEndOfServiceReportLocation)
       .buildAndExpand(endOfServiceReport!!.id)
       .toString()
 
