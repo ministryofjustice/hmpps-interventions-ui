@@ -132,7 +132,6 @@ class CommunityAPIReferralEventService(
 class CommunityAPIActionPlanEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.action-plan}") private val ppActionPlanLocation: String,
-  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUIApprovedActionPlanLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -151,7 +150,7 @@ class CommunityAPIActionPlanEventService(
       }
       ActionPlanEventType.APPROVED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUIApprovedActionPlanLocation)
+          .path(ppActionPlanLocation)
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
