@@ -73,7 +73,7 @@ export default class InterventionProgressPresenter {
     title: `${utils.convertToTitleCase(this.intervention.contractType.name)} progress`,
   }
 
-  readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/reason`
+  readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/start`
 
   readonly hasSessions = this.actionPlanAppointments.length !== 0
 

@@ -178,7 +178,7 @@ describe(InterventionProgressPresenter, () => {
       const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
 
       expect(presenter.referralCancellationHref).toEqual(
-        `/probation-practitioner/referrals/${referral.id}/cancellation/reason`
+        `/probation-practitioner/referrals/${referral.id}/cancellation/start`
       )
     })
   })

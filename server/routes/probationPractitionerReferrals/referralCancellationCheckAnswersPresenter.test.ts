@@ -3,7 +3,7 @@ import ReferralCancellationCheckAnswersPresenter from './referralCancellationChe
 describe(ReferralCancellationCheckAnswersPresenter, () => {
   describe('text', () => {
     it('contains a title and confirmation question', () => {
-      const presenter = new ReferralCancellationCheckAnswersPresenter('89047822-1014-4f8f-a52c-c348137c89a5')
+      const presenter = new ReferralCancellationCheckAnswersPresenter('', '')
 
       expect(presenter.text).toMatchObject({
         title: 'Referral Cancellation',
@@ -14,25 +14,13 @@ describe(ReferralCancellationCheckAnswersPresenter, () => {
 
   describe('confirmCancellationHref', () => {
     it('contains a reference to the referral cancellation endpoint', () => {
-      const presenter = new ReferralCancellationCheckAnswersPresenter('89047822-1014-4f8f-a52c-c348137c89a5')
-      expect(presenter.confirmCancellationHref).toEqual(
-        '/probation-practitioner/referrals/89047822-1014-4f8f-a52c-c348137c89a5/cancellation/submit'
-      )
-    })
-  })
-
-  describe('hiddenFields', () => {
-    it('contains the cancellation code and comments', () => {
       const presenter = new ReferralCancellationCheckAnswersPresenter(
         '89047822-1014-4f8f-a52c-c348137c89a5',
-        'MOV',
-        'Alex moved out of the area'
+        'e3eac95b-787b-4ab9-93fd-39df32aabc41'
       )
-
-      expect(presenter.hiddenFields).toMatchObject({
-        cancellationReason: 'MOV',
-        cancellationComments: 'Alex moved out of the area',
-      })
+      expect(presenter.confirmCancellationHref).toEqual(
+        '/probation-practitioner/referrals/89047822-1014-4f8f-a52c-c348137c89a5/cancellation/e3eac95b-787b-4ab9-93fd-39df32aabc41/submit'
+      )
     })
   })
 })
