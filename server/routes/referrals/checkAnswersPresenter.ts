@@ -44,10 +44,12 @@ export default class CheckAnswersPresenter {
         {
           key: needsAndRequirementsPresenter.text.additionalNeedsInformation.label,
           lines: [needsAndRequirementsPresenter.fields.additionalNeedsInformation],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.accessibilityNeeds.label,
           lines: [needsAndRequirementsPresenter.fields.accessibilityNeeds],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.needsInterpreter.label,
@@ -57,6 +59,7 @@ export default class CheckAnswersPresenter {
               needsAndRequirementsPresenter.fields.interpreterLanguage
             ),
           ],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.hasAdditionalResponsibilities.label,
@@ -66,6 +69,7 @@ export default class CheckAnswersPresenter {
               needsAndRequirementsPresenter.fields.whenUnavailable
             ),
           ],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
       ],
     }

@@ -100,7 +100,9 @@ describe(CheckAnswersPresenter, () => {
   })
 
   describe('riskSection', () => {
-    const referral = parameterisedDraftReferralFactory.build({ additionalRiskInformation: 'Past assault of strangers' })
+    const referral = parameterisedDraftReferralFactory.build({
+      additionalRiskInformation: 'Past assault of strangers',
+    })
     const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
@@ -139,6 +141,7 @@ describe(CheckAnswersPresenter, () => {
     describe('summary', () => {
       describe('additional needs information', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           additionalNeedsInformation: 'Some additional needs information',
         })
         const presenter = new CheckAnswersPresenter(
@@ -152,12 +155,14 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[0]).toEqual({
             key: 'Additional information about Alex’s needs (optional)',
             lines: ['Some additional needs information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
       })
 
       describe('accessibility needs', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           accessibilityNeeds: 'Some accessibility needs information',
         })
         const presenter = new CheckAnswersPresenter(
@@ -171,6 +176,7 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[1]).toEqual({
             key: 'Does Alex have any other mobility, disability or accessibility needs? (optional)',
             lines: ['Some accessibility needs information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
       })
@@ -178,6 +184,7 @@ describe(CheckAnswersPresenter, () => {
       describe('needs interpreter', () => {
         it('includes the answer', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: false,
           })
           const presenter = new CheckAnswersPresenter(
@@ -190,11 +197,13 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
             key: 'Does Alex need an interpreter?',
             lines: ['No'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
 
         describe('when an interpreter is needed', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
@@ -209,6 +218,7 @@ describe(CheckAnswersPresenter, () => {
             expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
               key: 'Does Alex need an interpreter?',
               lines: ['Yes. Spanish'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
           })
         })
@@ -217,6 +227,7 @@ describe(CheckAnswersPresenter, () => {
       describe('has additional responsibilities', () => {
         it('includes the answer', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: false,
           })
           const presenter = new CheckAnswersPresenter(
@@ -229,11 +240,13 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
             key: 'Does Alex have caring or employment responsibilities?',
             lines: ['No'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
 
         describe('when they have additional responsibilities', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
@@ -248,6 +261,7 @@ describe(CheckAnswersPresenter, () => {
             expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
               key: 'Does Alex have caring or employment responsibilities?',
               lines: ['Yes. Alex can’t attend on Fridays'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
           })
         })

@@ -91,6 +91,7 @@ describe('Referral form', () => {
   describe('for single referrals', () => {
     it('User starts a referral, fills in the form, and submits it', () => {
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
         serviceCategoryIds: [accommodationServiceCategory.id],
         serviceProvider: {
           name: 'Harmony Living',
@@ -100,6 +101,7 @@ describe('Referral form', () => {
       const completedServiceUserDetailsDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory])
         .build({
+          id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
           interventionId: draftReferral.interventionId,
           serviceProvider: {
@@ -110,6 +112,7 @@ describe('Referral form', () => {
       const completedDraftReferral = draftReferralFactory
         .filledFormUpToFurtherInformation([accommodationServiceCategory])
         .build({
+          id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
           interventionId: draftReferral.interventionId,
           serviceProvider: {
@@ -118,7 +121,9 @@ describe('Referral form', () => {
           furtherInformation: 'Some information about Alex',
         })
 
-      const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
+      const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build({
+        id: draftReferral.id,
+      })
 
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
@@ -356,10 +361,33 @@ describe('Referral form', () => {
 
       cy.contains('A danger to the elderly')
 
-      cy.contains('Alex is currently sleeping on her aunt’s sofa')
-      cy.contains('She uses a wheelchair')
-      cy.contains('Yes. Spanish')
-      cy.contains('Yes. She works Mondays 9am - midday')
+      cy.contains('Additional information about Alex’s needs (optional)')
+        .next()
+        .contains('Alex is currently sleeping on her aunt’s sofa')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+
+      cy.contains('Does Alex have any other mobility, disability or accessibility needs? (optional)')
+        .next()
+        .contains('She uses a wheelchair')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+
+      cy.contains('Does Alex need an interpreter?')
+        .next()
+        .contains('Yes. Spanish')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+
+      cy.contains('Does Alex have caring or employment responsibilities?')
+        .next()
+        .contains('Yes. She works Mondays 9am - midday')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
 
       cy.contains('Burglary')
       cy.contains('Theft act, 1968')
