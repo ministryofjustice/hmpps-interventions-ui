@@ -4,6 +4,10 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import CancellationReason from '../../models/cancellationReason'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
+import { createDraftFactory } from '../../../testutils/factories/draft'
+import draftCancellationDataFactory from '../../../testutils/factories/draftCancellationData'
+
+const draftFactory = createDraftFactory(draftCancellationDataFactory.build())
 
 describe(ReferralCancellationReasonPresenter, () => {
   describe('text', () => {
@@ -15,6 +19,7 @@ describe(ReferralCancellationReasonPresenter, () => {
       const cancellationReasons: CancellationReason[] = []
 
       const presenter = new ReferralCancellationReasonPresenter(
+        draftFactory.build({ data: draftCancellationDataFactory.build() }),
         sentReferral,
         intervention,
         serviceUser,
@@ -39,6 +44,7 @@ describe(ReferralCancellationReasonPresenter, () => {
       ]
 
       const presenter = new ReferralCancellationReasonPresenter(
+        draftFactory.build({ data: draftCancellationDataFactory.build() }),
         sentReferral,
         intervention,
         serviceUser,
@@ -61,6 +67,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is an error', () => {
       it('returns a summary of the error', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
@@ -85,6 +92,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is no error', () => {
       it('returns null', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
@@ -105,6 +113,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is an error', () => {
       it('returns the error message', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
@@ -127,6 +136,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is no error', () => {
       it('returns null', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
