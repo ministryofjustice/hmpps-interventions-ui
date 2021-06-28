@@ -29,7 +29,7 @@ class NotifyActionPlanService(
   @Value("\${notify.templates.action-plan-approved}") private val actionPlanApprovedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.action-plan}") private val ppActionPlanLocation: String,
-  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmitActionPlanLocation: String,
+  @Value("\${interventions-ui.locations.service-provider.action-plan}") private val spActionPlanLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ActionPlanEvent>, NotifyService {
@@ -52,7 +52,7 @@ class NotifyActionPlanService(
       }
       ActionPlanEventType.APPROVED -> {
         val recipient = hmppsAuthService.getUserDetail(event.actionPlan.submittedBy!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, spActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
           actionPlanApprovedTemplateID,
           recipient.email,
