@@ -66,6 +66,10 @@ import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessment
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
+import ReportingPresenter from './reportingPresenter'
+import ReportingView from './reportingView'
+import ReportingForm from './reportingForm'
+import ServiceProviderCSVGenerator from '../../utils/serviceProviderCSVGenerator'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -1008,6 +1012,39 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
     const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewReporting(_req: Request, res: Response): Promise<void> {
+    const presenter = new ReportingPresenter()
+    const view = new ReportingView(presenter)
+    ControllerUtils.renderWithLayout(res, view, null)
+  }
+
+  async createReport(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    let userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+
+    const data = await new ReportingForm(req).data()
+
+    if (data.error) {
+      res.status(400)
+      formError = data.error
+      userInputData = req.body
+      const presenter = new ReportingPresenter(formError, userInputData)
+      const view = new ReportingView(presenter)
+      ControllerUtils.renderWithLayout(res, view, null)
+    } else {
+      const reportReferrals = await this.interventionsService.getServiceProviderReportingData(accessToken, data.value)
+
+      const reportCSV = await ServiceProviderCSVGenerator.generate(reportReferrals)
+      const filename = ServiceProviderCSVGenerator.createFilename()
+
+      res.setHeader('Content-disposition', `attachment; filename=${filename}`)
+      res.set('Content-Type', 'text/csv')
+      res.status(200).send(reportCSV)
+    }
   }
 
   private async findSelectedServiceCategories(
