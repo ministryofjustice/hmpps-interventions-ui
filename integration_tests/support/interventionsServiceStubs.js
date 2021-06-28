@@ -145,3 +145,7 @@ Cypress.Commands.add('stubScheduleSupplierAssessmentAppointment', (supplierAsses
 Cypress.Commands.add('stubSubmitAppointmentFeedback', (id, responseJson) => {
   cy.task('stubSubmitAppointmentFeedback', { id, responseJson })
 })
+
+Cypress.Commands.add('stubGetServiceProviderReportingData', responseJson => {
+  cy.task('stubGetServiceProviderReportingData', { responseJson })
+})

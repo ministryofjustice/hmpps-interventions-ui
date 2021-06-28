@@ -14,6 +14,7 @@ import endOfServiceReportFactory from '../../testutils/factories/endOfServiceRep
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import appointmentFactory from '../../testutils/factories/appointment'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
+import CalendarDay from '../utils/calendarDay'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -2910,6 +2911,60 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
   */
+
+  describe('getServiceProviderReportingData', () => {
+    const reportingResponse = [
+      {
+        referralLink: 'https://refer-and-monitor.example/referral/c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
+        referralRef: 'SM1973AC',
+        referralId: 'c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
+        contractId: 'some-contract-id',
+        organisationId: 'XYZ5678',
+        referringOfficerEmail: 'bernard.beaks@justice.gov.uk',
+        caseworkerId: 'liane.supplier@example.com',
+        serviceUserCrn: 'X017844',
+        dateReferralReceived: '2021-06-27T14:49:01+01:00',
+        dateSaaBooked: '2021-06-27T14:49:01+01:00',
+        dateSaaAttended: '2021-06-27T14:49:01+01:00',
+        dateFirstActionPlanSubmitted: '2021-06-27T14:49:01+01:00',
+        dateOfFirstActionPlanApproval: '2021-06-27T14:49:01+01:00',
+        dateOfFirstAttendedSession: '2021-06-27T14:49:01+01:00',
+        outcomesToBeAchievedCount: 8,
+        outcomesAchieved: 5.5,
+        countOfSessionsExpected: 10,
+        countOfSessionsAttended: 6,
+        endRequestedByPPAt: '2021-06-27T14:49:01+01:00',
+        endRequestedByPPReason: 'REC',
+        dateEOSRSubmitted: '2021-06-27T14:49:01+01:00',
+        concludedAt: '2021-06-27T14:49:01+01:00',
+      },
+    ]
+
+    it('returns a list of referrals for with data for reporting', async () => {
+      await provider.addInteraction({
+        state: 'nothing',
+        uponReceiving: 'a GET request for referral reporting data',
+        withRequest: {
+          method: 'GET',
+          path: '/performance-report',
+          query: { fromIncludingDate: '2021-06-01', toIncludingDate: '2021-06-10' },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(reportingResponse),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(
+        await interventionsService.getServiceProviderReportingData(token, {
+          fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
+          toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
+        })
+      ).toMatchObject(reportingResponse)
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {
