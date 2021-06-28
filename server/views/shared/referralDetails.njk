@@ -10,7 +10,8 @@
 
       {% if presenter.canAssignReferral %}
         <h2 class="govuk-heading-m">Who do you want to assign this referral to?</h2>
-        <form method="get" action={{ presenter.assignmentFormAction }}>
+        <form method="post" action={{ presenter.assignmentFormAction }}>
+              <input type="hidden" name="_csrf" value="{{csrfToken}}">
               {{ govukInput(emailInputArgs) }}
               {{ govukButton({ text: "Save and continue" }) }}
         </form>
