@@ -42,4 +42,16 @@ data class ActionPlan(
   override fun toString(): String {
     return "ActionPlan(referralId=${referral.id}, numberOfSessions=$numberOfSessions, activities=$activities, createdBy=$createdBy, createdAt=$createdAt, submittedBy=$submittedBy, submittedAt=$submittedAt, id=$id)"
   }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other !is ActionPlan) {
+      return false
+    }
+
+    return id == other.id
+  }
 }
