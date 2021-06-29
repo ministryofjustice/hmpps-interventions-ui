@@ -31,6 +31,7 @@ class NotifyAppointmentServiceTest {
       actionPlanSessionFactory.createAttended(
         id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
         actionPlan = SampleData.sampleActionPlan(
+          id = UUID.fromString("4907ffb5-94cf-4eff-8cf9-dcf09765be42"),
           referral = SampleData.sampleReferral(
             "X123456",
             "Harmony Living",
@@ -52,7 +53,7 @@ class NotifyAppointmentServiceTest {
       "template",
       "template",
       "http://example.com",
-      "/referral/{id}/progress",
+      "/pp/action-plan/{id}/appointment/sessionNumber/{sessionNumber}/feedback",
       emailSender,
       hmppsAuthService,
     )
@@ -82,7 +83,7 @@ class NotifyAppointmentServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
     Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/progress")
+    Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/pp/action-plan/4907ffb5-94cf-4eff-8cf9-dcf09765be42/appointment/sessionNumber/1/feedback")
   }
 
   @Test
@@ -109,6 +110,6 @@ class NotifyAppointmentServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
     Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/progress")
+    Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/pp/action-plan/4907ffb5-94cf-4eff-8cf9-dcf09765be42/appointment/sessionNumber/1/feedback")
   }
 }

@@ -58,7 +58,8 @@ class NotifyActionPlanServiceTest {
       "template",
       "template",
       "http://example.com",
-      "/referrals/{id}",
+      "/pp/referrals/{id}/action-plan",
+      "/sp/referrals/{id}/action-plan",
       emailSender,
       hmppsAuthService,
     )
@@ -94,7 +95,7 @@ class NotifyActionPlanServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("tom@tom.tom"), personalisationCaptor.capture())
     assertThat(personalisationCaptor.firstValue["submitterFirstName"]).isEqualTo("tom")
     assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo(actionPlan.referral.referenceNumber)
-    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/referrals/${actionPlan.referral.id}")
+    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/sp/referrals/${actionPlan.referral.id}/action-plan")
   }
 
   @Test
@@ -113,6 +114,6 @@ class NotifyActionPlanServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("tom@tom.tom"), personalisationCaptor.capture())
     assertThat(personalisationCaptor.firstValue["submitterFirstName"]).isEqualTo("tom")
     assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/referrals/${actionPlanSubmittedEvent.actionPlan.referral.id}")
+    assertThat(personalisationCaptor.firstValue["actionPlanUrl"]).isEqualTo("http://example.com/pp/referrals/${actionPlanSubmittedEvent.actionPlan.referral.id}/action-plan")
   }
 }

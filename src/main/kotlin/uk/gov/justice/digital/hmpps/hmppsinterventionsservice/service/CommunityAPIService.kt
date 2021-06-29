@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType.SESSION_FEEDBACK_RECORDED
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -30,10 +29,8 @@ interface CommunityAPIService {
 @Service
 class CommunityAPIReferralEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.sent-referral}") private val interventionsUISentReferralLocation: String,
-  @Value("\${interventions-ui.probation-links.cancelled-referral}") private val interventionsUICancelledReferralLocation: String,
-  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
-  @Value("\${community-api.locations.sent-referral}") private val communityAPISentReferralLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.referral-details}") private val ppReferralDetailsLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.end-of-service-report}") private val ppEndOfServiceReportLocation: String,
   @Value("\${community-api.locations.ended-referral}") private val communityAPIEndedReferralLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
@@ -52,7 +49,7 @@ class CommunityAPIReferralEventService(
       ReferralEventType.CANCELLED,
       -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUICancelledReferralLocation)
+          .path(ppReferralDetailsLocation)
           .buildAndExpand(event.referral.id)
           .toString()
 
@@ -69,7 +66,7 @@ class CommunityAPIReferralEventService(
         postNotificationRequest(event.referral.endOfServiceReport)
 
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUIEndOfServiceReportLocation)
+          .path(ppEndOfServiceReportLocation)
           .buildAndExpand(event.referral.endOfServiceReport!!.id)
           .toString()
 
@@ -104,7 +101,7 @@ class CommunityAPIReferralEventService(
     }
 
     val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-      .path(interventionsUIEndOfServiceReportLocation)
+      .path(ppEndOfServiceReportLocation)
       .buildAndExpand(endOfServiceReport!!.id)
       .toString()
 
@@ -132,27 +129,9 @@ class CommunityAPIReferralEventService(
 }
 
 @Service
-class CommunityAPIEndOfServiceReportEventService(
-  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUIEndOfServiceReportLocation: String,
-  @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
-  @Value("\${community-api.integration-context}") private val integrationContext: String,
-  private val communityAPIClient: CommunityAPIClient,
-) : ApplicationListener<EndOfServiceReportEvent>, CommunityAPIService {
-  companion object : KLogging()
-
-  override fun onApplicationEvent(event: EndOfServiceReportEvent) {
-    // Moved to referral end notification as there is a race condition arising between
-    // them. Should the referral be updated as completed before EoSR is notified,
-    // community-api will reject it saying NSI does not exist.
-  }
-}
-
-@Service
 class CommunityAPIActionPlanEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUISubmittedActionPlanLocation: String,
-  @Value("\${interventions-ui.probation-links.action-plan}") private val interventionsUIApprovedActionPlanLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.action-plan}") private val ppActionPlanLocation: String,
   @Value("\${community-api.locations.notification-request}") private val communityAPINotificationLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -163,7 +142,7 @@ class CommunityAPIActionPlanEventService(
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUISubmittedActionPlanLocation)
+          .path(ppActionPlanLocation)
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
@@ -171,7 +150,7 @@ class CommunityAPIActionPlanEventService(
       }
       ActionPlanEventType.APPROVED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUIApprovedActionPlanLocation)
+          .path(ppActionPlanLocation)
           .buildAndExpand(event.actionPlan.referral.id)
           .toString()
 
@@ -202,7 +181,7 @@ class CommunityAPIActionPlanEventService(
 @Service
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.session-feedback}") private val interventionsUISessionFeedbackLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -213,7 +192,7 @@ class CommunityAPIAppointmentEventService(
     when (event.type) {
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-          .path(interventionsUISessionFeedbackLocation)
+          .path(ppSessionFeedbackLocation)
           .buildAndExpand(event.actionPlanSession.actionPlan.id, event.actionPlanSession.sessionNumber)
           .toString()
 

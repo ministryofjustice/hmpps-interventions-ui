@@ -84,23 +84,18 @@ notify:
     end-of-service-report-submitted: "f79cb53f-dc5c-42aa-947e-f599f9ad7942"
 
 interventions-ui:
-  # Service Provider Links
   locations:
-    sent-referral: "/service-provider/referrals/{id}/details"
-    cancelled-referral: "/service-provider/referrals/{id}/details"
-    submit-action-plan: "/service-provider/referrals/{id}/progress" # fixme
-    appointment-not-attended: "/service-provider/referrals/{id}/progress" # fixme
-  probation-links:
-    sent-referral: "/probation-practitioner/referrals/{id}/details"
-    cancelled-referral: "/probation-practitioner/referrals/{id}/details"
-    action-plan: "/probation-practitioner/referrals/{id}/progress"
-    pp-referral-progress: "/probation-practitioner/referrals/{id}/progress"
-    submit-end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
-    session-feedback: "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback"
-  probation-appointment-links: "{
-    SERVICE_DELIVERY:'/probation-practitioner/referrals/{id}/progress',
-    SUPPLIER_ASSESSMENT:'/probation-practitioner/referrals/{id}/supplier-assessment'
-    }"
+    service-provider:
+      referral-details: "/service-provider/referrals/{id}/details"
+      intervention-progress: "/service-provider/referrals/{id}/progress"
+      action-plan: "/service-provider/referrals/{id}/action-plan"
+    probation-practitioner:
+      referral-details: "/probation-practitioner/referrals/{id}/details"
+      intervention-progress: "/probation-practitioner/referrals/{id}/progress"
+      supplier-assessment: "/probation-practitioner/referrals/{id}/supplier-assessment"
+      action-plan: "/probation-practitioner/referrals/{id}/action-plan"
+      session-feedback: "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback"
+      end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
 
 community-api:
   locations:

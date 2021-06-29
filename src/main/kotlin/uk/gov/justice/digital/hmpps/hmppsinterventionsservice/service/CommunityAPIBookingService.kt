@@ -19,7 +19,8 @@ import javax.validation.constraints.NotNull
 class CommunityAPIBookingService(
   @Value("\${community-api.appointments.bookings.enabled}") private val bookingsEnabled: Boolean,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("#{\${interventions-ui.probation-appointment-links}}") private val interventionsUIViewAppointmentLinks: Map<AppointmentType, String>,
+  @Value("\${interventions-ui.locations.probation-practitioner.intervention-progress}") private val ppInterventionProgressLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment}") private val ppSupplierAssessmentLocation: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
   @Value("\${community-api.locations.reschedule-appointment}") private val communityApiRescheduleAppointmentLocation: String,
   @Value("\${community-api.appointments.office-location}") private val officeLocation: String,
@@ -88,8 +89,13 @@ class CommunityAPIBookingService(
   }
 
   private fun buildReferralResourceUrl(referral: Referral, appointmentType: AppointmentType): String {
+    val location = when (appointmentType) {
+      AppointmentType.SERVICE_DELIVERY -> ppInterventionProgressLocation
+      AppointmentType.SUPPLIER_ASSESSMENT -> ppSupplierAssessmentLocation
+    }
+
     return UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
-      .path(get(appointmentType, interventionsUIViewAppointmentLinks))
+      .path(location)
       .buildAndExpand(referral.id)
       .toString()
   }

@@ -27,8 +27,7 @@ class CommunityAPIActionPlanEventServiceTest {
 
   val communityAPIService = CommunityAPIActionPlanEventService(
     "http://testUrl",
-    "/probation-practitioner/submit-action-plan/{id}",
-    "/probation-practitioner/approved-action-plan/{id}",
+    "/probation-practitioner/referral/{id}/action-plan",
     "/secure/offenders/crn/{crn}/sentence/{sentenceId}/notifications/context/{contextName}",
     "commissioned-rehabilitation-services",
     communityAPIClient
@@ -48,7 +47,7 @@ class CommunityAPIActionPlanEventServiceTest {
         event.actionPlan.referral.id,
         submittedAtDefault,
         "Action Plan Submitted for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
-          "http://testUrl/probation-practitioner/submit-action-plan/${event.actionPlan.referral.id}",
+          "http://testUrl/probation-practitioner/referral/${event.actionPlan.referral.id}/action-plan",
       )
     )
   }
@@ -67,7 +66,7 @@ class CommunityAPIActionPlanEventServiceTest {
         event.actionPlan.referral.id,
         approvedAtDefault,
         "Action Plan Approved for Accommodation Referral XX1234 with Prime Provider Harmony Living\n" +
-          "http://testUrl/probation-practitioner/approved-action-plan/${event.actionPlan.referral.id}",
+          "http://testUrl/probation-practitioner/referral/${event.actionPlan.referral.id}/action-plan",
       )
     )
   }

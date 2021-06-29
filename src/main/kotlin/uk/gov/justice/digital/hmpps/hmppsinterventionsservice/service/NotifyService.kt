@@ -15,11 +15,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import java.net.URI
-import java.util.UUID
 
 interface NotifyService {
-  fun generateResourceUrl(baseURL: String, path: String, id: UUID): URI {
-    return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(id).toUri()
+  fun generateResourceUrl(baseURL: String, path: String, vararg args: Any): URI {
+    return UriComponentsBuilder.fromHttpUrl(baseURL).path(path).buildAndExpand(*args).toUri()
   }
 }
 
@@ -28,7 +27,8 @@ class NotifyActionPlanService(
   @Value("\${notify.templates.action-plan-submitted}") private val actionPlanSubmittedTemplateID: String,
   @Value("\${notify.templates.action-plan-approved}") private val actionPlanApprovedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.submit-action-plan}") private val interventionsUISubmitActionPlanLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.action-plan}") private val ppActionPlanLocation: String,
+  @Value("\${interventions-ui.locations.service-provider.action-plan}") private val spActionPlanLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ActionPlanEvent>, NotifyService {
@@ -38,7 +38,7 @@ class NotifyActionPlanService(
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
         val recipient = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, ppActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
           actionPlanSubmittedTemplateID,
           recipient.email,
@@ -51,7 +51,7 @@ class NotifyActionPlanService(
       }
       ActionPlanEventType.APPROVED -> {
         val recipient = hmppsAuthService.getUserDetail(event.actionPlan.submittedBy!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitActionPlanLocation, event.actionPlan.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, spActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
           actionPlanApprovedTemplateID,
           recipient.email,
@@ -70,7 +70,7 @@ class NotifyActionPlanService(
 class NotifyEndOfServiceReportService(
   @Value("\${notify.templates.end-of-service-report-submitted}") private val endOfServiceReportSubmittedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.submit-end-of-service-report}") private val interventionsUISubmitEndOfServiceReportLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.end-of-service-report}") private val ppEndOfServiceReportLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<EndOfServiceReportEvent>, NotifyService {
@@ -80,7 +80,7 @@ class NotifyEndOfServiceReportService(
     when (event.type) {
       EndOfServiceReportEventType.SUBMITTED -> {
         val userDetail = hmppsAuthService.getUserDetail(event.endOfServiceReport.referral.getResponsibleProbationPractitioner())
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISubmitEndOfServiceReportLocation, event.endOfServiceReport.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, ppEndOfServiceReportLocation, event.endOfServiceReport.id)
         emailSender.sendEmail(
           endOfServiceReportSubmittedTemplateID,
           userDetail.email,
@@ -100,7 +100,7 @@ class NotifyAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.pp-referral-progress}") private val interventionsUiPPReferralProgressLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<AppointmentEvent>, NotifyService {
@@ -111,8 +111,9 @@ class NotifyAppointmentService(
       val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
       val location = generateResourceUrl(
         interventionsUIBaseURL,
-        interventionsUiPPReferralProgressLocation,
-        referral.id,
+        ppSessionFeedbackLocation,
+        event.actionPlanSession.actionPlan.id,
+        event.actionPlanSession.sessionNumber,
       )
 
       when (event.type) {
@@ -148,7 +149,7 @@ class NotifyReferralService(
   @Value("\${notify.templates.referral-sent}") private val referralSentTemplateID: String,
   @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
+  @Value("\${interventions-ui.locations.service-provider.referral-details}") private val spReferralDetailsLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ReferralEvent>, NotifyService {
@@ -157,7 +158,7 @@ class NotifyReferralService(
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, spReferralDetailsLocation, event.referral.id)
         val intervention = event.referral.intervention
         val serviceProvider = intervention.dynamicFrameworkContract.primeProvider
         emailSender.sendEmail(
@@ -173,7 +174,7 @@ class NotifyReferralService(
 
       ReferralEventType.ASSIGNED -> {
         val userDetails = hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, spReferralDetailsLocation, event.referral.id)
         emailSender.sendEmail(
           referralAssignedTemplateID,
           userDetails.email,
