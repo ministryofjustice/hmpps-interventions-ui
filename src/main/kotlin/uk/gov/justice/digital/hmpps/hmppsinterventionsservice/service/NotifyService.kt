@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import java.net.URI
-import java.util.UUID
 
 interface NotifyService {
   fun generateResourceUrl(baseURL: String, path: String, vararg args: Any): URI {
