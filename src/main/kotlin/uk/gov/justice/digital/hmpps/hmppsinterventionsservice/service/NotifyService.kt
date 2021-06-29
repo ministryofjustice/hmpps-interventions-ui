@@ -151,6 +151,7 @@ class NotifyReferralService(
   @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
+  @Value("\${interventions-ui.locations.service-provider.referral-details}") private val spReferralDetailsLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<ReferralEvent>, NotifyService {
@@ -159,7 +160,7 @@ class NotifyReferralService(
   override fun onApplicationEvent(event: ReferralEvent) {
     when (event.type) {
       ReferralEventType.SENT -> {
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, spReferralDetailsLocation, event.referral.id)
         val intervention = event.referral.intervention
         val serviceProvider = intervention.dynamicFrameworkContract.primeProvider
         emailSender.sendEmail(
