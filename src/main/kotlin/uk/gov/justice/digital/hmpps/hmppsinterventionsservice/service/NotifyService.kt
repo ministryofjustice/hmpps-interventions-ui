@@ -101,7 +101,7 @@ class NotifyAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.probation-links.pp-referral-progress}") private val interventionsUiPPReferralProgressLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<AppointmentEvent>, NotifyService {
@@ -112,8 +112,9 @@ class NotifyAppointmentService(
       val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
       val location = generateResourceUrl(
         interventionsUIBaseURL,
-        interventionsUiPPReferralProgressLocation,
-        referral.id,
+        ppSessionFeedbackLocation,
+        event.actionPlanSession.actionPlan.id,
+        event.actionPlanSession.sessionNumber,
       )
 
       when (event.type) {
