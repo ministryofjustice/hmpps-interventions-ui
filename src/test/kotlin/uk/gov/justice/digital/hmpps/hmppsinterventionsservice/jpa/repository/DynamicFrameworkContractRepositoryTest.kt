@@ -32,6 +32,9 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
     endOfServiceReportRepository.deleteAll()
     appointmentRepository.deleteAll()
     supplierAssessmentRepository.deleteAll()
+
+    entityManager.flush()
+
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
     authUserRepository.deleteAll()

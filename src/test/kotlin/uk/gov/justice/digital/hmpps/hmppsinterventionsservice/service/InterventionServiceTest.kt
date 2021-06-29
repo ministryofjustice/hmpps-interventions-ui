@@ -47,6 +47,9 @@ class InterventionServiceTest @Autowired constructor(
     actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
+
+    entityManager.flush()
+
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
     authUserRepository.deleteAll()
