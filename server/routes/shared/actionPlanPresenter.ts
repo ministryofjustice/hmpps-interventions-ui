@@ -79,4 +79,9 @@ export default class ActionPlanPresenter {
   get showEditButton(): boolean {
     return this.userType === 'service-provider' && this.actionPlanUnderReview
   }
+
+  get probationPractitionerBlockedFromViewing(): boolean {
+    // probation practitioners can only view submitted action plans
+    return this.userType === 'probation-practitioner' && !this.actionPlanSubmitted
+  }
 }
