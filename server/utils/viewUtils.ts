@@ -54,6 +54,19 @@ export default class ViewUtils {
             }
             return { text: item.lines[0] || '' }
           })(),
+          actions: (() => {
+            if (item.changeLink) {
+              return {
+                items: [
+                  {
+                    href: item.changeLink,
+                    text: 'Change',
+                  },
+                ],
+              }
+            }
+            return null
+          })(),
         }
       }),
     }

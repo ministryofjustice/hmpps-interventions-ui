@@ -28,10 +28,11 @@ export default class CheckAnswersPresenter {
     }
   }
 
-  get riskSection(): { title: string; text: string } {
+  get riskSection(): { title: string; text: string; changeLink: string } {
     return {
       title: `${this.serviceUserName}’s risk information`,
       text: this.referral.additionalRiskInformation ?? '',
+      changeLink: `/referrals/${this.referral.id}/risk-information`,
     }
   }
 
@@ -44,10 +45,12 @@ export default class CheckAnswersPresenter {
         {
           key: needsAndRequirementsPresenter.text.additionalNeedsInformation.label,
           lines: [needsAndRequirementsPresenter.fields.additionalNeedsInformation],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.accessibilityNeeds.label,
           lines: [needsAndRequirementsPresenter.fields.accessibilityNeeds],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.needsInterpreter.label,
@@ -57,6 +60,7 @@ export default class CheckAnswersPresenter {
               needsAndRequirementsPresenter.fields.interpreterLanguage
             ),
           ],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.hasAdditionalResponsibilities.label,
@@ -66,6 +70,7 @@ export default class CheckAnswersPresenter {
               needsAndRequirementsPresenter.fields.whenUnavailable
             ),
           ],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
       ],
     }
@@ -102,11 +107,13 @@ export default class CheckAnswersPresenter {
           {
             key: 'Complexity level',
             lines: [checkedComplexityOption?.title ?? '', '', checkedComplexityOption?.hint ?? ''],
+            changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/complexity-level`,
           },
           {
             key: 'Desired outcomes',
             lines: checkedDesiredOutcomesOptions.map(option => option.text),
             listStyle: ListStyle.bulleted,
+            changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
           },
         ],
       }
@@ -127,6 +134,7 @@ export default class CheckAnswersPresenter {
         key: 'Selected service categories',
         lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
         listStyle: ListStyle.noMarkers,
+        changeLink: `/referrals/${this.referral.id}/service-categories`,
       },
     ]
   }
@@ -138,14 +146,17 @@ export default class CheckAnswersPresenter {
       {
         key: 'Sentence',
         lines: [presenter.category],
+        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
       },
       {
         key: 'Subcategory',
         lines: [presenter.subcategory],
+        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
       },
       {
         key: 'End of sentence date',
         lines: [presenter.endOfSentenceDate],
+        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
       },
     ]
   }
@@ -159,7 +170,13 @@ export default class CheckAnswersPresenter {
 
     return {
       title: `${this.intervention.contractType.name} completion date`,
-      summary: [{ key: 'Date', lines: [PresenterUtils.govukFormattedDate(completionDeadline)] }],
+      summary: [
+        {
+          key: 'Date',
+          lines: [PresenterUtils.govukFormattedDate(completionDeadline)],
+          changeLink: `/referrals/${this.referral.id}/completion-deadline`,
+        },
+      ],
     }
   }
 
@@ -168,6 +185,7 @@ export default class CheckAnswersPresenter {
       {
         key: 'Maximum number of enforceable days',
         lines: [this.referral.maximumEnforceableDays ? this.referral.maximumEnforceableDays.toString() : ''],
+        changeLink: `/referrals/${this.referral.id}/enforceable-days`,
       },
     ]
   }
@@ -177,6 +195,7 @@ export default class CheckAnswersPresenter {
       {
         key: 'Further information for the provider',
         lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
+        changeLink: `/referrals/${this.referral.id}/further-information`,
       },
     ]
   }

@@ -7,4 +7,5 @@ export interface SummaryListItem {
   key: string
   lines: string[]
   listStyle?: ListStyle
+  changeLink?: string
 }

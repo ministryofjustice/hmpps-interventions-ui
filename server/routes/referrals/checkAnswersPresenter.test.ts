@@ -100,24 +100,22 @@ describe(CheckAnswersPresenter, () => {
   })
 
   describe('riskSection', () => {
-    const referral = parameterisedDraftReferralFactory.build({ additionalRiskInformation: 'Past assault of strangers' })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      additionalRiskInformation: 'Past assault of strangers',
+    })
     const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
       deliusServiceUser
     )
-
-    describe('title', () => {
-      it('returns the section title', () => {
-        expect(presenter.riskSection.title).toEqual('Alex’s risk information')
-      })
-    })
-
-    describe('text', () => {
-      it('returns the additional risk information', () => {
-        expect(presenter.riskSection.text).toEqual('Past assault of strangers')
-      })
+    it('returns the risk information section values', () => {
+      expect(presenter.riskSection.title).toEqual('Alex’s risk information')
+      expect(presenter.riskSection.text).toEqual('Past assault of strangers')
+      expect(presenter.riskSection.changeLink).toEqual(
+        `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/risk-information`
+      )
     })
   })
 
@@ -139,6 +137,7 @@ describe(CheckAnswersPresenter, () => {
     describe('summary', () => {
       describe('additional needs information', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           additionalNeedsInformation: 'Some additional needs information',
         })
         const presenter = new CheckAnswersPresenter(
@@ -152,12 +151,14 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[0]).toEqual({
             key: 'Additional information about Alex’s needs (optional)',
             lines: ['Some additional needs information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
       })
 
       describe('accessibility needs', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           accessibilityNeeds: 'Some accessibility needs information',
         })
         const presenter = new CheckAnswersPresenter(
@@ -171,6 +172,7 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[1]).toEqual({
             key: 'Does Alex have any other mobility, disability or accessibility needs? (optional)',
             lines: ['Some accessibility needs information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
       })
@@ -178,6 +180,7 @@ describe(CheckAnswersPresenter, () => {
       describe('needs interpreter', () => {
         it('includes the answer', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: false,
           })
           const presenter = new CheckAnswersPresenter(
@@ -190,11 +193,13 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
             key: 'Does Alex need an interpreter?',
             lines: ['No'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
 
         describe('when an interpreter is needed', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
@@ -209,6 +214,7 @@ describe(CheckAnswersPresenter, () => {
             expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
               key: 'Does Alex need an interpreter?',
               lines: ['Yes. Spanish'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
           })
         })
@@ -217,6 +223,7 @@ describe(CheckAnswersPresenter, () => {
       describe('has additional responsibilities', () => {
         it('includes the answer', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: false,
           })
           const presenter = new CheckAnswersPresenter(
@@ -229,11 +236,13 @@ describe(CheckAnswersPresenter, () => {
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
             key: 'Does Alex have caring or employment responsibilities?',
             lines: ['No'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
         })
 
         describe('when they have additional responsibilities', () => {
           const referral = parameterisedDraftReferralFactory.build({
+            id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
@@ -248,6 +257,7 @@ describe(CheckAnswersPresenter, () => {
             expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
               key: 'Does Alex have caring or employment responsibilities?',
               lines: ['Yes. Alex can’t attend on Fridays'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
           })
         })
@@ -257,6 +267,7 @@ describe(CheckAnswersPresenter, () => {
 
   describe('referralDetailsSections', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({
+      id: '428ee70f-3001-4399-95a6-ad25eaaede16',
       name: 'Accommodation',
       complexityLevels: [
         { id: '1', title: 'Low complexity', description: 'Low complexity accommodation description' },
@@ -278,6 +289,7 @@ describe(CheckAnswersPresenter, () => {
       ],
     })
     const eteServiceCategory = serviceCategoryFactory.build({
+      id: 'ca374ac3-84eb-4b91-bea7-9005398f426f',
       name: 'Education, training and employment',
       complexityLevels: [
         { id: '3', title: 'Low complexity', description: 'Low complexity ETE description' },
@@ -285,6 +297,7 @@ describe(CheckAnswersPresenter, () => {
       ],
     })
     const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
       complexityLevels: [
         { serviceCategoryId: accommodationServiceCategory.id, complexityLevelId: '1' },
@@ -317,6 +330,8 @@ describe(CheckAnswersPresenter, () => {
           expect(item).toEqual({
             key: 'Complexity level',
             lines: ['Low complexity', '', 'Low complexity accommodation description'],
+            changeLink:
+              '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level',
           })
         })
       })
@@ -329,6 +344,8 @@ describe(CheckAnswersPresenter, () => {
             key: 'Desired outcomes',
             lines: ['Accommodation desired outcome example 1', 'Accommodation desired outcome example 3'],
             listStyle: ListStyle.bulleted,
+            changeLink:
+              '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes',
           })
         })
       })
@@ -366,6 +383,7 @@ describe(CheckAnswersPresenter, () => {
 
       describe('with a single service category chosen in the referral', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
@@ -376,6 +394,7 @@ describe(CheckAnswersPresenter, () => {
               key: 'Selected service categories',
               lines: ['Accommodation'],
               listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
             },
           ])
         })
@@ -383,6 +402,7 @@ describe(CheckAnswersPresenter, () => {
 
       describe('with multiple service categories chosen in the referral', () => {
         const referral = parameterisedDraftReferralFactory.build({
+          id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
         })
 
@@ -393,6 +413,7 @@ describe(CheckAnswersPresenter, () => {
               key: 'Selected service categories',
               lines: ['Accommodation', 'Education, training and employment'],
               listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
             },
           ])
         })
@@ -401,7 +422,7 @@ describe(CheckAnswersPresenter, () => {
   })
 
   describe('sentenceInformationSummary', () => {
-    const referral = parameterisedDraftReferralFactory.build()
+    const referral = parameterisedDraftReferralFactory.build({ id: '03e9e6cd-a45f-4dfc-adad-06301349042e' })
     const intervention = interventionFactory.build()
     const assaultConviction = deliusConvictionFactory.build({
       offences: [
@@ -424,14 +445,17 @@ describe(CheckAnswersPresenter, () => {
         {
           key: 'Sentence',
           lines: ['Common and other types of assault'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
         },
         {
           key: 'Subcategory',
           lines: ['Common assault and battery'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
         },
         {
           key: 'End of sentence date',
           lines: ['15 September 2025'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
         },
       ])
     })
@@ -439,7 +463,10 @@ describe(CheckAnswersPresenter, () => {
 
   describe('completionDeadlineSection', () => {
     const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
-    const referral = parameterisedDraftReferralFactory.build({ completionDeadline: '2021-10-24' })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      completionDeadline: '2021-10-24',
+    })
     const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
 
     describe('title', () => {
@@ -454,6 +481,7 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Date',
             lines: ['24 October 2021'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
           },
         ])
       })
@@ -461,7 +489,10 @@ describe(CheckAnswersPresenter, () => {
   })
 
   describe('enforceableDaysSummary', () => {
-    const referral = parameterisedDraftReferralFactory.build({ maximumEnforceableDays: 15 })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      maximumEnforceableDays: 15,
+    })
 
     it('states the maximum number of enforceable days to use', () => {
       const presenter = new CheckAnswersPresenter(
@@ -475,6 +506,7 @@ describe(CheckAnswersPresenter, () => {
         {
           key: 'Maximum number of enforceable days',
           lines: ['15'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
         },
       ])
     })
@@ -482,7 +514,10 @@ describe(CheckAnswersPresenter, () => {
 
   describe('furtherInformationSummary', () => {
     describe('when the referral’s further information is not empty', () => {
-      const referral = parameterisedDraftReferralFactory.build({ furtherInformation: 'Some further information' })
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: 'Some further information',
+      })
 
       it('contains the referral’s further information', () => {
         const presenter = new CheckAnswersPresenter(
@@ -496,13 +531,17 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Further information for the provider',
             lines: ['Some further information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
           },
         ])
       })
     })
 
     describe('when the referral’s further information is empty', () => {
-      const referral = parameterisedDraftReferralFactory.build({ furtherInformation: '' })
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: '',
+      })
 
       it('states that there is no further information', () => {
         const presenter = new CheckAnswersPresenter(
@@ -516,6 +555,7 @@ describe(CheckAnswersPresenter, () => {
           {
             key: 'Further information for the provider',
             lines: ['None'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
           },
         ])
       })
