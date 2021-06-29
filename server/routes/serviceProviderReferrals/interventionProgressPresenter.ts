@@ -6,7 +6,7 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
-import ActionPlanPresenter from '../shared/actionPlanPresenter'
+import ActionPlanPresenter from '../shared/action-plan/actionPlanPresenter'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 
