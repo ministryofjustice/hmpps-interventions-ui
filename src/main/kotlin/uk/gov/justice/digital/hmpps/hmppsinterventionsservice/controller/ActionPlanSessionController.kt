@@ -69,21 +69,36 @@ class ActionPlanSessionController(
     @PathVariable(name = "id") actionPlanId: UUID,
     @PathVariable sessionNumber: Int,
     @RequestBody update: UpdateAppointmentAttendanceDTO,
+    authentication: JwtAuthenticationToken,
   ): ActionPlanSessionDTO {
+    val user = userMapper.fromToken(authentication)
     val updatedSession = actionPlanSessionsService.recordAppointmentAttendance(
-      actionPlanId, sessionNumber, update.attended, update.additionalAttendanceInformation
+      user, actionPlanId, sessionNumber, update.attended, update.additionalAttendanceInformation
     )
 
     return ActionPlanSessionDTO.from(updatedSession)
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/record-behaviour")
-  fun recordBehaviour(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int, @RequestBody recordBehaviourDTO: RecordAppointmentBehaviourDTO): ActionPlanSessionDTO {
-    return ActionPlanSessionDTO.from(actionPlanSessionsService.recordBehaviour(actionPlanId, sessionNumber, recordBehaviourDTO.behaviourDescription, recordBehaviourDTO.notifyProbationPractitioner))
+  fun recordBehaviour(
+    @PathVariable actionPlanId: UUID,
+    @PathVariable sessionNumber: Int,
+    @RequestBody recordBehaviourDTO: RecordAppointmentBehaviourDTO,
+    authentication: JwtAuthenticationToken
+  ): ActionPlanSessionDTO {
+    val user = userMapper.fromToken(authentication)
+    val updatedSession = actionPlanSessionsService.recordBehaviour(
+      user, actionPlanId, sessionNumber, recordBehaviourDTO.behaviourDescription, recordBehaviourDTO.notifyProbationPractitioner
+    )
+    return ActionPlanSessionDTO.from(updatedSession)
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/submit")
-  fun submitSessionFeedback(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int, authentication: JwtAuthenticationToken): ActionPlanSessionDTO {
+  fun submitSessionFeedback(
+    @PathVariable actionPlanId: UUID,
+    @PathVariable sessionNumber: Int,
+    authentication: JwtAuthenticationToken,
+  ): ActionPlanSessionDTO {
     val user = userMapper.fromToken(authentication)
     return ActionPlanSessionDTO.from(actionPlanSessionsService.submitSessionFeedback(actionPlanId, sessionNumber, user))
   }
