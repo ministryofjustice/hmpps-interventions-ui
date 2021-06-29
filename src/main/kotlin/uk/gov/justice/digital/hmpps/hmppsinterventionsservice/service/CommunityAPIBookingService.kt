@@ -89,7 +89,7 @@ class CommunityAPIBookingService(
   }
 
   private fun buildReferralResourceUrl(referral: Referral, appointmentType: AppointmentType): String {
-    val location = when(appointmentType) {
+    val location = when (appointmentType) {
       AppointmentType.SERVICE_DELIVERY -> ppInterventionProgressLocation
       AppointmentType.SUPPLIER_ASSESSMENT -> ppSupplierAssessmentLocation
     }

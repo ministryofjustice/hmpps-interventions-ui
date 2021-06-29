@@ -25,10 +25,8 @@ class CommunityAPIReferralEventServiceTest {
 
   private val communityAPIService = CommunityAPIReferralEventService(
     "http://testUrl",
-    "/referral/sent/{id}",
-    "/referral/progress/{id}",
-    "/referral/end-of-service-report/{id}",
-    "secure/offenders/crn/{crn}/referral/start/context/{contextName}",
+    "/pp/referral/{id}",
+    "/pp/referral/{id}/end-of-service-report",
     "secure/offenders/crn/{crn}/referral/end/context/{contextName}",
     "secure/offenders/crn/{crn}/sentence/{sentenceId}/notifications/context/{contextName}",
     "commissioned-rehabilitation-services",
@@ -60,7 +58,7 @@ class CommunityAPIReferralEventServiceTest {
         event.referral.id,
         "CANCELLED",
         "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
-          "http://testUrl/referral/progress/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
+          "http://testUrl/pp/referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
       )
     )
   }
@@ -81,7 +79,7 @@ class CommunityAPIReferralEventServiceTest {
         event.referral.id,
         submittedAtDefault,
         "End of Service Report Submitted for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
-          "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
+          "http://testUrl/pp/referral/120b1a45-8ac7-4920-b05b-acecccf4734b/end-of-service-report",
       )
     )
 
@@ -95,7 +93,7 @@ class CommunityAPIReferralEventServiceTest {
         event.referral.id,
         "PREMATURELY_ENDED",
         "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
-          "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
+          "http://testUrl/pp/referral/120b1a45-8ac7-4920-b05b-acecccf4734b/end-of-service-report",
       )
     )
   }
@@ -123,7 +121,7 @@ class CommunityAPIReferralEventServiceTest {
         event.referral.id,
         submittedAtDefault,
         "End of Service Report Submitted for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
-          "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
+          "http://testUrl/pp/referral/120b1a45-8ac7-4920-b05b-acecccf4734b/end-of-service-report",
       )
     )
 
@@ -137,7 +135,7 @@ class CommunityAPIReferralEventServiceTest {
         event.referral.id,
         "COMPLETED",
         "Referral Ended for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
-          "http://testUrl/referral/end-of-service-report/120b1a45-8ac7-4920-b05b-acecccf4734b",
+          "http://testUrl/pp/referral/120b1a45-8ac7-4920-b05b-acecccf4734b/end-of-service-report",
       )
     )
   }

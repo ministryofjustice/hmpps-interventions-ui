@@ -35,7 +35,8 @@ internal class CommunityAPIBookingServiceTest {
   )
 
   private val httpBaseUrl = "http://url"
-  private val viewUrl = "/view/{referralId}"
+  private val progressUrl = "/pp/{referralId}/progress"
+  private val supplierAssessmentUrl = "/pp/{referralId}/supplier-assessment"
   private val bookingApiUrl = "/appt/{CRN}/{sentenceId}/{contextName}"
   private val rescheduleApiUrl = "/appt/{CRN}/{sentenceId}/{contextName}/reschedule"
   private val crsOfficeLocation = "CRSEXTL"
@@ -46,7 +47,8 @@ internal class CommunityAPIBookingServiceTest {
   private val communityAPIBookingService = CommunityAPIBookingService(
     true,
     httpBaseUrl,
-    mapOf(AppointmentType.SERVICE_DELIVERY to viewUrl),
+    progressUrl,
+    supplierAssessmentUrl,
     bookingApiUrl,
     rescheduleApiUrl,
     crsOfficeLocation,
@@ -62,7 +64,7 @@ internal class CommunityAPIBookingServiceTest {
 
     val uri = "/appt/X1/123/CRS"
     val notes = "Service Delivery Appointment for Accommodation Referral XX123456 with Prime Provider SPN\n" +
-      "http://url/view/${referral.id}"
+      "http://url/pp/${referral.id}/progress"
     val request = AppointmentCreateRequestDTO(
       "ACC",
       referral.sentAt!!,
@@ -129,7 +131,8 @@ internal class CommunityAPIBookingServiceTest {
     val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(
       false,
       httpBaseUrl,
-      mapOf(),
+      progressUrl,
+      supplierAssessmentUrl,
       bookingApiUrl,
       rescheduleApiUrl,
       crsOfficeLocation,
@@ -152,7 +155,8 @@ internal class CommunityAPIBookingServiceTest {
     val communityAPIBookingServiceNotEnabled = CommunityAPIBookingService(
       false,
       httpBaseUrl,
-      mapOf(),
+      progressUrl,
+      supplierAssessmentUrl,
       bookingApiUrl,
       rescheduleApiUrl,
       crsOfficeLocation,
