@@ -98,8 +98,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
 
     requestFactory.create(request, token, referral1.id.toString())
       .exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+      .expectStatus()
+      .is2xxSuccessful
 
     requestFactory.create(request, token, referral2.id.toString())
       .exchange()
@@ -124,8 +124,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
 
     requestFactory.create(Request.CreateDraftReferral, token, body = CreateReferralRequestDTO("X1233456", intervention.id))
       .exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+      .expectStatus()
+      .is2xxSuccessful
 
     requestFactory.create(Request.CreateDraftReferral, token, body = CreateReferralRequestDTO("X5555555", intervention.id))
       .exchange()
@@ -163,8 +163,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
 
     requestFactory.create(request, token, referral.id.toString())
       .exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+      .expectStatus()
+      .is2xxSuccessful
   }
 
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
@@ -190,8 +190,8 @@ class SingleReferralEndpoints : IntegrationTestBase() {
 
     requestFactory.create(request, token, referral.id.toString())
       .exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+      .expectStatus()
+      .is2xxSuccessful
   }
 
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
@@ -401,17 +401,14 @@ class SingleReferralEndpoints : IntegrationTestBase() {
     val referral3 = createSentReferral(contract3)
     val token = createEncodedTokenForUser(user)
 
-    requestFactory.create(request, token, referral1.id.toString()).exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+    val checkReferral1 = requestFactory.create(request, token, referral1.id.toString()).exchange()
+    checkReferral1.expectStatus().is2xxSuccessful
 
-    requestFactory.create(request, token, referral2.id.toString()).exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+    val checkReferral2 = requestFactory.create(request, token, referral2.id.toString()).exchange()
+    checkReferral2.expectStatus().is2xxSuccessful
 
-    requestFactory.create(request, token, referral3.id.toString()).exchange()
-      .expectStatus().is2xxSuccessful
-      .expectBody()
+    val checkReferral3 = requestFactory.create(request, token, referral3.id.toString()).exchange()
+    checkReferral3.expectStatus().is2xxSuccessful
   }
 
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
@@ -485,8 +482,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @ParameterizedTest(name = "{displayName} ({argumentsWithNames})")
   @MethodSource("allReferralRequests")
   fun `requests with no auth token can never access anything`(request: Request) {
-    requestFactory.create(request, null, UUID.randomUUID().toString()).exchange()
-      .expectStatus().isUnauthorized
-      .expectBody()
+    val response = requestFactory.create(request, null, UUID.randomUUID().toString()).exchange()
+    response.expectStatus().isUnauthorized
   }
 }
