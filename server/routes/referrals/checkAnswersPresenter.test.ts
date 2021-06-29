@@ -101,6 +101,7 @@ describe(CheckAnswersPresenter, () => {
 
   describe('riskSection', () => {
     const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       additionalRiskInformation: 'Past assault of strangers',
     })
     const presenter = new CheckAnswersPresenter(
@@ -109,17 +110,12 @@ describe(CheckAnswersPresenter, () => {
       conviction,
       deliusServiceUser
     )
-
-    describe('title', () => {
-      it('returns the section title', () => {
-        expect(presenter.riskSection.title).toEqual('Alex’s risk information')
-      })
-    })
-
-    describe('text', () => {
-      it('returns the additional risk information', () => {
-        expect(presenter.riskSection.text).toEqual('Past assault of strangers')
-      })
+    it('returns the risk information section values', () => {
+      expect(presenter.riskSection.title).toEqual('Alex’s risk information')
+      expect(presenter.riskSection.text).toEqual('Past assault of strangers')
+      expect(presenter.riskSection.changeLink).toEqual(
+        `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/risk-information`
+      )
     })
   })
 

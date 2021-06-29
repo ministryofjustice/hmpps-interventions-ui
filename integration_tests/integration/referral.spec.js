@@ -360,7 +360,13 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
-      cy.contains('A danger to the elderly')
+      // Alex's risk information
+      cy.contains('risk information')
+        .next()
+        .contains('A danger to the elderly')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/risk-information`)
 
       // Alex's needs and requirements
       cy.contains('Additional information about Alex’s needs (optional)')
