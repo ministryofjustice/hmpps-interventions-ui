@@ -150,7 +150,6 @@ class NotifyReferralService(
   @Value("\${notify.templates.referral-sent}") private val referralSentTemplateID: String,
   @Value("\${notify.templates.referral-assigned}") private val referralAssignedTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.sent-referral}") private val interventionsUISentReferralLocation: String,
   @Value("\${interventions-ui.locations.service-provider.referral-details}") private val spReferralDetailsLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
@@ -176,7 +175,7 @@ class NotifyReferralService(
 
       ReferralEventType.ASSIGNED -> {
         val userDetails = hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
-        val location = generateResourceUrl(interventionsUIBaseURL, interventionsUISentReferralLocation, event.referral.id)
+        val location = generateResourceUrl(interventionsUIBaseURL, spReferralDetailsLocation, event.referral.id)
         emailSender.sendEmail(
           referralAssignedTemplateID,
           userDetails.email,
