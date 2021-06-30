@@ -219,6 +219,18 @@ describe('GET /service-provider/referrals/:id/details', () => {
         })
     })
   })
+
+  describe('when no staff details can be found', () => {
+    it('does not show the team details', async () => {
+      communityApiService.getStaffDetails.mockResolvedValue(null)
+      await request(app)
+        .get(`/service-provider/referrals/${sentReferral.id}/details`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).not.toContain('Team contact details')
+        })
+    })
+  })
 })
 
 describe('GET /service-provider/referrals/:id/progress', () => {

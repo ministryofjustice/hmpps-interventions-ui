@@ -105,7 +105,6 @@ export default class ServiceProviderReferralsController {
         this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
         this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
       ])
-
     const assignee =
       sentReferral.assignedTo === null
         ? null
