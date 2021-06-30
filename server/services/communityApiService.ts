@@ -60,13 +60,22 @@ export default class CommunityApiService {
     })) as DeliusConviction
   }
 
-  async getStaffDetails(username: string): Promise<DeliusStaffDetails> {
+  async getStaffDetails(username: string): Promise<DeliusStaffDetails | null> {
     const token = await this.hmppsAuthService.getApiClientToken()
 
     logger.info({ username }, 'getting staff details for officer')
-    return (await this.restClient.get({
-      path: `/secure/staff/username/${username}`,
-      token,
-    })) as DeliusStaffDetails
+    try {
+      return (await this.restClient.get({
+        path: `/secure/staff/username/${username}`,
+        token,
+      })) as DeliusStaffDetails
+    } catch (err) {
+      if (err.status === 404) {
+        // not all users will have staff details on delius
+        return null
+      }
+
+      throw createError(err.status, err, { userMessage: 'Could retrieve staff details from nDelius.' })
+    }
   }
 }

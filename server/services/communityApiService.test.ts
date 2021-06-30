@@ -1,3 +1,4 @@
+import createError from 'http-errors'
 import CommunityApiService from './communityApiService'
 import RestClient from '../data/restClient'
 import MockRestClient from '../data/testutils/mockRestClient'
@@ -7,6 +8,7 @@ import deliusServiceUser from '../../testutils/factories/deliusServiceUser'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConviction from '../../testutils/factories/deliusConviction'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import deliusStaffDetails from '../../testutils/factories/deliusStaffDetails'
 
 jest.mock('../data/restClient')
 
@@ -110,6 +112,43 @@ describe(CommunityApiService, () => {
       })
 
       expect(result).toMatchObject(conviction)
+    })
+  })
+
+  describe('getStaffDetails', () => {
+    const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
+    const service = new CommunityApiService(hmppsAuthClientMock, restClientMock)
+    const staffDetails = deliusStaffDetails.build()
+    it('makes a request to the Community API and casts the response as Delius Staff Details', async () => {
+      restClientMock.get.mockResolvedValue(staffDetails)
+
+      hmppsAuthClientMock.getApiClientToken.mockResolvedValue('token')
+
+      const result = await service.getStaffDetails('BERNARD.BEAKS')
+      expect(restClientMock.get).toHaveBeenCalledWith({
+        path: `/secure/staff/username/BERNARD.BEAKS`,
+        token: 'token',
+      })
+
+      expect(result).toMatchObject(staffDetails)
+    })
+    describe('when user can not be found', () => {
+      it('makes a request to Community API and returns null', async () => {
+        restClientMock.get.mockRejectedValue(createError(404))
+        const result = await service.getStaffDetails('UNKNOWN_USER')
+        expect(result).toEqual(null)
+      })
+    })
+    describe('when Community API has unexpected behaviour', () => {
+      it('makes a request to Community API and returns a user message', async () => {
+        restClientMock.get.mockRejectedValue(createError(500))
+        try {
+          await service.getStaffDetails('BERNARD.BEAKS')
+        } catch (err) {
+          expect(err.status).toBe(500)
+          expect(err.userMessage).toBe('Could retrieve staff details from nDelius.')
+        }
+      })
     })
   })
 })

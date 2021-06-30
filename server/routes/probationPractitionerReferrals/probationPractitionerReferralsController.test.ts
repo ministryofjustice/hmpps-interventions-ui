@@ -427,6 +427,17 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         })
     })
   })
+  describe('when no staff details can be found', () => {
+    it('does not show the team details', async () => {
+      communityApiService.getStaffDetails.mockResolvedValue(null)
+      await request(app)
+        .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).not.toContain('Team contact details')
+        })
+    })
+  })
 })
 
 describe('GET /probation-practitioner/referrals/:id/action-plan', () => {

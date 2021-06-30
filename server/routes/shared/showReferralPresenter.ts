@@ -39,7 +39,7 @@ export default class ShowReferralPresenter {
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     private readonly riskSummary: RiskSummary | null,
-    private readonly staffDetails: DeliusStaffDetails
+    private readonly staffDetails: DeliusStaffDetails | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -78,7 +78,7 @@ export default class ShowReferralPresenter {
   }
 
   private get activeTeam(): DeliusTeam | null {
-    const firstTeam = this.staffDetails.teams
+    const firstTeam = this.staffDetails?.teams
       ?.filter(team => {
         if (team.endDate === null || team.endDate === undefined) {
           return true
