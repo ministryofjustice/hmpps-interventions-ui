@@ -387,6 +387,33 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activity/:number',
       })
   })
 
+  it('prefills the text area for existing activities', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
+      activities: [
+        { id: 'bca57234-f2f3-4a25-8f25-b17008bd9052', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' },
+        {
+          id: '084a64c2-e8f5-43de-be52-b65cf4425eb4',
+          description: 'Do another thing',
+          createdAt: '2021-03-01T11:00:00Z',
+        },
+      ],
+    })
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategoryFactory.build())
+
+    await request(app)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add activity 2 to action plan')
+        expect(res.text).toContain('Do another thing')
+        expect(res.text).toContain('084a64c2-e8f5-43de-be52-b65cf4425eb4')
+      })
+  })
+
   it('errors if the activity number is invalid', async () => {
     await request(app)
       .get(`/service-provider/action-plan/123/add-activity/invalid`)
