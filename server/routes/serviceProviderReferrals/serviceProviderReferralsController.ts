@@ -294,7 +294,7 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
+  async addOrUpdateActionPlanActivity(req: Request, res: Response): Promise<void> {
     const activityNumber = this.parseActivityNumber(req.params.number)
 
     const form = await AddActionPlanActivitiesForm.createForm(req)
