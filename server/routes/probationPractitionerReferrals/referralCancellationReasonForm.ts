@@ -8,7 +8,7 @@ import { FormValidationError } from '../../utils/formValidationError'
 export default class ReferralCancellationReasonForm {
   constructor(private readonly request: Request) {}
 
-  async data(): Promise<FormData<Partial<{ cancellationReason: string; cancellationComments: string }>>> {
+  async data(): Promise<FormData<{ cancellationReason: string; cancellationComments: string }>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
       validations: ReferralCancellationReasonForm.validations,

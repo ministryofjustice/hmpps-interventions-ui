@@ -266,6 +266,24 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/start', () => {
   })
 })
 
+describe('GET /probation-practitioner/referrals/:id/cancellation/reason', () => {
+  it('creates a draft cancellation in the session and redirects to the reason page', async () => {
+    const draftCancellation = draftCancellationFactory.build()
+    draftsService.createDraft.mockReturnValue(draftCancellation)
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/123/cancellation/reason`)
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/123/cancellation/${draftCancellation.id}/reason`)
+
+    expect(draftsService.createDraft).toHaveBeenCalledWith(
+      'cancellation',
+      { cancellationReason: null, cancellationComments: null },
+      expect.anything()
+    )
+  })
+})
+
 describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellationId/reason', () => {
   it('renders a page where the PP can add comments and cancel a referral', async () => {
     const draftCancellation = draftCancellationFactory.build()
@@ -293,6 +311,29 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
         expect(res.text).toContain('Service user has moved out of delivery area')
         expect(res.text).toContain('Additional comments (optional)')
       })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/cancellation/check-your-answers', () => {
+  it('creates a draft cancellation in the session with the submitted data, and redirects to the check your answers page', async () => {
+    const draftCancellation = draftCancellationFactory.build()
+    draftsService.createDraft.mockReturnValue(draftCancellation)
+
+    await request(app)
+      .post(`/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/check-your-answers`)
+      .type('form')
+      .send({ 'cancellation-reason': 'MOV', 'cancellation-comments': 'Alex has moved out of the area' })
+      .expect(302)
+      .expect(
+        'Location',
+        `/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/${draftCancellation.id}/check-your-answers`
+      )
+
+    expect(draftsService.createDraft).toHaveBeenCalledWith(
+      'cancellation',
+      { cancellationReason: 'MOV', cancellationComments: 'Alex has moved out of the area' },
+      expect.anything()
+    )
   })
 })
 
@@ -349,6 +390,27 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
 })
 
 describe('POST /probation-practitioner/referrals/:id/cancellation/submit', () => {
+  it('submits a request to cancel the referral on the backend and redirects to the confirmation screen', async () => {
+    await request(app)
+      .post(`/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/submit`)
+      .type('form')
+      .send({ 'cancellation-reason': 'MOV', 'cancellation-comments': 'Alex has moved out of the area' })
+      .expect(302)
+      .expect(
+        'Location',
+        `/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/confirmation`
+      )
+
+    expect(interventionsService.endReferral).toHaveBeenCalledWith(
+      'token',
+      '9747b7fb-51bc-40e2-bbbd-791a9be9284b',
+      'MOV',
+      'Alex has moved out of the area'
+    )
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancellationId/submit', () => {
   it('submits a request to cancel the referral on the backend and redirects to the confirmation screen', async () => {
     const draftCancellation = draftCancellationFactory.build({
       data: { cancellationReason: 'MOV', cancellationComments: 'Alex has moved out of the area' },

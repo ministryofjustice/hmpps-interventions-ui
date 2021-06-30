@@ -75,6 +75,44 @@ describe(ReferralCancellationReasonPresenter, () => {
     })
   })
 
+  describe('fields', () => {
+    describe('cancellationComments', () => {
+      const sentReferral = sentReferralFactory.build()
+      const serviceUser = deliusServiceUserFactory.build()
+      const intervention = interventionFactory.build()
+
+      describe('when the draft cancellation has null cancellationComments', () => {
+        it('returns an empty string', () => {
+          const presenter = new ReferralCancellationReasonPresenter(
+            draftFactory.build({ data: draftCancellationDataFactory.build({ cancellationComments: null }) }),
+            sentReferral,
+            intervention,
+            serviceUser,
+            []
+          )
+
+          expect(presenter.fields.cancellationComments).toEqual('')
+        })
+      })
+
+      describe('when the draft cancellation has a non-null cancellationComments', () => {
+        it('returns that value', () => {
+          const presenter = new ReferralCancellationReasonPresenter(
+            draftFactory.build({
+              data: draftCancellationDataFactory.build({ cancellationComments: 'David has been recalled' }),
+            }),
+            sentReferral,
+            intervention,
+            serviceUser,
+            []
+          )
+
+          expect(presenter.fields.cancellationComments).toEqual('David has been recalled')
+        })
+      })
+    })
+  })
+
   describe('errorSummary', () => {
     const sentReferral = sentReferralFactory.build()
     const serviceUser = deliusServiceUserFactory.build()

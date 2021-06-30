@@ -223,7 +223,7 @@ export default function routes(router: Router, services: Services): Router {
 
   get('/probation-practitioner/referrals/:id/cancellation/reason', (req, res) =>
     // This keeps the cancel link on any pre-drafts version of the intervention progress page working
-    probationPractitionerReferralsController.backwardsCompatibilityStartCancellation(req, res)
+    probationPractitionerReferralsController.startCancellation(req, res)
   )
   get('/probation-practitioner/referrals/:id/cancellation/start', (req, res) =>
     probationPractitionerReferralsController.startCancellation(req, res)
