@@ -87,7 +87,7 @@ export default class CommunityApiMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/community-api/staff/username/${username}`,
+        urlPattern: `/community-api/secure/staff/username/${username}`,
       },
       response: {
         status: 200,

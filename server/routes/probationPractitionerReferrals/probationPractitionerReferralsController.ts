@@ -152,7 +152,7 @@ export default class ProbationPractitionerReferralsController {
       false,
       expandedServiceUser,
       riskSummary,
-      staffDetails.teams.length === 0 ? null : staffDetails.teams[0]
+      staffDetails
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, expandedServiceUser)

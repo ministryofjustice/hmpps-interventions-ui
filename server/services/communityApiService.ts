@@ -65,7 +65,7 @@ export default class CommunityApiService {
 
     logger.info({ username }, 'getting staff details for officer')
     return (await this.restClient.get({
-      path: `/staff/username/${username}`,
+      path: `/secure/staff/username/${username}`,
       token,
     })) as DeliusStaffDetails
   }

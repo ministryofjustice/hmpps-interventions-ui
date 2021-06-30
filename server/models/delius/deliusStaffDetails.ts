@@ -1,9 +1,11 @@
 export interface DeliusStaffDetails {
   username: string
-  teams: DeliusTeam[]
+  teams?: DeliusTeam[]
 }
 
 export interface DeliusTeam {
-  telephone: string
-  emailAddress: string
+  telephone?: string | null
+  emailAddress?: string | null
+  startDate: string
+  endDate?: string | null
 }

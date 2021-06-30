@@ -11,6 +11,8 @@ import supplementaryRiskInformationFactory from '../../../testutils/factories/su
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
+import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
+import deliusTeam from '../../../testutils/factories/deliusTeam'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -44,11 +46,12 @@ describe(ShowReferralPresenter, () => {
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
-  const staffDetails = deliusStaffDetailsFactory.build()
+  const defaultStaffDetails = deliusStaffDetailsFactory.build()
 
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the check assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)
+
       const presenter = new ShowReferralPresenter(
         referral,
         intervention,
@@ -61,7 +64,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails.teams[0]
+        defaultStaffDetails
       )
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
@@ -85,7 +88,7 @@ describe(ShowReferralPresenter, () => {
             true,
             deliusServiceUser,
             riskSummary,
-            staffDetails.teams[0]
+            defaultStaffDetails
           )
 
           expect(presenter.text.assignedTo).toBeNull()
@@ -107,7 +110,7 @@ describe(ShowReferralPresenter, () => {
             true,
             deliusServiceUser,
             riskSummary,
-            staffDetails.teams[0]
+            defaultStaffDetails
           )
 
           expect(presenter.text.assignedTo).toEqual('John Smith')
@@ -131,7 +134,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails.teams[0]
+        defaultStaffDetails
       )
 
       expect(presenter.probationPractitionerDetails).toEqual([
@@ -142,10 +145,9 @@ describe(ShowReferralPresenter, () => {
   })
 
   describe('probationPractitionerTeamDetails', () => {
-    it('returns a summary list of probation practitioner team details', () => {
-      const sentReferral = sentReferralFactory.build(referralParams)
-      const presenter = new ShowReferralPresenter(
-        sentReferral,
+    function createShowReferralPresenterWithStaffDetails(staffDetails: DeliusStaffDetails) {
+      return new ShowReferralPresenter(
+        sentReferralFactory.build(referralParams),
         intervention,
         deliusConviction,
         supplementaryRiskInformation,
@@ -156,33 +158,89 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails.teams[0]
+        staffDetails
       )
+    }
 
-      expect(presenter.probationPractitionerTeamDetails).toEqual([
-        { key: 'Phone', lines: ['07890 123456'] },
-        { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-      ])
+    describe('when a single active team exists on staff details', () => {
+      it('should display the team details', () => {
+        const presenter = createShowReferralPresenterWithStaffDetails(defaultStaffDetails)
+        expect(presenter.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: ['07890 123456'] },
+          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+        ])
+      })
+      describe('when ended date is null', () => {
+        it('should display the team details', () => {
+          const staffDetails = deliusStaffDetailsFactory.build({
+            teams: [deliusTeam.build({ endDate: null })],
+          })
+          const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
+          expect(presenter.probationPractitionerTeamDetails).toEqual([
+            { key: 'Phone', lines: ['07890 123456'] },
+            { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+          ])
+        })
+      })
     })
-    describe('when no team is found', () => {
-      it('returns an empty summary list', () => {
-        const sentReferral = sentReferralFactory.build(referralParams)
-        const presenter = new ShowReferralPresenter(
-          sentReferral,
-          intervention,
-          deliusConviction,
-          supplementaryRiskInformation,
-          deliusUser,
-          null,
-          null,
-          'service-provider',
-          true,
-          deliusServiceUser,
-          riskSummary,
-          null
+    describe('when no teams exist for staff', () => {
+      it('should not show any team details', () => {
+        const presenterWithEmptyListTeams = createShowReferralPresenterWithStaffDetails(
+          deliusStaffDetailsFactory.build({ teams: [] })
+        )
+        expect(presenterWithEmptyListTeams.probationPractitionerTeamDetails).toEqual([])
+        const presenterWithUndefinedTeams = createShowReferralPresenterWithStaffDetails({ username: 'username' })
+        expect(presenterWithUndefinedTeams.probationPractitionerTeamDetails).toEqual([])
+      })
+    })
+    describe('when all teams are ended in the past', () => {
+      it('should not show any team details', () => {
+        const staffDetails = deliusStaffDetailsFactory.build({
+          teams: [deliusTeam.build({ endDate: '2021-01-01' })],
+        })
+        const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
+        expect(presenter.probationPractitionerTeamDetails).toEqual([])
+      })
+    })
+    describe('when a team is ended in the future', () => {
+      it('should show the team details', () => {
+        const staffDetails = deliusStaffDetailsFactory.build({
+          teams: [deliusTeam.build({ endDate: '3021-01-01' })],
+        })
+        const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
+        expect(presenter.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: ['07890 123456'] },
+          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+        ])
+      })
+    })
+    describe('when there are multiple active teams', () => {
+      it('should show the latest team details', () => {
+        const newerTeam = deliusTeam.build({
+          telephone: '07890 123456',
+          emailAddress: 'probation-team4692@justice.gov.uk',
+          startDate: '2021-01-02',
+        })
+        const olderTeam = deliusTeam.build({
+          telephone: 'incorrect number',
+          emailAddress: 'incorrect-team@justice.gov.uk',
+          startDate: '2021-01-01',
+        })
+        const orderedAsc = createShowReferralPresenterWithStaffDetails(
+          deliusStaffDetailsFactory.build({ teams: [olderTeam, newerTeam] })
+        )
+        const orderedDesc = createShowReferralPresenterWithStaffDetails(
+          deliusStaffDetailsFactory.build({ teams: [newerTeam, olderTeam] })
         )
 
-        expect(presenter.probationPractitionerTeamDetails).toEqual([])
+        expect(orderedAsc.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: ['07890 123456'] },
+          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+        ])
+        expect(orderedDesc.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: ['07890 123456'] },
+          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+        ])
       })
     })
   })
@@ -257,7 +315,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          staffDetails.teams[0]
+          defaultStaffDetails
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -347,7 +405,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          staffDetails.teams[0]
+          defaultStaffDetails
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -403,7 +461,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails.teams[0]
+        defaultStaffDetails
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
@@ -443,7 +501,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails.teams[0]
+        defaultStaffDetails
       )
 
       expect(presenter.serviceUserDetails).toEqual([
@@ -486,7 +544,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails.teams[0]
+        defaultStaffDetails
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -553,7 +611,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          staffDetails.teams[0]
+          defaultStaffDetails
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -642,7 +700,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          staffDetails.teams[0]
+          defaultStaffDetails
         )
 
         expect(presenter.serviceUserNeeds).toEqual([

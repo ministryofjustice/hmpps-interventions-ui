@@ -282,6 +282,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           telephone: '07890 123456',
           emailAddress: 'probation-team4692@justice.gov.uk',
+          startDate: '2021-01-01',
         },
       ],
     })
@@ -349,12 +350,12 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
 
+    cy.contains('Team contact details').next().contains('Phone').next().contains('07890 123456')
+
     cy.contains('Team contact details')
       .next()
-      .contains('Phone')
-      .next("07890 123456'")
-      .contains()
-      .next('Email address')
+      .contains('Email address')
+      .next()
       .contains('probation-team4692@justice.gov.uk')
   })
 })

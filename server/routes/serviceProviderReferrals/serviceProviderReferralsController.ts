@@ -139,7 +139,7 @@ export default class ServiceProviderReferralsController {
       true,
       expandedServiceUser,
       riskSummary,
-      staffDetails.teams.length === 0 ? null : staffDetails.teams[0]
+      staffDetails
     )
     const view = new ShowReferralView(presenter)
 

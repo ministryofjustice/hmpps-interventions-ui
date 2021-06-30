@@ -19,7 +19,8 @@ import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/s
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RiskPresenter from './riskPresenter'
-import { DeliusTeam } from '../../models/delius/deliusStaffDetails'
+import { DeliusStaffDetails, DeliusTeam } from '../../models/delius/deliusStaffDetails'
+import CalendarDay from '../../utils/calendarDay'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -38,7 +39,7 @@ export default class ShowReferralPresenter {
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     private readonly riskSummary: RiskSummary | null,
-    private readonly teamDetails: DeliusTeam | null
+    private readonly staffDetails: DeliusStaffDetails
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -61,17 +62,40 @@ export default class ShowReferralPresenter {
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
   ]
 
-  readonly probationPractitionerTeamDetails: SummaryListItem[] =
-    this.teamDetails == null
+  get probationPractitionerTeamDetails(): SummaryListItem[] {
+    const { activeTeam } = this
+    return activeTeam == null
       ? []
       : [
-          { key: 'Phone', lines: [`${this.teamDetails?.telephone}`] },
-          { key: 'Email address', lines: [`${this.teamDetails?.emailAddress}`] },
+          { key: 'Phone', lines: [`${activeTeam.telephone}`] },
+          { key: 'Email address', lines: [`${activeTeam.emailAddress}`] },
         ]
+  }
 
   get referralServiceCategories(): ServiceCategory[] {
     const { serviceCategoryIds } = this.sentReferral.referral
     return this.intervention.serviceCategories.filter(it => serviceCategoryIds.includes(it.id))
+  }
+
+  private get activeTeam(): DeliusTeam | null {
+    const firstTeam = this.staffDetails.teams
+      ?.filter(team => {
+        if (team.endDate === null || team.endDate === undefined) {
+          return true
+        }
+        const endDate = CalendarDay.parseIso8601Date(team.endDate)?.utcDate
+        if (endDate !== undefined) {
+          return endDate >= new Date()
+        }
+        return true
+      })
+      .sort((teamA, teamB) => {
+        const teamAStartDate = CalendarDay.parseIso8601Date(teamA.startDate)!.utcDate
+        const teamBStartDate = CalendarDay.parseIso8601Date(teamB.startDate)!.utcDate
+        return teamBStartDate.getDate() - teamAStartDate.getDate()
+      })
+      .shift()
+    return firstTeam === undefined ? null : firstTeam
   }
 
   serviceCategorySection(serviceCategory: ServiceCategory, tagMacro: (args: TagArgs) => string): SummaryListItem[] {
