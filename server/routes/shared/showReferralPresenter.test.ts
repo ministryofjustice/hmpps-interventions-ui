@@ -226,11 +226,19 @@ describe(ShowReferralPresenter, () => {
           emailAddress: 'incorrect-team@justice.gov.uk',
           startDate: '2021-01-01',
         })
+        const teamWithNoStartDate = deliusTeam.build({
+          telephone: 'incorrect number - nsd',
+          emailAddress: 'incorrect-team@justice.gov.uk',
+        })
         const orderedAsc = createShowReferralPresenterWithStaffDetails(
-          deliusStaffDetailsFactory.build({ teams: [olderTeam, newerTeam] })
+          deliusStaffDetailsFactory.build({
+            teams: [teamWithNoStartDate, teamWithNoStartDate, olderTeam, newerTeam],
+          })
         )
         const orderedDesc = createShowReferralPresenterWithStaffDetails(
-          deliusStaffDetailsFactory.build({ teams: [newerTeam, olderTeam] })
+          deliusStaffDetailsFactory.build({
+            teams: [newerTeam, olderTeam, teamWithNoStartDate, teamWithNoStartDate],
+          })
         )
 
         expect(orderedAsc.probationPractitionerTeamDetails).toEqual([

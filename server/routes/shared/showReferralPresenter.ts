@@ -78,24 +78,34 @@ export default class ShowReferralPresenter {
   }
 
   private get activeTeam(): DeliusTeam | null {
+    const today = new Date()
     const firstTeam = this.staffDetails?.teams
       ?.filter(team => {
-        if (team.endDate === null || team.endDate === undefined) {
+        // teams without an end date are assumed to be active
+        if (!team.endDate) {
           return true
         }
+
+        // otherwise filter out teams with an end date in the past
         const endDate = CalendarDay.parseIso8601Date(team.endDate)?.utcDate
-        if (endDate !== undefined) {
-          return endDate >= new Date()
-        }
-        return true
+        return endDate && endDate >= today
       })
       .sort((teamA, teamB) => {
+        // the ordering of teams with no start date is entirely arbitrary
+        // we are going to guess that they are older than those with a start date
+        if (!teamA.startDate) {
+          return 1
+        }
+
+        if (!teamB.startDate) {
+          return 0
+        }
+
         const teamAStartDate = CalendarDay.parseIso8601Date(teamA.startDate)!.utcDate
         const teamBStartDate = CalendarDay.parseIso8601Date(teamB.startDate)!.utcDate
         return teamBStartDate.getDate() - teamAStartDate.getDate()
-      })
-      .shift()
-    return firstTeam === undefined ? null : firstTeam
+      })[0]
+    return firstTeam || null
   }
 
   serviceCategorySection(serviceCategory: ServiceCategory, tagMacro: (args: TagArgs) => string): SummaryListItem[] {
