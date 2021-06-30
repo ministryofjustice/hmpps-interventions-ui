@@ -12,6 +12,7 @@ export default class AddActionPlanActivitiesPresenter {
     private readonly sentReferral: SentReferral,
     private readonly serviceCategories: ServiceCategory[],
     private readonly actionPlan: ActionPlan,
+    readonly activityNumber: number,
     private readonly errors: FormValidationError | null = null
   ) {
     this.actionPlanPresenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
@@ -19,9 +20,7 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly saveAndContinueFormAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activities`
 
-  readonly addActivityAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activity`
-
-  readonly activityNumber = this.actionPlan.activities.length + 1
+  readonly addActivityAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activity/${this.activityNumber}`
 
   readonly errorMessage = PresenterUtils.errorMessage(this.errors, 'description')
 

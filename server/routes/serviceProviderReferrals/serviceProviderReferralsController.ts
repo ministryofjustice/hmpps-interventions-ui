@@ -3,7 +3,7 @@ import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, { AppointmentUpdate } from '../../services/interventionsService'
-import { ActionPlanAppointment } from '../../models/actionPlan'
+import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
@@ -266,11 +266,14 @@ export default class ServiceProviderReferralsController {
       req.params.id
     )
 
-    res.redirect(303, `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    res.redirect(303, `/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
   }
 
   async showActionPlanAddActivitiesForm(req: Request, res: Response): Promise<void> {
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+
+    const activityNumber = this.parseActivityNumber(req.params.number, actionPlan)
+
     const sentReferral = await this.interventionsService.getSentReferral(
       res.locals.user.token.accessToken,
       actionPlan.referralId
@@ -285,13 +288,15 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan)
+    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, activityNumber)
     const view = new AddActionPlanActivitiesView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
+    const activityNumber = this.parseActivityNumber(req.params.number)
+
     const form = await AddActionPlanActivitiesForm.createForm(req)
 
     if (form.isValid) {
@@ -301,7 +306,8 @@ export default class ServiceProviderReferralsController {
         form.activityParamsForUpdate
       )
 
-      res.redirect(`/service-provider/action-plan/${req.params.id}/add-activities`)
+      const nextActivityNumber = activityNumber + 1
+      res.redirect(`/service-provider/action-plan/${req.params.id}/add-activity/${nextActivityNumber}`)
       return
     }
 
@@ -320,7 +326,13 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, form.error)
+    const presenter = new AddActionPlanActivitiesPresenter(
+      sentReferral,
+      serviceCategories,
+      actionPlan,
+      activityNumber,
+      form.error
+    )
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.status(400)
@@ -345,7 +357,13 @@ export default class ServiceProviderReferralsController {
     if (form.isValid) {
       res.redirect(`/service-provider/action-plan/${actionPlan.id}/number-of-sessions`)
     } else {
-      const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, form.error)
+      const presenter = new AddActionPlanActivitiesPresenter(
+        sentReferral,
+        serviceCategories,
+        actionPlan,
+        actionPlan.activities.length + 1,
+        form.error
+      )
       const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
       const view = new AddActionPlanActivitiesView(presenter)
 
@@ -1005,5 +1023,18 @@ export default class ServiceProviderReferralsController {
       throw new Error('Expected service categories are missing in intervention')
     }
     return serviceCategories
+  }
+
+  private parseActivityNumber(number: string, actionPlan?: ActionPlan): number {
+    const activityNumber = Number(number)
+    if (Number.isNaN(activityNumber)) {
+      throw createError(500, 'activity number specified in URL cannot be parsed')
+    }
+
+    if (actionPlan && activityNumber > actionPlan.activities.length + 1) {
+      throw createError(500, 'activity number specified in URL is too big')
+    }
+
+    return activityNumber
   }
 }
