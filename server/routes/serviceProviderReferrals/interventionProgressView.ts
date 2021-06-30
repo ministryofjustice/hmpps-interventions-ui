@@ -9,7 +9,7 @@ import {
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
-import ActionPlanView from '../shared/actionPlanView'
+import ActionPlanView from '../shared/action-plan/actionPlanView'
 
 export default class InterventionProgressView {
   actionPlanView: ActionPlanView

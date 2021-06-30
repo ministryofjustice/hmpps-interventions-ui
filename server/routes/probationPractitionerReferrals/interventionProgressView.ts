@@ -2,7 +2,7 @@ import { TagArgs, TableArgs, SummaryListArgs } from '../../utils/govukFrontendTy
 import ViewUtils from '../../utils/viewUtils'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
-import ActionPlanView from '../shared/actionPlanView'
+import ActionPlanView from '../shared/action-plan/actionPlanView'
 
 export default class InterventionProgressView {
   actionPlanView: ActionPlanView
