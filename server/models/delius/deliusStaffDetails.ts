@@ -6,6 +6,6 @@ export interface DeliusStaffDetails {
 export interface DeliusTeam {
   telephone?: string | null
   emailAddress?: string | null
-  startDate: string
+  startDate?: string | null
   endDate?: string | null
 }
