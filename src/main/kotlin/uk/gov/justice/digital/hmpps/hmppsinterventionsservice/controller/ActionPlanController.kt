@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
@@ -20,7 +19,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPl
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import java.util.UUID
-import javax.persistence.EntityExistsException
 
 @RestController
 class ActionPlanController(
@@ -35,17 +33,12 @@ class ActionPlanController(
     @RequestBody createActionPlanDTO: CreateActionPlanDTO,
     authentication: JwtAuthenticationToken
   ): ResponseEntity<ActionPlanDTO> {
-    val referralId = createActionPlanDTO.referralId
-
-    if (actionPlanService.checkActionPlanExistsForReferral(referralId)) {
-      throw EntityExistsException("action plan already exists for referral [referralId=$referralId]")
-    }
 
     val draftActionPlan = actionPlanService.createDraftActionPlan(
-      referralId,
+      createActionPlanDTO.referralId,
       createActionPlanDTO.numberOfSessions,
       createActionPlanDTO.activities.map { ActionPlanActivity(description = it.description) },
-      userMapper.fromToken(authentication)
+      userMapper.fromToken(authentication),
     )
 
     val actionPlanDTO = ActionPlanDTO.from(draftActionPlan)
@@ -93,14 +86,6 @@ class ActionPlanController(
   @GetMapping("/action-plan/{id}")
   fun getActionPlan(@PathVariable id: UUID): ActionPlanDTO {
     val actionPlan = actionPlanService.getActionPlan(id)
-    return ActionPlanDTO.from(actionPlan)
-  }
-
-  @GetMapping("/action-plan")
-  fun getActionPlanByReferral(
-    @RequestParam(name = "referralId", required = true) referralId: UUID
-  ): ActionPlanDTO {
-    val actionPlan = actionPlanService.getActionPlanByReferral(referralId)
     return ActionPlanDTO.from(actionPlan)
   }
 

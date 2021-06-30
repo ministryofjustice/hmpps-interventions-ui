@@ -17,7 +17,9 @@ values ('81d754aa-d868-4347-9c0f-50690773014e', '{Autism spectrum condition, sci
 
 insert into referral_desired_outcome (referral_id, desired_outcome_id, service_category_id)
 values ('81d754aa-d868-4347-9c0f-50690773014e', '301ead30-30a4-4c7c-8296-2768abfb59b5', '428ee70f-3001-4399-95a6-ad25eaaede16'),
-       ('81d754aa-d868-4347-9c0f-50690773014e', '65924ac6-9724-455b-ad30-906936291421', '428ee70f-3001-4399-95a6-ad25eaaede16');
+       ('81d754aa-d868-4347-9c0f-50690773014e', '65924ac6-9724-455b-ad30-906936291421', '428ee70f-3001-4399-95a6-ad25eaaede16'),
+       ('f89bd739-b9a2-482e-9947-12a793abcfb1', 'f2aa2f28-27b5-4e79-856e-6a3f19550b20', 'b84f4eb7-4db0-477e-8c59-21027b3262c5'),
+       ('f89bd739-b9a2-482e-9947-12a793abcfb1', 'b820cdf3-164b-427d-b78e-1fb079851ebd', 'c036826e-f077-49a5-8b33-601dca7ad479');
 
 insert into supplier_assessment(id, referral_id)
 values ('fbc4a21f-eb15-489d-b16f-b3b82b008722', '81d754aa-d868-4347-9c0f-50690773014e'),

@@ -10,6 +10,7 @@ import org.springframework.boot.test.json.JacksonTester
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -17,6 +18,7 @@ import java.util.UUID
 @JsonTest
 class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferralDTO>) {
   private val referralFactory = ReferralFactory()
+  private val actionPlanFactory = ActionPlanFactory()
 
   @Test
   fun `sent referral requires reference number, sent timestamp, sentBy, and risk id`() {
@@ -99,13 +101,14 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
     val createdAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
     val sentAt = OffsetDateTime.parse("2021-01-13T21:57:13+00:00")
     val sentBy = AuthUser("id", "source", "username")
+    val actionPlan = actionPlanFactory.create()
 
     val referral = SampleData.sampleReferral(
       "X123456",
       "Provider",
       id = id,
       createdAt = createdAt,
-      actionPlan = SampleData.sampleActionPlan()
+      actionPlans = mutableListOf(actionPlan)
     )
 
     referral.referenceNumber = "something"
@@ -134,7 +137,7 @@ class SentReferralDTOTest(@Autowired private val json: JacksonTester<SentReferra
           "serviceUser": {"crn": "X123456"},
           "serviceProvider": {"name": "Provider"}
         },
-        "actionPlanId": "${referral.actionPlan?.id}",
+        "actionPlanId": "${actionPlan.id}",
         "endOfServiceReportCreationRequired": false
       }
     """

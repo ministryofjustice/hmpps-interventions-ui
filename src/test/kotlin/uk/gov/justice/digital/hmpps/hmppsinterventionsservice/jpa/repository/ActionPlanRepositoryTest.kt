@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSes
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
-import java.util.UUID
 
 @RepositoryTest
 class ActionPlanRepositoryTest @Autowired constructor(
@@ -34,14 +33,6 @@ class ActionPlanRepositoryTest @Autowired constructor(
 
     assertThat(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan1.id)).isEqualTo(4)
     assertThat(actionPlanRepository.countNumberOfAttemptedSessions(actionPlan2.id)).isEqualTo(1)
-  }
-
-  @Test
-  fun `existsByReferralId returns true for duplicate action plans`() {
-    val id = UUID.randomUUID()
-    actionPlanFactory.create(referral = referralFactory.createSent(id))
-    assertThat(actionPlanRepository.existsByReferralId(id)).isTrue
-    assertThat(actionPlanRepository.existsByReferralId(UUID.randomUUID())).isFalse
   }
 
   @Test

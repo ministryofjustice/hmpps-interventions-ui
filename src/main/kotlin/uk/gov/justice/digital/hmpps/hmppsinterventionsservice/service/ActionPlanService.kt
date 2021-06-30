@@ -39,8 +39,8 @@ class ActionPlanService(
       numberOfSessions = numberOfSessions,
       createdBy = authUserRepository.save(createdByUser),
       createdAt = OffsetDateTime.now(),
-      referral = referralRepository.getOne(referralId),
-      activities = activities.toMutableList()
+      referral = referralRepository.getById(referralId),
+      activities = activities.toMutableList(),
     )
 
     return actionPlanRepository.save(draftActionPlan)
@@ -103,10 +103,6 @@ class ActionPlanService(
   fun getActionPlanByReferral(referralId: UUID): ActionPlan {
     return actionPlanRepository.findByReferralId(referralId)
       ?: throw EntityNotFoundException("action plan not found [referralId=$referralId]")
-  }
-
-  fun checkActionPlanExistsForReferral(referralId: UUID): Boolean {
-    return actionPlanRepository.existsByReferralId(referralId)
   }
 
   private fun updateDraftActivityPlan(

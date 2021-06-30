@@ -7,13 +7,11 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateActionPlanDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanActivityDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateActionPlanDTO
@@ -25,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFac
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import java.net.URI
 import java.util.UUID
-import javax.persistence.EntityExistsException
 
 internal class ActionPlanControllerTest {
   private val actionPlanFactory = ActionPlanFactory()
@@ -43,19 +40,10 @@ internal class ActionPlanControllerTest {
   )
 
   @Test
-  fun `throws error if an action plan already exists for the referral`() {
-    whenever(actionPlanService.checkActionPlanExistsForReferral(any())).thenReturn(true)
-    val request = CreateActionPlanDTO(UUID.randomUUID(), 3, emptyList())
-    assertThrows<EntityExistsException> {
-      actionPlanController.createDraftActionPlan(request, tokenFactory.create())
-    }
-  }
-
-  @Test
   fun `saves draft action plan`() {
     val referralId = UUID.randomUUID()
     val numberOfSessions = 5
-    val activitiesDTO = emptyList<CreateActionPlanActivityDTO>()
+    val activitiesDTO = emptyList<UpdateActionPlanActivityDTO>()
     val createActionPlanDTO = CreateActionPlanDTO(referralId, 5, activitiesDTO)
     val jwtAuthenticationToken = JwtAuthenticationToken(mock())
     val authUser = AuthUser("CRN123", "auth", "user")
@@ -77,7 +65,7 @@ internal class ActionPlanControllerTest {
   @Test
   fun `successfully update a draft action plan containing an activity`() {
     val actionPlan = actionPlanFactory.create()
-    val activityDTO = CreateActionPlanActivityDTO("Description")
+    val activityDTO = UpdateActionPlanActivityDTO("Description")
 
     whenever(actionPlanService.updateActionPlan(eq(actionPlan.id), eq(1), any())).thenReturn(actionPlan)
 
@@ -125,17 +113,6 @@ internal class ActionPlanControllerTest {
     whenever(actionPlanService.getActionPlan(actionPlan.id)).thenReturn(actionPlan)
 
     val retrievedActionPlan = actionPlanController.getActionPlan(actionPlan.id)
-
-    assertThat(retrievedActionPlan).isNotNull
-  }
-
-  @Test
-  fun `gets action plan by referral id`() {
-    val actionPlan = SampleData.sampleActionPlan()
-    val referralId = actionPlan.referral.id
-    whenever(actionPlanService.getActionPlanByReferral(referralId)).thenReturn(actionPlan)
-
-    val retrievedActionPlan = actionPlanController.getActionPlanByReferral(referralId)
 
     assertThat(retrievedActionPlan).isNotNull
   }

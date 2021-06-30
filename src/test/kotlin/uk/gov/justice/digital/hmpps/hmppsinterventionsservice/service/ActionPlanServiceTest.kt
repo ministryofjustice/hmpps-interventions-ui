@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Act
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.Optional.empty
 import java.util.Optional.of
@@ -36,6 +37,8 @@ internal class ActionPlanServiceTest {
   private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
   private val actionPlanSessionsService: ActionPlanSessionsService = mock()
   private val desiredOutcomeRepository: DesiredOutcomeRepository = mock()
+
+  private val referralFactory = ReferralFactory()
 
   private val actionPlanService = ActionPlanService(
     authUserRepository,
@@ -55,7 +58,7 @@ internal class ActionPlanServiceTest {
     val referral = SampleData.sampleReferral("CRN123", "Service Provider")
 
     whenever(authUserRepository.save(authUser)).thenReturn(authUser)
-    whenever(referralRepository.getOne(referralId)).thenReturn(referral)
+    whenever(referralRepository.getById(referralId)).thenReturn(referral)
     whenever(
       actionPlanRepository.save(
         ArgumentMatchers.argThat {

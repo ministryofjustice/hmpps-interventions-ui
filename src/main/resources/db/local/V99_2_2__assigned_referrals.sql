@@ -14,6 +14,13 @@ values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', 'd0db50b0-4a50-4fc7-a006-9c97530
        ('B59D3599-0681-466A-82B2-F6F957E46190', 'd0db50b0-4a50-4fc7-a006-9c97530e38b2', '428ee70f-3001-4399-95a6-ad25eaaede16'),
        ('a2a551aa-3d11-44b1-907b-42a028852bc1', '8e409327-e3ab-4c91-9300-2f61a409789f', '9556a399-3529-4993-8030-41db2090555e');
 
+insert into referral_desired_outcome(referral_id, desired_outcome_id, service_category_id)
+values ('a2a551aa-3d11-44b1-907b-42a028852bc1', '868f713a-5c53-4a18-b20f-ff8f118e9c30', '9556a399-3529-4993-8030-41db2090555e'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1', '4fc163c9-f8fb-4cfd-b107-2cb13583ebf0', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1', '117832ca-f65e-4cce-9cdd-bdf666e740ea', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c'),
+       ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '65924ac6-9724-455b-ad30-906936291421', '428ee70f-3001-4399-95a6-ad25eaaede16'),
+       ('B59D3599-0681-466A-82B2-F6F957E46190', '19d5ef58-5cfc-41fe-894c-acd705dc1325', '428ee70f-3001-4399-95a6-ad25eaaede16');
+
 insert into referral_service_user_data (referral_id, disabilities, dob, ethnicity, title, first_name, last_name, preferred_language, religion_or_belief, gender)
 values ('BBC2FEEE-2E86-4A33-8069-DD79A606B741', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Sir', 'ANDREW', 'DAVIES', 'Yupik', 'None', 'Male'),
        ('B59D3599-0681-466A-82B2-F6F957E46190', '{}', TO_DATE('2097-11-08', 'YYYY-MM-DD'), 'White British', 'Ms', 'JUNAID', 'KHAN', 'English', 'None', 'Female'),
@@ -28,14 +35,16 @@ insert into action_plan (id, referral_id, number_of_sessions, created_by_id, cre
 values ('21EA6AFE-C437-4018-9260-BF1A829DE464', 'BBC2FEEE-2E86-4A33-8069-DD79A606B741', 2, '608955ae-52ed-44cc-884c-011597a77949', '2021-03-10 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949', '2021-03-11 17:51:34.235464+00'),
        ('2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 'B59D3599-0681-466A-82B2-F6F957E46190', 3, '608955ae-52ed-44cc-884c-011597a77949', '2021-03-10 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949', '2021-03-11 17:51:34.235464+00');
 
+insert into action_plan_activity (id, action_plan_id, description, created_at)
+values ('fc8efc3d-fa13-4fde-b12b-22c04f18ea59', '21EA6AFE-C437-4018-9260-BF1A829DE464', 'Identify vacancies and make approach to supported hostel scheme.', '2021-03-11 17:51:34.235464+00'),
+       ('e4e9030c-d0b0-4ee1-943f-88f1b74cece6', '21EA6AFE-C437-4018-9260-BF1A829DE464', 'Service user to develop independent living skills and understanding the importance of budgeting.', '2021-03-11 17:51:34.235464+00');
+
 insert into appointment(id, appointment_time, duration_in_minutes, created_at, created_by_id)
 values  ('1b79fba2-42ae-4acb-89ce-571e8ff10719', '2021-04-01 12:00:00.000000+00', 120, '2021-03-12 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949'),
         ('82e2fbbe-1bb4-4967-8ee6-81aa072fd44b' , '2021-04-07 12:00:00.000000+00', 120, '2021-03-12 18:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949');
 
 insert into action_plan_session (id, action_plan_id, session_number)
-values ('F6D6710F-8812-43D0-96F9-C0BDE9FF66F9', '21EA6AFE-C437-4018-9260-BF1A829DE464', 1),
-       ('27597A9E-68CC-43AC-96DF-DE9B92F53524', '21EA6AFE-C437-4018-9260-BF1A829DE464', 2),
-       ('847E253C-DC48-4914-9E5E-771694BB9C01', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 1),
+values ('847E253C-DC48-4914-9E5E-771694BB9C01', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 1),
        ('7F8EBDFF-E127-475B-986F-635288CED216', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 2),
        ('C6AA09D1-3BA2-4069-AFFB-1E9F98CDFF8D', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 3);
 
