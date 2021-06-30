@@ -481,6 +481,39 @@ describe('POST /service-provider/action-plan/:id/add-activity/:number', () => {
     })
   })
 
+  it('updates the action plan activity with the specified description and renders the add activity form again', async () => {
+    const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation' })]
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryIds: [serviceCategories[0].id],
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const draftActionPlan = actionPlanFactory.oneActivityAdded().build()
+    const activityId = draftActionPlan.activities[0].id
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
+
+    await request(app)
+      .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
+      .type('form')
+      .send({
+        description: 'Attend training course',
+        'activity-id': activityId,
+      })
+      .expect(302)
+      .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
+
+    expect(interventionsService.updateActionPlanActivity).toHaveBeenCalledWith(
+      'token',
+      draftActionPlan.id,
+      activityId,
+      'Attend training course'
+    )
+  })
+
   describe('when the user enters no description', () => {
     it('does not update the action plan on the backend and returns a 400 with an error message', async () => {
       const desiredOutcome = { id: '8eb52caf-b462-4100-a0e9-7022d2551c92', description: 'Achieve a thing' }
