@@ -25,6 +25,15 @@
 
         <h2 class="govuk-heading-m">Desired outcomes and activities</h2>
 
+        {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
+            <h3 class="govuk-heading-s">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
+            <ul class="govuk-list govuk-list--bullet">
+                {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
+                    <li>{{ desiredOutcome }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+
         <ul class="govuk-list">
         {% for activity in presenter.orderedActivities %}
             <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity)) }}</li>
