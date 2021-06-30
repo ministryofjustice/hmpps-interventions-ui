@@ -1,23 +1,20 @@
-import { InsetTextArgs } from '../../../../utils/govukFrontendTypes'
 import ReviewActionPlanPresenter from './reviewActionPlanPresenter'
+import ActionPlanView from '../../../shared/action-plan/actionPlanView'
 
 export default class ReviewActionPlanView {
-  constructor(private readonly presenter: ReviewActionPlanPresenter) {}
+  actionPlanView: ActionPlanView
+
+  constructor(private readonly presenter: ReviewActionPlanPresenter) {
+    this.actionPlanView = new ActionPlanView(presenter.actionPlanPresenter)
+  }
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/reviewActionPlan',
       {
         presenter: this.presenter,
-        insetTextArgs: this.insetTextArgs,
+        insetTextArgs: this.actionPlanView.insetTextActivityArgs,
       },
     ]
-  }
-
-  insetTextArgs(index: number, description: string): InsetTextArgs {
-    return {
-      html: `<h3 class="govuk-heading-m govuk-!-font-weight-bold">Activity ${index}</h3><p class="govuk-body">${description}</p>`,
-      classes: 'app-inset-text--grey',
-    }
   }
 }

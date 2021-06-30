@@ -52,55 +52,5 @@ describe(ReviewActionPlanPresenter, () => {
         expect(presenter.text.title).toEqual('Confirm action plan')
       })
     })
-
-    describe('numberOfSessions', () => {
-      it('returns the suggested number of sessions in the action plan', () => {
-        const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ numberOfSessions: 10 })
-
-        const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
-
-        expect(presenter.text.numberOfSessions).toEqual('10')
-      })
-    })
-  })
-
-  describe('desiredOutcomesByServiceCategory', () => {
-    it('returns the desired outcomes on the Service Category that match those populated on the SentReferral', () => {
-      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({ activities: [] })
-
-      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
-
-      expect(presenter.desiredOutcomesByServiceCategory).toEqual([
-        {
-          serviceCategory: 'Accommodation',
-          desiredOutcomes: [
-            'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-            'Service user makes progress in obtaining accommodation',
-          ],
-        },
-      ])
-    })
-  })
-
-  describe('orderedActivities', () => {
-    it('returns the activities specified on the draft action plan in date created order', () => {
-      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build({
-        activities: [
-          {
-            id: '1',
-            description: 'description 1',
-            createdAt: '2021-03-15T10:05:00Z',
-          },
-          {
-            id: '2',
-            description: 'description 2',
-            createdAt: '2021-03-15T10:00:00Z',
-          },
-        ],
-      })
-
-      const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
-      expect(presenter.orderedActivities).toEqual(['description 2', 'description 1'])
-    })
   })
 })

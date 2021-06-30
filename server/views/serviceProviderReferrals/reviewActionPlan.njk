@@ -9,7 +9,7 @@
     Desired outcomes and activities
   </h2>
 
-  {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
+  {% for serviceCategoryWithDesiredOutcomes in presenter.actionPlanPresenter.desiredOutcomesByServiceCategory %}
     <h3 class="govuk-heading-m">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
     <ul class="govuk-list govuk-list--bullet">
       {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
@@ -18,7 +18,7 @@
     </ul>
   {% endfor %}
 
-  {% for description in presenter.orderedActivities %}
+  {% for description in presenter.actionPlanPresenter.orderedActivities %}
     {{ govukInsetText(insetTextArgs(loop.index, description)) }}
   {% endfor %}
 
@@ -29,7 +29,7 @@
   </h2>
 
   <p class="govuk-body">
-    Suggested number of sessions: {{ presenter.text.numberOfSessions }}
+    Suggested number of sessions: {{ presenter.actionPlanPresenter.text.actionPlanNumberOfSessions }}
   </p>
 
   <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
