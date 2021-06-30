@@ -26,7 +26,7 @@
         <h2 class="govuk-heading-m">Desired outcomes and activities</h2>
 
         <ul class="govuk-list">
-        {% for activity in presenter.activities %}
+        {% for activity in presenter.orderedActivities %}
             <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity)) }}</li>
         {% endfor %}
         </ul>

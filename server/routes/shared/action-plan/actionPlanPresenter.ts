@@ -31,11 +31,11 @@ export default class ActionPlanPresenter {
     confirmApproval: PresenterUtils.errorMessage(this.validationError, 'confirm-approval'),
   }
 
-  get activities(): string[] {
+  get orderedActivities(): string[] {
     return (
-      this.actionPlan?.activities?.map(it => {
-        return it.description
-      }) || []
+      this.actionPlan?.activities
+        ?.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+        ?.map(activity => activity.description) || []
     )
   }
 

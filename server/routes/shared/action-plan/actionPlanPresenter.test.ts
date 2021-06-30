@@ -29,4 +29,26 @@ describe(InterventionProgressPresenter, () => {
       })
     })
   })
+
+  describe('orderedActivities', () => {
+    it('returns the activities specified on the draft action plan in date created order', () => {
+      const actionPlan = actionPlanFactory.justCreated(referral.id).build({
+        activities: [
+          {
+            id: '1',
+            description: 'description 1',
+            createdAt: '2021-03-15T10:05:00Z',
+          },
+          {
+            id: '2',
+            description: 'description 2',
+            createdAt: '2021-03-15T10:00:00Z',
+          },
+        ],
+      })
+
+      const presenter = new ActionPlanPresenter(referral, actionPlan, 'probation-practitioner')
+      expect(presenter.orderedActivities).toEqual(['description 2', 'description 1'])
+    })
+  })
 })
