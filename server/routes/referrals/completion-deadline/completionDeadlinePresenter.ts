@@ -10,7 +10,7 @@ export default class CompletionDeadlinePresenter {
 
   readonly title = `What date does the ${utils.convertToProperCase(
     this.intervention.contractType.name
-  )} referral need to be completed by?`
+  )} intervention need to be completed by?`
 
   readonly hint = 'For example, 27 10 2021'
 
