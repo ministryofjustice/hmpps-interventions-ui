@@ -550,6 +550,11 @@ export default class InterventionsService {
         toIncludingDate: reportDates.toIncludingDate.iso8601,
       },
       headers: { Accept: 'application/json' },
+      // this will likely be a very large request, so we're overriding the timeout to play it safe
+      timeout: {
+        deadline: 120000,
+        response: 120000,
+      },
     })) as ServiceProviderReportReferral[]
   }
 }

@@ -12,6 +12,10 @@ interface GetRequest {
   responseType?: string
   raw?: boolean
   token?: string | null
+  timeout?: {
+    response: number
+    deadline: number
+  }
 }
 
 interface PostRequest {
@@ -52,6 +56,7 @@ export default class RestClient {
     responseType = '',
     raw = false,
     token = this.token,
+    timeout = this.timeoutConfig(),
   }: GetRequest): Promise<unknown> {
     this.logger.info(
       {
@@ -79,7 +84,7 @@ export default class RestClient {
         .query(query)
         .set(headers)
         .responseType(responseType)
-        .timeout(this.timeoutConfig())
+        .timeout(timeout)
 
       const result =
         token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
