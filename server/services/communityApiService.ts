@@ -5,6 +5,7 @@ import logger from '../../log'
 import DeliusUser from '../models/delius/deliusUser'
 import DeliusServiceUser, { ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
 import DeliusConviction from '../models/delius/deliusConviction'
+import { DeliusStaffDetails } from '../models/delius/deliusStaffDetails'
 
 export default class CommunityApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -57,5 +58,15 @@ export default class CommunityApiService {
       path: `/secure/offenders/crn/${crn}/convictions/${id}`,
       token,
     })) as DeliusConviction
+  }
+
+  async getStaffDetails(username: string): Promise<DeliusStaffDetails> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+
+    logger.info({ username }, 'getting staff details for officer')
+    return (await this.restClient.get({
+      path: `/staff/username/${username}`,
+      token,
+    })) as DeliusStaffDetails
   }
 }

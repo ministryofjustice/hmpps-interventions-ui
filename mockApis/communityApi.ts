@@ -82,4 +82,20 @@ export default class CommunityApiMocks {
       },
     })
   }
+
+  stubGetStaffDetails = async (username: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/community-api/staff/username/${username}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }

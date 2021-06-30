@@ -19,6 +19,7 @@ import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/s
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RiskPresenter from './riskPresenter'
+import { DeliusTeam } from '../../models/delius/deliusStaffDetails'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -36,7 +37,8 @@ export default class ShowReferralPresenter {
     readonly userType: 'service-provider' | 'probation-practitioner',
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
-    private readonly riskSummary: RiskSummary | null
+    private readonly riskSummary: RiskSummary | null,
+    private readonly teamDetails: DeliusTeam | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -58,6 +60,14 @@ export default class ShowReferralPresenter {
     { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
   ]
+
+  readonly probationPractitionerTeamDetails: SummaryListItem[] =
+    this.teamDetails == null
+      ? []
+      : [
+          { key: 'Phone', lines: [`${this.teamDetails?.telephone}`] },
+          { key: 'Email address', lines: [`${this.teamDetails?.emailAddress}`] },
+        ]
 
   get referralServiceCategories(): ServiceCategory[] {
     const { serviceCategoryIds } = this.sentReferral.referral

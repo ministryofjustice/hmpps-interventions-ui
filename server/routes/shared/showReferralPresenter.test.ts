@@ -10,6 +10,7 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -43,6 +44,7 @@ describe(ShowReferralPresenter, () => {
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
+  const staffDetails = deliusStaffDetailsFactory.build()
 
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the check assignment page', () => {
@@ -58,7 +60,8 @@ describe(ShowReferralPresenter, () => {
         'service-provider',
         true,
         deliusServiceUser,
-        riskSummary
+        riskSummary,
+        staffDetails.teams[0]
       )
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
@@ -81,7 +84,8 @@ describe(ShowReferralPresenter, () => {
             'service-provider',
             true,
             deliusServiceUser,
-            riskSummary
+            riskSummary,
+            staffDetails.teams[0]
           )
 
           expect(presenter.text.assignedTo).toBeNull()
@@ -102,7 +106,8 @@ describe(ShowReferralPresenter, () => {
             'service-provider',
             true,
             deliusServiceUser,
-            riskSummary
+            riskSummary,
+            staffDetails.teams[0]
           )
 
           expect(presenter.text.assignedTo).toEqual('John Smith')
@@ -125,13 +130,60 @@ describe(ShowReferralPresenter, () => {
         'service-provider',
         true,
         deliusServiceUser,
-        riskSummary
+        riskSummary,
+        staffDetails.teams[0]
       )
 
       expect(presenter.probationPractitionerDetails).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
       ])
+    })
+  })
+
+  describe('probationPractitionerTeamDetails', () => {
+    it('returns a summary list of probation practitioner team details', () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        staffDetails.teams[0]
+      )
+
+      expect(presenter.probationPractitionerTeamDetails).toEqual([
+        { key: 'Phone', lines: ['07890 123456'] },
+        { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+      ])
+    })
+    describe('when no team is found', () => {
+      it('returns an empty summary list', () => {
+        const sentReferral = sentReferralFactory.build(referralParams)
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          null
+        )
+
+        expect(presenter.probationPractitionerTeamDetails).toEqual([])
+      })
     })
   })
 
@@ -204,7 +256,8 @@ describe(ShowReferralPresenter, () => {
           'service-provider',
           true,
           deliusServiceUser,
-          riskSummary
+          riskSummary,
+          staffDetails.teams[0]
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -293,7 +346,8 @@ describe(ShowReferralPresenter, () => {
           'service-provider',
           true,
           deliusServiceUser,
-          riskSummary
+          riskSummary,
+          staffDetails.teams[0]
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -348,7 +402,8 @@ describe(ShowReferralPresenter, () => {
         'service-provider',
         true,
         deliusServiceUser,
-        riskSummary
+        riskSummary,
+        staffDetails.teams[0]
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
@@ -387,7 +442,8 @@ describe(ShowReferralPresenter, () => {
         'service-provider',
         true,
         deliusServiceUser,
-        riskSummary
+        riskSummary,
+        staffDetails.teams[0]
       )
 
       expect(presenter.serviceUserDetails).toEqual([
@@ -429,7 +485,8 @@ describe(ShowReferralPresenter, () => {
         'service-provider',
         true,
         deliusServiceUser,
-        riskSummary
+        riskSummary,
+        staffDetails.teams[0]
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -495,7 +552,8 @@ describe(ShowReferralPresenter, () => {
           'service-provider',
           true,
           deliusServiceUser,
-          riskSummary
+          riskSummary,
+          staffDetails.teams[0]
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -583,7 +641,8 @@ describe(ShowReferralPresenter, () => {
           'service-provider',
           true,
           deliusServiceUser,
-          riskSummary
+          riskSummary,
+          staffDetails.teams[0]
         )
 
         expect(presenter.serviceUserNeeds).toEqual([

@@ -121,14 +121,16 @@ export default class ProbationPractitionerReferralsController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
-    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary] = await Promise.all([
-      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.communityApiService.getExpandedServiceUserByCRN(crn),
-      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
-      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
-      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-    ])
+    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary, staffDetails] =
+      await Promise.all([
+        this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
+        this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+        this.communityApiService.getExpandedServiceUserByCRN(crn),
+        this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
+        this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
+        this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+        this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
+      ])
 
     const assignee =
       sentReferral.assignedTo === null
@@ -149,7 +151,8 @@ export default class ProbationPractitionerReferralsController {
       'probation-practitioner',
       false,
       expandedServiceUser,
-      riskSummary
+      riskSummary,
+      staffDetails.teams.length === 0 ? null : staffDetails.teams[0]
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
