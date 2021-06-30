@@ -445,6 +445,34 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/check-your-ans
       { userId: '123' }
     )
   })
+
+  describe('with invalid data', () => {
+    it('renders an error message', async () => {
+      const draftCancellation = draftCancellationFactory.build()
+      draftsService.createDraft.mockResolvedValue(draftCancellation)
+
+      const referral = sentReferralFactory.assigned().build()
+      const intervention = interventionFactory.build()
+      const serviceUser = deliusServiceUserFactory.build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+      interventionsService.getReferralCancellationReasons.mockResolvedValue([
+        { code: 'MIS', description: 'Referral was made by mistake' },
+        { code: 'MOV', description: 'Service user has moved out of delivery area' },
+      ])
+
+      await request(app)
+        .post(`/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/cancellation/check-your-answers`)
+        .type('form')
+        .send({ 'cancellation-comments': 'Alex has moved out of the area' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Select a reason for cancelling the referral')
+        })
+    })
+  })
 })
 
 describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancellationId/reason', () => {
@@ -489,6 +517,36 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancella
           expect(res.text).toContain(
             'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.'
           )
+        })
+    })
+  })
+
+  describe('with invalid data', () => {
+    it('renders an error message', async () => {
+      const draftCancellation = draftCancellationFactory.build({
+        data: { cancellationReason: null, cancellationComments: null },
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftCancellation)
+
+      const referral = sentReferralFactory.assigned().build()
+      const intervention = interventionFactory.build()
+      const serviceUser = deliusServiceUserFactory.build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+      interventionsService.getReferralCancellationReasons.mockResolvedValue([
+        { code: 'MIS', description: 'Referral was made by mistake' },
+        { code: 'MOV', description: 'Service user has moved out of delivery area' },
+      ])
+
+      await request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/cancellation/${draftCancellation.id}/reason`)
+        .type('form')
+        .send({ 'cancellation-comments': 'Alex has moved out of the area' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Select a reason for cancelling the referral')
         })
     })
   })
