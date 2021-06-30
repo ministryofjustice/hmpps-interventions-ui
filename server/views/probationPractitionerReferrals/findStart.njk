@@ -7,33 +7,33 @@
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
 {% block primaryNav %}
-    {{ mojPrimaryNavigation(primaryNavArgs) }}
+  {{ mojPrimaryNavigation(primaryNavArgs) }}
 {% endblock %}
 
 {% block pageContent %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-            <h1 class="govuk-heading-xl">Refer and monitor an intervention</h1>
+      <h1 class="govuk-heading-xl">Refer and monitor an intervention</h1>
 
-            <p class="govuk-body govuk-!-margin-bottom-7">Use this service to find interventions for your service users.</p>
-            <form action="/find-interventions">
-                <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
-                    Find interventions
-                    <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewbox="0 0 33 40" aria-hidden="true" focusable="false">
-                        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
-                    </svg>
-                </button>
-            </form>
+      <p class="govuk-body govuk-!-margin-bottom-7">Use this service to find interventions for your service users.</p>
+      <form action="/find-interventions">
+        <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+          Find interventions
+          <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewbox="0 0 33 40" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
+          </svg>
+        </button>
+      </form>
 
-            <h2 class="govuk-heading-l">
-                Draft referrals
-            </h2>
-            {% if presenter.orderedReferrals | length %}
-                {{ govukTable(tableArgs) }}
-            {% else %}
-                <p class="govuk-body-m">{{ presenter.text.noDraftReferrals }}</p>
-            {% endif %}
-        </div>
+      <h2 class="govuk-heading-l">
+        Draft referrals
+      </h2>
+      {% if presenter.orderedReferrals | length %}
+        {{ govukTable(tableArgs) }}
+      {% else %}
+        <p class="govuk-body-m">{{ presenter.text.noDraftReferrals }}</p>
+      {% endif %}
     </div>
+  </div>
 {% endblock %}
