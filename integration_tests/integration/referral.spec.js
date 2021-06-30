@@ -296,7 +296,7 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.get('h1').contains('What date does the Accommodation referral need to be completed by?')
+      cy.get('h1').contains('What date does the Accommodation intervention need to be completed by?')
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
@@ -762,7 +762,7 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.get('h1').contains("What date does the Women's services referral need to be completed by?")
+      cy.get('h1').contains("What date does the Women's services intervention need to be completed by?")
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')

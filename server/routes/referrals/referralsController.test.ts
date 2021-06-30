@@ -531,7 +531,7 @@ describe('GET /referrals/:id/completion-deadline', () => {
       .get('/referrals/1/completion-deadline')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('What date does the Women&#39;s service referral need to be completed by?')
+        expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
       })
   })
   // TODO how do we (or indeed, do we) test what happens when the request has a completion deadline - i.e. that the
@@ -584,7 +584,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('What date does the Women&#39;s service referral need to be completed by?')
+          expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
           expect(res.text).toContain('The date by which the service needs to be completed must be in the future')
         })
 
