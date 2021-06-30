@@ -34,6 +34,15 @@ export default class ReferralCancellationReasonPresenter {
     }))
   }
 
+  private readonly utils = new PresenterUtils(null)
+
+  readonly fields = {
+    cancellationComments: this.utils.stringValue(
+      this.draftCancellation.data.cancellationComments,
+      'cancellation-comments'
+    ),
+  }
+
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'cancellation-reason')
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
