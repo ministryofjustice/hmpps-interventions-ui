@@ -17,3 +17,7 @@ Cypress.Commands.add('stubGetActiveConvictionsByCRN', (crn, responseJson) => {
 Cypress.Commands.add('stubGetConvictionById', (crn, id, responseJson) => {
   cy.task('stubGetConvictionById', { crn, id, responseJson })
 })
+
+Cypress.Commands.add('stubGetStaffDetails', (username, responseJson) => {
+  cy.task('stubGetStaffDetails', { username, responseJson })
+})

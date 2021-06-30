@@ -24,6 +24,13 @@ import expandedDeliusServiceUserFactory from '../../../testutils/factories/expan
 import appointmentFactory from '../../../testutils/factories/appointment'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
+import SentReferral from '../../models/sentReferral'
+import DeliusUser from '../../models/delius/deliusUser'
+import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
+import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
+import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
+import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -98,19 +105,43 @@ describe('GET /service-provider/dashboard', () => {
 })
 
 describe('GET /service-provider/referrals/:id/details', () => {
+  const intervention = interventionFactory.build()
+  const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+  const conviction = deliusConvictionFactory.build()
+  const riskSummary: RiskSummary = riskSummaryFactory.build()
+  let sentReferral: SentReferral
+  let deliusUser: DeliusUser
+  let deliusServiceUser: ExpandedDeliusServiceUser
+  let supplementaryRiskInformation: SupplementaryRiskInformation
+  let staffDetails: DeliusStaffDetails
+  beforeEach(() => {
+    sentReferral = sentReferralFactory.build()
+    deliusUser = deliusUserFactory.build()
+    deliusServiceUser = expandedDeliusServiceUserFactory.build()
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+    staffDetails = deliusStaffDetailsFactory.build()
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    communityApiService.getConvictionById.mockResolvedValue(conviction)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
+  })
+
   it('displays information about the referral and service user', async () => {
-    const intervention = interventionFactory.build()
-    const sentReferral = sentReferralFactory.unassigned().build()
-    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+    sentReferral = sentReferralFactory.unassigned().build()
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'Alex is low risk to others.',
     })
-    const riskSummary = riskSummaryFactory.build()
-    const deliusUser = deliusUserFactory.build({
+    deliusUser = deliusUserFactory.build({
       firstName: 'Bernard',
       surname: 'Beaks',
       email: 'bernard.beaks@justice.gov.uk',
     })
-    const deliusServiceUser = expandedDeliusServiceUserFactory.build({
+    deliusServiceUser = expandedDeliusServiceUserFactory.build({
       firstName: 'Alex',
       surname: 'River',
       contactDetails: {
@@ -137,13 +168,9 @@ describe('GET /service-provider/referrals/:id/details', () => {
         ],
       },
     })
-    const conviction = deliusConvictionFactory.build()
-
-    interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-    communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
 
@@ -161,34 +188,34 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain("service user's Risk of Serious Harm (ROSH) levels")
         expect(res.text).toContain('Children')
         expect(res.text).toContain('HIGH')
+        expect(res.text).toContain('07890 123456')
+        expect(res.text).toContain('probation-team4692@justice.gov.uk')
       })
   })
 
   describe('when the referral has been assigned to a caseworker', () => {
     it('mentions the assigned caseworker', async () => {
-      const intervention = interventionFactory.build()
-      const sentReferral = sentReferralFactory.assigned().build()
-      const deliusUser = deliusUserFactory.build()
-      const deliusServiceUser = expandedDeliusServiceUserFactory.build()
-      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
-      const conviction = deliusConvictionFactory.build()
-      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-
-      interventionsService.getIntervention.mockResolvedValue(intervention)
+      sentReferral = sentReferralFactory.assigned().build()
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-      communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-      communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-      hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
-      communityApiService.getConvictionById.mockResolvedValue(conviction)
-      assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
-      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
-
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}/details`)
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('This intervention is assigned to')
           expect(res.text).toContain('John Smith')
+        })
+    })
+  })
+
+  describe('when no team details can be found', () => {
+    it('does not show the team details', async () => {
+      staffDetails = deliusStaffDetailsFactory.build({ teams: [] })
+      communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
+      await request(app)
+        .get(`/service-provider/referrals/${sentReferral.id}/details`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).not.toContain('Team contact details')
         })
     })
   })

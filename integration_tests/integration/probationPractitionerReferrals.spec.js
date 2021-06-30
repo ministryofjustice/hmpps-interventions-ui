@@ -7,6 +7,7 @@ import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -276,6 +277,16 @@ describe('Probation practitioner referrals dashboard', () => {
       },
     })
 
+    const staffDetails = deliusStaffDetailsFactory.build({
+      teams: [
+        {
+          telephone: '07890 123456',
+          emailAddress: 'probation-team4692@justice.gov.uk',
+          startDate: '2021-01-01',
+        },
+      ],
+    })
+
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
@@ -283,6 +294,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+    cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
 
     cy.login()
 
@@ -337,5 +349,13 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('She works Mondays 9am - midday')
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
+
+    cy.contains('Team contact details').next().contains('Phone').next().contains('07890 123456')
+
+    cy.contains('Team contact details')
+      .next()
+      .contains('Email address')
+      .next()
+      .contains('probation-team4692@justice.gov.uk')
   })
 })

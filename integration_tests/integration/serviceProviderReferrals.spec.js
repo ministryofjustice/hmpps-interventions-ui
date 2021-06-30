@@ -10,6 +10,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import appointmentFactory from '../../testutils/factories/appointment'
 
@@ -156,6 +157,16 @@ describe('Service provider referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
+    const staffDetails = deliusStaffDetailsFactory.build({
+      teams: [
+        {
+          telephone: '07890 123456',
+          emailAddress: 'probation-team4692@justice.gov.uk',
+          startDate: '2021-01-01',
+        },
+      ],
+    })
+
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
@@ -165,6 +176,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
+    cy.stubGetStaffDetails(referralToSelect.sentBy.username, staffDetails)
 
     cy.login()
 
@@ -242,6 +254,14 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('She works Mondays 9am - midday')
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
+
+    cy.contains('Team contact details').next().contains('Phone').next().contains('07890 123456')
+
+    cy.contains('Team contact details')
+      .next()
+      .contains('Email address')
+      .next()
+      .contains('probation-team4692@justice.gov.uk')
   })
 
   it('User assigns a referral to a caseworker', () => {
@@ -262,6 +282,7 @@ describe('Service provider referrals dashboard', () => {
     const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+    const staffDetails = deliusStaffDetailsFactory.build()
 
     cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetSentReferral(referral.id, referral)
@@ -274,6 +295,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubAssignSentReferral(referral.id, referral)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+    cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
 
     cy.login()
 
