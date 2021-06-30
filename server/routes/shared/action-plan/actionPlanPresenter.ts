@@ -1,4 +1,4 @@
-import ActionPlan from '../../../models/actionPlan'
+import ActionPlan, { Activity } from '../../../models/actionPlan'
 import SentReferral from '../../../models/sentReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
@@ -49,12 +49,8 @@ export default class ActionPlanPresenter {
     }
   })
 
-  get orderedActivities(): string[] {
-    return (
-      this.actionPlan?.activities
-        ?.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
-        ?.map(activity => activity.description) || []
-    )
+  get orderedActivities(): Activity[] {
+    return this.actionPlan?.activities?.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1)) || []
   }
 
   get showApprovalForm(): boolean {

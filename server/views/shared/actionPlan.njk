@@ -36,7 +36,7 @@
 
         <ul class="govuk-list">
         {% for activity in presenter.orderedActivities %}
-            <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity)) }}</li>
+            <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity.description)) }}</li>
         {% endfor %}
         </ul>
 

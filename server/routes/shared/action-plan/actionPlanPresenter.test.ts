@@ -100,7 +100,18 @@ describe(InterventionProgressPresenter, () => {
       })
 
       const presenter = new ActionPlanPresenter(referral, actionPlan, serviceCategories, 'probation-practitioner')
-      expect(presenter.orderedActivities).toEqual(['description 2', 'description 1'])
+      expect(presenter.orderedActivities).toEqual([
+        {
+          id: '2',
+          description: 'description 2',
+          createdAt: '2021-03-15T10:00:00Z',
+        },
+        {
+          id: '1',
+          description: 'description 1',
+          createdAt: '2021-03-15T10:05:00Z',
+        },
+      ])
     })
   })
 })
