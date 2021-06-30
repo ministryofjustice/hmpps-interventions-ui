@@ -10,8 +10,6 @@ import { Draft } from '../../services/draftsService'
 
 export default class ReferralCancellationReasonPresenter {
   constructor(
-    // This property is unused right now, but we’ll shortly make use of it
-    // to replay entered data
     private readonly draftCancellation: Draft<DraftCancellationData>,
     private readonly sentReferral: SentReferral,
     private readonly intervention: Intervention,
@@ -32,7 +30,7 @@ export default class ReferralCancellationReasonPresenter {
     return this.cancellationReasons.map(cancellationReason => ({
       value: cancellationReason.code,
       text: cancellationReason.description,
-      checked: false,
+      checked: this.draftCancellation.data.cancellationReason === cancellationReason.code,
     }))
   }
 
