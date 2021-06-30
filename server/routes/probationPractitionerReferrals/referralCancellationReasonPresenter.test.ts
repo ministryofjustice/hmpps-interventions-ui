@@ -34,17 +34,17 @@ describe(ReferralCancellationReasonPresenter, () => {
   })
 
   describe('referralCancellationFields', () => {
-    it('returns an array of fields to be passed as radio button args', () => {
-      const sentReferral = sentReferralFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-      const intervention = interventionFactory.build()
-      const cancellationReasons: CancellationReason[] = [
-        { code: 'MIS', description: 'Referral was made by mistake' },
-        { code: 'MOV', description: 'Service user has moved out of delivery area' },
-      ]
+    const sentReferral = sentReferralFactory.build()
+    const serviceUser = deliusServiceUserFactory.build()
+    const intervention = interventionFactory.build()
+    const cancellationReasons: CancellationReason[] = [
+      { code: 'MIS', description: 'Referral was made by mistake' },
+      { code: 'MOV', description: 'Service user has moved out of delivery area' },
+    ]
 
+    it('returns an array of fields to be passed as radio button args', () => {
       const presenter = new ReferralCancellationReasonPresenter(
-        draftFactory.build({ data: draftCancellationDataFactory.build() }),
+        draftFactory.build({ data: draftCancellationDataFactory.build({ cancellationReason: null }) }),
         sentReferral,
         intervention,
         serviceUser,
@@ -55,6 +55,23 @@ describe(ReferralCancellationReasonPresenter, () => {
         { value: 'MIS', text: 'Referral was made by mistake', checked: false },
         { value: 'MOV', text: 'Service user has moved out of delivery area', checked: false },
       ])
+    })
+
+    describe('when the draft cancellation has a non-null cancellationReason', () => {
+      it('sets checked to true for that reason', () => {
+        const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build({ cancellationReason: 'MOV' }) }),
+          sentReferral,
+          intervention,
+          serviceUser,
+          cancellationReasons
+        )
+
+        expect(presenter.cancellationReasonsFields).toEqual([
+          { value: 'MIS', text: 'Referral was made by mistake', checked: false },
+          { value: 'MOV', text: 'Service user has moved out of delivery area', checked: true },
+        ])
+      })
     })
   })
 
