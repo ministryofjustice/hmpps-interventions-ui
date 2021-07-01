@@ -111,6 +111,7 @@ class ReferralService(
     val referrals = referralRepository.findAllByInterventionDynamicFrameworkContractPrimeProviderInAndSentAtIsNotNull(serviceProviders)
       // todo: query for referrals where the service provider has been granted nominated access only
       .union(referralRepository.findAllByInterventionDynamicFrameworkContractSubcontractorProvidersInAndSentAtIsNotNull(serviceProviders))
+      .filterNot { it.cancelled() }
 
     return referralAccessFilter.serviceProviderReferrals(referrals.toList(), user)
   }
