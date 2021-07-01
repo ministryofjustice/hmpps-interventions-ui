@@ -508,4 +508,57 @@ internal class ActionPlanSessionsServiceTest {
     verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
     verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
   }
+
+  @Test
+  fun `makes a booking with delius office location`() {
+    val session = actionPlanSessionFactory.createScheduled()
+    val actionPlanId = session.actionPlan.id
+    val sessionNumber = session.sessionNumber
+    val referral = session.actionPlan.referral
+    val createdByUser = session.actionPlan.createdBy
+    val appointmentTime = OffsetDateTime.now()
+    val durationInMinutes = 15
+    val npsOfficeCode = "CRS0001"
+
+    whenever(
+      communityAPIBookingService.book(
+        referral,
+        session.currentAppointment,
+        appointmentTime,
+        durationInMinutes,
+        SERVICE_DELIVERY
+      )
+    ).thenReturn(999L)
+    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(
+      session
+    )
+    whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
+    whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
+
+    val updatedSession = actionPlanSessionsService.updateSessionAppointment(
+      actionPlanId,
+      sessionNumber,
+      appointmentTime,
+      durationInMinutes,
+      createdByUser,
+      AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+      null,
+      npsOfficeCode
+    )
+
+    assertThat(updatedSession).isEqualTo(session)
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE), isNull(), eq(npsOfficeCode))
+    verify(communityAPIBookingService).book(
+      referral,
+      session.currentAppointment,
+      appointmentTime,
+      durationInMinutes,
+      SERVICE_DELIVERY
+    )
+    verify(appointmentRepository, times(1)).saveAndFlush(
+      ArgumentMatchers.argThat {
+        it.deliusAppointmentId == 999L
+      }
+    )
+  }
 }

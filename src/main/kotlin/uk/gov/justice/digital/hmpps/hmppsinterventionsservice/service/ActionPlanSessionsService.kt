@@ -64,6 +64,7 @@ class ActionPlanSessionsService(
     updatedBy: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String? = null,
   ): ActionPlanSession {
 
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
@@ -87,14 +88,14 @@ class ActionPlanSessionsService(
         referral = session.actionPlan.referral,
       )
       appointmentRepository.saveAndFlush(appointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
     } else {
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
       appointmentRepository.saveAndFlush(existingAppointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
     }
     return actionPlanSessionRepository.save(session)
   }

@@ -40,7 +40,7 @@ internal class ActionPlanSessionControllerTest {
     val actionPlanId = actionPlanSession.actionPlan.id
     val sessionNumber = actionPlanSession.sessionNumber
 
-    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, null)
+    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, null, null)
 
     whenever(
       sessionsService.updateSessionAppointment(
@@ -50,6 +50,7 @@ internal class ActionPlanSessionControllerTest {
         updateAppointmentDTO.durationInMinutes,
         user,
         AppointmentDeliveryType.PHONE_CALL,
+        null,
         null
       )
     ).thenReturn(actionPlanSession)
