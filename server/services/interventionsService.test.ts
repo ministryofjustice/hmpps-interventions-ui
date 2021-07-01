@@ -17,6 +17,23 @@ import supplierAssessmentFactory from '../../testutils/factories/supplierAssessm
 
 jest.mock('../services/hmppsAuthService')
 
+/*
+ It seems that perhaps after upgrading to Jest 27.x, it’s broken something in jest-pact
+ (a Jest hook?) which is responsible for increasing the Jest timeout to 30s to give the 
+ mock web server time to start up. I’m basing this on the error that’s displayed below 
+ when I run the tests.
+
+ I’ve created IC-2024 to investigate this, but I think the temporary solution 
+ is to set the timeout ourselves.
+
+  ● Pact between Interventions UI and Interventions Service › with 30000 ms timeout for Pact › getDraftReferral › returns a referral for the gi
+ven ID
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+*/
+jest.setTimeout(30000)
+
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
   let token: string
