@@ -65,7 +65,10 @@ export default class ShowReferralPresenter {
   get probationPractitionerTeamDetails(): SummaryListItem[] {
     const { activeTeam } = this
     return activeTeam == null
-      ? []
+      ? [
+          { key: 'Phone', lines: [] },
+          { key: 'Email address', lines: [] },
+        ]
       : [
           { key: 'Phone', lines: [`${activeTeam.telephone}`] },
           { key: 'Email address', lines: [`${activeTeam.emailAddress}`] },
