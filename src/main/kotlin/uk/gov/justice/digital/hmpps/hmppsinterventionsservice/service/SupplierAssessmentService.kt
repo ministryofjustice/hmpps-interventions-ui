@@ -42,6 +42,7 @@ class SupplierAssessmentService(
     createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String? = null,
   ): Appointment {
     val appointment = appointmentService.createOrUpdateAppointment(
       supplierAssessment.referral,
@@ -52,6 +53,7 @@ class SupplierAssessmentService(
       createdByUser,
       appointmentDeliveryType,
       appointmentDeliveryAddress,
+      npsOfficeCode,
     )
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.save(supplierAssessment)

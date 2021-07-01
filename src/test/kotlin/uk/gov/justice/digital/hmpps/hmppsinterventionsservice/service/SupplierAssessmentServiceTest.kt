@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
@@ -61,37 +62,70 @@ class SupplierAssessmentServiceTest {
     assertThat(response.supplierAssessment).isNotNull
   }
 
-  @Test
-  fun `can create supplier assessment appointment`() {
+  @Nested
+  inner class CreateOrUpdateSupplierAssessmentAppointment {
     val supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
     val appointment = appointmentFactory.create()
     val createdByUser = authUserFactory.create()
     val durationInMinutes = 60
     val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
-    val appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
+    var appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
+    @Test
+    fun `can create supplier assessment appointment`() {
+      whenever(
+        appointmentService.createOrUpdateAppointment(
+          eq(supplierAssessment.referral),
+          isNull(),
+          eq(durationInMinutes),
+          eq(appointmentTime),
+          eq(SUPPLIER_ASSESSMENT),
+          eq(createdByUser),
+          eq(appointmentDeliveryType),
+          isNull(),
+          isNull(),
+        )
+      ).thenReturn(appointment)
+      whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
 
-    whenever(
-      appointmentService.createOrUpdateAppointment(
-        eq(supplierAssessment.referral),
-        isNull(),
-        eq(durationInMinutes),
-        eq(appointmentTime),
-        eq(SUPPLIER_ASSESSMENT),
-        eq(createdByUser),
-        eq(appointmentDeliveryType),
-        isNull()
-      )
-    ).thenReturn(appointment)
-    whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
+      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType)
 
-    supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType)
+      val argumentCaptor = argumentCaptor<SupplierAssessment>()
+      verify(supplierAssessmentRepository, atLeastOnce()).save(argumentCaptor.capture())
+      val arguments = argumentCaptor.firstValue
 
-    val argumentCaptor = argumentCaptor<SupplierAssessment>()
-    verify(supplierAssessmentRepository, atLeastOnce()).save(argumentCaptor.capture())
-    val arguments = argumentCaptor.firstValue
+      assertThat(arguments.appointments.size).isEqualTo(1)
+      assertThat(arguments.currentAppointment).isEqualTo(appointment)
+    }
 
-    assertThat(arguments.appointments.size).isEqualTo(1)
-    assertThat(arguments.currentAppointment).isEqualTo(appointment)
+    @Test
+    fun `can create supplier assessment appointment with delius office location`() {
+      appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE
+      val npsOfficeCode = "CRSEXT"
+
+      whenever(
+        appointmentService.createOrUpdateAppointment(
+          eq(supplierAssessment.referral),
+          isNull(),
+          eq(durationInMinutes),
+          eq(appointmentTime),
+          eq(SUPPLIER_ASSESSMENT),
+          eq(createdByUser),
+          eq(appointmentDeliveryType),
+          isNull(),
+          eq(npsOfficeCode),
+        )
+      ).thenReturn(appointment)
+      whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
+
+      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType, npsOfficeCode = npsOfficeCode)
+
+      val argumentCaptor = argumentCaptor<SupplierAssessment>()
+      verify(supplierAssessmentRepository, atLeastOnce()).save(argumentCaptor.capture())
+      val arguments = argumentCaptor.firstValue
+
+      assertThat(arguments.appointments.size).isEqualTo(1)
+      assertThat(arguments.currentAppointment).isEqualTo(appointment)
+    }
   }
 
   @Test
