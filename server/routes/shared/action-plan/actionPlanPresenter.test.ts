@@ -156,4 +156,48 @@ describe(InterventionProgressPresenter, () => {
       expect(submittedActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
     })
   })
+
+  describe('showEditButton', () => {
+    it('shows for SPs when the action plan has been submitted', () => {
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(submittedActionPlanPresenter.showEditButton).toBe(true)
+    })
+
+    it('does not show for SPs when the action plan has been approved', () => {
+      const approvedActionPlan = actionPlanFactory.approved().build()
+      const approvedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        approvedActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(approvedActionPlanPresenter.showEditButton).toBe(false)
+    })
+
+    it('never shows for PPs', () => {
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(submittedActionPlanPresenter.showEditButton).toBe(false)
+
+      const approvedActionPlan = actionPlanFactory.approved().build()
+      const approvedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        approvedActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(approvedActionPlanPresenter.showEditButton).toBe(false)
+    })
+  })
 })

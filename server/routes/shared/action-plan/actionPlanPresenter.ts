@@ -28,6 +28,8 @@ export default class ActionPlanPresenter {
 
   readonly actionPlanApprovalUrl = `/probation-practitioner/referrals/${this.referral.id}/action-plan/approve`
 
+  readonly actionPlanEditConfirmationUrl = `/service-provider/referrals/${this.referral.id}/action-plan/edit`
+
   readonly errorSummary = PresenterUtils.errorSummary(this.validationError)
 
   readonly fieldErrors = {
@@ -60,5 +62,9 @@ export default class ActionPlanPresenter {
   get probationPractitionerBlockedFromViewing(): boolean {
     // probation practitioners can only view submitted action plans
     return this.userType === 'probation-practitioner' && !this.actionPlanSummaryPresenter.actionPlanSubmitted
+  }
+
+  get showEditButton(): boolean {
+    return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanUnderReview
   }
 }
