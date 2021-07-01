@@ -312,6 +312,18 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('This intervention is assigned to John Smith.')
   })
 
+  it('User tries to continue a draft assignment that no longer exists', () => {
+    cy.stubGetSentReferralsForUserToken([])
+
+    cy.login()
+
+    cy.visit('/service-provider/referrals/abc123/assignment/some-fake-id/check', { failOnStatusCode: false })
+    // TODO IC-2021 check this gives a 404 response too
+    cy.get('#user-error-message').contains(
+      'Too much time has passed since started entering your answers. Your answers have not been saved, and you will need to start again.'
+    )
+  })
+
   it('User creates an action plan and submits it for approval', () => {
     const desiredOutcomes = [
       {

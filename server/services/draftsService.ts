@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import uuid from 'uuid'
+import createError from 'http-errors'
 
 export interface Draft<Data> {
   id: string
@@ -32,7 +33,11 @@ export default class DraftsService {
     const dto = req.session[this.sessionKey(id)]
 
     if (dto === undefined) {
-      throw new Error(`Draft with ID ${id} not found in session`)
+      throw createError(404, new Error(`Draft with ID ${id} not found in session`), {
+        external: false,
+        userMessage:
+          'Too much time has passed since started entering your answers. Your answers have not been saved, and you will need to start again.',
+      })
     }
 
     return dto

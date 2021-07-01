@@ -11,7 +11,7 @@
                 <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
                 
                 {% if userMessage %}
-                    <p class="govuk-body">{{ userMessage }}</p>
+                    <p id="user-error-message" class="govuk-body">{{ userMessage }}</p>
                 {% endif %}
 
                 <p class="govuk-body">The error has been logged.</p>
