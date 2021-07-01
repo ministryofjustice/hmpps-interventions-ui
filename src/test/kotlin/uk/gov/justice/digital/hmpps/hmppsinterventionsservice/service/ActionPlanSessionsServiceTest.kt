@@ -103,7 +103,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
@@ -133,7 +133,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(newTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(newDuration)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isNotEqualTo("re-scheduler")
@@ -173,7 +173,7 @@ internal class ActionPlanSessionsServiceTest {
     )
 
     assertThat(updatedSession).isEqualTo(session)
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     verify(communityAPIBookingService).book(
       referral,
       session.currentAppointment,
@@ -220,7 +220,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == null

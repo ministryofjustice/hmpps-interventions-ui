@@ -12,7 +12,7 @@ data class AppointmentDTO(
   val sessionFeedback: SessionFeedbackDTO,
   val appointmentDeliveryType: AppointmentDeliveryType?,
   val appointmentDeliveryAddress: AddressDTO?,
-  val deliusOfficeLocationCode: String?
+  val npsOfficeCode: String?
 ) {
   companion object {
     fun from(appointment: Appointment): AppointmentDTO {
@@ -36,7 +36,7 @@ data class AppointmentDTO(
         ),
         appointmentDeliveryType = appointment.appointmentDelivery?.appointmentDeliveryType,
         appointmentDeliveryAddress = addressDTO,
-        deliusOfficeLocationCode = appointment.appointmentDelivery?.npsOfficeCode
+        npsOfficeCode = appointment.appointmentDelivery?.npsOfficeCode
       )
     }
     fun from(appointments: MutableSet<Appointment>): List<AppointmentDTO> {

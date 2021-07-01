@@ -18,8 +18,8 @@ class AppointmentValidator {
     val appointmentDeliveryAddress = updateAppointmentDTO.appointmentDeliveryAddress
     when (updateAppointmentDTO.appointmentDeliveryType) {
       AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE -> {
-        if (updateAppointmentDTO.deliusOfficeLocationCode.isNullOrEmpty()) {
-          errors.add(FieldError(field = "deliusOfficeLocationCode", error = Code.CANNOT_BE_EMPTY))
+        if (updateAppointmentDTO.npsOfficeCode.isNullOrEmpty()) {
+          errors.add(FieldError(field = "npsOfficeCode", error = Code.CANNOT_BE_EMPTY))
         }
       }
       AppointmentDeliveryType.IN_PERSON_MEETING_OTHER -> {

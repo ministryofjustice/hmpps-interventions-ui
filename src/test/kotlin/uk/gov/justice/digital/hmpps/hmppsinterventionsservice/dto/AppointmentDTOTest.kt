@@ -34,6 +34,6 @@ internal class AppointmentDTOTest {
     appointment.appointmentDelivery = appointmentDelivery
     val appointmentDTO = AppointmentDTO.from(appointment)
     Assertions.assertThat(appointmentDTO.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
-    Assertions.assertThat(appointmentDTO.deliusOfficeLocationCode).isEqualTo("CRSEXT")
+    Assertions.assertThat(appointmentDTO.npsOfficeCode).isEqualTo("CRSEXT")
   }
 }

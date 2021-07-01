@@ -24,7 +24,7 @@ internal class AppointmentValidatorTest {
     inner class DeliusOfficeLocationAppointment {
       @Test
       fun `can request valid a delius office appointment`() {
-        val updateAppointmentDTO = UpdateAppointmentDTO(appointmentTime = OffsetDateTime.now(), durationInMinutes = 1, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, deliusOfficeLocationCode = "CRSEXT")
+        val updateAppointmentDTO = UpdateAppointmentDTO(appointmentTime = OffsetDateTime.now(), durationInMinutes = 1, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = "CRSEXT")
         assertDoesNotThrow {
           actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
         }
@@ -36,7 +36,7 @@ internal class AppointmentValidatorTest {
           actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
         }
         assertThat(exception.errors).containsExactly(
-          FieldError("deliusOfficeLocationCode", Code.CANNOT_BE_EMPTY),
+          FieldError("npsOfficeCode", Code.CANNOT_BE_EMPTY),
         )
       }
     }

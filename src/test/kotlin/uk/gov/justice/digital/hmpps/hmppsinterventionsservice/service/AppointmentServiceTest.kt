@@ -56,6 +56,32 @@ class AppointmentServiceTest {
   }
 
   @Test
+  fun `can create new appointment with delius office location delivery`() {
+    // Given
+    val durationInMinutes = 60
+    val appointmentTime = OffsetDateTime.now()
+    val referral = referralFactory.createSent()
+    val deliusAppointmentId = 99L
+    val npsOfficeCode = "CRSEXT"
+
+    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT))
+      .thenReturn(deliusAppointmentId)
+    val savedAppointment = appointmentFactory.create(
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = deliusAppointmentId,
+    )
+    whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
+
+    // When
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = npsOfficeCode)
+
+    // Then
+    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, npsOfficeCode)
+    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, npsOfficeCode)
+  }
+
+  @Test
   fun `create new appointment if none currently exist`() {
     // Given
     val durationInMinutes = 60
@@ -145,7 +171,7 @@ class AppointmentServiceTest {
     assertThat(error.message).contains("Is it not possible to update an appointment that has already been attended")
   }
 
-  private fun verifyResponse(appointment: Appointment, originalId: UUID?, expectNewId: Boolean, deliusAppointmentId: Long, appointmentTime: OffsetDateTime?, durationInMinutes: Int, appointmentDeliveryType: AppointmentDeliveryType) {
+  private fun verifyResponse(appointment: Appointment, originalId: UUID?, expectNewId: Boolean, deliusAppointmentId: Long, appointmentTime: OffsetDateTime?, durationInMinutes: Int, appointmentDeliveryType: AppointmentDeliveryType, npsOfficeCode: String? = null) {
 
     // Verifying create or update route
     if (expectNewId)
@@ -157,9 +183,10 @@ class AppointmentServiceTest {
     assertThat(appointment.appointmentTime).isEqualTo(appointmentTime)
     assertThat(appointment.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
+    assertThat(appointment.appointmentDelivery?.npsOfficeCode).isEqualTo(npsOfficeCode)
   }
 
-  private fun verifySavedAppointment(appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long, appointmentDeliveryType: AppointmentDeliveryType) {
+  private fun verifySavedAppointment(appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long, appointmentDeliveryType: AppointmentDeliveryType, npsOfficeCode: String? = null) {
     val argumentCaptor = argumentCaptor<Appointment>()
     verify(appointmentRepository, atLeast(1)).saveAndFlush(argumentCaptor.capture())
     val arguments = argumentCaptor.lastValue
@@ -169,6 +196,7 @@ class AppointmentServiceTest {
     assertThat(arguments.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(arguments.deliusAppointmentId).isEqualTo(deliusAppointmentId)
     assertThat(arguments.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
+    assertThat(arguments.appointmentDelivery?.npsOfficeCode).isEqualTo(npsOfficeCode)
   }
 
   @Nested

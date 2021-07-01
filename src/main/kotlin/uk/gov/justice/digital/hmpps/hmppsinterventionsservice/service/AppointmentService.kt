@@ -40,6 +40,7 @@ class AppointmentService(
     createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String? = null,
   ): Appointment {
     val appointment = when {
       // an initial appointment is required
@@ -53,7 +54,8 @@ class AppointmentService(
           createdByUser,
           appointmentDeliveryType,
           appointmentDeliveryAddress,
-          referral
+          referral,
+          npsOfficeCode
         )
       }
       // the current appointment needs to be updated
@@ -66,7 +68,8 @@ class AppointmentService(
           appointmentTime,
           deliusAppointmentId,
           appointmentDeliveryType,
-          appointmentDeliveryAddress
+          appointmentDeliveryAddress,
+          npsOfficeCode
         )
       }
       // an additional appointment is required
@@ -80,7 +83,8 @@ class AppointmentService(
           createdByUser,
           appointmentDeliveryType,
           appointmentDeliveryAddress,
-          referral
+          referral,
+          npsOfficeCode
         )
       }
       // the appointment has already been attended
@@ -95,12 +99,12 @@ class AppointmentService(
   fun createOrUpdateAppointmentDeliveryDetails(
     appointment: Appointment,
     appointmentDeliveryType: AppointmentDeliveryType,
-    appointmentDeliveryAddressDTO: AddressDTO?
+    appointmentDeliveryAddressDTO: AddressDTO?,
+    npsOfficeCode: String? = null
   ) {
     var appointmentDelivery = appointment.appointmentDelivery
     if (appointmentDelivery == null) {
-      appointmentDelivery =
-        AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
+      appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType, npsOfficeCode = npsOfficeCode)
     }
     appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
     appointment.appointmentDelivery = appointmentDelivery
@@ -219,6 +223,7 @@ class AppointmentService(
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
     referral: Referral,
+    npsOfficeCode: String?,
   ): Appointment {
     val appointment = Appointment(
       id = UUID.randomUUID(),
@@ -230,7 +235,7 @@ class AppointmentService(
       referral = referral,
     )
     appointmentRepository.saveAndFlush(appointment)
-    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
+    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
   }
 
@@ -241,12 +246,13 @@ class AppointmentService(
     deliusAppointmentId: Long?,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String?,
   ): Appointment {
     appointment.durationInMinutes = durationInMinutes
     appointment.appointmentTime = appointmentTime
     appointment.deliusAppointmentId = deliusAppointmentId
     val appointment = appointmentRepository.save(appointment)
-    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
+    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
   }
 
