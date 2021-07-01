@@ -51,7 +51,7 @@ class SupplierAssessmentService(
       SUPPLIER_ASSESSMENT,
       createdByUser,
       appointmentDeliveryType,
-      appointmentDeliveryAddress
+      appointmentDeliveryAddress,
     )
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.save(supplierAssessment)

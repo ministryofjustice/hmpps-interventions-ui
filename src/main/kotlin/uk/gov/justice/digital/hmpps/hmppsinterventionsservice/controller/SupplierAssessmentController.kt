@@ -46,7 +46,7 @@ class SupplierAssessmentController(
         updateAppointmentDTO.appointmentTime,
         user,
         updateAppointmentDTO.appointmentDeliveryType,
-        updateAppointmentDTO.appointmentDeliveryAddress
+        updateAppointmentDTO.appointmentDeliveryAddress,
       )
     )
   }

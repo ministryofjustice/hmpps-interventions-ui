@@ -8,12 +8,12 @@ import java.util.UUID
 
 class AppointmentDeliveryFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val appointmentFactory = AppointmentFactory(em)
+
   fun create(
     appointmentId: UUID? = null,
-    appointmentDeliveryType: AppointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL,
     npsOfficeCode: String? = null,
-    appointmentDeliveryAddress: AppointmentDeliveryAddress? = null
-  ): AppointmentDelivery {
+    appointmentDeliveryType: AppointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL,
+  ) : AppointmentDelivery {
     var id = appointmentId
     if (id == null) {
       id = appointmentFactory.create().id
@@ -23,7 +23,6 @@ class AppointmentDeliveryFactory(em: TestEntityManager? = null) : EntityFactory(
         appointmentId = id,
         appointmentDeliveryType = appointmentDeliveryType,
         npsOfficeCode = npsOfficeCode,
-        appointmentDeliveryAddress = appointmentDeliveryAddress
       )
     )
   }
