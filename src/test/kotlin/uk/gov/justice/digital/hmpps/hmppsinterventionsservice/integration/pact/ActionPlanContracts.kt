@@ -93,13 +93,17 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
     setupAssistant.createActionPlan(id = UUID.fromString("dfb64747-f658-40e0-a827-87b4b0bdcfed"))
   }
 
-  @State("a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted")
+  @State(
+    "a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted",
+    "a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and it has an activity with ID fd1b6653-ea7b-4e12-9d45-72ff9b1a3ea0",
+  )
   fun `create a an draft plan with activities`() {
     setupAssistant.createActionPlan(
       id = UUID.fromString("6e8dfb5c-127f-46ea-9846-f82b5fd60d27"),
       numberOfSessions = 4,
       activities = mutableListOf(
         ActionPlanActivity(
+          id = UUID.fromString("fd1b6653-ea7b-4e12-9d45-72ff9b1a3ea0"),
           description = "Attend training course",
         )
       )
