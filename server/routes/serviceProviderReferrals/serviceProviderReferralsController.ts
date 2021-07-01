@@ -983,7 +983,7 @@ export default class ServiceProviderReferralsController {
     ])
 
     const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'service-provider')
-    const view = new ActionPlanView(presenter, false)
+    const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

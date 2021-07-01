@@ -2,13 +2,13 @@ import { TagArgs, TableArgs, SummaryListArgs } from '../../utils/govukFrontendTy
 import ViewUtils from '../../utils/viewUtils'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
-import ActionPlanView from '../shared/action-plan/actionPlanView'
+import ActionPlanSummaryView from '../shared/action-plan/actionPlanSummaryView'
 
 export default class InterventionProgressView {
-  actionPlanView: ActionPlanView
+  actionPlanSummaryView: ActionPlanSummaryView
 
   constructor(private readonly presenter: InterventionProgressPresenter) {
-    this.actionPlanView = new ActionPlanView(presenter.actionPlanPresenter, true)
+    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanSummaryPresenter, true)
   }
 
   private supplierAssessmentSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs | null {
@@ -88,7 +88,7 @@ export default class InterventionProgressView {
         supplierAssessmentSummaryListArgs: this.supplierAssessmentSummaryListArgs.bind(this),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
-        actionPlanSummaryListArgs: this.actionPlanView.actionPlanSummaryListArgs.bind(this.actionPlanView),
+        actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
       },
     ]
   }

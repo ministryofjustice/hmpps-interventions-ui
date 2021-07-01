@@ -6,10 +6,10 @@ import DateUtils from '../../utils/dateUtils'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
-import ActionPlanPresenter from '../shared/action-plan/actionPlanPresenter'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
@@ -33,7 +33,7 @@ enum SupplierAssessmentStatus {
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
-  actionPlanPresenter: ActionPlanPresenter
+  actionPlanSummaryPresenter: ActionPlanSummaryPresenter
 
   constructor(
     private readonly referral: SentReferral,
@@ -48,7 +48,7 @@ export default class InterventionProgressPresenter {
       referral.id,
       'probation-practitioner'
     )
-    this.actionPlanPresenter = new ActionPlanPresenter(referral, actionPlan, 'probation-practitioner')
+    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'probation-practitioner')
   }
 
   get referralAssigned(): boolean {

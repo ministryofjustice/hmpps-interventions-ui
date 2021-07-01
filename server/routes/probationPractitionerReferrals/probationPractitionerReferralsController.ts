@@ -325,7 +325,7 @@ export default class ProbationPractitionerReferralsController {
     ])
 
     const presenter = new ActionPlanPresenter(sentReferral, actionPlan, 'probation-practitioner', formValidationError)
-    const view = new ActionPlanView(presenter, false)
+    const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
