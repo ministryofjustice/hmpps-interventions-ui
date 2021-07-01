@@ -280,5 +280,9 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.actionPlanEditConfirmation(req, res)
   )
 
+  post('/service-provider/referrals/:id/action-plan/edit', (req, res) =>
+    serviceProviderReferralsController.createNewDraftActionPlan(req, res)
+  )
+
   return router
 }
