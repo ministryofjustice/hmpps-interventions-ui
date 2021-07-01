@@ -3,6 +3,8 @@ import SentReferral from '../../../models/sentReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 import ActionPlanSummaryPresenter from './actionPlanSummaryPresenter'
+import utils from '../../../utils/utils'
+import ServiceCategory from '../../../models/serviceCategory'
 
 export default class ActionPlanPresenter {
   actionPlanSummaryPresenter: ActionPlanSummaryPresenter
@@ -10,6 +12,7 @@ export default class ActionPlanPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly actionPlan: ActionPlan,
+    private readonly serviceCategories: ServiceCategory[],
     readonly userType: 'service-provider' | 'probation-practitioner',
     private readonly validationError: FormValidationError | null = null
   ) {
@@ -31,11 +34,26 @@ export default class ActionPlanPresenter {
     confirmApproval: PresenterUtils.errorMessage(this.validationError, 'confirm-approval'),
   }
 
-  get activities(): string[] {
+  private readonly desiredOutcomesIds = this.referral.referral.desiredOutcomes.flatMap(
+    desiredOutcome => desiredOutcome.desiredOutcomesIds
+  )
+
+  readonly desiredOutcomesByServiceCategory = this.serviceCategories.map(serviceCategory => {
+    const desiredOutcomesForServiceCategory = serviceCategory.desiredOutcomes.filter(desiredOutcome =>
+      this.desiredOutcomesIds.includes(desiredOutcome.id)
+    )
+
+    return {
+      serviceCategory: utils.convertToProperCase(serviceCategory.name),
+      desiredOutcomes: desiredOutcomesForServiceCategory.map(desiredOutcome => desiredOutcome.description),
+    }
+  })
+
+  get orderedActivities(): string[] {
     return (
-      this.actionPlan?.activities?.map(it => {
-        return it.description
-      }) || []
+      this.actionPlan?.activities
+        ?.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+        ?.map(activity => activity.description) || []
     )
   }
 

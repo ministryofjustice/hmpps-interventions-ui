@@ -443,12 +443,14 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
 describe('GET /probation-practitioner/referrals/:id/action-plan', () => {
   it('displays information about the action plan and service user', async () => {
     const sentReferral = sentReferralFactory.assigned().build()
+    const serviceCategory = serviceCategoryFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
     const actionPlan = actionPlanFactory.submitted().build({ referralId: sentReferral.id })
     sentReferral.actionPlanId = actionPlan.id
 
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
@@ -478,12 +480,14 @@ describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () =>
   })
   it("redirects back to action-plan if approval hasn't been confirmed", async () => {
     const sentReferral = sentReferralFactory.assigned().build()
+    const serviceCategory = serviceCategoryFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
     const actionPlan = actionPlanFactory.submitted().build({ referralId: sentReferral.id })
     sentReferral.actionPlanId = actionPlan.id
 
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
