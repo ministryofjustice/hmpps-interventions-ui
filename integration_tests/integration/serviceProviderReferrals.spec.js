@@ -398,7 +398,7 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#action-plan-status').contains('Not submitted')
     cy.contains('Create action plan').click()
 
-    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
 
     cy.contains('Add activity 1 to action plan')
     cy.contains('Referred outcomes for Alex')
@@ -422,7 +422,7 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#description').type('Attend training course')
     cy.contains('Save and add activity 1').click()
 
-    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
 
     const draftActionPlanWithAllActivities = {
       ...draftActionPlanWithActivity,
@@ -442,7 +442,7 @@ describe('Service provider referrals dashboard', () => {
     cy.get('#description').type('Create appointment with local authority')
     cy.contains('Save and add activity 2').click()
 
-    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+    cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/3`)
 
     cy.contains('Continue without adding other activities').click()
 

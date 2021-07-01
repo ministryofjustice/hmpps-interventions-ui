@@ -350,7 +350,7 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
   })
 })
 
-describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () => {
+describe('GET /service-provider/action-plan/:actionPlanId/add-activity/:number', () => {
   it('displays a page to add activities to an action plan', async () => {
     const desiredOutcome = { id: '1', description: 'Achieve a thing' }
     const serviceCategories = [
@@ -377,7 +377,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
 
     await request(app)
-      .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Add activity 2 to action plan')
@@ -386,9 +386,44 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activities', () =>
         expect(res.text).toContain('Achieve a thing')
       })
   })
+
+  it('errors if the activity number is invalid', async () => {
+    await request(app)
+      .get(`/service-provider/action-plan/123/add-activity/invalid`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('activity number specified in URL cannot be parsed')
+      })
+  })
+
+  it('errors if the activity number is too big', async () => {
+    const referral = sentReferralFactory.build()
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+
+    await request(app)
+      .get(`/service-provider/action-plan/123/add-activity/2`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('activity number specified in URL is too big')
+      })
+  })
 })
 
-describe('POST /service-provider/action-plan/:id/add-activity', () => {
+describe('POST /service-provider/action-plan/:id/add-activity/:number', () => {
+  it('errors when an invalid activity number is passed in the URL', async () => {
+    await request(app)
+      .post(`/service-provider/action-plan/123/add-activity/invalid`)
+      .type('form')
+      .send({
+        description: 'Attend training course',
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('activity number specified in URL cannot be parsed')
+      })
+  })
+
   it('updates the action plan with the specified activity and renders the add activity form again', async () => {
     const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation' })]
     const referral = sentReferralFactory.assigned().build({
@@ -404,13 +439,13 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
 
     await request(app)
-      .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity`)
+      .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
       .type('form')
       .send({
         description: 'Attend training course',
       })
       .expect(302)
-      .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activities`)
+      .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
 
     expect(interventionsService.updateDraftActionPlan).toHaveBeenCalledWith('token', draftActionPlan.id, {
       newActivity: {
@@ -444,7 +479,7 @@ describe('POST /service-provider/action-plan/:id/add-activity', () => {
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
 
       await request(app)
-        .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity`)
+        .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
         .type('form')
         .send({
           description: '',

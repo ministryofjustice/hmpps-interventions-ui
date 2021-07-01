@@ -18,8 +18,8 @@
     </ul>
   {% endfor %}
 
-  {% for description in presenter.actionPlanPresenter.orderedActivities %}
-    {{ govukInsetText(insetTextArgs(loop.index, description)) }}
+  {% for activity in presenter.actionPlanPresenter.orderedActivities %}
+    {{ govukInsetText(insetTextArgs(loop.index, activity.description)) }}
   {% endfor %}
 
   <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">

@@ -8,7 +8,7 @@
 
   <h2 class="govuk-heading-m">{{ presenter.text.referredOutcomesHeader }}</h2>
 
-  {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
+  {% for serviceCategoryWithDesiredOutcomes in presenter.actionPlanPresenter.desiredOutcomesByServiceCategory %}
     <h3 class="govuk-heading-s">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
     <ul class="govuk-list govuk-list--bullet">
       {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
