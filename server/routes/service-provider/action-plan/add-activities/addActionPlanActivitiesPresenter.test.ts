@@ -145,4 +145,19 @@ describe(AddActionPlanActivitiesPresenter, () => {
       })
     })
   })
+
+  describe('existingActivity', () => {
+    it('is populated when an activity exists for the activity number', () => {
+      const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+      const actionPlan = actionPlanFactory.oneActivityAdded().build()
+      const presenter = new AddActionPlanActivitiesPresenter(
+        sentReferral,
+        [socialInclusionServiceCategory],
+        actionPlan,
+        1
+      )
+
+      expect(presenter.existingActivity).toEqual(actionPlan.activities[0])
+    })
+  })
 })

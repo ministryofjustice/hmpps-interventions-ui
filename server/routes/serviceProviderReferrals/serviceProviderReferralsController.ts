@@ -294,17 +294,26 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
+  async addOrUpdateActionPlanActivity(req: Request, res: Response): Promise<void> {
     const activityNumber = this.parseActivityNumber(req.params.number)
 
     const form = await AddActionPlanActivitiesForm.createForm(req)
 
     if (form.isValid) {
-      await this.interventionsService.updateDraftActionPlan(
-        res.locals.user.token.accessToken,
-        req.params.id,
-        form.activityParamsForUpdate
-      )
+      if (form.isUpdate) {
+        // update an existing activity
+        await this.interventionsService.updateActionPlanActivity(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.activityParamsForUpdate.id,
+          form.activityParamsForUpdate.description
+        )
+      } else {
+        // add a new activity
+        await this.interventionsService.updateDraftActionPlan(res.locals.user.token.accessToken, req.params.id, {
+          newActivity: { description: form.activityParamsForUpdate.description },
+        })
+      }
 
       const nextActivityNumber = activityNumber + 1
       res.redirect(`/service-provider/action-plan/${req.params.id}/add-activity/${nextActivityNumber}`)

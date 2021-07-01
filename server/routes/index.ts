@@ -76,7 +76,7 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.showActionPlanAddActivitiesForm(req, res)
   )
   post('/service-provider/action-plan/:id/add-activity/:number', (req, res) =>
-    serviceProviderReferralsController.addActivityToActionPlan(req, res)
+    serviceProviderReferralsController.addOrUpdateActionPlanActivity(req, res)
   )
   post('/service-provider/action-plan/:id/add-activities', (req, res) =>
     serviceProviderReferralsController.finaliseActionPlanActivities(req, res)

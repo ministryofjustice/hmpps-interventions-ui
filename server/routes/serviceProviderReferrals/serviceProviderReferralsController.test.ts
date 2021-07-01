@@ -387,6 +387,33 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activity/:number',
       })
   })
 
+  it('prefills the text area for existing activities', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
+      activities: [
+        { id: 'bca57234-f2f3-4a25-8f25-b17008bd9052', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' },
+        {
+          id: '084a64c2-e8f5-43de-be52-b65cf4425eb4',
+          description: 'Do another thing',
+          createdAt: '2021-03-01T11:00:00Z',
+        },
+      ],
+    })
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategoryFactory.build())
+
+    await request(app)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add activity 2 to action plan')
+        expect(res.text).toContain('Do another thing')
+        expect(res.text).toContain('084a64c2-e8f5-43de-be52-b65cf4425eb4')
+      })
+  })
+
   it('errors if the activity number is invalid', async () => {
     await request(app)
       .get(`/service-provider/action-plan/123/add-activity/invalid`)
@@ -452,6 +479,39 @@ describe('POST /service-provider/action-plan/:id/add-activity/:number', () => {
         description: 'Attend training course',
       },
     })
+  })
+
+  it('updates the action plan activity with the specified description and renders the add activity form again', async () => {
+    const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation' })]
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryIds: [serviceCategories[0].id],
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const draftActionPlan = actionPlanFactory.oneActivityAdded().build()
+    const activityId = draftActionPlan.activities[0].id
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
+
+    await request(app)
+      .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
+      .type('form')
+      .send({
+        description: 'Attend training course',
+        'activity-id': activityId,
+      })
+      .expect(302)
+      .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
+
+    expect(interventionsService.updateActionPlanActivity).toHaveBeenCalledWith(
+      'token',
+      draftActionPlan.id,
+      activityId,
+      'Attend training course'
+    )
   })
 
   describe('when the user enters no description', () => {

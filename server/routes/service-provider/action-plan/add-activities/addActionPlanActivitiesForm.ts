@@ -1,5 +1,4 @@
 import { Request } from 'express'
-import { UpdateDraftActionPlanParams } from '../../../../services/interventionsService'
 import errorMessages from '../../../../utils/errorMessages'
 import { FormValidationError } from '../../../../utils/formValidationError'
 
@@ -10,12 +9,15 @@ export default class AddActionPlanActivitiesForm {
     return new AddActionPlanActivitiesForm(request)
   }
 
-  get activityParamsForUpdate(): Partial<UpdateDraftActionPlanParams> {
+  get activityParamsForUpdate(): Record<string, string> {
     return {
-      newActivity: {
-        description: this.request.body.description,
-      },
+      id: this.request.body['activity-id'],
+      description: this.request.body.description,
     }
+  }
+
+  get isUpdate(): boolean {
+    return this.activityParamsForUpdate.id != null
   }
 
   get isValid(): boolean {
