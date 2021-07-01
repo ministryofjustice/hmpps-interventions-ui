@@ -281,6 +281,20 @@ export default class InterventionsService {
     })) as ActionPlan
   }
 
+  async updateActionPlanActivity(
+    token: string,
+    actionPlanId: string,
+    activityId: string,
+    description: string
+  ): Promise<ActionPlan> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.patch({
+      path: `/action-plan/${actionPlanId}/activities/${activityId}`,
+      headers: { Accept: 'application/json' },
+      data: { description },
+    })) as ActionPlan
+  }
+
   async submitActionPlan(token: string, id: string): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 

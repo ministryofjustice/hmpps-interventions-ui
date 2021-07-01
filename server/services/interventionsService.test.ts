@@ -1971,6 +1971,53 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('updateActionPlanActivity', () => {
+    it('updates and returns an updated action plan activity', async () => {
+      const draftActionPlanId = '6e8dfb5c-127f-46ea-9846-f82b5fd60d27'
+      const activityId = 'fd1b6653-ea7b-4e12-9d45-72ff9b1a3ea0'
+
+      await provider.addInteraction({
+        state: `a draft action plan with ID ${draftActionPlanId} exists and it has an activity with ID ${activityId}`,
+        uponReceiving: `a PATCH request to update the activity with id ${activityId}`,
+        withRequest: {
+          method: 'PATCH',
+          path: `/action-plan/${draftActionPlanId}/activities/${activityId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: {
+            description: 'do something totally different!',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: draftActionPlanId,
+            activities: [
+              {
+                id: activityId,
+                description: 'do something totally different!',
+                createdAt: Matchers.like('2020-12-07T20:45:21.986389Z'),
+              },
+            ],
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.updateActionPlanActivity(
+        token,
+        draftActionPlanId,
+        activityId,
+        'do something totally different!'
+      )
+
+      expect(draftActionPlan.id).toBe(draftActionPlanId)
+      expect(draftActionPlan.activities[0].id).toEqual(activityId)
+      expect(draftActionPlan.activities[0].description).toEqual('do something totally different!')
+    })
+  })
+
   describe('submitDraftActionPlan', () => {
     const submittedActionPlan = {
       id: '486ba46a-0b57-46ab-82c0-d8c5c43710c6',

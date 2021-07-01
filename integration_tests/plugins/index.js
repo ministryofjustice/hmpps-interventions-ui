@@ -127,6 +127,10 @@ module.exports = on => {
       return interventionsService.stubUpdateDraftActionPlan(arg.id, arg.responseJson)
     },
 
+    stubUpdateActionPlanActivity: arg => {
+      return interventionsService.stubActionPlanActivity(arg.actionPlanId, arg.activityId, arg.responseJson)
+    },
+
     stubSubmitActionPlan: arg => {
       return interventionsService.stubSubmitActionPlan(arg.id, arg.responseJson)
     },
