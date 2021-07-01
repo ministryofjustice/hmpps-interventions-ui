@@ -40,6 +40,11 @@ interface TwelveHourTimeInputPresenter {
   partOfDay: PartOfDayInputPresenter
 }
 
+interface SelectionInputPresenter {
+  errorMessage: string | null
+  value: string | null
+}
+
 interface MeetingMethodInputPresenter {
   errorMessage: string | null
   value: AppointmentDeliveryType | null
@@ -156,6 +161,23 @@ export default class PresenterUtils {
     }
   }
 
+  selectionValue(
+    modelValue: string | null,
+    userInputKey: string,
+    error: FormValidationError | null
+  ): SelectionInputPresenter {
+    let selection: string | null
+    if (this.userInputData === null) {
+      selection = modelValue
+    } else {
+      selection = (this.userInputData[userInputKey] as string) ?? null
+    }
+    return {
+      errorMessage: PresenterUtils.errorMessage(error, userInputKey),
+      value: selection,
+    }
+  }
+
   meetingMethodValue(
     modelValue: AppointmentDeliveryType | null,
     userInputKey: string,
@@ -167,7 +189,11 @@ export default class PresenterUtils {
       appointmentDeliveryType = modelValue
     } else {
       const radioButtonValue = this.userInputData['meeting-method']
-      if (['PHONE_CALL', 'VIDEO_CALL', 'IN_PERSON_MEETING_OTHER'].includes(radioButtonValue as string)) {
+      if (
+        ['PHONE_CALL', 'VIDEO_CALL', 'IN_PERSON_MEETING_OTHER', 'IN_PERSON_MEETING_PROBATION_OFFICE'].includes(
+          radioButtonValue as string
+        )
+      ) {
         appointmentDeliveryType = radioButtonValue as AppointmentDeliveryType
       }
     }

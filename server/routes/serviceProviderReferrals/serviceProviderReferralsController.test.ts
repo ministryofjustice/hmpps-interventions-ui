@@ -896,6 +896,7 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
     interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
     interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
     interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+    interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
     await request(app)
       .get(`/service-provider/action-plan/1/sessions/1/edit`)
@@ -919,6 +920,8 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
 
       interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.updateActionPlanAppointment.mockResolvedValue(updatedAppointment)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
@@ -942,6 +945,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
         durationInMinutes: 75,
         appointmentDeliveryType: 'PHONE_CALL',
         appointmentDeliveryAddress: null,
+        npsOfficeCode: null,
       })
     })
 
@@ -950,6 +954,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
         interventionsService.getActionPlanAppointment.mockResolvedValue(actionPlanAppointmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = { status: 409 }
         interventionsService.updateActionPlanAppointment.mockRejectedValue(error)
@@ -977,6 +982,8 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
     describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
       it('renders an error message', async () => {
         interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = new Error('Failed to update appointment')
         interventionsService.updateActionPlanAppointment.mockRejectedValue(error)
@@ -1010,6 +1017,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
       interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .post(`/service-provider/action-plan/1/sessions/1/edit`)
@@ -1811,6 +1819,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
     it('renders an empty form', async () => {
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -1828,6 +1837,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         supplierAssessmentFactory.withSingleAppointment.build()
       )
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -1845,6 +1855,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         supplierAssessmentFactory.withNonAttendedAppointment.build()
       )
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(
         hmppsAuthUserFactory.build({ firstName: 'caseWorkerFirstName', lastName: 'caseWorkerLastName' })
       )
@@ -1878,6 +1889,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
@@ -1904,6 +1916,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
           }
         )
       })
@@ -1924,6 +1937,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
@@ -1950,6 +1964,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
           }
         )
       })
@@ -1959,6 +1974,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
       it('renders a specific error message', async () => {
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = { status: 409 }
         interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
@@ -1987,6 +2003,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
       it('renders an error message', async () => {
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = new Error('Failed to update appointment')
         interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
@@ -2016,6 +2033,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
     it('does not try to schedule an appointment on the interventions service, and renders an error message', async () => {
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .post(`/service-provider/referrals/1/supplier-assessment/schedule`)

@@ -37,6 +37,13 @@ class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppoi
     return this.params({ appointmentDeliveryType: 'VIDEO_CALL', appointmentDeliveryAddress: null })
   }
 
+  inPersonDeliusOfficeLocation(npsOfficeCode: string): InitialAssessmentAppointmentFactory {
+    return this.params({
+      appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
+      npsOfficeCode,
+    })
+  }
+
   get inPersonOtherWithFullAddress(): InitialAssessmentAppointmentFactory {
     return this.params({
       appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -75,6 +82,7 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   // For some reason the compiler complains if I write 'VIDEO_CALL' inline
   appointmentDeliveryType: defaultAppointmentDeliveryType,
   appointmentDeliveryAddress: null,
+  npsOfficeCode: null,
   sessionFeedback: {
     attendance: {
       attended: null,
