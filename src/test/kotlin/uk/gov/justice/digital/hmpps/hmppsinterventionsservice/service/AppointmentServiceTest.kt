@@ -64,7 +64,7 @@ class AppointmentServiceTest {
     val deliusAppointmentId = 99L
     val npsOfficeCode = "CRSEXT"
 
-    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT))
+    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, npsOfficeCode))
       .thenReturn(deliusAppointmentId)
     val savedAppointment = appointmentFactory.create(
       appointmentTime = appointmentTime,
@@ -89,7 +89,7 @@ class AppointmentServiceTest {
     val referral = referralFactory.createSent()
     val deliusAppointmentId = 99L
 
-    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT))
+    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null))
       .thenReturn(deliusAppointmentId)
     val savedAppointment = appointmentFactory.create(
       appointmentTime = appointmentTime,
@@ -115,7 +115,7 @@ class AppointmentServiceTest {
     val referral = referralFactory.createSent()
     val rescheduledDeliusAppointmentId = 99L
 
-    whenever(communityAPIBookingService.book(referral, existingAppointment, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT))
+    whenever(communityAPIBookingService.book(referral, existingAppointment, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null))
       .thenReturn(rescheduledDeliusAppointmentId)
     val savedAppointment = appointmentFactory.create(
       appointmentTime = appointmentTime,
@@ -141,7 +141,7 @@ class AppointmentServiceTest {
     val referral = referralFactory.createSent()
     val additionalDeliusAppointmentId = 99L
 
-    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT)).thenReturn(additionalDeliusAppointmentId)
+    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null)).thenReturn(additionalDeliusAppointmentId)
     val savedAppointment = appointmentFactory.create(
       appointmentTime = appointmentTime,
       durationInMinutes = durationInMinutes,

@@ -70,12 +70,14 @@ class ActionPlanSessionsService(
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
 
+    // TODO: Some code duplication here with AppointmentService.kt
     val deliusAppointmentId = communityAPIBookingService.book(
       session.actionPlan.referral,
       existingAppointment,
       appointmentTime,
       durationInMinutes,
-      SERVICE_DELIVERY
+      SERVICE_DELIVERY,
+      npsOfficeCode
     )
     if (existingAppointment == null) {
       val appointment = Appointment(

@@ -46,7 +46,7 @@ class AppointmentService(
       // an initial appointment is required
       appointment == null -> {
         val deliusAppointmentId =
-          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
         createAppointment(
           durationInMinutes,
           appointmentTime,
@@ -61,7 +61,7 @@ class AppointmentService(
       // the current appointment needs to be updated
       appointment!!.attended == null -> {
         val deliusAppointmentId =
-          communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType)
+          communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
         updateAppointment(
           appointment,
           durationInMinutes,
@@ -75,7 +75,7 @@ class AppointmentService(
       // an additional appointment is required
       appointment.attended == Attended.NO -> {
         val deliusAppointmentId =
-          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
         createAppointment(
           durationInMinutes,
           appointmentTime,

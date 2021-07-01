@@ -71,6 +71,34 @@ internal class CommunityAPIBookingServiceTest {
       referral.id,
       now.plusMinutes(60),
       now.plusMinutes(120),
+      "CRS0001",
+      notes = notes,
+      true
+    )
+    val response = AppointmentResponseDTO(1234L)
+
+    whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
+      .thenReturn(response)
+
+    val deliusAppointmentId = communityAPIBookingService.book(referral, null, now.plusMinutes(60), 60, SERVICE_DELIVERY, "CRS0001")
+
+    assertThat(deliusAppointmentId).isEqualTo(1234L)
+    verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+  }
+
+  @Test
+  fun `requests booking for a new appointment with a office location uses default`() {
+    val now = now()
+
+    val uri = "/appt/X1/123/CRS"
+    val notes = "Service Delivery Appointment for Accommodation Referral XX123456 with Prime Provider SPN\n" +
+      "http://url/pp/${referral.id}/progress"
+    val request = AppointmentCreateRequestDTO(
+      "ACC",
+      referral.sentAt!!,
+      referral.id,
+      now.plusMinutes(60),
+      now.plusMinutes(120),
       "CRSEXTL",
       notes = notes,
       true
@@ -80,7 +108,7 @@ internal class CommunityAPIBookingServiceTest {
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
       .thenReturn(response)
 
-    val deliusAppointmentId = communityAPIBookingService.book(referral, null, now.plusMinutes(60), 60, SERVICE_DELIVERY)
+    val deliusAppointmentId = communityAPIBookingService.book(referral, null, now.plusMinutes(60), 60, SERVICE_DELIVERY, null)
 
     assertThat(deliusAppointmentId).isEqualTo(1234L)
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
@@ -99,7 +127,7 @@ internal class CommunityAPIBookingServiceTest {
     whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
       .thenReturn(response)
 
-    communityAPIBookingService.book(referral, appointment, now, 45, SERVICE_DELIVERY)
+    communityAPIBookingService.book(referral, appointment, now, 45, SERVICE_DELIVERY, null)
 
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
   }
@@ -110,7 +138,7 @@ internal class CommunityAPIBookingServiceTest {
     val deliusAppointmentId = 999L
     val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
 
-    communityAPIBookingService.book(referral, appointment, now.plusDays(1), 60, SERVICE_DELIVERY)
+    communityAPIBookingService.book(referral, appointment, now.plusDays(1), 60, SERVICE_DELIVERY, null)
 
     verifyNoMoreInteractions(communityAPIClient)
   }
@@ -142,7 +170,7 @@ internal class CommunityAPIBookingServiceTest {
       communityAPIClient
     )
 
-    val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY)
+    val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY, null)
 
     assertThat(deliusAppointmentId).isNull()
     verifyZeroInteractions(communityAPIClient)
@@ -166,7 +194,7 @@ internal class CommunityAPIBookingServiceTest {
       communityAPIClient
     )
 
-    val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY)
+    val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY, null)
 
     assertThat(deliusAppointmentId).isEqualTo(1234L)
     verifyZeroInteractions(communityAPIClient)

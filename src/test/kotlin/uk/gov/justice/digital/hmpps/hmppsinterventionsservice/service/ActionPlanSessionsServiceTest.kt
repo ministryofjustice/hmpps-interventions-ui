@@ -155,7 +155,8 @@ internal class ActionPlanSessionsServiceTest {
         session.currentAppointment,
         appointmentTime,
         durationInMinutes,
-        SERVICE_DELIVERY
+        SERVICE_DELIVERY,
+        null
       )
     ).thenReturn(999L)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
@@ -179,7 +180,8 @@ internal class ActionPlanSessionsServiceTest {
       session.currentAppointment,
       appointmentTime,
       durationInMinutes,
-      SERVICE_DELIVERY
+      SERVICE_DELIVERY,
+      null
     )
     verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
@@ -204,7 +206,8 @@ internal class ActionPlanSessionsServiceTest {
         session.currentAppointment,
         appointmentTime,
         durationInMinutes,
-        SERVICE_DELIVERY
+        SERVICE_DELIVERY,
+        null
       )
     ).thenReturn(null)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
@@ -526,7 +529,8 @@ internal class ActionPlanSessionsServiceTest {
         session.currentAppointment,
         appointmentTime,
         durationInMinutes,
-        SERVICE_DELIVERY
+        SERVICE_DELIVERY,
+        npsOfficeCode
       )
     ).thenReturn(999L)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(
@@ -553,7 +557,8 @@ internal class ActionPlanSessionsServiceTest {
       session.currentAppointment,
       appointmentTime,
       durationInMinutes,
-      SERVICE_DELIVERY
+      SERVICE_DELIVERY,
+      npsOfficeCode
     )
     verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
