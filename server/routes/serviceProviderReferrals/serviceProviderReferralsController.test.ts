@@ -1903,3 +1903,44 @@ describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
       })
   })
 })
+
+describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
+  it('returns error if no existing action plan exists', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/action-plan/edit`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('No existing action plan exists for this referral')
+      })
+  })
+
+  it('creates a new draft action plan with the attributes of the existing action plan', async () => {
+    const existingActionPlan = actionPlanFactory.submitted().build({
+      numberOfSessions: 5,
+      activities: [
+        {
+          id: 'd67217a8-82eb-4e8d-bdce-60dbd6ba6db9',
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          description: 'existing activity',
+        },
+      ],
+    })
+    const referral = sentReferralFactory.assigned().build({ actionPlanId: existingActionPlan.id })
+    const newActionPlan = actionPlanFactory.justCreated(referral.id).build()
+
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getActionPlan.mockResolvedValue(existingActionPlan)
+    interventionsService.createDraftActionPlan.mockResolvedValue(newActionPlan)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/action-plan/edit`)
+      .expect(303)
+      .expect('Location', `/service-provider/action-plan/${newActionPlan.id}/add-activity/1`)
+
+    expect(interventionsService.createDraftActionPlan).toBeCalledWith('token', referral.id, 5, [
+      { description: 'existing activity' },
+    ])
+  })
+})

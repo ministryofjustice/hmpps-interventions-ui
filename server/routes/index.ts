@@ -276,5 +276,13 @@ export default function routes(router: Router, services: Services): Router {
     probationPractitionerReferralsController.actionPlanApproved(req, res)
   )
 
+  get('/service-provider/referrals/:id/action-plan/edit', (req, res) =>
+    serviceProviderReferralsController.actionPlanEditConfirmation(req, res)
+  )
+
+  post('/service-provider/referrals/:id/action-plan/edit', (req, res) =>
+    serviceProviderReferralsController.createNewDraftActionPlan(req, res)
+  )
+
   return router
 }

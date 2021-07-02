@@ -39,6 +39,12 @@
 
             {{ govukSummaryList(actionPlanSummaryListArgs(govukTag)) }}
 
+            {% if presenter.showEditButton %}
+                <a href="{{ presenter.actionPlanEditConfirmationUrl }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    Edit action plan
+                </a>
+            {% endif %}
+
             <h2 class="govuk-heading-m">Desired outcomes and activities</h2>
 
             {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}

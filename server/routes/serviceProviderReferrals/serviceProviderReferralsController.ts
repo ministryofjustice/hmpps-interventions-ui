@@ -66,6 +66,8 @@ import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessment
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
+import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
+import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -1017,6 +1019,47 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
     const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not edit action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanEditConfirmationPresenter(sentReferral)
+    const view = new ActionPlanEditConfirmationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async createNewDraftActionPlan(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not create new draft action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No existing action plan exists for this referral',
+      })
+    }
+
+    const existingActionPlan = await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
+    const newDraftActionPlan = await this.interventionsService.createDraftActionPlan(
+      accessToken,
+      sentReferral.id,
+      existingActionPlan.numberOfSessions || undefined,
+      existingActionPlan.activities.map(it => {
+        return { description: it.description }
+      })
+    )
+    res.redirect(303, `/service-provider/action-plan/${newDraftActionPlan.id}/add-activity/1`)
   }
 
   private async findSelectedServiceCategories(

@@ -1715,6 +1715,59 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
     })
+
+    it('returns a newly created draft action plan with number of sessions and activities', async () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      await provider.addInteraction({
+        state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
+        uponReceiving: 'a POST request to create a draft action plan that includes numberOfSessions and activities',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          body: {
+            referralId,
+            numberOfSessions: 5,
+            activities: [{ description: 'activity 1' }, { description: 'activity 2' }],
+          },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like({
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: 5,
+            activities: [
+              {
+                id: '5f7ce12c-0858-4188-a6af-5c8bdd697536',
+                createdAt: '2020-12-07T20:45:21.986389Z',
+                description: 'activity 1',
+              },
+              {
+                id: '5f7ce12c-0858-4188-a6af-5c8bdd697536',
+                createdAt: '2020-12-07T20:45:21.986389Z',
+                description: 'activity 2',
+              },
+            ],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
+            ),
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.createDraftActionPlan(token, referralId, 5, [
+        { description: 'activity 1' },
+        { description: 'activity 2' },
+      ])
+      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(5)
+      expect(draftActionPlan.activities.length).toBe(2)
+    })
   })
 
   describe('getActionPlan', () => {
