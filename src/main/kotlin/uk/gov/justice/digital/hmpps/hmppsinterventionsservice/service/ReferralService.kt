@@ -111,6 +111,7 @@ class ReferralService(
     val referrals = referralRepository.findAllByInterventionDynamicFrameworkContractPrimeProviderInAndSentAtIsNotNull(serviceProviders)
       // todo: query for referrals where the service provider has been granted nominated access only
       .union(referralRepository.findAllByInterventionDynamicFrameworkContractSubcontractorProvidersInAndSentAtIsNotNull(serviceProviders))
+      .filterNot { it.cancelled() }
 
     return referralAccessFilter.serviceProviderReferrals(referrals.toList(), user)
   }
@@ -244,7 +245,7 @@ class ReferralService(
     }
 
     update.serviceUser?.let {
-      if (it.crn != null && it.crn != referral.serviceUserCRN) {
+      if (it.crn != referral.serviceUserCRN) {
         errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
       }
     }

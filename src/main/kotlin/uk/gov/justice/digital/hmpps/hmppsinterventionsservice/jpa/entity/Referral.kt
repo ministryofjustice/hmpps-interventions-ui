@@ -99,6 +99,8 @@ class Referral(
     return createdBy
   }
 
+  fun cancelled(): Boolean = concludedAt != null && endRequestedAt != null && endOfServiceReport == null
+
   val currentActionPlan: ActionPlan?
     get() = actionPlans?.lastOrNull()
 }
