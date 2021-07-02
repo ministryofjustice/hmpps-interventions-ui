@@ -114,4 +114,46 @@ describe(InterventionProgressPresenter, () => {
       ])
     })
   })
+
+  describe('probationPractitionerBlockedFromViewing', () => {
+    it('should always return false for service providers', () => {
+      const newActionPlan = actionPlanFactory.justCreated(referral.id).build()
+      const newActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        newActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(newActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
+
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(submittedActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
+    })
+
+    it('should return true for probation practitioners when the referral is unsubmitted', () => {
+      const newActionPlan = actionPlanFactory.justCreated(referral.id).build()
+      const newActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        newActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(newActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(true)
+
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(submittedActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
+    })
+  })
 })

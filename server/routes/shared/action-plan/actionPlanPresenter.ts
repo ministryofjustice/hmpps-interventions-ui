@@ -56,4 +56,9 @@ export default class ActionPlanPresenter {
   get showApprovalForm(): boolean {
     return this.userType === 'probation-practitioner' && this.actionPlanSummaryPresenter.actionPlanUnderReview
   }
+
+  get probationPractitionerBlockedFromViewing(): boolean {
+    // probation practitioners can only view submitted action plans
+    return this.userType === 'probation-practitioner' && !this.actionPlanSummaryPresenter.actionPlanSubmitted
+  }
 }
