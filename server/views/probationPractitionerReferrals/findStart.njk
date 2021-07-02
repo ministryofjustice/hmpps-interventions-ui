@@ -4,7 +4,8 @@
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "HMPPS Interventions" %}
-{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+{% block pageTitle %}{{ pageTitle }}
+  - GOV.UK{% endblock %}
 
 {% block primaryNav %}
   {{ mojPrimaryNavigation(primaryNavArgs) }}
@@ -25,6 +26,28 @@
           </svg>
         </button>
       </form>
+
+      <h2 class="govuk-heading-l govuk-!-margin-top-7">
+        Download structured interventions
+      </h2>
+      <p class="govuk-body-m">
+        Structured interventions don't currently appear when finding interventions for referrals. You can download information about structured interventions here.
+      </p>
+      <div class="refer-and-monitor-download-section">
+        <svg width="78" height="110" viewbox="0 0 78 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M53.1429 47.9277V47.4277H52.6429H40.0714H39.5714V47.9277V94.2849V94.7849H40.0714H52.6429H53.1429V94.2849V47.9277ZM9.92859 9.92773H67.8572V30.142H9.92859V9.92773ZM9.92859 46.8563H23.6607V95.3563H9.92859V46.8563ZM39 95.3563V46.8563H53.7143V95.3563H39Z" fill="#B1B4B6" stroke="#B1B4B6"/>
+          <path d="M39.0001 47.9681V47.4681H38.5001H25.7715H25.2715V47.9681V94.286V94.786H25.7715H38.5001H39.0001V94.286V47.9681ZM39.5715 46.8967V95.3967H24.6608V46.8967H39.5715ZM67.2858 47.9681V47.4681H66.7858H54.2536H53.7536V47.9681V94.286V94.786H54.2536H66.7858H67.2858V94.286V47.9681ZM67.8572 46.8967V95.3967H53.1429V46.8967H67.8572Z" fill="black" stroke="#B1B4B6"/>
+          <path d="M23.5714 81.6051H67.9643M23.5714 53.8223H67.9643H23.5714ZM23.5714 60.768H67.9643H23.5714ZM23.5714 88.5508H67.9643H23.5714ZM23.5714 74.6594H67.9643H23.5714ZM23.5714 67.7137H67.9643H23.5714Z" stroke="#B1B4B6" stroke-width="2"/>
+          <rect x="0.5" y="0.5" width="76.7857" height="109" stroke="#B1B4B6"/>
+        </svg>
+        <span class="refer-and-monitor-download-links">
+          <p class="govuk-body-l"> <a href="{{ presenter.structuredInterventionsDownloadHrefs.xlsx }}">Structured interventions data</a></p>
+          <p class="govuk-body-m">{{ presenter.fileInformation }}</p>
+          <p class="govuk-body-m">This file is available in a
+            <a href="{{ presenter.structuredInterventionsDownloadHrefs.pdf }}">pdf format</a>.
+          </p>
+        </span>
+      </div>
 
       <h2 class="govuk-heading-l">
         Draft referrals

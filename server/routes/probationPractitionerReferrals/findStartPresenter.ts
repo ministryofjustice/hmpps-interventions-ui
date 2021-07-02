@@ -4,7 +4,11 @@ import PresenterUtils from '../../utils/presenterUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
 
 export default class FindStartPresenter {
-  constructor(private readonly draftReferrals: DraftReferral[]) {}
+  constructor(
+    private readonly draftReferrals: DraftReferral[],
+    private readonly downloadPaths: { xlsx: string; pdf: string },
+    private readonly downloadFileSize: { bytes: number }
+  ) {}
 
   readonly navItemsPresenter = new DashboardNavPresenter('Find interventions')
 
@@ -18,8 +22,28 @@ export default class FindStartPresenter {
       }))
   }
 
+  get fileInformation(): string {
+    const roundedKilobyteSize = (this.downloadFileSize.bytes / 1024).toFixed(1)
+    return `${this.extension(this.downloadPaths.xlsx).toUpperCase()}, ${roundedKilobyteSize}KB`
+  }
+
+  readonly structuredInterventionsDownloadHrefs = {
+    xlsx: `/${this.downloadPaths.xlsx}`,
+    pdf: `/${this.downloadPaths.pdf}`,
+  }
+
   readonly text = {
     noDraftReferrals: 'You do not have any draft referrals at this moment.',
+  }
+
+  private extension(filepath: string): string {
+    const extension = filepath.split('.').pop()
+
+    if (!extension) {
+      throw new Error('No extension found')
+    }
+
+    return extension
   }
 }
 
