@@ -245,7 +245,7 @@ class ReferralService(
     }
 
     update.serviceUser?.let {
-      if (it.crn != null && it.crn != referral.serviceUserCRN) {
+      if (it.crn != referral.serviceUserCRN) {
         errors.add(FieldError(field = "serviceUser.crn", error = Code.FIELD_CANNOT_BE_CHANGED))
       }
     }
