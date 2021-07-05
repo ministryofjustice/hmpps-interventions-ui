@@ -21,6 +21,7 @@ import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import Appointment from '../models/appointment'
 import SupplierAssessment from '../models/supplierAssessment'
+import { ServiceProviderReportReferral } from '../models/serviceProviderReportReferral'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -60,6 +61,11 @@ export interface CreateEndOfServiceReportOutcome {
 export interface UpdateDraftEndOfServiceReportParams {
   furtherInformation: string | null
   outcome: CreateEndOfServiceReportOutcome | null
+}
+
+export interface CreateReportDateParams {
+  fromIncludingDate: CalendarDay
+  toIncludingDate: CalendarDay
 }
 
 export default class InterventionsService {
@@ -530,4 +536,25 @@ export default class InterventionsService {
     })) as Appointment
   }
  */
+
+  async getServiceProviderReportingData(
+    token: string,
+    reportDates: CreateReportDateParams
+  ): Promise<ServiceProviderReportReferral[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: '/performance-report',
+      query: {
+        fromIncludingDate: reportDates.fromIncludingDate.iso8601,
+        toIncludingDate: reportDates.toIncludingDate.iso8601,
+      },
+      headers: { Accept: 'application/json' },
+      // this will likely be a very large request, so we're overriding the timeout to play it safe
+      timeout: {
+        deadline: 120000,
+        response: 120000,
+      },
+    })) as ServiceProviderReportReferral[]
+  }
 }
