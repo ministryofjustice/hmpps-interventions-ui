@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.5
+  hmpps: ministryofjustice/hmpps@3.7.0
   snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
   veracode: orb-01scan/sast-orb@0.0.9
@@ -148,6 +148,7 @@ workflows:
       - hmpps/build_docker:
           name: build_docker_publish
           snyk-scan: true
+          git-lfs: true
           filters:
             branches:
               only:
@@ -155,6 +156,7 @@ workflows:
       - hmpps/build_docker:
           publish: false
           snyk-scan: true
+          git-lfs: true
           filters:
             branches:
               ignore:
@@ -253,3 +255,4 @@ workflows:
       - hmpps/build_docker:
           publish: false
           snyk-scan: true
+          git-lfs: true
