@@ -330,6 +330,83 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
       cy.contains('This intervention is assigned to John Smith.')
     })
+
+    it('User re-assigns a referral to a different caseworker', () => {
+      const intervention = interventionFactory.build()
+      const conviction = deliusConvictionFactory.build()
+
+      const referralParams = {
+        referral: {
+          interventionId: intervention.id,
+          serviceCategoryIds: [intervention.serviceCategories[0].id],
+          relevantSentenceId: conviction.convictionId,
+        },
+      }
+
+      const currentAssignee = hmppsAuthUserFactory.build({
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john.smith',
+      })
+      const referral = sentReferralFactory
+        .assigned()
+        .build({ ...referralParams, assignedTo: { username: currentAssignee.username } })
+      const deliusUser = deliusUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+      const staffDetails = deliusStaffDetailsFactory.build()
+
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetSentReferralsForUserToken([referral])
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+      cy.stubGetAuthUserByEmailAddress([currentAssignee])
+      cy.stubGetAuthUserByUsername(currentAssignee.username, currentAssignee)
+      cy.stubAssignSentReferral(referral.id, referral)
+      cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+      cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+
+      cy.contains('This intervention is assigned to John Smith.')
+
+      cy.get('h2').contains('Who do you want to assign this referral to?')
+
+      const newAssignee = hmppsAuthUserFactory.build({
+        firstName: 'Anna',
+        lastName: 'Dawkins',
+        username: 'anna.dawkins',
+      })
+      cy.stubGetAuthUserByEmailAddress([newAssignee])
+      cy.stubGetAuthUserByUsername(newAssignee.username, newAssignee)
+
+      cy.get('#email').type('anna@harmonyliving.org.uk')
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
+      cy.get('h1').contains('Confirm the Accommodation referral assignment')
+      cy.contains('Anna Dawkins')
+
+      const reAssignedReferral = sentReferralFactory
+        .assigned()
+        .build({ ...referral, assignedTo: { username: newAssignee.username } })
+      cy.stubGetSentReferral(reAssignedReferral.id, reAssignedReferral)
+      cy.stubGetSentReferralsForUserToken([reAssignedReferral])
+
+      cy.contains('Confirm assignment').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+      cy.get('h1').contains('Caseworker assigned')
+
+      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.contains('This intervention is assigned to Anna Dawkins.')
+    })
   })
 
   it('User creates an action plan and submits it for approval', () => {
