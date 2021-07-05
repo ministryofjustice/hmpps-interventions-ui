@@ -2922,7 +2922,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         organisationId: 'XYZ5678',
         referringOfficerEmail: 'bernard.beaks@justice.gov.uk',
         caseworkerId: 'liane.supplier@example.com',
-        serviceUserCrn: 'X017844',
+        serviceUserCRN: 'X017844',
         dateReferralReceived: '2021-06-27T14:49:01+01:00',
         dateSaaBooked: '2021-06-27T14:49:01+01:00',
         dateSaaAttended: '2021-06-27T14:49:01+01:00',
