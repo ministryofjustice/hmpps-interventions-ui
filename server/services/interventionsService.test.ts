@@ -15,6 +15,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import appointmentFactory from '../../testutils/factories/appointment'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import CalendarDay from '../utils/calendarDay'
+import serviceProviderReportReferralFactory from '../../testutils/factories/serviceProviderReportReferral'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -2914,7 +2915,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getServiceProviderReportingData', () => {
     const reportingResponse = [
-      {
+      serviceProviderReportReferralFactory.build({
         referralLink: 'https://refer-and-monitor.example/referral/c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
         referralRef: 'SM1973AC',
         referralId: 'c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
@@ -2937,7 +2938,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         endRequestedByPPReason: 'REC',
         dateEOSRSubmitted: '2021-06-27T14:49:01+01:00',
         concludedAt: '2021-06-27T14:49:01+01:00',
-      },
+      }),
     ]
 
     it('returns a list of referrals for with data for reporting', async () => {
