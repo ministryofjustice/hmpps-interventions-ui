@@ -76,7 +76,7 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.showActionPlanAddActivitiesForm(req, res)
   )
   post('/service-provider/action-plan/:id/add-activity/:number', (req, res) =>
-    serviceProviderReferralsController.addActivityToActionPlan(req, res)
+    serviceProviderReferralsController.addOrUpdateActionPlanActivity(req, res)
   )
   post('/service-provider/action-plan/:id/add-activities', (req, res) =>
     serviceProviderReferralsController.finaliseActionPlanActivities(req, res)
@@ -276,6 +276,14 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/probation-practitioner/referrals/:id/action-plan/approved', (req, res) =>
     probationPractitionerReferralsController.actionPlanApproved(req, res)
+  )
+
+  get('/service-provider/referrals/:id/action-plan/edit', (req, res) =>
+    serviceProviderReferralsController.actionPlanEditConfirmation(req, res)
+  )
+
+  post('/service-provider/referrals/:id/action-plan/edit', (req, res) =>
+    serviceProviderReferralsController.createNewDraftActionPlan(req, res)
   )
 
   return router

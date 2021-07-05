@@ -1,4 +1,4 @@
-import ActionPlan from '../../../../models/actionPlan'
+import ActionPlan, { Activity } from '../../../../models/actionPlan'
 import SentReferral from '../../../../models/sentReferral'
 import ServiceCategory from '../../../../models/serviceCategory'
 import { FormValidationError } from '../../../../utils/formValidationError'
@@ -29,5 +29,9 @@ export default class AddActionPlanActivitiesPresenter {
   readonly text = {
     title: `Add activity ${this.activityNumber} to action plan`,
     referredOutcomesHeader: `Referred outcomes for ${this.sentReferral.referral.serviceUser.firstName}`,
+  }
+
+  get existingActivity(): Activity | null {
+    return this.actionPlanPresenter.orderedActivities[this.activityNumber - 1] || null
   }
 }

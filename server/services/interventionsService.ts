@@ -35,7 +35,7 @@ export interface InterventionsFilterParams {
   maximumAge?: number
 }
 
-interface UpdateActivityParams {
+export interface UpdateActivityParams {
   description: string
 }
 
@@ -254,13 +254,22 @@ export default class InterventionsService {
     })) as PCCRegion[]
   }
 
-  async createDraftActionPlan(token: string, referralId: string): Promise<ActionPlan> {
+  async createDraftActionPlan(
+    token: string,
+    referralId: string,
+    numberOfSessions?: number,
+    activities?: UpdateActivityParams[]
+  ): Promise<ActionPlan> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
       path: '/draft-action-plan',
       headers: { Accept: 'application/json' },
-      data: { referralId },
+      data: {
+        referralId,
+        numberOfSessions,
+        activities,
+      },
     })) as ActionPlan
   }
 

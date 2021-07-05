@@ -114,4 +114,90 @@ describe(InterventionProgressPresenter, () => {
       ])
     })
   })
+
+  describe('probationPractitionerBlockedFromViewing', () => {
+    it('should always return false for service providers', () => {
+      const newActionPlan = actionPlanFactory.justCreated(referral.id).build()
+      const newActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        newActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(newActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
+
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(submittedActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
+    })
+
+    it('should return true for probation practitioners when the referral is unsubmitted', () => {
+      const newActionPlan = actionPlanFactory.justCreated(referral.id).build()
+      const newActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        newActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(newActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(true)
+
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(submittedActionPlanPresenter.probationPractitionerBlockedFromViewing).toBe(false)
+    })
+  })
+
+  describe('showEditButton', () => {
+    it('shows for SPs when the action plan has been submitted', () => {
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(submittedActionPlanPresenter.showEditButton).toBe(true)
+    })
+
+    it('does not show for SPs when the action plan has been approved', () => {
+      const approvedActionPlan = actionPlanFactory.approved().build()
+      const approvedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        approvedActionPlan,
+        serviceCategories,
+        'service-provider'
+      )
+      expect(approvedActionPlanPresenter.showEditButton).toBe(false)
+    })
+
+    it('never shows for PPs', () => {
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(submittedActionPlanPresenter.showEditButton).toBe(false)
+
+      const approvedActionPlan = actionPlanFactory.approved().build()
+      const approvedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        approvedActionPlan,
+        serviceCategories,
+        'probation-practitioner'
+      )
+      expect(approvedActionPlanPresenter.showEditButton).toBe(false)
+    })
+  })
 })
