@@ -31,6 +31,7 @@ import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import CalendarDay from '../../utils/calendarDay'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -1866,5 +1867,76 @@ describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
         expect(res.text).toContain('24 March 2021')
         expect(res.text).toContain('9:02am to 10:17am')
       })
+  })
+})
+
+describe('GET /service-provider/reporting', () => {
+  it('displays a page to allow the Service Provider to download a report of referral data', async () => {
+    await request(app)
+      .get('/service-provider/performance-report')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Reporting')
+      })
+  })
+})
+
+describe('POST /service-provider/reporting', () => {
+  it('makes a request to the interventions service for referral data and generates a CSV', async () => {
+    const reportingResponse = [
+      {
+        referralLink: 'https://refer-and-monitor.com/referral/c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
+        referralRef: 'SM1973AC',
+        referralId: 'c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
+        contractId: 'thing',
+        organisationId: 'XYZ5678',
+        referringOfficerEmail: 'joe.probation@example.com',
+        caseworkerId: 'liane.supplier@example.com',
+        serviceUserCRN: 'X017844',
+        dateReferralReceived: '2021-06-27T14:49:01+01:00',
+        dateSAABooked: '2021-06-27T14:49:01+01:00',
+        dateSAAAttended: '2021-06-27T14:49:01+01:00',
+        dateFirstActionPlanSubmitted: '2021-06-27T14:49:01+01:00',
+        dateOfFirstActionPlanApproval: '2021-06-27T14:49:01+01:00',
+        dateOfFirstAttendedSession: '2021-06-27T14:49:01+01:00',
+        outcomesToBeAchievedCount: 8,
+        outcomesAchieved: 5.5,
+        countOfSessionsExpected: 10,
+        countOfSessionsAttended: 6,
+        endRequestedByPPAt: '2021-06-27T14:49:01+01:00',
+        endRequestedByPPReason: 'REC',
+        dateEOSRSubmitted: '2021-06-27T14:49:01+01:00',
+        concludedAt: '2021-06-27T14:49:01+01:00',
+      },
+    ]
+
+    interventionsService.getServiceProviderReportingData.mockResolvedValue(reportingResponse)
+
+    await request(app)
+      .post('/service-provider/performance-report')
+      .type('form')
+      .send({
+        'from-date-day': '20',
+        'from-date-month': '06',
+        'from-date-year': '2021',
+        'to-date-day': '25',
+        'to-date-month': '06',
+        'to-date-year': '2021',
+      })
+      .expect(200)
+      .expect('Content-Disposition', /attachment; filename=refer-monitor-intervention_report_\d{8}\.csv/)
+      .expect(res => {
+        expect(res.text).toContain(
+          'referral_link,referral_ref,referral_id,contract_id,organisation_id,referring_officer_email,caseworker_id,service_user_crn,date_referral_received,date_saa_booked,date_saa_attended,date_first_action_plan_submitted,date_of_first_action_plan_approval,date_of_first_attended_session,outcomes_to_be_achieved_count,outcomes_achieved,count_of_sessions_expected,count_of_sessions_attended,end_requested_by_pp_at,end_requested_by_pp_reason,date_eosr_submitted,concluded_at'
+        )
+        expect(res.text).toContain(
+          'https://refer-and-monitor.com/referral/c9f9e22f-ddd9-422a-a9af-76fc02b18b38,SM1973AC,c9f9e22f-ddd9-422a-a9af-76fc02b18b38,thing,XYZ5678,joe.probation@example.com,liane.supplier@example.com,X017844,2021-06-27T14:49:01+01:00,2021-06-27T14:49:01+01:00,2021-06-27T14:49:01+01:00,2021-06-27T14:49:01+01:00,2021-06-27T14:49:01+01:00,2021-06-27T14:49:01+01:00,8,5.5,10,6,2021-06-27T14:49:01+01:00,REC,2021-06-27T14:49:01+01:00,2021-06-27T14:49:01+01:00'
+        )
+      })
+
+    expect(interventionsService.getServiceProviderReportingData).toHaveBeenCalledWith('token', {
+      fromIncludingDate: CalendarDay.fromComponents(20, 6, 2021),
+      toIncludingDate: CalendarDay.fromComponents(25, 6, 2021),
+    })
   })
 })

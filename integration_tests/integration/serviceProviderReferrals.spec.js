@@ -1331,4 +1331,74 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
     })
   })
+
+  describe('User downloads reporting data', () => {
+    it('allows the user to download a CSV based on the requested date range', () => {
+      const intervention = interventionFactory.build()
+
+      const sentReferrals = [
+        sentReferralFactory.build({
+          referral: {
+            interventionId: intervention.id,
+          },
+        }),
+        sentReferralFactory.build({
+          referral: {
+            interventionId: intervention.id,
+          },
+        }),
+      ]
+
+      const deliusUser = deliusUserFactory.build()
+
+      cy.stubGetIntervention(intervention.id, intervention)
+      sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
+      cy.stubGetSentReferralsForUserToken(sentReferrals)
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetServiceProviderReportingData([
+        {
+          referralLink: 'https://refer-and-monitor.example/referral/c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
+          referralRef: 'SM1973AC',
+          referralId: 'c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
+          contractId: 'thing',
+          organisationId: 'XYZ5678',
+          referringOfficerEmail: 'joe.probation@example.com',
+          caseworkerId: 'liane.supplier@example.com',
+          serviceUserCrn: 'X017844',
+          dateReferralReceived: '2021-06-27T14:49:01+01:00',
+          dateSaaBooked: '2021-06-27T14:49:01+01:00',
+          dateSaaAttended: '2021-06-27T14:49:01+01:00',
+          dateFirstActionPlanSubmitted: '2021-06-27T14:49:01+01:00',
+          dateOfFirstActionPlanApproval: '2021-06-27T14:49:01+01:00',
+          dateOfFirstAttendedSession: '2021-06-27T14:49:01+01:00',
+          outcomesToBeAchievedCount: 8,
+          outcomesAchieved: 5.5,
+          countOfSessionsExpected: 10,
+          countOfSessionsAttended: 6,
+          endRequestedByPPAt: '2021-06-27T14:49:01+01:00',
+          endRequestedByPPReason: 'REC',
+          dateEOSRSubmitted: '2021-06-27T14:49:01+01:00',
+          concludedAt: '2021-06-27T14:49:01+01:00',
+        },
+      ])
+
+      cy.login()
+
+      cy.contains('Reporting').click()
+      cy.contains('Reporting')
+
+      cy.get('#from-date-day').clear().type('10')
+      cy.get('#from-date-month').clear().type('6')
+      cy.get('#from-date-year').clear().type('2021')
+      cy.get('#to-date-day').clear().type('27')
+      cy.get('#to-date-month').clear().type('6')
+      cy.get('#to-date-year').clear().type('2021')
+
+      // TODO (IC-2040)
+      // Unfortunately there's currently no way to test non 'text/html' files in Cypress.
+      // https://github.com/cypress-io/cypress/issues/1551
+      // When attempting to download the generated CSV, the page hangs.
+      // I'm leaving this test here as-is, in case Cypress is updated and we can test this behaviour.
+    })
+  })
 })

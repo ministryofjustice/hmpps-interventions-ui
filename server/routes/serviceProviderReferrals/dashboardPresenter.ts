@@ -4,6 +4,7 @@ import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import utils from '../../utils/utils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
+import DashboardNavPresenter from './dashboardNavPresenter'
 
 export default class DashboardPresenter {
   constructor(private readonly referrals: SentReferral[], private readonly interventions: Intervention[]) {}
@@ -16,6 +17,8 @@ export default class DashboardPresenter {
     { text: 'Caseworker', sort: 'none' },
     { text: 'Action', sort: 'none' },
   ]
+
+  readonly navItemsPresenter = new DashboardNavPresenter('All cases')
 
   readonly tableRows: SortableTableRow[] = this.referrals.map(referral => {
     const interventionForReferral = this.interventions.find(
