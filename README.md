@@ -85,6 +85,10 @@ The integration tests require a different docker-compose stack and a different a
 
 Note: You may need to run `npm run build` if you make none test code changes while the cypress tests are active
 
+### Using a debugger
+
+The development server and integration tests Node processes have the [Node Inspector](https://nodejs.org/en/docs/guides/debugging-getting-started/#enabling-remote-debugging-scenarios) enabled, running on ports 9229 and 9330 respectively. You can use a debugger such as the one built into Chrome to set breakpoints etc. See the linked page for further details.
+
 ### Building a static page (designers)
 
 To view the existing static pages, and for more instructions about how to edit them, go to `http://localhost:3000/static-pages`. If you get asked to log in when you try to go to this page, then you might need to re-enter this URL after logging in.
