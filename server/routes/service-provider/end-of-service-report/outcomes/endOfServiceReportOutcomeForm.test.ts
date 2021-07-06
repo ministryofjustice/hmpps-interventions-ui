@@ -1,6 +1,6 @@
 import EndOfServiceReportOutcomeForm from './endOfServiceReportOutcomeForm'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import TestUtils from '../../../testutils/testUtils'
+import sentReferralFactory from '../../../../../testutils/factories/sentReferral'
+import TestUtils from '../../../../../testutils/testUtils'
 
 describe(EndOfServiceReportOutcomeForm, () => {
   const { serviceUser } = sentReferralFactory.build({ referral: { serviceUser: { firstName: 'Alex' } } }).referral

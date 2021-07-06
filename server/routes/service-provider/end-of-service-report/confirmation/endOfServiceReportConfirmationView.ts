@@ -1,4 +1,4 @@
-import ViewUtils from '../../utils/viewUtils'
+import ViewUtils from '../../../../utils/viewUtils'
 import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
 
 export default class EndOfServiceReportConfirmationView {

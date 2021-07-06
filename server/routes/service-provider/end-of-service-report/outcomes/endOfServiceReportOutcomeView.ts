@@ -1,5 +1,5 @@
-import { RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
-import ViewUtils from '../../utils/viewUtils'
+import { RadiosArgs, TextareaArgs } from '../../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../../utils/viewUtils'
 import EndOfServiceReportOutcomePresenter from './endOfServiceReportOutcomePresenter'
 
 export default class EndOfServiceReportOutcomeView {

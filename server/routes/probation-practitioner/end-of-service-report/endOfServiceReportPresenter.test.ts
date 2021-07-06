@@ -1,7 +1,7 @@
 import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import sentReferralFactory from '../../../../testutils/factories/sentReferral'
+import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
+import endOfServiceReportFactory from '../../../../testutils/factories/endOfServiceReport'
 
 describe(EndOfServiceReportPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({

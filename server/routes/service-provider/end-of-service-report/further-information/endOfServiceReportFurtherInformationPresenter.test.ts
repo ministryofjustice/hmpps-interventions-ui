@@ -1,7 +1,7 @@
 import EndOfServiceReportFurtherInformationPresenter from './endOfServiceReportFurtherInformationPresenter'
-import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
+import endOfServiceReportFactory from '../../../../../testutils/factories/endOfServiceReport'
+import serviceCategoryFactory from '../../../../../testutils/factories/serviceCategory'
+import sentReferralFactory from '../../../../../testutils/factories/sentReferral'
 
 describe(EndOfServiceReportFurtherInformationPresenter, () => {
   const endOfServiceReport = endOfServiceReportFactory.build({ furtherInformation: 'Some further information' })
