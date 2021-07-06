@@ -6,12 +6,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegi
 class PCCRegionDTO(
   val id: PCCRegionID,
   val name: String,
+  val npsRegion: NPSRegionDTO,
 ) {
   companion object {
     fun from(pccRegion: PCCRegion): PCCRegionDTO {
       return PCCRegionDTO(
         id = pccRegion.id,
-        name = pccRegion.name
+        name = pccRegion.name,
+        npsRegion = NPSRegionDTO.from(pccRegion.npsRegion)
       )
     }
   }
