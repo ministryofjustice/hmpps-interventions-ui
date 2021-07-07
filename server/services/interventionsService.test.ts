@@ -3136,7 +3136,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'GET',
           path: '/performance-report',
           query: { fromIncludingDate: '2021-06-01', toIncludingDate: '2021-06-10' },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
         },
         willRespondWith: {
           status: 200,
