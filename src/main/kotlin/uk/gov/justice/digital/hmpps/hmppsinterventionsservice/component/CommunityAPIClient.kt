@@ -48,7 +48,7 @@ class CommunityAPIClient(
       .bodyToMono(responseBodyClass)
       .onErrorMap { e ->
         handleResponse(e, requestBody)
-       }
+      }
       .block()
   }
 
@@ -90,7 +90,7 @@ class CommunityAPIClient(
   private fun userMessageOrDeveloperMessageOrResponseBodyInThatOrder(responseBody: String): String {
     try {
       objectMapper.readValue(responseBody, ObjectNode::class.java)?.let { node ->
-        val userMessage = node.get("userMessage")?: run {
+        val userMessage = node.get("userMessage") ?: run {
           val developerMessage = node.get("developerMessage")
           return developerMessage.textValue()
         }
