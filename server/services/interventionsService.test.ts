@@ -39,11 +39,13 @@ jest.setTimeout(30000)
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
   let probationPractitionerToken: string
+  let serviceProviderToken: string
 
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
     probationPractitionerToken = oauth2TokenFactory.probationPractitionerToken().build()
+    serviceProviderToken = oauth2TokenFactory.serviceProviderToken().build()
   })
 
   describe('getDraftReferral', () => {
@@ -3129,7 +3131,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns a list of referrals for with data for reporting', async () => {
       await provider.addInteraction({
         state: 'nothing',
-        uponReceiving: 'a GET request for referral reporting data',
+        uponReceiving: 'a service provider user’s GET request for referral reporting data',
         withRequest: {
           method: 'GET',
           path: '/performance-report',
@@ -3144,7 +3146,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       expect(
-        await interventionsService.getServiceProviderReportingData(probationPractitionerToken, {
+        await interventionsService.getServiceProviderReportingData(serviceProviderToken, {
           fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
           toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
         })
