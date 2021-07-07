@@ -207,31 +207,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
         })
     })
   })
-
-  describe('when no team details can be found', () => {
-    it('does not show the team details', async () => {
-      staffDetails = deliusStaffDetailsFactory.build({ teams: [] })
-      communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
-      await request(app)
-        .get(`/service-provider/referrals/${sentReferral.id}/details`)
-        .expect(200)
-        .expect(res => {
-          expect(res.text).not.toContain('Team contact details')
-        })
-    })
-  })
-
-  describe('when no staff details can be found', () => {
-    it('does not show the team details', async () => {
-      communityApiService.getStaffDetails.mockResolvedValue(null)
-      await request(app)
-        .get(`/service-provider/referrals/${sentReferral.id}/details`)
-        .expect(200)
-        .expect(res => {
-          expect(res.text).not.toContain('Team contact details')
-        })
-    })
-  })
 })
 
 describe('GET /service-provider/referrals/:id/progress', () => {
@@ -388,6 +363,33 @@ describe('GET /service-provider/action-plan/:actionPlanId/add-activity/:number',
       })
   })
 
+  it('prefills the text area for existing activities', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const draftActionPlan = actionPlanFactory.justCreated(referral.id).build({
+      activities: [
+        { id: 'bca57234-f2f3-4a25-8f25-b17008bd9052', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' },
+        {
+          id: '084a64c2-e8f5-43de-be52-b65cf4425eb4',
+          description: 'Do another thing',
+          createdAt: '2021-03-01T11:00:00Z',
+        },
+      ],
+    })
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategoryFactory.build())
+
+    await request(app)
+      .get(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add activity 2 to action plan')
+        expect(res.text).toContain('Do another thing')
+        expect(res.text).toContain('084a64c2-e8f5-43de-be52-b65cf4425eb4')
+      })
+  })
+
   it('errors if the activity number is invalid', async () => {
     await request(app)
       .get(`/service-provider/action-plan/123/add-activity/invalid`)
@@ -453,6 +455,39 @@ describe('POST /service-provider/action-plan/:id/add-activity/:number', () => {
         description: 'Attend training course',
       },
     })
+  })
+
+  it('updates the action plan activity with the specified description and renders the add activity form again', async () => {
+    const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation' })]
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryIds: [serviceCategories[0].id],
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+      },
+    })
+    const draftActionPlan = actionPlanFactory.oneActivityAdded().build()
+    const activityId = draftActionPlan.activities[0].id
+
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
+
+    await request(app)
+      .post(`/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
+      .type('form')
+      .send({
+        description: 'Attend training course',
+        'activity-id': activityId,
+      })
+      .expect(302)
+      .expect('Location', `/service-provider/action-plan/${draftActionPlan.id}/add-activity/2`)
+
+    expect(interventionsService.updateActionPlanActivity).toHaveBeenCalledWith(
+      'token',
+      draftActionPlan.id,
+      activityId,
+      'Attend training course'
+    )
   })
 
   describe('when the user enters no description', () => {
@@ -1938,5 +1973,46 @@ describe('POST /service-provider/reporting', () => {
       fromIncludingDate: CalendarDay.fromComponents(20, 6, 2021),
       toIncludingDate: CalendarDay.fromComponents(25, 6, 2021),
     })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
+  it('returns error if no existing action plan exists', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/action-plan/edit`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('No existing action plan exists for this referral')
+      })
+  })
+
+  it('creates a new draft action plan with the attributes of the existing action plan', async () => {
+    const existingActionPlan = actionPlanFactory.submitted().build({
+      numberOfSessions: 5,
+      activities: [
+        {
+          id: 'd67217a8-82eb-4e8d-bdce-60dbd6ba6db9',
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          description: 'existing activity',
+        },
+      ],
+    })
+    const referral = sentReferralFactory.assigned().build({ actionPlanId: existingActionPlan.id })
+    const newActionPlan = actionPlanFactory.justCreated(referral.id).build()
+
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getActionPlan.mockResolvedValue(existingActionPlan)
+    interventionsService.createDraftActionPlan.mockResolvedValue(newActionPlan)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/action-plan/edit`)
+      .expect(303)
+      .expect('Location', `/service-provider/action-plan/${newActionPlan.id}/add-activity/1`)
+
+    expect(interventionsService.createDraftActionPlan).toBeCalledWith('token', referral.id, 5, [
+      { description: 'existing activity' },
+    ])
   })
 })

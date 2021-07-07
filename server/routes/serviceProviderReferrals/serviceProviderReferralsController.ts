@@ -70,6 +70,8 @@ import ReportingPresenter from './reportingPresenter'
 import ReportingView from './reportingView'
 import ReportingForm from './reportingForm'
 import ServiceProviderCSVGenerator from '../../utils/serviceProviderCSVGenerator'
+import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
+import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -298,17 +300,26 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addActivityToActionPlan(req: Request, res: Response): Promise<void> {
+  async addOrUpdateActionPlanActivity(req: Request, res: Response): Promise<void> {
     const activityNumber = this.parseActivityNumber(req.params.number)
 
     const form = await AddActionPlanActivitiesForm.createForm(req)
 
     if (form.isValid) {
-      await this.interventionsService.updateDraftActionPlan(
-        res.locals.user.token.accessToken,
-        req.params.id,
-        form.activityParamsForUpdate
-      )
+      if (form.isUpdate) {
+        // update an existing activity
+        await this.interventionsService.updateActionPlanActivity(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.activityParamsForUpdate.id,
+          form.activityParamsForUpdate.description
+        )
+      } else {
+        // add a new activity
+        await this.interventionsService.updateDraftActionPlan(res.locals.user.token.accessToken, req.params.id, {
+          newActivity: { description: form.activityParamsForUpdate.description },
+        })
+      }
 
       const nextActivityNumber = activityNumber + 1
       res.redirect(`/service-provider/action-plan/${req.params.id}/add-activity/${nextActivityNumber}`)
@@ -1045,6 +1056,47 @@ export default class ServiceProviderReferralsController {
       res.set('Content-Type', 'text/csv')
       res.status(200).send(reportCSV)
     }
+  }
+
+  async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
+    const sentReferral = await this.interventionsService.getSentReferral(
+      res.locals.user.token.accessToken,
+      req.params.id
+    )
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not edit action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanEditConfirmationPresenter(sentReferral)
+    const view = new ActionPlanEditConfirmationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async createNewDraftActionPlan(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+
+    if (sentReferral.actionPlanId === null) {
+      throw createError(500, `could not create new draft action plan for referral with id '${req.params.id}'`, {
+        userMessage: 'No existing action plan exists for this referral',
+      })
+    }
+
+    const existingActionPlan = await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
+    const newDraftActionPlan = await this.interventionsService.createDraftActionPlan(
+      accessToken,
+      sentReferral.id,
+      existingActionPlan.numberOfSessions || undefined,
+      existingActionPlan.activities.map(it => {
+        return { description: it.description }
+      })
+    )
+    res.redirect(303, `/service-provider/action-plan/${newDraftActionPlan.id}/add-activity/1`)
   }
 
   private async findSelectedServiceCategories(

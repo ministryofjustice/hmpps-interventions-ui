@@ -170,6 +170,23 @@ describe(ShowReferralPresenter, () => {
           { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
         ])
       })
+      describe('when start date is empty', () => {
+        it('should display the team details', () => {
+          const staffDetails = deliusStaffDetailsFactory.build({
+            teams: [
+              {
+                telephone: '07890 123456',
+                emailAddress: 'probation-team4692@justice.gov.uk',
+              },
+            ],
+          })
+          const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
+          expect(presenter.probationPractitionerTeamDetails).toEqual([
+            { key: 'Phone', lines: ['07890 123456'] },
+            { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
+          ])
+        })
+      })
       describe('when ended date is null', () => {
         it('should display the team details', () => {
           const staffDetails = deliusStaffDetailsFactory.build({
@@ -188,9 +205,15 @@ describe(ShowReferralPresenter, () => {
         const presenterWithEmptyListTeams = createShowReferralPresenterWithStaffDetails(
           deliusStaffDetailsFactory.build({ teams: [] })
         )
-        expect(presenterWithEmptyListTeams.probationPractitionerTeamDetails).toEqual([])
+        expect(presenterWithEmptyListTeams.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: [] },
+          { key: 'Email address', lines: [] },
+        ])
         const presenterWithUndefinedTeams = createShowReferralPresenterWithStaffDetails({ username: 'username' })
-        expect(presenterWithUndefinedTeams.probationPractitionerTeamDetails).toEqual([])
+        expect(presenterWithUndefinedTeams.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: [] },
+          { key: 'Email address', lines: [] },
+        ])
       })
     })
     describe('when all teams are ended in the past', () => {
@@ -199,9 +222,13 @@ describe(ShowReferralPresenter, () => {
           teams: [deliusTeam.build({ endDate: '2021-01-01' })],
         })
         const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
-        expect(presenter.probationPractitionerTeamDetails).toEqual([])
+        expect(presenter.probationPractitionerTeamDetails).toEqual([
+          { key: 'Phone', lines: [] },
+          { key: 'Email address', lines: [] },
+        ])
       })
     })
+
     describe('when a team is ended in the future', () => {
       it('should show the team details', () => {
         const staffDetails = deliusStaffDetailsFactory.build({

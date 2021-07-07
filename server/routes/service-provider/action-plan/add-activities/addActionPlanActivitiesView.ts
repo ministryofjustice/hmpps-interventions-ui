@@ -26,6 +26,7 @@ export default class AddActionPlanActivitiesView {
     hint: {
       text: 'Please write the details of the activity here.',
     },
+    value: this.presenter.existingActivity?.description,
     errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
   }
 }

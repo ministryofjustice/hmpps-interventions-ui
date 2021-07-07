@@ -33,6 +33,7 @@ import errorMessages from '../../utils/errorMessages'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
+import FileUtils from '../../utils/fileUtils'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -59,7 +60,19 @@ export default class ProbationPractitionerReferralsController {
     const { accessToken } = res.locals.user.token
 
     const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUserToken(accessToken)
-    const presenter = new FindStartPresenter(existingDraftReferrals)
+
+    const structuredInterventionsFileDownloadPaths = {
+      xlsx: 'assets/downloads/Structured interventions list v1_3_3.xlsx',
+      pdf: 'assets/downloads/Structured interventions list v1_3_3.pdf',
+    }
+
+    const downloadFileSize = await FileUtils.fileSize(structuredInterventionsFileDownloadPaths.xlsx)
+    const presenter = new FindStartPresenter(
+      existingDraftReferrals,
+      structuredInterventionsFileDownloadPaths,
+      downloadFileSize
+    )
+
     const view = new FindStartView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

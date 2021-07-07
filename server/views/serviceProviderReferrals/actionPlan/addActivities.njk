@@ -20,6 +20,10 @@
   <form method="post" action="{{ presenter.addActivityAction }}">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
+    {% if presenter.existingActivity %}
+      <input type="hidden" name="activity-id" value="{{ presenter.existingActivity.id }}">
+    {% endif %}
+
     {{ govukTextarea(addActivityTextareaArgs) }}
 
     {{ govukButton({ text: ('Save and add activity ' + presenter.activityNumber), classes: "govuk-button--secondary", attributes: { id: 'add-activity' }, preventDoubleClick: true }) }}
