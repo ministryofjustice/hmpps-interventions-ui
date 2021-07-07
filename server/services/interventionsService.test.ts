@@ -3130,7 +3130,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns a list of referrals for with data for reporting', async () => {
       await provider.addInteraction({
-        state: 'nothing',
+        state: 'there are referrals available for the reporting period of 1 June 2021 to 10 June 2021',
         uponReceiving: 'a service provider user’s GET request for referral reporting data',
         withRequest: {
           method: 'GET',
