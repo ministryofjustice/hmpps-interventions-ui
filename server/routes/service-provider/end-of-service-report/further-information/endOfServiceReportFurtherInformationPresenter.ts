@@ -1,8 +1,8 @@
-import EndOfServiceReport from '../../models/endOfServiceReport'
-import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
-import PresenterUtils from '../../utils/presenterUtils'
-import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
+import EndOfServiceReport from '../../../../models/endOfServiceReport'
+import SentReferral from '../../../../models/sentReferral'
+import ServiceCategory from '../../../../models/serviceCategory'
+import PresenterUtils from '../../../../utils/presenterUtils'
+import EndOfServiceReportFormPresenter from '../endOfServiceReportFormPresenter'
 
 export default class EndOfServiceReportFurtherInformationPresenter {
   constructor(

@@ -1,10 +1,10 @@
-import DesiredOutcome from '../../models/desiredOutcome'
-import EndOfServiceReport, { EndOfServiceReportOutcome } from '../../models/endOfServiceReport'
-import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
-import { FormValidationError } from '../../utils/formValidationError'
-import PresenterUtils from '../../utils/presenterUtils'
-import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
+import DesiredOutcome from '../../../../models/desiredOutcome'
+import EndOfServiceReport, { EndOfServiceReportOutcome } from '../../../../models/endOfServiceReport'
+import SentReferral from '../../../../models/sentReferral'
+import ServiceCategory from '../../../../models/serviceCategory'
+import { FormValidationError } from '../../../../utils/formValidationError'
+import PresenterUtils from '../../../../utils/presenterUtils'
+import EndOfServiceReportFormPresenter from '../endOfServiceReportFormPresenter'
 
 export default class EndOfServiceReportOutcomePresenter {
   constructor(

@@ -1,4 +1,4 @@
-import EndOfServiceReportAnswersView from '../shared/endOfServiceReportAnswersView'
+import EndOfServiceReportAnswersView from '../../../shared/endOfServiceReportAnswersView'
 import EndOfServiceReportCheckAnswersPresenter from './endOfServiceReportCheckAnswersPresenter'
 
 export default class EndOfServiceReportCheckAnswersView {

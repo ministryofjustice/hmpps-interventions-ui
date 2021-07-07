@@ -1,6 +1,6 @@
 import EndOfServiceReportFormPresenter from './endOfServiceReportFormPresenter'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
+import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
+import sentReferralFactory from '../../../../testutils/factories/sentReferral'
 
 describe(EndOfServiceReportFormPresenter, () => {
   const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })

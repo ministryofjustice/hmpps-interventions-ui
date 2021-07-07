@@ -1,4 +1,4 @@
-import { TextareaArgs } from '../../utils/govukFrontendTypes'
+import { TextareaArgs } from '../../../../utils/govukFrontendTypes'
 import EndOfServiceReportFurtherInformationPresenter from './endOfServiceReportFurtherInformationPresenter'
 
 export default class EndOfServiceReportFurtherInformationView {

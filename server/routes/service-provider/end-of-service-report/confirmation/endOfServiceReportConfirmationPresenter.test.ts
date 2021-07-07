@@ -1,6 +1,6 @@
 import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import sentReferralFactory from '../../../../../testutils/factories/sentReferral'
+import serviceCategoryFactory from '../../../../../testutils/factories/serviceCategory'
 
 describe(EndOfServiceReportConfirmationPresenter, () => {
   describe('progressHref', () => {

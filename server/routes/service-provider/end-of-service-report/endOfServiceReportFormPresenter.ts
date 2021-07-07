@@ -1,6 +1,6 @@
-import SentReferral from '../../models/sentReferral'
-import ServiceCategory from '../../models/serviceCategory'
-import utils from '../../utils/utils'
+import SentReferral from '../../../models/sentReferral'
+import ServiceCategory from '../../../models/serviceCategory'
+import utils from '../../../utils/utils'
 
 interface EndOfServiceReportFormPagePresenter {
   text: {
