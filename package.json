@@ -130,7 +130,7 @@
     "@types/bunyan-format": "^0.2.3",
     "@types/compression": "^1.7.1",
     "@types/connect-redis": "0.0.17",
-    "@types/cookie-session": "^2.0.41",
+    "@types/cookie-session": "^2.0.43",
     "@types/csurf": "^1.9.36",
     "@types/express-request-id": "^1.4.1",
     "@types/express-session": "^1.17.3",
