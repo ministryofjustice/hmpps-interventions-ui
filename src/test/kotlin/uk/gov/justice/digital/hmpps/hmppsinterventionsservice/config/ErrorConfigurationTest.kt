@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config
 
 import com.microsoft.applicationinsights.TelemetryClient
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus.MOVED_PERMANENTLY
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.DownstreamApiCallError
+import java.lang.RuntimeException
 import java.net.URI
 import java.nio.charset.Charset
 
@@ -59,5 +62,27 @@ internal class ErrorConfigurationTest {
     assertThat(errorConfiguration.userMessageForWebClientException(SERVICE_UNAVAILABLE))
       .isEqualTo("System is experiencing issues. Please try again later and if the issue persists contact Support")
     assertThat(errorConfiguration.userMessageForWebClientException(MOVED_PERMANENTLY)).isNull()
+  }
+
+  @Test
+  fun `handles downstream api call error`() {
+
+    val error = DownstreamApiCallError(BAD_REQUEST, "category of error", "{\"name\",\"value\"}", RuntimeException("An exception"))
+
+    val response = errorConfiguration.handleDownstreamApiCallError(error).body!!
+
+    assertThat(response.status).isEqualTo(BAD_REQUEST.value())
+    assertThat(response.error).isEqualTo("category of error")
+    assertThat(response.userMessage).isEqualTo("A problem has occurred. Please contact support")
+    assertThat(response.message).isEqualTo("{\"name\",\"value\"}")
+
+    verify(telemetryClient).trackEvent(
+      "InterventionsDownstreamAPICallError",
+      mapOf(
+        "category" to "category of error",
+        "userMessage" to "A problem has occurred. Please contact support"
+      ),
+      null
+    )
   }
 }

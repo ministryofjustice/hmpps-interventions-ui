@@ -1,14 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments
+import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.WebClientResponseException.BadRequest
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.DownstreamApiCallError
 
 @Component
 class CommunityAPIClient(
   private val communityApiClient: RestClient,
+  private val objectMapper: ObjectMapper,
 ) {
   companion object : KLogging()
 
@@ -40,8 +48,7 @@ class CommunityAPIClient(
       .bodyToMono(responseBodyClass)
       .onErrorMap { e ->
         handleResponse(e, requestBody)
-        e
-      }
+       }
       .block()
   }
 
@@ -51,22 +58,51 @@ class CommunityAPIClient(
       .bodyToMono(responseBodyClass)
       .onErrorMap { e ->
         handleResponse(e, "")
-        e
       }
       .block()
   }
 
-  fun handleResponse(e: Throwable, requestBody: Any): String {
+  fun handleResponse(e: Throwable, requestBody: Any): DownstreamApiCallError {
     val responseBodyAsString = when (e) {
       is BadRequest -> e.responseBodyAsString
       else -> e.localizedMessage
     }
-    logger.error(
-      "Call to community api failed",
-      e,
-      StructuredArguments.kv("req.body", requestBody),
-      StructuredArguments.kv("res.body", responseBodyAsString)
-    )
-    return responseBodyAsString.let { it } ?: "No response body message"
+
+    val statusCode = when (e) {
+      is WebClientResponseException -> e.statusCode
+      else -> INTERNAL_SERVER_ERROR
+    }
+
+    val causeMessage = userMessageOrDeveloperMessageOrResponseBodyInThatOrder(responseBodyAsString)
+    val error = DownstreamApiCallError(statusCode, causeMessage, responseBodyAsString, e)
+    if (error.logError) {
+      logger.error(
+        "Call to downstream api failed [${error.category}]",
+        e,
+        StructuredArguments.kv("req.body", requestBody),
+        StructuredArguments.kv("res.body", responseBodyAsString)
+      )
+    }
+
+    return error
+  }
+
+  private fun userMessageOrDeveloperMessageOrResponseBodyInThatOrder(responseBody: String): String {
+    try {
+      objectMapper.readValue(responseBody, ObjectNode::class.java)?.let { node ->
+        val userMessage = node.get("userMessage")?: run {
+          val developerMessage = node.get("developerMessage")
+          return developerMessage.textValue()
+        }
+        return userMessage.textValue()
+      }
+      return responseBody
+    } catch (e: JsonProcessingException) {
+      // response body does not contain json
+      return responseBody
+    } catch (e: JsonMappingException) {
+      // response body does not contain json
+      return responseBody
+    }
   }
 }
