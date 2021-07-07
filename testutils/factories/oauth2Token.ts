@@ -18,6 +18,15 @@ class Oauth2TokenFactory extends Factory<string, TokenParams> {
       roles: ['ROLE_PROBATION'],
     })
   }
+
+  serviceProviderToken() {
+    return this.transient({
+      authSource: 'auth',
+      userID: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
+      username: 'TEST_INTERVENTIONS_SP_1',
+      roles: ['ROLE_CRS_PROVIDER'],
+    })
+  }
 }
 
 export default Oauth2TokenFactory.define(({ transientParams }) => {
