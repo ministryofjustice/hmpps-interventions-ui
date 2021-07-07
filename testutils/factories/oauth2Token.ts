@@ -10,7 +10,7 @@ interface TokenParams {
 }
 
 class Oauth2TokenFactory extends Factory<string, TokenParams> {
-  deliusToken() {
+  probationPractitionerToken() {
     return this.transient({
       authSource: 'delius',
       userID: '2500128586',

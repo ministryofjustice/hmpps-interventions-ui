@@ -43,7 +43,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
-    token = oauth2TokenFactory.deliusToken().build()
+    token = oauth2TokenFactory.probationPractitionerToken().build()
   })
 
   describe('getDraftReferral', () => {
@@ -1166,7 +1166,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getDraftReferralsForUserToken', () => {
     it('returns a list of draft referrals for a given userID', async () => {
-      const userToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '8751622134' } })
+      const userToken = oauth2TokenFactory
+        .probationPractitionerToken()
+        .build('', { transient: { userID: '8751622134' } })
 
       await provider.addInteraction({
         state: 'a single referral for user with ID 8751622134 exists',
@@ -1199,7 +1201,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns an empty list for an unknown user ID', async () => {
-      const unknownUserToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '123344556' } })
+      const unknownUserToken = oauth2TokenFactory
+        .probationPractitionerToken()
+        .build('', { transient: { userID: '123344556' } })
 
       await provider.addInteraction({
         state: 'a referral does not exist for user with ID 123344556',
