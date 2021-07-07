@@ -126,10 +126,10 @@
   },
   "devDependencies": {
     "@pact-foundation/pact": "^9.16.0",
-    "@types/bunyan": "^1.8.6",
+    "@types/bunyan": "^1.8.7",
     "@types/bunyan-format": "^0.2.3",
     "@types/compression": "^1.7.0",
-    "@types/connect-redis": "0.0.16",
+    "@types/connect-redis": "0.0.17",
     "@types/cookie-session": "^2.0.41",
     "@types/csurf": "^1.9.36",
     "@types/express-request-id": "^1.4.1",
