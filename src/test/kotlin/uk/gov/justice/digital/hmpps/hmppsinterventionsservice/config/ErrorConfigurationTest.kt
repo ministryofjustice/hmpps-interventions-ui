@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus.MOVED_PERMANENTLY
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.DownstreamApiCallError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.CommunityApiCallError
 import java.lang.RuntimeException
 import java.net.URI
 import java.nio.charset.Charset
@@ -67,20 +67,20 @@ internal class ErrorConfigurationTest {
   @Test
   fun `handles downstream api call error`() {
 
-    val error = DownstreamApiCallError(BAD_REQUEST, "category of error", "{\"name\",\"value\"}", RuntimeException("An exception"))
+    val error = CommunityApiCallError(BAD_REQUEST, "category of error", "{\"name\",\"value\"}", RuntimeException("An exception"))
 
-    val response = errorConfiguration.handleDownstreamApiCallError(error).body!!
+    val response = errorConfiguration.handleCommunityApiCallError(error).body!!
 
     assertThat(response.status).isEqualTo(BAD_REQUEST.value())
     assertThat(response.error).isEqualTo("category of error")
-    assertThat(response.userMessage).isEqualTo("A problem has occurred. Please contact support")
+    assertThat(response.userMessage).isEqualTo("Delius reported \"category of error\". Please correct, if possible, otherwise contact support")
     assertThat(response.message).isEqualTo("{\"name\",\"value\"}")
 
     verify(telemetryClient).trackEvent(
-      "InterventionsDownstreamAPICallError",
+      "InterventionsCommunityAPICallError",
       mapOf(
         "category" to "category of error",
-        "userMessage" to "A problem has occurred. Please contact support"
+        "userMessage" to "Delius reported \"category of error\". Please correct, if possible, otherwise contact support"
       ),
       null
     )

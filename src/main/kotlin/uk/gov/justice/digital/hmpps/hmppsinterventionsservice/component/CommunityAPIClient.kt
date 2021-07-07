@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.WebClientResponseException.BadRequest
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.DownstreamApiCallError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.CommunityApiCallError
 
 @Component
 class CommunityAPIClient(
@@ -62,7 +62,7 @@ class CommunityAPIClient(
       .block()
   }
 
-  fun handleResponse(e: Throwable, requestBody: Any): DownstreamApiCallError {
+  fun handleResponse(e: Throwable, requestBody: Any): CommunityApiCallError {
     val responseBodyAsString = when (e) {
       is BadRequest -> e.responseBodyAsString
       else -> e.localizedMessage
@@ -74,7 +74,7 @@ class CommunityAPIClient(
     }
 
     val causeMessage = userMessageOrDeveloperMessageOrResponseBodyInThatOrder(responseBodyAsString)
-    val error = DownstreamApiCallError(statusCode, causeMessage, responseBodyAsString, e)
+    val error = CommunityApiCallError(statusCode, causeMessage, responseBodyAsString, e)
     if (error.logError) {
       logger.error(
         "Call to downstream api failed [${error.category}]",

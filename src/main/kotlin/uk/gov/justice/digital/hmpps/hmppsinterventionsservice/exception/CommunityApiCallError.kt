@@ -27,7 +27,7 @@ Error categories after (Replace [A-Z]*[0-9]+ with _ and Replace '[A-Z0-9]*' with
 5) _ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/sentence/_/appointments/context/commissioned-rehabilitation-services
 6) _ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/appointments/_/reschedule/context/commissioned-rehabilitation-services*/
 
-class DownstreamApiCallError(val httpStatus: HttpStatus, causeMessage: String, val responseBody: String, val exception: Throwable) :
+class CommunityApiCallError(val httpStatus: HttpStatus, causeMessage: String, val responseBody: String, val exception: Throwable) :
   RuntimeException(
     exception
   ) {
@@ -36,28 +36,28 @@ class DownstreamApiCallError(val httpStatus: HttpStatus, causeMessage: String, v
     httpStatus.is4xxClientError -> {
       when {
         category.contains("Contact type .* requires an outcome type as the contact date is in the past".toRegex()) -> {
-          Pair("An appointment must only be made for today or in the future. Please try again", false)
+          Pair("Delius requires an appointment to only be made for today or in the future. Please amend and try again", true)
         }
         category.contains("endTime must be after or equal to startTime".toRegex()) -> {
-          Pair("An appointment must complete within the same day. Please try again", false)
+          Pair("Delius requires that an appointment must end on the same day it starts. Please amend and try again", true)
         }
         category.contains("CRN: _ EventId: _ has multiple referral requirements".toRegex()) -> {
-          Pair("The Service User Sentence must not contain more than one active rehabilitation activity requirement. Please correct and try again", true)
+          Pair("The Service User Sentence must not contain more than one active rehabilitation activity requirement. Please correct in Delius and try again", true)
         }
         category.contains("Cannot find NSI for CRN: _ Sentence: _ and ContractType".toRegex()) -> {
-          Pair("The intervention cannot be found for the Service User Sentence. Please contact support", true)
+          Pair("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support", true)
         }
         category.contains("Multiple existing matching NSIs found".toRegex()) -> {
-          Pair("Multiple NSI's match this referral. Please contact support", true)
+          Pair("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support", true)
         }
         category.contains("Conflict.*appointments".toRegex()) -> {
-          Pair("The appointment conflicts with another. Please try again", false)
+          Pair("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again", true)
         }
         category.contains("Conflict.*reschedule".toRegex()) -> {
-          Pair("The appointment conflicts with another Please try again", false)
+          Pair("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again", true)
         }
         else -> {
-          Pair("A problem has occurred. Please contact support", true)
+          Pair("Delius reported \"$causeMessage\". Please correct, if possible, otherwise contact support", true)
         }
       }
     }

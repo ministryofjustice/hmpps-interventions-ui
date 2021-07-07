@@ -7,76 +7,85 @@ import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.GONE
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 
-internal class DownstreamApiCallErrorTest {
+internal class CommunityApiCallErrorTest {
 
   @Test
   fun `maps user message to category`() {
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "Contact type '_' requires an outcome type as the contact date is in the past '_-_-_'",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("An appointment must only be made for today or in the future. Please try again")
+    ).isEqualTo("Delius requires an appointment to only be made for today or in the future. Please amend and try again")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "Validation failure: startTime endTime must be after or equal to startTime, endTime endTime must be after or equal to startTime",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("An appointment must complete within the same day. Please try again")
+    ).isEqualTo("Delius requires that an appointment must end on the same day it starts. Please amend and try again")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "CRN: _ EventId: _ has multiple referral requirements",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("The Service User Sentence must not contain more than one active rehabilitation activity requirement. Please correct and try again")
+    ).isEqualTo("The Service User Sentence must not contain more than one active rehabilitation activity requirement. Please correct in Delius and try again")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "Cannot find NSI for CRN: _ Sentence: _ and ContractType ACC",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("The intervention cannot be found for the Service User Sentence. Please contact support")
+    ).isEqualTo("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
+        BAD_REQUEST,
+        "Multiple existing matching NSIs found",
+        "{}",
+        RuntimeException()
+      ).userMessage
+    ).isEqualTo("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support")
+
+    assertThat(
+      CommunityApiCallError(
         CONFLICT,
         "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/sentence/_/appointments/context/commissioned-rehabilitation-services",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("The appointment conflicts with another. Please try again")
+    ).isEqualTo("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         CONFLICT,
         "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/appointments/_/reschedule/context/commissioned-rehabilitation-services",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("The appointment conflicts with another. Please try again")
+    ).isEqualTo("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         GONE,
         "An unrecognised issue",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("A problem has occurred. Please contact support")
+    ).isEqualTo("Delius reported \"An unrecognised issue\". Please correct, if possible, otherwise contact support")
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         SERVICE_UNAVAILABLE,
         "Any message",
         "{}",
@@ -89,25 +98,25 @@ internal class DownstreamApiCallErrorTest {
   fun `determines whether to log`() {
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "Contact type '_' requires an outcome type as the contact date is in the past '_-_-_'",
         "{}",
         RuntimeException()
       ).logError
-    ).isFalse
+    ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "Validation failure: startTime endTime must be after or equal to startTime, endTime endTime must be after or equal to startTime",
         "{}",
         RuntimeException()
       ).logError
-    ).isFalse
+    ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "CRN: _ EventId: _ has multiple referral requirements",
         "{}",
@@ -116,7 +125,7 @@ internal class DownstreamApiCallErrorTest {
     ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         BAD_REQUEST,
         "Cannot find NSI for CRN: _ Sentence: _ and ContractType ACC",
         "{}",
@@ -125,25 +134,34 @@ internal class DownstreamApiCallErrorTest {
     ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
+        BAD_REQUEST,
+        "Multiple existing matching NSIs found",
+        "{}",
+        RuntimeException()
+      ).logError
+    ).isTrue
+
+    assertThat(
+      CommunityApiCallError(
         CONFLICT,
         "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/sentence/_/appointments/context/commissioned-rehabilitation-services",
         "{}",
         RuntimeException()
       ).logError
-    ).isFalse
+    ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         CONFLICT,
         "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/appointments/_/reschedule/context/commissioned-rehabilitation-services",
         "{}",
         RuntimeException()
       ).logError
-    ).isFalse
+    ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         GONE,
         "An unrecognised issue",
         "{}",
@@ -152,7 +170,7 @@ internal class DownstreamApiCallErrorTest {
     ).isTrue
 
     assertThat(
-      DownstreamApiCallError(
+      CommunityApiCallError(
         SERVICE_UNAVAILABLE,
         "Any message",
         "{}",

@@ -25,7 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.DownstreamApiCallError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.CommunityApiCallError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentResponseDTO
@@ -177,13 +177,13 @@ class CommunityAPIClientTest {
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    val exception = Assertions.assertThrows(DownstreamApiCallError::class.java) {
+    val exception = Assertions.assertThrows(CommunityApiCallError::class.java) {
       communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
     assertThat(exception.localizedMessage).isEqualTo("org.springframework.web.reactive.function.client.WebClientResponseException\$BadRequest: 400 Bad Request from UNKNOWN ")
     assertThat(exception.httpStatus).isEqualTo(BAD_REQUEST)
     assertThat(exception.category).isEqualTo("There was a problem Houston")
-    assertThat(exception.userMessage).isEqualTo("A problem has occurred. Please contact support")
+    assertThat(exception.userMessage).isEqualTo("Delius reported \"There was a problem Houston\". Please correct, if possible, otherwise contact support")
     assertThat(exception.responseBody).isEqualTo("There was a problem Houston")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
@@ -205,13 +205,13 @@ class CommunityAPIClientTest {
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    val exception = Assertions.assertThrows(DownstreamApiCallError::class.java) {
+    val exception = Assertions.assertThrows(CommunityApiCallError::class.java) {
       communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
     assertThat(exception.localizedMessage).isEqualTo("org.springframework.web.reactive.function.client.WebClientResponseException\$BadRequest: 400 Bad Request from UNKNOWN ")
     assertThat(exception.httpStatus).isEqualTo(BAD_REQUEST)
     assertThat(exception.category).isEqualTo("CRN _, there was a problem on requirement _")
-    assertThat(exception.userMessage).isEqualTo("A problem has occurred. Please contact support")
+    assertThat(exception.userMessage).isEqualTo("Delius reported \"CRN X123456, there was a problem on requirement 123456\". Please correct, if possible, otherwise contact support")
     assertThat(exception.responseBody).isEqualTo("{\"userMessage\":\"CRN X123456, there was a problem on requirement 123456\",\"developerMessage\":\"None\"}")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
@@ -233,13 +233,13 @@ class CommunityAPIClientTest {
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    val exception = Assertions.assertThrows(DownstreamApiCallError::class.java) {
+    val exception = Assertions.assertThrows(CommunityApiCallError::class.java) {
       communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
     assertThat(exception.localizedMessage).isEqualTo("org.springframework.web.reactive.function.client.WebClientResponseException\$BadRequest: 400 Bad Request from UNKNOWN ")
     assertThat(exception.httpStatus).isEqualTo(BAD_REQUEST)
     assertThat(exception.category).isEqualTo("Sentence '_', there was a problem")
-    assertThat(exception.userMessage).isEqualTo("A problem has occurred. Please contact support")
+    assertThat(exception.userMessage).isEqualTo("Delius reported \"Sentence '123456', there was a problem\". Please correct, if possible, otherwise contact support")
     assertThat(exception.responseBody).isEqualTo("{\"developerMessage\":\"Sentence '123456', there was a problem\"}")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
