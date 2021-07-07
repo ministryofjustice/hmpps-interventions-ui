@@ -126,7 +126,7 @@
   },
   "devDependencies": {
     "@pact-foundation/pact": "^9.16.0",
-    "@types/bunyan": "^1.8.6",
+    "@types/bunyan": "^1.8.7",
     "@types/bunyan-format": "^0.2.3",
     "@types/compression": "^1.7.0",
     "@types/connect-redis": "0.0.17",
