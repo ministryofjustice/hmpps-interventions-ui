@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
@@ -21,10 +22,10 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.CommunityApiCallError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentCreateRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentResponseDTO
@@ -36,6 +37,7 @@ import java.util.UUID
 class CommunityAPIClientTest {
 
   private val exchangeFunction = mock<ExchangeFunction>()
+  private val objectMapper = ObjectMapper()
   private lateinit var communityAPIClient: CommunityAPIClient
 
   companion object {
@@ -66,7 +68,8 @@ class CommunityAPIClientTest {
   fun `makes async post request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
     )
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.empty())
 
@@ -84,7 +87,8 @@ class CommunityAPIClientTest {
   fun `makes async patch request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
     )
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.empty())
 
@@ -102,22 +106,24 @@ class CommunityAPIClientTest {
   fun `error was logged on exception during async post request`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
     )
-    whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException::class.java)
+    whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException("An error"))
 
     communityAPIClient.makeAsyncPostRequest("/uriValue", referralSentEvent)
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [An error]")
   }
 
   @Test
   fun `makes sync post request successfully`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
     )
     val clientResponse: ClientResponse = ClientResponse
       .create(OK)
@@ -142,42 +148,103 @@ class CommunityAPIClientTest {
   fun `error was logged on exception during sync post request`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
     )
     whenever(exchangeFunction.exchange(any())).thenThrow(RuntimeException("A problem"))
 
     val exception = Assertions.assertThrows(RuntimeException::class.java) {
       communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
-    assertThat(exception.localizedMessage).isEqualTo("A problem")
+    assertThat(exception.localizedMessage).isEqualTo("java.lang.RuntimeException: A problem")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [A problem]")
   }
 
   @Test
-  fun `propogates error response body on exception during sync post request`() {
+  fun `propagates error response body on exception during sync post request`() {
 
     communityAPIClient = CommunityAPIClient(
-      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id")
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
     )
     val clientResponse: ClientResponse = ClientResponse
       .create(BAD_REQUEST)
       .header("Content-Type", "application/json")
-      .body("There was a problem Houston")
+      .body("There was a problem Houston A1234 and 777")
       .build()
     whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
 
-    val exception = Assertions.assertThrows(WebClientResponseException::class.java) {
+    val exception = Assertions.assertThrows(CommunityApiCallError::class.java) {
       communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
     }
-    assertThat(exception.localizedMessage).isEqualTo("400 Bad Request from UNKNOWN ")
-    assertThat(exception.responseBodyAsString).isEqualTo("There was a problem Houston")
+    assertThat(exception.localizedMessage).isEqualTo("org.springframework.web.reactive.function.client.WebClientResponseException\$BadRequest: 400 Bad Request from UNKNOWN ")
+    assertThat(exception.httpStatus).isEqualTo(BAD_REQUEST)
+    assertThat(exception.category).isEqualTo("There was a problem Houston _ and _")
+    assertThat(exception.userMessage).isEqualTo("Delius reported \"There was a problem Houston A1234 and 777\". Please correct, if possible, otherwise contact support")
+    assertThat(exception.responseBody).isEqualTo("There was a problem Houston A1234 and 777")
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [There was a problem Houston _ and _]")
+  }
+
+  @Test
+  fun `propagates user message on exception during sync post request`() {
+
+    communityAPIClient = CommunityAPIClient(
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
+    )
+    val clientResponse: ClientResponse = ClientResponse
+      .create(BAD_REQUEST)
+      .header("Content-Type", "application/json")
+      .body("{\"userMessage\":\"CRN X123456, there was a problem on requirement 123456\",\"developerMessage\":\"None\"}")
+      .build()
+    whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
+
+    val exception = Assertions.assertThrows(CommunityApiCallError::class.java) {
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
+    }
+    assertThat(exception.localizedMessage).isEqualTo("org.springframework.web.reactive.function.client.WebClientResponseException\$BadRequest: 400 Bad Request from UNKNOWN ")
+    assertThat(exception.httpStatus).isEqualTo(BAD_REQUEST)
+    assertThat(exception.category).isEqualTo("CRN _, there was a problem on requirement _")
+    assertThat(exception.userMessage).isEqualTo("Delius reported \"CRN X123456, there was a problem on requirement 123456\". Please correct, if possible, otherwise contact support")
+    assertThat(exception.responseBody).isEqualTo("{\"userMessage\":\"CRN X123456, there was a problem on requirement 123456\",\"developerMessage\":\"None\"}")
+
+    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
+    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [CRN _, there was a problem on requirement _]")
+  }
+
+  @Test
+  fun `propagates developer message on exception during sync post request`() {
+
+    communityAPIClient = CommunityAPIClient(
+      RestClient(WebClient.builder().exchangeFunction(exchangeFunction).build(), "client-registration-id"),
+      objectMapper
+    )
+    val clientResponse: ClientResponse = ClientResponse
+      .create(BAD_REQUEST)
+      .header("Content-Type", "application/json")
+      .body("{\"developerMessage\":\"Sentence '123456', there was a problem\"}")
+      .build()
+    whenever(exchangeFunction.exchange(any())).thenReturn(Mono.just(clientResponse))
+
+    val exception = Assertions.assertThrows(CommunityApiCallError::class.java) {
+      communityAPIClient.makeSyncPostRequest("/uriValue", appointmentCreateRequest, AppointmentResponseDTO::class.java)
+    }
+    assertThat(exception.localizedMessage).isEqualTo("org.springframework.web.reactive.function.client.WebClientResponseException\$BadRequest: 400 Bad Request from UNKNOWN ")
+    assertThat(exception.httpStatus).isEqualTo(BAD_REQUEST)
+    assertThat(exception.category).isEqualTo("Sentence '_', there was a problem")
+    assertThat(exception.userMessage).isEqualTo("Delius reported \"Sentence '123456', there was a problem\". Please correct, if possible, otherwise contact support")
+    assertThat(exception.responseBody).isEqualTo("{\"developerMessage\":\"Sentence '123456', there was a problem\"}")
+
+    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
+    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [Sentence '_', there was a problem]")
   }
 
   private val referralSentEvent = ReferralEvent(

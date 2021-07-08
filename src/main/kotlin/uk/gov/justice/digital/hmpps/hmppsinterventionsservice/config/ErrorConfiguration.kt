@@ -12,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.CommunityApiCallError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
@@ -121,6 +122,26 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
   fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse> {
     logger.info("Call to dependency response exception", e)
     return errorResponse(e.statusCode, "Call to dependency response exception", e.responseBodyAsString, userMessageForWebClientException(e.statusCode))
+  }
+
+  @ExceptionHandler(CommunityApiCallError::class)
+  fun handleCommunityApiCallError(e: CommunityApiCallError): ResponseEntity<ErrorResponse> {
+    telemetryClient.trackEvent(
+      "InterventionsCommunityAPICallError",
+      mapOf(
+        "category" to e.category,
+        "userMessage" to e.userMessage
+      ),
+      null
+    )
+
+    logger.info("Call to downstream response exception", e)
+    return errorResponse(
+      e.httpStatus,
+      e.category,
+      e.responseBody,
+      e.userMessage
+    )
   }
 
   fun userMessageForWebClientException(status: HttpStatus?): String? {
