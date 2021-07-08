@@ -115,7 +115,7 @@ class CommunityAPIClientTest {
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to downstream api failed [An error]")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [An error]")
   }
 
   @Test
@@ -160,7 +160,7 @@ class CommunityAPIClientTest {
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to downstream api failed [A problem]")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [A problem]")
   }
 
   @Test
@@ -188,7 +188,7 @@ class CommunityAPIClientTest {
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to downstream api failed [There was a problem Houston]")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [There was a problem Houston]")
   }
 
   @Test
@@ -216,7 +216,7 @@ class CommunityAPIClientTest {
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to downstream api failed [CRN _, there was a problem on requirement _]")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [CRN _, there was a problem on requirement _]")
   }
 
   @Test
@@ -244,7 +244,7 @@ class CommunityAPIClientTest {
 
     assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to downstream api failed [Sentence '_', there was a problem]")
+    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Call to community api failed [Sentence '_', there was a problem]")
   }
 
   private val referralSentEvent = ReferralEvent(

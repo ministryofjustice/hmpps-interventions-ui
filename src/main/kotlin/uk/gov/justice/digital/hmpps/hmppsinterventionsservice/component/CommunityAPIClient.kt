@@ -77,7 +77,7 @@ class CommunityAPIClient(
     val error = CommunityApiCallError(statusCode, causeMessage, responseBodyAsString, e)
     if (error.logError) {
       logger.error(
-        "Call to downstream api failed [${error.category}]",
+        "Call to community api failed [${error.category}]",
         e,
         StructuredArguments.kv("req.body", requestBody),
         StructuredArguments.kv("res.body", responseBodyAsString)
