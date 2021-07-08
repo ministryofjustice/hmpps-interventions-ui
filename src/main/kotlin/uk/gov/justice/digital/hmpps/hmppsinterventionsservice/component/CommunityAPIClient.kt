@@ -75,14 +75,13 @@ class CommunityAPIClient(
 
     val causeMessage = userMessageOrDeveloperMessageOrResponseBodyInThatOrder(responseBodyAsString)
     val error = CommunityApiCallError(statusCode, causeMessage, responseBodyAsString, e)
-    if (error.logError) {
-      logger.error(
-        "Call to community api failed [${error.category}]",
-        e,
-        StructuredArguments.kv("req.body", requestBody),
-        StructuredArguments.kv("res.body", responseBodyAsString)
-      )
-    }
+    logger.error(
+      "Call to community api failed [${error.category}]",
+      e,
+      StructuredArguments.kv("req.body", requestBody),
+      StructuredArguments.kv("res.body", responseBodyAsString),
+      StructuredArguments.kv("res.causeMessage", causeMessage)
+    )
 
     return error
   }

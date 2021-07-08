@@ -15,7 +15,7 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         BAD_REQUEST,
-        "Contact type '_' requires an outcome type as the contact date is in the past '_-_-_'",
+        "Contact type 'CRSSAA' requires an outcome type as the contact date is in the past '2021-06-29'",
         "{}",
         RuntimeException()
       ).userMessage
@@ -33,7 +33,7 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         BAD_REQUEST,
-        "CRN: _ EventId: _ has multiple referral requirements",
+        "CRN: E376578 EventId: 1502929161 has multiple referral requirements",
         "{}",
         RuntimeException()
       ).userMessage
@@ -42,7 +42,7 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         BAD_REQUEST,
-        "Cannot find NSI for CRN: _ Sentence: _ and ContractType ACC",
+        "Cannot find NSI for CRN: M190420 Sentence: 1503032340 and ContractType ACC",
         "{}",
         RuntimeException()
       ).userMessage
@@ -60,7 +60,7 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         CONFLICT,
-        "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/sentence/_/appointments/context/commissioned-rehabilitation-services",
+        "409 Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/E188275/sentence/1503090023/appointments/context/commissioned-rehabilitation-services",
         "{}",
         RuntimeException()
       ).userMessage
@@ -69,7 +69,7 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         CONFLICT,
-        "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/appointments/_/reschedule/context/commissioned-rehabilitation-services",
+        "409 Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/D889766/appointments/1761440075/reschedule/context/commissioned-rehabilitation-services",
         "{}",
         RuntimeException()
       ).userMessage
@@ -78,11 +78,11 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         GONE,
-        "An unrecognised issue 'A123'",
+        "An unrecognised issue 'A123' and 234566",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("Delius reported \"An unrecognised issue '_'\". Please correct, if possible, otherwise contact support")
+    ).isEqualTo("Delius reported \"An unrecognised issue 'A123' and 234566\". Please correct, if possible, otherwise contact support")
 
     assertThat(
       CommunityApiCallError(
@@ -92,90 +92,5 @@ internal class CommunityApiCallErrorTest {
         RuntimeException()
       ).userMessage
     ).isEqualTo("System is experiencing issues. Please try again later and if the issue persists contact Support")
-  }
-
-  @Test
-  fun `determines whether to log`() {
-
-    assertThat(
-      CommunityApiCallError(
-        BAD_REQUEST,
-        "Contact type '_' requires an outcome type as the contact date is in the past '_-_-_'",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        BAD_REQUEST,
-        "Validation failure: startTime endTime must be after or equal to startTime, endTime endTime must be after or equal to startTime",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        BAD_REQUEST,
-        "CRN: _ EventId: _ has multiple referral requirements",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        BAD_REQUEST,
-        "Cannot find NSI for CRN: _ Sentence: _ and ContractType ACC",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        BAD_REQUEST,
-        "Multiple existing matching NSIs found",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        CONFLICT,
-        "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/sentence/_/appointments/context/commissioned-rehabilitation-services",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        CONFLICT,
-        "_ Conflict from POST https://community-api-secure.probation.service.justice.gov.uk/secure/offenders/crn/_/appointments/_/reschedule/context/commissioned-rehabilitation-services",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        GONE,
-        "An unrecognised issue",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
-
-    assertThat(
-      CommunityApiCallError(
-        SERVICE_UNAVAILABLE,
-        "Any message",
-        "{}",
-        RuntimeException()
-      ).logError
-    ).isTrue
   }
 }

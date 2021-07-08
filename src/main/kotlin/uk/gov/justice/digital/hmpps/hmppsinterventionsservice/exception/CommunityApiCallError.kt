@@ -32,44 +32,41 @@ class CommunityApiCallError(val httpStatus: HttpStatus, causeMessage: String, va
     exception
   ) {
   val category = errorCategoryByRemovingIdentifiers(causeMessage)
-  private val error = when {
+  val userMessage = when {
     httpStatus.is4xxClientError -> {
       when {
         category.contains("Contact type .* requires an outcome type as the contact date is in the past".toRegex()) -> {
-          Pair("Delius requires an appointment to only be made for today or in the future. Please amend and try again", true)
+          "Delius requires an appointment to only be made for today or in the future. Please amend and try again"
         }
         category.contains("endTime must be after or equal to startTime".toRegex()) -> {
-          Pair("Delius requires that an appointment must end on the same day it starts. Please amend and try again", true)
+          "Delius requires that an appointment must end on the same day it starts. Please amend and try again"
         }
         category.contains("CRN: _ EventId: _ has multiple referral requirements".toRegex()) -> {
-          Pair("The Service User Sentence must not contain more than one active rehabilitation activity requirement. Please correct in Delius and try again", true)
+          "The Service User Sentence must not contain more than one active rehabilitation activity requirement. Please correct in Delius and try again"
         }
         category.contains("Cannot find NSI for CRN: _ Sentence: _ and ContractType".toRegex()) -> {
-          Pair("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support", true)
+          "There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support"
         }
         category.contains("Multiple existing matching NSIs found".toRegex()) -> {
-          Pair("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support", true)
+          "There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support"
         }
         category.contains("Conflict.*appointments".toRegex()) -> {
-          Pair("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again", true)
+          "The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again"
         }
         category.contains("Conflict.*reschedule".toRegex()) -> {
-          Pair("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again", true)
+          "The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again"
         }
         else -> {
-          Pair("Delius reported \"$category\". Please correct, if possible, otherwise contact support", true)
+          "Delius reported \"$causeMessage\". Please correct, if possible, otherwise contact support"
         }
       }
     }
     else -> {
-      Pair("System is experiencing issues. Please try again later and if the issue persists contact Support", true)
+      "System is experiencing issues. Please try again later and if the issue persists contact Support"
     }
   }
-  val userMessage = error.first
-  val logError = error.second
 
   private fun errorCategoryByRemovingIdentifiers(message: String): String {
-    val messageWithoutIds = "[A-Z]*[0-9]+".toRegex().replace(message, "_")
-    return "'[A-Z0-9]*'".toRegex().replace(messageWithoutIds, "'_'")
+    return "[A-Z]*[0-9]+".toRegex().replace(message, "_")
   }
 }
