@@ -16,6 +16,10 @@
             <appender-ref ref="stdout" />
         </root>
 
+        <logger name="uk.gov.justice.digital.hmpps.hmppsinterventionsservice" level="debug" additivity="false">
+            <appender-ref ref="stdout" />
+        </logger>
+
         <logger name="org.hibernate.SQL" level="debug" additivity="false">
             <appender-ref ref="stdout" />
         </logger>
