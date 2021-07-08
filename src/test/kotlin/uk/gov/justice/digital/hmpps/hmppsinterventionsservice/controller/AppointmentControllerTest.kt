@@ -61,4 +61,19 @@ class AppointmentControllerTest {
 
     assertThat(result).isNotNull
   }
+
+  @Test
+  fun `can submit appointment feedback`() {
+    val appointmentId = UUID.randomUUID()
+    val submittedBy = authUserFactory.create()
+    val token = tokenFactory.create()
+    val appointment = appointmentFactory.create()
+
+    whenever(appointmentService.submitSessionFeedback(any(), any())).thenReturn(appointment)
+    whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+
+    val result = appointmentController.submitFeedback(appointmentId, token)
+
+    assertThat(result).isNotNull
+  }
 }

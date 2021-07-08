@@ -269,4 +269,57 @@ class AppointmentServiceTest {
     }
     assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
   }
+
+  @Test
+  fun `appointment feedback can be submitted`() {
+    val appointmentId = UUID.randomUUID()
+    val appointment = appointmentFactory.create(id = appointmentId)
+    val submittedBy = authUserFactory.create()
+
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+    whenever(appointmentRepository.save(any())).thenReturn(appointment)
+    whenever(authUserRepository.save(any())).thenReturn(submittedBy)
+
+    appointmentService.submitSessionFeedback(appointmentId, submittedBy)
+
+    val argumentCaptor = argumentCaptor<Appointment>()
+    verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
+    val arguments = argumentCaptor.firstValue
+
+    assertThat(arguments.id).isEqualTo(appointmentId)
+    assertThat(arguments.appointmentFeedbackSubmittedAt).isNotNull
+    assertThat(arguments.appointmentFeedbackSubmittedBy).isEqualTo(submittedBy)
+  }
+
+  @Test
+  fun `appointment feedback can't be submitted more than once`() {
+    val appointmentId = UUID.randomUUID()
+    val appointment = appointmentFactory.create(id = appointmentId)
+    val submittedBy = authUserFactory.create()
+
+    appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+
+    val exception = assertThrows<ResponseStatusException> {
+      appointmentService.submitSessionFeedback(appointmentId, submittedBy)
+    }
+    assertThat(exception.message).contains("appointment feedback has already been submitted")
+  }
+
+  @Test
+  fun `appointment feedback can't be submitted if attendance hasn't been recorded`() {
+    val appointmentId = UUID.randomUUID()
+    val appointment = appointmentFactory.create(id = appointmentId)
+    val submittedBy = authUserFactory.create()
+
+    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
+
+    val exception = assertThrows<ResponseStatusException> {
+      appointmentService.submitSessionFeedback(appointmentId, submittedBy)
+    }
+    assertThat(exception.message).contains("can't submit feedback unless attendance has been recorded")
+  }
 }

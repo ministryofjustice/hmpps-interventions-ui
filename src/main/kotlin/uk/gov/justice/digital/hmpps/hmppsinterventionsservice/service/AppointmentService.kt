@@ -98,6 +98,22 @@ class AppointmentService(
     return appointmentRepository.save(appointment)
   }
 
+  fun submitSessionFeedback(appointmentId: UUID, submitter: AuthUser): Appointment {
+    val appointment = getAppointmentById(appointmentId)
+
+    if (appointment.appointmentFeedbackSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.CONFLICT, "appointment feedback has already been submitted")
+    }
+
+    if (appointment.attendanceSubmittedAt == null) {
+      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "can't submit feedback unless attendance has been recorded")
+    }
+
+    appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
+    appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
+    return appointmentRepository.save(appointment)
+  }
+
   private fun getAppointmentById(appointmentId: UUID): Appointment {
     return appointmentRepository.findByIdOrNull(appointmentId)
       ?: throw EntityNotFoundException("Appointment not found [id=$appointmentId]")
