@@ -27,10 +27,12 @@ data class Appointment(
 
   var attendanceBehaviour: String? = null,
   var attendanceBehaviourSubmittedAt: OffsetDateTime? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var attendanceBehaviourSubmittedBy: AuthUser? = null,
   var notifyPPOfAttendanceBehaviour: Boolean? = null,
 
   var appointmentFeedbackSubmittedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var appointmentFeedbackSubmittedBy: AuthUser? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var attendanceSubmittedBy: AuthUser? = null,
 
   var deliusAppointmentId: Long? = null,
 

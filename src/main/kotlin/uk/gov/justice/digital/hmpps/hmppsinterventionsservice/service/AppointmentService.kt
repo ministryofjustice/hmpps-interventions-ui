@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
@@ -15,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.App
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Service
@@ -61,15 +65,66 @@ class AppointmentService(
   fun createOrUpdateAppointmentDeliveryDetails(appointment: Appointment, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressDTO: AddressDTO?) {
     var appointmentDelivery = appointment.appointmentDelivery
     if (appointmentDelivery == null) {
-      appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
+      appointmentDelivery =
+        AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType)
     }
     appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
     appointment.appointmentDelivery = appointmentDelivery
     appointmentRepository.saveAndFlush(appointment)
     if (appointmentDeliveryType == AppointmentDeliveryType.IN_PERSON_MEETING_OTHER) {
-      appointmentDelivery.appointmentDeliveryAddress = createOrUpdateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressDTO!!)
+      appointmentDelivery.appointmentDeliveryAddress =
+        createOrUpdateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressDTO!!)
       appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
     }
+  }
+
+  fun recordBehaviour(appointmentId: UUID, behaviourDescription: String, notifyProbationPractitioner: Boolean, submittedBy: AuthUser): Appointment {
+    val appointment = getAppointmentById(appointmentId)
+    if (appointment.appointmentFeedbackSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
+    }
+    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, submittedBy)
+    return appointmentRepository.save(appointment)
+  }
+
+  fun recordAppointmentAttendance(appointmentId: UUID, attended: Attended, additionalAttendanceInformation: String?, submittedBy: AuthUser): Appointment {
+    val appointment = getAppointmentById(appointmentId)
+
+    if (appointment.appointmentFeedbackSubmittedAt != null) {
+      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
+    }
+
+    setAttendanceFields(appointment, attended, additionalAttendanceInformation, submittedBy)
+    return appointmentRepository.save(appointment)
+  }
+
+  private fun getAppointmentById(appointmentId: UUID): Appointment {
+    return appointmentRepository.findByIdOrNull(appointmentId)
+      ?: throw EntityNotFoundException("Appointment not found [id=$appointmentId]")
+  }
+
+  private fun setAttendanceFields(
+    appointment: Appointment,
+    attended: Attended,
+    additionalInformation: String?,
+    submittedBy: AuthUser,
+  ) {
+    appointment.attended = attended
+    additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
+    appointment.attendanceSubmittedAt = OffsetDateTime.now()
+    appointment.attendanceSubmittedBy = authUserRepository.save(submittedBy)
+  }
+
+  private fun setBehaviourFields(
+    appointment: Appointment,
+    behaviour: String,
+    notifyProbationPractitioner: Boolean,
+    submittedBy: AuthUser,
+  ) {
+    appointment.attendanceBehaviour = behaviour
+    appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
+    appointment.notifyPPOfAttendanceBehaviour = notifyProbationPractitioner
+    appointment.attendanceBehaviourSubmittedBy = authUserRepository.save(submittedBy)
   }
 
   private fun createAppointment(

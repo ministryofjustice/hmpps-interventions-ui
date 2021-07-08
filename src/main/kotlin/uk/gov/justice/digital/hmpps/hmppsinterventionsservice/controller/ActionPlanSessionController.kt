@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
@@ -78,8 +78,8 @@ class ActionPlanSessionController(
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/record-behaviour")
-  fun recordBehaviour(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int, @RequestBody update: UpdateAppointmentBehaviourDTO): ActionPlanSessionDTO {
-    return ActionPlanSessionDTO.from(actionPlanSessionsService.recordBehaviour(actionPlanId, sessionNumber, update.behaviourDescription, update.notifyProbationPractitioner))
+  fun recordBehaviour(@PathVariable actionPlanId: UUID, @PathVariable sessionNumber: Int, @RequestBody recordBehaviourDTO: RecordAppointmentBehaviourDTO): ActionPlanSessionDTO {
+    return ActionPlanSessionDTO.from(actionPlanSessionsService.recordBehaviour(actionPlanId, sessionNumber, recordBehaviourDTO.behaviourDescription, recordBehaviourDTO.notifyProbationPractitioner))
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/submit")
