@@ -1,7 +1,7 @@
-import TestUtils from '../../../../../../../testutils/testUtils'
-import PostSessionAttendanceFeedbackForm from './postSessionAttendanceFeedbackForm'
+import TestUtils from '../../../../../../testutils/testUtils'
+import AttendanceFeedbackForm from './attendanceFeedbackForm'
 
-describe(PostSessionAttendanceFeedbackForm, () => {
+describe(AttendanceFeedbackForm, () => {
   describe('data', () => {
     describe('with valid data', () => {
       const validAttendedValues = ['yes', 'late', 'no']
@@ -12,7 +12,7 @@ describe(PostSessionAttendanceFeedbackForm, () => {
             attended: validAttendedValue,
             'additional-attendance-information': 'Alex missed the bus',
           })
-          const data = await new PostSessionAttendanceFeedbackForm(request).data()
+          const data = await new AttendanceFeedbackForm(request).data()
 
           expect(data.paramsForUpdate?.attended).toEqual(validAttendedValue)
           expect(data.paramsForUpdate?.additionalAttendanceInformation).toEqual('Alex missed the bus')
@@ -24,7 +24,7 @@ describe(PostSessionAttendanceFeedbackForm, () => {
       it('returns an error when the attended property is not present', async () => {
         const request = TestUtils.createRequest({})
 
-        const data = await new PostSessionAttendanceFeedbackForm(request).data()
+        const data = await new AttendanceFeedbackForm(request).data()
 
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'attended',

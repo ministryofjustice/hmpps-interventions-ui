@@ -1,15 +1,16 @@
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { ActionPlanAppointment } from '../../../../../models/actionPlan'
-import PostSessionAttendanceFeedbackPresenter from '../../../../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackPresenter'
+import ActionPlanPostSessionAttendanceFeedbackPresenter from '../../../../service-provider/action-plan/appointment/post-session-feedback/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
 import PostSessionBehaviourFeedbackPresenter from '../../../../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackPresenter'
+import AttendanceFeedbackPresenter from '../../../../service-provider/appointment/feedback/attendance/attendanceFeedbackPresenter'
 
 export default class FeedbackAnswersPresenter {
-  private readonly attendancePresenter: PostSessionAttendanceFeedbackPresenter
+  private readonly attendancePresenter: AttendanceFeedbackPresenter
 
   private readonly behaviourPresenter: PostSessionBehaviourFeedbackPresenter
 
   constructor(private readonly appointment: ActionPlanAppointment, private readonly serviceUser: DeliusServiceUser) {
-    this.attendancePresenter = new PostSessionAttendanceFeedbackPresenter(this.appointment, this.serviceUser)
+    this.attendancePresenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(this.appointment, this.serviceUser)
     this.behaviourPresenter = new PostSessionBehaviourFeedbackPresenter(this.appointment, this.serviceUser)
   }
 

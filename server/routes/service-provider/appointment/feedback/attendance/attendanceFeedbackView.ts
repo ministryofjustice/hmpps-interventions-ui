@@ -1,9 +1,9 @@
-import { TextareaArgs } from '../../../../../../utils/govukFrontendTypes'
-import ViewUtils from '../../../../../../utils/viewUtils'
-import PostSessionAttendanceFeedbackPresenter from './postSessionAttendanceFeedbackPresenter'
+import { TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../../../utils/viewUtils'
+import AttendanceFeedbackPresenter from './attendanceFeedbackPresenter'
 
-export default class PostSessionAttendanceFeedbackView {
-  constructor(private readonly presenter: PostSessionAttendanceFeedbackPresenter) {}
+export default class AttendanceFeedbackView {
+  constructor(private readonly presenter: AttendanceFeedbackPresenter) {}
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
 

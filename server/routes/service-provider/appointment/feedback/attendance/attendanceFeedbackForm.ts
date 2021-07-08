@@ -1,18 +1,18 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import AppointmentAttendance from '../../../../../../models/appointmentAttendance'
-import errorMessages from '../../../../../../utils/errorMessages'
-import { FormValidationError } from '../../../../../../utils/formValidationError'
-import { FormData } from '../../../../../../utils/forms/formData'
-import FormUtils from '../../../../../../utils/formUtils'
+import AppointmentAttendance from '../../../../../models/appointmentAttendance'
+import errorMessages from '../../../../../utils/errorMessages'
+import { FormValidationError } from '../../../../../utils/formValidationError'
+import { FormData } from '../../../../../utils/forms/formData'
+import FormUtils from '../../../../../utils/formUtils'
 
-export default class PostSessionAttendanceFeedbackForm {
+export default class AttendanceFeedbackForm {
   constructor(private readonly request: Request) {}
 
   async data(): Promise<FormData<Partial<AppointmentAttendance>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: PostSessionAttendanceFeedbackForm.validations,
+      validations: AttendanceFeedbackForm.validations,
     })
 
     const error = this.error(validationResult)
