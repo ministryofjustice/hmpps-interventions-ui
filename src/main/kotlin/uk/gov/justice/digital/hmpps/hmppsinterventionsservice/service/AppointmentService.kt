@@ -3,9 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryAddress
@@ -78,7 +77,6 @@ class AppointmentService(
       appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
     }
   }
-
 
   fun recordBehaviour(appointmentId: UUID, behaviourDescription: String, notifyProbationPractitioner: Boolean, submittedBy: AuthUser): Appointment {
     val appointment = getAppointmentById(appointmentId)
