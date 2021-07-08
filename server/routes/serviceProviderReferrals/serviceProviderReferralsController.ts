@@ -31,9 +31,9 @@ import ActionPlanNumberOfSessionsForm from '../service-provider/action-plan/numb
 import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import ScheduleAppointmentView from './scheduleAppointmentView'
 import ScheduleAppointmentForm from './scheduleAppointmentForm'
-import PostSessionAttendanceFeedbackView from '../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackView'
-import PostSessionAttendanceFeedbackPresenter from '../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackPresenter'
-import PostSessionAttendanceFeedbackForm from '../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackForm'
+import AttendanceFeedbackView from '../service-provider/appointment/feedback/attendance/attendanceFeedbackView'
+import ActionPlanPostSessionAttendanceFeedbackPresenter from '../service-provider/action-plan/appointment/post-session-feedback/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
+import AttendanceFeedbackForm from '../service-provider/appointment/feedback/attendance/attendanceFeedbackForm'
 import PostSessionFeedbackConfirmationPresenter from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationPresenter'
 import PostSessionFeedbackConfirmationView from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationView'
 import PostSessionBehaviourFeedbackPresenter from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackPresenter'
@@ -639,7 +639,7 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+  async addInitialAssessmentPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { actionPlanId, sessionNumber } = req.params
@@ -647,7 +647,7 @@ export default class ServiceProviderReferralsController {
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
 
-    const data = await new PostSessionAttendanceFeedbackForm(req).data()
+    const data = await new AttendanceFeedbackForm(req).data()
 
     if (req.method === 'POST') {
       if (data.error) {
@@ -682,8 +682,67 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, userInputData)
-    const view = new PostSessionAttendanceFeedbackView(presenter)
+    const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
+      appointment,
+      serviceUser,
+      formError,
+      userInputData
+    )
+    const view = new AttendanceFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    const data = await new AttendanceFeedbackForm(req).data()
+
+    if (req.method === 'POST') {
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
+          accessToken,
+          actionPlanId,
+          Number(sessionNumber),
+          data.paramsForUpdate
+        )
+
+        const redirectPath =
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+
+        return res.redirect(
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
+        )
+      }
+    }
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
+      appointment,
+      serviceUser,
+      formError,
+      userInputData
+    )
+    const view = new AttendanceFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
