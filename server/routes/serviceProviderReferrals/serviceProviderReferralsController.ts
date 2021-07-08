@@ -68,6 +68,7 @@ import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssess
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
 import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
 import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
+import InitialAssessmentPostAssessmentAttendanceFeedbackPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/attendance/initialAssessmentPostAssessmentAttendanceFeedbackPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -639,7 +640,7 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addInitialAssessmentPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { actionPlanId, sessionNumber } = req.params
@@ -693,50 +694,27 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+  async addInitialAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+    const referralId = req.params.id
 
-    let formError: FormValidationError | null = null
-    let userInputData: Record<string, unknown> | null = null
-
-    const data = await new AttendanceFeedbackForm(req).data()
-
-    if (req.method === 'POST') {
-      if (data.error) {
-        res.status(400)
-        formError = data.error
-        userInputData = req.body
-      } else {
-        const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
-          accessToken,
-          actionPlanId,
-          Number(sessionNumber),
-          data.paramsForUpdate
-        )
-
-        const redirectPath =
-          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
-
-        return res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
-        )
-      }
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(
+      res.locals.user.token.accessToken,
+      referralId
+    )
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
     }
 
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const formError: FormValidationError | null = null
+    const userInputData: Record<string, unknown> | null = null
 
-    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
-
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      actionPlanId,
-      Number(sessionNumber)
-    )
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
+    const presenter = new InitialAssessmentPostAssessmentAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
       formError,
