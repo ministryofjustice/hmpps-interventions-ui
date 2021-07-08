@@ -78,11 +78,11 @@ internal class CommunityApiCallErrorTest {
     assertThat(
       CommunityApiCallError(
         GONE,
-        "An unrecognised issue",
+        "An unrecognised issue 'A123'",
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("Delius reported \"An unrecognised issue\". Please correct, if possible, otherwise contact support")
+    ).isEqualTo("Delius reported \"An unrecognised issue '_'\". Please correct, if possible, otherwise contact support")
 
     assertThat(
       CommunityApiCallError(

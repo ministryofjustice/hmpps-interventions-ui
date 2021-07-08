@@ -57,7 +57,7 @@ class CommunityApiCallError(val httpStatus: HttpStatus, causeMessage: String, va
           Pair("The appointment conflicts with another. Please contact the service user's probation practitioner for an available slot and try again", true)
         }
         else -> {
-          Pair("Delius reported \"$causeMessage\". Please correct, if possible, otherwise contact support", true)
+          Pair("Delius reported \"$category\". Please correct, if possible, otherwise contact support", true)
         }
       }
     }
