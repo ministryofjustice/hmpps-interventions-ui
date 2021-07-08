@@ -705,19 +705,41 @@ export default class ServiceProviderReferralsController {
     const { accessToken } = user.token
     const referralId = req.params.id
 
-    const supplierAssessment = await this.interventionsService.getSupplierAssessment(
-      res.locals.user.token.accessToken,
-      referralId
-    )
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
     const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
     if (appointment === null) {
       throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
     }
 
-    const formError: FormValidationError | null = null
-    const userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
 
-    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const data = await new AttendanceFeedbackForm(req).data()
+
+    if (req.method === 'POST') {
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
+          accessToken,
+          appointment.id,
+          data.paramsForUpdate
+        )
+
+        const redirectPath =
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/${redirectPath}`
+        )
+      }
+    }
+
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new InitialAssessmentPostAssessmentAttendanceFeedbackPresenter(
