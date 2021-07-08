@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralReq
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
@@ -39,7 +40,8 @@ internal class ReferralControllerTest {
   private val referralService = mock<ReferralService>()
   private val referralConcluder = mock<ReferralConcluder>()
   private val serviceCategoryService = mock<ServiceCategoryService>()
-  private val userMapper = UserMapper()
+  private val authUserRepository = mock<AuthUserRepository>()
+  private val userMapper = UserMapper(authUserRepository)
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val referralController = ReferralController(
     referralService, referralConcluder, serviceCategoryService, userMapper, cancellationReasonMapper
