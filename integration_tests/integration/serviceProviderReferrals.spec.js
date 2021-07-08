@@ -1137,16 +1137,16 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Review the end of service report')
 
     cy.get('#change-outcome-2').click()
-    cy.contains('Do you have any further comments about their progression on this outcome?').type(
-      'They have done fairly well but could make some changes'
-    )
+    cy.contains('Do you have any further comments about their progression on this outcome?')
+      .type('{selectall}{backspace}')
+      .type('I think that overall it’s gone well but they could make some changes')
 
     cy.contains('Save and continue').click()
 
     cy.contains('Would you like to give any additional information about this intervention (optional)?')
-    cy.contains(
-      'Provide any further information that you believe is important for the probation practitioner to know.'
-    ).type('You should know x and y and p and q')
+    cy.contains('Provide any further information that you believe is important for the probation practitioner to know.')
+      .type('{selectall}{backspace}')
+      .type('It’s important that you know p and q')
 
     cy.contains('Save and continue').click()
 
