@@ -526,6 +526,7 @@ export default class InterventionsService {
       data: appointmentAttendanceUpdate,
     })) as Appointment
   }
+
   /*
   async recordAppointmentBehavior(
     token: string,
@@ -540,14 +541,13 @@ export default class InterventionsService {
       data: appointmentBehaviourUpdate,
     })) as Appointment
   }
-
+*/
   async submitAppointmentFeedback(token: string, id: string): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/appointment/${id}/submit-feedback`,
+      path: `/appointment/${id}/submit`,
       headers: { Accept: 'application/json' },
     })) as Appointment
   }
- */
 }

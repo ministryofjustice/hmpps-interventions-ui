@@ -2108,6 +2108,45 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   })
 })
 
+describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', () => {
+  it('submits the action plan and redirects to the confirmation page', async () => {
+    const appointment = appointmentFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+    interventionsService.submitAppointmentFeedback.mockResolvedValue(appointment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
+      .expect(302)
+      .expect(
+        'Location',
+        `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/confirmation`
+      )
+
+    expect(interventionsService.submitAppointmentFeedback).toHaveBeenCalledWith('token', appointment.id)
+  })
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const appointment = appointmentFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+    interventionsService.submitAppointmentFeedback.mockResolvedValue(appointment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Attempting to submit supplier assessment feedback without a current appointment')
+      })
+  })
+})
+
 describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
   it('returns error if no existing action plan exists', async () => {
     const referral = sentReferralFactory.assigned().build()

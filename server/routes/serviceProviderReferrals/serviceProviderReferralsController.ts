@@ -714,7 +714,6 @@ export default class ServiceProviderReferralsController {
     if (appointment === null) {
       throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
     }
-
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
 
@@ -777,6 +776,23 @@ export default class ServiceProviderReferralsController {
     const view = new CheckFeedbackAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to submit supplier assessment feedback without a current appointment')
+    }
+
+    await this.interventionsService.submitAppointmentFeedback(accessToken, appointment.id)
+
+    return res.redirect(
+      `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`
+    )
   }
 
   async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
