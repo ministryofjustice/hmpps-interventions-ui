@@ -727,17 +727,16 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
-          accessToken,
-          appointment.id,
-          data.paramsForUpdate
-        )
+        await this.interventionsService.recordAppointmentAttendance(accessToken, appointment.id, data.paramsForUpdate)
+        // TODO: Uncomment when behaviour page has been implemented as part of IC-1583
+        /*
+
 
         const redirectPath =
           updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
-
+      */
         return res.redirect(
-          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/${redirectPath}`
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
         )
       }
     }
