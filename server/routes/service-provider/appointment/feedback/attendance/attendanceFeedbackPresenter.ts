@@ -2,9 +2,7 @@ import PresenterUtils from '../../../../../utils/presenterUtils'
 import { SummaryListItem } from '../../../../../utils/summaryList'
 import DateUtils from '../../../../../utils/dateUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
-import { AppointmentDeliveryType } from '../../../../../models/appointmentDeliveryType'
-import Address from '../../../../../models/address'
-import SessionFeedback from '../../../../../models/sessionFeedback'
+import { AppointmentDetails } from '../appointmentDetails'
 
 interface AttendanceFeedbackFormText {
   title: string
@@ -13,17 +11,10 @@ interface AttendanceFeedbackFormText {
   attendanceQuestionHint: string
   additionalAttendanceInformationLabel: string
 }
-export interface AttendanceAppointmentDetails {
-  appointmentTime: string | null
-  durationInMinutes: number | null
-  appointmentDeliveryType: AppointmentDeliveryType | null
-  appointmentDeliveryAddress: Address | null
-  sessionFeedback: SessionFeedback
-}
 
 export default abstract class AttendanceFeedbackPresenter {
   protected constructor(
-    private readonly appointmentDetails: AttendanceAppointmentDetails,
+    private readonly appointmentDetails: AppointmentDetails,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
