@@ -1,11 +1,12 @@
-import AttendanceFeedbackPresenter, { AttendanceAppointmentDetails } from './attendanceFeedbackPresenter'
+import AttendanceFeedbackPresenter from './attendanceFeedbackPresenter'
 import appointmentFactory from '../../../../../../testutils/factories/appointment'
 import { FormValidationError } from '../../../../../utils/formValidationError'
+import { AppointmentDetails } from '../appointmentDetails'
 
 describe(AttendanceFeedbackPresenter, () => {
   class ExtendedAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
     constructor(
-      appointmentDetails: AttendanceAppointmentDetails,
+      appointmentDetails: AppointmentDetails,
       error: FormValidationError | null = null,
       userInputData: Record<string, unknown> | null = null
     ) {
