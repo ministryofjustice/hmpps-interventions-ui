@@ -501,7 +501,6 @@ export default class InterventionsService {
     })) as Appointment
   }
 
-  /*
   async recordAppointmentAttendance(
     token: string,
     id: string,
@@ -515,7 +514,7 @@ export default class InterventionsService {
       data: appointmentAttendanceUpdate,
     })) as Appointment
   }
-
+  /*
   async recordAppointmentBehavior(
     token: string,
     id: string,
