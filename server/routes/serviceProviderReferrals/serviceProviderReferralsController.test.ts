@@ -1951,6 +1951,8 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
 })
 
 describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', () => {
+  // TODO: Uncomment when behaviour page has been implemented as part of IC-1583
+  /*
   describe('when the Service Provider marks the Service user as having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
       const referral = sentReferralFactory.assigned().build()
@@ -1986,7 +1988,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         )
     })
   })
-
+*/
   describe('when the Service Provider marks the Service user as not having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
       const referral = sentReferralFactory.assigned().build()
