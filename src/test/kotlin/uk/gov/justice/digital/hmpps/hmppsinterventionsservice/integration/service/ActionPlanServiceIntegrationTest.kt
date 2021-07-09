@@ -35,9 +35,9 @@ class ActionPlanServiceIntegrationTest @Autowired constructor(
     val referral = setupAssistant.createAssignedReferral()
     assertThat(referral.currentActionPlan).isNull()
 
-    val firstActionPlan = actionPlanService.createDraftActionPlan(referral.id, null, listOf(), referral.assignedTo!!)
-    actionPlanService.createDraftActionPlan(referral.id, 4, listOf(), referral.assignedTo!!)
-    val lastActionPlan = actionPlanService.createDraftActionPlan(referral.id, 10, listOf(), referral.assignedTo!!)
+    val firstActionPlan = actionPlanService.createDraftActionPlan(referral.id, null, listOf(), referral.currentAssignee!!)
+    actionPlanService.createDraftActionPlan(referral.id, 4, listOf(), referral.currentAssignee!!)
+    val lastActionPlan = actionPlanService.createDraftActionPlan(referral.id, 10, listOf(), referral.currentAssignee!!)
 
     // need JPA to reload the referral so it picks up the foreign key associations created above
     val updatedReferral = referralRepository.findByIdOrNull(referral.id)!!

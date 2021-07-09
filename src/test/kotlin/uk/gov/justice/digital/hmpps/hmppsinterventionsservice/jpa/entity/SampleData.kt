@@ -66,9 +66,6 @@ class SampleData {
       createdBy: AuthUser = AuthUser("123456", "delius", "bernard.beaks"),
       sentAt: OffsetDateTime? = null,
       sentBy: AuthUser? = null,
-      assignedTo: AuthUser? = null,
-      assignedAt: OffsetDateTime = OffsetDateTime.now(),
-      assignedBy: AuthUser? = null,
       actionPlans: MutableList<ActionPlan>? = null,
       endOfServiceReport: EndOfServiceReport? = null,
       concludedAt: OffsetDateTime? = null,
@@ -78,6 +75,7 @@ class SampleData {
         )
       ),
     ): Referral {
+
       return Referral(
         serviceUserCRN = crn,
         id = id,
@@ -88,9 +86,6 @@ class SampleData {
         referenceNumber = referenceNumber,
         sentAt = sentAt,
         sentBy = sentBy,
-        assignedTo = assignedTo,
-        assignedAt = assignedAt,
-        assignedBy = assignedBy,
         intervention = intervention,
         selectedServiceCategories = intervention.dynamicFrameworkContract.contractType.serviceCategories.toMutableSet(),
         actionPlans = actionPlans,

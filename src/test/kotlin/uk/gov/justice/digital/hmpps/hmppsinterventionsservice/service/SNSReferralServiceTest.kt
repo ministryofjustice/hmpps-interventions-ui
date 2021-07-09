@@ -8,19 +8,21 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 internal class SNSReferralServiceTest {
   private val snsPublisher = mock<SNSPublisher>()
+  private val referralFactory = ReferralFactory()
+  private val authUserFactory = AuthUserFactory()
 
   private val referralSentEvent = ReferralEvent(
     "source",
     ReferralEventType.SENT,
-    SampleData.sampleReferral(
-      "X123456",
-      "Harmony Living",
+    referralFactory.createSent(
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
       sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
@@ -32,14 +34,16 @@ internal class SNSReferralServiceTest {
   private val referralAssignedEvent = ReferralEvent(
     "source",
     ReferralEventType.ASSIGNED,
-    SampleData.sampleReferral(
-      "X123456",
-      "Harmony Living",
+    referralFactory.createSent(
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referenceNumber = "HAS71263",
-      assignedTo = AuthUser("abc123", "auth", "abc123"),
-      assignedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
-      assignedBy = AuthUser("c978b35160", "irrelevant", "irrelevant"),
+      assignments = listOf(
+        ReferralAssignment(
+          OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+          authUserFactory.createSP("irrelevant"),
+          authUserFactory.createSP("abc123")
+        )
+      )
     ),
     "http://localhost:8080/sent-referral/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
   )
@@ -67,7 +71,11 @@ internal class SNSReferralServiceTest {
       referralSentEvent.referral.sentAt!!,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"), "assignedTo" to "abc123")
     )
-    verify(snsPublisher).publish(referralAssignedEvent.referral.id, referralAssignedEvent.referral.assignedBy!!, snsEvent)
+    verify(snsPublisher).publish(
+      referralAssignedEvent.referral.id,
+      referralAssignedEvent.referral.currentAssignment!!.assignedBy,
+      snsEvent
+    )
   }
 
   private fun snsReferralService(): SNSReferralService {

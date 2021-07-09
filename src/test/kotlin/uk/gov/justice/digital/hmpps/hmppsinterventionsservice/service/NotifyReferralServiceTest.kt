@@ -14,8 +14,10 @@ import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
+import java.time.OffsetDateTime
 import java.util.UUID
 
 class NotifyReferralServiceTest {
@@ -40,7 +42,7 @@ class NotifyReferralServiceTest {
     referralFactory.createSent(
       id = UUID.fromString("42C7D267-0776-4272-A8E8-A673BFE30D0D"),
       referenceNumber = "AJ9871AC",
-      assignedTo = authUserFactory.create()
+      assignments = listOf(ReferralAssignment(OffsetDateTime.now(), authUserFactory.createSP(), authUserFactory.createSP()))
     ),
     "http://localhost:8080/sent-referral/42c7d267-0776-4272-a8e8-a673bfe30d0d",
   )

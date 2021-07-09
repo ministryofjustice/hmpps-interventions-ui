@@ -61,9 +61,12 @@ COMMENT ON COLUMN referral.maximum_enforceable_days IS 'the maximum number of en
 COMMENT ON COLUMN referral.reference_number IS 'referral number';
 COMMENT ON COLUMN referral.sent_at IS 'when the referral was sent';
 COMMENT ON COLUMN referral.sent_by_id IS 'ID of the person who sent the referral';
-COMMENT ON COLUMN referral.assigned_at IS 'when the case was assigned';
-COMMENT ON COLUMN referral.assigned_by_id IS 'ID of the person who assigned the case';
-COMMENT ON COLUMN referral.assigned_to_id IS 'ID of the person who the case is assigned to';
+
+COMMENT ON TABLE referral_assignments IS 'snapshots of referral assignments';
+COMMENT ON COLUMN referral_assignments.referral_id IS 'the referral being assigned';
+COMMENT ON COLUMN referral_assignments.assigned_at IS 'when the case was assigned';
+COMMENT ON COLUMN referral_assignments.assigned_by_id IS 'ID of the person who assigned the case';
+COMMENT ON COLUMN referral_assignments.assigned_to_id IS 'ID of the person who the case is assigned to';
 
 COMMENT ON TABLE referral_desired_outcome IS 'desired outcome details';
 COMMENT ON COLUMN referral_desired_outcome.referral_id IS 'referral unique identifier';

@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfSe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.NPSRegion
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
@@ -199,7 +200,7 @@ class SetupAssistant(
   fun createEndedReferral(id: UUID = UUID.randomUUID(), intervention: Intervention = createIntervention(), endRequestedReason: CancellationReason? = randomCancellationReason(), endRequestedComments: String? = null): Referral {
     val ppUser = createPPUser()
     val spUser = createSPUser()
-    return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endRequestedBy = ppUser, assignedTo = spUser, endRequestedReason = endRequestedReason, endRequestedComments = endRequestedComments))
+    return referralRepository.save(referralFactory.createEnded(id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser, endRequestedBy = ppUser, assignments = listOf(ReferralAssignment(OffsetDateTime.now(), spUser, spUser)), endRequestedReason = endRequestedReason, endRequestedComments = endRequestedComments))
   }
 
   fun createSentReferral(
@@ -292,7 +293,7 @@ class SetupAssistant(
     return referralRepository.save(
       referralFactory.createSent(
         id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser,
-        assignedTo = spUser, assignedBy = spUser, assignedAt = OffsetDateTime.now(),
+        assignments = listOf(ReferralAssignment(OffsetDateTime.now(), spUser, spUser)),
         supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
       )
     )
@@ -433,7 +434,7 @@ class SetupAssistant(
 
   fun createEndOfServiceReport(id: UUID = UUID.randomUUID(), referral: Referral = createAssignedReferral()): EndOfServiceReport {
     val eosr = endOfServiceReportRepository.save(
-      endOfServiceReportFactory.create(id = id, referral = referral, createdBy = referral.assignedTo!!)
+      endOfServiceReportFactory.create(id = id, referral = referral, createdBy = referral.currentAssignee!!)
     )
     referral.endOfServiceReport = eosr
     return eosr
