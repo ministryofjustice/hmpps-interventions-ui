@@ -36,9 +36,8 @@ import ActionPlanPostSessionAttendanceFeedbackPresenter from '../service-provide
 import AttendanceFeedbackForm from '../service-provider/appointment/feedback/attendance/attendanceFeedbackForm'
 import PostSessionFeedbackConfirmationPresenter from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationPresenter'
 import PostSessionFeedbackConfirmationView from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationView'
-import PostSessionBehaviourFeedbackPresenter from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackPresenter'
-import PostSessionBehaviourFeedbackView from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackView'
-import PostSessionBehaviourFeedbackForm from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackForm'
+import BehaviourFeedbackView from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackView'
+import BehaviourFeedbackForm from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackForm'
 import PostSessionFeedbackCheckAnswersView from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/postSessionFeedbackCheckAnswersView'
 import PostSessionFeedbackCheckAnswersPresenter from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/postSessionFeedbackCheckAnswersPresenter'
 import SubmittedPostSessionFeedbackView from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackView'
@@ -69,6 +68,7 @@ import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentA
 import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
 import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
 import InitialAssessmentPostAssessmentAttendanceFeedbackPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/attendance/initialAssessmentPostAssessmentAttendanceFeedbackPresenter'
+import BehaviourFeedbackPresenter from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -756,7 +756,7 @@ export default class ServiceProviderReferralsController {
     let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
-      const data = await new PostSessionBehaviourFeedbackForm(req).data()
+      const data = await new BehaviourFeedbackForm(req).data()
 
       if (data.error) {
         res.status(400)
@@ -786,8 +786,8 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
-    const view = new PostSessionBehaviourFeedbackView(presenter)
+    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
+    const view = new BehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)

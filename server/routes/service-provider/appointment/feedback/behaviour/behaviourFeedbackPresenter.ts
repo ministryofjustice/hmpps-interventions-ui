@@ -1,11 +1,11 @@
-import DeliusServiceUser from '../../../../../../models/delius/deliusServiceUser'
-import { ActionPlanAppointment } from '../../../../../../models/actionPlan'
-import { FormValidationError } from '../../../../../../utils/formValidationError'
-import PresenterUtils from '../../../../../../utils/presenterUtils'
+import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
+import { FormValidationError } from '../../../../../utils/formValidationError'
+import PresenterUtils from '../../../../../utils/presenterUtils'
+import { AppointmentDetails } from '../appointmentDetails'
 
-export default class PostSessionBehaviourFeedbackPresenter {
+export default class BehaviourFeedbackPresenter {
   constructor(
-    private readonly appointment: ActionPlanAppointment,
+    private readonly appointment: AppointmentDetails,
     private readonly serviceUser: DeliusServiceUser,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
