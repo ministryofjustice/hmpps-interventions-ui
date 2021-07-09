@@ -24,15 +24,16 @@ data class Appointment(
   @Type(type = "attended") @Enumerated(EnumType.STRING) var attended: Attended? = null,
   var additionalAttendanceInformation: String? = null,
   var attendanceSubmittedAt: OffsetDateTime? = null,
+  @ManyToOne @Fetch(FetchMode.JOIN) var attendanceSubmittedBy: AuthUser? = null,
 
   var attendanceBehaviour: String? = null,
   var attendanceBehaviourSubmittedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var attendanceBehaviourSubmittedBy: AuthUser? = null,
+
   var notifyPPOfAttendanceBehaviour: Boolean? = null,
 
   var appointmentFeedbackSubmittedAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var appointmentFeedbackSubmittedBy: AuthUser? = null,
-  @ManyToOne @Fetch(FetchMode.JOIN) var attendanceSubmittedBy: AuthUser? = null,
 
   var deliusAppointmentId: Long? = null,
 

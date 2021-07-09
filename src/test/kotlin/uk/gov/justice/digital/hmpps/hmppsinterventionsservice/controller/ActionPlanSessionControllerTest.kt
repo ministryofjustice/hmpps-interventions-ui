@@ -35,7 +35,7 @@ internal class ActionPlanSessionControllerTest {
   @Test
   fun `updates a session`() {
     val user = authUserFactory.create()
-    val userToken = jwtTokenFactory.create(userID = user.id, userName = user.userName, authSource = user.authSource)
+    val userToken = jwtTokenFactory.create(user)
     val actionPlanSession = actionPlanSessionFactory.createScheduled(createdBy = user)
     val actionPlanId = actionPlanSession.actionPlan.id
     val sessionNumber = actionPlanSession.sessionNumber
@@ -90,6 +90,8 @@ internal class ActionPlanSessionControllerTest {
 
   @Test
   fun `updates session appointment with attendance details`() {
+    val user = authUserFactory.create()
+    val userToken = jwtTokenFactory.create(user)
     val update = UpdateAppointmentAttendanceDTO(Attended.YES, "more info")
     val actionPlan = actionPlanFactory.create()
     val sessionNumber = 1
@@ -103,12 +105,12 @@ internal class ActionPlanSessionControllerTest {
 
     whenever(
       sessionsService.recordAppointmentAttendance(
-        actionPlan.id, sessionNumber, update.attended,
+        user, actionPlan.id, sessionNumber, update.attended,
         update.additionalAttendanceInformation
       )
     ).thenReturn(updatedSession)
 
-    val sessionResponse = sessionsController.recordAttendance(actionPlan.id, sessionNumber, update)
+    val sessionResponse = sessionsController.recordAttendance(actionPlan.id, sessionNumber, update, userToken)
 
     assertThat(sessionResponse.sessionFeedback.attendance.additionalAttendanceInformation).isEqualTo("more info")
   }

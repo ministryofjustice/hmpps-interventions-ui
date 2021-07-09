@@ -77,7 +77,7 @@ class ActionPlanSessionsService(
       SERVICE_DELIVERY
     )
     if (existingAppointment == null) {
-      var appointment = Appointment(
+      val appointment = Appointment(
         id = UUID.randomUUID(),
         createdBy = authUserRepository.save(updatedBy),
         createdAt = OffsetDateTime.now(),
@@ -99,6 +99,7 @@ class ActionPlanSessionsService(
   }
 
   fun recordAppointmentAttendance(
+    actor: AuthUser,
     actionPlanId: UUID,
     sessionNumber: Int,
     attended: Attended,
@@ -112,11 +113,12 @@ class ActionPlanSessionsService(
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
 
-    setAttendanceFields(appointment, attended, additionalInformation)
+    setAttendanceFields(appointment, attended, additionalInformation, actor)
     return actionPlanSessionRepository.save(session)
   }
 
   fun recordBehaviour(
+    actor: AuthUser,
     actionPlanId: UUID,
     sessionNumber: Int,
     behaviourDescription: String,
@@ -130,7 +132,7 @@ class ActionPlanSessionsService(
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
 
-    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner)
+    setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, actor)
     appointmentRepository.save(appointment)
     return actionPlanSessionRepository.save(session)
   }
@@ -172,20 +174,24 @@ class ActionPlanSessionsService(
   private fun setAttendanceFields(
     appointment: Appointment,
     attended: Attended,
-    additionalInformation: String?
+    additionalInformation: String?,
+    actor: AuthUser,
   ) {
     appointment.attended = attended
     additionalInformation?.let { appointment.additionalAttendanceInformation = additionalInformation }
     appointment.attendanceSubmittedAt = OffsetDateTime.now()
+    appointment.attendanceSubmittedBy = authUserRepository.save(actor)
   }
 
   private fun setBehaviourFields(
     appointment: Appointment,
     behaviour: String,
     notifyProbationPractitioner: Boolean,
+    actor: AuthUser,
   ) {
     appointment.attendanceBehaviour = behaviour
     appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
+    appointment.attendanceBehaviourSubmittedBy = authUserRepository.save(actor)
     appointment.notifyPPOfAttendanceBehaviour = notifyProbationPractitioner
   }
 
