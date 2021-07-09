@@ -1,9 +1,9 @@
-import { TextareaArgs } from '../../../../../../utils/govukFrontendTypes'
-import ViewUtils from '../../../../../../utils/viewUtils'
-import PostSessionBehaviourFeedbackPresenter from './postSessionBehaviourFeedbackPresenter'
+import { TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../../../utils/viewUtils'
+import BehaviourFeedbackPresenter from './behaviourFeedbackPresenter'
 
-export default class PostSessionBehaviourFeedbackView {
-  constructor(private readonly presenter: PostSessionBehaviourFeedbackPresenter) {}
+export default class BehaviourFeedbackView {
+  constructor(private readonly presenter: BehaviourFeedbackPresenter) {}
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
