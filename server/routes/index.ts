@@ -185,6 +185,10 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.checkInitialAssessmentFeedbackAnswers(req, res)
   )
 
+  post('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', (req, res) =>
+    serviceProviderReferralsController.submitPostAssessmentFeedback(req, res)
+  )
+
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {
       return staticContentController.index(req, res)
