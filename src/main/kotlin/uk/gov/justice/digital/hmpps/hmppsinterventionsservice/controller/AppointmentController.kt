@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -41,7 +42,15 @@ class AppointmentController(
     val updatedAppointment = appointmentService.recordAppointmentAttendance(
       id, update.attended, update.additionalAttendanceInformation, submittedBy
     )
-
     return AppointmentDTO.from(updatedAppointment)
+  }
+
+  @PostMapping("/appointment/{id}/submit")
+  fun submitFeedback(
+    @PathVariable id: UUID,
+    authentication: JwtAuthenticationToken
+  ): AppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    return AppointmentDTO.from(appointmentService.submitSessionFeedback(id, user))
   }
 }
