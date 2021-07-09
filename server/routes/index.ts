@@ -181,6 +181,10 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
   )
 
+  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
+    serviceProviderReferralsController.checkInitialAssessmentFeedbackAnswers(req, res)
+  )
+
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {
       return staticContentController.index(req, res)

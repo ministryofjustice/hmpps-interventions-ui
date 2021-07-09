@@ -1,8 +1,8 @@
 import ViewUtils from '../../../../../utils/viewUtils'
-import ActionPlanPostSessionFeedbackCheckAnswersPresenter from '../../../action-plan/appointment/post-session-feedback/check-your-answers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
+import CheckFeedbackAnswersPresenter from './checkFeedbackAnswersPresenter'
 
 export default class CheckFeedbackAnswersView {
-  constructor(private readonly presenter: ActionPlanPostSessionFeedbackCheckAnswersPresenter) {}
+  constructor(private readonly presenter: CheckFeedbackAnswersPresenter) {}
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
 
