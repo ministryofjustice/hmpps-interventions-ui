@@ -70,6 +70,8 @@ import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit
 import InitialAssessmentPostAssessmentAttendanceFeedbackPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/attendance/initialAssessmentPostAssessmentAttendanceFeedbackPresenter'
 import BehaviourFeedbackPresenter from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackPresenter'
 import InitialAssessmentPostAssessmentFeedbackCheckAnswersPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/check-your-answers/initialAssessmentPostAssessmentFeedbackCheckAnswersPresenter'
+import InitialAssessmentFeedbackConfirmationPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/confirmation/initialAssessmentFeedbackConfirmationPresenter'
+import InitialAssessmentFeedbackConfirmationView from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/confirmation/initialAssessmentFeedbackConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -787,6 +789,20 @@ export default class ServiceProviderReferralsController {
     return res.redirect(
       `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`
     )
+  }
+
+  async showPostAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new InitialAssessmentFeedbackConfirmationPresenter(referralId)
+    const view = new InitialAssessmentFeedbackConfirmationView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
