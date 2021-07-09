@@ -53,13 +53,13 @@ class EndOfServiceReportService(
 
   fun updateEndOfServiceReport(endOfServiceReportId: UUID, furtherInformation: String?, outcome: EndOfServiceReportOutcome?):
     EndOfServiceReport {
-      val endOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
+    val endOfServiceReport = getEndOfServiceReport(endOfServiceReportId)
 
-      updateEndOfServiceReport(endOfServiceReport, furtherInformation)
-      updateEndOfServiceReportOutcomes(endOfServiceReport, outcome)
+    updateEndOfServiceReport(endOfServiceReport, furtherInformation)
+    updateEndOfServiceReportOutcomes(endOfServiceReport, outcome)
 
-      return endOfServiceReportRepository.save(endOfServiceReport)
-    }
+    return endOfServiceReportRepository.save(endOfServiceReport)
+  }
 
   fun submitEndOfServiceReport(endOfServiceReportId: UUID, submittedByUser: AuthUser): EndOfServiceReport {
     val draftEndOfServiceReport = getEndOfServiceReport(endOfServiceReportId)

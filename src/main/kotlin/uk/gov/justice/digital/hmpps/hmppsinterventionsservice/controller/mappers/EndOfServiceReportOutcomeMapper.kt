@@ -13,13 +13,13 @@ class EndOfServiceReportOutcomeMapper(
 ) {
   fun mapCreateEndOfServiceReportOutcomeDtoToEndOfServiceReportOutcome(outcome: CreateEndOfServiceReportOutcomeDTO):
     EndOfServiceReportOutcome {
-      return EndOfServiceReportOutcome(
-        desiredOutcome = desiredOutcomeRepository.findById(outcome.desiredOutcomeId).orElseThrow {
-          throw ResponseStatusException(HttpStatus.NOT_FOUND, "desired outcome not found [id=${outcome.desiredOutcomeId}]")
-        },
-        achievementLevel = outcome.achievementLevel,
-        progressionComments = outcome.progressionComments,
-        additionalTaskComments = outcome.additionalTaskComments,
-      )
-    }
+    return EndOfServiceReportOutcome(
+      desiredOutcome = desiredOutcomeRepository.findById(outcome.desiredOutcomeId).orElseThrow {
+        throw ResponseStatusException(HttpStatus.NOT_FOUND, "desired outcome not found [id=${outcome.desiredOutcomeId}]")
+      },
+      achievementLevel = outcome.achievementLevel,
+      progressionComments = outcome.progressionComments,
+      additionalTaskComments = outcome.additionalTaskComments,
+    )
+  }
 }
