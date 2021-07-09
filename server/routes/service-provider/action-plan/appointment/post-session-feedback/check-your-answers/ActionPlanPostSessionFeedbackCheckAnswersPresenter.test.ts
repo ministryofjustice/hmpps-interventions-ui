@@ -1,15 +1,15 @@
-import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
+import ActionPlanPostSessionFeedbackCheckAnswersPresenter from './actionPlanPostSessionFeedbackCheckAnswersPresenter'
 import actionPlanAppointmentFactory from '../../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../../testutils/factories/deliusServiceUser'
 
-describe(PostSessionFeedbackCheckAnswersPresenter, () => {
+describe(ActionPlanPostSessionFeedbackCheckAnswersPresenter, () => {
   describe('text', () => {
     it('includes the title of the page', () => {
       const appointment = actionPlanAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build()
       const actionPlanId = 'f9d7c3fc-21e7-4b2e-b906-5a317b826642'
 
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
+      const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
       expect(presenter.text).toMatchObject({
         title: 'Confirm feedback',
@@ -23,7 +23,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
       const serviceUser = deliusServiceUserFactory.build()
       const actionPlanId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
+      const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
       expect(presenter.submitHref).toEqual(
         '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/submit'
@@ -38,7 +38,7 @@ describe(PostSessionFeedbackCheckAnswersPresenter, () => {
       const appointment = actionPlanAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
       })
-      const presenter = new PostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
+      const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(appointment, serviceUser, actionPlanId)
 
       expect(presenter.sessionDetailsSummary).toEqual([
         {

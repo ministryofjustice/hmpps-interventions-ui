@@ -3,17 +3,24 @@ import User from '../../../../../models/hmppsAuth/user'
 import { ActionPlanAppointment } from '../../../../../models/actionPlan'
 import DateUtils from '../../../../../utils/dateUtils'
 import { SummaryListItem } from '../../../../../utils/summaryList'
-import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
+import FeedbackAnswersPresenter from '../../../../service-provider/appointment/feedback/feedbackAnswersPresenter'
+import AttendanceFeedbackPresenter from '../../../../service-provider/appointment/feedback/attendance/attendanceFeedbackPresenter'
+import BehaviourFeedbackPresenter from '../../../../service-provider/appointment/feedback/behaviour/behaviourFeedbackPresenter'
+import ActionPlanPostSessionAttendanceFeedbackPresenter from '../../../../service-provider/action-plan/appointment/post-session-feedback/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
 
-export default class SubmittedPostSessionFeedbackPresenter {
-  readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
+export default class SubmittedPostSessionFeedbackPresenter extends FeedbackAnswersPresenter {
+  protected readonly attendancePresenter: AttendanceFeedbackPresenter
+
+  protected readonly behaviourPresenter: BehaviourFeedbackPresenter
 
   constructor(
-    private readonly appointment: ActionPlanAppointment,
+    appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly assignedCaseworker: User | null = null
   ) {
-    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(this.appointment, this.serviceUser)
+    super(appointment)
+    this.attendancePresenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(appointment, this.serviceUser)
+    this.behaviourPresenter = new BehaviourFeedbackPresenter(appointment, this.serviceUser)
   }
 
   readonly text = {

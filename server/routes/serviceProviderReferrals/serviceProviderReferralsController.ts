@@ -38,8 +38,8 @@ import PostSessionFeedbackConfirmationPresenter from '../service-provider/action
 import PostSessionFeedbackConfirmationView from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationView'
 import BehaviourFeedbackView from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackView'
 import BehaviourFeedbackForm from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackForm'
-import PostSessionFeedbackCheckAnswersView from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/postSessionFeedbackCheckAnswersView'
-import PostSessionFeedbackCheckAnswersPresenter from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/postSessionFeedbackCheckAnswersPresenter'
+import CheckFeedbackAnswersView from '../service-provider/appointment/feedback/check-your-answers/checkFeedbackAnswersView'
+import ActionPlanPostSessionFeedbackCheckAnswersPresenter from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
 import SubmittedPostSessionFeedbackView from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackView'
 import SubmittedPostSessionFeedbackPresenter from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackPresenter'
 import EndOfServiceReportOutcomeForm from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomeForm'
@@ -809,8 +809,12 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser, actionPlanId)
-    const view = new PostSessionFeedbackCheckAnswersView(presenter)
+    const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+      currentAppointment,
+      serviceUser,
+      actionPlanId
+    )
+    const view = new CheckFeedbackAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
