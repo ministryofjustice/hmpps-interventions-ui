@@ -2147,6 +2147,21 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   })
 })
 
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', () => {
+  it('renders a page confirming that the supplier assessment feedback has been submitted', async () => {
+    const referral = sentReferralFactory.assigned().build()
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Initial assessment added')
+      })
+  })
+})
+
 describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
   it('returns error if no existing action plan exists', async () => {
     const referral = sentReferralFactory.assigned().build()
