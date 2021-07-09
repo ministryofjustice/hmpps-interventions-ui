@@ -132,7 +132,7 @@
     "@types/connect-redis": "0.0.17",
     "@types/cookie-session": "^2.0.43",
     "@types/csurf": "^1.11.2",
-    "@types/express-request-id": "^1.4.1",
+    "@types/express-request-id": "^1.4.2",
     "@types/express-session": "^1.17.4",
     "@types/http-errors": "^1.8.1",
     "@types/indefinite": "^2.3.0",
