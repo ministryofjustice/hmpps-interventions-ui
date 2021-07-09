@@ -69,6 +69,7 @@ import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan
 import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
 import InitialAssessmentPostAssessmentAttendanceFeedbackPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/attendance/initialAssessmentPostAssessmentAttendanceFeedbackPresenter'
 import BehaviourFeedbackPresenter from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackPresenter'
+import InitialAssessmentPostAssessmentFeedbackCheckAnswersPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/check-your-answers/initialAssessmentPostAssessmentFeedbackCheckAnswersPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -749,6 +750,31 @@ export default class ServiceProviderReferralsController {
       userInputData
     )
     const view = new AttendanceFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async checkInitialAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to check supplier assessment feedback answers without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new InitialAssessmentPostAssessmentFeedbackCheckAnswersPresenter(
+      appointment,
+      serviceUser,
+      referralId
+    )
+    const view = new CheckFeedbackAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
