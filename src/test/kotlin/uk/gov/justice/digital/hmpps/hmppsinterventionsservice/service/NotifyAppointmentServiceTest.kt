@@ -11,8 +11,8 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
@@ -24,8 +24,8 @@ class NotifyAppointmentServiceTest {
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
 
-  private fun appointmentEvent(type: AppointmentEventType, notifyPP: Boolean): AppointmentEvent {
-    return AppointmentEvent(
+  private fun appointmentEvent(type: ActionPlanAppointmentEventType, notifyPP: Boolean): ActionPlanAppointmentEvent {
+    return ActionPlanAppointmentEvent(
       "source",
       type,
       actionPlanSessionFactory.createAttended(
@@ -63,14 +63,14 @@ class NotifyAppointmentServiceTest {
   fun `appointment attendance recorded event does not send email when user details are not available`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
-      notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, true))
+      notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, true))
     }
     verifyZeroInteractions(emailSender)
   }
 
   @Test
   fun `appointment attendance recorded event does not send email when notifyPP is false`() {
-    notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, false))
+    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, false))
     verifyZeroInteractions(emailSender)
   }
 
@@ -78,7 +78,7 @@ class NotifyAppointmentServiceTest {
   fun `appointment attendance recorded event calls email client`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
 
-    notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, true))
+    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
@@ -90,14 +90,14 @@ class NotifyAppointmentServiceTest {
   fun `appointment behaviour recorded event does not send email when user details are not available`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
-      notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, true))
+      notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     }
     verifyZeroInteractions(emailSender)
   }
 
   @Test
   fun `appointment behaviour recorded event does not send email when notifyPP is false`() {
-    notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, false))
+    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, false))
     verifyZeroInteractions(emailSender)
   }
 
@@ -105,7 +105,7 @@ class NotifyAppointmentServiceTest {
   fun `appointment behaviour recorded event calls email client`() {
     whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
 
-    notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, true))
+    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")

@@ -7,8 +7,8 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
@@ -103,9 +103,9 @@ class NotifyAppointmentService(
   @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
-) : ApplicationListener<AppointmentEvent>, NotifyService {
+) : ApplicationListener<ActionPlanAppointmentEvent>, NotifyService {
   @AsyncEventExceptionHandling
-  override fun onApplicationEvent(event: AppointmentEvent) {
+  override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     if (event.notifyPP) {
       val referral = event.actionPlanSession.actionPlan.referral
       val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
@@ -117,7 +117,7 @@ class NotifyAppointmentService(
       )
 
       when (event.type) {
-        AppointmentEventType.ATTENDANCE_RECORDED -> {
+        ActionPlanAppointmentEventType.ATTENDANCE_RECORDED -> {
           emailSender.sendEmail(
             appointmentNotAttendedTemplateID,
             ppDetails.email,
@@ -128,7 +128,7 @@ class NotifyAppointmentService(
             )
           )
         }
-        AppointmentEventType.BEHAVIOUR_RECORDED -> {
+        ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED -> {
           emailSender.sendEmail(
             concerningBehaviourTemplateID,
             ppDetails.email,

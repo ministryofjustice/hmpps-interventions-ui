@@ -6,8 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPubli
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
@@ -83,12 +83,12 @@ class SNSReferralService(
 @Service
 class SNSAppointmentService(
   private val snsPublisher: SNSPublisher,
-) : ApplicationListener<AppointmentEvent>, SNSService {
+) : ApplicationListener<ActionPlanAppointmentEvent>, SNSService {
 
   @AsyncEventExceptionHandling
-  override fun onApplicationEvent(event: AppointmentEvent) {
+  override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     when (event.type) {
-      AppointmentEventType.ATTENDANCE_RECORDED -> {
+      ActionPlanAppointmentEventType.ATTENDANCE_RECORDED -> {
         val referral = event.actionPlanSession.actionPlan.referral
         val appointment = event.actionPlanSession.currentAppointment
           ?: throw RuntimeException("event triggered for session with no appointments")

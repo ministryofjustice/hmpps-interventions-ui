@@ -15,10 +15,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSes
 import java.net.URI
 import java.time.OffsetDateTime
 
-class AppointmentEventPublisherTest {
+class ActionPlanActionPlanAppointmentEventPublisherTest {
   private val eventPublisher = mock<ApplicationEventPublisher>()
   private val locationMapper = mock<LocationMapper>()
-  private val publisher = AppointmentEventPublisher(eventPublisher, locationMapper)
+  private val publisher = ActionPlanAppointmentEventPublisher(eventPublisher, locationMapper)
 
   @BeforeEach
   fun setup() {
@@ -33,12 +33,12 @@ class AppointmentEventPublisherTest {
 
     publisher.attendanceRecordedEvent(session, false)
 
-    val eventCaptor = argumentCaptor<AppointmentEvent>()
+    val eventCaptor = argumentCaptor<ActionPlanAppointmentEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())
     val event = eventCaptor.firstValue
 
     Assertions.assertThat(event.source).isSameAs(publisher)
-    Assertions.assertThat(event.type).isSameAs(AppointmentEventType.ATTENDANCE_RECORDED)
+    Assertions.assertThat(event.type).isSameAs(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED)
     Assertions.assertThat(event.actionPlanSession).isSameAs(session)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isFalse
@@ -50,12 +50,12 @@ class AppointmentEventPublisherTest {
 
     publisher.behaviourRecordedEvent(appointment, true)
 
-    val eventCaptor = argumentCaptor<AppointmentEvent>()
+    val eventCaptor = argumentCaptor<ActionPlanAppointmentEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())
     val event = eventCaptor.firstValue
 
     Assertions.assertThat(event.source).isSameAs(publisher)
-    Assertions.assertThat(event.type).isSameAs(AppointmentEventType.BEHAVIOUR_RECORDED)
+    Assertions.assertThat(event.type).isSameAs(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED)
     Assertions.assertThat(event.actionPlanSession).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isTrue
@@ -71,12 +71,12 @@ class AppointmentEventPublisherTest {
 
     publisher.sessionFeedbackRecordedEvent(appointment, true)
 
-    val eventCaptor = argumentCaptor<AppointmentEvent>()
+    val eventCaptor = argumentCaptor<ActionPlanAppointmentEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())
     val event = eventCaptor.firstValue
 
     Assertions.assertThat(event.source).isSameAs(publisher)
-    Assertions.assertThat(event.type).isSameAs(AppointmentEventType.SESSION_FEEDBACK_RECORDED)
+    Assertions.assertThat(event.type).isSameAs(ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED)
     Assertions.assertThat(event.actionPlanSession).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isTrue

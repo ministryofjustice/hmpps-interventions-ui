@@ -7,38 +7,38 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Location
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.ActionPlanSessionController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 
-enum class AppointmentEventType {
+enum class ActionPlanAppointmentEventType {
   ATTENDANCE_RECORDED,
   BEHAVIOUR_RECORDED,
   SESSION_FEEDBACK_RECORDED,
 }
 
-class AppointmentEvent(source: Any, val type: AppointmentEventType, val actionPlanSession: ActionPlanSession, val detailUrl: String, val notifyPP: Boolean) : ApplicationEvent(source) {
+class ActionPlanAppointmentEvent(source: Any, val type: ActionPlanAppointmentEventType, val actionPlanSession: ActionPlanSession, val detailUrl: String, val notifyPP: Boolean) : ApplicationEvent(source) {
   override fun toString(): String {
     return "AppointmentEvent(type=$type, appointment=${actionPlanSession.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 
 @Component
-class AppointmentEventPublisher(
+class ActionPlanAppointmentEventPublisher(
   private val applicationEventPublisher: ApplicationEventPublisher,
   private val locationMapper: LocationMapper
 ) {
   fun attendanceRecordedEvent(session: ActionPlanSession, notifyPP: Boolean) {
     applicationEventPublisher.publishEvent(
-      AppointmentEvent(this, AppointmentEventType.ATTENDANCE_RECORDED, session, getAppointmentURL(session), notifyPP)
+      ActionPlanAppointmentEvent(this, ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, session, getAppointmentURL(session), notifyPP)
     )
   }
 
   fun behaviourRecordedEvent(session: ActionPlanSession, notifyPP: Boolean) {
     applicationEventPublisher.publishEvent(
-      AppointmentEvent(this, AppointmentEventType.BEHAVIOUR_RECORDED, session, getAppointmentURL(session), notifyPP)
+      ActionPlanAppointmentEvent(this, ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, session, getAppointmentURL(session), notifyPP)
     )
   }
 
   fun sessionFeedbackRecordedEvent(session: ActionPlanSession, notifyPP: Boolean) {
     applicationEventPublisher.publishEvent(
-      AppointmentEvent(this, AppointmentEventType.SESSION_FEEDBACK_RECORDED, session, getAppointmentURL(session), notifyPP)
+      ActionPlanAppointmentEvent(this, ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED, session, getAppointmentURL(session), notifyPP)
     )
   }
 
