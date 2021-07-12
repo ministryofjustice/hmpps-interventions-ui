@@ -6,6 +6,7 @@ import DeliusUser from '../models/delius/deliusUser'
 import DeliusServiceUser, { ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
 import DeliusConviction from '../models/delius/deliusConviction'
 import { DeliusStaffDetails } from '../models/delius/deliusStaffDetails'
+import { DeliusOffenderManager } from '../models/delius/deliusOffenderManager'
 
 export default class CommunityApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -76,6 +77,30 @@ export default class CommunityApiService {
       }
 
       throw createError(err.status, err, { userMessage: 'Could retrieve staff details from nDelius.' })
+    }
+  }
+
+  async getResponsibleOfficersForServiceUser(crn: string): Promise<DeliusOffenderManager[]> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+
+    logger.info({ crn }, 'getting offender managers for service user')
+    try {
+      const deliusOffenderManagers = (await this.restClient.get({
+        path: `/secure/offenders/crn/${crn}/allOffenderManagers`,
+        token,
+      })) as DeliusOffenderManager[]
+
+      const responsibleOfficer = deliusOffenderManagers.filter(offenderManager => offenderManager.isResponsibleOfficer)
+
+      if (!responsibleOfficer) {
+        throw createError(500, `No offender manager found in Delius for CRN ${crn}`, {
+          userMessage: 'No responsible officer is assigned to this service user in nDelius.',
+        })
+      }
+
+      return responsibleOfficer
+    } catch (err) {
+      throw createError(err.status, err, { userMessage: 'Could retrieve Responsible Officer from nDelius.' })
     }
   }
 }

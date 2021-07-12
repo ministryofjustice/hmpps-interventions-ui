@@ -59,6 +59,10 @@ module.exports = on => {
       return communityApi.stubGetStaffDetails(arg.username, arg.responseJson)
     },
 
+    stubGetResponsibleOfficersForServiceUser: arg => {
+      return communityApi.stubGetResponsibleOfficersForServiceUser(arg.crn, arg.responseJson)
+    },
+
     stubGetDraftReferral: arg => {
       return interventionsService.stubGetDraftReferral(arg.id, arg.responseJson)
     },
