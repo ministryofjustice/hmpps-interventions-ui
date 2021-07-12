@@ -13,7 +13,7 @@ PERCENTAGE_OF_SENT_REFERRALS_WHICH_ARE_ASSIGNED_TO_A_CASEWORKER = 25
 NUM_ENDED_REFERRALS = 0
 
 REFERRAL_CREATION_RANGE = (datetime.date(2021, 1, 1), datetime.date.today())
-COMPLETION_DEADLINE_RANGE = (datetime.date(2021, 6, 24), datetime.date(2022, 6, 24))
+COMPLETION_DEADLINE_RANGE = (datetime.date(2021, 7, 24), datetime.date(2022, 6, 24))
 
 service_providers = [
     ('HARMONY_LIVING', 'Harmony Living'),
@@ -510,14 +510,7 @@ if __name__ == '__main__':
             sent_at = created_at # this doesn't really matter
             sent_by_id = created_by_id
 
-            assigned = random.random() < PERCENTAGE_OF_SENT_REFERRALS_WHICH_ARE_ASSIGNED_TO_A_CASEWORKER / 100.
-            sp_users = list(filter(lambda x: x[2] == organization, sp_user_ids_with_username_and_organization))
-            assigned_at = sent_at if assigned else None
-            assigned_by_id = random.choice(sp_users)[0] if assigned else None
-            assigned_to_id = random.choice(list(filter(lambda x: x != assigned_by_id, sp_users)))[0] if assigned else None
-
             fields.extend([reference_number, sent_at, sent_by_id])
-            fields.extend([assigned_at, assigned_by_id, assigned_to_id])
 
         # ended fields
         if (i >= NUM_DRAFT_REFERRALS + NUM_SENT_REFERRALS):
@@ -540,8 +533,7 @@ if __name__ == '__main__':
             has_additional_responsibilities, when_unavailable,
             maximum_enforceable_days,
             reference_number,
-            sent_at, sent_by_id,
-            assigned_at, assigned_by_id, assigned_to_id)
+            sent_at, sent_by_id)
         values
         """)
 
@@ -588,3 +580,19 @@ if __name__ == '__main__':
 
         f.write("""INSERT INTO referral_complexity_level_ids (referral_id, complexity_level_ids, complexity_level_ids_key) VALUES""")
         f.write(sql_values(referral_complexities))
+
+    referral_assignments = []
+    sp_users = list(filter(lambda x: x[2] == organization, sp_user_ids_with_username_and_organization))
+    for r in referrals:
+        assigned = random.random() < PERCENTAGE_OF_SENT_REFERRALS_WHICH_ARE_ASSIGNED_TO_A_CASEWORKER / 100.
+        if assigned:
+            referral_id = r[0]
+            assigned_at = r[1]  # created_at
+            assigned_by_id = random.choice(sp_users)[0]
+            assigned_to_id = random.choice(list(filter(lambda x: x != assigned_by_id, sp_users)))[0]
+            referral_assignments.append([referral_id, assigned_at, assigned_by_id, assigned_to_id])
+
+    with open(migrations_dir('V100_4_3__referral_assignments.sql'), 'w') as f:
+            f.write("""INSERT INTO referral_assignments (referral_id, assigned_at, assigned_by_id, assigned_to_id)  VALUES""")
+            f.write(sql_values(referral_assignments))
+            f.write("\n")
