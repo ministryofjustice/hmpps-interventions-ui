@@ -36,10 +36,7 @@ class SelectedDesiredOutcomesMapping(
 @Entity
 @Table(indexes = arrayOf(Index(columnList = "created_by_id")))
 class Referral(
-  // assigned referral fields
-  var assignedAt: OffsetDateTime? = null,
-  @ManyToOne @Fetch(FetchMode.JOIN) var assignedBy: AuthUser? = null,
-  @ManyToOne @Fetch(FetchMode.JOIN) var assignedTo: AuthUser? = null,
+  @ElementCollection val assignments: MutableList<ReferralAssignment> = mutableListOf(),
 
   // sent referral fields
   var sentAt: OffsetDateTime? = null,
@@ -102,5 +99,11 @@ class Referral(
   fun cancelled(): Boolean = concludedAt != null && endRequestedAt != null && endOfServiceReport == null
 
   val currentActionPlan: ActionPlan?
-    get() = actionPlans?.lastOrNull()
+    get() = actionPlans?.maxByOrNull { it.createdAt }
+
+  val currentAssignment: ReferralAssignment?
+    get() = assignments.maxByOrNull { it.assignedAt }
+
+  val currentAssignee: AuthUser?
+    get() = currentAssignment?.assignedTo
 }

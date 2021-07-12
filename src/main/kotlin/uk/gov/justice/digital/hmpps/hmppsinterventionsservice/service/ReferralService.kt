@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
@@ -84,9 +85,12 @@ class ReferralService(
   }
 
   fun assignSentReferral(referral: Referral, assignedBy: AuthUser, assignedTo: AuthUser): Referral {
-    referral.assignedAt = OffsetDateTime.now()
-    referral.assignedBy = authUserRepository.save(assignedBy)
-    referral.assignedTo = authUserRepository.save(assignedTo)
+    val assignment = ReferralAssignment(
+      OffsetDateTime.now(),
+      authUserRepository.save(assignedBy),
+      authUserRepository.save(assignedTo)
+    )
+    referral.assignments.add(assignment)
 
     val assignedReferral = referralRepository.save(referral)
     eventPublisher.referralAssignedEvent(assignedReferral)

@@ -173,7 +173,7 @@ class NotifyReferralService(
       }
 
       ReferralEventType.ASSIGNED -> {
-        val userDetails = hmppsAuthService.getUserDetail(event.referral.assignedTo!!)
+        val userDetails = hmppsAuthService.getUserDetail(event.referral.currentAssignee!!)
         val location = generateResourceUrl(interventionsUIBaseURL, spReferralDetailsLocation, event.referral.id)
         emailSender.sendEmail(
           referralAssignedTemplateID,

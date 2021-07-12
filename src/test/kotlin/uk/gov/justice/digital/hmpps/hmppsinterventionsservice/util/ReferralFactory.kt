@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Desired
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceCategory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
@@ -67,9 +68,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     referenceNumber: String? = "JS18726AC",
     supplementaryRiskId: UUID = UUID.randomUUID(),
 
-    assignedBy: AuthUser? = null,
-    assignedTo: AuthUser? = null,
-    assignedAt: OffsetDateTime? = null,
+    assignments: List<ReferralAssignment> = emptyList(),
 
     supplierAssessment: SupplierAssessment? = null,
   ): Referral {
@@ -89,9 +88,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       referenceNumber = referenceNumber,
       supplementaryRiskId = supplementaryRiskId,
 
-      assignedBy = assignedBy,
-      assignedTo = assignedTo,
-      assignedAt = assignedAt,
+      assignments = assignments,
       supplierAssessment = supplierAssessment
     )
     return referral
@@ -110,9 +107,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     supplementaryRiskId: UUID = UUID.randomUUID(),
     actionPlans: MutableList<ActionPlan>? = null,
 
-    assignedBy: AuthUser? = null,
-    assignedTo: AuthUser? = null,
-    assignedAt: OffsetDateTime? = null,
+    assignments: List<ReferralAssignment> = emptyList(),
 
     endRequestedAt: OffsetDateTime? = OffsetDateTime.now(),
     endRequestedBy: AuthUser? = authUserFactory.create(),
@@ -137,9 +132,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       referenceNumber = referenceNumber,
       supplementaryRiskId = supplementaryRiskId,
 
-      assignedBy = assignedBy,
-      assignedTo = assignedTo,
-      assignedAt = assignedAt,
+      assignments = assignments,
 
       endRequestedAt = endRequestedAt,
       endRequestedBy = endRequestedBy,
@@ -174,9 +167,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     referenceNumber: String? = null,
     supplementaryRiskId: UUID? = null,
 
-    assignedAt: OffsetDateTime? = null,
-    assignedBy: AuthUser? = null,
-    assignedTo: AuthUser? = null,
+    assignments: List<ReferralAssignment> = emptyList(),
 
     endRequestedAt: OffsetDateTime? = null,
     endRequestedBy: AuthUser? = null,
@@ -206,9 +197,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         sentBy = sentBy,
         referenceNumber = referenceNumber,
         supplementaryRiskId = supplementaryRiskId,
-        assignedAt = assignedAt,
-        assignedBy = assignedBy,
-        assignedTo = assignedTo,
+        assignments = assignments.toMutableList(),
         endRequestedAt = endRequestedAt,
         endRequestedBy = endRequestedBy,
         endRequestedReason = endRequestedReason,
