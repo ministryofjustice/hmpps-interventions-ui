@@ -28,6 +28,7 @@ enum SupplierAssessmentStatus {
   awaitingCaseworker,
   notScheduled,
   scheduled,
+  delivered,
 }
 
 export default class InterventionProgressPresenter {
@@ -173,13 +174,18 @@ export default class InterventionProgressPresenter {
   readonly supplierAssessmentSessionStatusPresenter = new SessionStatusPresenter(this.supplierAssessmentSessionStatus)
 
   private get supplierAssessmentStatus(): SupplierAssessmentStatus {
-    if (this.supplierAssessmentSessionStatus !== SessionStatus.notScheduled) {
-      return SupplierAssessmentStatus.scheduled
+    switch (this.supplierAssessmentSessionStatus) {
+      case SessionStatus.scheduled:
+        return SupplierAssessmentStatus.scheduled
+      case SessionStatus.didNotAttend:
+      case SessionStatus.completed:
+        return SupplierAssessmentStatus.delivered
+      case SessionStatus.notScheduled:
+      default:
+        return this.referral.assignedTo === null
+          ? SupplierAssessmentStatus.awaitingCaseworker
+          : SupplierAssessmentStatus.notScheduled
     }
-
-    return this.referral.assignedTo === null
-      ? SupplierAssessmentStatus.awaitingCaseworker
-      : SupplierAssessmentStatus.notScheduled
   }
 
   readonly shouldDisplaySupplierAssessmentSummaryList =
@@ -193,6 +199,8 @@ export default class InterventionProgressPresenter {
         return 'Once a caseworker has been assigned the assessment will be booked.'
       case SupplierAssessmentStatus.scheduled:
         return 'The appointment has been scheduled by the supplier.'
+      case SupplierAssessmentStatus.delivered:
+        return 'The initial assessment has been delivered and feedback added.'
       default:
         throw new Error('unexpected status')
     }
@@ -203,13 +211,20 @@ export default class InterventionProgressPresenter {
   }
 
   get supplierAssessmentLink(): { text: string; href: string } | null {
-    if (this.supplierAssessmentStatus !== SupplierAssessmentStatus.scheduled) {
-      return null
-    }
-
-    return {
-      text: 'View appointment details',
-      href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
+    switch (this.supplierAssessmentSessionStatus) {
+      case SessionStatus.scheduled:
+        return {
+          text: 'View appointment details',
+          href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
+        }
+      case SessionStatus.completed:
+      case SessionStatus.didNotAttend:
+        return {
+          text: 'View feedback',
+          href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,
+        }
+      default:
+        return null
     }
   }
 }
