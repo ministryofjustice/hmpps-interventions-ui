@@ -40,8 +40,8 @@ import BehaviourFeedbackView from '../service-provider/appointment/feedback/beha
 import BehaviourFeedbackForm from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackForm'
 import CheckFeedbackAnswersView from '../service-provider/appointment/feedback/check-your-answers/checkFeedbackAnswersView'
 import ActionPlanPostSessionFeedbackCheckAnswersPresenter from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
-import SubmittedPostSessionFeedbackView from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackView'
-import SubmittedPostSessionFeedbackPresenter from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackPresenter'
+import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
+import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
 import EndOfServiceReportOutcomeForm from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomeForm'
 import EndOfServiceReportOutcomePresenter from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomePresenter'
 import EndOfServiceReportOutcomeView from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomeView'
@@ -906,8 +906,8 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser)
-    const view = new SubmittedPostSessionFeedbackView(presenter)
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser)
+    const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
