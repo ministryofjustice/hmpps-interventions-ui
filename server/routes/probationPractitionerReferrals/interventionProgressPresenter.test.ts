@@ -415,6 +415,34 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.supplierAssessmentMessage).toEqual('The appointment has been scheduled by the supplier.')
       })
     })
+
+    describe('when the supplier assessment has been attended', () => {
+      it('returns an appropriate message', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withAttendedAppointment.build()
+
+        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+
+        expect(presenter.supplierAssessmentMessage).toEqual(
+          'The initial assessment has been delivered and feedback added.'
+        )
+      })
+    })
+
+    describe('when the supplier assessment has been delivered but not attended', () => {
+      it('returns an appropriate message', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withNonAttendedAppointment.build()
+
+        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+
+        expect(presenter.supplierAssessmentMessage).toEqual(
+          'The initial assessment has been delivered and feedback added.'
+        )
+      })
+    })
   })
 
   describe('supplierAssessmentCaseworker', () => {
@@ -464,7 +492,7 @@ describe(InterventionProgressPresenter, () => {
       })
     })
 
-    describe('when the supplier assessment has an appointment', () => {
+    describe('when the supplier assessment has an appointment still awaiting feedback', () => {
       it('returns a link to a page for viewing the supplier assessment', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
@@ -483,6 +511,52 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.supplierAssessmentLink).toEqual({
           href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
           text: 'View appointment details',
+        })
+      })
+    })
+
+    describe('when the supplier assessment has an appointment with feedback and it was attended', () => {
+      it('returns a link to a page for viewing feedback for the supplier assessment', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withAttendedAppointment.build()
+        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          supplierAssessment,
+          assignee
+        )
+
+        expect(presenter.supplierAssessmentLink).toEqual({
+          href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
+          text: 'View feedback',
+        })
+      })
+    })
+
+    describe('when the supplier assessment has an appointment with feedback and it was not attended', () => {
+      it('returns a link to a page for viewing feedback for the supplier assessment', () => {
+        const referral = sentReferralFactory.build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.withNonAttendedAppointment.build()
+        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          supplierAssessment,
+          assignee
+        )
+
+        expect(presenter.supplierAssessmentLink).toEqual({
+          href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
+          text: 'View feedback',
         })
       })
     })
