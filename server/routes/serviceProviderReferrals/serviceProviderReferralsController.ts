@@ -800,6 +800,28 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async viewSubmittedPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
+    if (currentAppointment === null) {
+      throw new Error('Attempting to view supplier assessment feedback without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser)
+    const view = new SubmittedFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
