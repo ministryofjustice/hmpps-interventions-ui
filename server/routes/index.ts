@@ -43,30 +43,6 @@ export default function routes(router: Router, services: Services): Router {
     return commonController.reportAProblem(req, res)
   })
 
-  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback', (req, res) =>
-    serviceProviderReferralsController.viewSubmittedPostAssessmentFeedback(req, res)
-  )
-
-  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
-    serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
-  )
-
-  post('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
-    serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
-  )
-
-  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
-    serviceProviderReferralsController.checkInitialAssessmentFeedbackAnswers(req, res)
-  )
-
-  post('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', (req, res) =>
-    serviceProviderReferralsController.submitPostAssessmentFeedback(req, res)
-  )
-
-  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
-    serviceProviderReferralsController.showPostAssessmentFeedbackConfirmation(req, res)
-  )
-
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get(router, '/static-pages', (req, res) => {
       return staticContentController.index(req, res)

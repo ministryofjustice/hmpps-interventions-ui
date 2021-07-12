@@ -118,6 +118,24 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:id/supplier-assessment/rescheduled-confirmation', (req, res) =>
     serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
+  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback', (req, res) =>
+    serviceProviderReferralsController.viewSubmittedPostAssessmentFeedback(req, res)
+  )
+  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
+    serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
+  )
+  post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
+    serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
+  )
+  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
+    serviceProviderReferralsController.checkInitialAssessmentFeedbackAnswers(req, res)
+  )
+  post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/submit', (req, res) =>
+    serviceProviderReferralsController.submitPostAssessmentFeedback(req, res)
+  )
+  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
+    serviceProviderReferralsController.showPostAssessmentFeedbackConfirmation(req, res)
+  )
 
   get(router, '/referrals/:id/action-plan', (req, res) => serviceProviderReferralsController.viewActionPlan(req, res))
 
