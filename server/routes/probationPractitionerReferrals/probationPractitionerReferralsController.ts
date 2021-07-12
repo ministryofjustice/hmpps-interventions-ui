@@ -9,8 +9,8 @@ import FindStartPresenter from './findStartPresenter'
 import MyCasesView from './myCasesView'
 import MyCasesPresenter from './myCasesPresenter'
 import FindStartView from './findStartView'
-import SubmittedPostSessionFeedbackPresenter from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackPresenter'
-import SubmittedPostSessionFeedbackView from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackView'
+import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
+import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 import ReferralCancellationReasonView from './referralCancellationReasonView'
 import EndOfServiceReportPresenter from '../probation-practitioner/end-of-service-report/endOfServiceReportPresenter'
@@ -191,8 +191,8 @@ export default class ProbationPractitionerReferralsController {
       throw new Error('Referral has not yet been assigned to a caseworker')
     }
 
-    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
-    const view = new SubmittedPostSessionFeedbackView(presenter)
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
+    const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
