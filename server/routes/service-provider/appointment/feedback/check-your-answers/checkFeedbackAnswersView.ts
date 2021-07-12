@@ -1,8 +1,8 @@
-import ViewUtils from '../../../../../../utils/viewUtils'
-import PostSessionFeedbackCheckAnswersPresenter from './postSessionFeedbackCheckAnswersPresenter'
+import ViewUtils from '../../../../../utils/viewUtils'
+import CheckFeedbackAnswersPresenter from './checkFeedbackAnswersPresenter'
 
-export default class PostSessionFeedbackCheckAnswersView {
-  constructor(private readonly presenter: PostSessionFeedbackCheckAnswersPresenter) {}
+export default class CheckFeedbackAnswersView {
+  constructor(private readonly presenter: CheckFeedbackAnswersPresenter) {}
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
 
