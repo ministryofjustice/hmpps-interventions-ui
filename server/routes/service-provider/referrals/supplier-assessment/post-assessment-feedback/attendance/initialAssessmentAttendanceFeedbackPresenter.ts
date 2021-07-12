@@ -3,7 +3,7 @@ import DeliusServiceUser from '../../../../../../models/delius/deliusServiceUser
 import { FormValidationError } from '../../../../../../utils/formValidationError'
 import AttendanceFeedbackPresenter from '../../../../appointment/feedback/attendance/attendanceFeedbackPresenter'
 
-export default class InitialAssessmentPostAssessmentAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
+export default class InitialAssessmentAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
   constructor(
     private readonly appointment: Appointment,
     private readonly serviceUser: DeliusServiceUser,

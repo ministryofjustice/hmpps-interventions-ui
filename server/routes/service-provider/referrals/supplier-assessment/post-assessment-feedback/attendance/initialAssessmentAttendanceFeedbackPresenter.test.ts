@@ -1,13 +1,13 @@
 import appointmentFactory from '../../../../../../../testutils/factories/appointment'
 import deliusServiceUserFactory from '../../../../../../../testutils/factories/deliusServiceUser'
-import InitialAssessmentPostAssessmentAttendanceFeedbackPresenter from './initialAssessmentPostAssessmentAttendanceFeedbackPresenter'
+import InitialAssessmentAttendanceFeedbackPresenter from './initialAssessmentAttendanceFeedbackPresenter'
 
-describe(InitialAssessmentPostAssessmentAttendanceFeedbackPresenter, () => {
+describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
   describe('text', () => {
     it('contains a title including the name of the service category and a subtitle, and the attendance questions', () => {
       const appointment = appointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new InitialAssessmentPostAssessmentAttendanceFeedbackPresenter(appointment, serviceUser)
+      const presenter = new InitialAssessmentAttendanceFeedbackPresenter(appointment, serviceUser)
 
       expect(presenter.text).toMatchObject({
         title: 'Add feedback',

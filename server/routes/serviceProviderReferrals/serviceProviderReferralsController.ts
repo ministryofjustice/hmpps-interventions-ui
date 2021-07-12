@@ -67,9 +67,9 @@ import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssess
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
 import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
 import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
-import InitialAssessmentPostAssessmentAttendanceFeedbackPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/attendance/initialAssessmentPostAssessmentAttendanceFeedbackPresenter'
+import InitialAssessmentAttendanceFeedbackPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/attendance/initialAssessmentAttendanceFeedbackPresenter'
 import BehaviourFeedbackPresenter from '../service-provider/appointment/feedback/behaviour/behaviourFeedbackPresenter'
-import InitialAssessmentPostAssessmentFeedbackCheckAnswersPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/check-your-answers/initialAssessmentPostAssessmentFeedbackCheckAnswersPresenter'
+import InitialAssessmentFeedbackCheckAnswersPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/check-your-answers/initialAssessmentFeedbackCheckAnswersPresenter'
 import InitialAssessmentFeedbackConfirmationPresenter from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/confirmation/initialAssessmentFeedbackConfirmationPresenter'
 import InitialAssessmentFeedbackConfirmationView from '../service-provider/referrals/supplier-assessment/post-assessment-feedback/confirmation/initialAssessmentFeedbackConfirmationView'
 
@@ -737,7 +737,7 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new InitialAssessmentPostAssessmentAttendanceFeedbackPresenter(
+    const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
       formError,
@@ -763,11 +763,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new InitialAssessmentPostAssessmentFeedbackCheckAnswersPresenter(
-      appointment,
-      serviceUser,
-      referralId
-    )
+    const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(appointment, serviceUser, referralId)
     const view = new CheckFeedbackAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
