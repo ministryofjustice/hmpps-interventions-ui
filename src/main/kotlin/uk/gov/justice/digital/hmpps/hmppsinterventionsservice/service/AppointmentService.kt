@@ -45,7 +45,7 @@ class AppointmentService(
     val initialAppointmentRequired = appointment == null
     if (initialAppointmentRequired) {
       val deliusAppointmentId = communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser, appointmentDeliveryType, appointmentDeliveryAddress)
+      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser, appointmentDeliveryType, appointmentDeliveryAddress, referral)
     }
 
     val updateCurrentAppointmentRequired = appointment!!.attended == null
@@ -57,7 +57,7 @@ class AppointmentService(
     val additionalAppointmentRequired = appointment.attended == Attended.NO
     if (additionalAppointmentRequired) {
       val deliusAppointmentId = communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser, appointmentDeliveryType, appointmentDeliveryAddress)
+      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser, appointmentDeliveryType, appointmentDeliveryAddress, referral)
     }
     throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
   }
@@ -150,6 +150,7 @@ class AppointmentService(
     createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    referral: Referral,
   ): Appointment {
     val appointment = Appointment(
       id = UUID.randomUUID(),
@@ -157,7 +158,8 @@ class AppointmentService(
       durationInMinutes = durationInMinutes,
       deliusAppointmentId = deliusAppointmentId,
       createdBy = authUserRepository.save(createdByUser),
-      createdAt = OffsetDateTime.now()
+      createdAt = OffsetDateTime.now(),
+      referral = referral,
     )
     appointmentRepository.saveAndFlush(appointment)
     createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)

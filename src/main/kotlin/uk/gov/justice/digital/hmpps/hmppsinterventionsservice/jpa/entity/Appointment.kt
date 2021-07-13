@@ -15,7 +15,6 @@ import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 import javax.persistence.PrimaryKeyJoinColumn
 import javax.validation.constraints.NotNull
@@ -48,7 +47,7 @@ data class Appointment(
   @PrimaryKeyJoinColumn
   var appointmentDelivery: AppointmentDelivery? = null,
 
-  @ManyToOne(fetch = FetchType.LAZY) var referral: Referral? = null,
+  @ManyToOne(fetch = FetchType.LAZY) var referral: Referral,
 
   @Id val id: UUID,
 ) {

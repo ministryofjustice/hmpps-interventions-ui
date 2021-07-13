@@ -84,6 +84,7 @@ class ActionPlanSessionsService(
         appointmentTime = appointmentTime,
         durationInMinutes = durationInMinutes,
         deliusAppointmentId = deliusAppointmentId,
+        referral = session.actionPlan.referral,
       )
       appointmentRepository.saveAndFlush(appointment)
       appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
