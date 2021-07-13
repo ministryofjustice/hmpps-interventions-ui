@@ -9,8 +9,8 @@ import FindStartPresenter from './findStartPresenter'
 import MyCasesView from './myCasesView'
 import MyCasesPresenter from './myCasesPresenter'
 import FindStartView from './findStartView'
-import SubmittedPostSessionFeedbackPresenter from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackPresenter'
-import SubmittedPostSessionFeedbackView from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackView'
+import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
+import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 import ReferralCancellationReasonView from './referralCancellationReasonView'
 import EndOfServiceReportPresenter from '../probation-practitioner/end-of-service-report/endOfServiceReportPresenter'
@@ -191,8 +191,35 @@ export default class ProbationPractitionerReferralsController {
       throw new Error('Referral has not yet been assigned to a caseworker')
     }
 
-    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
-    const view = new SubmittedPostSessionFeedbackView(presenter)
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
+    const view = new SubmittedFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewSubmittedPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+
+    if (!referral.assignedTo) {
+      throw new Error('Referral has not yet been assigned to a caseworker')
+    }
+
+    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
+    if (currentAppointment === null) {
+      throw new Error('Attempting to view initial assessment feedback without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser)
+    const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -418,7 +445,7 @@ export default class ProbationPractitionerReferralsController {
 
     const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
     if (appointment === null) {
-      throw new Error('Attempting to view supplier assessment without a current appointment')
+      throw new Error('Attempting to view initial assessment without a current appointment')
     }
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
@@ -426,6 +453,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, assignee, {
       includeAssignee: true,
       readonly: true,
+      userType: 'probation-practitioner',
     })
     const view = new SupplierAssessmentAppointmentView(presenter)
 

@@ -173,6 +173,10 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
 
+  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback', (req, res) =>
+    serviceProviderReferralsController.viewSubmittedPostAssessmentFeedback(req, res)
+  )
+
   get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
   )
@@ -240,6 +244,9 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/probation-practitioner/referrals/:id/supplier-assessment', (req, res) =>
     probationPractitionerReferralsController.showSupplierAssessmentAppointment(req, res)
+  )
+  get('/probation-practitioner/referrals/:id/supplier-assessment/post-assessment-feedback', (req, res) =>
+    probationPractitionerReferralsController.viewSubmittedPostAssessmentFeedback(req, res)
   )
 
   get('/intervention/:interventionId/refer', (req, res) => referralsController.startReferral(req, res))

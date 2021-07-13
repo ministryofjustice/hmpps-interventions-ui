@@ -1,8 +1,8 @@
-import ViewUtils from '../../../../../utils/viewUtils'
-import SubmittedPostSessionFeedbackPresenter from './submittedPostSessionFeedbackPresenter'
+import ViewUtils from '../../../../utils/viewUtils'
+import SubmittedFeedbackPresenter from './submittedFeedbackPresenter'
 
-export default class SubmittedPostSessionFeedbackView {
-  constructor(private readonly presenter: SubmittedPostSessionFeedbackPresenter) {}
+export default class SubmittedFeedbackView {
+  constructor(private readonly presenter: SubmittedFeedbackPresenter) {}
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
 

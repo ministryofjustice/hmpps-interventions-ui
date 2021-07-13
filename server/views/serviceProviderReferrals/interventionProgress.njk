@@ -15,7 +15,7 @@
 
   {% if presenter.referralAssigned %}
     <p class="govuk-body">
-      Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.
+     {{ supplierAssessmentMessage }}
     </p>
 
     {{ govukSummaryList(initialAssessmentSummaryListArgs(govukTag)) }}
