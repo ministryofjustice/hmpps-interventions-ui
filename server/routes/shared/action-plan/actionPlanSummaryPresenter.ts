@@ -33,6 +33,9 @@ export default class ActionPlanSummaryPresenter {
     if (this.actionPlanUnderReview) {
       return 'Awaiting approval'
     }
+    if (this.actionPlanCreated && this.userType === 'service-provider') {
+      return 'In draft'
+    }
     return 'Not submitted'
   }
 

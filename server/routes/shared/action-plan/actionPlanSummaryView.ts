@@ -10,7 +10,9 @@ export default class ActionPlanSummaryView {
       case 'Approved':
         return 'govuk-tag--green'
       case 'Awaiting approval':
-        return 'govuk-tag- govuk-tag--red'
+        return 'govuk-tag--red'
+      case 'In draft':
+        return 'govuk-tag--yellow'
       default:
         return 'govuk-tag--grey'
     }
@@ -72,7 +74,7 @@ export default class ActionPlanSummaryView {
           rows.push({
             key: { text: 'Action' },
             value: {
-              html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Submit action plan</a>`,
+              html: `<a href="${this.presenter.actionPlanFormUrl}" class="govuk-link">Complete action plan</a>`,
             },
           })
         }
