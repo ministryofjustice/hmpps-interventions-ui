@@ -45,6 +45,12 @@
 
       <h2 class="govuk-heading-m">Service user's needs</h2>
       {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
+
+      <h2 class="govuk-heading-m">Responsible officer details</h2>
+      {% for summaryListArgs in responsibleOfficerSummaryListsArgs %}
+        {{ govukSummaryList(summaryListArgs) }}
+      {% endfor %}
+
       <h2 class="govuk-heading-m">Referring probation practitioner details</h2>
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
       <h2 class="govuk-heading-m">Team contact details</h2>

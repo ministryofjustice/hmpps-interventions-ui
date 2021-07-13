@@ -177,31 +177,10 @@ describe(CommunityApiService, () => {
           token: 'token',
         })
 
-        const names = responsibleOfficers!.map((officer: DeliusOffenderManager) => officer.staff.forenames)
+        const names = responsibleOfficers!.map((officer: DeliusOffenderManager) => officer.staff!.forenames)
 
         expect(names).toEqual(['Jerry', 'Linda'])
         expect(names).not.toContainEqual('Roger')
-      })
-    })
-
-    describe('when none of the Offender Managers are Responsible Officers', () => {
-      it('throws an error with a user-facing message', async () => {
-        const deliusOffenderManagers = [
-          deliusOffenderManagerFactory.notResponsibleOfficer().build({ staff: { forenames: 'Jerry' } }),
-          deliusOffenderManagerFactory.notResponsibleOfficer().build({ staff: { forenames: 'Linda' } }),
-          deliusOffenderManagerFactory.notResponsibleOfficer().build({ staff: { forenames: 'Roger' } }),
-        ]
-
-        restClientMock.get.mockResolvedValue(deliusOffenderManagers)
-
-        hmppsAuthClientMock.getApiClientToken.mockResolvedValue('token')
-
-        try {
-          await service.getResponsibleOfficersForServiceUser('X123456')
-        } catch (err) {
-          expect(err.status).toBe(500)
-          expect(err.userMessage).toBe('No responsible officer is assigned to this service user in nDelius.')
-        }
       })
     })
 

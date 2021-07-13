@@ -90,15 +90,7 @@ export default class CommunityApiService {
         token,
       })) as DeliusOffenderManager[]
 
-      const responsibleOfficer = deliusOffenderManagers.filter(offenderManager => offenderManager.isResponsibleOfficer)
-
-      if (!responsibleOfficer) {
-        throw createError(500, `No offender manager found in Delius for CRN ${crn}`, {
-          userMessage: 'No responsible officer is assigned to this service user in nDelius.',
-        })
-      }
-
-      return responsibleOfficer
+      return deliusOffenderManagers.filter(offenderManager => offenderManager.isResponsibleOfficer)
     } catch (err) {
       throw createError(err.status, err, { userMessage: 'Could retrieve Responsible Officer from nDelius.' })
     }

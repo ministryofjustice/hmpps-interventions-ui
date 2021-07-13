@@ -8,6 +8,7 @@ import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
+import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -287,6 +288,15 @@ describe('Probation practitioner referrals dashboard', () => {
       ],
     })
 
+    const responsibleOfficer = deliusOffenderManagerFactory.build({
+      staff: {
+        forenames: 'Peter',
+        surname: 'Practitioner',
+        email: 'p.practitioner@justice.gov.uk',
+        phoneNumber: '01234567890',
+      },
+    })
+
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
@@ -295,6 +305,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+    cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
     cy.login()
 
@@ -347,6 +358,11 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('She uses a wheelchair')
     cy.contains('Spanish')
     cy.contains('She works Mondays 9am - midday')
+
+    cy.contains('Responsible officer details').next().contains('Name').next().contains('Peter Practitioner')
+    cy.contains('Responsible officer details').next().contains('Phone').next().contains('01234567890')
+    cy.contains('Responsible officer details').next().contains('Email').next().contains('p.practitioner@justice.gov.uk')
+
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
 
