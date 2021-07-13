@@ -4,6 +4,7 @@ import Appointment from '../models/appointment'
 export enum SessionStatus {
   notScheduled,
   scheduled,
+  awaitingFeedback,
   completed,
   didNotAttend,
 }
