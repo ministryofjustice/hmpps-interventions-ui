@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryAddress
@@ -26,6 +27,7 @@ class AppointmentService(
   val communityAPIBookingService: CommunityAPIBookingService,
   val appointmentDeliveryRepository: AppointmentDeliveryRepository,
   val authUserRepository: AuthUserRepository,
+  val appointmentEventPublisher: AppointmentEventPublisher,
 ) {
 
   // TODO complexity of this method can be reduced
@@ -92,7 +94,7 @@ class AppointmentService(
     return appointmentRepository.save(appointment)
   }
 
-  fun submitSessionFeedback(appointment: Appointment, submitter: AuthUser): Appointment {
+  fun submitSessionFeedback(appointment: Appointment, submitter: AuthUser, appointmentType: AppointmentType): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "appointment feedback has already been submitted")
     }
@@ -103,7 +105,17 @@ class AppointmentService(
 
     appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
-    return appointmentRepository.save(appointment)
+    appointmentRepository.save(appointment)
+
+    appointmentEventPublisher.attendanceRecordedEvent(appointment, appointment.attended!! == Attended.NO, appointmentType)
+
+    if (appointment.attendanceBehaviourSubmittedAt != null) { // excluding the case of non attendance
+      appointmentEventPublisher.behaviourRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour!!, appointmentType)
+    }
+
+    appointmentEventPublisher.sessionFeedbackRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour ?: false, appointmentType)
+
+    return appointment
   }
 
   private fun setAttendanceFields(

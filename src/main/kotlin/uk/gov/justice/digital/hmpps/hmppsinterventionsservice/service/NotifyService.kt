@@ -9,11 +9,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import java.net.URI
 
 interface NotifyService {
@@ -96,7 +99,7 @@ class NotifyEndOfServiceReportService(
 }
 
 @Service
-class NotifyAppointmentService(
+class NotifyActionPlanAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
@@ -143,6 +146,69 @@ class NotifyAppointmentService(
     }
   }
 }
+
+@Service
+class NotifyAppointmentService(
+  @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
+  @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSAASessionFeedbackLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppActionPlanSessionFeedbackLocation: String,
+  private val emailSender: EmailSender,
+  private val hmppsAuthService: HMPPSAuthService,
+) : ApplicationListener<AppointmentEvent>, NotifyService {
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: AppointmentEvent) {
+    if (event.notifyPP) {
+      val referral = event.appointment.referral
+      val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
+
+      val location = when(event.appointmentType){
+        AppointmentType.SUPPLIER_ASSESSMENT -> generateResourceUrl(
+          interventionsUIBaseURL,
+          ppSAASessionFeedbackLocation,
+          event.appointment.referral.id
+        )
+        AppointmentType.SERVICE_DELIVERY -> run {
+          log.error("asdghsd")
+          return
+        }
+      }
+
+//      val location = generateResourceUrl(
+//        interventionsUIBaseURL,
+//        endpoint,
+//        event.appointment.referral.id
+//      )
+
+      when (event.type) {
+        AppointmentEventType.ATTENDANCE_RECORDED -> {
+          emailSender.sendEmail(
+            appointmentNotAttendedTemplateID,
+            ppDetails.email,
+            mapOf(
+              "ppFirstName" to ppDetails.firstName,
+              "referenceNumber" to referral.referenceNumber!!,
+              "attendanceUrl" to location.toString(),
+            )
+          )
+        }
+        AppointmentEventType.BEHAVIOUR_RECORDED -> {
+          emailSender.sendEmail(
+            concerningBehaviourTemplateID,
+            ppDetails.email,
+            mapOf(
+              "ppFirstName" to ppDetails.firstName,
+              "referenceNumber" to referral.referenceNumber!!,
+              "sessionUrl" to location.toString(),
+            )
+          )
+        }
+      }
+    }
+  }
+}
+
 
 @Service
 class NotifyReferralService(

@@ -48,7 +48,6 @@ data class Appointment(
   var appointmentDelivery: AppointmentDelivery? = null,
 
   @ManyToOne(fetch = FetchType.LAZY) var referral: Referral,
-
   @Id val id: UUID,
 ) {
   override fun equals(other: Any?): Boolean {

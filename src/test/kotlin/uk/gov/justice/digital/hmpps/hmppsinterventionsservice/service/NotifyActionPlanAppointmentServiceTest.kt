@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSes
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class NotifyAppointmentServiceTest {
+class NotifyActionPlanAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
@@ -48,8 +48,8 @@ class NotifyAppointmentServiceTest {
     )
   }
 
-  private fun notifyService(): NotifyAppointmentService {
-    return NotifyAppointmentService(
+  private fun notifyService(): NotifyActionPlanAppointmentService {
+    return NotifyActionPlanAppointmentService(
       "template",
       "template",
       "http://example.com",

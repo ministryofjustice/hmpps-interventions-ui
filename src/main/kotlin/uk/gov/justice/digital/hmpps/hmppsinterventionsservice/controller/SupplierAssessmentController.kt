@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
@@ -87,7 +88,7 @@ class SupplierAssessmentController(
   ): AppointmentDTO {
     val user = userMapper.fromToken(authentication)
     val supplierAssessmentAppointment = getSupplierAssessmentAppointment(referralId, user)
-    return AppointmentDTO.from(appointmentService.submitSessionFeedback(supplierAssessmentAppointment, user))
+    return AppointmentDTO.from(appointmentService.submitSessionFeedback(supplierAssessmentAppointment, user, AppointmentType.SUPPLIER_ASSESSMENT))
   }
 
   private fun getSupplierAssessmentAppointment(referralId: UUID, user: AuthUser): Appointment {
