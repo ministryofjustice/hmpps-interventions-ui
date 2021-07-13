@@ -14,6 +14,7 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
         const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
         const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, assignee, {
           includeAssignee: true,
+          userType: 'probation-practitioner',
         })
 
         expect(presenter.summary[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
@@ -113,7 +114,10 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
       describe('when the readonly option is true', () => {
         it('returns null', () => {
           const appointment = appointmentFactory.newlyBooked().build()
-          const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null, { readonly: true })
+          const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null, {
+            readonly: true,
+            userType: 'probation-practitioner',
+          })
 
           expect(presenter.actionLink).toBeNull()
         })
@@ -131,10 +135,24 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
   })
 
   describe('backLinkHref', () => {
-    it('returns the URL of the intervention progress page', () => {
-      const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointmentFactory.build(), null)
+    describe('when user is a service-provider', () => {
+      it('returns the URL of the service-provider intervention progress page', () => {
+        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointmentFactory.build(), null, {
+          userType: 'service-provider',
+        })
 
-      expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
+        expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
+      })
+    })
+
+    describe('when user is a probation-practitioner', () => {
+      it('returns the URL of the probation-practitioner intervention progress page', () => {
+        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointmentFactory.build(), null, {
+          userType: 'probation-practitioner',
+        })
+
+        expect(presenter.backLinkHref).toEqual(`/probation-practitioner/referrals/${referral.id}/progress`)
+      })
     })
   })
 })

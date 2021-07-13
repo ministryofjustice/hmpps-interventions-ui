@@ -463,6 +463,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, assignee, {
       includeAssignee: true,
       readonly: true,
+      userType: 'probation-practitioner',
     })
     const view = new SupplierAssessmentAppointmentView(presenter)
 

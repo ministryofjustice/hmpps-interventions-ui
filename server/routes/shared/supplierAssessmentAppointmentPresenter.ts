@@ -9,6 +9,7 @@ import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 interface SupplierAssessmentAppointmentPresenterOptions {
   readonly?: boolean
   includeAssignee?: boolean
+  readonly userType: 'service-provider' | 'probation-practitioner'
 }
 
 export default class SupplierAssessmentAppointmentPresenter {
@@ -16,7 +17,7 @@ export default class SupplierAssessmentAppointmentPresenter {
     private readonly referral: SentReferral,
     private readonly appointment: Appointment,
     private readonly assignee: AuthUserDetails | null,
-    private readonly options: SupplierAssessmentAppointmentPresenterOptions = {}
+    private readonly options: SupplierAssessmentAppointmentPresenterOptions = { userType: 'service-provider' }
   ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
@@ -88,5 +89,7 @@ export default class SupplierAssessmentAppointmentPresenter {
       : null
   }
 
-  readonly backLinkHref = `/service-provider/referrals/${this.referral.id}/progress`
+  get backLinkHref(): string {
+    return `/${this.options.userType}/referrals/${this.referral.id}/progress`
+  }
 }
