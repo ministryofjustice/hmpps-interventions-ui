@@ -5,6 +5,11 @@ import ViewUtils from '../../../../utils/viewUtils'
 export default class ActionPlanNumberOfSessionsView {
   constructor(private readonly presenter: ActionPlanNumberOfSessionsPresenter) {}
 
+  private readonly backLinkArgs = {
+    text: 'Back',
+    href: `/service-provider/action-plan/${this.presenter.actionPlanId}/add-activity/${this.presenter.numberOfActivities}`,
+  }
+
   private get numberOfSessionsInputArgs(): InputArgs {
     return {
       label: {
@@ -28,6 +33,7 @@ export default class ActionPlanNumberOfSessionsView {
         presenter: this.presenter,
         errorSummaryArgs: ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary),
         numberOfSessionsInputArgs: this.numberOfSessionsInputArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
