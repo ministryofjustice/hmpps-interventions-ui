@@ -44,13 +44,28 @@ class AppointmentFactory extends Factory<Appointment> {
       },
     })
   }
+
+  get inThePast(): AppointmentFactory {
+    return this.params({
+      // one day in the past
+      appointmentTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    })
+  }
+
+  get inTheFuture(): AppointmentFactory {
+    return this.params({
+      // one day in the future
+      appointmentTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+    })
+  }
 }
 
 const defaultAppointmentDeliveryType: AppointmentDeliveryType = 'VIDEO_CALL'
 
 export default AppointmentFactory.define(({ sequence }) => ({
   id: sequence.toString(),
-  appointmentTime: new Date().toISOString(),
+  // one day in the future
+  appointmentTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
   durationInMinutes: 60,
   // For some reason the compiler complains if I write 'VIDEO_CALL' inline
   appointmentDeliveryType: defaultAppointmentDeliveryType,

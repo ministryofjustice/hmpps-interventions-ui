@@ -212,33 +212,64 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
       })
       describe('when the referral has been assigned and the appointment scheduled', () => {
-        it('should show the initial appointment as scheduled and a link to view appointment details', () => {
-          const appointmentWithNoFeedback = appointmentFactory.build({
-            appointmentTime: '2021-03-24T09:02:02Z',
-            durationInMinutes: 75,
-            appointmentDeliveryType: 'PHONE_CALL',
-          })
-          const supplierAssessment = supplierAssessmentFactory.build({
-            appointments: [appointmentWithNoFeedback],
-            currentAppointmentId: appointmentWithNoFeedback.id,
-          })
-          cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessment)
-          cy.login()
-          cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
-
-          cy.contains('Initial assessment appointment')
-            .next()
-            .contains('The appointment has been scheduled by the supplier')
-            .next()
-            .within(() => {
-              cy.contains('Caseworker').next().contains('John Smith')
-              cy.contains('Appointment status').next().contains('scheduled')
-              cy.contains('To do').next().contains('View appointment details').click()
-              cy.location('pathname').should(
-                'equal',
-                `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment`
-              )
+        describe('and the appointment is in the past', () => {
+          it('should show the initial appointment as awaiting feedback and a link to view appointment details', () => {
+            const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+              durationInMinutes: 75,
+              appointmentDeliveryType: 'PHONE_CALL',
             })
+            const supplierAssessment = supplierAssessmentFactory.build({
+              appointments: [appointmentWithNoFeedback],
+              currentAppointmentId: appointmentWithNoFeedback.id,
+            })
+            cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessment)
+            cy.login()
+            cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
+
+            cy.contains('Initial assessment appointment')
+              .next()
+              .contains('The appointment has been scheduled by the supplier')
+              .next()
+              .within(() => {
+                cy.contains('Caseworker').next().contains('John Smith')
+                cy.contains('Appointment status').next().contains('awaiting feedback')
+                cy.contains('To do').next().contains('View appointment details').click()
+                cy.location('pathname').should(
+                  'equal',
+                  `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment`
+                )
+              })
+          })
+        })
+
+        describe('and the appointment is in the future', () => {
+          it('should show the initial appointment as scheduled and a link to view appointment details', () => {
+            const appointmentWithNoFeedback = appointmentFactory.inTheFuture.build({
+              durationInMinutes: 75,
+              appointmentDeliveryType: 'PHONE_CALL',
+            })
+            const supplierAssessment = supplierAssessmentFactory.build({
+              appointments: [appointmentWithNoFeedback],
+              currentAppointmentId: appointmentWithNoFeedback.id,
+            })
+            cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessment)
+            cy.login()
+            cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
+
+            cy.contains('Initial assessment appointment')
+              .next()
+              .contains('The appointment has been scheduled by the supplier')
+              .next()
+              .within(() => {
+                cy.contains('Caseworker').next().contains('John Smith')
+                cy.contains('Appointment status').next().contains('scheduled')
+                cy.contains('To do').next().contains('View appointment details').click()
+                cy.location('pathname').should(
+                  'equal',
+                  `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment`
+                )
+              })
+          })
         })
       })
       describe('when the referral has been assigned and the appointment delivered and attended', () => {

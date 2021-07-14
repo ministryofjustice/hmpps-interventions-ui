@@ -121,6 +121,7 @@ export default class InterventionProgressPresenter {
           },
         ]
         break
+      case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
         links = [
           {
@@ -180,6 +181,7 @@ export default class InterventionProgressPresenter {
     switch (this.supplierAssessmentStatus) {
       case SessionStatus.notScheduled:
         return 'Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.'
+      case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
         return 'Feedback needs to be added on the same day the assessment is delivered.'
       case SessionStatus.completed:
@@ -206,6 +208,9 @@ export default class InterventionProgressPresenter {
             text: 'View appointment details',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
           },
+        ]
+      case SessionStatus.awaitingFeedback:
+        return [
           {
             text: 'Add feedback',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
