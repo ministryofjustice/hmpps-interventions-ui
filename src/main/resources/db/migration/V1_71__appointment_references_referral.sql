@@ -23,6 +23,3 @@ set referral_id = (
     where app.id = apo.id
 )
 where apo.referral_id is null;
-
-alter table appointment
-    alter column referral_id set not null
