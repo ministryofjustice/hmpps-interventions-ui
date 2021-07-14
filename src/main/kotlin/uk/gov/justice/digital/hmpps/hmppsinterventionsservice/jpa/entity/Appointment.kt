@@ -47,7 +47,7 @@ data class Appointment(
   @PrimaryKeyJoinColumn
   var appointmentDelivery: AppointmentDelivery? = null,
 
-  @ManyToOne(fetch = FetchType.LAZY) var referral: Referral,
+  @ManyToOne(fetch = FetchType.LAZY) var referral: Referral? = null,
 
   @Id val id: UUID,
 ) {
