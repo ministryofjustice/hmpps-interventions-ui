@@ -66,11 +66,11 @@ describe('GET /service-provider/dashboard', () => {
   it('displays a list of all sent referrals', async () => {
     const accommodationIntervention = interventionFactory.build({
       id: '1',
-      title: 'accommodation services - west midlands',
+      title: 'Accommodation Services - West Midlands',
     })
     const womensServicesIntervention = interventionFactory.build({
       id: '2',
-      title: "women's services - west midlands",
+      title: "Women's Services - West Midlands",
     })
 
     const sentReferrals = [
