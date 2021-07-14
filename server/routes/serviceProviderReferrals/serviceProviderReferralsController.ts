@@ -723,16 +723,15 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        await this.interventionsService.recordAppointmentAttendance(accessToken, appointment.id, data.paramsForUpdate)
-        // TODO: Uncomment when behaviour page has been implemented as part of IC-1583
-        /*
-
-
+        const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
+          accessToken,
+          appointment.id,
+          data.paramsForUpdate
+        )
         const redirectPath =
           updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
-      */
         return res.redirect(
-          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/${redirectPath}`
         )
       }
     }
@@ -747,6 +746,40 @@ export default class ServiceProviderReferralsController {
     )
     const view = new AttendanceFeedbackView(presenter)
 
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addInitialAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
+    }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+    if (req.method === 'POST') {
+      const data = await new BehaviourFeedbackForm(req).data()
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.recordAppointmentBehaviour(accessToken, appointment.id, data.paramsForUpdate)
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+      }
+    }
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
+    const view = new BehaviourFeedbackView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

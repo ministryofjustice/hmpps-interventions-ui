@@ -203,8 +203,8 @@ module.exports = on => {
       return interventionsService.stubRecordAppointmentAttendance(arg.id, arg.responseJson)
     },
 
-    stubRecordAppointmentBehavior: arg => {
-      return interventionsService.stubRecordAppointmentBehavior(arg.id, arg.responseJson)
+    stubRecordAppointmentBehaviour: arg => {
+      return interventionsService.stubRecordAppointmentBehaviour(arg.id, arg.responseJson)
     },
 
     stubGetSupplierAssessment: arg => {

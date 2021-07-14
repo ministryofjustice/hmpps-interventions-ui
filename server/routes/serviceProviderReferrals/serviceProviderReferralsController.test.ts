@@ -1951,8 +1951,6 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
 })
 
 describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', () => {
-  // TODO: Uncomment when behaviour page has been implemented as part of IC-1583
-  /*
   describe('when the Service Provider marks the Service user as having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
       const referral = sentReferralFactory.assigned().build()
@@ -1988,7 +1986,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         )
     })
   })
-*/
+
   describe('when the Service Provider marks the Service user as not having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
       const referral = sentReferralFactory.assigned().build()
@@ -2039,6 +2037,108 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
       .expect(res => {
         expect(res.text).toContain(
           'Attempting to add supplier assessment attendance feedback without a current appointment'
+        )
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', () => {
+  it('renders a page with which the Service Provider can record the Service user‘s behaviour for their initial appointment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add behaviour feedback')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('If you described poor behaviour, do you want to notify the probation practitioner?')
+      })
+  })
+
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add initial assessment behaviour feedback without a current appointment'
+        )
+      })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', () => {
+  describe('when the Service Provider records behaviour for the initial assessment', () => {
+    it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check-your-answers page', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = appointmentFactory.build()
+      const updatedAppointment = appointmentFactory.build({
+        ...appointment,
+        sessionFeedback: {
+          behaviour: {
+            behaviourDescription: 'They were very respectful and polite.',
+            notifyProbationPractitioner: false,
+          },
+        },
+      })
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+      interventionsService.recordAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+      await request(app)
+        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+        .type('form')
+        .send({
+          'behaviour-description': 'They were very respectful and polite.',
+          'notify-probation-practitioner': 'no',
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+    })
+  })
+
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add initial assessment behaviour feedback without a current appointment'
         )
       })
   })
