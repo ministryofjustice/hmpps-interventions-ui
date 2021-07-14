@@ -29,13 +29,13 @@ describe('Service provider referrals dashboard', () => {
 
     const personalWellbeingIntervention = interventionFactory.build({
       contractType: { code: 'PWB', name: 'Personal wellbeing' },
-      title: 'personal wellbeing - west midlands',
+      title: 'Personal Wellbeing - West Midlands',
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
     const socialInclusionIntervention = interventionFactory.build({
       contractType: { code: 'SOC', name: 'Social inclusion' },
-      title: 'social inclusion - west midlands',
+      title: 'Social Inclusion - West Midlands',
       serviceCategories: [socialInclusionServiceCategory],
     })
 

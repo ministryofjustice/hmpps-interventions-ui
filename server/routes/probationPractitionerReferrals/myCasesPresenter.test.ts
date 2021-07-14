@@ -4,8 +4,8 @@ import MyCasesPresenter from './myCasesPresenter'
 
 describe('MyCasesPresenter', () => {
   const interventions = [
-    interventionFactory.build({ id: '1', title: 'accommodation services - west midlands' }),
-    interventionFactory.build({ id: '2', title: "women's services - west midlands" }),
+    interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' }),
+    interventionFactory.build({ id: '2', title: "Women's Services - West Midlands" }),
   ]
   const referrals = [
     SentReferralFactory.assigned().build({

@@ -8,11 +8,11 @@ describe(DashboardPresenter, () => {
       const interventions = [
         interventionFactory.build({
           id: '1',
-          title: 'accommodation services - west midlands',
+          title: 'Accommodation Services - West Midlands',
         }),
         interventionFactory.build({
           id: '2',
-          title: "women's services - west midlands",
+          title: "Women's Services - West Midlands",
         }),
       ]
       const sentReferrals = [

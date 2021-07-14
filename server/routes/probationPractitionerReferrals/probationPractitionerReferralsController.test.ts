@@ -83,7 +83,7 @@ describe('GET /probation-practitioner/find', () => {
 
 describe('GET /probation-practitioner/dashboard', () => {
   it('displays a dashboard page', async () => {
-    const intervention = interventionFactory.build({ id: '1', title: 'accommodation services - west midlands' })
+    const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
     const referrals = [
       sentReferralFactory.assigned().build({
         referral: {

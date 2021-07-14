@@ -22,11 +22,11 @@ describe('Probation practitioner referrals dashboard', () => {
     const serviceCategory = serviceCategoryFactory.build()
     const accommodationIntervention = interventionFactory.build({
       contractType: { name: 'accommodation' },
-      title: 'accommodation services - west midlands',
+      title: 'Accommodation Services - West Midlands',
     })
     const womensServicesIntervention = interventionFactory.build({
       contractType: { name: "women's services" },
-      title: "women's services - west midlands",
+      title: "Women's Services - West Midlands",
     })
 
     const sentReferrals = [
