@@ -185,6 +185,10 @@ export default function routes(router: Router, services: Services): Router {
     serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
   )
 
+  get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
+    serviceProviderReferralsController.addInitialAssessmentBehaviourFeedback(req, res)
+  )
+
   get('/service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
     serviceProviderReferralsController.checkInitialAssessmentFeedbackAnswers(req, res)
   )

@@ -2044,6 +2044,52 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   })
 })
 
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', () => {
+  it('renders a page with which the Service Provider can record the Service user‘s behaviour for their initial appointment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add behaviour feedback')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('If you described poor behaviour, do you want to notify the probation practitioner?')
+      })
+  })
+
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add initial assessment behaviour feedback without a current appointment'
+        )
+      })
+  })
+})
+
 describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', () => {
   it('renders a page with which the Service Provider can view the feedback for the initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()

@@ -750,6 +750,26 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async addInitialAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
+    }
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, null, null)
+    const view = new BehaviourFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async checkInitialAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
