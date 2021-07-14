@@ -5,6 +5,7 @@ import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
+import appointmentFactory from '../../../testutils/factories/appointment'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import { SessionStatus } from '../../utils/sessionStatus'
 
@@ -580,27 +581,46 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when there is a supplier assessment scheduled', () => {
-      it('returns links to a page to view appointment details and add feedback for the appointment', () => {
-        const referral = sentReferralFactory.build()
+      describe('when the appointment is in the past', () => {
+        it('returns links to a page to add feedback for the appointment', () => {
+          const referral = sentReferralFactory.build()
 
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          interventionFactory.build(),
-          null,
-          [],
-          supplierAssessmentFactory.withSingleAppointment.build()
-        )
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            interventionFactory.build(),
+            null,
+            [],
+            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inThePast.build()).build()
+          )
 
-        expect(presenter.supplierAssessmentLink).toEqual([
-          {
-            text: 'View appointment details',
-            href: `/service-provider/referrals/${referral.id}/supplier-assessment`,
-          },
-          {
-            text: 'Add feedback',
-            href: `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
-          },
-        ])
+          expect(presenter.supplierAssessmentLink).toEqual([
+            {
+              text: 'Add feedback',
+              href: `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
+            },
+          ])
+        })
+      })
+
+      describe('when the appointment is in the future', () => {
+        it('returns links to a page to view appointment details for the appointment', () => {
+          const referral = sentReferralFactory.build()
+
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            interventionFactory.build(),
+            null,
+            [],
+            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inTheFuture.build()).build()
+          )
+
+          expect(presenter.supplierAssessmentLink).toEqual([
+            {
+              text: 'View appointment details',
+              href: `/service-provider/referrals/${referral.id}/supplier-assessment`,
+            },
+          ])
+        })
       })
     })
 
@@ -667,20 +687,40 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when there is a supplier assessment scheduled', () => {
-      it('provides text relating to the status of the appointment', () => {
-        const referral = sentReferralFactory.build()
+      describe('and the appointment is in the past', () => {
+        it('provides text relating to the status of the appointment', () => {
+          const referral = sentReferralFactory.build()
 
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          interventionFactory.build(),
-          null,
-          [],
-          supplierAssessmentFactory.withSingleAppointment.build()
-        )
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            interventionFactory.build(),
+            null,
+            [],
+            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inThePast.build()).build()
+          )
 
-        expect(presenter.supplierAssessmentMessage).toEqual(
-          'Feedback needs to be added on the same day the assessment is delivered.'
-        )
+          expect(presenter.supplierAssessmentMessage).toEqual(
+            'Feedback needs to be added on the same day the assessment is delivered.'
+          )
+        })
+      })
+
+      describe('and the appointment is in the future', () => {
+        it('provides text relating to the status of the appointment', () => {
+          const referral = sentReferralFactory.build()
+
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            interventionFactory.build(),
+            null,
+            [],
+            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inTheFuture.build()).build()
+          )
+
+          expect(presenter.supplierAssessmentMessage).toEqual(
+            'Feedback needs to be added on the same day the assessment is delivered.'
+          )
+        })
       })
     })
 

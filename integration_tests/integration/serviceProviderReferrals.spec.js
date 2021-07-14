@@ -1209,7 +1209,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
       const scheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-03-24T09:02:02Z',
+        appointmentTime: '3021-03-24T09:02:02Z',
         durationInMinutes: 75,
         appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
         appointmentDeliveryAddress: {
@@ -1244,7 +1244,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('View appointment details').click()
       cy.get('h1').contains('View appointment details')
 
-      cy.contains('24 March 2021')
+      cy.contains('24 March 3021')
       cy.contains('9:02am to 10:17am')
       cy.contains('In-person meeting')
       cy.contains('Harmony Living Office, Room 4')
@@ -1261,7 +1261,7 @@ describe('Service provider referrals dashboard', () => {
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const scheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-03-24T09:02:00Z',
+        appointmentTime: '3021-03-24T09:02:00Z',
         durationInMinutes: 75,
       })
       const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.justCreated.build({
@@ -1289,7 +1289,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('#date-day').should('have.value', '24')
       cy.get('#date-month').should('have.value', '3')
-      cy.get('#date-year').should('have.value', '2021')
+      cy.get('#date-year').should('have.value', '3021')
       cy.get('#time-hour').should('have.value', '9')
       cy.get('#time-minute').should('have.value', '02')
       // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -1307,7 +1307,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#duration-minutes').clear().type('45')
 
       const rescheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-04-10T16:15:00Z',
+        appointmentTime: '3021-04-10T16:15:00Z',
         durationInMinutes: 45,
       })
       const supplierAssessmentWithRescheduledAppointment = supplierAssessmentFactory.build({
@@ -1356,8 +1356,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe('when user records the attendance', () => {
         it('should allow user to add attendance, check their answers and submit the referral', () => {
-          const appointmentWithNoFeedback = appointmentFactory.build({
-            appointmentTime: '2021-03-24T09:02:02Z',
+          const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
           })
@@ -1376,7 +1375,7 @@ describe('Service provider referrals dashboard', () => {
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
             .next()
             .within(() => {
-              cy.contains('Appointment status').next().contains('scheduled')
+              cy.contains('Appointment status').next().contains('awaiting feedback')
               cy.contains('To do').next().contains('Add feedback').click()
               cy.location('pathname').should(
                 'equal',
