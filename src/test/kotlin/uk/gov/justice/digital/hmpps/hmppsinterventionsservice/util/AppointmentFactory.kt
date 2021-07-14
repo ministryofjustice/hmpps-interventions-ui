@@ -4,11 +4,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class AppointmentFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
+  private val referralFactory = ReferralFactory(em)
 
   fun create(
     id: UUID = UUID.randomUUID(),
@@ -25,6 +27,7 @@ class AppointmentFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     appointmentFeedbackSubmittedAt: OffsetDateTime? = null,
     appointmentFeedbackSubmittedBy: AuthUser? = null,
     deliusAppointmentId: Long? = null,
+    referral: Referral = referralFactory.createSent()
   ): Appointment {
     return save(
       Appointment(
@@ -42,6 +45,7 @@ class AppointmentFactory(em: TestEntityManager? = null) : EntityFactory(em) {
         appointmentFeedbackSubmittedAt = appointmentFeedbackSubmittedAt,
         appointmentFeedbackSubmittedBy = appointmentFeedbackSubmittedBy,
         deliusAppointmentId = deliusAppointmentId,
+        referral = referral,
       )
     )
   }

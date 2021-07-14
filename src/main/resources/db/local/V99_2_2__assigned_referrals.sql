@@ -44,9 +44,9 @@ insert into action_plan_activity (id, action_plan_id, description, created_at)
 values ('fc8efc3d-fa13-4fde-b12b-22c04f18ea59', '21EA6AFE-C437-4018-9260-BF1A829DE464', 'Identify vacancies and make approach to supported hostel scheme.', '2021-03-11 17:51:34.235464+00'),
        ('e4e9030c-d0b0-4ee1-943f-88f1b74cece6', '21EA6AFE-C437-4018-9260-BF1A829DE464', 'Service user to develop independent living skills and understanding the importance of budgeting.', '2021-03-11 17:51:34.235464+00');
 
-insert into appointment(id, appointment_time, duration_in_minutes, created_at, created_by_id)
-values  ('1b79fba2-42ae-4acb-89ce-571e8ff10719', '2021-04-01 12:00:00.000000+00', 120, '2021-03-12 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949'),
-        ('82e2fbbe-1bb4-4967-8ee6-81aa072fd44b' , '2021-04-07 12:00:00.000000+00', 120, '2021-03-12 18:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949');
+insert into appointment(id, appointment_time, duration_in_minutes, created_at, created_by_id, referral_id)
+values  ('1b79fba2-42ae-4acb-89ce-571e8ff10719', '2021-04-01 12:00:00.000000+00', 120, '2021-03-12 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949', 'b59d3599-0681-466a-82b2-f6f957e46190'),
+        ('82e2fbbe-1bb4-4967-8ee6-81aa072fd44b' , '2021-04-07 12:00:00.000000+00', 120, '2021-03-12 18:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949', 'b59d3599-0681-466a-82b2-f6f957e46190');
 
 insert into action_plan_session (id, action_plan_id, session_number)
 values ('847E253C-DC48-4914-9E5E-771694BB9C01', '2EB8B0DB-EAF1-430A-BA69-39984D501EB9', 1),

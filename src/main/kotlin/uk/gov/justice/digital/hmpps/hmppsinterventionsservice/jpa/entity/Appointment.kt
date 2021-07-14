@@ -12,6 +12,7 @@ import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
@@ -45,6 +46,8 @@ data class Appointment(
   @OneToOne(cascade = [CascadeType.ALL])
   @PrimaryKeyJoinColumn
   var appointmentDelivery: AppointmentDelivery? = null,
+
+  @ManyToOne(fetch = FetchType.LAZY) var referral: Referral? = null,
 
   @Id val id: UUID,
 ) {

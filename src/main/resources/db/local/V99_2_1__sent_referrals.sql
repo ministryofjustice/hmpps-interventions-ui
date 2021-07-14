@@ -25,8 +25,8 @@ insert into supplier_assessment(id, referral_id)
 values ('fbc4a21f-eb15-489d-b16f-b3b82b008722', '81d754aa-d868-4347-9c0f-50690773014e'),
        ('1db491c4-ee7d-4fa7-b42f-7b1aa81039f0', 'f89bd739-b9a2-482e-9947-12a793abcfb1');
 
-insert into appointment(id, appointment_time, duration_in_minutes, created_at, created_by_id)
-values  ('71f0de69-baba-4f29-8f59-62af4bb4c63d', '2021-04-01 12:00:00.000000+00', 120, '2021-03-12 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949');
+insert into appointment(id, appointment_time, duration_in_minutes, created_at, created_by_id, referral_id)
+values  ('71f0de69-baba-4f29-8f59-62af4bb4c63d', '2021-04-01 12:00:00.000000+00', 120, '2021-03-12 17:51:34.235464+00', '608955ae-52ed-44cc-884c-011597a77949', '81d754aa-d868-4347-9c0f-50690773014e');
 
 insert into supplier_assessment_appointment(supplier_assessment_id, appointment_id)
 values ('fbc4a21f-eb15-489d-b16f-b3b82b008722', '71f0de69-baba-4f29-8f59-62af4bb4c63d');
