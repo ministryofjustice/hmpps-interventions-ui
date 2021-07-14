@@ -1354,8 +1354,110 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser)
       })
 
-      describe('when user records the attendance', () => {
+      describe('when user records the attendance as not attended', () => {
         it('should allow user to add attendance, check their answers and submit the referral', () => {
+          const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+          })
+          let supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithNoFeedback],
+            currentAppointmentId: appointmentWithNoFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.login()
+
+          cy.visit(`/service-provider/referrals/${sentReferral.id}/progress`)
+
+          cy.contains('Initial assessment appointment')
+            .next()
+            .contains('Feedback needs to be added on the same day the assessment is delivered.')
+            .next()
+            .within(() => {
+              cy.contains('Appointment status').next().contains('awaiting feedback')
+              cy.contains('To do').next().contains('Add feedback').click()
+              cy.location('pathname').should(
+                'equal',
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
+              )
+            })
+          cy.contains('No').click()
+          cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
+
+          const appointmentWithAttendanceFeedback = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'no',
+                additionalAttendanceInformation: 'Alex did not attend the session',
+              },
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithAttendanceFeedback],
+            currentAppointmentId: appointmentWithAttendanceFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.stubRecordAppointmentAttendance(appointmentWithAttendanceFeedback.id, appointmentWithAttendanceFeedback)
+          cy.contains('Save and continue').click()
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+          )
+
+          cy.contains('24 Mar 2021')
+          cy.contains('09:02')
+          cy.contains('Did Alex attend the initial assessment appointment?')
+          cy.contains('No')
+          cy.contains("Add additional information about Alex's attendance:")
+          cy.contains('Alex did not attend the session')
+
+          cy.stubSubmitAppointmentFeedback(appointmentWithAttendanceFeedback.id, appointmentWithAttendanceFeedback)
+          cy.get('form').contains('Confirm').click()
+
+          cy.contains('Initial assessment added')
+
+          const submittedAppointment = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'no',
+                additionalAttendanceInformation: 'Alex did not attend this session',
+              },
+              submitted: true,
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [submittedAppointment],
+            currentAppointmentId: submittedAppointment.id,
+          })
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.contains('Return to progress').click()
+          cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
+
+          cy.contains('Initial assessment appointment')
+            .next()
+            .contains('The initial assessment has been delivered and feedback added.')
+            .next()
+            .within(() => {
+              cy.contains('Appointment status').next().contains('did not attend')
+              cy.contains('To do').next().contains('View feedback').click()
+              cy.location('pathname').should(
+                'equal',
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback`
+              )
+            })
+        })
+      })
+
+      describe('when user records the attendance as attended', () => {
+        it('should allow user to add attendance, add behaviour, check their answers and submit the referral', () => {
           const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -1406,17 +1508,52 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
           cy.location('pathname').should(
             'equal',
-            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/behaviour`
           )
 
+          cy.contains("Describe Alex's behaviour in this session").type('Alex was acting very suspicious.')
+          cy.contains('Yes').click()
+
+          const appointmentWithBehaviourFeedback = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'Alex attended the session',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was acting very suspicious.',
+                notifyProbationPractitioner: true,
+              },
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithBehaviourFeedback],
+            currentAppointmentId: appointmentWithBehaviourFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.stubRecordAppointmentBehaviour(appointmentWithBehaviourFeedback.id, appointmentWithBehaviourFeedback)
+
+          cy.contains('Save and continue').click()
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+          )
           cy.contains('24 Mar 2021')
           cy.contains('09:02')
           cy.contains('Did Alex attend the initial assessment appointment?')
           cy.contains('Yes, they were on time')
           cy.contains("Add additional information about Alex's attendance:")
           cy.contains('Alex attended the session')
+          cy.contains("Describe Alex's behaviour in this session")
+          cy.contains('Alex was acting very suspicious.')
+          cy.contains('If you described poor behaviour, do you want to notify the probation practitioner?')
+          cy.contains('Yes')
 
-          cy.stubSubmitAppointmentFeedback(appointmentWithAttendanceFeedback.id, appointmentWithAttendanceFeedback)
+          cy.stubSubmitAppointmentFeedback(appointmentWithBehaviourFeedback.id, appointmentWithBehaviourFeedback)
           cy.get('form').contains('Confirm').click()
 
           cy.contains('Initial assessment added')
@@ -1429,6 +1566,10 @@ describe('Service provider referrals dashboard', () => {
               attendance: {
                 attended: 'yes',
                 additionalAttendanceInformation: 'Alex attended the session',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was acting very suspicious.',
+                notifyProbationPractitioner: true,
               },
               submitted: true,
             },
