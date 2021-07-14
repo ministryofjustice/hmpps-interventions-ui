@@ -3153,6 +3153,29 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ).toMatchObject(reportingResponse)
     })
   })
+
+  describe('generateServiceProviderPerformanceReport', () => {
+    it('returns a 202 response indicating that a performance report will be asynchronously generated', async () => {
+      await provider.addInteraction({
+        state: 'there are referrals available for the reporting period of 1 June 2021 to 10 June 2021',
+        uponReceiving: 'a service provider user’s POST request to generate a performance report',
+        withRequest: {
+          method: 'POST',
+          path: '/performance-report',
+          body: { fromIncludingDate: '2021-06-01', toIncludingDate: '2021-06-10' },
+          headers: { Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 202,
+        },
+      })
+
+      await interventionsService.generateServiceProviderPerformanceReport(serviceProviderToken, {
+        fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
+        toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
+      })
+    })
+  })
 })
 
 describe('serializeDeliusServiceUser', () => {

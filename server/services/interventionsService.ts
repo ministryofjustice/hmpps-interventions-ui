@@ -566,4 +566,20 @@ export default class InterventionsService {
       },
     })) as ServiceProviderReportReferral[]
   }
+
+  private static createReportDatesDTO(params: CreateReportDateParams): Record<string, unknown> {
+    return {
+      fromIncludingDate: params.fromIncludingDate.iso8601,
+      toIncludingDate: params.toIncludingDate.iso8601,
+    }
+  }
+
+  async generateServiceProviderPerformanceReport(token: string, reportDates: CreateReportDateParams): Promise<void> {
+    const restClient = this.createRestClient(token)
+
+    await restClient.post({
+      path: '/performance-report',
+      data: InterventionsService.createReportDatesDTO(reportDates),
+    })
+  }
 }

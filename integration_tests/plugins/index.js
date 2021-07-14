@@ -222,5 +222,9 @@ module.exports = on => {
     stubGetServiceProviderReportingData: arg => {
       return interventionsService.stubGetServiceProviderReportingData(arg.responseJson)
     },
+
+    stubGenerateServiceProviderPerformanceReport: () => {
+      return interventionsService.stubGenerateServiceProviderPerformanceReport()
+    },
   })
 }

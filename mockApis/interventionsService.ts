@@ -601,4 +601,16 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubGenerateServiceProviderPerformanceReport = async (): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPath: `${this.mockPrefix}/performance-report`,
+      },
+      response: {
+        status: 202,
+      },
+    })
+  }
 }
