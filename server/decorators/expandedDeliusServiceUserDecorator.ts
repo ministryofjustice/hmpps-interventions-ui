@@ -1,5 +1,6 @@
 import logger from '../../log'
 import { Address, ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
+import CalendarDay from '../utils/calendarDay'
 
 export default class ExpandedDeliusServiceUserDecorator {
   constructor(private readonly deliusServiceUser: ExpandedDeliusServiceUser) {}
@@ -21,7 +22,20 @@ export default class ExpandedDeliusServiceUserDecorator {
       return null
     }
 
-    const mostRecentAddress = addresses.sort((a, b) => new Date(b.from!).getTime() - new Date(a.from!).getTime())[0]
+    const today = CalendarDay.britishDayForDate(new Date()).utcDate
+
+    const currentAddresses = addresses.filter(address => {
+      // If we have no "to" date, assume it's still current
+      if (!address.to) {
+        return true
+      }
+
+      return today < CalendarDay.britishDayForDate(new Date(address.to)).utcDate
+    })
+
+    const mostRecentAddress = currentAddresses.sort(
+      (a, b) => new Date(b.from!).getTime() - new Date(a.from!).getTime()
+    )[0]
 
     return this.deliusAddressToArray(mostRecentAddress)
   }
