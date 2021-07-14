@@ -130,6 +130,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
     serviceProviderReferralsController.addInitialAssessmentBehaviourFeedback(req, res)
   )
+  post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
+    serviceProviderReferralsController.addInitialAssessmentBehaviourFeedback(req, res)
+  )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
     serviceProviderReferralsController.checkInitialAssessmentFeedbackAnswers(req, res)
   )

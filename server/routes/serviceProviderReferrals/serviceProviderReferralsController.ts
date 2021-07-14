@@ -769,10 +769,24 @@ export default class ServiceProviderReferralsController {
     if (appointment === null) {
       throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
     }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+    if (req.method === 'POST') {
+      const data = await new BehaviourFeedbackForm(req).data()
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.recordAppointmentBehaviour(accessToken, appointment.id, data.paramsForUpdate)
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+      }
+    }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, null, null)
+    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
     const view = new BehaviourFeedbackView(presenter)
-
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
