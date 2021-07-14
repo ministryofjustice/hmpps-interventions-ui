@@ -5,6 +5,7 @@ import actionPlanAppointmentFactory from '../../../testutils/factories/actionPla
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
+import appointmentFactory from '../../../testutils/factories/appointment'
 
 describe(InterventionProgressPresenter, () => {
   describe('sessionTableRows', () => {
@@ -45,35 +46,70 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when an appointment has been scheduled', () => {
-      it('populates the table with formatted session information, with the "Reschedule session" and "Give feedback" links displayed', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          [
-            actionPlanAppointmentFactory.build({
+      describe('and the appointment is in the future', () => {
+        it('populates the table with formatted session information, with the "Reschedule session" and "Give feedback" links displayed and "scheduled" status', () => {
+          const referral = sentReferralFactory.build()
+          const intervention = interventionFactory.build()
+          const supplierAssessment = supplierAssessmentFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            [
+              actionPlanAppointmentFactory.build({
+                sessionNumber: 1,
+                appointmentTime: '3020-12-07T13:00:00.000000Z',
+                durationInMinutes: 120,
+              }),
+            ],
+            null,
+            supplierAssessment,
+            null
+          )
+          expect(presenter.sessionTableRows).toEqual([
+            {
               sessionNumber: 1,
-              appointmentTime: '2020-12-07T13:00:00.000000Z',
-              durationInMinutes: 120,
-            }),
-          ],
-          null,
-          supplierAssessment,
-          null
-        )
-        expect(presenter.sessionTableRows).toEqual([
-          {
-            sessionNumber: 1,
-            appointmentTime: '07 Dec 2020, 13:00',
-            tagArgs: {
-              text: 'scheduled',
-              classes: 'govuk-tag--blue',
+              appointmentTime: '07 Dec 3020, 13:00',
+              tagArgs: {
+                text: 'scheduled',
+                classes: 'govuk-tag--blue',
+              },
+              link: null,
             },
-            link: null,
-          },
-        ])
+          ])
+        })
+      })
+
+      describe('and the appointment is in the past', () => {
+        it('populates the table with formatted session information, with the "Reschedule session" and "Give feedback" links displayed and "scheduled" status', () => {
+          const referral = sentReferralFactory.build()
+          const intervention = interventionFactory.build()
+          const supplierAssessment = supplierAssessmentFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            [
+              actionPlanAppointmentFactory.build({
+                sessionNumber: 1,
+                appointmentTime: '1920-12-07T13:00:00.000000Z',
+                durationInMinutes: 120,
+              }),
+            ],
+            null,
+            supplierAssessment,
+            null
+          )
+          expect(presenter.sessionTableRows).toEqual([
+            {
+              sessionNumber: 1,
+              appointmentTime: '07 Dec 1920, 13:00',
+              tagArgs: {
+                text: 'scheduled',
+                classes: 'govuk-tag--blue',
+              },
+              link: null,
+            },
+          ])
+        })
       })
     })
 
@@ -405,14 +441,44 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when the supplier assessment has been scheduled', () => {
-      it('returns an appropriate message', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
+      describe('when the appointment is in the past', () => {
+        it('returns an appropriate message', () => {
+          const appointment = appointmentFactory.inThePast.build()
+          const referral = sentReferralFactory.build()
+          const intervention = interventionFactory.build()
+          const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            [],
+            null,
+            supplierAssessment,
+            null
+          )
 
-        expect(presenter.supplierAssessmentMessage).toEqual('The appointment has been scheduled by the supplier.')
+          expect(presenter.supplierAssessmentMessage).toEqual('The appointment has been scheduled by the supplier.')
+        })
+      })
+
+      describe('when the appointment is in the past', () => {
+        it('returns an appropriate message', () => {
+          const appointment = appointmentFactory.inTheFuture.build()
+          const referral = sentReferralFactory.build()
+          const intervention = interventionFactory.build()
+          const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
+
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            [],
+            null,
+            supplierAssessment,
+            null
+          )
+
+          expect(presenter.supplierAssessmentMessage).toEqual('The appointment has been scheduled by the supplier.')
+        })
       })
     })
 
@@ -493,24 +559,51 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when the supplier assessment has an appointment still awaiting feedback', () => {
-      it('returns a link to a page for viewing the supplier assessment', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
-        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+      describe('when the appointment is in the past', () => {
+        it('returns a link to a page for viewing the supplier assessment', () => {
+          const appointment = appointmentFactory.inThePast.build()
+          const referral = sentReferralFactory.build()
+          const intervention = interventionFactory.build()
+          const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
+          const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
 
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          [],
-          null,
-          supplierAssessment,
-          assignee
-        )
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            [],
+            null,
+            supplierAssessment,
+            assignee
+          )
 
-        expect(presenter.supplierAssessmentLink).toEqual({
-          href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
-          text: 'View appointment details',
+          expect(presenter.supplierAssessmentLink).toEqual({
+            href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
+            text: 'View appointment details',
+          })
+        })
+      })
+
+      describe('when the appointment is in the future', () => {
+        it('returns a link to a page for viewing the supplier assessment', () => {
+          const appointment = appointmentFactory.inTheFuture.build()
+          const referral = sentReferralFactory.build()
+          const intervention = interventionFactory.build()
+          const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
+          const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            [],
+            null,
+            supplierAssessment,
+            assignee
+          )
+
+          expect(presenter.supplierAssessmentLink).toEqual({
+            href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
+            text: 'View appointment details',
+          })
         })
       })
     })

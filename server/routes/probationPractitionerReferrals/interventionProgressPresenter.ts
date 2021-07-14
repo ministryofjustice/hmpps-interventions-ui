@@ -124,6 +124,7 @@ export default class InterventionProgressPresenter {
             href: `/probation-practitioner/action-plan/${this.referral.actionPlanId}/appointment/${appointment.sessionNumber}/post-session-feedback`,
           },
         }
+      case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
         return {
           text: presenter.text,
@@ -176,6 +177,7 @@ export default class InterventionProgressPresenter {
   private get supplierAssessmentStatus(): SupplierAssessmentStatus {
     switch (this.supplierAssessmentSessionStatus) {
       case SessionStatus.scheduled:
+      case SessionStatus.awaitingFeedback:
         return SupplierAssessmentStatus.scheduled
       case SessionStatus.didNotAttend:
       case SessionStatus.completed:
@@ -213,6 +215,7 @@ export default class InterventionProgressPresenter {
   get supplierAssessmentLink(): { text: string; href: string } | null {
     switch (this.supplierAssessmentSessionStatus) {
       case SessionStatus.scheduled:
+      case SessionStatus.awaitingFeedback:
         return {
           text: 'View appointment details',
           href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
