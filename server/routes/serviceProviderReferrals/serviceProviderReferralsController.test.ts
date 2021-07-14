@@ -31,6 +31,8 @@ import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
+import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -114,12 +116,16 @@ describe('GET /service-provider/referrals/:id/details', () => {
   let deliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
   let staffDetails: DeliusStaffDetails
+  let responsibleOfficers: DeliusOffenderManager[]
+
   beforeEach(() => {
     sentReferral = sentReferralFactory.build()
     deliusUser = deliusUserFactory.build()
     deliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
     staffDetails = deliusStaffDetailsFactory.build()
+    responsibleOfficers = [deliusOffenderManagerFactory.responsibleOfficer().build()]
+
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
@@ -129,6 +135,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
+    communityApiService.getResponsibleOfficersForServiceUser.mockResolvedValue(responsibleOfficers)
   })
 
   it('displays information about the referral and service user', async () => {
@@ -168,11 +175,18 @@ describe('GET /service-provider/referrals/:id/details', () => {
         ],
       },
     })
+    responsibleOfficers = [
+      deliusOffenderManagerFactory
+        .responsibleOfficer()
+        .build({ staff: { forenames: 'Peter', surname: 'Practitioner' } }),
+    ]
+
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    communityApiService.getResponsibleOfficersForServiceUser.mockResolvedValue(responsibleOfficers)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -181,6 +195,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain('Who do you want to assign this referral to?')
         expect(res.text).toContain('Bernard Beaks')
         expect(res.text).toContain('bernard.beaks@justice.gov.uk')
+        expect(res.text).toContain('Peter Practitioner')
         expect(res.text).toContain('alex.river@example.com')
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')

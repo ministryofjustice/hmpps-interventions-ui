@@ -97,16 +97,25 @@ export default class ServiceProviderReferralsController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
-    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary, staffDetails] =
-      await Promise.all([
-        this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-        this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-        this.communityApiService.getExpandedServiceUserByCRN(crn),
-        this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
-        this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
-        this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-        this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
-      ])
+    const [
+      intervention,
+      sentBy,
+      expandedServiceUser,
+      conviction,
+      riskInformation,
+      riskSummary,
+      staffDetails,
+      responsibleOfficers,
+    ] = await Promise.all([
+      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
+      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.communityApiService.getExpandedServiceUserByCRN(crn),
+      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
+      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+      this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
+      this.communityApiService.getResponsibleOfficersForServiceUser(crn),
+    ])
     const assignee =
       sentReferral.assignedTo === null
         ? null
@@ -140,7 +149,8 @@ export default class ServiceProviderReferralsController {
       true,
       expandedServiceUser,
       riskSummary,
-      staffDetails
+      staffDetails,
+      responsibleOfficers
     )
     const view = new ShowReferralView(presenter)
 

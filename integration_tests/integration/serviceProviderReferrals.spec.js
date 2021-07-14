@@ -13,6 +13,7 @@ import expandedDeliusServiceUserFactory from '../../testutils/factories/expanded
 import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import appointmentFactory from '../../testutils/factories/appointment'
+import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -167,6 +168,15 @@ describe('Service provider referrals dashboard', () => {
       ],
     })
 
+    const responsibleOfficer = deliusOffenderManagerFactory.build({
+      staff: {
+        forenames: 'Peter',
+        surname: 'Practitioner',
+        email: 'p.practitioner@justice.gov.uk',
+        phoneNumber: '01234567890',
+      },
+    })
+
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
@@ -177,6 +187,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetStaffDetails(referralToSelect.sentBy.username, staffDetails)
+    cy.stubGetResponsibleOfficersForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
 
     cy.login()
 
@@ -252,6 +263,11 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('She uses a wheelchair')
     cy.contains('Spanish')
     cy.contains('She works Mondays 9am - midday')
+
+    cy.contains('Responsible officer details').next().contains('Name').next().contains('Peter Practitioner')
+    cy.contains('Responsible officer details').next().contains('Phone').next().contains('01234567890')
+    cy.contains('Responsible officer details').next().contains('Email').next().contains('p.practitioner@justice.gov.uk')
+
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
 
@@ -284,6 +300,7 @@ describe('Service provider referrals dashboard', () => {
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const staffDetails = deliusStaffDetailsFactory.build()
+      const responsibleOfficer = deliusOffenderManagerFactory.build()
 
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSentReferral(referral.id, referral)
@@ -297,6 +314,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+      cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
       cy.login()
 
@@ -356,6 +374,7 @@ describe('Service provider referrals dashboard', () => {
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const staffDetails = deliusStaffDetailsFactory.build()
+      const responsibleOfficer = deliusOffenderManagerFactory.build()
 
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSentReferral(referral.id, referral)
@@ -369,6 +388,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+      cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
       cy.login()
 
