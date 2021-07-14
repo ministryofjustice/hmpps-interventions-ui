@@ -515,8 +515,7 @@ export default class InterventionsService {
     })) as Appointment
   }
 
-  /*
-  async recordAppointmentBehavior(
+  async recordAppointmentBehaviour(
     token: string,
     id: string,
     appointmentBehaviourUpdate: Partial<AppointmentBehaviour>
@@ -529,7 +528,7 @@ export default class InterventionsService {
       data: appointmentBehaviourUpdate,
     })) as Appointment
   }
-*/
+
   async submitAppointmentFeedback(token: string, id: string): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
