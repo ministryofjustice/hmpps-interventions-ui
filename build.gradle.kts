@@ -37,6 +37,9 @@ tasks {
 }
 
 dependencies {
+  // batch processing
+  implementation("org.springframework.boot:spring-boot-starter-batch")
+
   // monitoring and logging
   implementation("io.sentry:sentry-spring-boot-starter:5.0.1")
   implementation("io.sentry:sentry-logback:5.0.1")

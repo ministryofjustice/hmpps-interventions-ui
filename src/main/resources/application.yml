@@ -39,6 +39,11 @@ spring:
       ddl-auto: validate
       dialect: PostgreSQLDialect
     show-sql: false
+  batch:
+    job:
+      enabled: false  # don't run jobs at application startup
+    jdbc:
+      initialize-schema: always
 
 server:
   port: 8080
