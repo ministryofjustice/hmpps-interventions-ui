@@ -6,6 +6,7 @@ import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import java.io.Writer
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.Date
@@ -13,6 +14,12 @@ import java.util.Date
 @Component
 class BatchUtils {
   private val zoneOffset = ZoneOffset.UTC
+
+  fun parseLocalDateToDate(date: LocalDate): Date {
+    // convert the input date into a timestamp zoned in UTC
+    // (for converting LocalDates in request params to batch job params
+    return Date.from(date.atStartOfDay().atOffset(zoneOffset).toInstant())
+  }
 
   fun parseDateToOffsetDateTime(date: Date): OffsetDateTime {
     // (for converting Dates in batch job params to sql query params)

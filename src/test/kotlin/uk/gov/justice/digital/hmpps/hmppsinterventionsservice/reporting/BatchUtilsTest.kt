@@ -7,6 +7,8 @@ import org.springframework.batch.item.ExecutionContext
 import org.springframework.core.io.FileSystemResource
 import java.io.File
 import java.time.Instant
+import java.time.LocalDate
+import java.time.Month
 import java.time.OffsetDateTime
 import java.util.Date
 import java.util.UUID
@@ -14,6 +16,14 @@ import kotlin.io.path.createTempFile
 
 internal class BatchUtilsTest {
   private val batchUtils = BatchUtils()
+
+  @Test
+  fun `parseLocalDateToDate converts LocalDate objects to Date at start of day`() {
+    var localDate = LocalDate.of(2024, Month.FEBRUARY, 29)
+    val date = batchUtils.parseLocalDateToDate(localDate)
+
+    assertThat(date.toInstant()).isEqualTo(Instant.parse("2024-02-29T00:00:00.00Z"))
+  }
 
   @Test
   fun `parseDateToOffsetDateTime converts Dates to OffsetDateTimes in UTC`() {
