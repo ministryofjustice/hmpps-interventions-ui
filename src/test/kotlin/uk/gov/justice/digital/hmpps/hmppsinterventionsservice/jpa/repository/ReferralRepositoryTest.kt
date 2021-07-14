@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.data.domain.PageRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -308,6 +309,21 @@ class ReferralRepositoryTest @Autowired constructor(
       referral.serviceUserData!!.firstName,
       referral.serviceUserData!!.lastName
     )
+
+  @Test
+  fun `referral report sanity check`() {
+    val referral = referralFactory.createSent()
+    referralFactory.createSent(sentAt = OffsetDateTime.now().minusHours(2), intervention = referral.intervention)
+
+    val referrals = referralRepository.serviceProviderReportReferralIds(
+      OffsetDateTime.now().minusHours(1),
+      OffsetDateTime.now().plusHours(1),
+      setOf(referral.intervention.dynamicFrameworkContract),
+      PageRequest.of(0, 5),
+    )
+
+    assertThat(referrals.numberOfElements).isEqualTo(1)
+  }
 }
 
 data class Summary(
