@@ -535,7 +535,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordAppointmentBehavior = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubRecordAppointmentBehaviour = async (id: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'PUT',
