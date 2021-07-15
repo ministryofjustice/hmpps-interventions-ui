@@ -40,12 +40,10 @@ context('Login', () => {
     })
 
     it('the user cannot access service provider pages', () => {
-      cy.request({
-        url: '/service-provider/dashboard',
-        failOnStatusCode: false,
-      })
-        .its('status')
-        .should('equal', 403)
+      cy.request({ url: '/service-provider/dashboard', failOnStatusCode: false }).its('status').should('equal', 403)
+
+      cy.visit('/service-provider/dashboard', { failOnStatusCode: false })
+      cy.contains('you are not authorised to access this page')
     })
   })
 
@@ -81,12 +79,12 @@ context('Login', () => {
     })
 
     it('the user cannot access probation practitioner pages', () => {
-      cy.request({
-        url: '/probation-practitioner/dashboard',
-        failOnStatusCode: false,
-      })
+      cy.request({ url: '/probation-practitioner/dashboard', failOnStatusCode: false })
         .its('status')
         .should('equal', 403)
+
+      cy.visit('/probation-practitioner/dashboard', { failOnStatusCode: false })
+      cy.contains('you are not authorised to access this page')
     })
   })
 })

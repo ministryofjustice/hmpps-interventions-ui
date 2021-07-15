@@ -11,7 +11,7 @@ export default function createErrorHandler(production: boolean) {
 
     if (createError.isHttpError(err)) {
       // authorization errors from interventions service cause a special error page to be displayed
-      if (err.status === 403 && err.response?.body?.accessErrors) {
+      if (err.status === 403 && (!err.external || err.response?.body?.accessErrors)) {
         res.status(403)
 
         const args = {
