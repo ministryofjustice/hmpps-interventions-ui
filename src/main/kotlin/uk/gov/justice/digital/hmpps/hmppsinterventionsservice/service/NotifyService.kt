@@ -1,14 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
@@ -153,33 +154,27 @@ class NotifyAppointmentService(
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSAASessionFeedbackLocation: String,
-  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppActionPlanSessionFeedbackLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
 ) : ApplicationListener<AppointmentEvent>, NotifyService {
+  companion object : KLogging()
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: AppointmentEvent) {
     if (event.notifyPP) {
       val referral = event.appointment.referral
       val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
 
-      val location = when(event.appointmentType){
+      val location = when (event.appointmentType) {
         AppointmentType.SUPPLIER_ASSESSMENT -> generateResourceUrl(
           interventionsUIBaseURL,
           ppSAASessionFeedbackLocation,
           event.appointment.referral.id
         )
         AppointmentType.SERVICE_DELIVERY -> run {
-          log.error("asdghsd")
+          logger.error("action plan session should not be using the shared appointment service.")
           return
         }
       }
-
-//      val location = generateResourceUrl(
-//        interventionsUIBaseURL,
-//        endpoint,
-//        event.appointment.referral.id
-//      )
 
       when (event.type) {
         AppointmentEventType.ATTENDANCE_RECORDED -> {
@@ -208,7 +203,6 @@ class NotifyAppointmentService(
     }
   }
 }
-
 
 @Service
 class NotifyReferralService(
