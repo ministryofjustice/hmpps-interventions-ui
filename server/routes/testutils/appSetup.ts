@@ -14,6 +14,7 @@ import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSet
 import LoggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import config from '../../config'
+import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from '../probationPractitionerRoutes'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -23,6 +24,7 @@ export enum AppSetupUserType {
 function appSetup(
   indexRouter: Router,
   serviceProviderRouter: Router,
+  probationPractitionerRouter: Router,
   production: boolean,
   userType: AppSetupUserType
 ): Express {
@@ -53,6 +55,7 @@ function appSetup(
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use('/', indexRouter)
   app.use(serviceProviderUrlPrefix, serviceProviderRouter)
+  app.use(probationPractitionerUrlPrefix, probationPractitionerRouter)
   app.use(createErrorHandler(production))
 
   config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
@@ -81,6 +84,7 @@ export default function appWithAllRoutes({
   return appSetup(
     indexRoutes(standardRouter(), services),
     serviceProviderRoutes(standardRouter(), services),
+    probationPractitionerRoutes(standardRouter(), services),
     production,
     userType
   )

@@ -27,6 +27,7 @@ import passportSetup from './authentication/passport'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ControllerUtils from './utils/controllerUtils'
 import broadcastMessageConfig from './broadcast-message-config.json'
+import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
 
 const RedisStore = connectRedis(session)
 
@@ -205,8 +206,8 @@ export default function createApp(
   }
 
   app.use('/', indexRoutes(standardRouter(), services))
-
   app.use(serviceProviderUrlPrefix, serviceProviderRoutes(standardRouter(['ROLE_CRS_PROVIDER']), services))
+  app.use(probationPractitionerUrlPrefix, probationPractitionerRoutes(standardRouter(['ROLE_PROBATION']), services))
 
   // final regular middleware is for handling 404s
   app.use((req, res, next) => {

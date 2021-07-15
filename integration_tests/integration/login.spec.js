@@ -79,5 +79,14 @@ context('Login', () => {
       cy.get('[data-qa=logout]').click()
       AuthLoginPage.verifyOnPage()
     })
+
+    it('the user cannot access probation practitioner pages', () => {
+      cy.request({
+        url: '/probation-practitioner/dashboard',
+        failOnStatusCode: false,
+      })
+        .its('status')
+        .should('equal', 403)
+    })
   })
 })
