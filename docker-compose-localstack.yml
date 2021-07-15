@@ -9,7 +9,7 @@ services:
       - "4566:4566"
       - "4571:4571"
     environment:
-      - LOCALSTACK_SERVICES=${LOCALSTACK_SERVICES-sns}
+      - LOCALSTACK_SERVICES=${LOCALSTACK_SERVICES-sns,s3}
       - LOCALSTACK_DEFAULT_REGION=${LOCALSTACK_DEFAULT_REGION-eu-west-2}
       - LOCALSTACK_DEBUG=${LOCALSTACK_DEBUG- }
       - LOCALSTACK_DATA_DIR=${LOCALSTACK_DATA_DIR- }
@@ -19,3 +19,4 @@ services:
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./script/localstack:/docker-entrypoint-initaws.d"

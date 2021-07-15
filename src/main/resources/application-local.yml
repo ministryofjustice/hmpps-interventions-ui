@@ -16,6 +16,13 @@ assess-risks-and-needs:
   baseurl: http://localhost:8094
 
 aws:
+  s3:
+    enabled: false
+    provider: localstack
+    access-key-id: test
+    secret-access-key: test
+    endpoint.uri: http://localhost:4566
+    bucket.name: interventions-bucket-local
   sns:
     enabled: false
     provider: localstack

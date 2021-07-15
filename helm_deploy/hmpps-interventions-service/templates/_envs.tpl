@@ -84,4 +84,22 @@ env:
         name: sentry
         key: service_dsn
 
+  - name: AWS_S3_ACCESSKEYID
+    valueFrom:
+      secretKeyRef:
+        name: storage-s3-bucket
+        key: access_key_id
+
+  - name: AWS_S3_SECRETACCESSKEY
+    valueFrom:
+      secretKeyRef:
+        name: storage-s3-bucket
+        key: secret_access_key
+
+  - name: AWS_S3_BUCKET_NAME
+    valueFrom:
+      secretKeyRef:
+        name: storage-s3-bucket
+        key: bucket_name
+
 {{- end -}}
