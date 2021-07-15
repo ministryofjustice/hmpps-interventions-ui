@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance
 
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -24,13 +24,13 @@ import java.util.UUID
 
 @Configuration
 @EnableBatchProcessing
-class ReferralReportJobConfiguration(
+class PerformanceReportJobConfiguration(
   private val userMapper: UserMapper,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val jobBuilderFactory: JobBuilderFactory,
   private val stepBuilderFactory: StepBuilderFactory,
   private val batchUtils: BatchUtils,
-  private val listener: ReferralReportJobListener,
+  private val listener: PerformanceReportJobListener,
   private val referralRepository: ReferralRepository,
 ) {
   @Bean
@@ -44,7 +44,7 @@ class ReferralReportJobConfiguration(
 
     val contracts = serviceProviderAccessScopeMapper.fromUser(userMapper.fromId(userId)).contracts
     return RepositoryItemReaderBuilder<UUID>()
-      .name("referralReportReader")
+      .name("performanceReportReader")
       .repository(referralRepository)
       .methodName("serviceProviderReportReferralIds")
       .arguments(batchUtils.parseDateToOffsetDateTime(from), batchUtils.parseDateToOffsetDateTime(to), contracts)
@@ -55,18 +55,18 @@ class ReferralReportJobConfiguration(
 
   @Bean
   @JobScope
-  fun writer(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<ReferralReport> {
+  fun writer(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<PerformanceReportData> {
     return batchUtils.csvFileWriter(
-      "referralReportWriter",
+      "performanceReportWriter",
       FileSystemResource(path),
-      ReferralReport.fields,
-      ReferralReport.fields
+      PerformanceReportData.fields,
+      PerformanceReportData.fields
     )
   }
 
   @Bean
-  fun referralReportJob(writeToCsvStep: Step): Job {
-    return jobBuilderFactory["referralReportJob"]
+  fun performanceReportJob(writeToCsvStep: Step): Job {
+    return jobBuilderFactory["performanceReportJob"]
       .listener(listener)
       .start(writeToCsvStep)
       .build()
@@ -75,11 +75,11 @@ class ReferralReportJobConfiguration(
   @Bean
   fun writeToCsvStep(
     reader: RepositoryItemReader<UUID>,
-    processor: ItemProcessor<UUID, ReferralReport>,
-    writer: FlatFileItemWriter<ReferralReport>,
+    processor: ItemProcessor<UUID, PerformanceReportData>,
+    writer: FlatFileItemWriter<PerformanceReportData>,
   ): Step {
     return stepBuilderFactory["writeToCsvStep"]
-      .chunk<UUID, ReferralReport>(5)
+      .chunk<UUID, PerformanceReportData>(5)
       .reader(reader)
       .processor(processor)
       .writer(writer)

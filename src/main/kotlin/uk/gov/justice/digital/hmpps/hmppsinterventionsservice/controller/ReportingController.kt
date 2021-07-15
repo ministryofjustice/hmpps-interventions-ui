@@ -15,13 +15,13 @@ class ReportingController(
   private val reportingService: ReportingService,
   private val userMapper: UserMapper,
 ) {
-  @PostMapping("/service-provider/referral-report")
-  fun createPerformanceReport(
+  @PostMapping("/reports/service-provider/performance")
+  fun creatServiceProviderPerformanceReport(
     @RequestParam("fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
     @RequestParam("toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
     authentication: JwtAuthenticationToken
   ): ResponseEntity<Any> {
-    reportingService.generateServiceProviderReferralReport(from, to, userMapper.fromToken(authentication))
+    reportingService.generateServiceProviderPerformanceReport(from, to, userMapper.fromToken(authentication))
     return ResponseEntity.accepted().build()
   }
 }

@@ -13,17 +13,17 @@ import java.time.LocalDate
 @Service
 class ReportingService(
   private val jobLauncher: JobLauncher,
-  private val referralReportJob: Job,
+  private val performanceReportJob: Job,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val batchUtils: BatchUtils,
 ) {
-  fun generateServiceProviderReferralReport(from: LocalDate, to: LocalDate, user: AuthUser) {
+  fun generateServiceProviderPerformanceReport(from: LocalDate, to: LocalDate, user: AuthUser) {
     // this is really not ideal - but the intention here is validate the user has
     // a valid access scope before launching the job (which will also call this method).
     serviceProviderAccessScopeMapper.fromUser(user)
 
     jobLauncher.run(
-      referralReportJob,
+      performanceReportJob,
       JobParametersBuilder()
         .addString("user.id", user.id)
         .addDate("from", batchUtils.parseLocalDateToDate(from))

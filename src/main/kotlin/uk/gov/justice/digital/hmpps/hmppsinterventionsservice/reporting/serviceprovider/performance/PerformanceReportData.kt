@@ -1,10 +1,10 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance
 
 import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.reflect.full.memberProperties
 
-data class ReferralReport(
+data class PerformanceReportData(
   val id: UUID,
   val referralReference: String,
   val serviceUserCRN: String,
@@ -13,6 +13,6 @@ data class ReferralReport(
   val organisationId: String,
 ) {
   companion object {
-    val fields = ReferralReport::class.memberProperties.map { it.name }.sorted()
+    val fields = PerformanceReportData::class.memberProperties.map { it.name }.sorted()
   }
 }

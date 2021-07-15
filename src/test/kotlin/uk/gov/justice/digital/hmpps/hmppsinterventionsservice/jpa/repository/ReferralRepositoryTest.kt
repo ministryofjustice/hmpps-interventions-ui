@@ -311,7 +311,7 @@ class ReferralRepositoryTest @Autowired constructor(
     )
 
   @Test
-  fun `referral report sanity check`() {
+  fun `service provider report sanity check`() {
     val referral = referralFactory.createSent()
     referralFactory.createSent(sentAt = OffsetDateTime.now().minusHours(2), intervention = referral.intervention)
 

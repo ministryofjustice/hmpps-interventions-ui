@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider
+package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance
 
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
@@ -8,19 +8,19 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ref
 import java.util.UUID
 
 @Component
-class ReferralReportProcessor(
+class PerformanceReportProcessor(
   private val referralRepository: ReferralRepository,
-) : ItemProcessor<UUID, ReferralReport> {
+) : ItemProcessor<UUID, PerformanceReportData> {
   companion object : KLogging()
 
-  override fun process(referralId: UUID): ReferralReport {
+  override fun process(referralId: UUID): PerformanceReportData {
     logger.info("processing referral {}", kv("referralId", referralId))
 
     val referral = referralRepository.findByIdAndSentAtIsNotNull(referralId)
       ?: throw RuntimeException("invalid referral id passed to report processor")
 
     // note: all referrals here are 'sent', we can safely access fields like 'referenceNumber'
-    return ReferralReport(
+    return PerformanceReportData(
       id = referral.id,
       referralReference = referral.referenceNumber!!,
       serviceUserCRN = referral.serviceUserCRN,
