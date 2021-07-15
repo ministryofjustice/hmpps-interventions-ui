@@ -80,13 +80,14 @@ class SupplierAssessmentController(
     return AppointmentDTO.from(updatedAppointment)
   }
 
-  @PostMapping("/appointment/{id}/submit")
+  @PostMapping("/referral/{referralId}/supplier-assessment/submit-feedback")
   fun submitFeedback(
-    @PathVariable id: UUID,
+    @PathVariable referralId: UUID,
     authentication: JwtAuthenticationToken
   ): AppointmentDTO {
     val user = userMapper.fromToken(authentication)
-    return AppointmentDTO.from(appointmentService.submitSessionFeedback(id, user))
+    val supplierAssessmentAppointment = getSupplierAssessmentAppointment(referralId, user)
+    return AppointmentDTO.from(appointmentService.submitSessionFeedback(supplierAssessmentAppointment, user))
   }
 
   private fun getSupplierAssessmentAppointment(referralId: UUID, user: AuthUser): Appointment {
