@@ -102,6 +102,7 @@ class ServiceProviderAccessScopeMapperTest {
         "InterventionsAuthorizedProvider",
         mapOf(
           "userId" to "b40ac52d-037d-4732-a3cd-bf5484c6ab6a",
+          "userName" to "test@test.example.org",
           "userAuthSource" to "auth",
           "contracts" to "TEST_C0001,TEST_C0002",
           "providers" to "TEST_P1,TEST_P2",

@@ -60,6 +60,7 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
       "InterventionsAuthorizationError",
       mapOf(
         "userId" to e.user.id,
+        "userName" to e.user.userName,
         "userAuthSource" to e.user.authSource,
         "message" to e.message,
         "issues" to e.errors.toString()

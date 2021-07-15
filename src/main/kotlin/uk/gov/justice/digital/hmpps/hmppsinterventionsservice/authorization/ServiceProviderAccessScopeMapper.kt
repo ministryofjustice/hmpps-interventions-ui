@@ -64,6 +64,7 @@ class ServiceProviderAccessScopeMapper(
         "InterventionsAuthorizedProvider",
         mapOf(
           "userId" to user.id,
+          "userName" to user.userName,
           "userAuthSource" to user.authSource,
           "contracts" to it.contracts.joinToString(",") { c -> c.contractReference },
           "providers" to it.serviceProviders.joinToString(",") { p -> p.id },

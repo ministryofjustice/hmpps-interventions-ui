@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.CommunityApiCallError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.lang.RuntimeException
 import java.net.URI
 import java.nio.charset.Charset
@@ -62,6 +63,33 @@ internal class ErrorConfigurationTest {
     assertThat(errorConfiguration.userMessageForWebClientException(SERVICE_UNAVAILABLE))
       .isEqualTo("System is experiencing issues. Please try again later and if the issue persists contact Support")
     assertThat(errorConfiguration.userMessageForWebClientException(MOVED_PERMANENTLY)).isNull()
+  }
+
+  @Test
+  fun `access errors are tracked and returned as 403 Forbidden`() {
+    val error = AccessError(
+      user = AuthUser(id = "abc123", userName = "abc123@example.org", authSource = "auth"),
+      message = "explaining why",
+      errors = listOf("reason1", "reason2"),
+    )
+
+    val response = errorConfiguration.handleAccessError(error)
+    assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+    assertThat(response.body?.error).isEqualTo("access error")
+    assertThat(response.body?.message).isEqualTo("explaining why")
+    assertThat(response.body?.accessErrors).containsExactly("reason1", "reason2")
+
+    verify(telemetryClient).trackEvent(
+      "InterventionsAuthorizationError",
+      mapOf(
+        "userId" to "abc123",
+        "userName" to "abc123@example.org",
+        "userAuthSource" to "auth",
+        "message" to "explaining why",
+        "issues" to "[reason1, reason2]",
+      ),
+      null
+    )
   }
 
   @Test
