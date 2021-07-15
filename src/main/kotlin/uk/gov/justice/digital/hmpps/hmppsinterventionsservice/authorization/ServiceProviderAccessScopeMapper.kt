@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -27,6 +28,7 @@ class ServiceProviderAccessScopeMapper(
   private val serviceProviderRepository: ServiceProviderRepository,
   private val dynamicFrameworkContractRepository: DynamicFrameworkContractRepository,
   private val userTypeChecker: UserTypeChecker,
+  private val telemetryClient: TelemetryClient,
 ) {
   private val serviceProviderGroupPrefix = "INT_SP_"
   private val contractGroupPrefix = "INT_CR_"
@@ -57,7 +59,18 @@ class ServiceProviderAccessScopeMapper(
     return ServiceProviderAccessScope(
       serviceProviders = workingScope.providers,
       contracts = workingScope.contracts,
-    )
+    ).also {
+      telemetryClient.trackEvent(
+        "InterventionsAuthorizedProvider",
+        mapOf(
+          "userId" to user.id,
+          "userAuthSource" to user.authSource,
+          "contracts" to it.contracts.joinToString(",") { c -> c.contractReference },
+          "providers" to it.serviceProviders.joinToString(",") { p -> p.id },
+        ),
+        null
+      )
+    }
   }
 
   private fun resolveProviders(scope: WorkingScope) {
