@@ -66,15 +66,16 @@ class SupplierAssessmentController(
     )
   }
 
-  @PutMapping("/appointment/{id}/record-attendance")
+  @PutMapping("/referral/{referralId}/supplier-assessment/record-attendance")
   fun recordAttendance(
-    @PathVariable id: UUID,
+    @PathVariable referralId: UUID,
     @RequestBody update: UpdateAppointmentAttendanceDTO,
     authentication: JwtAuthenticationToken,
   ): AppointmentDTO {
     val submittedBy = userMapper.fromToken(authentication)
+    val supplierAssessmentAppointment = getSupplierAssessmentAppointment(referralId, submittedBy)
     val updatedAppointment = appointmentService.recordAppointmentAttendance(
-      id, update.attended, update.additionalAttendanceInformation, submittedBy
+      supplierAssessmentAppointment, update.attended, update.additionalAttendanceInformation, submittedBy
     )
     return AppointmentDTO.from(updatedAppointment)
   }

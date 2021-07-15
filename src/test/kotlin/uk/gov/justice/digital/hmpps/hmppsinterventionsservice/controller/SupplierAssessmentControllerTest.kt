@@ -156,22 +156,87 @@ class SupplierAssessmentControllerTest {
     }
   }
 
-  @Test
-  fun `can record appointment attendance`() {
-    val appointmentId = UUID.randomUUID()
-    val attended = Attended.YES
-    val additionalAttendanceInformation = "information"
-    val submittedBy = authUserFactory.create()
-    val token = tokenFactory.create()
-    val update = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
-    val appointment = appointmentFactory.create()
+  @Nested
+  inner class RecordAppointmentAttendance {
+    @Test
+    fun `can record appointment attendance`() {
+      val referralId = UUID.randomUUID()
+      val attended = Attended.YES
+      val additionalAttendanceInformation = "information"
+      val submittedBy = authUserFactory.createSP()
+      val token = tokenFactory.create()
 
-    whenever(appointmentService.recordAppointmentAttendance(any(), any(), any(), any())).thenReturn(appointment)
-    whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+      val supplierAssessment = supplierAssessmentFactory.create()
+      supplierAssessment.referral.supplierAssessment = supplierAssessment
+      whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+      whenever(referralService.getSentReferralForUser(eq(referralId), eq(submittedBy))).thenReturn(supplierAssessment.referral)
+      whenever(appointmentService.recordAppointmentAttendance(eq(supplierAssessment!!.currentAppointment!!), eq(attended), eq(additionalAttendanceInformation), eq(submittedBy))).thenReturn(appointmentFactory.create())
 
-    val result = supplierAssessmentController.recordAttendance(appointmentId, update, token)
+      val userRequest = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
+      val result = supplierAssessmentController.recordAttendance(referralId, userRequest, token)
+      assertThat(result).isNotNull
+    }
 
-    assertThat(result).isNotNull
+    @Test
+    fun `expect not found if referral does not exist`() {
+      val referralId = UUID.randomUUID()
+      val attended = Attended.YES
+      val additionalAttendanceInformation = "information"
+      val submittedBy = authUserFactory.createSP()
+      val token = tokenFactory.create()
+
+      whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+      whenever(referralService.getSentReferralForUser(eq(referralId), eq(submittedBy))).thenReturn(null)
+
+      val userRequest = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
+      val exception = assertThrows<ResponseStatusException> {
+        supplierAssessmentController.recordAttendance(referralId, userRequest, token)
+      }
+      assertThat(exception.status).isEqualTo(HttpStatus.NOT_FOUND)
+      assertThat(exception.message).contains("referral not found")
+    }
+
+    @Test
+    fun `expect not found if supplier assessment does not exist`() {
+      val referralId = UUID.randomUUID()
+      val attended = Attended.YES
+      val additionalAttendanceInformation = "information"
+      val submittedBy = authUserFactory.createSP()
+      val token = tokenFactory.create()
+
+      val referral = referralFactory.createSent(supplierAssessment = null)
+      whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+      whenever(referralService.getSentReferralForUser(eq(referralId), eq(submittedBy))).thenReturn(referral)
+
+      val userRequest = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
+      val exception = assertThrows<ResponseStatusException> {
+        supplierAssessmentController.recordAttendance(referralId, userRequest, token)
+      }
+      assertThat(exception.status).isEqualTo(HttpStatus.NOT_FOUND)
+      assertThat(exception.message).contains("supplier assessment not found for referral")
+    }
+
+    @Test
+    fun `expect not found if current appointment does not exist`() {
+      val referralId = UUID.randomUUID()
+      val attended = Attended.YES
+      val additionalAttendanceInformation = "information"
+      val submittedBy = authUserFactory.createSP()
+      val token = tokenFactory.create()
+
+      val supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
+      supplierAssessment.referral.supplierAssessment = supplierAssessment
+
+      whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
+      whenever(referralService.getSentReferralForUser(eq(referralId), eq(submittedBy))).thenReturn(supplierAssessment.referral)
+
+      val userRequest = UpdateAppointmentAttendanceDTO(attended, additionalAttendanceInformation)
+      val exception = assertThrows<ResponseStatusException> {
+        supplierAssessmentController.recordAttendance(referralId, userRequest, token)
+      }
+      assertThat(exception.status).isEqualTo(HttpStatus.NOT_FOUND)
+      assertThat(exception.message).contains("no current appointment exists on supplier assessment for referral")
+    }
   }
 
   @Test

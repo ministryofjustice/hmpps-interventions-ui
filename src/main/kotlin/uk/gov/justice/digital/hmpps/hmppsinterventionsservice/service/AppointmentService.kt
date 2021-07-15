@@ -86,13 +86,10 @@ class AppointmentService(
     return appointmentRepository.save(appointment)
   }
 
-  fun recordAppointmentAttendance(appointmentId: UUID, attended: Attended, additionalAttendanceInformation: String?, submittedBy: AuthUser): Appointment {
-    val appointment = getAppointmentById(appointmentId)
-
+  fun recordAppointmentAttendance(appointment: Appointment, attended: Attended, additionalAttendanceInformation: String?, submittedBy: AuthUser): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
-      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
+      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=${appointment.id}]")
     }
-
     setAttendanceFields(appointment, attended, additionalAttendanceInformation, submittedBy)
     return appointmentRepository.save(appointment)
   }

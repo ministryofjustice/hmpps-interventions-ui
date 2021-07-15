@@ -25,10 +25,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFa
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
-import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID
-import javax.persistence.EntityNotFoundException
 
 class AppointmentServiceTest {
   private val authUserRepository: AuthUserRepository = mock()
@@ -212,46 +210,46 @@ class AppointmentServiceTest {
     }
   }
 
-  @Test
-  fun `appointment attendance can be updated`() {
-    val appointmentId = UUID.randomUUID()
-    val attended = Attended.YES
-    val additionalAttendanceInformation = "information"
-    val appointment = appointmentFactory.create(id = appointmentId)
-    val submittedBy = authUserFactory.create()
+  @Nested
+  inner class RecordAppointmentAttendance {
+    @Test
+    fun `appointment attendance can be updated`() {
+      val appointmentId = UUID.randomUUID()
+      val attended = Attended.YES
+      val additionalAttendanceInformation = "information"
+      val appointment = appointmentFactory.create(id = appointmentId)
+      val submittedBy = authUserFactory.create()
 
-    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
-    whenever(appointmentRepository.save(any())).thenReturn(appointment)
-    whenever(authUserRepository.save(any())).thenReturn(submittedBy)
+      whenever(appointmentRepository.save(any())).thenReturn(appointment)
+      whenever(authUserRepository.save(any())).thenReturn(submittedBy)
 
-    appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation, submittedBy)
+      appointmentService.recordAppointmentAttendance(appointment, attended, additionalAttendanceInformation, submittedBy)
 
-    val argumentCaptor = argumentCaptor<Appointment>()
-    verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
-    val arguments = argumentCaptor.firstValue
+      val argumentCaptor = argumentCaptor<Appointment>()
+      verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
+      val arguments = argumentCaptor.firstValue
 
-    assertThat(arguments.id).isEqualTo(appointmentId)
-    assertThat(arguments.attended).isEqualTo(attended)
-    assertThat(arguments.additionalAttendanceInformation).isEqualTo(additionalAttendanceInformation)
-    assertThat(arguments.attendanceSubmittedAt).isNotNull
-    assertThat(arguments.attendanceSubmittedBy).isEqualTo(submittedBy)
-  }
-
-  @Test
-  fun `appointment attendance cannot be updated if appointment cannot be found`() {
-    val appointmentId = UUID.randomUUID()
-    val attended = Attended.YES
-    val additionalAttendanceInformation = "information"
-    val appointment = appointmentFactory.create(id = appointmentId)
-    val submittedBy = authUserFactory.create()
-
-    whenever(appointmentRepository.findById(appointmentId)).thenReturn(of(appointment))
-    whenever(appointmentRepository.findById(appointmentId)).thenReturn(empty())
-
-    val error = assertThrows<EntityNotFoundException> {
-      appointmentService.recordAppointmentAttendance(appointmentId, attended, additionalAttendanceInformation, submittedBy)
+      assertThat(arguments.id).isEqualTo(appointmentId)
+      assertThat(arguments.attended).isEqualTo(attended)
+      assertThat(arguments.additionalAttendanceInformation).isEqualTo(additionalAttendanceInformation)
+      assertThat(arguments.attendanceSubmittedAt).isNotNull
+      assertThat(arguments.attendanceSubmittedBy).isEqualTo(submittedBy)
     }
-    assertThat(error.message).contains("Appointment not found [id=$appointmentId]")
+
+    @Test
+    fun `appointment attendance cannot be updated if feedback has been submitted`() {
+      val appointmentId = UUID.randomUUID()
+      val attended = Attended.YES
+      val additionalAttendanceInformation = "information"
+      val submittedBy = authUserFactory.create()
+      val feedbackSubmittedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+      val appointment = appointmentFactory.create(id = appointmentId, appointmentFeedbackSubmittedAt = feedbackSubmittedAt)
+
+      val error = assertThrows<ResponseStatusException> {
+        appointmentService.recordAppointmentAttendance(appointment, attended, additionalAttendanceInformation, submittedBy)
+      }
+      assertThat(error.message).contains("Feedback has already been submitted for this appointment [id=$appointmentId]")
+    }
   }
 
   @Test
