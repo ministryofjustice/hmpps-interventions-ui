@@ -13,6 +13,6 @@ class PCCRegionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     npsRegion: NPSRegion? = null
   ):
     PCCRegion {
-      return save(PCCRegion(id = id, name = name, npsRegion = npsRegion ?: npsRegionFactory.create()))
-    }
+    return save(PCCRegion(id = id, name = name, npsRegion = npsRegion ?: npsRegionFactory.create()))
+  }
 }
