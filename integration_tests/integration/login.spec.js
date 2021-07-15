@@ -38,6 +38,15 @@ context('Login', () => {
       cy.get('[data-qa=logout]').click()
       AuthLoginPage.verifyOnPage()
     })
+
+    it('the user cannot access service provider pages', () => {
+      cy.request({
+        url: '/service-provider/dashboard',
+        failOnStatusCode: false,
+      })
+        .its('status')
+        .should('equal', 403)
+    })
   })
 
   describe('after logging in as a service provider', () => {

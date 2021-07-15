@@ -3,7 +3,8 @@ import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
 import path from 'path'
 
-import allRoutes, { Services } from '../index'
+import indexRoutes, { Services } from '../index'
+import serviceProviderRoutes, { serviceProviderUrlPrefix } from '../serviceProviderRoutes'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import createErrorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
@@ -19,7 +20,12 @@ export enum AppSetupUserType {
   serviceProvider = 'auth',
 }
 
-function appSetup(route: Router, production: boolean, userType: AppSetupUserType): Express {
+function appSetup(
+  indexRouter: Router,
+  serviceProviderRouter: Router,
+  production: boolean,
+  userType: AppSetupUserType
+): Express {
   const app = express()
 
   app.set('view engine', 'njk')
@@ -45,7 +51,8 @@ function appSetup(route: Router, production: boolean, userType: AppSetupUserType
   app.use(cookieSession({ keys: [''] }))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
-  app.use('/', route)
+  app.use('/', indexRouter)
+  app.use(serviceProviderUrlPrefix, serviceProviderRouter)
   app.use(createErrorHandler(production))
 
   config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
@@ -63,14 +70,17 @@ export default function appWithAllRoutes({
   userType: AppSetupUserType
 }): Express {
   // auth.default.authenticationMiddleware = () => (req, res, next) => next()
+  const services = {
+    communityApiService: new MockCommunityApiService(),
+    interventionsService: {} as InterventionsService,
+    hmppsAuthService: new MockedHmppsAuthService(),
+    assessRisksAndNeedsService: {} as AssessRisksAndNeedsService,
+    ...overrides,
+  }
+
   return appSetup(
-    allRoutes(standardRouter(), {
-      communityApiService: new MockCommunityApiService(),
-      interventionsService: {} as InterventionsService,
-      hmppsAuthService: new MockedHmppsAuthService(),
-      assessRisksAndNeedsService: {} as AssessRisksAndNeedsService,
-      ...overrides,
-    }),
+    indexRoutes(standardRouter(), services),
+    serviceProviderRoutes(standardRouter(), services),
     production,
     userType
   )
