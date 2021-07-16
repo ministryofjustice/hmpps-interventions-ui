@@ -113,7 +113,7 @@ class AppointmentService(
       appointmentEventPublisher.behaviourRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour!!, appointmentType)
     }
 
-    appointmentEventPublisher.sessionFeedbackRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour ?: false, appointmentType)
+//    appointmentEventPublisher.sessionFeedbackRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour ?: false, appointmentType)
 
     return appointment
   }

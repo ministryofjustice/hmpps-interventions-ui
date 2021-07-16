@@ -15,7 +15,7 @@ enum class ActionPlanAppointmentEventType {
 
 class ActionPlanAppointmentEvent(source: Any, val type: ActionPlanAppointmentEventType, val actionPlanSession: ActionPlanSession, val detailUrl: String, val notifyPP: Boolean) : ApplicationEvent(source) {
   override fun toString(): String {
-    return "AppointmentEvent(type=$type, appointment=${actionPlanSession.id}, detailUrl='$detailUrl', source=$source)"
+    return "ActionPlanAppointmentEvent(type=$type, appointment=${actionPlanSession.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 

@@ -27,17 +27,20 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
 
   @BeforeEach
   fun setup() {
+
+    appointmentRepository.deleteAll()
     actionPlanSessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
-    appointmentRepository.deleteAll()
     supplierAssessmentRepository.deleteAll()
 
     entityManager.flush()
 
     referralRepository.deleteAll()
     interventionRepository.deleteAll()
+    dynamicFrameworkContractRepository.deleteAll()
     authUserRepository.deleteAll()
+    entityManager.flush()
   }
 
   @Test

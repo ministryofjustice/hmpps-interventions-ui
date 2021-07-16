@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
@@ -251,7 +252,7 @@ class SupplierAssessmentControllerTest {
       supplierAssessment.referral.supplierAssessment = supplierAssessment
       whenever(referralService.getSentReferralForUser(eq(referralId), eq(submittedBy))).thenReturn(supplierAssessment.referral)
       whenever(userMapper.fromToken(token)).thenReturn(submittedBy)
-      whenever(appointmentService.submitSessionFeedback(eq(supplierAssessment!!.currentAppointment!!), eq(submittedBy))).thenReturn(appointmentFactory.create())
+      whenever(appointmentService.submitSessionFeedback(eq(supplierAssessment!!.currentAppointment!!), eq(submittedBy), eq(AppointmentType.SUPPLIER_ASSESSMENT))).thenReturn(appointmentFactory.create())
 
       val result = supplierAssessmentController.submitFeedback(referralId, token)
       assertThat(result).isNotNull

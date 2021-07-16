@@ -13,11 +13,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.YES
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -32,6 +34,7 @@ class AppointmentServiceTest {
   private val appointmentRepository: AppointmentRepository = mock()
   private val communityAPIBookingService: CommunityAPIBookingService = mock()
   private val appointmentDeliveryRepository: AppointmentDeliveryRepository = mock()
+  private val appointmentEventPublisher: AppointmentEventPublisher = mock()
 
   private val authUserFactory = AuthUserFactory()
   private val appointmentFactory = AppointmentFactory()
@@ -44,6 +47,7 @@ class AppointmentServiceTest {
     communityAPIBookingService,
     appointmentDeliveryRepository,
     authUserRepository,
+    appointmentEventPublisher
   )
 
   @BeforeEach
@@ -260,11 +264,12 @@ class AppointmentServiceTest {
       val submittedBy = authUserFactory.create()
 
       appointment.attendanceSubmittedAt = OffsetDateTime.now()
+      appointment.attended = YES
 
       whenever(appointmentRepository.save(any())).thenReturn(appointment)
       whenever(authUserRepository.save(any())).thenReturn(submittedBy)
 
-      appointmentService.submitSessionFeedback(appointment, submittedBy)
+      appointmentService.submitSessionFeedback(appointment, submittedBy, SUPPLIER_ASSESSMENT)
 
       val argumentCaptor = argumentCaptor<Appointment>()
       verify(appointmentRepository, times(1)).save(argumentCaptor.capture())
@@ -284,7 +289,7 @@ class AppointmentServiceTest {
       appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
 
       val exception = assertThrows<ResponseStatusException> {
-        appointmentService.submitSessionFeedback(appointment, submittedBy)
+        appointmentService.submitSessionFeedback(appointment, submittedBy, SUPPLIER_ASSESSMENT)
       }
       assertThat(exception.message).contains("appointment feedback has already been submitted")
     }
@@ -296,9 +301,29 @@ class AppointmentServiceTest {
       val submittedBy = authUserFactory.create()
 
       val exception = assertThrows<ResponseStatusException> {
-        appointmentService.submitSessionFeedback(appointment, submittedBy)
+        appointmentService.submitSessionFeedback(appointment, submittedBy, SUPPLIER_ASSESSMENT)
       }
       assertThat(exception.message).contains("can't submit feedback unless attendance has been recorded")
+    }
+
+    @Test
+    fun `session feedback emits application events`() {
+      val appointmentId = UUID.randomUUID()
+      val appointment = appointmentFactory.create(id = appointmentId)
+      val submittedBy = authUserFactory.create()
+
+      appointment.attendanceSubmittedAt = OffsetDateTime.now()
+      appointment.attended = NO
+      appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
+      appointment.notifyPPOfAttendanceBehaviour = true
+
+      whenever(appointmentRepository.save(any())).thenReturn(appointment)
+      whenever(authUserRepository.save(any())).thenReturn(submittedBy)
+
+      appointmentService.submitSessionFeedback(appointment, submittedBy, SUPPLIER_ASSESSMENT)
+
+      verify(appointmentEventPublisher).attendanceRecordedEvent(appointment, true, SUPPLIER_ASSESSMENT)
+      verify(appointmentEventPublisher).behaviourRecordedEvent(appointment, true, SUPPLIER_ASSESSMENT)
     }
   }
 }
