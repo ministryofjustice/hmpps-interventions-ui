@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -18,7 +17,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.App
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
 import java.util.UUID
-import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Service
@@ -78,29 +76,23 @@ class AppointmentService(
     }
   }
 
-  fun recordBehaviour(appointmentId: UUID, behaviourDescription: String, notifyProbationPractitioner: Boolean, submittedBy: AuthUser): Appointment {
-    val appointment = getAppointmentById(appointmentId)
+  fun recordBehaviour(appointment: Appointment, behaviourDescription: String, notifyProbationPractitioner: Boolean, submittedBy: AuthUser): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
-      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
+      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=${appointment.id}]")
     }
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, submittedBy)
     return appointmentRepository.save(appointment)
   }
 
-  fun recordAppointmentAttendance(appointmentId: UUID, attended: Attended, additionalAttendanceInformation: String?, submittedBy: AuthUser): Appointment {
-    val appointment = getAppointmentById(appointmentId)
-
+  fun recordAppointmentAttendance(appointment: Appointment, attended: Attended, additionalAttendanceInformation: String?, submittedBy: AuthUser): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
-      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=$appointmentId]")
+      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=${appointment.id}]")
     }
-
     setAttendanceFields(appointment, attended, additionalAttendanceInformation, submittedBy)
     return appointmentRepository.save(appointment)
   }
 
-  fun submitSessionFeedback(appointmentId: UUID, submitter: AuthUser): Appointment {
-    val appointment = getAppointmentById(appointmentId)
-
+  fun submitSessionFeedback(appointment: Appointment, submitter: AuthUser): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "appointment feedback has already been submitted")
     }
@@ -112,11 +104,6 @@ class AppointmentService(
     appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
     return appointmentRepository.save(appointment)
-  }
-
-  private fun getAppointmentById(appointmentId: UUID): Appointment {
-    return appointmentRepository.findByIdOrNull(appointmentId)
-      ?: throw EntityNotFoundException("Appointment not found [id=$appointmentId]")
   }
 
   private fun setAttendanceFields(
