@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import ServiceProviderSentReferralSummaryDTO
 import com.fasterxml.jackson.annotation.JsonView
 import mu.KLogging
 import org.springframework.http.HttpStatus
@@ -102,6 +103,16 @@ class ReferralController(
   ): List<SentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
     return referralService.getSentReferralsForUser(user).map { SentReferralSummaryDTO.from(it) }
+  }
+
+  @Deprecated(message = "This is a temporary solution to by-pass the extremely long wait times in production that occurs with /sent-referrals")
+  @JsonView(Views.SentReferral::class)
+  @GetMapping("/sent-referrals/summary/service-provider")
+  fun getServiceProviderSentReferralsSummary(
+    authentication: JwtAuthenticationToken,
+  ): List<ServiceProviderSentReferralSummaryDTO> {
+    val user = userMapper.fromToken(authentication)
+    return referralService.getServiceProviderSummaries(user).map { ServiceProviderSentReferralSummaryDTO.from(it) }
   }
 
   @JsonView(Views.SentReferral::class)

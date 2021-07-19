@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfSe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProviderSentReferralSummary
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -109,6 +110,13 @@ class ReferralService(
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
 
+  fun getServiceProviderSummaries(user: AuthUser): List<ServiceProviderSentReferralSummary> {
+    if (userTypeChecker.isServiceProviderUser(user)) {
+      return getSentReferralSummariesForServiceProviderUser(user)
+    }
+    throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
+  }
+
   private fun getSentReferralsForServiceProviderUser(user: AuthUser): List<Referral> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
 
@@ -118,6 +126,13 @@ class ReferralService(
       .filterNot { it.cancelled() }
 
     return referralAccessFilter.serviceProviderReferrals(referrals.toList(), user)
+  }
+
+  private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser): List<ServiceProviderSentReferralSummary> {
+    val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
+
+    val referralSummaries = referralRepository.referralSummaryForServiceProviders(serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.name })
+    return referralAccessFilter.serviceProviderReferralSummaries(referralSummaries, user)
   }
 
   private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
