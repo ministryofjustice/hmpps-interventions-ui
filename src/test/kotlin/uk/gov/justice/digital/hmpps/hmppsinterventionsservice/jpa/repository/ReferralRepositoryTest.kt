@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProvid
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceUserFactory
 import java.time.Instant
 import java.time.OffsetDateTime
-import java.util.UUID
 import javax.transaction.Transactional
 
 @Transactional
@@ -125,7 +124,7 @@ class ReferralRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `can obtain multiple referrals wih latest assigned`() {
+    fun `can obtain multiple referrals with latest assigned`() {
       val referralWithChangedAssignee = createReferral(true, 2)
       val referralWithMultipleChangedAssignee = createReferral(true, 10)
 
@@ -287,7 +286,7 @@ class ReferralRepositoryTest @Autowired constructor(
 
   private fun contains(summaries: List<ServiceProviderSentReferralSummary>, summary: Summary): Boolean {
     return summaries.any {
-      it.referralId == summary.referralId &&
+      it.referralId == summary.referralId.toString() &&
         it.sentAt == summary.sentAt &&
         it.referenceNumber == summary.referenceNumber &&
         it.interventionTitle == summary.interventionTitle &&
@@ -300,11 +299,11 @@ class ReferralRepositoryTest @Autowired constructor(
 
   private fun expectedSummary(referral: Referral) =
     Summary(
-      referral.id,
+      referral.id.toString(),
       referral.sentAt!!.toInstant(),
       referral.referenceNumber!!,
       referral.intervention.title,
-      referral.intervention.dynamicFrameworkContract.contractReference,
+      referral.intervention.dynamicFrameworkContract.id.toString(),
       referral.currentAssignee?.id,
       referral.serviceUserData!!.firstName,
       referral.serviceUserData!!.lastName
@@ -312,7 +311,7 @@ class ReferralRepositoryTest @Autowired constructor(
 }
 
 data class Summary(
-  override val referralId: UUID,
+  override val referralId: String,
   override val sentAt: Instant,
   override val referenceNumber: String,
   override val interventionTitle: String,

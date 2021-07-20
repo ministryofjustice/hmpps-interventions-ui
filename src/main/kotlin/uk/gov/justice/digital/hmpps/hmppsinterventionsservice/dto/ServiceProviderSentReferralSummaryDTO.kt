@@ -15,7 +15,7 @@ class ServiceProviderSentReferralSummaryDTO(
   companion object {
     fun from(sentReferralSummary: ServiceProviderSentReferralSummary): ServiceProviderSentReferralSummaryDTO {
       return ServiceProviderSentReferralSummaryDTO(
-        referralId = sentReferralSummary.referralId,
+        referralId = UUID.fromString(sentReferralSummary.referralId),
         sentAt = OffsetDateTime.ofInstant(sentReferralSummary.sentAt, ZoneOffset.UTC),
         referenceNumber = sentReferralSummary.referenceNumber,
         interventionTitle = sentReferralSummary.interventionTitle,

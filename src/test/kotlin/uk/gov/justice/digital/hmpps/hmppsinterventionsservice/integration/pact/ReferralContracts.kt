@@ -35,6 +35,33 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
     setupAssistant.fillReferralFields(referral)
   }
 
+  @State("There is a sent referral with ID 4afb07a0-e50b-490c-a8c1-c858d5a1e912 with an assigned user")
+  fun `create a sent referral with ID 4afb07a0-e50b-490c-a8c1-c858d5a1e912 with an assigned user`() {
+    setupAssistant.createAssignedReferral(
+      id = UUID.fromString("4afb07a0-e50b-490c-a8c1-c858d5a1e912"),
+      interventionTitle = "Accommodation Services - West Midlands",
+      serviceProviderId = "HAPPY_LIVING",
+      sentAt = OffsetDateTime.parse("2021-01-26T13:00:00.000000Z"),
+      referenceNumber = "ABCABCA1",
+      assignedToUsername = "bernard.beaks",
+      serviceUserFirstName = "George",
+      serviceUserLastName = "Michael",
+    )
+  }
+
+  @State("There is a sent referral with ID dc94fbd6-354b-4edc-863b-cffc8358f1ec without an assigned user")
+  fun `create a sent referral with ID dc94fbd6-354b-4edc-863b-cffc8358f1ec without an assigned user`() {
+    setupAssistant.createAssignedReferral(
+      id = UUID.fromString("dc94fbd6-354b-4edc-863b-cffc8358f1ec"),
+      interventionTitle = "Accommodation Services - West Midlands",
+      serviceProviderId = "HAPPY_LIVING",
+      sentAt = OffsetDateTime.parse("2021-01-26T13:00:00.000000Z"),
+      referenceNumber = "ABCABCA1",
+      serviceUserFirstName = "George",
+      serviceUserLastName = "Michael",
+    )
+  }
+
   @State(
     "There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf and it is unassigned",
     "There are some existing sent referrals sent by a probation practitioner user",
