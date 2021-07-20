@@ -1516,7 +1516,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns a list of unassigned referrals', async () => {
       await provider.addInteraction({
         state: 'There is a sent referral with ID dc94fbd6-354b-4edc-863b-cffc8358f1ec without an assigned user',
-        uponReceiving: 'a request for all sent referrals summary for the service user',
+        uponReceiving: 'a request for all sent referral summary for the service user',
         withRequest: {
           method: 'GET',
           path: '/sent-referrals/summary/service-provider',
