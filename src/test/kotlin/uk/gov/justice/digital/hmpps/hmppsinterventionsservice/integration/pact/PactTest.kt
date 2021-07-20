@@ -44,6 +44,9 @@ class PactTest : IntegrationTestBase() {
     whenever(communityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
       .thenReturn(ServiceUserAccessResult(true, emptyList()))
 
+    // required for SP user
+    whenever(hmppsAuthService.getUserGroups(any())).thenReturn(listOf("INT_SP_HAPPY_LIVING", "INT_CR_PACT_TEST"))
+
     context.addStateChangeHandlers(
       ActionPlanContracts(setupAssistant),
       InterventionContracts(setupAssistant),
