@@ -10,17 +10,20 @@ import java.util.UUID
 
 interface ReferralRepository : JpaRepository<Referral, UUID> {
   @Query(
-    value = """select referralId, sentAt,
+    value = """select 
+      referralId, 
+      sentAt,
 			referenceNumber,
-			assignedToUserName,
 			interventionTitle,
+      dynamicFrameworkContractId,
+			assignedToUserName,
 			serviceUserFirstName,
 			serviceUserLastName from (	
 	select
 			cast(r.id as varchar) AS referralId,
 			cast(r.sent_at as TIMESTAMP WITH TIME ZONE) as sentAt,
 			r.reference_number as referenceNumber,
-      dfc.id as dynamicFrameworkContractId,
+      cast(dfc.id as varchar) as dynamicFrameworkContractId,
 			au.user_name as assignedToUserName,
 			i.title as interventionTitle,
 			rsud.first_name as serviceUserFirstName,
