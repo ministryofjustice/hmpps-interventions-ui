@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProvid
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceUserFactory
 import java.time.Instant
 import java.time.OffsetDateTime
+import java.util.UUID
 import javax.transaction.Transactional
 
 @Transactional
@@ -286,7 +287,8 @@ class ReferralRepositoryTest @Autowired constructor(
 
   private fun contains(summaries: List<ServiceProviderSentReferralSummary>, summary: Summary): Boolean {
     return summaries.any {
-      it.sentAt == summary.sentAt &&
+      it.referralId == summary.referralId &&
+        it.sentAt == summary.sentAt &&
         it.referenceNumber == summary.referenceNumber &&
         it.interventionTitle == summary.interventionTitle &&
         it.dynamicFrameWorkContractId == summary.dynamicFrameWorkContractId &&
@@ -298,6 +300,7 @@ class ReferralRepositoryTest @Autowired constructor(
 
   private fun expectedSummary(referral: Referral) =
     Summary(
+      referral.id,
       referral.sentAt!!.toInstant(),
       referral.referenceNumber!!,
       referral.intervention.title,
@@ -309,6 +312,7 @@ class ReferralRepositoryTest @Autowired constructor(
 }
 
 data class Summary(
+  override val referralId: UUID,
   override val sentAt: Instant,
   override val referenceNumber: String,
   override val interventionTitle: String,

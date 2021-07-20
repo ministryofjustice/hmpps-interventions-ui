@@ -17,6 +17,7 @@ interface ReferralRepository : JpaRepository<Referral, UUID> {
 			serviceUserFirstName,
 			serviceUserLastName from (	
 	select
+			cast(r.id as varchar) AS referralId,
 			cast(r.sent_at as TIMESTAMP WITH TIME ZONE) as sentAt,
 			r.reference_number as referenceNumber,
       dfc.id as dynamicFrameworkContractId,
