@@ -335,11 +335,11 @@ class SetupAssistant(
   ): Referral {
     val intervention = createIntervention(interventionTitle = interventionTitle, serviceProviderId = serviceProviderId)
     val ppUser = createPPUser()
-    val spUser = if ( assignedToUsername != null ) createSPUser(assignedToUsername) else null
+    val spUser = if (assignedToUsername != null) createSPUser(assignedToUsername) else null
     val referral = referralRepository.save(
       referralFactory.createSent(
         id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser,
-        assignments = if ( spUser != null ) listOf(ReferralAssignment(OffsetDateTime.now(), spUser, spUser)) else listOf(),
+        assignments = if (spUser != null) listOf(ReferralAssignment(OffsetDateTime.now(), spUser, spUser)) else listOf(),
         supplierAssessment = supplierAssessmentFactory.createWithNoAppointment(),
         sentAt = sentAt,
         referenceNumber = referenceNumber,

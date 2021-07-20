@@ -52,7 +52,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
-      expectedSummaryWithAssignedUser(referralWithPrimeSp, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referralWithPrimeSp)))
     }
 
     @Test
@@ -64,7 +64,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
-      expectedSummaryWithAssignedUser(referralWithSubConSp, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referralWithSubConSp)))
     }
 
     @Test
@@ -82,8 +82,8 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(serviceProviderSearchIds)
 
       assertThat(summaries.size).isEqualTo(2)
-      expectedSummaryWithAssignedUser(referralWithPrimeSp, summaries[0])
-      expectedSummaryWithAssignedUser(referralWithSubConSp, summaries[1])
+      assertThat(contains(summaries, expectedSummary(referralWithPrimeSp)))
+      assertThat(contains(summaries, expectedSummary(referralWithSubConSp)))
     }
 
     @Test
@@ -109,7 +109,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
-      expectedSummaryWithAssignedUser(referralWithSingleAssignee, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referralWithSingleAssignee)))
     }
 
     @Test
@@ -120,7 +120,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
-      expectedSummaryWithAssignedUser(referralWithChangedAssignee, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referralWithChangedAssignee)))
     }
 
     @Test
@@ -135,8 +135,9 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(serviceProviderSearchIds)
 
       assertThat(summaries.size).isEqualTo(2)
-      expectedSummaryWithAssignedUser(referralWithMultipleChangedAssignee, summaries[0])
-      expectedSummaryWithAssignedUser(referralWithChangedAssignee, summaries[1])
+      assertThat(contains(summaries, expectedSummary(referralWithChangedAssignee)))
+      assertThat(contains(summaries, expectedSummary(referralWithMultipleChangedAssignee)))
+      summaries.contains(expectedSummary(referralWithChangedAssignee))
     }
 
     @Test
@@ -148,7 +149,7 @@ class ReferralRepositoryTest @Autowired constructor(
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(summaries[0].assignedToUserName).isNull()
-      expectedSummaryWithNoAssignedUser(referralWithNoAssignee, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referralWithNoAssignee)))
     }
   }
 
@@ -183,7 +184,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
-      expectedSummaryWithAssignedUser(referral, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referral)))
     }
 
     @Test
@@ -199,7 +200,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
-      expectedSummaryWithAssignedUser(referral, summaries[0])
+      assertThat(contains(summaries, expectedSummary(referral)))
     }
 
     @Test
@@ -296,26 +297,17 @@ class ReferralRepositoryTest @Autowired constructor(
     }
   }
 
-  private fun expectedSummaryWithAssignedUser(referral: Referral, referralSummary: ServiceProviderSentReferralSummary) {
-    assertThat(referralSummary.referralId).isEqualTo(referral.id.toString())
-    assertThat(referralSummary.sentAt).isEqualTo(referral.sentAt!!.toInstant())
-    assertThat(referralSummary.referenceNumber).isEqualTo(referral.referenceNumber)
-    assertThat(referralSummary.interventionTitle).isEqualTo(referral.intervention.title)
-    assertThat(referralSummary.dynamicFrameWorkContractId).isEqualTo(referral.intervention.dynamicFrameworkContract.id.toString())
-    assertThat(referralSummary.assignedToUserName).isEqualTo(referral.currentAssignee!!.userName)
-    assertThat(referralSummary.serviceUserFirstName).isEqualTo(referral.serviceUserData!!.firstName)
-    assertThat(referralSummary.serviceUserLastName).isEqualTo(referral.serviceUserData!!.lastName)
-  }
-  private fun expectedSummaryWithNoAssignedUser(referral: Referral, referralSummary: ServiceProviderSentReferralSummary) {
-    assertThat(referralSummary.referralId).isEqualTo(referral.id.toString())
-    assertThat(referralSummary.sentAt).isEqualTo(referral.sentAt!!.toInstant())
-    assertThat(referralSummary.referenceNumber).isEqualTo(referral.referenceNumber)
-    assertThat(referralSummary.interventionTitle).isEqualTo(referral.intervention.title)
-    assertThat(referralSummary.dynamicFrameWorkContractId).isEqualTo(referral.intervention.dynamicFrameworkContract.id.toString())
-    assertThat(referralSummary.assignedToUserName).isNull()
-    assertThat(referralSummary.serviceUserFirstName).isEqualTo(referral.serviceUserData!!.firstName)
-    assertThat(referralSummary.serviceUserLastName).isEqualTo(referral.serviceUserData!!.lastName)
-  }
+  private fun expectedSummary(referral: Referral) =
+    Summary(
+      referral.id.toString(),
+      referral.sentAt!!.toInstant(),
+      referral.referenceNumber!!,
+      referral.intervention.title,
+      referral.intervention.dynamicFrameworkContract.id.toString(),
+      referral.currentAssignee?.id,
+      referral.serviceUserData!!.firstName,
+      referral.serviceUserData!!.lastName
+    )
 }
 
 data class Summary(
