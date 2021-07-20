@@ -49,6 +49,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceR
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.SupplierAssessmentFactory
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -88,6 +89,7 @@ class SetupAssistant(
   private val appointmentDeliveryFactory = AppointmentDeliveryFactory()
   private val appointmentDeliveryAddressFactory = AppointmentDeliveryAddressFactory()
   private val supplierAssessmentFactory = SupplierAssessmentFactory()
+  private val serviceUserFactory = ServiceUserFactory()
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -153,8 +155,8 @@ class SetupAssistant(
     return authUserRepository.save(user)
   }
 
-  fun createSPUser(): AuthUser {
-    val user = AuthUser("608955ae-52ed-44cc-884c-011597a77949", "auth", "AUTH_USER")
+  fun createSPUser(username: String = "AUTH_USER"): AuthUser {
+    val user = AuthUser("608955ae-52ed-44cc-884c-011597a77949", "auth", username)
     return authUserRepository.save(user)
   }
 
@@ -175,6 +177,27 @@ class SetupAssistant(
       )
 
     return interventionRepository.save(interventionFactory.create(id = id, contract = contract))
+  }
+
+  fun createIntervention(
+    id: UUID = UUID.randomUUID(),
+    interventionTitle: String,
+    serviceProviderId: String,
+    dynamicFrameworkContract: DynamicFrameworkContract? = null
+  ): Intervention {
+    val contractType = contractTypes["ACC"]!!
+    val region = npsRegions['C']!!
+
+    val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create(id = serviceProviderId))
+
+    val contract = dynamicFrameworkContract
+      ?: createDynamicFrameworkContract(
+        contractType = contractType,
+        primeProviderId = primeProvider.id,
+        npsRegion = region,
+      )
+
+    return interventionRepository.save(interventionFactory.create(id = id, contract = contract, title = interventionTitle))
   }
 
   fun createDraftReferral(
@@ -298,6 +321,32 @@ class SetupAssistant(
         supplierAssessment = supplierAssessmentFactory.createWithNoAppointment()
       )
     )
+  }
+
+  fun createAssignedReferral(
+    id: UUID = UUID.randomUUID(),
+    interventionTitle: String,
+    serviceProviderId: String,
+    sentAt: OffsetDateTime,
+    referenceNumber: String,
+    assignedToUsername: String? = null,
+    serviceUserFirstName: String? = null,
+    serviceUserLastName: String,
+  ): Referral {
+    val intervention = createIntervention(interventionTitle = interventionTitle, serviceProviderId = serviceProviderId)
+    val ppUser = createPPUser()
+    val spUser = if ( assignedToUsername != null ) createSPUser(assignedToUsername) else null
+    val referral = referralRepository.save(
+      referralFactory.createSent(
+        id = id, intervention = intervention, createdBy = ppUser, sentBy = ppUser,
+        assignments = if ( spUser != null ) listOf(ReferralAssignment(OffsetDateTime.now(), spUser, spUser)) else listOf(),
+        supplierAssessment = supplierAssessmentFactory.createWithNoAppointment(),
+        sentAt = sentAt,
+        referenceNumber = referenceNumber,
+      )
+    )
+    val serviceUser = serviceUserFactory.create(firstName = serviceUserFirstName, lastName = serviceUserLastName, referral = referral)
+    return referral
   }
 
   fun createActionPlan(
