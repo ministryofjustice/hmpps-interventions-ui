@@ -1,11 +1,11 @@
-import Intervention from '../../models/intervention'
-import SentReferral from '../../models/sentReferral'
 import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
+import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
+import utils from '../../utils/utils'
 
 export default class DashboardPresenter {
-  constructor(private readonly referrals: SentReferral[], private readonly interventions: Intervention[]) {}
+  constructor(private readonly referralsSummary: ServiceProviderSentReferralSummary[]) {}
 
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Date received', sort: 'none' },
@@ -16,41 +16,35 @@ export default class DashboardPresenter {
     { text: 'Action', sort: 'none' },
   ]
 
-  readonly tableRows: SortableTableRow[] = this.referrals.map(referral => {
-    const interventionForReferral = this.interventions.find(
-      intervention => intervention.id === referral.referral.interventionId
-    )
-    if (interventionForReferral === undefined) {
-      throw new Error(
-        `Couldn't populate row as referral's intervention ID ${referral.referral.interventionId} not passed in collection`
-      )
-    }
-    const sentAtDay = CalendarDay.britishDayForDate(new Date(referral.sentAt))
-    const { serviceUser } = referral.referral
-
+  readonly tableRows: SortableTableRow[] = this.referralsSummary.map(referralSummary => {
+    const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
     return [
       {
         text: PresenterUtils.govukShortFormattedDate(sentAtDay),
         sortValue: sentAtDay.iso8601,
         href: null,
       },
-      { text: referral.referenceNumber, sortValue: null, href: null },
+      { text: referralSummary.referenceNumber, sortValue: null, href: null },
       {
-        text: PresenterUtils.fullName(serviceUser),
-        sortValue: PresenterUtils.fullNameSortValue(serviceUser),
+        text: utils.convertToTitleCase(
+          `${referralSummary.serviceUserFirstName ?? ''} ${referralSummary.serviceUserLastName ?? ''}`
+        ),
+        sortValue: `${referralSummary.serviceUserLastName ?? ''}, ${
+          referralSummary.serviceUserFirstName ?? ''
+        }`.toLocaleLowerCase('en-GB'),
         href: null,
       },
-      { text: interventionForReferral.title, sortValue: null, href: null },
-      { text: referral.assignedTo?.username ?? '', sortValue: null, href: null },
-      { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referral) },
+      { text: referralSummary.interventionTitle, sortValue: null, href: null },
+      { text: referralSummary.assignedToUserName ?? '', sortValue: null, href: null },
+      { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referralSummary) },
     ]
   })
 
-  private static hrefForViewing(referral: SentReferral): string {
-    if (referral.assignedTo === null) {
-      return `/service-provider/referrals/${referral.id}/details`
+  private static hrefForViewing(referralSummary: ServiceProviderSentReferralSummary): string {
+    if (referralSummary.assignedToUserName === null || referralSummary.assignedToUserName === undefined) {
+      return `/service-provider/referrals/${referralSummary.referralId}/details`
     }
 
-    return `/service-provider/referrals/${referral.id}/progress`
+    return `/service-provider/referrals/${referralSummary.referralId}/progress`
   }
 }

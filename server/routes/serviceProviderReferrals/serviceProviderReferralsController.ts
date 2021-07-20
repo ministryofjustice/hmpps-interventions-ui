@@ -78,15 +78,11 @@ export default class ServiceProviderReferralsController {
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
-    const referrals = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken)
-
-    const dedupedInterventionIds = Array.from(new Set(referrals.map(referral => referral.referral.interventionId)))
-
-    const interventions = await Promise.all(
-      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken
     )
 
-    const presenter = new DashboardPresenter(referrals, interventions)
+    const presenter = new DashboardPresenter(referralsSummary)
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
