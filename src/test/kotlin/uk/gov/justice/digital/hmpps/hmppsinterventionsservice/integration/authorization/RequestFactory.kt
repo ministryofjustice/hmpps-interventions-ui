@@ -19,6 +19,7 @@ enum class Request {
   EndSentReferral,
   GetDraftReferrals,
   GetSentReferrals,
+  GetServiceProviderReferralsSummary,
 }
 
 class RequestFactory(private val webTestClient: WebTestClient, private val setupAssistant: SetupAssistant) {
@@ -44,6 +45,7 @@ class RequestFactory(private val webTestClient: WebTestClient, private val setup
 
       Request.GetDraftReferrals -> webTestClient.get().uri("/draft-referrals")
       Request.GetSentReferrals -> webTestClient.get().uri("/sent-referrals")
+      Request.GetServiceProviderReferralsSummary -> webTestClient.get().uri("/sent-referrals/summary/service-provider")
     }
 
     return if (token != null) {
