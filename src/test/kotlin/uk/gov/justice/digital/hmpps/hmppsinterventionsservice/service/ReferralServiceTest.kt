@@ -594,7 +594,7 @@ class ReferralServiceTest @Autowired constructor(
 
       val result = referralService.getServiceProviderSummaries(multiSubUser)
       assertThat(result.size).isEqualTo(5)
-      val referralIds = result.map { summary -> summary.referralId }
+      val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
       assertThat(referralIds).doesNotContain(noAccess.id)
       assertThat(referralIds).containsAll(listOf(primeRef1.id, primeRef2.id, primeAndSubRef.id, refWithAllProvidersBeingSubs.id, subRef.id))
     }
@@ -622,7 +622,7 @@ class ReferralServiceTest @Autowired constructor(
 
       val user = userWithProviders(listOf(provider))
       val result = referralService.getServiceProviderSummaries(user)
-      val referralIds = result.map { summary -> summary.referralId }
+      val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
       assertThat(referralIds).containsExactlyInAnyOrder(refLive.id, refEndedEarly.id)
       assertThat(referralIds).doesNotContain(refCancelled.id)
     }
