@@ -357,6 +357,8 @@ class SetupAssistant(
       )
     )
     val serviceUser = serviceUserFactory.create(firstName = serviceUserFirstName, lastName = serviceUserLastName, referral = referral)
+    referral.serviceUserData = serviceUser
+    referralRepository.save(referral)
     return referral
   }
 
