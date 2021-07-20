@@ -188,14 +188,16 @@ class SetupAssistant(
     val contractType = contractTypes["ACC"]!!
     val region = npsRegions['C']!!
 
-    val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create(id = serviceProviderId))
+    var contract = dynamicFrameworkContract
 
-    val contract = dynamicFrameworkContract
-      ?: createDynamicFrameworkContract(
+    if (contract == null) {
+      val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create(id = serviceProviderId))
+      contract = createDynamicFrameworkContract(
         contractType = contractType,
         primeProviderId = primeProvider.id,
         npsRegion = region,
       )
+    }
 
     return interventionRepository.save(interventionFactory.create(id = id, contract = contract, title = interventionTitle))
   }
@@ -333,7 +335,16 @@ class SetupAssistant(
     serviceUserFirstName: String? = null,
     serviceUserLastName: String,
   ): Referral {
-    val intervention = createIntervention(interventionTitle = interventionTitle, serviceProviderId = serviceProviderId)
+    val contractType = contractTypes["ACC"]!!
+    val region = npsRegions['C']!!
+    val primeProvider = serviceProviderRepository.save(serviceProviderFactory.create(id = serviceProviderId))
+    val dynamicFrameworkContract = createDynamicFrameworkContract(
+      contractReference = "PACT_TEST",
+      contractType = contractType,
+      primeProviderId = primeProvider.id,
+      npsRegion = region,
+    )
+    val intervention = createIntervention(interventionTitle = interventionTitle, serviceProviderId = serviceProviderId, dynamicFrameworkContract = dynamicFrameworkContract)
     val ppUser = createPPUser()
     val spUser = if (assignedToUsername != null) createSPUser(assignedToUsername) else null
     val referral = referralRepository.save(
