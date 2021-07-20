@@ -37,11 +37,13 @@ jest.setTimeout(30000)
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
   let token: string
+  let serviceProviderToken: string
 
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
     token = oauth2TokenFactory.deliusToken().build()
+    serviceProviderToken = oauth2TokenFactory.authToken().build()
   })
 
   describe('getDraftReferral', () => {
@@ -1468,6 +1470,87 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       expect(await interventionsService.getSentReferralsForUserToken(token)).toEqual([sentReferral, sentReferral])
+    })
+  })
+
+  describe('getServiceProviderSentReferralsSummaryForUserToken', () => {
+    it('returns a list of assigned referrals', async () => {
+      await provider.addInteraction({
+        state: 'There is a sent referral with ID 4afb07a0-e50b-490c-a8c1-c858d5a1e912 with an assigned user',
+        uponReceiving: 'a request for all sent referrals summary for the service user',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals/summary/service-provider',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([
+            {
+              referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
+              sentAt: '2021-01-26T13:00:00.000000Z',
+              referenceNumber: 'ABCABCA1',
+              interventionTitle: 'Accommodation Services - West Midlands',
+              assignedToUserName: 'bernard.beaks',
+              serviceUserFirstName: 'George',
+              serviceUserLastName: 'Michael',
+            },
+          ]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const referralSummary = {
+        referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'ABCABCA1',
+        interventionTitle: 'Accommodation Services - West Midlands',
+        assignedToUserName: 'bernard.beaks',
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+      }
+      expect(
+        await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(serviceProviderToken)
+      ).toEqual([referralSummary])
+    })
+    it('returns a list of unassigned referrals', async () => {
+      await provider.addInteraction({
+        state: 'There is a sent referral with ID dc94fbd6-354b-4edc-863b-cffc8358f1ec without an assigned user',
+        uponReceiving: 'a request for all sent referrals summary for the service user',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals/summary/service-provider',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([
+            {
+              referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
+              sentAt: '2021-01-26T13:00:00.000000Z',
+              referenceNumber: 'ABCABCA1',
+              interventionTitle: 'Accommodation Services - West Midlands',
+              assignedToUserName: null,
+              serviceUserFirstName: 'George',
+              serviceUserLastName: 'Michael',
+            },
+          ]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const referralSummary = {
+        referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'ABCABCA1',
+        interventionTitle: 'Accommodation Services - West Midlands',
+        assignedToUserName: null,
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+      }
+      expect(
+        await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(serviceProviderToken)
+      ).toEqual([referralSummary])
     })
   })
 

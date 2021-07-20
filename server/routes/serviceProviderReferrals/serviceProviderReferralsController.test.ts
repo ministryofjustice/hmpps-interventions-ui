@@ -33,6 +33,7 @@ import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
+import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -64,35 +65,28 @@ afterEach(() => {
 
 describe('GET /service-provider/dashboard', () => {
   it('displays a list of all sent referrals', async () => {
-    const accommodationIntervention = interventionFactory.build({
-      id: '1',
-      title: 'Accommodation Services - West Midlands',
-    })
-    const womensServicesIntervention = interventionFactory.build({
-      id: '2',
-      title: "Women's Services - West Midlands",
-    })
-
-    const sentReferrals = [
-      sentReferralFactory.build({
-        referral: {
-          interventionId: accommodationIntervention.id,
-          serviceUser: { firstName: 'George', lastName: 'Michael' },
-        },
-      }),
-      sentReferralFactory.build({
-        referral: {
-          interventionId: womensServicesIntervention.id,
-          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-        },
-      }),
+    const referralsSummary: ServiceProviderSentReferralSummary[] = [
+      {
+        referralId: '1',
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'ABCABCA1',
+        interventionTitle: 'Accommodation Services - West Midlands',
+        assignedToUserName: null,
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+      },
+      {
+        referralId: '2',
+        sentAt: '2020-10-13T13:00:00.000000Z',
+        referenceNumber: 'ABCABCA2',
+        interventionTitle: "Women's Services - West Midlands",
+        assignedToUserName: null,
+        serviceUserFirstName: 'Jenny',
+        serviceUserLastName: 'Jones',
+      },
     ]
 
-    interventionsService.getSentReferralsForUserToken.mockResolvedValue(sentReferrals)
-    interventionsService.getIntervention.mockImplementation(async (token, id) => {
-      const result = [accommodationIntervention, womensServicesIntervention].find(category => category.id === id)
-      return result!
-    })
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
 
     await request(app)
       .get('/service-provider/dashboard')

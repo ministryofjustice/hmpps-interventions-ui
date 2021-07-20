@@ -21,6 +21,7 @@ import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import Appointment from '../models/appointment'
 import SupplierAssessment from '../models/supplierAssessment'
+import ServiceProviderSentReferralSummary from '../models/serviceProviderSentReferralSummary'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -202,6 +203,17 @@ export default class InterventionsService {
       path: `/sent-referrals`,
       headers: { Accept: 'application/json' },
     })) as SentReferral[]
+  }
+
+  async getServiceProviderSentReferralsSummaryForUserToken(
+    token: string
+  ): Promise<ServiceProviderSentReferralSummary[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/sent-referrals/summary/service-provider`,
+      headers: { Accept: 'application/json' },
+    })) as ServiceProviderSentReferralSummary[]
   }
 
   async assignSentReferral(token: string, id: string, assignee: User): Promise<SentReferral> {
