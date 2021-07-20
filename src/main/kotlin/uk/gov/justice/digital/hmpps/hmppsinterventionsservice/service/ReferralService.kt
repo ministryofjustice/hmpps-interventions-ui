@@ -98,6 +98,7 @@ class ReferralService(
       authUserRepository.save(assignedBy),
       authUserRepository.save(assignedTo)
     )
+    referral.assignments.forEach { it.superseded = true }
     referral.assignments.add(assignment)
 
     val assignedReferral = referralRepository.save(referral)
