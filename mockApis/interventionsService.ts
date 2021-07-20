@@ -170,6 +170,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetServiceProviderSentReferralsSummaryForUserToken = async (responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPathPattern: `${this.mockPrefix}/sent-referrals/summary/service-provider`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubAssignSentReferral = async (id: string, responseJson: Record<string, unknown>): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {

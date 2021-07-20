@@ -14,6 +14,7 @@ import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDeta
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import appointmentFactory from '../../testutils/factories/appointment'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
+import serviceProviderSentReferralSummaryFactory from '../../testutils/factories/serviceProviderSentReferralSummary'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -176,11 +177,20 @@ describe('Service provider referrals dashboard', () => {
         phoneNumber: '01234567890',
       },
     })
+    const sentReferralsSummary = [
+      serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(sentReferrals[0], socialInclusionIntervention)
+        .build({}),
+      serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(sentReferrals[1], personalWellbeingIntervention)
+        .build({}),
+    ]
 
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
     cy.stubGetSentReferralsForUserToken(sentReferrals)
+    cy.stubGetServiceProviderSentReferralsSummaryForUserToken(sentReferralsSummary)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
@@ -301,10 +311,13 @@ describe('Service provider referrals dashboard', () => {
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const staffDetails = deliusStaffDetailsFactory.build()
       const responsibleOfficer = deliusOffenderManagerFactory.build()
-
+      let referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(referral, intervention)
+        .build()
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetSentReferralsForUserToken([referral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
@@ -334,6 +347,11 @@ describe('Service provider referrals dashboard', () => {
         .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(assignedReferral, intervention)
+        .withAssignedUser(hmppsAuthUser.username)
+        .build()
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
 
       cy.contains('Confirm assignment').click()
 
@@ -375,10 +393,14 @@ describe('Service provider referrals dashboard', () => {
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const staffDetails = deliusStaffDetailsFactory.build()
       const responsibleOfficer = deliusOffenderManagerFactory.build()
-
+      let referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(referral, intervention)
+        .withAssignedUser(currentAssignee.username)
+        .build()
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetSentReferralsForUserToken([referral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
@@ -416,8 +438,13 @@ describe('Service provider referrals dashboard', () => {
       const reAssignedReferral = sentReferralFactory
         .assigned()
         .build({ ...referral, assignedTo: { username: newAssignee.username } })
+      referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(reAssignedReferral, intervention)
+        .withAssignedUser(newAssignee.username)
+        .build()
       cy.stubGetSentReferral(reAssignedReferral.id, reAssignedReferral)
       cy.stubGetSentReferralsForUserToken([reAssignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
 
       cy.contains('Confirm assignment').click()
 
@@ -477,9 +504,14 @@ describe('Service provider referrals dashboard', () => {
       actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 3 }),
       actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 4 }),
     ]
+    const referralSummary = serviceProviderSentReferralSummaryFactory
+      .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
+      .withAssignedUser(hmppsAuthUser.username)
+      .build()
 
     cy.stubGetSentReferralsForUserToken([assignedReferral])
 
+    cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
     cy.stubGetActionPlan(draftActionPlan.id, draftActionPlan)
     cy.stubCreateDraftActionPlan(draftActionPlan)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
@@ -594,6 +626,7 @@ describe('Service provider referrals dashboard', () => {
 
     beforeEach(() => {
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, appointment)
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
@@ -741,6 +774,7 @@ describe('Service provider referrals dashboard', () => {
       })
 
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
@@ -894,6 +928,7 @@ describe('Service provider referrals dashboard', () => {
       })
 
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(intervention.id, intervention)
@@ -1045,6 +1080,7 @@ describe('Service provider referrals dashboard', () => {
         })
       cy.stubGetSentReferral(endedReferral.id, endedReferral)
       cy.stubGetSentReferralsForUserToken([endedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Intervention ended')
@@ -1062,6 +1098,7 @@ describe('Service provider referrals dashboard', () => {
       })
       cy.stubGetSentReferral(endedReferral.id, endedReferral)
       cy.stubGetSentReferralsForUserToken([endedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Please note that an end of service report must still be submitted within 10 working days.')
@@ -1074,6 +1111,7 @@ describe('Service provider referrals dashboard', () => {
       })
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.contains('Intervention cancelled').should('not.exist')
@@ -1133,6 +1171,7 @@ describe('Service provider referrals dashboard', () => {
     const draftEndOfServiceReport = endOfServiceReportFactory.justCreated().build({ referralId: referral.id })
 
     cy.stubGetSentReferralsForUserToken([referral])
+    cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
 
     cy.stubGetActionPlan(actionPlan.id, actionPlan)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
@@ -1278,6 +1317,7 @@ describe('Service provider referrals dashboard', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
 
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
       cy.stubGetSentReferral(referral.id, referral)
@@ -1370,6 +1410,7 @@ describe('Service provider referrals dashboard', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
 
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
       cy.stubGetSentReferral(referral.id, referral)
