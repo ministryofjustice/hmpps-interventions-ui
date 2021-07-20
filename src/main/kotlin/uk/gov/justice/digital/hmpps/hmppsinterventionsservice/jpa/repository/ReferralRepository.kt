@@ -10,7 +10,7 @@ import java.util.UUID
 
 interface ReferralRepository : JpaRepository<Referral, UUID> {
   @Query(
-    value = """select sentAt,
+    value = """select referralId, sentAt,
 			referenceNumber,
 			assignedToUserName,
 			interventionTitle,
@@ -28,7 +28,7 @@ interface ReferralRepository : JpaRepository<Referral, UUID> {
 			row_number() over(partition by r.id order by ra.assigned_at desc) as assigned_at_desc_seq		
 	from referral r
 			 inner join intervention i on i.id = r.intervention_id
-			 inner join referral_service_user_data rsud on rsud.referral_id = r.id
+			 left join referral_service_user_data rsud on rsud.referral_id = r.id
 			 inner join dynamic_framework_contract dfc on dfc.id = i.dynamic_framework_contract_id
 			 left join dynamic_framework_contract_sub_contractor dfcsc on dfcsc.dynamic_framework_contract_id = dfc.id
 			 left join referral_assignments ra on ra.referral_id = r.id

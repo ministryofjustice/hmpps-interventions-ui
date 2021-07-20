@@ -131,7 +131,7 @@ class ReferralService(
   private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser): List<ServiceProviderSentReferralSummary> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
 
-    val referralSummaries = referralRepository.referralSummaryForServiceProviders(serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.name })
+    val referralSummaries = referralRepository.referralSummaryForServiceProviders(serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.id })
     return referralAccessFilter.serviceProviderReferralSummaries(referralSummaries, user)
   }
 
