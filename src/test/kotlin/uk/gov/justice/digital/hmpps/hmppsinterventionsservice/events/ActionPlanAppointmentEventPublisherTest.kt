@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSes
 import java.net.URI
 import java.time.OffsetDateTime
 
-class ActionPlanActionPlanAppointmentEventPublisherTest {
+class ActionPlanAppointmentEventPublisherTest {
   private val eventPublisher = mock<ApplicationEventPublisher>()
   private val locationMapper = mock<LocationMapper>()
   private val publisher = ActionPlanAppointmentEventPublisher(eventPublisher, locationMapper)
