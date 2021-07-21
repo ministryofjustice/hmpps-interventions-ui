@@ -878,4 +878,23 @@ describe(PresenterUtils, () => {
       ).toEqual('10:30am to 3:45pm')
     })
   })
+
+  describe('type guards', () => {
+    describe('isNonNullAndDefined', () => {
+      it('should return false if undefined', () => {
+        expect(PresenterUtils.isNonNullAndDefined(undefined)).toBe(false)
+      })
+      it('should return false if null', () => {
+        expect(PresenterUtils.isNonNullAndDefined(null)).toBe(false)
+      })
+      it('should return true if non-null and defined', () => {
+        expect(PresenterUtils.isNonNullAndDefined('defined')).toBe(true)
+      })
+      it('can be used to filter types', () => {
+        const multiTypes: (string | null | undefined)[] = ['value', null, undefined]
+        const singleType: string[] = multiTypes.filter(PresenterUtils.isNonNullAndDefined)
+        expect(singleType).toEqual(['value'])
+      })
+    })
+  })
 })

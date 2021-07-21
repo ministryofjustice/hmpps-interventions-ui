@@ -30,7 +30,7 @@ interface ContactDetails {
 }
 
 interface ExpandedContactDetails extends ContactDetails {
-  addresses: Address[] | null
+  addresses: (Address | null | undefined)[] | null
 }
 
 interface PhoneNumber {
