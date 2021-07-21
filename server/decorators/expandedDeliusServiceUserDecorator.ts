@@ -39,6 +39,9 @@ export default class ExpandedDeliusServiceUserDecorator {
       return today < CalendarDay.britishDayForDate(new Date(address.to)).utcDate
     })
 
+    if (currentAddresses.length === 0) {
+      return null
+    }
     const mostRecentAddress = currentAddresses.sort(
       (a, b) => new Date(b.from!).getTime() - new Date(a.from!).getTime()
     )[0]

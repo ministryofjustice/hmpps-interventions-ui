@@ -191,6 +191,36 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
             expect(serviceUser.address).toBeNull()
           })
         })
+
+        describe('when there is no current address added for the service user', () => {
+          it('should return null', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [
+                    {
+                      from: '2021-04-09',
+                      to: '2021-04-30',
+                      noFixedAbode: true,
+                      postcode: 'xxx',
+                    },
+                    {
+                      from: '2020-06-29',
+                      to: '2021-04-09',
+                      noFixedAbode: false,
+                      addressNumber: 'xxx',
+                      streetName: 'xxx',
+                      district: 'xxx',
+                      postcode: 'xxx',
+                    },
+                  ],
+                },
+              })
+            )
+
+            expect(serviceUser.address).toBeNull()
+          })
+        })
       })
 
       describe('null  values checks', () => {
