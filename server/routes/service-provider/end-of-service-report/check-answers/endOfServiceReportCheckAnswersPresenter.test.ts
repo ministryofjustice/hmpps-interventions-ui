@@ -38,11 +38,9 @@ describe(EndOfServiceReportCheckAnswersPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new EndOfServiceReportCheckAnswersPresenter(
-        referral,
-        buildEndOfServiceReport(),
-        serviceCategory
-      )
+      const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, buildEndOfServiceReport(), [
+        serviceCategory,
+      ])
 
       expect(presenter.text).toEqual({
         subTitle: 'Review the end of service report',
@@ -52,11 +50,9 @@ describe(EndOfServiceReportCheckAnswersPresenter, () => {
 
   describe('answersPresenter', () => {
     it('returns a presenter', () => {
-      const presenter = new EndOfServiceReportCheckAnswersPresenter(
-        referral,
-        buildEndOfServiceReport(),
-        serviceCategory
-      )
+      const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, buildEndOfServiceReport(), [
+        serviceCategory,
+      ])
 
       expect(presenter.answersPresenter).toBeDefined()
     })

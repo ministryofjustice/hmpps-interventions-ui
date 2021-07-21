@@ -8,7 +8,7 @@ export default class EndOfServiceReportCheckAnswersPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategory
+    private readonly serviceCategories: ServiceCategory[]
   ) {}
 
   readonly formAction = `/service-provider/end-of-service-report/${this.endOfServiceReport.id}/submit`
@@ -17,12 +17,13 @@ export default class EndOfServiceReportCheckAnswersPresenter {
     subTitle: 'Review the end of service report',
   }
 
-  readonly formPagePresenter = new EndOfServiceReportFormPresenter(this.serviceCategory, this.referral).checkAnswersPage
+  readonly formPagePresenter = new EndOfServiceReportFormPresenter(this.serviceCategories[0], this.referral)
+    .checkAnswersPage
 
   readonly answersPresenter = new EndOfServiceReportAnswersPresenter(
     this.referral,
     this.endOfServiceReport,
-    [this.serviceCategory],
+    this.serviceCategories,
     true
   )
 }
