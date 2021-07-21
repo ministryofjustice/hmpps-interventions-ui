@@ -65,17 +65,7 @@ export default class RestClient {
       const unauthenticatedRequest = superagent
         .get(`${this.apiUrl()}${path}`)
         .agent(this.agent)
-        .retry(2, (err, res) => {
-          if (err)
-            this.logger.info(
-              {
-                code: err.code,
-                message: err.message,
-              },
-              'retry handler found API error'
-            )
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
+        .retry(0)
         .query(query)
         .set(headers)
         .responseType(responseType)
@@ -137,10 +127,7 @@ export default class RestClient {
         .patch(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
-        .retry(2, (err, res) => {
-          if (err) this.logger.info({ code: err.code, message: err.message }, 'retry handler found API error')
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
+        .retry(0)
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
@@ -171,10 +158,7 @@ export default class RestClient {
         .put(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
-        .retry(2, (err, res) => {
-          if (err) this.logger.info({ code: err.code, message: err.message }, 'retry handler found API error')
-          return undefined // retry handler only for logging retries, not to influence retry logic
-        })
+        .retry(0)
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
