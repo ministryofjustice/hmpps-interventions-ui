@@ -278,6 +278,8 @@ class AppointmentServiceTest {
       assertThat(arguments.id).isEqualTo(appointmentId)
       assertThat(arguments.appointmentFeedbackSubmittedAt).isNotNull
       assertThat(arguments.appointmentFeedbackSubmittedBy).isEqualTo(submittedBy)
+
+      verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(appointment, false, SUPPLIER_ASSESSMENT)
     }
 
     @Test
