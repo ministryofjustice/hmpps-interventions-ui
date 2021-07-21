@@ -17,7 +17,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
@@ -40,7 +40,7 @@ internal class ActionPlanSessionsServiceTest {
   private val actionPlanRepository: ActionPlanRepository = mock()
   private val actionPlanSessionRepository: ActionPlanSessionRepository = mock()
   private val authUserRepository: AuthUserRepository = mock()
-  private val appointmentEventPublisher: AppointmentEventPublisher = mock()
+  private val actionPlanAppointmentEventPublisher: ActionPlanAppointmentEventPublisher = mock()
   private val communityAPIBookingService: CommunityAPIBookingService = mock()
   private val appointmentRepository: AppointmentRepository = mock()
   private val appointmentService: AppointmentService = mock()
@@ -50,7 +50,7 @@ internal class ActionPlanSessionsServiceTest {
 
   private val actionPlanSessionsService = ActionPlanSessionsService(
     actionPlanSessionRepository, actionPlanRepository,
-    authUserRepository, appointmentEventPublisher,
+    authUserRepository, actionPlanAppointmentEventPublisher,
     communityAPIBookingService, appointmentService, appointmentRepository,
   )
 
@@ -443,10 +443,10 @@ internal class ActionPlanSessionsServiceTest {
     actionPlanSessionsService.recordAppointmentAttendance(user, actionPlanId, 1, Attended.YES, "")
     actionPlanSessionsService.recordBehaviour(user, actionPlanId, 1, "bad", true)
 
-    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, user)
-    verify(appointmentEventPublisher).attendanceRecordedEvent(session, false)
-    verify(appointmentEventPublisher).behaviourRecordedEvent(session, true)
-    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(session, true)
+    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.actionPlan.createdBy)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
+    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(session, true)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, true)
   }
 
   @Test
@@ -487,8 +487,8 @@ internal class ActionPlanSessionsServiceTest {
     actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, user)
 
     verify(actionPlanSessionRepository, atLeastOnce()).save(session)
-    verify(appointmentEventPublisher).attendanceRecordedEvent(session, true)
-    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, true)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
   }
 
   @Test
@@ -505,7 +505,7 @@ internal class ActionPlanSessionsServiceTest {
     actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, user)
 
     verify(actionPlanSessionRepository, atLeastOnce()).save(session)
-    verify(appointmentEventPublisher).attendanceRecordedEvent(session, false)
-    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
   }
 }

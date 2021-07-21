@@ -13,38 +13,25 @@ import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
-import java.time.OffsetDateTime
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.util.UUID
 
 class NotifyAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
-  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val appointmentFactory = AppointmentFactory()
+  private val referralFactory = ReferralFactory()
 
-  private fun appointmentEvent(type: AppointmentEventType, notifyPP: Boolean): AppointmentEvent {
+  private fun appointmentEvent(type: AppointmentEventType, notifyPP: Boolean, appointmentType: AppointmentType = AppointmentType.SUPPLIER_ASSESSMENT): AppointmentEvent {
     return AppointmentEvent(
       "source",
       type,
-      actionPlanSessionFactory.createAttended(
-        id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
-        actionPlan = SampleData.sampleActionPlan(
-          id = UUID.fromString("4907ffb5-94cf-4eff-8cf9-dcf09765be42"),
-          referral = SampleData.sampleReferral(
-            "X123456",
-            "Harmony Living",
-            id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
-            referenceNumber = "HAS71263",
-            sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
-          ),
-        ),
-        createdBy = SampleData.sampleAuthUser(),
-        attended = Attended.YES,
-      ),
+      appointmentFactory.create(referral = referralFactory.createSent(id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"))),
       "http://localhost:8080/appointment/42c7d267-0776-4272-a8e8-a673bfe30d0d",
       notifyPP,
+      appointmentType
     )
   }
 
@@ -53,7 +40,7 @@ class NotifyAppointmentServiceTest {
       "template",
       "template",
       "http://example.com",
-      "/pp/action-plan/{id}/appointment/sessionNumber/{sessionNumber}/feedback",
+      "/probation-practitioner/referrals/{id}/supplier-assessment/post-session-feedback",
       emailSender,
       hmppsAuthService,
     )
@@ -82,8 +69,8 @@ class NotifyAppointmentServiceTest {
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
-    Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/pp/action-plan/4907ffb5-94cf-4eff-8cf9-dcf09765be42/appointment/sessionNumber/1/feedback")
+    Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS18726AC")
+    Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/probation-practitioner/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/supplier-assessment/post-session-feedback")
   }
 
   @Test
@@ -109,7 +96,13 @@ class NotifyAppointmentServiceTest {
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
-    Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/pp/action-plan/4907ffb5-94cf-4eff-8cf9-dcf09765be42/appointment/sessionNumber/1/feedback")
+    Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS18726AC")
+    Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/probation-practitioner/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/supplier-assessment/post-session-feedback")
+  }
+
+  @Test
+  fun `appointment event does not send email for appointment event time service delivery`() {
+    notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, false, AppointmentType.SERVICE_DELIVERY))
+    verifyZeroInteractions(emailSender)
   }
 }

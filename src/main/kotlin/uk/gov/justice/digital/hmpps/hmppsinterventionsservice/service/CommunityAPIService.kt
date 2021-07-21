@@ -6,10 +6,10 @@ import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -185,10 +185,10 @@ class CommunityAPIAppointmentEventService(
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
-) : ApplicationListener<AppointmentEvent>, CommunityAPIService {
+) : ApplicationListener<ActionPlanAppointmentEvent>, CommunityAPIService {
   companion object : KLogging()
 
-  override fun onApplicationEvent(event: AppointmentEvent) {
+  override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     when (event.type) {
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)

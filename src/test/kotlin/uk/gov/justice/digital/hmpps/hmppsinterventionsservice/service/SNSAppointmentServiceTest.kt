@@ -9,8 +9,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
@@ -27,9 +27,9 @@ internal class SNSAppointmentServiceTest {
     referral = ReferralFactory().createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"))
   )
   private val now = OffsetDateTime.now()
-  private fun attendanceRecordedEvent(attendance: Attended) = AppointmentEvent(
+  private fun attendanceRecordedEvent(attendance: Attended) = ActionPlanAppointmentEvent(
     "source",
-    AppointmentEventType.ATTENDANCE_RECORDED,
+    ActionPlanAppointmentEventType.ATTENDANCE_RECORDED,
     actionPlanSessionFactory.createAttended(
       actionPlan = actionPlan,
       createdBy = actionPlan.createdBy,

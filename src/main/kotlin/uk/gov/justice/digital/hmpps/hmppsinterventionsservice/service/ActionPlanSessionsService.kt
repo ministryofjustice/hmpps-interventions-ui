@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
@@ -28,7 +28,7 @@ class ActionPlanSessionsService(
   val actionPlanSessionRepository: ActionPlanSessionRepository,
   val actionPlanRepository: ActionPlanRepository,
   val authUserRepository: AuthUserRepository,
-  val appointmentEventPublisher: AppointmentEventPublisher,
+  val actionPlanAppointmentEventPublisher: ActionPlanAppointmentEventPublisher,
   val communityAPIBookingService: CommunityAPIBookingService,
   val appointmentService: AppointmentService,
   val appointmentRepository: AppointmentRepository,
@@ -154,13 +154,13 @@ class ActionPlanSessionsService(
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
     actionPlanSessionRepository.save(session)
 
-    appointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)
+    actionPlanAppointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)
 
     if (appointment.attendanceBehaviourSubmittedAt != null) { // excluding the case of non attendance
-      appointmentEventPublisher.behaviourRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
+      actionPlanAppointmentEventPublisher.behaviourRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
     }
 
-    appointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
+    actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
     return session
   }
 

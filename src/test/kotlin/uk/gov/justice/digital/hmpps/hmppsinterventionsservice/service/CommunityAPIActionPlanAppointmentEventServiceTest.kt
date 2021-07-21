@@ -6,15 +6,15 @@ import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType.SESSION_FEEDBACK_RECORDED
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class CommunityAPIAppointmentEventServiceTest {
+class CommunityAPIActionPlanAppointmentEventServiceTest {
 
   private val communityAPIClient = mock<CommunityAPIClient>()
 
@@ -49,7 +49,7 @@ class CommunityAPIAppointmentEventServiceTest {
     )
   }
 
-  private val appointmentEvent = AppointmentEvent(
+  private val appointmentEvent = ActionPlanAppointmentEvent(
     "source",
     SESSION_FEEDBACK_RECORDED,
     actionPlanSessionFactory.createAttended(
