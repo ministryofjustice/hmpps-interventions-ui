@@ -193,17 +193,79 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
         })
       })
 
-      describe('when there is no address returned from nDelius', () => {
-        it('returns null', () => {
-          const serviceUser = new ExpandedDeliusServiceUserDecorator(
-            expandedDeliusServiceUserFactory.build({
-              contactDetails: {
-                addresses: [],
-              },
-            })
-          )
+      describe('null  values checks', () => {
+        describe('when there is no address returned from nDelius', () => {
+          it('returns null', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [],
+                },
+              })
+            )
 
-          expect(serviceUser.address).toBeNull()
+            expect(serviceUser.address).toBeNull()
+          })
+        })
+        describe('when the addresses contains a single undefined address', () => {
+          it('should return null', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [undefined],
+                },
+              })
+            )
+
+            expect(serviceUser.address).toBeNull()
+          })
+        })
+        describe('when the addresses contains a single null address', () => {
+          it('should return null', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [null],
+                },
+              })
+            )
+            expect(serviceUser.address).toBeNull()
+          })
+        })
+
+        describe('when there is only one address mixed in with undefined and null', () => {
+          it('should return the single address', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [
+                    null,
+                    undefined,
+                    {
+                      addressNumber: 'Flat 2',
+                      buildingName: null,
+                      streetName: 'Test Walk',
+                      postcode: 'SW16 1AQ',
+                      town: 'London',
+                      district: 'City of London',
+                      county: 'Greater London',
+                      from: '2019-01-01',
+                      to: null,
+                      noFixedAbode: false,
+                    },
+                  ],
+                },
+              })
+            )
+
+            expect(serviceUser.address).toEqual([
+              'Flat 2 Test Walk',
+              'London',
+              'City of London',
+              'Greater London',
+              'SW16 1AQ',
+            ])
+          })
         })
       })
     })
