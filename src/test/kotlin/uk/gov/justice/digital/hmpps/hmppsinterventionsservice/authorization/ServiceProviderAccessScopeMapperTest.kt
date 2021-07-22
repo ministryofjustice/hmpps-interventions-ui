@@ -73,26 +73,31 @@ class ServiceProviderAccessScopeMapperTest {
     @BeforeEach
     fun setup() {
       whenever(hmppsAuthService.getUserGroups(spUser))
-        .thenReturn(listOf("INT_SP_TEST_P1", "INT_SP_TEST_P2", "INT_CR_TEST_C0001", "INT_CR_TEST_C0002"))
+        .thenReturn(listOf("INT_SP_TEST_P1", "INT_SP_TEST_A2", "INT_CR_TEST_C0001", "INT_CR_TEST_A0002"))
 
       val p1 = ServiceProvider(id = "TEST_P1", name = "Test 1 Ltd")
-      val p2 = ServiceProvider(id = "TEST_P2", name = "Test 2 Ltd")
+      val p2 = ServiceProvider(id = "TEST_A2", name = "Test 2 Ltd")
       providers = listOf(p1, p2)
-      whenever(serviceProviderRepository.findAllById(listOf("TEST_P1", "TEST_P2")))
+      whenever(serviceProviderRepository.findAllById(listOf("TEST_P1", "TEST_A2")))
         .thenReturn(providers)
 
       val c1 = SampleData.sampleContract(contractReference = "TEST_C0001", primeProvider = p1)
-      val c2 = SampleData.sampleContract(contractReference = "TEST_C0002", primeProvider = p2)
+      val c2 = SampleData.sampleContract(contractReference = "TEST_A0002", primeProvider = p2)
       contracts = listOf(c1, c2)
-      whenever(dynamicFrameworkContractRepository.findAllByContractReferenceIn(listOf("TEST_C0001", "TEST_C0002")))
+      whenever(dynamicFrameworkContractRepository.findAllByContractReferenceIn(listOf("TEST_C0001", "TEST_A0002")))
         .thenReturn(contracts)
     }
 
     @Test
-    fun `returns the access scope`() {
+    fun `returns the access scope with providers sorted by their ID`() {
       val scope = mapper.fromUser(spUser)
-      assertThat(scope.serviceProviders).containsExactlyElementsOf(providers)
-      assertThat(scope.contracts).containsExactlyElementsOf(contracts)
+      assertThat(scope.serviceProviders.map { it.id }).containsExactly("TEST_A2", "TEST_P1")
+    }
+
+    @Test
+    fun `returns the access scope with contracts sorted by their contract reference`() {
+      val scope = mapper.fromUser(spUser)
+      assertThat(scope.contracts.map { it.contractReference }).containsExactly("TEST_A0002", "TEST_C0001")
     }
 
     @Test
@@ -104,8 +109,8 @@ class ServiceProviderAccessScopeMapperTest {
           "userId" to "b40ac52d-037d-4732-a3cd-bf5484c6ab6a",
           "userName" to "test@test.example.org",
           "userAuthSource" to "auth",
-          "contracts" to "TEST_C0001,TEST_C0002",
-          "providers" to "TEST_P1,TEST_P2",
+          "contracts" to "TEST_A0002,TEST_C0001",
+          "providers" to "TEST_A2,TEST_P1",
         ),
         null
       )

@@ -121,7 +121,7 @@ class ServiceProviderAccessScopeMapper(
     unidentifiedProviders.forEach { undefinedProvider ->
       configErrors.add("unidentified provider '$undefinedProvider': group does not exist in the reference data")
     }
-    return providers
+    return providers.sortedBy { it.id }
   }
 
   private fun getContracts(contractGroups: List<String>, configErrors: MutableList<String>): List<DynamicFrameworkContract> {
@@ -130,6 +130,6 @@ class ServiceProviderAccessScopeMapper(
     unidentifiedContracts.forEach { undefinedContract ->
       configErrors.add("unidentified contract '$undefinedContract': group does not exist in the reference data")
     }
-    return contracts
+    return contracts.sortedBy { it.contractReference }
   }
 }
