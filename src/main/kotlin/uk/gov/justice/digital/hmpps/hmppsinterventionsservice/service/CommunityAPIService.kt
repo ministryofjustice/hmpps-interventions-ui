@@ -10,6 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
@@ -178,8 +180,9 @@ class CommunityAPIActionPlanEventService(
     communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
   }
 }
+
 @Service
-class CommunityAPIAppointmentEventService(
+class CommunityAPIActionPlanAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
@@ -206,6 +209,43 @@ class CommunityAPIAppointmentEventService(
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
           .buildAndExpand(event.actionPlanSession.actionPlan.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
+          .toString()
+
+        communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
+      }
+      else -> {}
+    }
+  }
+}
+
+@Service
+class CommunityAPIAppointmentEventService(
+  @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSessionFeedbackLocation: String,
+  @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
+  @Value("\${community-api.integration-context}") private val integrationContext: String,
+  private val communityAPIClient: CommunityAPIClient,
+) : ApplicationListener<AppointmentEvent>, CommunityAPIService {
+  companion object : KLogging()
+
+  override fun onApplicationEvent(event: AppointmentEvent) {
+    when (event.type) {
+      AppointmentEventType.SESSION_FEEDBACK_RECORDED -> {
+        val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
+          .path(ppSessionFeedbackLocation)
+          .buildAndExpand(event.appointment.referral.id)
+          .toString()
+
+        val appointment = event.appointment
+
+        val request = AppointmentOutcomeRequest(
+          getNotes(event.appointment.referral, url, "Session Feedback Recorded"),
+          appointment.attended!!.name,
+          appointment.notifyPPOfAttendanceBehaviour ?: false
+        )
+
+        val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
+          .buildAndExpand(event.appointment.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
