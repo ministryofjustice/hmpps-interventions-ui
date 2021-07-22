@@ -41,7 +41,7 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
     assertThat(urlCaptor.firstValue).isEqualTo("/secure/offenders/crn/CRN123/appointments/123456/outcome/context/commissioned-rehabilitation-services")
     assertThat(payloadCaptor.firstValue.toString()).isEqualTo(
       AppointmentOutcomeRequest(
-        "Session Feedback Recorded for Accommodation Referral X123456 with Prime Provider TOP Service Provider\n" +
+        "Session Feedback Recorded for Accommodation Referral X123456 with Prime Provider Service Provider\n" +
           "http://baseUrl/probation-practitioner/action-plan/$actionPlanId/appointment/1/post-session-feedback",
         "LATE",
         true
