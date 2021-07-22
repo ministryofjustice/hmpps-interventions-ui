@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -27,6 +28,7 @@ class ServiceProviderAccessScopeMapper(
   private val serviceProviderRepository: ServiceProviderRepository,
   private val dynamicFrameworkContractRepository: DynamicFrameworkContractRepository,
   private val userTypeChecker: UserTypeChecker,
+  private val telemetryClient: TelemetryClient,
 ) {
   private val serviceProviderGroupPrefix = "INT_SP_"
   private val contractGroupPrefix = "INT_CR_"
@@ -57,7 +59,19 @@ class ServiceProviderAccessScopeMapper(
     return ServiceProviderAccessScope(
       serviceProviders = workingScope.providers,
       contracts = workingScope.contracts,
-    )
+    ).also {
+      telemetryClient.trackEvent(
+        "InterventionsAuthorizedProvider",
+        mapOf(
+          "userId" to user.id,
+          "userName" to user.userName,
+          "userAuthSource" to user.authSource,
+          "contracts" to it.contracts.joinToString(",") { c -> c.contractReference },
+          "providers" to it.serviceProviders.joinToString(",") { p -> p.id },
+        ),
+        null
+      )
+    }
   }
 
   private fun resolveProviders(scope: WorkingScope) {
@@ -107,7 +121,7 @@ class ServiceProviderAccessScopeMapper(
     unidentifiedProviders.forEach { undefinedProvider ->
       configErrors.add("unidentified provider '$undefinedProvider': group does not exist in the reference data")
     }
-    return providers
+    return providers.sortedBy { it.id }
   }
 
   private fun getContracts(contractGroups: List<String>, configErrors: MutableList<String>): List<DynamicFrameworkContract> {
@@ -116,6 +130,6 @@ class ServiceProviderAccessScopeMapper(
     unidentifiedContracts.forEach { undefinedContract ->
       configErrors.add("unidentified contract '$undefinedContract': group does not exist in the reference data")
     }
-    return contracts
+    return contracts.sortedBy { it.contractReference }
   }
 }

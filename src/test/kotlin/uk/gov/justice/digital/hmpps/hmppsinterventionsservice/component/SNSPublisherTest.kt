@@ -24,7 +24,7 @@ class SNSPublisherTest {
   private val telemetryClient = mock<TelemetryClient>()
 
   private val aReferralId = UUID.fromString("82138d14-3835-442b-b39b-9f8a07650bbe")
-  private val aUser = AuthUser("d7c4c3a7a7", "irrelevant", "irrelevant")
+  private val aUser = AuthUser("d7c4c3a7a7", "irrelevant", "d7c4c3a7a7@example.org")
 
   val event = EventDTO(
     "intervention.test.event",
@@ -58,6 +58,7 @@ class SNSPublisherTest {
         "event" to "intervention.test.event",
         "referralId" to "82138d14-3835-442b-b39b-9f8a07650bbe",
         "actorUserId" to "d7c4c3a7a7",
+        "actorUserName" to "d7c4c3a7a7@example.org",
       ),
       null
     )
@@ -84,6 +85,7 @@ class SNSPublisherTest {
         "event" to "intervention.test.event",
         "referralId" to "82138d14-3835-442b-b39b-9f8a07650bbe",
         "actorUserId" to "d7c4c3a7a7",
+        "actorUserName" to "d7c4c3a7a7@example.org",
       ),
       null
     )

@@ -37,6 +37,7 @@ class SNSPublisher(
         "event" to eventType,
         "referralId" to referralId.toString(),
         "actorUserId" to actor.id,
+        "actorUserName" to actor.userName,
       ),
       null
     )
