@@ -2898,7 +2898,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  /*
   describe('recordAppointmentAttendance', () => {
     it('returns an updated appointment with the service user‘s attendance', async () => {
       const appointment = appointmentFactory.build({
@@ -2918,12 +2917,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists and no feedback has been recorded',
+        state:
+          'There is an existing sent referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2 and the supplier assessment has been booked but no feedback details have yet been submitted',
         uponReceiving:
-          'a PUT request to set the attendance for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
+          'a PUT request to set the attendance for the supplier assessment appointment for the referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2',
         withRequest: {
           method: 'PUT',
-          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-attendance',
+          path: '/referral/58963698-0f2e-4d6e-a072-0e2cf351f3b2/supplier-assessment/record-attendance',
           body: {
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
@@ -2939,9 +2939,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordAppointmentAttendance(
+      const result = await interventionsService.recordSupplierAssessmentAppointmentAttendance(
         token,
-        '578e9360-8938-4fea-8889-19a3309ad840',
+        '58963698-0f2e-4d6e-a072-0e2cf351f3b2',
         {
           attended: 'late',
           additionalAttendanceInformation: 'Alex missed the bus',
@@ -2959,8 +2959,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         durationInMinutes: 120,
         sessionFeedback: {
           attendance: {
-            attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex picked up the phone on time.',
           },
           behaviour: {
             behaviourDescription: 'Alex was well behaved',
@@ -2971,12 +2971,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists',
+        state:
+          'There is an existing sent referral with ID caac2a85-578f-4b0b-996d-2893311eb60e and the supplier assessment attendance details have been recorded',
         uponReceiving:
-          'a PUT request to set the behaviour for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
+          'a PUT request to set the behaviour for the supplier assessment for the referral with ID caac2a85-578f-4b0b-996d-2893311eb60e',
         withRequest: {
           method: 'PUT',
-          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-behaviour',
+          path: '/referral/caac2a85-578f-4b0b-996d-2893311eb60e/supplier-assessment/record-behaviour',
           body: {
             behaviourDescription: 'Alex was well behaved',
             notifyProbationPractitioner: false,
@@ -2992,9 +2993,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordAppointmentBehavior(
+      const result = await interventionsService.recordSupplierAssessmentAppointmentBehaviour(
         token,
-        '578e9360-8938-4fea-8889-19a3309ad840',
+        'caac2a85-578f-4b0b-996d-2893311eb60e',
         {
           behaviourDescription: 'Alex was well behaved',
           notifyProbationPractitioner: false,
@@ -3012,11 +3013,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         durationInMinutes: 120,
         sessionFeedback: {
           attendance: {
-            attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex picked up the phone on time.',
           },
           behaviour: {
-            behaviourDescription: 'Alex was well behaved',
+            behaviourDescription: 'We were having a good time on the phone.',
             notifyProbationPractitioner: false,
           },
           submitted: true,
@@ -3024,12 +3025,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state: 'an appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb exists',
+        state:
+          'There is an existing sent referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1 and the supplier assessment attendance and behaviour details have been recorded',
         uponReceiving:
-          'a POST request to submit the feedback for the appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb',
+          'a POST request to submit the feedback for the supplier assessment of the referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1',
         withRequest: {
           method: 'POST',
-          path: '/appointment/86c422b4-4c55-42ec-b9a6-3ae1ab000adb/submit-feedback',
+          path: '/referral/cd8f46a2-78f2-457b-ab14-7d77adce73d1/supplier-assessment/submit-feedback',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -3041,11 +3043,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.submitAppointmentFeedback(token, '86c422b4-4c55-42ec-b9a6-3ae1ab000adb')
+      const result = await interventionsService.submitSupplierAssessmentAppointmentFeedback(
+        token,
+        'cd8f46a2-78f2-457b-ab14-7d77adce73d1'
+      )
       expect(result.sessionFeedback!.submitted).toEqual(true)
     })
   })
-  */
 })
 
 describe('serializeDeliusServiceUser', () => {
