@@ -824,7 +824,7 @@ export default class ServiceProviderReferralsController {
       throw new Error('Attempting to submit supplier assessment feedback without a current appointment')
     }
 
-    await this.interventionsService.submitAppointmentFeedback(accessToken, appointment.id)
+    await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
 
     return res.redirect(
       `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`

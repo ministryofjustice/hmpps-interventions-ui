@@ -541,11 +541,11 @@ export default class InterventionsService {
     })) as Appointment
   }
 
-  async submitAppointmentFeedback(token: string, id: string): Promise<Appointment> {
+  async submitSupplierAssessmentAppointmentFeedback(token: string, referralId: string): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/appointment/${id}/submit`,
+      path: `/referral/${referralId}/supplier-assessment/submit-feedback`,
       headers: { Accept: 'application/json' },
     })) as Appointment
   }
