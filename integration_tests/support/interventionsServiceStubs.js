@@ -134,8 +134,8 @@ Cypress.Commands.add('stubRecordAppointmentAttendance', (id, responseJson) => {
   cy.task('stubRecordAppointmentAttendance', { id, responseJson })
 })
 
-Cypress.Commands.add('stubRecordAppointmentBehaviour', (id, responseJson) => {
-  cy.task('stubRecordAppointmentBehaviour', { id, responseJson })
+Cypress.Commands.add('stubRecordSupplierAssessmentAppointmentBehaviour', (referralId, responseJson) => {
+  cy.task('stubRecordSupplierAssessmentAppointmentBehaviour', { referralId, responseJson })
 })
 
 Cypress.Commands.add('stubGetSupplierAssessment', (referralId, responseJson) => {

@@ -1676,7 +1676,7 @@ describe('Service provider referrals dashboard', () => {
           })
 
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.stubRecordAppointmentBehaviour(appointmentWithBehaviourFeedback.id, appointmentWithBehaviourFeedback)
+          cy.stubRecordSupplierAssessmentAppointmentBehaviour(sentReferral.id, appointmentWithBehaviourFeedback)
 
           cy.contains('Save and continue').click()
           cy.location('pathname').should(

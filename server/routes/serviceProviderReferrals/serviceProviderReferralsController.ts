@@ -777,7 +777,11 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        await this.interventionsService.recordAppointmentBehaviour(accessToken, appointment.id, data.paramsForUpdate)
+        await this.interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+          accessToken,
+          referralId,
+          data.paramsForUpdate
+        )
         return res.redirect(
           `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
         )

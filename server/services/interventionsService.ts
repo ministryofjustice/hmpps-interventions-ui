@@ -527,15 +527,15 @@ export default class InterventionsService {
     })) as Appointment
   }
 
-  async recordAppointmentBehaviour(
+  async recordSupplierAssessmentAppointmentBehaviour(
     token: string,
-    id: string,
+    referralId: string,
     appointmentBehaviourUpdate: Partial<AppointmentBehaviour>
   ): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.put({
-      path: `/appointment/${id}/record-behaviour`,
+      path: `/referral/${referralId}/supplier-assessment/record-behaviour`,
       headers: { Accept: 'application/json' },
       data: appointmentBehaviourUpdate,
     })) as Appointment

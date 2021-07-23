@@ -2116,7 +2116,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         currentAppointmentId: appointment.id,
       })
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.recordAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+      interventionsService.recordSupplierAssessmentAppointmentBehaviour.mockResolvedValue(updatedAppointment)
       await request(app)
         .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
         .type('form')

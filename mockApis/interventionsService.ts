@@ -535,11 +535,14 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordAppointmentBehaviour = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubRecordSupplierAssessmentAppointmentBehaviour = async (
+    referralId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'PUT',
-        urlPattern: `${this.mockPrefix}/appointment/${id}/record-behaviour`,
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/supplier-assessment/record-behaviour`,
       },
       response: {
         status: 200,
