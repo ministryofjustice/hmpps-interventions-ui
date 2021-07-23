@@ -248,10 +248,28 @@ class SetupAssistant(
   fun addSupplierAssessmentAppointment(
     supplierAssessment: SupplierAssessment,
     referral: Referral = createSentReferral(),
-    appointment: Appointment = appointmentFactory.create(createdBy = createPPUser(), referral = referral),
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    attendanceBehaviour: String? = null,
+    notifyPPOfAttendanceBehaviour: Boolean? = null,
   ) {
+    val appointment: Appointment = appointmentFactory.create(createdBy = createPPUser(), referral = referral)
+    if (attended !== null) {
+      appointment.attended = attended
+      appointment.additionalAttendanceInformation = additionalAttendanceInformation
+      appointment.attendanceSubmittedAt = OffsetDateTime.now()
+      appointment.attendanceSubmittedBy = createSPUser()
+    }
+
+    if (attendanceBehaviour !== null) {
+      appointment.attendanceBehaviour = attendanceBehaviour
+      appointment.notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour
+      appointment.attendanceBehaviourSubmittedAt = OffsetDateTime.now()
+      appointment.attendanceBehaviourSubmittedBy = createSPUser()
+    }
+
     appointmentRepository.save(appointment)
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.saveAndFlush(supplierAssessment)
