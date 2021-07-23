@@ -729,9 +729,9 @@ export default class ServiceProviderReferralsController {
         formError = data.error
         userInputData = req.body
       } else {
-        const updatedAppointment = await this.interventionsService.recordAppointmentAttendance(
+        const updatedAppointment = await this.interventionsService.recordSupplierAssessmentAppointmentAttendance(
           accessToken,
-          appointment.id,
+          referralId,
           data.paramsForUpdate
         )
         const redirectPath =

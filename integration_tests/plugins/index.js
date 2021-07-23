@@ -207,8 +207,8 @@ module.exports = on => {
       return assessRisksAndNeedsService.stubGetRiskSummary(arg.crn, arg.responseJson)
     },
 
-    stubRecordAppointmentAttendance: arg => {
-      return interventionsService.stubRecordAppointmentAttendance(arg.id, arg.responseJson)
+    stubRecordSupplierAssessmentAppointmentAttendance: arg => {
+      return interventionsService.stubRecordSupplierAssessmentAppointmentAttendance(arg.referralId, arg.responseJson)
     },
 
     stubRecordSupplierAssessmentAppointmentBehaviour: arg => {

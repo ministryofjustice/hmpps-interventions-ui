@@ -1979,7 +1979,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
       })
 
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
       await request(app)
         .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
@@ -2014,7 +2014,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         currentAppointmentId: appointment.id,
       })
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
       await request(app)
         .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
         .type('form')
