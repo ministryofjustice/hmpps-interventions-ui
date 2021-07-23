@@ -1543,7 +1543,7 @@ describe('Service provider referrals dashboard', () => {
           })
 
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.stubRecordAppointmentAttendance(appointmentWithAttendanceFeedback.id, appointmentWithAttendanceFeedback)
+          cy.stubRecordSupplierAssessmentAppointmentAttendance(sentReferral.id, appointmentWithAttendanceFeedback)
           cy.contains('Save and continue').click()
           cy.location('pathname').should(
             'equal',
@@ -1557,7 +1557,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains("Add additional information about Alex's attendance:")
           cy.contains('Alex did not attend the session')
 
-          cy.stubSubmitAppointmentFeedback(appointmentWithAttendanceFeedback.id, appointmentWithAttendanceFeedback)
+          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithAttendanceFeedback)
           cy.get('form').contains('Confirm').click()
 
           cy.contains('Initial assessment added')
@@ -1645,7 +1645,7 @@ describe('Service provider referrals dashboard', () => {
           })
 
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.stubRecordAppointmentAttendance(appointmentWithAttendanceFeedback.id, appointmentWithAttendanceFeedback)
+          cy.stubRecordSupplierAssessmentAppointmentAttendance(sentReferral.id, appointmentWithAttendanceFeedback)
           cy.contains('Save and continue').click()
           cy.location('pathname').should(
             'equal',
@@ -1676,7 +1676,7 @@ describe('Service provider referrals dashboard', () => {
           })
 
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.stubRecordAppointmentBehaviour(appointmentWithBehaviourFeedback.id, appointmentWithBehaviourFeedback)
+          cy.stubRecordSupplierAssessmentAppointmentBehaviour(sentReferral.id, appointmentWithBehaviourFeedback)
 
           cy.contains('Save and continue').click()
           cy.location('pathname').should(
@@ -1694,7 +1694,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('If you described poor behaviour, do you want to notify the probation practitioner?')
           cy.contains('Yes')
 
-          cy.stubSubmitAppointmentFeedback(appointmentWithBehaviourFeedback.id, appointmentWithBehaviourFeedback)
+          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithBehaviourFeedback)
           cy.get('form').contains('Confirm').click()
 
           cy.contains('Initial assessment added')

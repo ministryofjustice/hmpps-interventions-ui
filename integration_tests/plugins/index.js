@@ -207,12 +207,12 @@ module.exports = on => {
       return assessRisksAndNeedsService.stubGetRiskSummary(arg.crn, arg.responseJson)
     },
 
-    stubRecordAppointmentAttendance: arg => {
-      return interventionsService.stubRecordAppointmentAttendance(arg.id, arg.responseJson)
+    stubRecordSupplierAssessmentAppointmentAttendance: arg => {
+      return interventionsService.stubRecordSupplierAssessmentAppointmentAttendance(arg.referralId, arg.responseJson)
     },
 
-    stubRecordAppointmentBehaviour: arg => {
-      return interventionsService.stubRecordAppointmentBehaviour(arg.id, arg.responseJson)
+    stubRecordSupplierAssessmentAppointmentBehaviour: arg => {
+      return interventionsService.stubRecordSupplierAssessmentAppointmentBehaviour(arg.referralId, arg.responseJson)
     },
 
     stubGetSupplierAssessment: arg => {
@@ -223,8 +223,8 @@ module.exports = on => {
       return interventionsService.stubScheduleSupplierAssessmentAppointment(arg.supplierAssessmentId, arg.responseJson)
     },
 
-    stubSubmitAppointmentFeedback: arg => {
-      return interventionsService.stubSubmitAppointmentFeedback(arg.id, arg.responseJson)
+    stubSubmitSupplierAssessmentAppointmentFeedback: arg => {
+      return interventionsService.stubSubmitSupplierAssessmentAppointmentFeedback(arg.referralId, arg.responseJson)
     },
   })
 }

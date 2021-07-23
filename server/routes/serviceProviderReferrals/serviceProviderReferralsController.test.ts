@@ -1979,7 +1979,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
       })
 
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
       await request(app)
         .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
@@ -2014,7 +2014,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         currentAppointmentId: appointment.id,
       })
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.recordAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
       await request(app)
         .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
         .type('form')
@@ -2116,7 +2116,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         currentAppointmentId: appointment.id,
       })
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.recordAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+      interventionsService.recordSupplierAssessmentAppointmentBehaviour.mockResolvedValue(updatedAppointment)
       await request(app)
         .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
         .type('form')
@@ -2219,7 +2219,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
       currentAppointmentId: appointment.id,
     })
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-    interventionsService.submitAppointmentFeedback.mockResolvedValue(appointment)
+    interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
 
     await request(app)
       .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
@@ -2229,7 +2229,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
         `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/confirmation`
       )
 
-    expect(interventionsService.submitAppointmentFeedback).toHaveBeenCalledWith('token', appointment.id)
+    expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith('token', referral.id)
   })
   it('renders an error if there is no current appointment for the supplier assessment', async () => {
     const appointment = appointmentFactory.build()
@@ -2238,7 +2238,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
       appointments: [],
     })
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-    interventionsService.submitAppointmentFeedback.mockResolvedValue(appointment)
+    interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
 
     await request(app)
       .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
