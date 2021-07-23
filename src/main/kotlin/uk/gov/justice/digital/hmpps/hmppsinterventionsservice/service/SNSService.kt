@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
@@ -81,7 +83,7 @@ class SNSReferralService(
 }
 
 @Service
-class SNSAppointmentService(
+class SNSActionPlanAppointmentService(
   private val snsPublisher: SNSPublisher,
 ) : ApplicationListener<ActionPlanAppointmentEvent>, SNSService {
 
@@ -102,6 +104,38 @@ class SNSAppointmentService(
         val snsEvent = EventDTO(
           eventType,
           "Attendance was recorded for a session appointment",
+          event.detailUrl,
+          appointment.attendanceSubmittedAt!!,
+          mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
+        )
+
+        snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
+      }
+    }
+  }
+}
+
+@Service
+class SNSAppointmentService(
+  private val snsPublisher: SNSPublisher,
+) : ApplicationListener<AppointmentEvent>, SNSService {
+
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: AppointmentEvent) {
+    when (event.type) {
+      AppointmentEventType.ATTENDANCE_RECORDED -> {
+        val referral = event.appointment.referral
+        val appointment = event.appointment
+
+        val eventType = "intervention.initial-assessment-appointment.${when (appointment.attended) {
+          Attended.YES, Attended.LATE -> "attended"
+          Attended.NO -> "missed"
+          null -> throw RuntimeException("event triggered for appointment with no recorded attendance")
+        }}"
+
+        val snsEvent = EventDTO(
+          eventType,
+          "Attendance was recorded for an initial assessment appointment",
           event.detailUrl,
           appointment.attendanceSubmittedAt!!,
           mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
