@@ -1,18 +1,18 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import AppointmentBehaviour from '../../../../../../models/appointmentBehaviour'
-import errorMessages from '../../../../../../utils/errorMessages'
-import FormUtils from '../../../../../../utils/formUtils'
-import { FormValidationError } from '../../../../../../utils/formValidationError'
-import { FormData } from '../../../../../../utils/forms/formData'
+import AppointmentBehaviour from '../../../../../models/appointmentBehaviour'
+import errorMessages from '../../../../../utils/errorMessages'
+import FormUtils from '../../../../../utils/formUtils'
+import { FormValidationError } from '../../../../../utils/formValidationError'
+import { FormData } from '../../../../../utils/forms/formData'
 
-export default class PostSessionBehaviourFeedbackForm {
+export default class BehaviourFeedbackForm {
   constructor(private readonly request: Request) {}
 
   async data(): Promise<FormData<Partial<AppointmentBehaviour>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: PostSessionBehaviourFeedbackForm.validations,
+      validations: BehaviourFeedbackForm.validations,
     })
 
     const error = this.error(validationResult)

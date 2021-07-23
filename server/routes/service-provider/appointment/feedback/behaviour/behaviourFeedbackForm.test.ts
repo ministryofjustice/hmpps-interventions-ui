@@ -1,7 +1,7 @@
-import TestUtils from '../../../../../../../testutils/testUtils'
-import PostSessionBehaviourFeedbackForm from './postSessionBehaviourFeedbackForm'
+import TestUtils from '../../../../../../testutils/testUtils'
+import BehaviourFeedbackForm from './behaviourFeedbackForm'
 
-describe(PostSessionBehaviourFeedbackForm, () => {
+describe(BehaviourFeedbackForm, () => {
   describe('data', () => {
     describe('with valid data', () => {
       it('returns a paramsForUpdate with the behaviour description and boolean value for whether to notify the PP', async () => {
@@ -10,7 +10,7 @@ describe(PostSessionBehaviourFeedbackForm, () => {
           'notify-probation-practitioner': 'no',
         })
 
-        const data = await new PostSessionBehaviourFeedbackForm(request).data()
+        const data = await new BehaviourFeedbackForm(request).data()
 
         expect(data.paramsForUpdate?.behaviourDescription).toEqual('Alex was well-behaved')
         expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
@@ -21,7 +21,7 @@ describe(PostSessionBehaviourFeedbackForm, () => {
       it('returns errors when both required fields are not present', async () => {
         const request = TestUtils.createRequest({})
 
-        const data = await new PostSessionBehaviourFeedbackForm(request).data()
+        const data = await new BehaviourFeedbackForm(request).data()
 
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'behaviour-description',
@@ -41,7 +41,7 @@ describe(PostSessionBehaviourFeedbackForm, () => {
           'notify-probation-practitioner': 'yes',
         })
 
-        const data = await new PostSessionBehaviourFeedbackForm(request).data()
+        const data = await new BehaviourFeedbackForm(request).data()
 
         expect(data.error?.errors).toEqual([
           {
@@ -57,7 +57,7 @@ describe(PostSessionBehaviourFeedbackForm, () => {
           'behaviour-description': 'They did well',
         })
 
-        const data = await new PostSessionBehaviourFeedbackForm(request).data()
+        const data = await new BehaviourFeedbackForm(request).data()
 
         expect(data.error?.errors).toEqual([
           {

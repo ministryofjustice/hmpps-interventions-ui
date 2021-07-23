@@ -1913,6 +1913,412 @@ describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
   })
 })
 
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', () => {
+  it('renders a page with which the Service Provider can record the Service user‘s attendance for their initial appointment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add feedback')
+        expect(res.text).toContain('Appointment details')
+        expect(res.text).toContain('01 Feb 2021')
+        expect(res.text).toContain('13:00')
+      })
+  })
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add supplier assessment attendance feedback without a current appointment'
+        )
+      })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', () => {
+  describe('when the Service Provider marks the Service user as having attended the initial assessment', () => {
+    it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = appointmentFactory.build()
+      const updatedAppointment = appointmentFactory.build({
+        ...appointment,
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+            additionalAttendanceInformation: 'Alex made the session on time',
+          },
+        },
+      })
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+      interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
+
+      await request(app)
+        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
+        .type('form')
+        .send({
+          attended: 'yes',
+          'additional-attendance-information': 'Alex made the session on time',
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`
+        )
+    })
+  })
+
+  describe('when the Service Provider marks the Service user as not having attended the initial assessment', () => {
+    it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = appointmentFactory.build()
+      const updatedAppointment = appointmentFactory.build({
+        ...appointment,
+        sessionFeedback: {
+          attendance: {
+            attended: 'no',
+            additionalAttendanceInformation: "I haven't heard from Alex",
+          },
+        },
+      })
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+      interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
+      await request(app)
+        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
+        .type('form')
+        .send({
+          attended: 'no',
+          'additional-attendance-information': "I haven't heard from Alex",
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+    })
+  })
+
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add supplier assessment attendance feedback without a current appointment'
+        )
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', () => {
+  it('renders a page with which the Service Provider can record the Service user‘s behaviour for their initial appointment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Add behaviour feedback')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('If you described poor behaviour, do you want to notify the probation practitioner?')
+      })
+  })
+
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add initial assessment behaviour feedback without a current appointment'
+        )
+      })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', () => {
+  describe('when the Service Provider records behaviour for the initial assessment', () => {
+    it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check-your-answers page', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = appointmentFactory.build()
+      const updatedAppointment = appointmentFactory.build({
+        ...appointment,
+        sessionFeedback: {
+          behaviour: {
+            behaviourDescription: 'They were very respectful and polite.',
+            notifyProbationPractitioner: false,
+          },
+        },
+      })
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+      interventionsService.recordSupplierAssessmentAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+      await request(app)
+        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+        .type('form')
+        .send({
+          'behaviour-description': 'They were very respectful and polite.',
+          'notify-probation-practitioner': 'no',
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+    })
+  })
+
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to add initial assessment behaviour feedback without a current appointment'
+        )
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', () => {
+  it('renders a page with which the Service Provider can view the feedback for the initial appointment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      sessionFeedback: {
+        attendance: {
+          attended: 'yes',
+          additionalAttendanceInformation: 'He was punctual',
+        },
+        behaviour: {
+          behaviourDescription: 'Acceptable',
+        },
+        submitted: false,
+      },
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm feedback')
+        expect(res.text).toContain('Did Alex attend the initial assessment appointment?')
+        expect(res.text).toContain('Yes, they were on time')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('Acceptable')
+      })
+  })
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Attempting to check supplier assessment feedback answers without a current appointment'
+        )
+      })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', () => {
+  it('submits the action plan and redirects to the confirmation page', async () => {
+    const appointment = appointmentFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+    interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
+      .expect(302)
+      .expect(
+        'Location',
+        `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/confirmation`
+      )
+
+    expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith('token', referral.id)
+  })
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const appointment = appointmentFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+    interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Attempting to submit supplier assessment feedback without a current appointment')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', () => {
+  it('renders a page confirming that the supplier assessment feedback has been submitted', async () => {
+    const referral = sentReferralFactory.assigned().build()
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/confirmation`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Initial assessment added')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback', () => {
+  it('renders a page showing the supplier assessment feedback', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = appointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      sessionFeedback: {
+        attendance: {
+          attended: 'yes',
+          additionalAttendanceInformation: 'He was punctual',
+        },
+        behaviour: {
+          behaviourDescription: 'Acceptable',
+        },
+        submitted: false,
+      },
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+      currentAppointmentId: appointment.id,
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('View feedback')
+        expect(res.text).toContain('Did Alex attend the initial assessment appointment?')
+        expect(res.text).toContain('Yes, they were on time')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('Acceptable')
+      })
+  })
+  it('renders an error if there is no current appointment for the supplier assessment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Attempting to view supplier assessment feedback without a current appointment')
+      })
+  })
+})
+
 describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
   it('returns error if no existing action plan exists', async () => {
     const referral = sentReferralFactory.assigned().build()

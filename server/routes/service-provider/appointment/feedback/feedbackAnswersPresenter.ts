@@ -1,17 +1,13 @@
-import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
-import { ActionPlanAppointment } from '../../../../../models/actionPlan'
-import PostSessionAttendanceFeedbackPresenter from '../../../../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackPresenter'
-import PostSessionBehaviourFeedbackPresenter from '../../../../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackPresenter'
+import AttendanceFeedbackPresenter from './attendance/attendanceFeedbackPresenter'
+import BehaviourFeedbackPresenter from './behaviour/behaviourFeedbackPresenter'
+import { AppointmentDetails } from './appointmentDetails'
 
-export default class FeedbackAnswersPresenter {
-  private readonly attendancePresenter: PostSessionAttendanceFeedbackPresenter
+export default abstract class FeedbackAnswersPresenter {
+  protected abstract get attendancePresenter(): AttendanceFeedbackPresenter
 
-  private readonly behaviourPresenter: PostSessionBehaviourFeedbackPresenter
+  protected abstract get behaviourPresenter(): BehaviourFeedbackPresenter
 
-  constructor(private readonly appointment: ActionPlanAppointment, private readonly serviceUser: DeliusServiceUser) {
-    this.attendancePresenter = new PostSessionAttendanceFeedbackPresenter(this.appointment, this.serviceUser)
-    this.behaviourPresenter = new PostSessionBehaviourFeedbackPresenter(this.appointment, this.serviceUser)
-  }
+  protected constructor(protected readonly appointment: AppointmentDetails) {}
 
   get attendedAnswers(): { question: string; answer: string } | null {
     if (this.appointment.sessionFeedback.attendance.attended === null) {
