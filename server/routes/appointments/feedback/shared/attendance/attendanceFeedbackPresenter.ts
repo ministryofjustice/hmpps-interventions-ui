@@ -21,6 +21,8 @@ export default abstract class AttendanceFeedbackPresenter {
 
   abstract readonly text: AttendanceFeedbackFormText
 
+  readonly backLinkHref: string | null = null
+
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly sessionDetailsSummary: SummaryListItem[] = [

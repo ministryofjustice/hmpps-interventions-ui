@@ -8,7 +8,8 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
     error: FormValidationError | null = null,
-    userInputData: Record<string, unknown> | null = null
+    userInputData: Record<string, unknown> | null = null,
+    private readonly referralId: string | null = null
   ) {
     super(appointment, error, userInputData)
   }
@@ -20,6 +21,8 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
     attendanceQuestionHint: 'Select one option',
     additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
   }
+
+  readonly backLinkHref = this.referralId ? `/service-provider/referrals/${this.referralId}/progress` : null
 
   private get attendanceQuestion(): string {
     switch (this.appointment.appointmentDeliveryType) {
