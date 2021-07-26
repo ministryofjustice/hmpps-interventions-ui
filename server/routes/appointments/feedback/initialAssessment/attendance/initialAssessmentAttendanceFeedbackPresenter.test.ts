@@ -18,4 +18,32 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
       })
     })
   })
+
+  describe('backLinkHref', () => {
+    describe('when a referral id is passed in', () => {
+      it('is a link back to the Intervention Progress page', () => {
+        const appointment = appointmentFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
+          appointment,
+          serviceUser,
+          null,
+          null,
+          'test-referral-id'
+        )
+
+        expect(presenter.backLinkHref).toEqual('/service-provider/referrals/test-referral-id/progress')
+      })
+    })
+
+    describe('when a referral id is not passed in', () => {
+      it('is null', () => {
+        const appointment = appointmentFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new InitialAssessmentAttendanceFeedbackPresenter(appointment, serviceUser)
+
+        expect(presenter.backLinkHref).toEqual(null)
+      })
+    })
+  })
 })
