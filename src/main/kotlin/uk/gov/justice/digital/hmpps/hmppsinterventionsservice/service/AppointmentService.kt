@@ -41,51 +41,55 @@ class AppointmentService(
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
   ): Appointment {
-
-    val initialAppointmentRequired = appointment == null
-    if (initialAppointmentRequired) {
-      val deliusAppointmentId =
-        communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      return createAppointment(
-        durationInMinutes,
-        appointmentTime,
-        deliusAppointmentId,
-        createdByUser,
-        appointmentDeliveryType,
-        appointmentDeliveryAddress,
-        referral
-      )
+    val appointment = when {
+      // an initial appointment is required
+      appointment == null -> {
+        val deliusAppointmentId =
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
+        createAppointment(
+          durationInMinutes,
+          appointmentTime,
+          deliusAppointmentId,
+          createdByUser,
+          appointmentDeliveryType,
+          appointmentDeliveryAddress,
+          referral
+        )
+      }
+      // the current appointment needs to be updated
+      appointment!!.attended == null -> {
+        val deliusAppointmentId =
+          communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType)
+        updateAppointment(
+          appointment,
+          durationInMinutes,
+          appointmentTime,
+          deliusAppointmentId,
+          appointmentDeliveryType,
+          appointmentDeliveryAddress
+        )
+      }
+      // an additional appointment is required
+      appointment.attended == Attended.NO -> {
+        val deliusAppointmentId =
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
+        createAppointment(
+          durationInMinutes,
+          appointmentTime,
+          deliusAppointmentId,
+          createdByUser,
+          appointmentDeliveryType,
+          appointmentDeliveryAddress,
+          referral
+        )
+      }
+      // the appointment has already been attended
+      else -> throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
     }
 
-    val updateCurrentAppointmentRequired = appointment!!.attended == null
-    if (updateCurrentAppointmentRequired) {
-      val deliusAppointmentId =
-        communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType)
-      return updateAppointment(
-        appointment,
-        durationInMinutes,
-        appointmentTime,
-        deliusAppointmentId,
-        appointmentDeliveryType,
-        appointmentDeliveryAddress
-      )
-    }
+    appointmentEventPublisher.appointmentScheduledEvent(appointment, appointmentType)
 
-    val additionalAppointmentRequired = appointment.attended == Attended.NO
-    if (additionalAppointmentRequired) {
-      val deliusAppointmentId =
-        communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      return createAppointment(
-        durationInMinutes,
-        appointmentTime,
-        deliusAppointmentId,
-        createdByUser,
-        appointmentDeliveryType,
-        appointmentDeliveryAddress,
-        referral
-      )
-    }
-    throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
+    return appointment
   }
 
   fun createOrUpdateAppointmentDeliveryDetails(

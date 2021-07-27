@@ -13,6 +13,7 @@ enum class AppointmentEventType {
   ATTENDANCE_RECORDED,
   BEHAVIOUR_RECORDED,
   SESSION_FEEDBACK_RECORDED,
+  SCHEDULED,
 }
 
 class AppointmentEvent(
@@ -33,6 +34,19 @@ class AppointmentEventPublisher(
   private val applicationEventPublisher: ApplicationEventPublisher,
   private val locationMapper: LocationMapper
 ) {
+  fun appointmentScheduledEvent(appointment: Appointment, appointmentType: AppointmentType) {
+    applicationEventPublisher.publishEvent(
+      AppointmentEvent(
+        this,
+        AppointmentEventType.SCHEDULED,
+        appointment,
+        getAppointmentURL(appointment, appointmentType),
+        appointmentType == AppointmentType.SUPPLIER_ASSESSMENT,
+        appointmentType
+      )
+    )
+  }
+
   fun attendanceRecordedEvent(appointment: Appointment, notifyPP: Boolean, appointmentType: AppointmentType) {
     applicationEventPublisher.publishEvent(
       AppointmentEvent(
