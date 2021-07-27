@@ -1,0 +1,19 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
+
+{% block formSection %}
+  {{ govukSummaryList(summaryListArgs) }}
+
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    {{ govukRadios(radioButtonArgs) }}
+
+    {{ govukTextarea(textAreaArgs) }}
+
+    {{ govukButton({ text: "Save and continue" }) }}
+  </form>
+{% endblock %}
