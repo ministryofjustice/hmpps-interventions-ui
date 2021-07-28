@@ -43,7 +43,7 @@ dependencies {
   implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
 
   // openapi
-  implementation("org.springdoc:springdoc-openapi-ui:1.5.9")
+  implementation("org.springdoc:springdoc-openapi-ui:1.5.10")
 
   // notifications
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
