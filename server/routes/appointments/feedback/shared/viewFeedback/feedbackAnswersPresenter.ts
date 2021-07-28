@@ -1,11 +1,11 @@
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
-import BehaviourFeedbackPresenter from '../behaviour/behaviourFeedbackPresenter'
 import { AppointmentDetails } from '../../appointmentDetails'
+import ActionPlanSessionBehaviourFeedbackPresenter from '../../actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 
 export default abstract class FeedbackAnswersPresenter {
   protected abstract get attendancePresenter(): AttendanceFeedbackPresenter
 
-  protected abstract get behaviourPresenter(): BehaviourFeedbackPresenter
+  protected abstract get behaviourPresenter(): ActionPlanSessionBehaviourFeedbackPresenter
 
   protected constructor(protected readonly appointment: AppointmentDetails) {}
 

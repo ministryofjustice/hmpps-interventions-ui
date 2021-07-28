@@ -1,11 +1,18 @@
-import { TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import { ErrorSummaryArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
-import BehaviourFeedbackPresenter from './behaviourFeedbackPresenter'
+import BehaviourFeedbackInputsPresenter from './behaviourFeedbackInputsPresenter'
+import { BehaviourFeedbackPresenter } from './behaviourFeedbackPresenter'
 
 export default class BehaviourFeedbackView {
-  constructor(private readonly presenter: BehaviourFeedbackPresenter) {}
+  inputsPresenter: BehaviourFeedbackInputsPresenter
 
-  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
+  constructor(private readonly presenter: BehaviourFeedbackPresenter) {
+    this.inputsPresenter = this.presenter.inputsPresenter
+  }
+
+  private get errorSummaryArgs(): ErrorSummaryArgs | null {
+    return ViewUtils.govukErrorSummaryArgs(this.inputsPresenter.errorSummary)
+  }
 
   private get textAreaArgs(): TextareaArgs {
     return {
@@ -19,8 +26,8 @@ export default class BehaviourFeedbackView {
       hint: {
         text: this.presenter.text.behaviourDescription.hint,
       },
-      value: this.presenter.fields.behaviourDescription.value,
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.behaviourDescription.errorMessage),
+      value: this.inputsPresenter.fields.behaviourDescription.value,
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.behaviourDescription.errorMessage),
     }
   }
 
@@ -46,15 +53,15 @@ export default class BehaviourFeedbackView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: this.presenter.fields.notifyProbationPractitioner.value === true,
+          checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === true,
         },
         {
           value: 'no',
           text: 'No',
-          checked: this.presenter.fields.notifyProbationPractitioner.value === false,
+          checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === false,
         },
       ],
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.notifyProbationPractitioner.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.notifyProbationPractitioner.errorMessage),
     }
   }
 

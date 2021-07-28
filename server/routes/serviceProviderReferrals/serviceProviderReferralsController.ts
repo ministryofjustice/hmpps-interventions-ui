@@ -68,10 +68,10 @@ import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentA
 import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
 import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
 import InitialAssessmentAttendanceFeedbackPresenter from '../appointments/feedback/initialAssessment/attendance/initialAssessmentAttendanceFeedbackPresenter'
-import BehaviourFeedbackPresenter from '../appointments/feedback/shared/behaviour/behaviourFeedbackPresenter'
 import InitialAssessmentFeedbackCheckAnswersPresenter from '../appointments/feedback/initialAssessment/checkYourAnswers/initialAssessmentFeedbackCheckAnswersPresenter'
 import InitialAssessmentFeedbackConfirmationPresenter from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationPresenter'
 import InitialAssessmentFeedbackConfirmationView from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
+import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -788,7 +788,12 @@ export default class ServiceProviderReferralsController {
       }
     }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
+    const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+      appointment,
+      serviceUser,
+      formError,
+      userInputData
+    )
     const view = new BehaviourFeedbackView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -906,7 +911,12 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
+    const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+      appointment,
+      serviceUser,
+      formError,
+      userInputData
+    )
     const view = new BehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)

@@ -1,59 +1,12 @@
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
-import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
-import BehaviourFeedbackPresenter from './behaviourFeedbackPresenter'
+import BehaviourFeedbackInputsPresenter from './behaviourFeedbackInputsPresenter'
 
-describe(BehaviourFeedbackPresenter, () => {
-  describe('text', () => {
-    it('contains the text for the title and questions to be displayed on the page', () => {
-      const appointment = actionPlanAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser)
-
-      expect(presenter.text).toMatchObject({
-        title: 'Add behaviour feedback',
-        behaviourDescription: {
-          question: `Describe Alex's behaviour in this session`,
-          hint: 'For example, consider how well-engaged they were and what their body language was like.',
-        },
-        notifyProbationPractitioner: {
-          question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
-          explanation: 'If you select yes, the probation practitioner will be notified by email.',
-          hint: 'Select one option',
-        },
-      })
-    })
-
-    describe('when there are errors', () => {
-      it('populates the error messages for the fields with errors', () => {
-        const appointment = actionPlanAppointmentFactory.build()
-        const serviceUser = deliusServiceUserFactory.build()
-        const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, {
-          errors: [
-            {
-              formFields: ['behaviour-description'],
-              errorSummaryLinkedField: 'behaviour-description',
-              message: 'behaviour msg',
-            },
-            {
-              formFields: ['notify-probation-practitioner'],
-              errorSummaryLinkedField: 'notify-probation-practitioner',
-              message: 'notify pp msg',
-            },
-          ],
-        })
-
-        expect(presenter.fields.behaviourDescription.errorMessage).toEqual('behaviour msg')
-        expect(presenter.fields.notifyProbationPractitioner.errorMessage).toEqual('notify pp msg')
-      })
-    })
-  })
-
+describe(BehaviourFeedbackInputsPresenter, () => {
   describe('errorSummary', () => {
     describe('when error is null', () => {
       it('returns null', () => {
         const appointment = actionPlanAppointmentFactory.build()
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-        const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser)
+        const presenter = new BehaviourFeedbackInputsPresenter(appointment)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -62,8 +15,8 @@ describe(BehaviourFeedbackPresenter, () => {
     describe('when error is not null', () => {
       it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const appointment = actionPlanAppointmentFactory.build()
-        const serviceUser = deliusServiceUserFactory.build()
-        const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, {
+
+        const presenter = new BehaviourFeedbackInputsPresenter(appointment, {
           errors: [
             {
               formFields: ['behaviour-description'],
@@ -96,8 +49,7 @@ describe(BehaviourFeedbackPresenter, () => {
                 behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
               },
             })
-            const serviceUser = deliusServiceUserFactory.build()
-            const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser)
+            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
 
             expect(presenter.fields.behaviourDescription.value).toEqual('Alex was well behaved')
           })
@@ -110,8 +62,7 @@ describe(BehaviourFeedbackPresenter, () => {
                 behaviour: { behaviourDescription: undefined },
               },
             })
-            const serviceUser = deliusServiceUserFactory.build()
-            const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser)
+            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
 
             expect(presenter.fields.behaviourDescription.value).toEqual('')
           })
@@ -125,8 +76,7 @@ describe(BehaviourFeedbackPresenter, () => {
               behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
             },
           })
-          const serviceUser = deliusServiceUserFactory.build()
-          const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, null, {
+          const presenter = new BehaviourFeedbackInputsPresenter(appointment, null, {
             'behaviour-description': 'Alex misbehaved during the session',
           })
 
@@ -145,8 +95,7 @@ describe(BehaviourFeedbackPresenter, () => {
               },
             })
 
-            const serviceUser = deliusServiceUserFactory.build()
-            const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser)
+            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
 
             expect(presenter.fields.notifyProbationPractitioner.value).toEqual(false)
           })
@@ -160,8 +109,7 @@ describe(BehaviourFeedbackPresenter, () => {
               },
             })
 
-            const serviceUser = deliusServiceUserFactory.build()
-            const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser)
+            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
 
             expect(presenter.fields.notifyProbationPractitioner.value).toEqual(null)
           })
@@ -175,14 +123,36 @@ describe(BehaviourFeedbackPresenter, () => {
               behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
             },
           })
-          const serviceUser = deliusServiceUserFactory.build()
-          const presenter = new BehaviourFeedbackPresenter(appointment, serviceUser, null, {
+          const presenter = new BehaviourFeedbackInputsPresenter(appointment, null, {
             'behaviour-description': 'Alex misbehaved during the session',
             'notify-probation-practitioner': 'yes',
           })
 
           expect(presenter.fields.notifyProbationPractitioner.value).toEqual(true)
         })
+      })
+    })
+
+    describe('errors', () => {
+      it('populates the error messages for the fields with errors', () => {
+        const appointment = actionPlanAppointmentFactory.build()
+        const presenter = new BehaviourFeedbackInputsPresenter(appointment, {
+          errors: [
+            {
+              formFields: ['behaviour-description'],
+              errorSummaryLinkedField: 'behaviour-description',
+              message: 'behaviour msg',
+            },
+            {
+              formFields: ['notify-probation-practitioner'],
+              errorSummaryLinkedField: 'notify-probation-practitioner',
+              message: 'notify pp msg',
+            },
+          ],
+        })
+
+        expect(presenter.fields.behaviourDescription.errorMessage).toEqual('behaviour msg')
+        expect(presenter.fields.notifyProbationPractitioner.errorMessage).toEqual('notify pp msg')
       })
     })
   })

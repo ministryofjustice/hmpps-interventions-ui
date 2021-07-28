@@ -1,14 +1,14 @@
 import { ActionPlanAppointment } from '../../../../../models/actionPlan'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
-import BehaviourFeedbackPresenter from '../../shared/behaviour/behaviourFeedbackPresenter'
 import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFeedbackAnswersPresenter'
 import ActionPlanPostSessionAttendanceFeedbackPresenter from '../attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
+import ActionPlanSessionBehaviourFeedbackPresenter from '../behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 
 export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends CheckFeedbackAnswersPresenter {
   protected readonly attendancePresenter: AttendanceFeedbackPresenter
 
-  protected readonly behaviourPresenter: BehaviourFeedbackPresenter
+  protected readonly behaviourPresenter: ActionPlanSessionBehaviourFeedbackPresenter
 
   constructor(
     private readonly actionPlanAppointment: ActionPlanAppointment,
@@ -20,7 +20,10 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
       this.actionPlanAppointment,
       this.serviceUser
     )
-    this.behaviourPresenter = new BehaviourFeedbackPresenter(this.actionPlanAppointment, this.serviceUser)
+    this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+      this.actionPlanAppointment,
+      this.serviceUser
+    )
   }
 
   readonly submitHref = `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/submit`
