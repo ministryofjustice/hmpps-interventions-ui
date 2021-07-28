@@ -30,6 +30,7 @@ data class UpdateAppointmentDTO(
   @JsonProperty(required = true) val durationInMinutes: Int,
   val appointmentDeliveryType: AppointmentDeliveryType,
   val appointmentDeliveryAddress: AddressDTO? = null,
+  val npsOfficeCode: String? = null,
 )
 
 data class UpdateAppointmentAttendanceDTO(

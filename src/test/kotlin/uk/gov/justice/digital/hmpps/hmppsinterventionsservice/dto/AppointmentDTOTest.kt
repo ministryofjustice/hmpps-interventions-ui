@@ -12,7 +12,7 @@ internal class AppointmentDTOTest {
   private val appointmentDeliveryFactory = AppointmentDeliveryFactory()
   private val appointmentDeliveryAddressFactory = AppointmentDeliveryAddressFactory()
   @Test
-  fun `Maps from an appointment`() {
+  fun `Maps from an appointment booked with Other Location`() {
     val appointment = appointmentFactory.create()
     val appointmentDelivery = appointmentDeliveryFactory.create(appointmentId = appointment.id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER)
     val appointmentDeliveryAddress = appointmentDeliveryAddressFactory.create(appointmentDeliveryId = appointmentDelivery.appointmentId, secondAddressLine = null, townCity = null, county = null, postCode = "SY4 0RE")
@@ -25,5 +25,15 @@ internal class AppointmentDTOTest {
     Assertions.assertThat(appointmentDTO.appointmentDeliveryAddress?.townOrCity).isNull()
     Assertions.assertThat(appointmentDTO.appointmentDeliveryAddress?.county).isNull()
     Assertions.assertThat(appointmentDTO.appointmentDeliveryAddress?.postCode).isEqualTo("SY40RE")
+  }
+
+  @Test
+  fun `Maps from an appointment booked with Delius Office Location`() {
+    val appointment = appointmentFactory.create()
+    val appointmentDelivery = appointmentDeliveryFactory.create(appointmentId = appointment.id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = "CRSEXT")
+    appointment.appointmentDelivery = appointmentDelivery
+    val appointmentDTO = AppointmentDTO.from(appointment)
+    Assertions.assertThat(appointmentDTO.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
+    Assertions.assertThat(appointmentDTO.npsOfficeCode).isEqualTo("CRSEXT")
   }
 }

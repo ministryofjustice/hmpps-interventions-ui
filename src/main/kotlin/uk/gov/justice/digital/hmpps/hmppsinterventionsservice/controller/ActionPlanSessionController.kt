@@ -40,7 +40,8 @@ class ActionPlanSessionController(
       updateAppointmentDTO.durationInMinutes,
       user,
       updateAppointmentDTO.appointmentDeliveryType,
-      updateAppointmentDTO.appointmentDeliveryAddress
+      updateAppointmentDTO.appointmentDeliveryAddress,
+      updateAppointmentDTO.npsOfficeCode,
     )
     return ActionPlanSessionDTO.from(actionPlanSession)
   }

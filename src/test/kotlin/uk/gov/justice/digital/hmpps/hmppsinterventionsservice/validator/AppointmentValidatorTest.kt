@@ -20,15 +20,25 @@ internal class AppointmentValidatorTest {
   @Nested
   inner class ValidateUpdateAppointment {
 
-    @Test
-    fun `nps office not yet implemented`() {
-      var updateAppointmentDTO = UpdateAppointmentDTO(appointmentTime = OffsetDateTime.now(), durationInMinutes = 1, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
-      var exception = assertThrows<ValidationError> {
-        actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+    @Nested
+    inner class DeliusOfficeLocationAppointment {
+      @Test
+      fun `can request valid a delius office appointment`() {
+        val updateAppointmentDTO = UpdateAppointmentDTO(appointmentTime = OffsetDateTime.now(), durationInMinutes = 1, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = "CRSEXT")
+        assertDoesNotThrow {
+          actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
       }
-      assertThat(exception.errors).containsExactly(
-        FieldError("appointmentDeliveryType", Code.NOT_YET_IMPLEMENTED),
-      )
+      @Test
+      fun `an empty delius office location throws validation error`() {
+        var updateAppointmentDTO = UpdateAppointmentDTO(appointmentTime = OffsetDateTime.now(), durationInMinutes = 1, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
+        var exception = assertThrows<ValidationError> {
+          actionPlanSessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
+        assertThat(exception.errors).containsExactly(
+          FieldError("npsOfficeCode", Code.CANNOT_BE_EMPTY),
+        )
+      }
     }
 
     @Nested

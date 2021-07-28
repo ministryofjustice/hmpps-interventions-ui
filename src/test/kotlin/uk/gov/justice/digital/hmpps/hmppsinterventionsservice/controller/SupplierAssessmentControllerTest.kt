@@ -47,32 +47,36 @@ class SupplierAssessmentControllerTest {
 
   private val supplierAssessmentController = SupplierAssessmentController(referralService, supplierAssessmentService, userMapper, appointmentValidator, appointmentService)
 
-  @Test
-  fun `update supplier assessment appointment details`() {
-    val referral = referralFactory.createSent()
-    val durationInMinutes = 60
-    val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
-    val appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
-    val addressDTO = AddressDTO(
-      firstAddressLine = "Harmony Living Office, Room 4",
-      secondAddressLine = "44 Bouverie Road",
-      townOrCity = "Blackpool",
-      county = "Lancashire",
-      postCode = "SY40RE"
-    )
-    val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes, appointmentDeliveryType, addressDTO)
-    val user = authUserFactory.create()
-    val token = tokenFactory.create()
-    val supplierAssessment = supplierAssessmentFactory.create()
+  @Nested
+  inner class UpdateSupplierAssessmentAppointment {
+    @Test
+    fun `update supplier assessment appointment details`() {
+      val referral = referralFactory.createSent()
+      val durationInMinutes = 60
+      val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+      val appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
+      val npsOfficeCode = "CRSEXT"
+      val addressDTO = AddressDTO(
+        firstAddressLine = "Harmony Living Office, Room 4",
+        secondAddressLine = "44 Bouverie Road",
+        townOrCity = "Blackpool",
+        county = "Lancashire",
+        postCode = "SY40RE"
+      )
+      val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes, appointmentDeliveryType, addressDTO, npsOfficeCode)
+      val user = authUserFactory.create()
+      val token = tokenFactory.create()
+      val supplierAssessment = supplierAssessmentFactory.create()
 
-    whenever(userMapper.fromToken(token)).thenReturn(user)
-    whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
-    whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
-    whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, addressDTO)).thenReturn(supplierAssessment.currentAppointment)
+      whenever(userMapper.fromToken(token)).thenReturn(user)
+      whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
+      whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
+      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, addressDTO, npsOfficeCode)).thenReturn(supplierAssessment.currentAppointment)
 
-    val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
-    verify(appointmentValidator).validateUpdateAppointment(eq(update))
-    assertThat(response).isNotNull
+      val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
+      verify(appointmentValidator).validateUpdateAppointment(eq(update))
+      assertThat(response).isNotNull
+    }
   }
 
   @Nested

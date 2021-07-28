@@ -64,17 +64,20 @@ class ActionPlanSessionsService(
     updatedBy: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String? = null,
   ): ActionPlanSession {
 
     val session = getActionPlanSessionOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
 
+    // TODO: Some code duplication here with AppointmentService.kt
     val deliusAppointmentId = communityAPIBookingService.book(
       session.actionPlan.referral,
       existingAppointment,
       appointmentTime,
       durationInMinutes,
-      SERVICE_DELIVERY
+      SERVICE_DELIVERY,
+      npsOfficeCode
     )
     if (existingAppointment == null) {
       val appointment = Appointment(
@@ -87,14 +90,14 @@ class ActionPlanSessionsService(
         referral = session.actionPlan.referral,
       )
       appointmentRepository.saveAndFlush(appointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
     } else {
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
       appointmentRepository.saveAndFlush(existingAppointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
     }
     return actionPlanSessionRepository.save(session)
   }

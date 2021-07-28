@@ -103,7 +103,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
@@ -133,7 +133,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(newTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(newDuration)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isNotEqualTo("re-scheduler")
@@ -155,7 +155,8 @@ internal class ActionPlanSessionsServiceTest {
         session.currentAppointment,
         appointmentTime,
         durationInMinutes,
-        SERVICE_DELIVERY
+        SERVICE_DELIVERY,
+        null
       )
     ).thenReturn(999L)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
@@ -173,13 +174,14 @@ internal class ActionPlanSessionsServiceTest {
     )
 
     assertThat(updatedSession).isEqualTo(session)
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     verify(communityAPIBookingService).book(
       referral,
       session.currentAppointment,
       appointmentTime,
       durationInMinutes,
-      SERVICE_DELIVERY
+      SERVICE_DELIVERY,
+      null
     )
     verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
@@ -204,7 +206,8 @@ internal class ActionPlanSessionsServiceTest {
         session.currentAppointment,
         appointmentTime,
         durationInMinutes,
-        SERVICE_DELIVERY
+        SERVICE_DELIVERY,
+        null
       )
     ).thenReturn(null)
     whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
@@ -220,7 +223,7 @@ internal class ActionPlanSessionsServiceTest {
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
     verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == null
@@ -507,5 +510,60 @@ internal class ActionPlanSessionsServiceTest {
     verify(actionPlanSessionRepository, atLeastOnce()).save(session)
     verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
     verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+  }
+
+  @Test
+  fun `makes a booking with delius office location`() {
+    val session = actionPlanSessionFactory.createScheduled()
+    val actionPlanId = session.actionPlan.id
+    val sessionNumber = session.sessionNumber
+    val referral = session.actionPlan.referral
+    val createdByUser = session.actionPlan.createdBy
+    val appointmentTime = OffsetDateTime.now()
+    val durationInMinutes = 15
+    val npsOfficeCode = "CRS0001"
+
+    whenever(
+      communityAPIBookingService.book(
+        referral,
+        session.currentAppointment,
+        appointmentTime,
+        durationInMinutes,
+        SERVICE_DELIVERY,
+        npsOfficeCode
+      )
+    ).thenReturn(999L)
+    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(
+      session
+    )
+    whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)
+    whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
+
+    val updatedSession = actionPlanSessionsService.updateSessionAppointment(
+      actionPlanId,
+      sessionNumber,
+      appointmentTime,
+      durationInMinutes,
+      createdByUser,
+      AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+      null,
+      npsOfficeCode
+    )
+
+    assertThat(updatedSession).isEqualTo(session)
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE), isNull(), eq(npsOfficeCode))
+    verify(communityAPIBookingService).book(
+      referral,
+      session.currentAppointment,
+      appointmentTime,
+      durationInMinutes,
+      SERVICE_DELIVERY,
+      npsOfficeCode
+    )
+    verify(appointmentRepository, times(1)).saveAndFlush(
+      ArgumentMatchers.argThat {
+        it.deliusAppointmentId == 999L
+      }
+    )
   }
 }
