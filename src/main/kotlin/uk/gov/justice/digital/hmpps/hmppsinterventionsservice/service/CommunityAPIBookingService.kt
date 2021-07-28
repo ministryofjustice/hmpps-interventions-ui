@@ -36,20 +36,20 @@ class CommunityAPIBookingService(
       return existingAppointment?.deliusAppointmentId
     }
 
-    return processingBooking(referral, existingAppointment, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode ?: this.defaultOfficeLocation)
+    return processingBooking(referral, existingAppointment, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
   }
 
-  private fun processingBooking(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int, appointmentType: AppointmentType, npsOfficeCode: String): Long? {
+  private fun processingBooking(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int, appointmentType: AppointmentType, npsOfficeCode: String?): Long? {
     return existingAppointment?.let {
-      if (!isRescheduleBooking(existingAppointment, appointmentTime, durationInMinutes)) {
+      if (!isRescheduleBooking(existingAppointment, appointmentTime, durationInMinutes, npsOfficeCode)) {
         // nothing to do !
         return existingAppointment.deliusAppointmentId
       }
 
-      val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime, durationInMinutes, npsOfficeCode)
+      val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime, durationInMinutes, npsOfficeCode ?: defaultOfficeLocation)
       makeBooking(referral.serviceUserCRN, it.deliusAppointmentId!!, appointmentRequestDTO, communityApiRescheduleAppointmentLocation)
     } ?: run {
-      val appointmentRequestDTO = buildAppointmentCreateRequestDTO(referral, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
+      val appointmentRequestDTO = buildAppointmentCreateRequestDTO(referral, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode ?: defaultOfficeLocation)
       makeBooking(referral.serviceUserCRN, referral.relevantSentenceId!!, appointmentRequestDTO, communityApiBookAppointmentLocation)
     }
   }
@@ -81,11 +81,11 @@ class CommunityAPIBookingService(
   }
 
   private fun buildAppointmentRescheduleRequestDTO(appointmentTime: OffsetDateTime, durationInMinutes: Int, npsOfficeCode: String): AppointmentRescheduleRequestDTO {
-    // TODO: CommunityApi and Delius currently don't allow for rescheduling with a different location
     return AppointmentRescheduleRequestDTO(
       updatedAppointmentStart = appointmentTime,
       updatedAppointmentEnd = appointmentTime.plusMinutes(durationInMinutes.toLong()),
       initiatedByServiceProvider = true, // fixme - needs to come from the user - defaulted to SP Initiated Reschedule
+      officeLocationCode = npsOfficeCode
     )
   }
 
@@ -101,10 +101,13 @@ class CommunityAPIBookingService(
       .toString()
   }
 
-  fun isRescheduleBooking(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
-    isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes)
+  fun isRescheduleBooking(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int, npsOfficeCode: String?): Boolean =
+    isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes) || isDifferentLocation(existingAppointment, npsOfficeCode)
 
-  fun isDifferentTimings(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
+  private fun isDifferentLocation(existingAppointment: Appointment, npsOfficeCode: String?): Boolean {
+    return !npsOfficeCode.equals(existingAppointment.appointmentDelivery?.npsOfficeCode)
+  }
+  private fun isDifferentTimings(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int): Boolean =
     !existingAppointment.appointmentTime.isEqual(appointmentTime) || existingAppointment.durationInMinutes != durationInMinutes
 
   private inline fun <reified T> get(appointmentType: AppointmentType, map: Map<AppointmentType, T>): T {
@@ -129,6 +132,7 @@ data class AppointmentRescheduleRequestDTO(
   val updatedAppointmentStart: OffsetDateTime?,
   val updatedAppointmentEnd: OffsetDateTime?,
   val initiatedByServiceProvider: Boolean,
+  val officeLocationCode: String,
 ) : AppointmentRequestDTO()
 
 data class AppointmentResponseDTO(
