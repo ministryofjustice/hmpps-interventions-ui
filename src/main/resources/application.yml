@@ -82,6 +82,7 @@ notify:
     appointment-not-attended: "21b14c86-30d2-4bf2-b355-8f3deb62ef69"
     concerning-behaviour: "a8ef6769-4c8e-4459-938c-19dd4b661b04"
     end-of-service-report-submitted: "f79cb53f-dc5c-42aa-947e-f599f9ad7942"
+    initial-assessment-scheduled: "28256bed-6433-485c-857d-cb52a7937dff"
 
 interventions-ui:
   locations:

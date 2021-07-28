@@ -41,28 +41,62 @@ class AppointmentService(
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentDeliveryAddress: AddressDTO? = null,
   ): Appointment {
-
-    val initialAppointmentRequired = appointment == null
-    if (initialAppointmentRequired) {
-      val deliusAppointmentId = communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser, appointmentDeliveryType, appointmentDeliveryAddress, referral)
+    val appointment = when {
+      // an initial appointment is required
+      appointment == null -> {
+        val deliusAppointmentId =
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
+        createAppointment(
+          durationInMinutes,
+          appointmentTime,
+          deliusAppointmentId,
+          createdByUser,
+          appointmentDeliveryType,
+          appointmentDeliveryAddress,
+          referral
+        )
+      }
+      // the current appointment needs to be updated
+      appointment!!.attended == null -> {
+        val deliusAppointmentId =
+          communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType)
+        updateAppointment(
+          appointment,
+          durationInMinutes,
+          appointmentTime,
+          deliusAppointmentId,
+          appointmentDeliveryType,
+          appointmentDeliveryAddress
+        )
+      }
+      // an additional appointment is required
+      appointment.attended == Attended.NO -> {
+        val deliusAppointmentId =
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
+        createAppointment(
+          durationInMinutes,
+          appointmentTime,
+          deliusAppointmentId,
+          createdByUser,
+          appointmentDeliveryType,
+          appointmentDeliveryAddress,
+          referral
+        )
+      }
+      // the appointment has already been attended
+      else -> throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
     }
 
-    val updateCurrentAppointmentRequired = appointment!!.attended == null
-    if (updateCurrentAppointmentRequired) {
-      val deliusAppointmentId = communityAPIBookingService.book(referral, appointment, appointmentTime, durationInMinutes, appointmentType)
-      return updateAppointment(appointment, durationInMinutes, appointmentTime, deliusAppointmentId, appointmentDeliveryType, appointmentDeliveryAddress)
-    }
+    appointmentEventPublisher.appointmentScheduledEvent(appointment, appointmentType)
 
-    val additionalAppointmentRequired = appointment.attended == Attended.NO
-    if (additionalAppointmentRequired) {
-      val deliusAppointmentId = communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType)
-      return createAppointment(durationInMinutes, appointmentTime, deliusAppointmentId, createdByUser, appointmentDeliveryType, appointmentDeliveryAddress, referral)
-    }
-    throw IllegalStateException("Is it not possible to update an appointment that has already been attended")
+    return appointment
   }
 
-  fun createOrUpdateAppointmentDeliveryDetails(appointment: Appointment, appointmentDeliveryType: AppointmentDeliveryType, appointmentDeliveryAddressDTO: AddressDTO?) {
+  fun createOrUpdateAppointmentDeliveryDetails(
+    appointment: Appointment,
+    appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentDeliveryAddressDTO: AddressDTO?
+  ) {
     var appointmentDelivery = appointment.appointmentDelivery
     if (appointmentDelivery == null) {
       appointmentDelivery =
@@ -78,42 +112,77 @@ class AppointmentService(
     }
   }
 
-  fun recordBehaviour(appointment: Appointment, behaviourDescription: String, notifyProbationPractitioner: Boolean, submittedBy: AuthUser): Appointment {
+  fun recordBehaviour(
+    appointment: Appointment,
+    behaviourDescription: String,
+    notifyProbationPractitioner: Boolean,
+    submittedBy: AuthUser
+  ): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
-      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=${appointment.id}]")
+      throw ResponseStatusException(
+        HttpStatus.CONFLICT,
+        "Feedback has already been submitted for this appointment [id=${appointment.id}]"
+      )
     }
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, submittedBy)
     return appointmentRepository.save(appointment)
   }
 
-  fun recordAppointmentAttendance(appointment: Appointment, attended: Attended, additionalAttendanceInformation: String?, submittedBy: AuthUser): Appointment {
+  fun recordAppointmentAttendance(
+    appointment: Appointment,
+    attended: Attended,
+    additionalAttendanceInformation: String?,
+    submittedBy: AuthUser
+  ): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
-      throw ResponseStatusException(HttpStatus.CONFLICT, "Feedback has already been submitted for this appointment [id=${appointment.id}]")
+      throw ResponseStatusException(
+        HttpStatus.CONFLICT,
+        "Feedback has already been submitted for this appointment [id=${appointment.id}]"
+      )
     }
     setAttendanceFields(appointment, attended, additionalAttendanceInformation, submittedBy)
     return appointmentRepository.save(appointment)
   }
 
-  fun submitSessionFeedback(appointment: Appointment, submitter: AuthUser, appointmentType: AppointmentType): Appointment {
+  fun submitSessionFeedback(
+    appointment: Appointment,
+    submitter: AuthUser,
+    appointmentType: AppointmentType
+  ): Appointment {
     if (appointment.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "appointment feedback has already been submitted")
     }
 
     if (appointment.attendanceSubmittedAt == null) {
-      throw ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "can't submit feedback unless attendance has been recorded")
+      throw ResponseStatusException(
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        "can't submit feedback unless attendance has been recorded"
+      )
     }
 
     appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
     appointmentRepository.save(appointment)
 
-    appointmentEventPublisher.attendanceRecordedEvent(appointment, appointment.attended!! == Attended.NO, appointmentType)
+    appointmentEventPublisher.attendanceRecordedEvent(
+      appointment,
+      appointment.attended!! == Attended.NO,
+      appointmentType
+    )
 
     if (appointment.attendanceBehaviourSubmittedAt != null) { // excluding the case of non attendance
-      appointmentEventPublisher.behaviourRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour!!, appointmentType)
+      appointmentEventPublisher.behaviourRecordedEvent(
+        appointment,
+        appointment.notifyPPOfAttendanceBehaviour!!,
+        appointmentType
+      )
     }
 
-    appointmentEventPublisher.sessionFeedbackRecordedEvent(appointment, appointment.notifyPPOfAttendanceBehaviour ?: false, appointmentType)
+    appointmentEventPublisher.sessionFeedbackRecordedEvent(
+      appointment,
+      appointment.notifyPPOfAttendanceBehaviour ?: false,
+      appointmentType
+    )
 
     return appointment
   }
@@ -181,7 +250,10 @@ class AppointmentService(
     return appointment
   }
 
-  private fun createOrUpdateAppointmentDeliveryAddress(appointmentDelivery: AppointmentDelivery, appointmentDeliveryAddressDTO: AddressDTO): AppointmentDeliveryAddress {
+  private fun createOrUpdateAppointmentDeliveryAddress(
+    appointmentDelivery: AppointmentDelivery,
+    appointmentDeliveryAddressDTO: AddressDTO
+  ): AppointmentDeliveryAddress {
     var appointmentDeliveryAddress = appointmentDelivery.appointmentDeliveryAddress
     if (appointmentDeliveryAddress == null) {
       appointmentDeliveryAddress = AppointmentDeliveryAddress(

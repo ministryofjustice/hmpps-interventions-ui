@@ -152,7 +152,9 @@ class NotifyActionPlanAppointmentService(
 class NotifyAppointmentService(
   @Value("\${notify.templates.appointment-not-attended}") private val appointmentNotAttendedTemplateID: String,
   @Value("\${notify.templates.concerning-behaviour}") private val concerningBehaviourTemplateID: String,
+  @Value("\${notify.templates.initial-assessment-scheduled}") private val initialAssessmentScheduledTemplateID: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.intervention-progress}") private val ppInterventionProgressUrl: String,
   @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSAASessionFeedbackLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
@@ -164,7 +166,7 @@ class NotifyAppointmentService(
       val referral = event.appointment.referral
       val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
 
-      val location = when (event.appointmentType) {
+      val sessionFeedbackLocation = when (event.appointmentType) {
         AppointmentType.SUPPLIER_ASSESSMENT -> generateResourceUrl(
           interventionsUIBaseURL,
           ppSAASessionFeedbackLocation,
@@ -184,7 +186,7 @@ class NotifyAppointmentService(
             mapOf(
               "ppFirstName" to ppDetails.firstName,
               "referenceNumber" to referral.referenceNumber!!,
-              "attendanceUrl" to location.toString(),
+              "attendanceUrl" to sessionFeedbackLocation.toString(),
             )
           )
         }
@@ -195,7 +197,17 @@ class NotifyAppointmentService(
             mapOf(
               "ppFirstName" to ppDetails.firstName,
               "referenceNumber" to referral.referenceNumber!!,
-              "sessionUrl" to location.toString(),
+              "sessionUrl" to sessionFeedbackLocation.toString(),
+            )
+          )
+        }
+        AppointmentEventType.SCHEDULED -> {
+          emailSender.sendEmail(
+            initialAssessmentScheduledTemplateID, ppDetails.email,
+            mapOf(
+              "ppFirstName" to ppDetails.firstName,
+              "referenceNumber" to referral.referenceNumber!!,
+              "referralUrl" to generateResourceUrl(interventionsUIBaseURL, ppInterventionProgressUrl, referral.id).toString(),
             )
           )
         }

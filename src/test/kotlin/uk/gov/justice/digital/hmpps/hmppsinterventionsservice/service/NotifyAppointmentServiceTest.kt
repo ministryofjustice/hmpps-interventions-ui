@@ -37,9 +37,11 @@ class NotifyAppointmentServiceTest {
 
   private fun notifyService(): NotifyAppointmentService {
     return NotifyAppointmentService(
-      "template",
-      "template",
+      "appointmentNotAttendedTemplate",
+      "concerningBehaviourTemplate",
+      "initialAssessmentScheduledTemplate",
       "http://example.com",
+      "/probation-practitioner/referrals/{id}/progress",
       "/probation-practitioner/referrals/{id}/supplier-assessment/post-session-feedback",
       emailSender,
       hmppsAuthService,
@@ -67,7 +69,7 @@ class NotifyAppointmentServiceTest {
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
-    verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
+    verify(emailSender).sendEmail(eq("appointmentNotAttendedTemplate"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
     Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS18726AC")
     Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/probation-practitioner/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/supplier-assessment/post-session-feedback")
@@ -94,7 +96,7 @@ class NotifyAppointmentServiceTest {
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
-    verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
+    verify(emailSender).sendEmail(eq("concerningBehaviourTemplate"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
     Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS18726AC")
     Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/probation-practitioner/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/supplier-assessment/post-session-feedback")
@@ -104,5 +106,17 @@ class NotifyAppointmentServiceTest {
   fun `appointment event does not send email for appointment event time service delivery`() {
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, false, AppointmentType.SERVICE_DELIVERY))
     verifyZeroInteractions(emailSender)
+  }
+
+  @Test
+  fun `appointment scheduled event sends email to pp`() {
+    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
+
+    notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.SCHEDULED, true))
+    val personalisationCaptor = argumentCaptor<Map<String, String>>()
+    verify(emailSender).sendEmail(eq("initialAssessmentScheduledTemplate"), eq("abc@abc.com"), personalisationCaptor.capture())
+    Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
+    Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("JS18726AC")
+    Assertions.assertThat(personalisationCaptor.firstValue["referralUrl"]).isEqualTo("http://example.com/probation-practitioner/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/progress")
   }
 }
