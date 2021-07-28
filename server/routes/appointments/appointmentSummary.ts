@@ -5,7 +5,7 @@ import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import PresenterUtils from '../../utils/presenterUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
-export default class AppointmentSummaryComponent {
+export default class AppointmentSummary {
   constructor(
     private readonly appointment: Appointment | ActionPlanAppointment,
     private readonly assignedCaseworker: AuthUserDetails | null = null
@@ -13,7 +13,7 @@ export default class AppointmentSummaryComponent {
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
 
-  get appointmentSummary(): SummaryListItem[] {
+  get appointmentSummaryList(): SummaryListItem[] {
     return [
       this.assignedCaseworker !== null
         ? { key: 'Caseworker', lines: [`${this.assignedCaseworker.firstName} ${this.assignedCaseworker.lastName}`] }
