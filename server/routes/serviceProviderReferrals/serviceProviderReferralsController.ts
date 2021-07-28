@@ -72,6 +72,7 @@ import InitialAssessmentFeedbackCheckAnswersPresenter from '../appointments/feed
 import InitialAssessmentFeedbackConfirmationPresenter from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationPresenter'
 import InitialAssessmentFeedbackConfirmationView from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
 import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -788,7 +789,7 @@ export default class ServiceProviderReferralsController {
       }
     }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+    const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
       appointment,
       serviceUser,
       formError,

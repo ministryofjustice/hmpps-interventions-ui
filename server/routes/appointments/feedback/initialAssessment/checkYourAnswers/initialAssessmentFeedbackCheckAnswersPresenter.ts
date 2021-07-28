@@ -3,12 +3,12 @@ import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFe
 import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
 import InitialAssessmentAttendanceFeedbackPresenter from '../attendance/initialAssessmentAttendanceFeedbackPresenter'
 import Appointment from '../../../../../models/appointment'
-import ActionPlanSessionBehaviourFeedbackPresenter from '../../actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import InitialAssessmentBehaviourFeedbackPresenter from '../behaviour/initialAssessmentBehaviourFeedbackPresenter'
 
 export default class InitialAssessmentFeedbackCheckAnswersPresenter extends CheckFeedbackAnswersPresenter {
   protected readonly attendancePresenter: AttendanceFeedbackPresenter
 
-  protected readonly behaviourPresenter: ActionPlanSessionBehaviourFeedbackPresenter
+  protected readonly behaviourPresenter: InitialAssessmentBehaviourFeedbackPresenter
 
   constructor(
     appointment: Appointment,
@@ -17,7 +17,7 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
   ) {
     super(appointment)
     this.attendancePresenter = new InitialAssessmentAttendanceFeedbackPresenter(appointment, this.serviceUser)
-    this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointment, this.serviceUser)
+    this.behaviourPresenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, this.serviceUser)
   }
 
   readonly submitHref = `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/submit`

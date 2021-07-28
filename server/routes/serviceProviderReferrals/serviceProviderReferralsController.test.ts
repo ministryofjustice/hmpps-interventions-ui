@@ -2071,7 +2071,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Add behaviour feedback')
-        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in the assessment appointment')
         expect(res.text).toContain('If you described poor behaviour, do you want to notify the probation practitioner?')
       })
   })
@@ -2185,7 +2185,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
         expect(res.text).toContain('Confirm feedback')
         expect(res.text).toContain('Did Alex attend the initial assessment appointment?')
         expect(res.text).toContain('Yes, they were on time')
-        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in the assessment appointment')
         expect(res.text).toContain('Acceptable')
       })
   })
