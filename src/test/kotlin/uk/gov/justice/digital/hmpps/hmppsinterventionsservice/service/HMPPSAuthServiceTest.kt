@@ -19,6 +19,7 @@ class HMPPSAuthServiceTest {
     "/authuser/detail",
     "/user/email",
     "/user/detail",
+    0L,
     RestClient(
       WebClient.create(
         mockWebServer.url("/").toString()

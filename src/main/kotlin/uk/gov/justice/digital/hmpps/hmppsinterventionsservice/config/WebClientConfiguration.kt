@@ -21,6 +21,8 @@ import java.time.Duration
 class WebClientConfiguration(
   @Value("\${webclient.connect-timeout-seconds}") private val connectTimeoutSeconds: Long,
   @Value("\${webclient.read-timeout-seconds}") private val readTimeoutSeconds: Int,
+  @Value("\${webclient.hmpps-auth.read-timeout-seconds}") private val hmppsReadTimeoutSeconds: Int,
+  @Value("\${webclient.hmpps-auth.connect-timeout-seconds}") private val hmppsAuthConnectTimeoutSeconds: Long,
   @Value("\${webclient.write-timeout-seconds}") private val writeTimeoutSeconds: Int,
   @Value("\${community-api.baseurl}") private val communityApiBaseUrl: String,
   @Value("\${hmppsauth.baseurl}") private val hmppsAuthBaseUrl: String,
@@ -40,7 +42,7 @@ class WebClientConfiguration(
   @Bean
   fun hmppsAuthApiClient(authorizedClientManager: OAuth2AuthorizedClientManager): RestClient {
     return RestClient(
-      createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl),
+      createAuthorizedWebClient(authorizedClientManager, hmppsAuthBaseUrl, hmppsReadTimeoutSeconds, hmppsAuthConnectTimeoutSeconds),
       interventionsClientRegistrationId
     )
   }
@@ -70,6 +72,15 @@ class WebClientConfiguration(
   }
 
   private fun createAuthorizedWebClient(clientManager: OAuth2AuthorizedClientManager, baseUrl: String): WebClient {
+    return createAuthorizedWebClient(clientManager, baseUrl, readTimeoutSeconds, connectTimeoutSeconds)
+  }
+
+  private fun createAuthorizedWebClient(
+    clientManager: OAuth2AuthorizedClientManager,
+    baseUrl: String,
+    readTimeoutSeconds: Int,
+    connectTimeoutSeconds: Long,
+  ): WebClient {
     val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(clientManager)
 
     val httpClient = HttpClient.create()

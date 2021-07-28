@@ -45,6 +45,7 @@ class HMPPSAuthService(
   @Value("\${hmppsauth.api.locations.auth-user-detail}") private val authUserDetailLocation: String,
   @Value("\${hmppsauth.api.locations.user-email}") private val userEmailLocation: String,
   @Value("\${hmppsauth.api.locations.user-detail}") private val userDetailLocation: String,
+  @Value("\${webclient.hmpps-auth.max-retry-attempts}") private val maxRetryAttempts: Long,
   private val hmppsAuthApiClient: RestClient,
 ) {
   fun getUserGroups(user: AuthUser): List<AuthGroupID>? {
@@ -56,6 +57,7 @@ class HMPPSAuthService(
       .retrieve()
       .onStatus({ HttpStatus.NOT_FOUND == it }, { Mono.just(null) })
       .bodyToFlux(AuthGroupResponse::class.java)
+      .retry(maxRetryAttempts)
       .map { it.groupCode }
       .collectList().block()
   }
@@ -72,6 +74,7 @@ class HMPPSAuthService(
     val groups = hmppsAuthApiClient.get(url)
       .retrieve()
       .bodyToFlux(AuthGroupResponse::class.java)
+      .retry(maxRetryAttempts)
       .collectList().block()
 
     val serviceProviderOrgs = groups
@@ -90,6 +93,7 @@ class HMPPSAuthService(
       hmppsAuthApiClient.get(url)
         .retrieve()
         .bodyToMono(AuthUserDetailResponse::class.java)
+        .retry(maxRetryAttempts)
         .map {
           if (!it.verified) {
             throw UnverifiedEmailException()
@@ -104,11 +108,13 @@ class HMPPSAuthService(
         hmppsAuthApiClient.get(detailUrl)
           .retrieve()
           .bodyToMono(UserDetailResponse::class.java)
+          .retry(maxRetryAttempts)
           .map { it.name.substringBefore(' ') },
         hmppsAuthApiClient.get(emailUrl)
           .retrieve()
           .onStatus({ it.equals(HttpStatus.NO_CONTENT) }, { Mono.error(UnverifiedEmailException()) })
           .bodyToMono(UserEmailResponse::class.java)
+          .retry(maxRetryAttempts)
           .map { it.email }
       )
         .map { UserDetail(it.t1, it.t2) }
