@@ -9,11 +9,13 @@ import ActionPlanPostSessionAttendanceFeedbackPresenter from '../../../appointme
 import Appointment from '../../../../models/appointment'
 import InitialAssessmentAttendanceFeedbackPresenter from '../../../appointments/feedback/initialAssessment/attendance/initialAssessmentAttendanceFeedbackPresenter'
 import ActionPlanSessionBehaviourFeedbackPresenter from '../../../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import InitialAssessmentBehaviourFeedbackPresenter from '../../../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
+import { BehaviourFeedbackPresenter } from '../../../appointments/feedback/shared/behaviour/behaviourFeedbackPresenter'
 
 export default class SubmittedFeedbackPresenter extends FeedbackAnswersPresenter {
   protected readonly attendancePresenter: AttendanceFeedbackPresenter
 
-  protected readonly behaviourPresenter: ActionPlanSessionBehaviourFeedbackPresenter
+  protected readonly behaviourPresenter: BehaviourFeedbackPresenter
 
   constructor(
     appointmentDetails: ActionPlanAppointment | Appointment,
@@ -26,10 +28,11 @@ export default class SubmittedFeedbackPresenter extends FeedbackAnswersPresenter
         appointmentDetails,
         this.serviceUser
       )
+      this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
     } else {
       this.attendancePresenter = new InitialAssessmentAttendanceFeedbackPresenter(appointmentDetails, this.serviceUser)
     }
-    this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
+    this.behaviourPresenter = new InitialAssessmentBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
   }
 
   private isActionPlanAppointment(

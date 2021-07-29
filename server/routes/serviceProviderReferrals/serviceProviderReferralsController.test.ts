@@ -2296,7 +2296,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
         expect(res.text).toContain('View feedback')
         expect(res.text).toContain('Did Alex attend the initial assessment appointment?')
         expect(res.text).toContain('Yes, they were on time')
-        expect(res.text).toContain('Describe Alex&#39;s behaviour in this session')
+        expect(res.text).toContain('Describe Alex&#39;s behaviour in the assessment appointment')
         expect(res.text).toContain('Acceptable')
       })
   })
