@@ -10,7 +10,9 @@ import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInpu
 
 describe('for a class that extends abstract class CheckFeedbackAnswersPresenter', () => {
   class ExtendedCheckFeedbackAnswersPresenter extends CheckFeedbackAnswersPresenter {
-    readonly submitHref: string = ''
+    readonly submitHref = ''
+
+    readonly backLinkHref = ''
 
     constructor(appointment: AppointmentDetails, private readonly serviceUser: DeliusServiceUser) {
       super(appointment)
