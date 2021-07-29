@@ -34,7 +34,7 @@ describe(SubmittedFeedbackPresenter, () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
-        let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser, caseworker)
+        let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser, null, caseworker)
         expect(presenter.sessionDetailsSummary).toEqual([
           {
             key: 'Caseworker',
@@ -52,7 +52,7 @@ describe(SubmittedFeedbackPresenter, () => {
         const initialAssessmentAppointment = appointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
-        presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, caseworker)
+        presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, null, caseworker)
         expect(presenter.sessionDetailsSummary).toEqual([
           {
             key: 'Caseworker',

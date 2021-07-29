@@ -22,7 +22,8 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
     )
     this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(
       this.actionPlanAppointment,
-      this.serviceUser
+      this.serviceUser,
+      this.actionPlanId
     )
   }
 

@@ -7,6 +7,7 @@ export default class InitialAssessmentBehaviourFeedbackPresenter {
   constructor(
     private readonly appointment: AppointmentDetails,
     private readonly serviceUser: DeliusServiceUser,
+    private readonly referralId: string | null = null,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -23,6 +24,10 @@ export default class InitialAssessmentBehaviourFeedbackPresenter {
       hint: 'Select one option',
     },
   }
+
+  readonly backLinkHref = this.referralId
+    ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
+    : null
 
   readonly inputsPresenter = new BehaviourFeedbackInputsPresenter(this.appointment, this.error, this.userInputData)
 }

@@ -16,4 +16,5 @@ interface BehaviourText {
 export interface BehaviourFeedbackPresenter {
   text: BehaviourText
   inputsPresenter: BehaviourFeedbackInputsPresenter
+  backLinkHref: string | null
 }

@@ -5,7 +5,8 @@ import { AppointmentDetails } from '../../appointmentDetails'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import CheckFeedbackAnswersPresenter from './checkFeedbackAnswersPresenter'
-import ActionPlanSessionBehaviourFeedbackPresenter from '../../actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
+import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInputsPresenter'
 
 describe('for a class that extends abstract class CheckFeedbackAnswersPresenter', () => {
   class ExtendedCheckFeedbackAnswersPresenter extends CheckFeedbackAnswersPresenter {
@@ -31,10 +32,26 @@ describe('for a class that extends abstract class CheckFeedbackAnswersPresenter'
       })(this.appointment)
     }
 
-    protected get behaviourPresenter(): ActionPlanSessionBehaviourFeedbackPresenter {
-      return new ActionPlanSessionBehaviourFeedbackPresenter(this.appointment, this.serviceUser)
+    protected get behaviourPresenter(): BehaviourFeedbackPresenter {
+      return {
+        backLinkHref: null,
+        inputsPresenter: new BehaviourFeedbackInputsPresenter(this.appointment),
+        text: {
+          title: `Add behaviour feedback`,
+          behaviourDescription: {
+            question: `Describe ${this.serviceUser.firstName}'s behaviour in this session`,
+            hint: 'For example, consider how well-engaged they were and what their body language was like.',
+          },
+          notifyProbationPractitioner: {
+            question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
+            explanation: 'If you select yes, the probation practitioner will be notified by email.',
+            hint: 'Select one option',
+          },
+        },
+      }
     }
   }
+
   describe('sessionDetailsSummary', () => {
     it('extracts the date and time from the appointmentTime and puts it in a SummaryList format', () => {
       const serviceUser = deliusServiceUserFactory.build()

@@ -794,6 +794,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
       appointment,
       serviceUser,
+      referralId,
       formError,
       userInputData
     )
@@ -917,6 +918,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
       appointment,
       serviceUser,
+      actionPlanId,
       formError,
       userInputData
     )

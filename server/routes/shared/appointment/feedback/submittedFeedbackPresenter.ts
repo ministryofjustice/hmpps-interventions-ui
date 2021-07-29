@@ -20,6 +20,7 @@ export default class SubmittedFeedbackPresenter extends FeedbackAnswersPresenter
   constructor(
     appointmentDetails: ActionPlanAppointment | Appointment,
     private readonly serviceUser: DeliusServiceUser,
+    private readonly actionPlanId: string | null = null,
     private readonly assignedCaseworker: User | null = null
   ) {
     super(appointmentDetails)
@@ -28,11 +29,15 @@ export default class SubmittedFeedbackPresenter extends FeedbackAnswersPresenter
         appointmentDetails,
         this.serviceUser
       )
-      this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
+      this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+        appointmentDetails,
+        this.serviceUser,
+        this.actionPlanId
+      )
     } else {
       this.attendancePresenter = new InitialAssessmentAttendanceFeedbackPresenter(appointmentDetails, this.serviceUser)
+      this.behaviourPresenter = new InitialAssessmentBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
     }
-    this.behaviourPresenter = new InitialAssessmentBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
   }
 
   private isActionPlanAppointment(

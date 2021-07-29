@@ -7,7 +7,7 @@ describe(ActionPlanSessionBehaviourFeedbackPresenter, () => {
     it('contains the text for the title and questions to be displayed on the page', () => {
       const appointment = actionPlanAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointment, serviceUser)
+      const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointment, serviceUser, 'action-plan-id')
 
       expect(presenter.text).toMatchObject({
         title: 'Add behaviour feedback',
@@ -21,6 +21,18 @@ describe(ActionPlanSessionBehaviourFeedbackPresenter, () => {
           hint: 'Select one option',
         },
       })
+    })
+  })
+
+  describe('backLinkHref', () => {
+    it('contains the link to the attendance page with the action plan id and session number', () => {
+      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+      const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointment, serviceUser, 'action-plan-id')
+
+      expect(presenter.backLinkHref).toEqual(
+        '/service-provider/action-plan/action-plan-id/appointment/2/post-session-feedback/attendance'
+      )
     })
   })
 })

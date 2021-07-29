@@ -201,7 +201,7 @@ export default class ProbationPractitionerReferralsController {
       throw new Error('Referral has not yet been assigned to a caseworker')
     }
 
-    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, referral.assignedTo)
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, null, referral.assignedTo)
     const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
