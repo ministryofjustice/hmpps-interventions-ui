@@ -28,8 +28,8 @@ export default class ScheduleAppointmentPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   get appointmentSummary(): SummaryListItem[] {
-    if (this.currentAppointment) {
-      return new AppointmentSummary(this.currentAppointment, null).appointmentSummaryList
+    if (this.appointmentAlreadyAttended) {
+      return new AppointmentSummary(this.currentAppointment!, null).appointmentSummaryList
     }
     return []
   }
@@ -54,21 +54,37 @@ export default class ScheduleAppointmentPresenter {
     return false
   }
 
-  readonly fields = {
-    date: this.utils.dateValue(this.appointmentDecorator?.britishDay ?? null, 'date', this.validationError),
-    time: this.utils.twelveHourTimeValue(this.appointmentDecorator?.britishTime ?? null, 'time', this.validationError),
-    duration: this.utils.durationValue(this.appointmentDecorator?.duration ?? null, 'duration', this.validationError),
-    meetingMethod: this.utils.meetingMethodValue(
-      this.currentAppointment?.appointmentDeliveryType ?? null,
-      'meeting-method',
-      this.validationError
-    ),
-    address: this.utils.addressValue(
-      this.currentAppointment?.appointmentDeliveryAddress ?? null,
-      'method-other-location',
-      this.validationError
-    ),
-  }
+  readonly fields = this.appointmentAlreadyAttended
+    ? {
+        date: this.utils.dateValue(null, 'date', this.validationError),
+        time: this.utils.twelveHourTimeValue(null, 'time', this.validationError),
+        duration: this.utils.durationValue(null, 'duration', this.validationError),
+        meetingMethod: this.utils.meetingMethodValue(null, 'meeting-method', this.validationError),
+        address: this.utils.addressValue(null, 'method-other-location', this.validationError),
+      }
+    : {
+        date: this.utils.dateValue(this.appointmentDecorator?.britishDay ?? null, 'date', this.validationError),
+        time: this.utils.twelveHourTimeValue(
+          this.appointmentDecorator?.britishTime ?? null,
+          'time',
+          this.validationError
+        ),
+        duration: this.utils.durationValue(
+          this.appointmentDecorator?.duration ?? null,
+          'duration',
+          this.validationError
+        ),
+        meetingMethod: this.utils.meetingMethodValue(
+          this.currentAppointment?.appointmentDeliveryType ?? null,
+          'meeting-method',
+          this.validationError
+        ),
+        address: this.utils.addressValue(
+          this.currentAppointment?.appointmentDeliveryAddress ?? null,
+          'method-other-location',
+          this.validationError
+        ),
+      }
 
   readonly backLinkHref = this.overrideBackLinkHref ?? `/service-provider/referrals/${this.referral.id}/progress`
 }

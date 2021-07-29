@@ -41,11 +41,11 @@ describe(ScheduleAppointmentPresenter, () => {
       })
     })
 
-    describe('when the appointment has been scheduled', () => {
+    describe('when the appointment has been attended', () => {
       it('should return appointment summary', () => {
         const presenter = new ScheduleAppointmentPresenter(
           referral,
-          appointmentFactory.build({
+          appointmentFactory.attended('no').build({
             appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
             durationInMinutes: 60,
             appointmentDeliveryType: 'VIDEO_CALL',
@@ -205,7 +205,44 @@ describe(ScheduleAppointmentPresenter, () => {
       })
     })
 
-    describe('with a populated appointment', () => {
+    describe('when the appointment has already been attended', () => {
+      it('should return empty fields', () => {
+        const presenter = new ScheduleAppointmentPresenter(referral, appointmentFactory.attended('no').build())
+
+        expect(presenter.fields).toEqual({
+          date: {
+            errorMessage: null,
+            day: { value: '', hasError: false },
+            month: { value: '', hasError: false },
+            year: { value: '', hasError: false },
+          },
+          time: {
+            errorMessage: null,
+            hour: { value: '', hasError: false },
+            minute: { value: '', hasError: false },
+            partOfDay: {
+              value: null,
+              hasError: false,
+            },
+          },
+          duration: {
+            errorMessage: null,
+            hours: { value: '', hasError: false },
+            minutes: { value: '', hasError: false },
+          },
+          meetingMethod: { value: null, errorMessage: null },
+          address: {
+            value: null,
+            errors: {
+              firstAddressLine: null,
+              postcode: null,
+            },
+          },
+        })
+      })
+    })
+
+    describe('with a non attended appointment', () => {
       it('returns values to populate the fields with', () => {
         const appointment = appointmentFactory.build({
           appointmentTime: '2021-03-24T10:30:00Z',

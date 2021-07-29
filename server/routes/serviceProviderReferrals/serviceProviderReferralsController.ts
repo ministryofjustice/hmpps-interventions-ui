@@ -540,7 +540,7 @@ export default class ServiceProviderReferralsController {
 
     await this.scheduleAppointment(req, res, {
       getReferral: async () => referral,
-      getCurrentAppointment: async () => new SupplierAssessmentDecorator(supplierAssessment).currentAppointment,
+      getCurrentAppointment: async () => currentAppointment,
       scheduleAppointment: paramsForUpdate =>
         this.interventionsService
           .scheduleSupplierAssessmentAppointment(
