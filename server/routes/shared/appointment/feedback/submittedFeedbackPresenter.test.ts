@@ -5,16 +5,19 @@ import User from '../../../../models/hmppsAuth/user'
 import SubmittedFeedbackPresenter from './submittedFeedbackPresenter'
 
 describe(SubmittedFeedbackPresenter, () => {
+  const userType = 'service-provider'
+  const referralId = 'referral-id'
+
   describe('text', () => {
     it('includes the title of the page', () => {
       const serviceUser = deliusServiceUserFactory.build()
       const actionPlanAppointment = actionPlanAppointmentFactory.build()
-      let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser)
+      let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser, userType, referralId)
       expect(presenter.text).toMatchObject({
         title: 'View feedback',
       })
       const initialAssessmentAppointment = appointmentFactory.build()
-      presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser)
+      presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, userType, referralId)
       expect(presenter.text).toMatchObject({
         title: 'View feedback',
       })
@@ -34,7 +37,14 @@ describe(SubmittedFeedbackPresenter, () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
-        let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser, null, caseworker)
+        let presenter = new SubmittedFeedbackPresenter(
+          actionPlanAppointment,
+          serviceUser,
+          userType,
+          referralId,
+          null,
+          caseworker
+        )
         expect(presenter.sessionDetailsSummary).toEqual([
           {
             key: 'Caseworker',
@@ -52,7 +62,14 @@ describe(SubmittedFeedbackPresenter, () => {
         const initialAssessmentAppointment = appointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
-        presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, null, caseworker)
+        presenter = new SubmittedFeedbackPresenter(
+          initialAssessmentAppointment,
+          serviceUser,
+          userType,
+          referralId,
+          null,
+          caseworker
+        )
         expect(presenter.sessionDetailsSummary).toEqual([
           {
             key: 'Caseworker',
@@ -77,7 +94,7 @@ describe(SubmittedFeedbackPresenter, () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
-        let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser)
+        let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser, userType, referralId)
 
         expect(presenter.sessionDetailsSummary).toEqual([
           {
@@ -92,7 +109,7 @@ describe(SubmittedFeedbackPresenter, () => {
         const initialAssessmentAppointment = appointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
-        presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser)
+        presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, userType, referralId)
         expect(presenter.sessionDetailsSummary).toEqual([
           {
             key: 'Date',
@@ -104,6 +121,21 @@ describe(SubmittedFeedbackPresenter, () => {
           },
         ])
       })
+    })
+  })
+
+  describe('backLinkHref', () => {
+    it('contains a link back to the referral progress page, including the userType and referral id in the URL', () => {
+      const serviceUser = deliusServiceUserFactory.build()
+      const actionPlanAppointment = actionPlanAppointmentFactory.build()
+      const presenter = new SubmittedFeedbackPresenter(
+        actionPlanAppointment,
+        serviceUser,
+        'probation-practitioner',
+        'test-referral-id'
+      )
+
+      expect(presenter.backLinkHref).toEqual('/probation-practitioner/referrals/test-referral-id/progress')
     })
   })
 })

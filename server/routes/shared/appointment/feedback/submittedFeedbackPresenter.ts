@@ -20,10 +20,13 @@ export default class SubmittedFeedbackPresenter extends FeedbackAnswersPresenter
   constructor(
     appointmentDetails: ActionPlanAppointment | Appointment,
     private readonly serviceUser: DeliusServiceUser,
+    private readonly userType: 'probation-practitioner' | 'service-provider',
+    private readonly referralId: string,
     private readonly actionPlanId: string | null = null,
     private readonly assignedCaseworker: User | null = null
   ) {
     super(appointmentDetails)
+
     if (this.isActionPlanAppointment(appointmentDetails)) {
       this.attendancePresenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
         appointmentDetails,
@@ -39,6 +42,8 @@ export default class SubmittedFeedbackPresenter extends FeedbackAnswersPresenter
       this.behaviourPresenter = new InitialAssessmentBehaviourFeedbackPresenter(appointmentDetails, this.serviceUser)
     }
   }
+
+  readonly backLinkHref = `/${this.userType}/referrals/${this.referralId}/progress`
 
   private isActionPlanAppointment(
     appointmentDetails: Appointment | ActionPlanAppointment

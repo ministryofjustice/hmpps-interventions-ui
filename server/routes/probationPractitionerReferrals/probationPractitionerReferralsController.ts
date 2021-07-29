@@ -201,7 +201,14 @@ export default class ProbationPractitionerReferralsController {
       throw new Error('Referral has not yet been assigned to a caseworker')
     }
 
-    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, null, referral.assignedTo)
+    const presenter = new SubmittedFeedbackPresenter(
+      currentAppointment,
+      serviceUser,
+      'probation-practitioner',
+      referral.id,
+      null,
+      referral.assignedTo
+    )
     const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -228,7 +235,12 @@ export default class ProbationPractitionerReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser)
+    const presenter = new SubmittedFeedbackPresenter(
+      currentAppointment,
+      serviceUser,
+      'probation-practitioner',
+      referralId
+    )
     const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
