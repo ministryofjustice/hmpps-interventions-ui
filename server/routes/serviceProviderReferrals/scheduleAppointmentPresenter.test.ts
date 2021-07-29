@@ -1,5 +1,6 @@
 import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import appointmentFactory from '../../../testutils/factories/appointment'
+import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 
 describe(ScheduleAppointmentPresenter, () => {
@@ -20,6 +21,75 @@ describe(ScheduleAppointmentPresenter, () => {
           const presenter = new ScheduleAppointmentPresenter(referral, appointmentFactory.build())
 
           expect(presenter.text).toEqual({ title: 'Change appointment details' })
+        })
+      })
+
+      describe('when the session has already been attended', () => {
+        it('returns an appropriate title', () => {
+          const presenter = new ScheduleAppointmentPresenter(referral, appointmentFactory.attended('no').build())
+          expect(presenter.text).toEqual({ title: 'Add appointment details' })
+        })
+      })
+    })
+  })
+
+  describe('appointmentSummary', () => {
+    describe('when the appointment has not yet been scheduled', () => {
+      it('should return an empty summary', () => {
+        const presenter = new ScheduleAppointmentPresenter(referral, null)
+        expect(presenter.appointmentSummary).toEqual([])
+      })
+    })
+
+    describe('when the appointment has been scheduled', () => {
+      it('should return appointment summary', () => {
+        const presenter = new ScheduleAppointmentPresenter(
+          referral,
+          appointmentFactory.build({
+            appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
+            durationInMinutes: 60,
+            appointmentDeliveryType: 'VIDEO_CALL',
+          })
+        )
+        expect(presenter.appointmentSummary).toEqual([
+          { key: 'Date', lines: ['2 January 2021'] },
+          { key: 'Time', lines: ['12:00pm to 1:00pm'] },
+          { key: 'Method', lines: ['Video call'] },
+        ])
+      })
+    })
+  })
+
+  describe('appointmentAlreadyAttended', () => {
+    describe('when the appointment has not yet been scheduled', () => {
+      it('should return false', () => {
+        const presenter = new ScheduleAppointmentPresenter(referral, null)
+        expect(presenter.appointmentAlreadyAttended).toBe(false)
+      })
+    })
+
+    describe('when the appointment has been scheduled but not yet attended', () => {
+      it('should return false', () => {
+        const presenter = new ScheduleAppointmentPresenter(referral, appointmentFactory.build())
+        expect(presenter.appointmentAlreadyAttended).toBe(false)
+      })
+    })
+
+    describe('when the appointment has been scheduled and attended', () => {
+      describe('and the appointment is an initial assessment', () => {
+        it('should return true', () => {
+          const presenter = new ScheduleAppointmentPresenter(referral, appointmentFactory.attended('no').build())
+          expect(presenter.appointmentAlreadyAttended).toBe(true)
+        })
+      })
+
+      describe('and the appointment is part of an action plan', () => {
+        it('should return false', () => {
+          const presenter = new ScheduleAppointmentPresenter(
+            referral,
+            actionPlanAppointmentFactory.attended('no').build()
+          )
+          expect(presenter.appointmentAlreadyAttended).toBe(false)
         })
       })
     })

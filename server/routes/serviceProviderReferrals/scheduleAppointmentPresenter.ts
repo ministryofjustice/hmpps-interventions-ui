@@ -4,6 +4,9 @@ import PresenterUtils from '../../utils/presenterUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
+import utils from '../../utils/utils'
+import AppointmentSummary from '../appointments/appointmentSummary'
+import { SummaryListItem } from '../../utils/summaryList'
 
 export default class ScheduleAppointmentPresenter {
   constructor(
@@ -16,10 +19,20 @@ export default class ScheduleAppointmentPresenter {
   ) {}
 
   readonly text = {
-    title: this.currentAppointment ? 'Change appointment details' : 'Add appointment details',
+    title:
+      this.currentAppointment && !this.appointmentAlreadyAttended
+        ? 'Change appointment details'
+        : 'Add appointment details',
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)
+
+  get appointmentSummary(): SummaryListItem[] {
+    if (this.currentAppointment) {
+      return new AppointmentSummary(this.currentAppointment, null).appointmentSummaryList
+    }
+    return []
+  }
 
   readonly errorSummary = this.serverError
     ? PresenterUtils.errorSummary(this.serverError)
@@ -30,6 +43,16 @@ export default class ScheduleAppointmentPresenter {
   private readonly appointmentDecorator = this.currentAppointment
     ? new AppointmentDecorator(this.currentAppointment)
     : null
+
+  get appointmentAlreadyAttended(): boolean {
+    if (this.currentAppointment !== null) {
+      // Remove this check once action plan appointments allow rescheduling
+      if (utils.isInitialAssessmentAppointment(this.currentAppointment)) {
+        return this.currentAppointment.sessionFeedback.submitted
+      }
+    }
+    return false
+  }
 
   readonly fields = {
     date: this.utils.dateValue(this.appointmentDecorator?.britishDay ?? null, 'date', this.validationError),
