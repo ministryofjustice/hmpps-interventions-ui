@@ -19,8 +19,8 @@ import java.time.Duration
 
 @Configuration
 class WebClientConfiguration(
-  @Value("\${webclient.connect-timeout-seconds}") private val connectTimeoutSeconds: Long,
-  @Value("\${webclient.read-timeout-seconds}") private val readTimeoutSeconds: Int,
+  @Value("\${webclient.connect-timeout-seconds}") private val defaultConnectTimeoutSeconds: Long,
+  @Value("\${webclient.read-timeout-seconds}") private val defaultReadTimeoutSeconds: Int,
   @Value("\${webclient.hmpps-auth.read-timeout-seconds}") private val hmppsReadTimeoutSeconds: Int,
   @Value("\${webclient.hmpps-auth.connect-timeout-seconds}") private val hmppsAuthConnectTimeoutSeconds: Long,
   @Value("\${webclient.write-timeout-seconds}") private val writeTimeoutSeconds: Int,
@@ -71,15 +71,11 @@ class WebClientConfiguration(
     return authorizedClientManager
   }
 
-  private fun createAuthorizedWebClient(clientManager: OAuth2AuthorizedClientManager, baseUrl: String): WebClient {
-    return createAuthorizedWebClient(clientManager, baseUrl, readTimeoutSeconds, connectTimeoutSeconds)
-  }
-
   private fun createAuthorizedWebClient(
     clientManager: OAuth2AuthorizedClientManager,
     baseUrl: String,
-    readTimeoutSeconds: Int,
-    connectTimeoutSeconds: Long,
+    readTimeoutSeconds: Int = defaultReadTimeoutSeconds,
+    connectTimeoutSeconds: Long = defaultConnectTimeoutSeconds,
   ): WebClient {
     val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(clientManager)
 

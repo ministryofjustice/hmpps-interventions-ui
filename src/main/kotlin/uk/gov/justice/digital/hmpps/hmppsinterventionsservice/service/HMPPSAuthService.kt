@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import io.netty.channel.ConnectTimeoutException
+import io.netty.handler.timeout.TimeoutException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -57,7 +61,7 @@ class HMPPSAuthService(
       .retrieve()
       .onStatus({ HttpStatus.NOT_FOUND == it }, { Mono.just(null) })
       .bodyToFlux(AuthGroupResponse::class.java)
-      .retry(maxRetryAttempts)
+      .withRetryPolicy()
       .map { it.groupCode }
       .collectList().block()
   }
@@ -74,7 +78,7 @@ class HMPPSAuthService(
     val groups = hmppsAuthApiClient.get(url)
       .retrieve()
       .bodyToFlux(AuthGroupResponse::class.java)
-      .retry(maxRetryAttempts)
+      .withRetryPolicy()
       .collectList().block()
 
     val serviceProviderOrgs = groups
@@ -93,7 +97,7 @@ class HMPPSAuthService(
       hmppsAuthApiClient.get(url)
         .retrieve()
         .bodyToMono(AuthUserDetailResponse::class.java)
-        .retry(maxRetryAttempts)
+        .withRetryPolicy()
         .map {
           if (!it.verified) {
             throw UnverifiedEmailException()
@@ -108,17 +112,35 @@ class HMPPSAuthService(
         hmppsAuthApiClient.get(detailUrl)
           .retrieve()
           .bodyToMono(UserDetailResponse::class.java)
-          .retry(maxRetryAttempts)
+          .withRetryPolicy()
           .map { it.name.substringBefore(' ') },
         hmppsAuthApiClient.get(emailUrl)
           .retrieve()
           .onStatus({ it.equals(HttpStatus.NO_CONTENT) }, { Mono.error(UnverifiedEmailException()) })
           .bodyToMono(UserEmailResponse::class.java)
-          .retry(maxRetryAttempts)
+          .withRetryPolicy()
           .map { it.email }
       )
         .map { UserDetail(it.t1, it.t2) }
         .block()
     }
+  }
+
+  fun <T> Flux<T>.withRetryPolicy(): Flux<T> {
+    return this
+      .retryWhen(
+        Retry.max(maxRetryAttempts).filter {
+          it is TimeoutException || it is ConnectTimeoutException
+        }
+      )
+  }
+
+  fun <T> Mono<T>.withRetryPolicy(): Mono<T> {
+    return this
+      .retryWhen(
+        Retry.max(maxRetryAttempts).filter {
+          it is TimeoutException || it is ConnectTimeoutException
+        }
+      )
   }
 }
