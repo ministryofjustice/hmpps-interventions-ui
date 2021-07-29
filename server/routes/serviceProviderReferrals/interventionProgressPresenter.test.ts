@@ -646,7 +646,7 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when the supplier assessment appointment was not attended', () => {
-      it('returns a link to a page to view feedback for the appointment', () => {
+      it('returns a link to a page to schedule a new appointment', () => {
         const referral = sentReferralFactory.build()
 
         const presenter = new InterventionProgressPresenter(
@@ -659,8 +659,8 @@ describe(InterventionProgressPresenter, () => {
 
         expect(presenter.supplierAssessmentLink).toEqual([
           {
-            text: 'View feedback',
-            href: `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
+            text: 'Reschedule',
+            href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule`,
           },
         ])
       })

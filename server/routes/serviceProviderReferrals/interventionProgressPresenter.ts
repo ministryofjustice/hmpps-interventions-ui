@@ -216,8 +216,14 @@ export default class InterventionProgressPresenter {
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
           },
         ]
-      case SessionStatus.completed:
       case SessionStatus.didNotAttend:
+        return [
+          {
+            text: 'Reschedule',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+          },
+        ]
+      case SessionStatus.completed:
         return [
           {
             text: 'View feedback',
