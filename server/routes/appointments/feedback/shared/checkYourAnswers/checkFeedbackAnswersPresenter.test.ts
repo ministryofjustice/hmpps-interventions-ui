@@ -5,7 +5,7 @@ import { AppointmentDetails } from '../../appointmentDetails'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import CheckFeedbackAnswersPresenter from './checkFeedbackAnswersPresenter'
-import BehaviourFeedbackPresenter from '../behaviour/behaviourFeedbackPresenter'
+import ActionPlanSessionBehaviourFeedbackPresenter from '../../actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 
 describe('for a class that extends abstract class CheckFeedbackAnswersPresenter', () => {
   class ExtendedCheckFeedbackAnswersPresenter extends CheckFeedbackAnswersPresenter {
@@ -31,8 +31,8 @@ describe('for a class that extends abstract class CheckFeedbackAnswersPresenter'
       })(this.appointment)
     }
 
-    protected get behaviourPresenter(): BehaviourFeedbackPresenter {
-      return new BehaviourFeedbackPresenter(this.appointment, this.serviceUser)
+    protected get behaviourPresenter(): ActionPlanSessionBehaviourFeedbackPresenter {
+      return new ActionPlanSessionBehaviourFeedbackPresenter(this.appointment, this.serviceUser)
     }
   }
   describe('sessionDetailsSummary', () => {

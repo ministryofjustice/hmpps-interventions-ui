@@ -1652,7 +1652,9 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/behaviour`
           )
 
-          cy.contains("Describe Alex's behaviour in this session").type('Alex was acting very suspicious.')
+          cy.contains("Describe Alex's behaviour in the assessment appointment").type(
+            'Alex was acting very suspicious.'
+          )
           cy.contains('Yes').click()
 
           const appointmentWithBehaviourFeedback = appointmentFactory.build({
@@ -1689,7 +1691,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Yes, they were on time')
           cy.contains("Add additional information about Alex's attendance:")
           cy.contains('Alex attended the session')
-          cy.contains("Describe Alex's behaviour in this session")
+          cy.contains("Describe Alex's behaviour in the assessment appointment")
           cy.contains('Alex was acting very suspicious.')
           cy.contains('If you described poor behaviour, do you want to notify the probation practitioner?')
           cy.contains('Yes')

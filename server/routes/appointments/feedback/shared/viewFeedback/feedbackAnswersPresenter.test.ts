@@ -3,9 +3,9 @@ import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { AppointmentDetails } from '../../appointmentDetails'
 import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
-import BehaviourFeedbackPresenter from '../behaviour/behaviourFeedbackPresenter'
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
+import ActionPlanSessionBehaviourFeedbackPresenter from '../../actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 
 describe(FeedbackAnswersPresenter, () => {
   class ExtendedFeedbackAnswersPresenter extends FeedbackAnswersPresenter {
@@ -29,8 +29,8 @@ describe(FeedbackAnswersPresenter, () => {
       })(this.appointment, this.serviceUser)
     }
 
-    protected get behaviourPresenter(): BehaviourFeedbackPresenter {
-      return new BehaviourFeedbackPresenter(this.appointment, this.serviceUser)
+    protected get behaviourPresenter(): ActionPlanSessionBehaviourFeedbackPresenter {
+      return new ActionPlanSessionBehaviourFeedbackPresenter(this.appointment, this.serviceUser)
     }
   }
   describe('attendedAnswers', () => {

@@ -1,6 +1,6 @@
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
-import BehaviourFeedbackPresenter from '../behaviour/behaviourFeedbackPresenter'
 import { AppointmentDetails } from '../../appointmentDetails'
+import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
 
 export default abstract class FeedbackAnswersPresenter {
   protected abstract get attendancePresenter(): AttendanceFeedbackPresenter
