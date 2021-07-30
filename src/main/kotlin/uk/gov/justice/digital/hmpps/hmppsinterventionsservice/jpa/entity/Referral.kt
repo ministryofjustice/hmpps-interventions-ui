@@ -91,11 +91,6 @@ class Referral(
   @OneToOne(mappedBy = "referral") @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
   @OneToOne(mappedBy = "referral") @Fetch(JOIN) var supplierAssessment: SupplierAssessment? = null,
 ) {
-  fun getResponsibleProbationPractitioner(): AuthUser {
-    // fixme: should this sentBy or createdBy?
-    return createdBy
-  }
-
   fun cancelled(): Boolean = concludedAt != null && endRequestedAt != null && endOfServiceReport == null
 
   val currentActionPlan: ActionPlan?

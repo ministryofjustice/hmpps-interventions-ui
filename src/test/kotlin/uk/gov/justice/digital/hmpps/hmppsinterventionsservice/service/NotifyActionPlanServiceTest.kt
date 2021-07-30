@@ -23,6 +23,7 @@ import java.util.UUID
 class NotifyActionPlanServiceTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
+  private val referralService = mock<ReferralService>()
   private val actionPlanFactory = ActionPlanFactory()
 
   private val actionPlanSubmittedEvent = ActionPlanEvent(
@@ -62,12 +63,13 @@ class NotifyActionPlanServiceTest {
       "/sp/referrals/{id}/action-plan",
       emailSender,
       hmppsAuthService,
+      referralService,
     )
   }
 
   @Test
   fun `action plan submitted event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(actionPlanSubmittedEvent)
     }
@@ -99,15 +101,9 @@ class NotifyActionPlanServiceTest {
   }
 
   @Test
-  fun `action plan submitted event does not swallow hmpps auth errors`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(UnverifiedEmailException::class.java)
-    assertThrows<UnverifiedEmailException> { notifyService().onApplicationEvent(actionPlanSubmittedEvent) }
-  }
-
-  @Test
   fun `action plan submitted event generates valid url and sends an email`() {
-    whenever(hmppsAuthService.getUserDetail(AuthUser("abc999", "auth", "abc999")))
-      .thenReturn(UserDetail("tom", "tom@tom.tom"))
+    whenever(referralService.getResponsibleProbationPractitioner(any()))
+      .thenReturn(ContactableProbationPractitioner("tom", "tom@tom.tom"))
 
     notifyService().onApplicationEvent(actionPlanSubmittedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

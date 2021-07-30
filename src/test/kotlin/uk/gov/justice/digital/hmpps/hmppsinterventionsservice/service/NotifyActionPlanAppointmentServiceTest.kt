@@ -21,7 +21,7 @@ import java.util.UUID
 
 class NotifyActionPlanAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
-  private val hmppsAuthService = mock<HMPPSAuthService>()
+  private val referralService = mock<ReferralService>()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
 
   private fun appointmentEvent(type: ActionPlanAppointmentEventType, notifyPP: Boolean): ActionPlanAppointmentEvent {
@@ -55,13 +55,13 @@ class NotifyActionPlanAppointmentServiceTest {
       "http://example.com",
       "/pp/action-plan/{id}/appointment/sessionNumber/{sessionNumber}/feedback",
       emailSender,
-      hmppsAuthService,
+      referralService,
     )
   }
 
   @Test
   fun `appointment attendance recorded event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, true))
     }
@@ -76,7 +76,7 @@ class NotifyActionPlanAppointmentServiceTest {
 
   @Test
   fun `appointment attendance recorded event calls email client`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
 
     notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
@@ -88,7 +88,7 @@ class NotifyActionPlanAppointmentServiceTest {
 
   @Test
   fun `appointment behaviour recorded event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     }
@@ -103,7 +103,7 @@ class NotifyActionPlanAppointmentServiceTest {
 
   @Test
   fun `appointment behaviour recorded event calls email client`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
 
     notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

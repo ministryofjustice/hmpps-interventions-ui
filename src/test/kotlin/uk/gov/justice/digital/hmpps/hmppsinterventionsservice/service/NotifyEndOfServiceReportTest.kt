@@ -18,7 +18,7 @@ import java.util.UUID
 
 class NotifyEndOfServiceReportTest {
   private val emailSender = mock<EmailSender>()
-  private val hmppsAuthService = mock<HMPPSAuthService>()
+  private val referralService = mock<ReferralService>()
   private val endOfServiceReportFactory = EndOfServiceReportFactory()
 
   private val endOfServiceReportSubmittedEvent = EndOfServiceReportEvent(
@@ -36,13 +36,13 @@ class NotifyEndOfServiceReportTest {
       "http://example.com",
       "/end-of-service-report/{id}",
       emailSender,
-      hmppsAuthService,
+      referralService,
     )
   }
 
   @Test
   fun `end of service report submitted event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(endOfServiceReportSubmittedEvent)
     }
@@ -51,8 +51,8 @@ class NotifyEndOfServiceReportTest {
 
   @Test
   fun `end of service report submitted event generates valid url and sends an email`() {
-    whenever(hmppsAuthService.getUserDetail(any()))
-      .thenReturn(UserDetail("abc", "abc@abc.abc"))
+    whenever(referralService.getResponsibleProbationPractitioner(any()))
+      .thenReturn(ContactableProbationPractitioner("abc", "abc@abc.abc"))
 
     notifyService().onApplicationEvent(endOfServiceReportSubmittedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
