@@ -36,6 +36,11 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import javax.transaction.Transactional
 
+data class ContactableProbationPractitioner(
+  val firstName: String,
+  val email: String,
+)
+
 @Service
 @Transactional
 class ReferralService(
@@ -57,6 +62,8 @@ class ReferralService(
   val assessRisksAndNeedsService: RisksAndNeedsService,
   val communityAPIOffenderService: CommunityAPIOffenderService,
   val supplierAssessmentService: SupplierAssessmentService,
+  val hmppsAuthService: HMPPSAuthService,
+  val telemetryService: TelemetryService,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -448,5 +455,28 @@ class ReferralService(
 
     logger.error("Unable to generate a referral number {} {}", kv("tries", maxReferenceNumberTries), kv("referral_id", referral.id))
     return null
+  }
+
+  fun getResponsibleProbationPractitioner(referral: Referral): ContactableProbationPractitioner {
+    val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
+    if (responsibleOfficer.email != null) {
+      return ContactableProbationPractitioner(
+        responsibleOfficer.firstName ?: "",
+        responsibleOfficer.email,
+      )
+    }
+
+    telemetryService.reportInvalidAssumption(
+      "all responsible officers have email addresses",
+      mapOf("staffId" to responsibleOfficer.staffId.toString())
+    )
+
+    logger.warn("no email address for responsible officer; falling back to referring probation practitioner")
+
+    val referringProbationPractitioner = hmppsAuthService.getUserDetail(referral.sentBy ?: referral.createdBy)
+    return ContactableProbationPractitioner(
+      referringProbationPractitioner.firstName,
+      referringProbationPractitioner.email
+    )
   }
 }
