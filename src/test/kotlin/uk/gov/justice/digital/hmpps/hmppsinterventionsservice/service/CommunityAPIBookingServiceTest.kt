@@ -6,12 +6,15 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentDeliveryFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
@@ -24,6 +27,7 @@ internal class CommunityAPIBookingServiceTest {
   private val interventionFactory = InterventionFactory()
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val appointmentFactory = AppointmentFactory()
+  private val appointmentDeliveryFactory = AppointmentDeliveryFactory()
 
   private val referral = referralFactory.createSent(
     serviceUserCRN = "X1",
@@ -114,42 +118,135 @@ internal class CommunityAPIBookingServiceTest {
     verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
   }
 
-  @Test
-  fun `requests rescheduling an appointment when timings are different`() {
-    val now = now()
-    val deliusAppointmentId = 999L
-    val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+  @Nested
+  inner class ReschedulingAppointment {
 
-    val uri = "/appt/X1/999/CRS/reschedule"
-    val request = AppointmentRescheduleRequestDTO(now, now.plusMinutes(45), true)
-    val response = AppointmentResponseDTO(1234L)
+    @Test
+    fun `requests rescheduling an appointment when timings are different`() {
+      val now = now()
+      val deliusAppointmentId = 999L
+      val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
 
-    whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
-      .thenReturn(response)
+      val uri = "/appt/X1/999/CRS/reschedule"
+      val request = AppointmentRescheduleRequestDTO(now, now.plusMinutes(45), true, crsOfficeLocation)
+      val response = AppointmentResponseDTO(1234L)
 
-    communityAPIBookingService.book(referral, appointment, now, 45, SERVICE_DELIVERY, null)
+      whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
+        .thenReturn(response)
 
-    verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
-  }
+      communityAPIBookingService.book(referral, appointment, now, 45, SERVICE_DELIVERY, null)
 
-  @Test
-  fun `does not reschedule an appointment when timings are same`() {
-    val now = now()
-    val deliusAppointmentId = 999L
-    val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+      verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+    }
 
-    communityAPIBookingService.book(referral, appointment, now.plusDays(1), 60, SERVICE_DELIVERY, null)
+    @Test
+    fun `does not reschedule an appointment when timings are same`() {
+      val now = now()
+      val deliusAppointmentId = 999L
+      val appointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
 
-    verifyNoMoreInteractions(communityAPIClient)
-  }
+      communityAPIBookingService.book(referral, appointment, now.plusDays(1), 60, SERVICE_DELIVERY, null)
 
-  @Test
-  fun `is reschedule`() {
-    val referralStart = now()
-    val appointmentStart = referralStart.plusDays(1)
-    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), appointmentStart, 60)).isFalse
-    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 59), appointmentStart, 60)).isTrue
-    assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), appointmentStart.plusNanos(1), 60)).isTrue
+      verifyNoMoreInteractions(communityAPIClient)
+    }
+
+    @Test
+    fun `is reschedule`() {
+      val referralStart = now()
+      val appointmentStart = referralStart.plusDays(1)
+      assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), appointmentStart, 60, null)).isFalse
+      assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 59), appointmentStart, 60, null)).isTrue
+      assertThat(communityAPIBookingService.isRescheduleBooking(makeAppointment(referralStart, appointmentStart, 60), appointmentStart.plusNanos(1), 60, null)).isTrue
+    }
+
+    @Nested
+    inner class AppointmentLocationRescheudling {
+      @Test
+      fun `requests rescheduling an appointment when locations are different`() {
+        val now = now()
+        val deliusAppointmentId = 999L
+        val existingAppointment = makeAppointment(now, now.plusMinutes(1), 60, deliusAppointmentId)
+        val appointmentDelivery = appointmentDeliveryFactory.create(existingAppointment.id, npsOfficeCode = "OLD_CODE", appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
+        existingAppointment.appointmentDelivery = appointmentDelivery
+
+        val uri = "/appt/X1/999/CRS/reschedule"
+        val request = AppointmentRescheduleRequestDTO(now, now.plusMinutes(60), true, "NEW_CODE")
+        val response = AppointmentResponseDTO(1234L)
+
+        whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
+          .thenReturn(response)
+
+        communityAPIBookingService.book(referral, existingAppointment, now, 60, SERVICE_DELIVERY, "NEW_CODE")
+
+        verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+      }
+
+      @Test
+      fun `requests rescheduling an appointment when location is not set on existing appointment `() {
+        val now = now()
+        val deliusAppointmentId = 999L
+        val existingAppointment = makeAppointment(now, now.plusMinutes(1), 60, deliusAppointmentId)
+        val appointmentDelivery = appointmentDeliveryFactory.create(existingAppointment.id, appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL)
+        existingAppointment.appointmentDelivery = appointmentDelivery
+
+        val uri = "/appt/X1/999/CRS/reschedule"
+        val request = AppointmentRescheduleRequestDTO(now, now.plusMinutes(60), true, "NEW_CODE")
+        val response = AppointmentResponseDTO(1234L)
+
+        whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
+          .thenReturn(response)
+
+        communityAPIBookingService.book(referral, existingAppointment, now, 60, SERVICE_DELIVERY, "NEW_CODE")
+
+        verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+      }
+
+      @Test
+      fun `requests rescheduling an appointment when location is not set on new appointment `() {
+        val now = now()
+        val deliusAppointmentId = 999L
+        val existingAppointment = makeAppointment(now, now.plusMinutes(1), 60, deliusAppointmentId)
+        val appointmentDelivery = appointmentDeliveryFactory.create(existingAppointment.id, npsOfficeCode = "OLD_CODE", appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
+        existingAppointment.appointmentDelivery = appointmentDelivery
+
+        val uri = "/appt/X1/999/CRS/reschedule"
+        val request = AppointmentRescheduleRequestDTO(now, now.plusMinutes(60), true, crsOfficeLocation)
+        val response = AppointmentResponseDTO(1234L)
+
+        whenever(communityAPIClient.makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java))
+          .thenReturn(response)
+
+        communityAPIBookingService.book(referral, existingAppointment, now, 60, SERVICE_DELIVERY, crsOfficeLocation)
+
+        verify(communityAPIClient).makeSyncPostRequest(uri, request, AppointmentResponseDTO::class.java)
+      }
+
+      @Test
+      fun `does not reschedule an appointment when locations are the same`() {
+        val now = now()
+        val deliusAppointmentId = 999L
+        val existingAppointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+        val appointmentDelivery = appointmentDeliveryFactory.create(existingAppointment.id, npsOfficeCode = "NPS_CODE", appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE)
+        existingAppointment.appointmentDelivery = appointmentDelivery
+
+        communityAPIBookingService.book(referral, existingAppointment, now.plusDays(1), 60, SERVICE_DELIVERY, "NPS_CODE")
+
+        verifyNoMoreInteractions(communityAPIClient)
+      }
+
+      @Test
+      fun `does not reschedule an appointment when no location is provided and existing appointment does not have location set`() {
+        val now = now()
+        val deliusAppointmentId = 999L
+        val existingAppointment = makeAppointment(now, now.plusDays(1), 60, deliusAppointmentId)
+        val appointmentDelivery = appointmentDeliveryFactory.create(existingAppointment.id, appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL)
+        existingAppointment.appointmentDelivery = appointmentDelivery
+
+        communityAPIBookingService.book(referral, existingAppointment, now.plusDays(1), 60, SERVICE_DELIVERY, null)
+
+        verifyNoMoreInteractions(communityAPIClient)
+      }
+    }
   }
 
   @Test
