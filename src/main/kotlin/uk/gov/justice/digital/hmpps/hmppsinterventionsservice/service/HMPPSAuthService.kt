@@ -149,14 +149,20 @@ class HMPPSAuthService(
       )
   }
 
-  private fun isTimeoutException(it: Throwable) =
-    it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
+  fun isTimeoutException(it: Throwable): Boolean {
+    // Timeout for NO_RESPONSE is wrapped in a WebClientRequestException
+    return it is ReadTimeoutException || it is ConnectTimeoutException ||
+      it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
+  }
 
-  private fun logRetrySignal(retrySignal: RetrySignal) {
+  fun logRetrySignal(retrySignal: RetrySignal) {
+    val exception = retrySignal.failure()?.cause.let { it } ?: retrySignal.failure()
+    val message = exception.message ?: exception.javaClass.canonicalName
     logger.debug(
-      "Retrying due to [${retrySignal.failure().message}]",
-      retrySignal.failure(),
-      StructuredArguments.kv("res.causeMessage", retrySignal.failure().message)
+      "Retrying due to [$message]",
+      exception,
+      StructuredArguments.kv("res.causeMessage", message),
+      StructuredArguments.kv("totalRetries", retrySignal.totalRetries())
     )
   }
 }
