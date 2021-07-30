@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import ch.qos.logback.classic.Level.DEBUG
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import io.netty.channel.ConnectTimeoutException
@@ -73,6 +74,7 @@ class HMPPSAuthServiceRetryTest {
     @JvmStatic
     fun setupAll() {
       memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
+      logger.level = DEBUG
       logger.addAppender(memoryAppender)
       memoryAppender.start()
     }
