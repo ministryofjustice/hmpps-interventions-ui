@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.microsoft.applicationinsights.TelemetryClient
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -9,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.InvalidAssumptionError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 
 private data class MockedResponse(
@@ -22,6 +25,8 @@ internal class CommunityAPIOffenderServiceTest {
   private val offenderAccessLocation = "offender-access"
   private val managedOffendersLocation = "managed-offenders"
   private val staffDetailsLocation = "staff-details"
+  private val offenderManagersLocation = "offender-managers"
+  private val telemetryService = TelemetryService(mock<TelemetryClient>())
 
   private fun createMockedRestClient(vararg responses: MockedResponse): RestClient {
     return RestClient(
@@ -45,7 +50,7 @@ internal class CommunityAPIOffenderServiceTest {
   }
 
   private fun offenderServiceFactory(restClient: RestClient): CommunityAPIOffenderService {
-    return CommunityAPIOffenderService(offenderAccessLocation, managedOffendersLocation, staffDetailsLocation, restClient)
+    return CommunityAPIOffenderService(offenderAccessLocation, managedOffendersLocation, staffDetailsLocation, offenderManagersLocation, restClient, telemetryService)
   }
 
   @Test
@@ -90,5 +95,20 @@ internal class CommunityAPIOffenderServiceTest {
     val offenderService = offenderServiceFactory(createMockedRestClient(staffResponse, offendersResponse))
     val result = offenderService.getManagedOffendersForDeliusUser(user)
     assertThat(result).isEqualTo(listOf(Offender("CRN123"), Offender("CRN456")))
+  }
+
+  @Test
+  fun `getResponsibleOfficer fails when there are no responsible officers`() {
+    val offenderService = offenderServiceFactory(createMockedRestClient(MockedResponse(offenderManagersLocation, HttpStatus.OK, "[]")))
+    assertThrows<InvalidAssumptionError> {
+      offenderService.getResponsibleOfficer("X123456")
+    }
+  }
+
+  @Test
+  fun `getResponsibleOfficer returns first when there are multiple responsible officers`() {
+    val offenderService = offenderServiceFactory(createMockedRestClient(MockedResponse(offenderManagersLocation, HttpStatus.OK, "[{\"isResponsibleOfficer\": true, \"staff\": {\"forenames\": \"tom\", \"email\": \"tom@tom.tom\"}, \"staffId\": 123}, {\"isResponsibleOfficer\": true}]")))
+    val result = offenderService.getResponsibleOfficer("X123456")
+    assertThat(result).isEqualTo(ResponsibleOfficer("tom", "tom@tom.tom", 123))
   }
 }

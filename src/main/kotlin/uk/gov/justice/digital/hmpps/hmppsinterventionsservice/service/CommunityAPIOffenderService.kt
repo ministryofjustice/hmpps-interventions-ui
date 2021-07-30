@@ -18,6 +18,12 @@ data class ServiceUserAccessResult(
   val messages: List<String>,
 )
 
+data class ResponsibleOfficer(
+  val firstName: String?,
+  val email: String?,
+  val staffId: Long?,
+)
+
 private data class UserAccessResponse(
   val exclusionMessage: String?,
   val restrictionMessage: String?,
@@ -27,12 +33,27 @@ private data class StaffDetailsResponse(
   val staffIdentifier: String,
 )
 
+private data class ContactableHumanResponse(
+  val forenames: String?,
+  val surname: String?,
+  val email: String?,
+  val phoneNumber: String?,
+)
+
+private data class OffenderManagerResponse(
+  val staff: ContactableHumanResponse?,
+  val staffId: Long?,
+  val isResponsibleOfficer: Boolean?,
+)
+
 @Service
 class CommunityAPIOffenderService(
   @Value("\${community-api.locations.offender-access}") private val offenderAccessLocation: String,
   @Value("\${community-api.locations.managed-offenders}") private val managedOffendersLocation: String,
   @Value("\${community-api.locations.staff-details}") private val staffDetailsLocation: String,
+  @Value("\${community-api.locations.offender-managers}") private val offenderManagersLocation: String,
   private val communityApiClient: RestClient,
+  private val telemetryService: TelemetryService,
 ) {
   fun checkIfAuthenticatedDeliusUserHasAccessToServiceUser(user: AuthUser, crn: String): ServiceUserAccessResult {
     val userAccessPath = UriComponentsBuilder.fromPath(offenderAccessLocation)
@@ -85,5 +106,38 @@ class CommunityAPIOffenderService(
       }
       .block()
       ?.staffIdentifier
+  }
+
+  fun getResponsibleOfficer(crn: String): ResponsibleOfficer {
+    val offenderManagersPath = UriComponentsBuilder.fromPath(offenderManagersLocation)
+      .buildAndExpand(crn)
+      .toString()
+
+    val responsibleOfficers = communityApiClient.get(offenderManagersPath)
+      .retrieve()
+      .bodyToFlux(OffenderManagerResponse::class.java)
+      .filter { it.isResponsibleOfficer == true }
+      .map { ResponsibleOfficer(it.staff?.forenames?.substringBefore(' '), it.staff?.email, it.staffId) }
+      .collectList()
+      .block()
+
+    // as with many community API endpoints, we have a few assumptions about the data.
+    // if there are no ROs, we can't recover. if there are more than one, we just take
+    // the first.
+    responsibleOfficers.size.let {
+      when {
+        it == 0 -> telemetryService.reportInvalidAssumption(
+          "service users always have a responsible officer",
+          mapOf("crn" to crn),
+          recoverable = false
+        )
+        it > 1 -> telemetryService.reportInvalidAssumption(
+          "service users only have one responsible officer",
+          mapOf("crn" to crn, "numberOfResponsibleOfficers" to it.toString()),
+        )
+      }
+    }
+
+    return responsibleOfficers.first()
   }
 }
