@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import io.netty.channel.ConnectTimeoutException
 import io.netty.handler.timeout.ReadTimeoutException
 import mu.KLogging
+import net.logstash.logback.argument.StructuredArguments
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -10,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
+import reactor.util.retry.Retry.RetrySignal
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -133,12 +135,8 @@ class HMPPSAuthService(
     return this
       .retryWhen(
         Retry.max(maxRetryAttempts)
-          .filter {
-            it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
-          }
-          .doBeforeRetry { retrySignal ->
-            logger.debug("Retrying: ${retrySignal.totalRetries()}, ${retrySignal.totalRetriesInARow()}, ${retrySignal.failure()}")
-          }
+          .filter { isTimeoutException(it) }
+          .doBeforeRetry { logRetrySignal(it) }
       )
   }
 
@@ -146,12 +144,20 @@ class HMPPSAuthService(
     return this
       .retryWhen(
         Retry.max(maxRetryAttempts)
-          .filter {
-            it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
-          }
-          .doBeforeRetry { retrySignal ->
-            logger.debug("Retrying: ${retrySignal.totalRetries()}, ${retrySignal.totalRetriesInARow()}, ${retrySignal.failure()}")
-          }
+          .filter { isTimeoutException(it) }
+          .doBeforeRetry { logRetrySignal(it) }
       )
+  }
+
+  private fun isTimeoutException(it: Throwable) =
+    it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
+
+  private fun logRetrySignal(retrySignal: RetrySignal) {
+    logger.debug(
+      "Retrying due to [${retrySignal.failure().message}]",
+      retrySignal.failure(),
+      StructuredArguments.kv("res.causeMessage", retrySignal.failure().message),
+      "Retrying: ${retrySignal.totalRetries()}, ${retrySignal.totalRetriesInARow()}, ${retrySignal.failure()}"
+    )
   }
 }
