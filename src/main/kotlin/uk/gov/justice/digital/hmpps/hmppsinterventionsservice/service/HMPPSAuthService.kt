@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import io.netty.channel.ConnectTimeoutException
-import io.netty.handler.timeout.TimeoutException
+import io.netty.handler.timeout.ReadTimeoutException
+import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -52,6 +53,8 @@ class HMPPSAuthService(
   @Value("\${webclient.hmpps-auth.max-retry-attempts}") private val maxRetryAttempts: Long,
   private val hmppsAuthApiClient: RestClient,
 ) {
+  companion object : KLogging()
+
   fun getUserGroups(user: AuthUser): List<AuthGroupID>? {
     val url = UriComponentsBuilder.fromPath(authUserGroupsLocation)
       .buildAndExpand(user.userName)
@@ -129,18 +132,26 @@ class HMPPSAuthService(
   fun <T> Flux<T>.withRetryPolicy(): Flux<T> {
     return this
       .retryWhen(
-        Retry.max(maxRetryAttempts).filter {
-          it is TimeoutException || it is ConnectTimeoutException
-        }
+        Retry.max(maxRetryAttempts)
+          .filter {
+            it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
+          }
+          .doBeforeRetry { retrySignal ->
+            logger.debug("Retrying: ${retrySignal.totalRetries()}, ${retrySignal.totalRetriesInARow()}, ${retrySignal.failure()}")
+          }
       )
   }
 
   fun <T> Mono<T>.withRetryPolicy(): Mono<T> {
     return this
       .retryWhen(
-        Retry.max(maxRetryAttempts).filter {
-          it is TimeoutException || it is ConnectTimeoutException
-        }
+        Retry.max(maxRetryAttempts)
+          .filter {
+            it.cause is ReadTimeoutException || it.cause is ConnectTimeoutException
+          }
+          .doBeforeRetry { retrySignal ->
+            logger.debug("Retrying: ${retrySignal.totalRetries()}, ${retrySignal.totalRetriesInARow()}, ${retrySignal.failure()}")
+          }
       )
   }
 }
