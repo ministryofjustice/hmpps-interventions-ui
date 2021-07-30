@@ -156,8 +156,7 @@ class HMPPSAuthService(
     logger.debug(
       "Retrying due to [${retrySignal.failure().message}]",
       retrySignal.failure(),
-      StructuredArguments.kv("res.causeMessage", retrySignal.failure().message),
-      "Retrying: ${retrySignal.totalRetries()}, ${retrySignal.totalRetriesInARow()}, ${retrySignal.failure()}"
+      StructuredArguments.kv("res.causeMessage", retrySignal.failure().message)
     )
   }
 }
