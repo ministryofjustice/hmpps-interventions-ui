@@ -1588,10 +1588,10 @@ describe('Service provider referrals dashboard', () => {
             .next()
             .within(() => {
               cy.contains('Appointment status').next().contains('did not attend')
-              cy.contains('To do').next().contains('View feedback').click()
+              cy.contains('To do').next().contains('Reschedule').click()
               cy.location('pathname').should(
                 'equal',
-                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback`
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule`
               )
             })
         })

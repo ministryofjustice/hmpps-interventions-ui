@@ -21,6 +21,7 @@ export default class ScheduleAppointmentView {
         address: this.addressFormView.inputArgs,
         meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
+        appointmentSummaryListArgs: ViewUtils.summaryListArgs(this.presenter.appointmentSummary),
       },
     ]
   }

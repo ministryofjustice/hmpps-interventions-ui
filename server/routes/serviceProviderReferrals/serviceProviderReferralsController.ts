@@ -536,11 +536,12 @@ export default class ServiceProviderReferralsController {
       referralId
     )
 
-    const hasExistingAppointment = supplierAssessment.currentAppointmentId !== null
+    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
+    const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
 
     await this.scheduleAppointment(req, res, {
       getReferral: async () => referral,
-      getCurrentAppointment: async () => new SupplierAssessmentDecorator(supplierAssessment).currentAppointment,
+      getCurrentAppointment: async () => currentAppointment,
       scheduleAppointment: paramsForUpdate =>
         this.interventionsService
           .scheduleSupplierAssessmentAppointment(
@@ -550,7 +551,7 @@ export default class ServiceProviderReferralsController {
           )
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) => {
-        const overrideBackLinkHref = hasExistingAppointment
+        const overrideBackLinkHref = hasExistingScheduledAppointment
           ? `/service-provider/referrals/${referralId}/supplier-assessment`
           : undefined
         return new ScheduleAppointmentPresenter(
@@ -563,7 +564,7 @@ export default class ServiceProviderReferralsController {
         )
       },
       redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
-        hasExistingAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
+        hasExistingScheduledAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
       }`,
     })
   }

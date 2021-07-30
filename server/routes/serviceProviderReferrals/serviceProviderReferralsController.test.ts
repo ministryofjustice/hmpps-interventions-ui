@@ -1667,16 +1667,53 @@ describe('GET /service-provider/end-of-service-report/:id/confirmation', () => {
 })
 
 describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () => {
-  it('renders a form', async () => {
-    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+  describe('when this is the first time to schedule an initial assessment', () => {
+    it('renders an empty form', async () => {
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
 
-    await request(app)
-      .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Add appointment details')
-      })
+      await request(app)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Add appointment details')
+          expect(res.text).not.toContain('Previous missed appointment')
+        })
+    })
+  })
+
+  describe('when there already is a scheduled appointment', () => {
+    it('renders an empty form', async () => {
+      interventionsService.getSupplierAssessment.mockResolvedValue(
+        supplierAssessmentFactory.withSingleAppointment.build()
+      )
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+      await request(app)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Change appointment details')
+          expect(res.text).not.toContain('Previous missed appointment')
+        })
+    })
+  })
+
+  describe('when the existing current appointment has already been attended', () => {
+    it('renders the form and includes current appointment details within previous missed appointment', async () => {
+      interventionsService.getSupplierAssessment.mockResolvedValue(
+        supplierAssessmentFactory.withNonAttendedAppointment.build()
+      )
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+      await request(app)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Add appointment details')
+          expect(res.text).toContain('Previous missed appointment')
+        })
+    })
   })
 })
 
