@@ -1,6 +1,3 @@
-import Appointment from '../models/appointment'
-import { ActionPlanAppointment } from '../models/actionPlan'
-
 function convertToProperCase(word: string): string {
   return word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 }
@@ -23,12 +20,7 @@ function convertToTitleCase(sentence: string | null): string {
   return isBlank(sentence) ? '' : sentence!.split(' ').map(properCaseName).join(' ')
 }
 
-function isInitialAssessmentAppointment(appointmentDetails: Appointment | ActionPlanAppointment): boolean {
-  return (<ActionPlanAppointment>appointmentDetails).sessionNumber === undefined
-}
-
 export default {
-  isInitialAssessmentAppointment,
   convertToProperCase,
   convertToTitleCase,
 }

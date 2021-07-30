@@ -4,7 +4,6 @@ import PresenterUtils from '../../utils/presenterUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
-import utils from '../../utils/utils'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import { SummaryListItem } from '../../utils/summaryList'
 
@@ -15,7 +14,8 @@ export default class ScheduleAppointmentPresenter {
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
-    private readonly overrideBackLinkHref?: string
+    private readonly overrideBackLinkHref?: string,
+    private readonly appointmentDecorator = currentAppointment ? new AppointmentDecorator(currentAppointment) : null
   ) {}
 
   readonly text = {
@@ -40,15 +40,11 @@ export default class ScheduleAppointmentPresenter {
 
   readonly serverErrorMessage = PresenterUtils.errorMessage(this.serverError, 'session-input')
 
-  private readonly appointmentDecorator = this.currentAppointment
-    ? new AppointmentDecorator(this.currentAppointment)
-    : null
-
   get appointmentAlreadyAttended(): boolean {
-    if (this.currentAppointment !== null) {
+    if (this.appointmentDecorator !== null) {
       // Remove this check once action plan appointments allow rescheduling
-      if (utils.isInitialAssessmentAppointment(this.currentAppointment)) {
-        return this.currentAppointment.sessionFeedback.submitted
+      if (this.appointmentDecorator.isInitialAssessmentAppointment(this.currentAppointment!)) {
+        return this.currentAppointment!.sessionFeedback.submitted
       }
     }
     return false
