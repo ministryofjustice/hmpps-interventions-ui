@@ -40,6 +40,8 @@ class ValidationError(override val message: String, val errors: List<FieldError>
 
 class AccessError(val user: AuthUser, override val message: String, val errors: List<String>) : RuntimeException(message)
 
+class InvalidAssumptionError(assumption: String) : RuntimeException("assumption proved invalid: $assumption")
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrorResponse(
   val status: Int,
