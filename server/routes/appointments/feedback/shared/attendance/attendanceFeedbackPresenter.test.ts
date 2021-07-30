@@ -209,4 +209,14 @@ describe(AttendanceFeedbackPresenter, () => {
       })
     })
   })
+
+  describe('backLinkHref', () => {
+    it('is null', () => {
+      const appointment = appointmentFactory.build()
+
+      const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
+
+      expect(presenter.backLinkHref).toEqual(null)
+    })
+  })
 })

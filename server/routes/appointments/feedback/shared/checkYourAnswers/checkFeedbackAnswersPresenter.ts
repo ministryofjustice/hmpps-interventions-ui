@@ -10,6 +10,8 @@ export default abstract class CheckFeedbackAnswersPresenter extends FeedbackAnsw
 
   abstract readonly submitHref: string
 
+  abstract readonly backLinkHref: string
+
   readonly text = {
     title: `Confirm feedback`,
   }

@@ -7,7 +7,7 @@ describe(InitialAssessmentBehaviourFeedbackPresenter, () => {
     it('contains the text for the title and questions to be displayed on the page', () => {
       const appointment = actionPlanAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, serviceUser)
+      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, serviceUser, 'test-referral-id')
 
       expect(presenter.text).toMatchObject({
         title: 'Add behaviour feedback',
@@ -21,6 +21,18 @@ describe(InitialAssessmentBehaviourFeedbackPresenter, () => {
           hint: 'Select one option',
         },
       })
+    })
+  })
+
+  describe('backLinkHref', () => {
+    it('contains the link to the attendance page with the referral id', () => {
+      const appointment = actionPlanAppointmentFactory.build()
+      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, serviceUser, 'test-referral-id')
+
+      expect(presenter.backLinkHref).toEqual(
+        '/service-provider/referrals/test-referral-id/supplier-assessment/post-assessment-feedback/attendance'
+      )
     })
   })
 })

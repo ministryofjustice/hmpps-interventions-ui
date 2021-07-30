@@ -8,10 +8,13 @@ export default class InitialAssessmentAttendanceFeedbackPresenter extends Attend
     private readonly appointment: Appointment,
     private readonly serviceUser: DeliusServiceUser,
     error: FormValidationError | null = null,
-    userInputData: Record<string, unknown> | null = null
+    userInputData: Record<string, unknown> | null = null,
+    private readonly referralId: string | null = null
   ) {
     super(appointment, error, userInputData)
   }
+
+  readonly backLinkHref = this.referralId ? `/service-provider/referrals/${this.referralId}/progress` : null
 
   readonly text = {
     title: `Add feedback`,

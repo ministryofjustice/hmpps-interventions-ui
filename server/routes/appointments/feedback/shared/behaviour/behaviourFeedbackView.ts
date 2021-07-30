@@ -1,4 +1,4 @@
-import { ErrorSummaryArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import { BackLinkArgs, ErrorSummaryArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
 import BehaviourFeedbackInputsPresenter from './behaviourFeedbackInputsPresenter'
 import { BehaviourFeedbackPresenter } from './behaviourFeedbackPresenter'
@@ -65,6 +65,16 @@ export default class BehaviourFeedbackView {
     }
   }
 
+  get backLinkArgs(): BackLinkArgs | null {
+    if (!this.presenter.backLinkHref) {
+      return null
+    }
+
+    return {
+      href: this.presenter.backLinkHref,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'appointments/feedback/shared/postSessionBehaviourFeedback',
@@ -73,6 +83,7 @@ export default class BehaviourFeedbackView {
         textAreaArgs: this.textAreaArgs,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }

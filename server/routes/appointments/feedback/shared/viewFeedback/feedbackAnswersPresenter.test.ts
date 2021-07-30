@@ -5,7 +5,8 @@ import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
-import ActionPlanSessionBehaviourFeedbackPresenter from '../../actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
+import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInputsPresenter'
 
 describe(FeedbackAnswersPresenter, () => {
   class ExtendedFeedbackAnswersPresenter extends FeedbackAnswersPresenter {
@@ -29,10 +30,26 @@ describe(FeedbackAnswersPresenter, () => {
       })(this.appointment, this.serviceUser)
     }
 
-    protected get behaviourPresenter(): ActionPlanSessionBehaviourFeedbackPresenter {
-      return new ActionPlanSessionBehaviourFeedbackPresenter(this.appointment, this.serviceUser)
+    protected get behaviourPresenter(): BehaviourFeedbackPresenter {
+      return {
+        backLinkHref: null,
+        inputsPresenter: new BehaviourFeedbackInputsPresenter(this.appointment),
+        text: {
+          title: `Add behaviour feedback`,
+          behaviourDescription: {
+            question: `Describe ${this.serviceUser.firstName}'s behaviour in this session`,
+            hint: 'For example, consider how well-engaged they were and what their body language was like.',
+          },
+          notifyProbationPractitioner: {
+            question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
+            explanation: 'If you select yes, the probation practitioner will be notified by email.',
+            hint: 'Select one option',
+          },
+        },
+      }
     }
   }
+
   describe('attendedAnswers', () => {
     it('returns an object with the question and answer given', () => {
       const appointment = actionPlanAppointmentFactory.build({

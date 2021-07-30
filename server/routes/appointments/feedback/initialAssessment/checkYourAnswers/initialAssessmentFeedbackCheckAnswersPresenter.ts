@@ -21,4 +21,9 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
   }
 
   readonly submitHref = `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/submit`
+
+  readonly backLinkHref =
+    this.appointment.sessionFeedback.attendance.attended === 'no'
+      ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
+      : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/behaviour`
 }

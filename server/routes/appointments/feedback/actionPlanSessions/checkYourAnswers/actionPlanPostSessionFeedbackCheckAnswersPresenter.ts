@@ -22,9 +22,15 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
     )
     this.behaviourPresenter = new ActionPlanSessionBehaviourFeedbackPresenter(
       this.actionPlanAppointment,
-      this.serviceUser
+      this.serviceUser,
+      this.actionPlanId
     )
   }
 
   readonly submitHref = `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/submit`
+
+  readonly backLinkHref =
+    this.actionPlanAppointment.sessionFeedback.attendance.attended === 'no'
+      ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/attendance`
+      : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
 }

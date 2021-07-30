@@ -13,11 +13,11 @@
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-
       {% if backLinkArgs %}
         {{ govukBackLink(backLinkArgs) }}
       {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
       {% if presenter.text.subTitle %}
         <h2 class="govuk-heading-l">{{ presenter.text.subTitle }}</h2>

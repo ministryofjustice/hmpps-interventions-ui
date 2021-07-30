@@ -1,4 +1,4 @@
-import { TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import { BackLinkArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
 import AttendanceFeedbackPresenter from './attendanceFeedbackPresenter'
 
@@ -48,6 +48,16 @@ export default class AttendanceFeedbackView {
     }
   }
 
+  private get backLinkArgs(): BackLinkArgs | null {
+    if (!this.presenter.backLinkHref) {
+      return null
+    }
+
+    return {
+      href: this.presenter.backLinkHref,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'appointments/feedback/shared/postSessionAttendanceFeedback',
@@ -57,6 +67,7 @@ export default class AttendanceFeedbackView {
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         textAreaArgs: this.textAreaArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
