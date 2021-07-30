@@ -9,12 +9,14 @@ import CommonController from './common/commonController'
 import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
 import ReferralsController from './referrals/referralsController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
+import DraftsService from '../services/draftsService'
 
 export interface Services {
   communityApiService: CommunityApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
   assessRisksAndNeedsService: AssessRisksAndNeedsService
+  draftsService: DraftsService
 }
 
 export const get = (router: Router, path: string, handler: RequestHandler): Router =>
