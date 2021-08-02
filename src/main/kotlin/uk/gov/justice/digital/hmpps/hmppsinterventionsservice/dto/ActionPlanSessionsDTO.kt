@@ -81,7 +81,7 @@ data class ActionPlanSessionDTO(
           session.currentAppointment?.attendanceBehaviour,
           session.currentAppointment?.notifyPPOfAttendanceBehaviour,
           session.currentAppointment?.attendanceSubmittedAt != null,
-          session.currentAppointment?.attendanceSubmittedBy,
+          session.currentAppointment?.appointmentFeedbackSubmittedBy,
         ),
       )
     }
