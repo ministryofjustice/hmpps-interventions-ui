@@ -15,3 +15,6 @@ spring:
   jpa:
     properties:
       hibernate.enable_lazy_load_no_trans: true
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0

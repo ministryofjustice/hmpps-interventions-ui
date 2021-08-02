@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 
 @Component
-class UserMapper {
+class UserMapper(
+  private val authUserRepository: AuthUserRepository,
+) {
   fun fromToken(authentication: JwtAuthenticationToken): AuthUser {
     val errors = mutableListOf<String>()
 
@@ -30,5 +34,10 @@ class UserMapper {
     }
 
     return AuthUser(id = userID, authSource = authSource, userName = userName)
+  }
+
+  fun fromId(id: String): AuthUser {
+    return authUserRepository.findByIdOrNull(id)
+      ?: throw AccessDeniedException("could not map user id to user: user does not exist")
   }
 }
