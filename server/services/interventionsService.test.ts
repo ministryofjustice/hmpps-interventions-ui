@@ -2463,6 +2463,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: null,
               },
               submitted: false,
+              submittedBy: null,
             },
           }),
           headers: {
@@ -2517,6 +2518,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: false,
               },
               submitted: false,
+              submittedBy: null,
             },
           }),
           headers: {
@@ -2567,6 +2569,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: false,
               },
               submitted: true,
+              submittedBy: {
+                authSource: 'delius',
+                userId: '2500128586',
+                username: 'joe.smith',
+              },
             },
           }),
           headers: {
@@ -2913,6 +2920,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             notifyProbationPractitioner: null,
           },
           submitted: false,
+          submittedBy: null,
         },
       })
 
@@ -2967,6 +2975,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             notifyProbationPractitioner: false,
           },
           submitted: false,
+          submittedBy: null,
         },
       })
 
@@ -3021,6 +3030,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             notifyProbationPractitioner: false,
           },
           submitted: true,
+          submittedBy: {
+            authSource: 'auth',
+            userId: '608955ae-52ed-44cc-884c-011597a77949',
+            username: 'AUTH_USER',
+          },
         },
       })
 
