@@ -6,11 +6,13 @@ import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import { SummaryListItem } from '../../utils/summaryList'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export default class ScheduleAppointmentPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly currentAppointment: Appointment | ActionPlanAppointment | null,
+    private readonly assignedCaseworker: AuthUserDetails | null = null,
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
@@ -29,7 +31,7 @@ export default class ScheduleAppointmentPresenter {
 
   get appointmentSummary(): SummaryListItem[] {
     if (this.appointmentAlreadyAttended) {
-      return new AppointmentSummary(this.currentAppointment!, null).appointmentSummaryList
+      return new AppointmentSummary(this.currentAppointment!, this.assignedCaseworker).appointmentSummaryList
     }
     return []
   }

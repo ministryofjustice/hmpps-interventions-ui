@@ -1845,6 +1845,9 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         supplierAssessmentFactory.withNonAttendedAppointment.build()
       )
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+        hmppsAuthUserFactory.build({ firstName: 'caseWorkerFirstName', lastName: 'caseWorkerLastName' })
+      )
 
       await request(app)
         .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -1852,6 +1855,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         .expect(res => {
           expect(res.text).toContain('Add appointment details')
           expect(res.text).toContain('Previous missed appointment')
+          expect(res.text).toContain('caseWorkerFirstName caseWorkerLastName')
         })
     })
   })
