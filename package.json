@@ -170,7 +170,7 @@
     "nock": "^13.1.1",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2",
-    "sass": "^1.36.0",
+    "sass": "^1.37.0",
     "stylelint": "^13.10.0",
     "stylelint-config-sass-guidelines": "^8.0.0",
     "supertest": "^6.1.4",
