@@ -25,6 +25,7 @@ export default ActionPlanAppointmentFactory.define(() => ({
   sessionNumber: 1,
   appointmentTime: null,
   durationInMinutes: null,
+  sessionType: null,
   appointmentDeliveryType: null,
   appointmentDeliveryAddress: null,
   sessionFeedback: initialAssessmentAppointmentFactory.newlyBooked().build().sessionFeedback,

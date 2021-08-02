@@ -73,6 +73,8 @@ export default class ScheduleAppointmentForm {
       paramsForUpdate: {
         appointmentTime: dateResult.value.toISOString(),
         durationInMinutes: durationResult.value.minutes!,
+        // TODO: this will be replaced in IC-2136, but is required now for compilation
+        sessionType: null,
         appointmentDeliveryType: appointmentDeliveryType.value!,
         appointmentDeliveryAddress: appointmentDeliveryAddress.value,
         npsOfficeCode: deliusOfficeLocation.value,

@@ -2,6 +2,7 @@ import { Factory } from 'fishery'
 import { InitialAssessmentAppointment } from '../../server/models/appointment'
 import { Attended } from '../../server/models/appointmentAttendance'
 import { AppointmentDeliveryType } from '../../server/models/appointmentDeliveryType'
+import { SessionType } from '../../server/models/sessionType'
 
 class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppointment> {
   newlyBooked() {
@@ -73,12 +74,14 @@ class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppoi
 }
 
 const defaultAppointmentDeliveryType: AppointmentDeliveryType = 'VIDEO_CALL'
+const defaultSessionType: SessionType = 'ONE_TO_ONE'
 
 export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   // one day in the future
   appointmentTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
   durationInMinutes: 60,
+  sessionType: defaultSessionType,
   // For some reason the compiler complains if I write 'VIDEO_CALL' inline
   appointmentDeliveryType: defaultAppointmentDeliveryType,
   appointmentDeliveryAddress: null,

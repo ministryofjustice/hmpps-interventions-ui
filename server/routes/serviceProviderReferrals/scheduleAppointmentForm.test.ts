@@ -34,6 +34,7 @@ describe(ScheduleAppointmentForm, () => {
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
             durationInMinutes: 90,
+            sessionType: null,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
             npsOfficeCode: null,
@@ -64,6 +65,7 @@ describe(ScheduleAppointmentForm, () => {
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
             durationInMinutes: 90,
+            sessionType: null,
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: {
               firstAddressLine: 'Harmony Living Office, Room 4',
@@ -98,6 +100,7 @@ describe(ScheduleAppointmentForm, () => {
             expect(data.paramsForUpdate).toEqual({
               appointmentTime: '2021-09-12T12:05:00.000Z',
               durationInMinutes: 90,
+              sessionType: null,
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
               appointmentDeliveryAddress: {
                 firstAddressLine: 'Harmony Living Office, Room 4',

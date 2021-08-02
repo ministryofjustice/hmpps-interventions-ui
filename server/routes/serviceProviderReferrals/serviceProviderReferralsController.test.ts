@@ -944,6 +944,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
       expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith('token', actionPlan.id, 1, {
         appointmentTime: '2021-03-24T09:02:00.000Z',
         durationInMinutes: 75,
+        sessionType: null,
         appointmentDeliveryType: 'PHONE_CALL',
         appointmentDeliveryAddress: null,
         npsOfficeCode: null,
@@ -1883,6 +1884,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
         })
@@ -1915,6 +1917,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
           {
             appointmentTime: '2021-03-24T09:02:00.000Z',
             durationInMinutes: 75,
+            sessionType: null,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
             npsOfficeCode: null,
@@ -1931,6 +1934,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
         })
@@ -1963,6 +1967,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
           {
             appointmentTime: '2021-03-24T09:02:00.000Z',
             durationInMinutes: 75,
+            sessionType: null,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
             npsOfficeCode: null,
