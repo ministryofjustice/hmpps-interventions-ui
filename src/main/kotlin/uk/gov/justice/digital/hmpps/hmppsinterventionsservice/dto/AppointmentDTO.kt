@@ -33,7 +33,7 @@ data class AppointmentDTO(
           appointment.attendanceBehaviour,
           appointment.notifyPPOfAttendanceBehaviour,
           appointment.appointmentFeedbackSubmittedAt != null,
-          appointment.attendanceSubmittedBy,
+          appointment.appointmentFeedbackSubmittedBy,
         ),
         appointmentDeliveryType = appointment.appointmentDelivery?.appointmentDeliveryType,
         appointmentDeliveryAddress = addressDTO,
