@@ -1,7 +1,7 @@
-import Appointment from './appointment'
+import { InitialAssessmentAppointment } from './appointment'
 
 export default interface SupplierAssessment {
   id: string
-  appointments: Appointment[]
+  appointments: InitialAssessmentAppointment[]
   currentAppointmentId: string | null
 }

@@ -2,7 +2,7 @@ import PresenterUtils from '../../../../../utils/presenterUtils'
 import { SummaryListItem } from '../../../../../utils/summaryList'
 import DateUtils from '../../../../../utils/dateUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
-import { AppointmentDetails } from '../../appointmentDetails'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 
 interface AttendanceFeedbackFormText {
   title: string
@@ -14,7 +14,7 @@ interface AttendanceFeedbackFormText {
 
 export default abstract class AttendanceFeedbackPresenter {
   protected constructor(
-    private readonly appointmentDetails: AppointmentDetails,
+    private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -28,25 +28,25 @@ export default abstract class AttendanceFeedbackPresenter {
   readonly sessionDetailsSummary: SummaryListItem[] = [
     {
       key: 'Date',
-      lines: [DateUtils.getDateStringFromDateTimeString(this.appointmentDetails.appointmentTime)],
+      lines: [DateUtils.getDateStringFromDateTimeString(this.appointment.appointmentTime)],
     },
     {
       key: 'Time',
-      lines: [DateUtils.getTimeStringFromDateTimeString(this.appointmentDetails.appointmentTime)],
+      lines: [DateUtils.getTimeStringFromDateTimeString(this.appointment.appointmentTime)],
     },
   ]
 
   readonly fields = {
     attended: {
       value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointmentDetails.sessionFeedback?.attendance?.attended ?? null,
+        this.appointment.sessionFeedback?.attendance?.attended ?? null,
         'attended'
       ),
       errorMessage: PresenterUtils.errorMessage(this.error, 'attended'),
     },
     additionalAttendanceInformation: {
       value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointmentDetails.sessionFeedback?.attendance?.additionalAttendanceInformation ?? null,
+        this.appointment.sessionFeedback?.attendance?.additionalAttendanceInformation ?? null,
         'additional-attendance-information'
       ),
     },

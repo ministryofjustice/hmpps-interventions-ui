@@ -1,9 +1,9 @@
 import { Factory } from 'fishery'
-import Appointment from '../../server/models/appointment'
+import { InitialAssessmentAppointment } from '../../server/models/appointment'
 import { Attended } from '../../server/models/appointmentAttendance'
 import { AppointmentDeliveryType } from '../../server/models/appointmentDeliveryType'
 
-class AppointmentFactory extends Factory<Appointment> {
+class AppointmentFactory extends Factory<InitialAssessmentAppointment> {
   newlyBooked() {
     return this.params({})
   }

@@ -1,17 +1,17 @@
-import Appointment from '../../../../../models/appointment'
+import { InitialAssessmentAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
 
 export default class InitialAssessmentAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
   constructor(
-    private readonly appointment: Appointment,
+    private readonly initialAssessmentAppointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
     error: FormValidationError | null = null,
     userInputData: Record<string, unknown> | null = null,
     private readonly referralId: string | null = null
   ) {
-    super(appointment, error, userInputData)
+    super(initialAssessmentAppointment, error, userInputData)
   }
 
   readonly backLinkHref = this.referralId ? `/service-provider/referrals/${this.referralId}/progress` : null

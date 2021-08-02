@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../../../../../models/actionPlan'
+import { ActionPlanAppointment } from '../../../../../models/appointment'
 import SentReferral from '../../../../../models/sentReferral'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import ScheduleAppointmentPresenter from '../../../../serviceProviderReferrals/scheduleAppointmentPresenter'

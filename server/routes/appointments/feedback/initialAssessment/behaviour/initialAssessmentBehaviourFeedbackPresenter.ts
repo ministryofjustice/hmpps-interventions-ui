@@ -1,11 +1,11 @@
+import { InitialAssessmentAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../../../../utils/formValidationError'
-import { AppointmentDetails } from '../../appointmentDetails'
 import BehaviourFeedbackInputsPresenter from '../../shared/behaviour/behaviourFeedbackInputsPresenter'
 
 export default class InitialAssessmentBehaviourFeedbackPresenter {
   constructor(
-    private readonly appointment: AppointmentDetails,
+    private readonly appointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly referralId: string | null = null,
     private readonly error: FormValidationError | null = null,

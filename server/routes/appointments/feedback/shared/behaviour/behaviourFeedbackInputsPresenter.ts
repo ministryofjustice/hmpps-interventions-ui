@@ -1,10 +1,10 @@
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import PresenterUtils from '../../../../../utils/presenterUtils'
-import { AppointmentDetails } from '../../appointmentDetails'
 
 export default class BehaviourFeedbackInputsPresenter {
   constructor(
-    private readonly appointment: AppointmentDetails,
+    private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}

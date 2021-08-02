@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
+import { InitialAssessmentAppointment } from '../../server/models/appointment'
 import SupplierAssessment from '../../server/models/supplierAssessment'
 import appointmentFactory from './appointment'
-import Appointment from '../../server/models/appointment'
 
 class SupplierAssessmentFactory extends Factory<SupplierAssessment> {
   get justCreated() {
@@ -13,7 +13,7 @@ class SupplierAssessmentFactory extends Factory<SupplierAssessment> {
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 
-  withAnAppointment(appointment: Appointment) {
+  withAnAppointment(appointment: InitialAssessmentAppointment) {
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 

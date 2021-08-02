@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import { ActionPlanAppointment } from '../../server/models/actionPlan'
+import { ActionPlanAppointment } from '../../server/models/appointment'
 import { Attended } from '../../server/models/appointmentAttendance'
 import appointmentFactory from './appointment'
 

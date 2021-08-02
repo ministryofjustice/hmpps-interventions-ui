@@ -1,11 +1,10 @@
-import { ActionPlanAppointment } from '../models/actionPlan'
-import Appointment from '../models/appointment'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../models/appointment'
 import CalendarDay from '../utils/calendarDay'
 import ClockTime from '../utils/clockTime'
 import Duration from '../utils/duration'
 
 export default class AppointmentDecorator {
-  constructor(private readonly appointment: Appointment | ActionPlanAppointment) {}
+  constructor(private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment) {}
 
   get britishDay(): CalendarDay | null {
     if (this.appointment.appointmentTime === null) {
@@ -46,11 +45,11 @@ export default class AppointmentDecorator {
     return duration
   }
 
-  isInitialAssessmentAppointment(appointmentDetails: Appointment | ActionPlanAppointment): boolean {
+  isInitialAssessmentAppointment(appointmentDetails: InitialAssessmentAppointment | ActionPlanAppointment): boolean {
     return (<ActionPlanAppointment>appointmentDetails).sessionNumber === undefined
   }
 
-  appointmentIsInThePast(appointment: Appointment | ActionPlanAppointment): boolean {
+  appointmentIsInThePast(appointment: InitialAssessmentAppointment | ActionPlanAppointment): boolean {
     return new Date(appointment.appointmentTime!) < new Date()
   }
 }

@@ -1,4 +1,4 @@
-import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
+import ActionPlan from '../../models/actionPlan'
 import SentReferral from '../../models/sentReferral'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
@@ -9,6 +9,7 @@ import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
+import { ActionPlanAppointment } from '../../models/appointment'
 
 interface EndedFields {
   endRequestedAt: string | null

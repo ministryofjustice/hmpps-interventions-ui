@@ -1,5 +1,5 @@
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
-import { AppointmentDetails } from '../../appointmentDetails'
 import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
 
 export default abstract class FeedbackAnswersPresenter {
@@ -7,7 +7,7 @@ export default abstract class FeedbackAnswersPresenter {
 
   protected abstract get behaviourPresenter(): BehaviourFeedbackPresenter
 
-  protected constructor(protected readonly appointment: AppointmentDetails) {}
+  protected constructor(protected readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment) {}
 
   get attendedAnswers(): { question: string; answer: string } | null {
     if (this.appointment.sessionFeedback.attendance.attended === null) {
