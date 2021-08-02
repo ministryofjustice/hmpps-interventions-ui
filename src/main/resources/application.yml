@@ -110,6 +110,7 @@ community-api:
     offender-access: "/secure/offenders/crn/{crn}/user/{username}/userAccess"
     managed-offenders: "/secure/staff/staffIdentifier/{staffIdentifier}/managedOffenders"
     staff-details: "/secure/staff/username/{username}"
+    offender-managers: "/secure/offenders/crn/{crn}/allOffenderManagers"
   appointments:
     bookings:
       enabled: true

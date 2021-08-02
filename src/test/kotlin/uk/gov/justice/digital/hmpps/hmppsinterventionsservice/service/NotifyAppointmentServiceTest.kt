@@ -20,7 +20,7 @@ import java.util.UUID
 
 class NotifyAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
-  private val hmppsAuthService = mock<HMPPSAuthService>()
+  private val referralService = mock<ReferralService>()
   private val appointmentFactory = AppointmentFactory()
   private val referralFactory = ReferralFactory()
 
@@ -44,13 +44,13 @@ class NotifyAppointmentServiceTest {
       "/probation-practitioner/referrals/{id}/progress",
       "/probation-practitioner/referrals/{id}/supplier-assessment/post-session-feedback",
       emailSender,
-      hmppsAuthService,
+      referralService,
     )
   }
 
   @Test
   fun `appointment attendance recorded event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, true))
     }
@@ -65,7 +65,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment attendance recorded event calls email client`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
@@ -77,7 +77,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment behaviour recorded event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, true))
     }
@@ -92,7 +92,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment behaviour recorded event calls email client`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
@@ -110,7 +110,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment scheduled event sends email to pp`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.SCHEDULED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

@@ -35,13 +35,14 @@ class NotifyActionPlanService(
   @Value("\${interventions-ui.locations.service-provider.action-plan}") private val spActionPlanLocation: String,
   private val emailSender: EmailSender,
   private val hmppsAuthService: HMPPSAuthService,
+  private val referralService: ReferralService,
 ) : ApplicationListener<ActionPlanEvent>, NotifyService {
 
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanEvent) {
     when (event.type) {
       ActionPlanEventType.SUBMITTED -> {
-        val recipient = hmppsAuthService.getUserDetail(event.actionPlan.referral.sentBy!!)
+        val recipient = referralService.getResponsibleProbationPractitioner(event.actionPlan.referral)
         val location = generateResourceUrl(interventionsUIBaseURL, ppActionPlanLocation, event.actionPlan.referral.id)
         emailSender.sendEmail(
           actionPlanSubmittedTemplateID,
@@ -76,20 +77,20 @@ class NotifyEndOfServiceReportService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.end-of-service-report}") private val ppEndOfServiceReportLocation: String,
   private val emailSender: EmailSender,
-  private val hmppsAuthService: HMPPSAuthService,
+  private val referralService: ReferralService,
 ) : ApplicationListener<EndOfServiceReportEvent>, NotifyService {
 
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: EndOfServiceReportEvent) {
     when (event.type) {
       EndOfServiceReportEventType.SUBMITTED -> {
-        val userDetail = hmppsAuthService.getUserDetail(event.endOfServiceReport.referral.getResponsibleProbationPractitioner())
+        val recipient = referralService.getResponsibleProbationPractitioner(event.endOfServiceReport.referral)
         val location = generateResourceUrl(interventionsUIBaseURL, ppEndOfServiceReportLocation, event.endOfServiceReport.id)
         emailSender.sendEmail(
           endOfServiceReportSubmittedTemplateID,
-          userDetail.email,
+          recipient.email,
           mapOf(
-            "ppFirstName" to userDetail.firstName,
+            "ppFirstName" to recipient.firstName,
             "referralReference" to event.endOfServiceReport.referral.referenceNumber!!,
             "endOfServiceReportLink" to location.toString(),
           )
@@ -106,13 +107,13 @@ class NotifyActionPlanAppointmentService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   private val emailSender: EmailSender,
-  private val hmppsAuthService: HMPPSAuthService,
+  private val referralService: ReferralService,
 ) : ApplicationListener<ActionPlanAppointmentEvent>, NotifyService {
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     if (event.notifyPP) {
       val referral = event.actionPlanSession.actionPlan.referral
-      val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
+      val recipient = referralService.getResponsibleProbationPractitioner(referral)
       val location = generateResourceUrl(
         interventionsUIBaseURL,
         ppSessionFeedbackLocation,
@@ -124,9 +125,9 @@ class NotifyActionPlanAppointmentService(
         ActionPlanAppointmentEventType.ATTENDANCE_RECORDED -> {
           emailSender.sendEmail(
             appointmentNotAttendedTemplateID,
-            ppDetails.email,
+            recipient.email,
             mapOf(
-              "ppFirstName" to ppDetails.firstName,
+              "ppFirstName" to recipient.firstName,
               "referenceNumber" to referral.referenceNumber!!,
               "attendanceUrl" to location.toString(),
             )
@@ -135,9 +136,9 @@ class NotifyActionPlanAppointmentService(
         ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED -> {
           emailSender.sendEmail(
             concerningBehaviourTemplateID,
-            ppDetails.email,
+            recipient.email,
             mapOf(
-              "ppFirstName" to ppDetails.firstName,
+              "ppFirstName" to recipient.firstName,
               "referenceNumber" to referral.referenceNumber!!,
               "sessionUrl" to location.toString(),
             )
@@ -157,14 +158,14 @@ class NotifyAppointmentService(
   @Value("\${interventions-ui.locations.probation-practitioner.intervention-progress}") private val ppInterventionProgressUrl: String,
   @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSAASessionFeedbackLocation: String,
   private val emailSender: EmailSender,
-  private val hmppsAuthService: HMPPSAuthService,
+  private val referralService: ReferralService,
 ) : ApplicationListener<AppointmentEvent>, NotifyService {
   companion object : KLogging()
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: AppointmentEvent) {
     if (event.notifyPP) {
       val referral = event.appointment.referral
-      val ppDetails = hmppsAuthService.getUserDetail(referral.getResponsibleProbationPractitioner())
+      val recipient = referralService.getResponsibleProbationPractitioner(referral)
 
       val sessionFeedbackLocation = when (event.appointmentType) {
         AppointmentType.SUPPLIER_ASSESSMENT -> generateResourceUrl(
@@ -182,9 +183,9 @@ class NotifyAppointmentService(
         AppointmentEventType.ATTENDANCE_RECORDED -> {
           emailSender.sendEmail(
             appointmentNotAttendedTemplateID,
-            ppDetails.email,
+            recipient.email,
             mapOf(
-              "ppFirstName" to ppDetails.firstName,
+              "ppFirstName" to recipient.firstName,
               "referenceNumber" to referral.referenceNumber!!,
               "attendanceUrl" to sessionFeedbackLocation.toString(),
             )
@@ -193,9 +194,9 @@ class NotifyAppointmentService(
         AppointmentEventType.BEHAVIOUR_RECORDED -> {
           emailSender.sendEmail(
             concerningBehaviourTemplateID,
-            ppDetails.email,
+            recipient.email,
             mapOf(
-              "ppFirstName" to ppDetails.firstName,
+              "ppFirstName" to recipient.firstName,
               "referenceNumber" to referral.referenceNumber!!,
               "sessionUrl" to sessionFeedbackLocation.toString(),
             )
@@ -203,9 +204,9 @@ class NotifyAppointmentService(
         }
         AppointmentEventType.SCHEDULED -> {
           emailSender.sendEmail(
-            initialAssessmentScheduledTemplateID, ppDetails.email,
+            initialAssessmentScheduledTemplateID, recipient.email,
             mapOf(
-              "ppFirstName" to ppDetails.firstName,
+              "ppFirstName" to recipient.firstName,
               "referenceNumber" to referral.referenceNumber!!,
               "referralUrl" to generateResourceUrl(interventionsUIBaseURL, ppInterventionProgressUrl, referral.id).toString(),
             )

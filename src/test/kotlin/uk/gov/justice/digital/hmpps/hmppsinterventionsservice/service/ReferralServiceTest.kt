@@ -95,6 +95,8 @@ class ReferralServiceTest @Autowired constructor(
   private val assessRisksAndNeedsService: RisksAndNeedsService = mock()
   private val communityAPIOffenderService: CommunityAPIOffenderService = mock()
   private val supplierAssessmentService: SupplierAssessmentService = mock()
+  private val hmppsAuthService: HMPPSAuthService = mock()
+  private val telemetryService: TelemetryService = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -115,6 +117,8 @@ class ReferralServiceTest @Autowired constructor(
     assessRisksAndNeedsService,
     communityAPIOffenderService,
     supplierAssessmentService,
+    hmppsAuthService,
+    telemetryService,
   )
 
   // reset before each test
