@@ -1,11 +1,11 @@
 import InitialAssessmentFeedbackCheckAnswersPresenter from './initialAssessmentFeedbackCheckAnswersPresenter'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
-import appointmentFactory from '../../../../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../../../../testutils/factories/initialAssessmentAppointment'
 
 describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
   describe('submitHref', () => {
     it('includes the referral id', () => {
-      const appointment = appointmentFactory.build()
+      const appointment = initialAssessmentAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build()
       const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
@@ -21,8 +21,8 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
     describe('when the appointment was attended', () => {
       it('includes the referal id and link to the behaviour feedback page', () => {
         const attendedAppointments = [
-          appointmentFactory.build({ sessionFeedback: { attendance: { attended: 'yes' } } }),
-          appointmentFactory.build({ sessionFeedback: { attendance: { attended: 'late' } } }),
+          initialAssessmentAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'yes' } } }),
+          initialAssessmentAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'late' } } }),
         ]
 
         const serviceUser = deliusServiceUserFactory.build()
@@ -40,7 +40,9 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
 
     describe('when the appointment was not attended', () => {
       it('includes the referal id and link to the attendance feedback page', () => {
-        const appointment = appointmentFactory.build({ sessionFeedback: { attendance: { attended: 'no' } } })
+        const appointment = initialAssessmentAppointmentFactory.build({
+          sessionFeedback: { attendance: { attended: 'no' } },
+        })
         const serviceUser = deliusServiceUserFactory.build()
         const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 

@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
 import { InitialAssessmentAppointment } from '../../server/models/appointment'
 import SupplierAssessment from '../../server/models/supplierAssessment'
-import appointmentFactory from './appointment'
+import initialAssessmentAppointmentFactory from './initialAssessmentAppointment'
 
 class SupplierAssessmentFactory extends Factory<SupplierAssessment> {
   get justCreated() {
@@ -9,7 +9,7 @@ class SupplierAssessmentFactory extends Factory<SupplierAssessment> {
   }
 
   get withSingleAppointment() {
-    const appointment = appointmentFactory.build()
+    const appointment = initialAssessmentAppointmentFactory.build()
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 
@@ -18,12 +18,12 @@ class SupplierAssessmentFactory extends Factory<SupplierAssessment> {
   }
 
   get withAttendedAppointment() {
-    const appointment = appointmentFactory.attended('yes').build()
+    const appointment = initialAssessmentAppointmentFactory.attended('yes').build()
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 
   get withNonAttendedAppointment() {
-    const appointment = appointmentFactory.attended('no').build()
+    const appointment = initialAssessmentAppointmentFactory.attended('no').build()
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 }

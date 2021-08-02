@@ -3,7 +3,7 @@ import { InitialAssessmentAppointment } from '../../server/models/appointment'
 import { Attended } from '../../server/models/appointmentAttendance'
 import { AppointmentDeliveryType } from '../../server/models/appointmentDeliveryType'
 
-class AppointmentFactory extends Factory<InitialAssessmentAppointment> {
+class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppointment> {
   newlyBooked() {
     return this.params({})
   }
@@ -29,15 +29,15 @@ class AppointmentFactory extends Factory<InitialAssessmentAppointment> {
     })
   }
 
-  get phoneCall(): AppointmentFactory {
+  get phoneCall(): InitialAssessmentAppointmentFactory {
     return this.params({ appointmentDeliveryType: 'PHONE_CALL', appointmentDeliveryAddress: null })
   }
 
-  get videoCall(): AppointmentFactory {
+  get videoCall(): InitialAssessmentAppointmentFactory {
     return this.params({ appointmentDeliveryType: 'VIDEO_CALL', appointmentDeliveryAddress: null })
   }
 
-  get inPersonOtherWithFullAddress(): AppointmentFactory {
+  get inPersonOtherWithFullAddress(): InitialAssessmentAppointmentFactory {
     return this.params({
       appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
       appointmentDeliveryAddress: {
@@ -50,14 +50,14 @@ class AppointmentFactory extends Factory<InitialAssessmentAppointment> {
     })
   }
 
-  get inThePast(): AppointmentFactory {
+  get inThePast(): InitialAssessmentAppointmentFactory {
     return this.params({
       // one day in the past
       appointmentTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     })
   }
 
-  get inTheFuture(): AppointmentFactory {
+  get inTheFuture(): InitialAssessmentAppointmentFactory {
     return this.params({
       // one day in the future
       appointmentTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
@@ -67,7 +67,7 @@ class AppointmentFactory extends Factory<InitialAssessmentAppointment> {
 
 const defaultAppointmentDeliveryType: AppointmentDeliveryType = 'VIDEO_CALL'
 
-export default AppointmentFactory.define(({ sequence }) => ({
+export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   // one day in the future
   appointmentTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),

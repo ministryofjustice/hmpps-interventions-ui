@@ -10,7 +10,7 @@ import expandedDeliusServiceUserFactory from '../../testutils/factories/expanded
 import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
-import appointmentFactory from '../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 
 describe('Probation practitioner referrals dashboard', () => {
@@ -214,7 +214,7 @@ describe('Probation practitioner referrals dashboard', () => {
       describe('when the referral has been assigned and the appointment scheduled', () => {
         describe('and the appointment is in the past', () => {
           it('should show the initial appointment as awaiting feedback and a link to view appointment details', () => {
-            const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+            const appointmentWithNoFeedback = initialAssessmentAppointmentFactory.inThePast.build({
               durationInMinutes: 75,
               appointmentDeliveryType: 'PHONE_CALL',
             })
@@ -244,7 +244,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
         describe('and the appointment is in the future', () => {
           it('should show the initial appointment as scheduled and a link to view appointment details', () => {
-            const appointmentWithNoFeedback = appointmentFactory.inTheFuture.build({
+            const appointmentWithNoFeedback = initialAssessmentAppointmentFactory.inTheFuture.build({
               durationInMinutes: 75,
               appointmentDeliveryType: 'PHONE_CALL',
             })

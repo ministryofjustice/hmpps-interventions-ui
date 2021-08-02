@@ -1,11 +1,11 @@
-import appointmentFactory from '../../../../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../../../../testutils/factories/initialAssessmentAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 import InitialAssessmentBehaviourFeedbackPresenter from './initialAssessmentBehaviourFeedbackPresenter'
 
 describe(InitialAssessmentBehaviourFeedbackPresenter, () => {
   describe('text', () => {
     it('contains the text for the title and questions to be displayed on the page', () => {
-      const initialAssessmentAppointment = appointmentFactory.build()
+      const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
       const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
         initialAssessmentAppointment,
@@ -30,7 +30,7 @@ describe(InitialAssessmentBehaviourFeedbackPresenter, () => {
 
   describe('backLinkHref', () => {
     it('contains the link to the attendance page with the referral id', () => {
-      const initialAssessmentAppointment = appointmentFactory.build()
+      const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
       const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
         initialAssessmentAppointment,

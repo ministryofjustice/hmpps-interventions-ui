@@ -5,7 +5,7 @@ import actionPlanAppointmentFactory from '../../../testutils/factories/actionPla
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
-import appointmentFactory from '../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 
 describe(InterventionProgressPresenter, () => {
   describe('sessionTableRows', () => {
@@ -443,7 +443,7 @@ describe(InterventionProgressPresenter, () => {
     describe('when the supplier assessment has been scheduled', () => {
       describe('when the appointment is in the past', () => {
         it('returns an appropriate message', () => {
-          const appointment = appointmentFactory.inThePast.build()
+          const appointment = initialAssessmentAppointmentFactory.inThePast.build()
           const referral = sentReferralFactory.build()
           const intervention = interventionFactory.build()
           const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
@@ -463,7 +463,7 @@ describe(InterventionProgressPresenter, () => {
 
       describe('when the appointment is in the past', () => {
         it('returns an appropriate message', () => {
-          const appointment = appointmentFactory.inTheFuture.build()
+          const appointment = initialAssessmentAppointmentFactory.inTheFuture.build()
           const referral = sentReferralFactory.build()
           const intervention = interventionFactory.build()
           const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
@@ -561,7 +561,7 @@ describe(InterventionProgressPresenter, () => {
     describe('when the supplier assessment has an appointment still awaiting feedback', () => {
       describe('when the appointment is in the past', () => {
         it('returns a link to a page for viewing the supplier assessment', () => {
-          const appointment = appointmentFactory.inThePast.build()
+          const appointment = initialAssessmentAppointmentFactory.inThePast.build()
           const referral = sentReferralFactory.build()
           const intervention = interventionFactory.build()
           const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
@@ -585,7 +585,7 @@ describe(InterventionProgressPresenter, () => {
 
       describe('when the appointment is in the future', () => {
         it('returns a link to a page for viewing the supplier assessment', () => {
-          const appointment = appointmentFactory.inTheFuture.build()
+          const appointment = initialAssessmentAppointmentFactory.inTheFuture.build()
           const referral = sentReferralFactory.build()
           const intervention = interventionFactory.build()
           const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
