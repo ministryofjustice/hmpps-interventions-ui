@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -66,6 +67,7 @@ data class ActionPlanSessionDTO(
         }
         else -> null
       }
+
       return ActionPlanSessionDTO(
         id = session.id,
         sessionNumber = session.sessionNumber,
@@ -79,6 +81,7 @@ data class ActionPlanSessionDTO(
           session.currentAppointment?.attendanceBehaviour,
           session.currentAppointment?.notifyPPOfAttendanceBehaviour,
           session.currentAppointment?.attendanceSubmittedAt != null,
+          session.currentAppointment?.attendanceSubmittedBy,
         ),
       )
     }
@@ -92,6 +95,7 @@ data class SessionFeedbackDTO(
   val attendance: AttendanceDTO,
   val behaviour: BehaviourDTO,
   val submitted: Boolean,
+  val submittedBy: AuthUserDTO?,
 ) {
   companion object {
     fun from(
@@ -100,11 +104,13 @@ data class SessionFeedbackDTO(
       behaviourDescription: String?,
       notifyProbationPractitioner: Boolean?,
       submitted: Boolean,
+      submittedBy: AuthUser?,
     ): SessionFeedbackDTO {
       return SessionFeedbackDTO(
         AttendanceDTO(attended = attended, additionalAttendanceInformation = additionalAttendanceInformation),
         BehaviourDTO(behaviourDescription, notifyProbationPractitioner),
         submitted,
+        submittedBy?.let { AuthUserDTO.from(it) },
       )
     }
   }
