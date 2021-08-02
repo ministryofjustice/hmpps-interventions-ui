@@ -20,6 +20,11 @@ class AppointmentFactory extends Factory<Appointment> {
           notifyProbationPractitioner: false,
         },
         submitted: true,
+        submittedBy: {
+          username: 'UserABC',
+          userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+          authSource: 'auth',
+        },
       },
     })
   }
@@ -80,5 +85,6 @@ export default AppointmentFactory.define(({ sequence }) => ({
       notifyProbationPractitioner: null,
     },
     submitted: false,
+    submittedBy: null,
   },
 }))
