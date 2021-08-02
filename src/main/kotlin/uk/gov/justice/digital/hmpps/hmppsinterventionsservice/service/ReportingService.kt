@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 @Service
 class ReportingService(
-  private val jobLauncher: JobLauncher,
+  private val asyncJobLauncher: JobLauncher,
   private val performanceReportJob: Job,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val batchUtils: BatchUtils,
@@ -22,7 +22,7 @@ class ReportingService(
     // a valid access scope before launching the job (which will also call this method).
     serviceProviderAccessScopeMapper.fromUser(user)
 
-    jobLauncher.run(
+    asyncJobLauncher.run(
       performanceReportJob,
       JobParametersBuilder()
         .addString("user.id", user.id)
