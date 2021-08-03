@@ -145,6 +145,10 @@ assess-risks-and-needs:
     create-supplementary-risk: "/risks/supplementary"
 
 aws:
+  s3:
+    enabled: false
+    provider: aws
+    region: eu-west-2
   sns:
     enabled: true
     provider: aws

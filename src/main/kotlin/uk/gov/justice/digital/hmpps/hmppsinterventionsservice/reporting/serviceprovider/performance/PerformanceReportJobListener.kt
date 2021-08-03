@@ -6,11 +6,15 @@ import org.springframework.batch.core.BatchStatus
 import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.JobExecutionListener
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.S3Service
 import java.io.File
+import kotlin.io.path.Path
 import kotlin.io.path.createTempDirectory
 
 @Component
-class PerformanceReportJobListener() : JobExecutionListener {
+class PerformanceReportJobListener(
+  private val s3Service: S3Service,
+) : JobExecutionListener {
   companion object : KLogging()
 
   override fun beforeJob(jobExecution: JobExecution) {
@@ -26,6 +30,8 @@ class PerformanceReportJobListener() : JobExecutionListener {
   override fun afterJob(jobExecution: JobExecution) {
     if (jobExecution.status == BatchStatus.COMPLETED) {
       val path = jobExecution.executionContext.get("output.file.path") as String
+
+      s3Service.publishFileToS3(Path(path), "reports/service-provider/performance/")
 
       // delete the file now the job is successfully completed
       logger.info("deleting csv file for service provider report {}", StructuredArguments.kv("path", path))
