@@ -44,6 +44,9 @@ spring:
       enabled: false  # don't run jobs at application startup
     jdbc:
       initialize-schema: never # we manage the spring batch schema with our own migrations
+    concurrency:
+      pool-size: 1 # run one job at a time...
+      queue-size: 10000 # unless the number of queued jobs exceeds this number
 
 server:
   port: 8080
