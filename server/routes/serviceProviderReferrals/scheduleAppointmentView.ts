@@ -238,7 +238,7 @@ export default class ScheduleAppointmentView {
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.meetingMethod.errorMessage),
       hint: {
-        text: 'Select one option.',
+        text: 'Select one option',
       },
       items,
     }
