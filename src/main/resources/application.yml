@@ -43,7 +43,7 @@ spring:
     job:
       enabled: false  # don't run jobs at application startup
     jdbc:
-      initialize-schema: always
+      initialize-schema: never # we manage the spring batch schema with our own migrations
 
 server:
   port: 8080
