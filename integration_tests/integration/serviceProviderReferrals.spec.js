@@ -642,6 +642,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.login()
     })
+
     describe('with valid inputs', () => {
       describe('when booking for an In-Person Meeting - Other Location', () => {
         it('should present no errors and display scheduled appointment', () => {
@@ -654,6 +655,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#time-part-of-day').select('AM')
           cy.get('#duration-hours').type('1')
           cy.get('#duration-minutes').type('15')
+          cy.contains('Group session').click()
           cy.contains('In-person meeting - Other locations').click()
           cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
           cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
@@ -665,6 +667,7 @@ describe('Service provider referrals dashboard', () => {
             ...appointment,
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
+            sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: {
               firstAddressLine: 'Harmony Living Office, Room 4',
@@ -692,6 +695,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
           cy.get('#duration-hours').should('have.value', '1')
           cy.get('#duration-minutes').should('have.value', '15')
+          cy.contains('Group session').parent().find('input').should('be.checked')
           cy.get('#method-other-location-address-line-1').should('have.value', 'Harmony Living Office, Room 4')
           cy.get('#method-other-location-address-line-2').should('have.value', '44 Bouverie Road')
           cy.get('#method-other-location-address-town-or-city').should('have.value', 'Blackpool')
@@ -711,6 +715,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#time-part-of-day').select('AM')
           cy.get('#duration-hours').type('1')
           cy.get('#duration-minutes').type('15')
+          cy.contains('Group session').click()
           cy.contains('In-person meeting - NPS offices').click()
           cy.get('#delius-office-location-code').select('Blackpool: Blackpool Probation Office')
 
@@ -718,6 +723,7 @@ describe('Service provider referrals dashboard', () => {
             ...appointment,
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
+            sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
             appointmentDeliveryAddress: null,
             npsOfficeCode: 'CRS0105',
@@ -741,6 +747,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#time-part-of-day').find('option:selected').should('have.text', 'AM')
           cy.get('#duration-hours').should('have.value', '1')
           cy.get('#duration-minutes').should('have.value', '15')
+          cy.contains('Group session').parent().find('input').should('be.checked')
           cy.get('#delius-office-location-code option:selected').should(
             'have.text',
             'Blackpool: Blackpool Probation Office'
@@ -750,6 +757,23 @@ describe('Service provider referrals dashboard', () => {
     })
 
     describe('with invalid inputs', () => {
+      describe("when the user doesn't select a session type", () => {
+        it('should show an error', () => {
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.get('#date-day').type('24')
+          cy.get('#date-month').type('3')
+          cy.get('#date-year').type('2021')
+          cy.get('#time-hour').type('9')
+          cy.get('#time-minute').type('02')
+          cy.get('#time-part-of-day').select('AM')
+          cy.get('#duration-hours').type('1')
+          cy.get('#duration-minutes').type('15')
+          cy.contains('In-person meeting').click()
+          cy.contains('Save and continue').click()
+          cy.contains('There is a problem').next().contains('Select the session type')
+        })
+      })
+
       describe("when the user doesn't select meeting method", () => {
         it('should show an error', () => {
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
@@ -761,6 +785,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#time-part-of-day').select('AM')
           cy.get('#duration-hours').type('1')
           cy.get('#duration-minutes').type('15')
+          cy.contains('1:1').click()
           cy.contains('Save and continue').click()
           cy.contains('There is a problem').next().contains('Select a meeting method')
         })
@@ -777,6 +802,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#time-part-of-day').select('AM')
           cy.get('#duration-hours').type('1')
           cy.get('#duration-minutes').type('15')
+          cy.contains('1:1').click()
           cy.contains('In-person meeting - Other locations').click()
           cy.contains('Save and continue').click()
           cy.contains('There is a problem').next().contains('Enter a value for address line 1')

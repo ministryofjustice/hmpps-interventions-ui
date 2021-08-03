@@ -231,6 +231,7 @@ describe(ScheduleAppointmentPresenter, () => {
             hours: { value: '', hasError: false },
             minutes: { value: '', hasError: false },
           },
+          sessionType: { value: '', errorMessage: null },
           meetingMethod: { value: null, errorMessage: null },
           address: {
             value: null,
@@ -276,6 +277,7 @@ describe(ScheduleAppointmentPresenter, () => {
             hours: { value: '', hasError: false },
             minutes: { value: '', hasError: false },
           },
+          sessionType: { value: '', errorMessage: null },
           meetingMethod: { value: null, errorMessage: null },
           address: {
             value: null,
@@ -297,6 +299,7 @@ describe(ScheduleAppointmentPresenter, () => {
         const appointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T10:30:00Z',
           durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
           appointmentDeliveryAddress: {
             firstAddressLine: 'Harmony Living Office, Room 4',
@@ -329,6 +332,7 @@ describe(ScheduleAppointmentPresenter, () => {
             hours: { value: '1', hasError: false },
             minutes: { value: '15', hasError: false },
           },
+          sessionType: { value: 'ONE_TO_ONE', errorMessage: null },
           meetingMethod: { value: 'IN_PERSON_MEETING_OTHER', errorMessage: null },
           address: {
             value: {
@@ -356,6 +360,7 @@ describe(ScheduleAppointmentPresenter, () => {
         const appointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T10:30:00Z',
           durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
           npsOfficeCode: 'CRS00001',
         })
@@ -382,6 +387,7 @@ describe(ScheduleAppointmentPresenter, () => {
             hours: { value: '1', hasError: false },
             minutes: { value: '15', hasError: false },
           },
+          sessionType: { value: 'ONE_TO_ONE', errorMessage: null },
           meetingMethod: { value: 'IN_PERSON_MEETING_PROBATION_OFFICE', errorMessage: null },
           address: {
             value: null,
@@ -414,6 +420,21 @@ describe(ScheduleAppointmentPresenter, () => {
 
         expect(presenter.backLinkHref).toEqual('/example-href')
       })
+    })
+  })
+
+  describe('isInitialAssessmentAppointment', () => {
+    it('returns true when there is no "current appointment" passed in', () => {
+      const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+
+      expect(presenter.isInitialAssessmentAppointment).toEqual(true)
+    })
+
+    it('returns false when a "current appointment" is passed in', () => {
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const presenter = new ScheduleAppointmentPresenter(referral, appointment, [])
+
+      expect(presenter.isInitialAssessmentAppointment).toEqual(false)
     })
   })
 })

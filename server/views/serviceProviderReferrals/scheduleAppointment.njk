@@ -46,6 +46,11 @@
           {{ govukDateInput(dateInputArgs) }}
           {{ appTimeInput(timeInputArgs) }}
           {{ govukDateInput(durationDateInputArgs) }}
+          {% if presenter.isInitialAssessmentAppointment %}
+            <input type="hidden" name="session-type" value="{{ presenter.initialAssessmentSessionType }}">
+          {% else %}
+            {{ govukRadios(sessionTypeRadioInputArgs) }}
+          {% endif %}
           {% set deliusOfficeLocationHtml %}
             {{ govukSelect(deliusOfficeLocationSelectArgs) }}
           {% endset -%}
