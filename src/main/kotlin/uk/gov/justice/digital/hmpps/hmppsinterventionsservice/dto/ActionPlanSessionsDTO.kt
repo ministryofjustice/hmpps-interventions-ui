@@ -50,6 +50,7 @@ data class ActionPlanSessionDTO(
   val appointmentTime: OffsetDateTime?,
   val durationInMinutes: Int?,
   val appointmentDeliveryType: AppointmentDeliveryType?,
+  val npsOfficeCode: String?,
   val appointmentDeliveryAddress: AddressDTO?,
   val sessionFeedback: SessionFeedbackDTO,
 ) {
@@ -75,6 +76,7 @@ data class ActionPlanSessionDTO(
         durationInMinutes = session.currentAppointment?.durationInMinutes,
         appointmentDeliveryType = session.currentAppointment?.appointmentDelivery?.appointmentDeliveryType,
         appointmentDeliveryAddress = address,
+        npsOfficeCode = session.currentAppointment?.appointmentDelivery?.npsOfficeCode,
         sessionFeedback = SessionFeedbackDTO.from(
           session.currentAppointment?.attended,
           session.currentAppointment?.additionalAttendanceInformation,
