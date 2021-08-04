@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -41,6 +42,7 @@ class SupplierAssessmentService(
     appointmentTime: OffsetDateTime,
     createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
   ): Appointment {
@@ -52,6 +54,7 @@ class SupplierAssessmentService(
       SUPPLIER_ASSESSMENT,
       createdByUser,
       appointmentDeliveryType,
+      appointmentSessionType,
       appointmentDeliveryAddress,
       npsOfficeCode,
     )

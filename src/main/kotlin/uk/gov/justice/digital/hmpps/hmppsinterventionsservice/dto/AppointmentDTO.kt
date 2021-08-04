@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -11,6 +12,7 @@ data class AppointmentDTO(
   val durationInMinutes: Int?,
   val sessionFeedback: SessionFeedbackDTO,
   val appointmentDeliveryType: AppointmentDeliveryType?,
+  val sessionType: AppointmentSessionType?,
   val appointmentDeliveryAddress: AddressDTO?,
   val npsOfficeCode: String?
 ) {
@@ -36,6 +38,7 @@ data class AppointmentDTO(
           appointment.appointmentFeedbackSubmittedBy,
         ),
         appointmentDeliveryType = appointment.appointmentDelivery?.appointmentDeliveryType,
+        sessionType = appointment.appointmentDelivery?.appointmentSessionType,
         appointmentDeliveryAddress = addressDTO,
         npsOfficeCode = appointment.appointmentDelivery?.npsOfficeCode
       )

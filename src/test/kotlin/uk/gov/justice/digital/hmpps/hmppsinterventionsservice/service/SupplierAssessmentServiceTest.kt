@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
@@ -70,6 +71,7 @@ class SupplierAssessmentServiceTest {
     val durationInMinutes = 60
     val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
     var appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
+    var appointmentSessionType = AppointmentSessionType.ONE_TO_ONE
     @Test
     fun `can create supplier assessment appointment`() {
       whenever(
@@ -81,13 +83,14 @@ class SupplierAssessmentServiceTest {
           eq(SUPPLIER_ASSESSMENT),
           eq(createdByUser),
           eq(appointmentDeliveryType),
+          eq(appointmentSessionType),
           isNull(),
           isNull(),
         )
       ).thenReturn(appointment)
       whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
 
-      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType)
+      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType, appointmentSessionType)
 
       val argumentCaptor = argumentCaptor<SupplierAssessment>()
       verify(supplierAssessmentRepository, atLeastOnce()).save(argumentCaptor.capture())
@@ -111,13 +114,14 @@ class SupplierAssessmentServiceTest {
           eq(SUPPLIER_ASSESSMENT),
           eq(createdByUser),
           eq(appointmentDeliveryType),
+          eq(appointmentSessionType),
           isNull(),
           eq(npsOfficeCode),
         )
       ).thenReturn(appointment)
       whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
 
-      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType, npsOfficeCode = npsOfficeCode)
+      supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, createdByUser, appointmentDeliveryType, appointmentSessionType, npsOfficeCode = npsOfficeCode)
 
       val argumentCaptor = argumentCaptor<SupplierAssessment>()
       verify(supplierAssessmentRepository, atLeastOnce()).save(argumentCaptor.capture())
