@@ -88,4 +88,19 @@ describe(AppointmentDecorator, () => {
       })
     })
   })
+
+  describe('isInitialAssessmentAppointment', () => {
+    it('returns true when the appointment is an initial assessment appointment, with no sessionNumber', () => {
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const decorator = new AppointmentDecorator(appointment)
+
+      expect(decorator.isInitialAssessmentAppointment).toEqual(true)
+    })
+    it('returns false when the appointment is an action plan appointment, which has a sessionNumber', () => {
+      const appointment = actionPlanAppointmentFactory.build()
+      const decorator = new AppointmentDecorator(appointment)
+
+      expect(decorator.isInitialAssessmentAppointment).toEqual(false)
+    })
+  })
 })

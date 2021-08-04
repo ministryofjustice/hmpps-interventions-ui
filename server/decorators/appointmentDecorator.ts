@@ -45,8 +45,8 @@ export default class AppointmentDecorator {
     return duration
   }
 
-  isInitialAssessmentAppointment(appointmentDetails: InitialAssessmentAppointment | ActionPlanAppointment): boolean {
-    return (<ActionPlanAppointment>appointmentDetails).sessionNumber === undefined
+  get isInitialAssessmentAppointment(): boolean {
+    return (<ActionPlanAppointment>this.appointment).sessionNumber === undefined
   }
 
   appointmentIsInThePast(appointment: InitialAssessmentAppointment | ActionPlanAppointment): boolean {

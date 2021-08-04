@@ -27,7 +27,7 @@ export default {
 
     if (appointment.appointmentTime) {
       if (
-        appointmentDecorator.isInitialAssessmentAppointment(appointment) &&
+        appointmentDecorator.isInitialAssessmentAppointment &&
         appointmentDecorator.appointmentIsInThePast(appointment)
       ) {
         return SessionStatus.awaitingFeedback
