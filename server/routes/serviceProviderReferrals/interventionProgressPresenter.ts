@@ -121,6 +121,7 @@ export default class InterventionProgressPresenter {
           },
         ]
         break
+      case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
         links = [
           {
@@ -176,20 +177,61 @@ export default class InterventionProgressPresenter {
     new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
   )
 
-  get supplierAssessmentLink(): { text: string; href: string; hiddenText?: string } {
+  get supplierAssessmentMessage(): string {
     switch (this.supplierAssessmentStatus) {
       case SessionStatus.notScheduled:
-        return {
-          text: 'Schedule',
-          hiddenText: ' initial assessment',
-          href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
-        }
+        return 'Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.'
+      case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
+        return 'Feedback needs to be added on the same day the assessment is delivered.'
+      case SessionStatus.completed:
+      case SessionStatus.didNotAttend:
+        return 'The initial assessment has been delivered and feedback added.'
       default:
-        return {
-          text: 'View appointment details',
-          href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
-        }
+        throw new Error('unexpected status')
+    }
+  }
+
+  get supplierAssessmentLink(): { text: string; href: string; hiddenText?: string }[] {
+    switch (this.supplierAssessmentStatus) {
+      case SessionStatus.notScheduled:
+        return [
+          {
+            text: 'Schedule',
+            hiddenText: ' initial assessment',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+          },
+        ]
+      case SessionStatus.scheduled:
+        return [
+          {
+            text: 'View appointment details',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
+          },
+        ]
+      case SessionStatus.awaitingFeedback:
+        return [
+          {
+            text: 'Add feedback',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
+          },
+        ]
+      case SessionStatus.didNotAttend:
+        return [
+          {
+            text: 'Reschedule',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+          },
+        ]
+      case SessionStatus.completed:
+        return [
+          {
+            text: 'View feedback',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,
+          },
+        ]
+      default:
+        throw new Error('unexpected status')
     }
   }
 

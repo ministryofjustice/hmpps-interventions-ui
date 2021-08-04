@@ -9,6 +9,8 @@ import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConviction from '../../testutils/factories/deliusConviction'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusStaffDetails from '../../testutils/factories/deliusStaffDetails'
+import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
+import { DeliusOffenderManager } from '../models/delius/deliusOffenderManager'
 
 jest.mock('../data/restClient')
 
@@ -147,6 +149,50 @@ describe(CommunityApiService, () => {
         } catch (err) {
           expect(err.status).toBe(500)
           expect(err.userMessage).toBe('Could retrieve staff details from nDelius.')
+        }
+      })
+    })
+  })
+
+  describe('getResponsibleOfficer', () => {
+    const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
+    const service = new CommunityApiService(hmppsAuthClientMock, restClientMock)
+
+    describe('when at least one Responsible Officer is assigned to the service user in Delius', () => {
+      it('makes a request to the Community API, retrieves the Responsible Officers and casts them as a DeliusResponsibleOfficer', async () => {
+        const deliusOffenderManagers = [
+          deliusOffenderManagerFactory.responsibleOfficer().build({ staff: { forenames: 'Jerry' } }),
+          deliusOffenderManagerFactory.responsibleOfficer().build({ staff: { forenames: 'Linda' } }),
+          deliusOffenderManagerFactory.notResponsibleOfficer().build({ staff: { forenames: 'Roger' } }),
+        ]
+
+        restClientMock.get.mockResolvedValue(deliusOffenderManagers)
+
+        hmppsAuthClientMock.getApiClientToken.mockResolvedValue('token')
+
+        const responsibleOfficers = await service.getResponsibleOfficersForServiceUser('X123456')
+
+        expect(restClientMock.get).toHaveBeenCalledWith({
+          path: '/secure/offenders/crn/X123456/allOffenderManagers',
+          token: 'token',
+        })
+
+        const names = responsibleOfficers!.map((officer: DeliusOffenderManager) => officer.staff!.forenames)
+
+        expect(names).toEqual(['Jerry', 'Linda'])
+        expect(names).not.toContainEqual('Roger')
+      })
+    })
+
+    describe('when Community API throws an error', () => {
+      it('makes a request to Community API and returns a user-facing error message', async () => {
+        restClientMock.get.mockRejectedValue(createError(500))
+
+        try {
+          await service.getResponsibleOfficersForServiceUser('X123456')
+        } catch (err) {
+          expect(err.status).toBe(500)
+          expect(err.userMessage).toBe('Could retrieve Responsible Officer from nDelius.')
         }
       })
     })

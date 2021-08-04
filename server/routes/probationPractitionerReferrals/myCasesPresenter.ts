@@ -1,7 +1,6 @@
 import Intervention from '../../models/intervention'
 import SentReferral from '../../models/sentReferral'
 import PresenterUtils from '../../utils/presenterUtils'
-import utils from '../../utils/utils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
 
@@ -42,7 +41,7 @@ export default class MyCasesPresenter {
         href: null,
       },
       {
-        text: utils.convertToTitleCase(interventionForReferral.title),
+        text: interventionForReferral.title,
         sortValue: null,
         href: null,
       },

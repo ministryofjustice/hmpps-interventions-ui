@@ -395,4 +395,10 @@ export default class PresenterUtils {
   static formattedTimeRange(startsAt: ClockTime, endsAt: ClockTime): string {
     return `${this.formattedTime(startsAt)} to ${this.formattedTime(endsAt)}`
   }
+
+  // This is a useful type guard that can be used to filter an array to modify the types defined in the array.
+  // i.e. const filtered: T = (T | undefined | null)[].filter(isNonNullAndDefined)
+  static isNonNullAndDefined<T>(arg: T | undefined | null): arg is T {
+    return arg !== null && arg !== undefined
+  }
 }

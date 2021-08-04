@@ -66,7 +66,7 @@ export default class InterventionProgressView {
         {
           key: { text: 'To do' },
           value: {
-            html: ViewUtils.linkHtml([this.presenter.supplierAssessmentLink]),
+            html: ViewUtils.linkHtml(this.presenter.supplierAssessmentLink),
           },
         },
       ],
@@ -135,6 +135,7 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
+        supplierAssessmentMessage: this.presenter.supplierAssessmentMessage,
         actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,

@@ -170,6 +170,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetServiceProviderSentReferralsSummaryForUserToken = async (responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPathPattern: `${this.mockPrefix}/sent-referrals/summary/service-provider`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubAssignSentReferral = async (id: string, responseJson: Record<string, unknown>): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
@@ -503,11 +519,14 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordAppointmentAttendance = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubRecordSupplierAssessmentAppointmentAttendance = async (
+    referralId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'PUT',
-        urlPattern: `${this.mockPrefix}/appointment/${id}/record-attendance`,
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/supplier-assessment/record-attendance`,
       },
       response: {
         status: 200,
@@ -519,11 +538,14 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordAppointmentBehavior = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubRecordSupplierAssessmentAppointmentBehaviour = async (
+    referralId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'PUT',
-        urlPattern: `${this.mockPrefix}/appointment/${id}/record-behaviour`,
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/supplier-assessment/record-behaviour`,
       },
       response: {
         status: 200,
@@ -570,11 +592,14 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubSubmitAppointmentFeedback = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubSubmitSupplierAssessmentAppointmentFeedback = async (
+    referralId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',
-        urlPattern: `${this.mockPrefix}/appointment/${id}/submit-feedback`,
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/supplier-assessment/submit-feedback`,
       },
       response: {
         status: 200,

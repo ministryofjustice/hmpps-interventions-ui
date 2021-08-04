@@ -13,6 +13,8 @@ import expandedDeliusServiceUserFactory from '../../testutils/factories/expanded
 import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import appointmentFactory from '../../testutils/factories/appointment'
+import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
+import serviceProviderSentReferralSummaryFactory from '../../testutils/factories/serviceProviderSentReferralSummary'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -28,13 +30,13 @@ describe('Service provider referrals dashboard', () => {
 
     const personalWellbeingIntervention = interventionFactory.build({
       contractType: { code: 'PWB', name: 'Personal wellbeing' },
-      title: 'personal wellbeing - west midlands',
+      title: 'Personal Wellbeing - West Midlands',
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
     const socialInclusionIntervention = interventionFactory.build({
       contractType: { code: 'SOC', name: 'Social inclusion' },
-      title: 'social inclusion - west midlands',
+      title: 'Social Inclusion - West Midlands',
       serviceCategories: [socialInclusionServiceCategory],
     })
 
@@ -167,16 +169,35 @@ describe('Service provider referrals dashboard', () => {
       ],
     })
 
+    const responsibleOfficer = deliusOffenderManagerFactory.build({
+      staff: {
+        forenames: 'Peter',
+        surname: 'Practitioner',
+        email: 'p.practitioner@justice.gov.uk',
+        phoneNumber: '01234567890',
+      },
+    })
+    const sentReferralsSummary = [
+      serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(sentReferrals[0], socialInclusionIntervention)
+        .build({}),
+      serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(sentReferrals[1], personalWellbeingIntervention)
+        .build({}),
+    ]
+
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
     cy.stubGetSentReferralsForUserToken(sentReferrals)
+    cy.stubGetServiceProviderSentReferralsSummaryForUserToken(sentReferralsSummary)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetStaffDetails(referralToSelect.sentBy.username, staffDetails)
+    cy.stubGetResponsibleOfficersForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
 
     cy.login()
 
@@ -252,6 +273,11 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('She uses a wheelchair')
     cy.contains('Spanish')
     cy.contains('She works Mondays 9am - midday')
+
+    cy.contains('Responsible officer details').next().contains('Name').next().contains('Peter Practitioner')
+    cy.contains('Responsible officer details').next().contains('Phone').next().contains('01234567890')
+    cy.contains('Responsible officer details').next().contains('Email').next().contains('p.practitioner@justice.gov.uk')
+
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
 
@@ -264,70 +290,170 @@ describe('Service provider referrals dashboard', () => {
       .contains('probation-team4692@justice.gov.uk')
   })
 
-  it('User assigns a referral to a caseworker', () => {
-    const intervention = interventionFactory.build()
-    const conviction = deliusConvictionFactory.build()
+  describe('Assigning a referral to a caseworker', () => {
+    it('User assigns a referral to a caseworker', () => {
+      const intervention = interventionFactory.build()
+      const conviction = deliusConvictionFactory.build()
 
-    const referralParams = {
-      referral: {
-        interventionId: intervention.id,
-        serviceCategoryIds: [intervention.serviceCategories[0].id],
-        relevantSentenceId: conviction.convictionId,
-      },
-    }
+      const referralParams = {
+        referral: {
+          interventionId: intervention.id,
+          serviceCategoryIds: [intervention.serviceCategories[0].id],
+          relevantSentenceId: conviction.convictionId,
+        },
+      }
 
-    const referral = sentReferralFactory.build(referralParams)
-    const deliusUser = deliusUserFactory.build()
-    const deliusServiceUser = deliusServiceUserFactory.build()
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
-    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-    const staffDetails = deliusStaffDetailsFactory.build()
+      const referral = sentReferralFactory.build(referralParams)
+      const deliusUser = deliusUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+      const staffDetails = deliusStaffDetailsFactory.build()
+      const responsibleOfficer = deliusOffenderManagerFactory.build()
+      let referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(referral, intervention)
+        .build()
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetSentReferralsForUserToken([referral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+      cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
+      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubAssignSentReferral(referral.id, referral)
+      cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+      cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+      cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
-    cy.stubGetIntervention(intervention.id, intervention)
-    cy.stubGetSentReferral(referral.id, referral)
-    cy.stubGetSentReferralsForUserToken([referral])
-    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
-    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
-    cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
-    cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
-    cy.stubAssignSentReferral(referral.id, referral)
-    cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
-    cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-    cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+      cy.login()
 
-    cy.login()
+      cy.visit(`/service-provider/referrals/${referral.id}/details`)
 
-    cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.get('h2').contains('Who do you want to assign this referral to?')
 
-    cy.get('h2').contains('Who do you want to assign this referral to?')
+      cy.get('#email').type('john@harmonyliving.org.uk')
+      cy.contains('Save and continue').click()
 
-    cy.get('#email').type('john@harmonyliving.org.uk')
-    cy.contains('Save and continue').click()
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
+      cy.get('h1').contains('Confirm the Accommodation referral assignment')
+      cy.contains('John Smith')
 
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
-    cy.get('h1').contains('Confirm the Accommodation referral assignment')
-    cy.contains('John Smith')
+      const assignedReferral = sentReferralFactory
+        .assigned()
+        .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetSentReferralsForUserToken([assignedReferral])
+      referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(assignedReferral, intervention)
+        .withAssignedUser(hmppsAuthUser.username)
+        .build()
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
 
-    const assignedReferral = sentReferralFactory
-      .assigned()
-      .build({ ...referralParams, id: referral.id, assignedTo: { username: hmppsAuthUser.username } })
-    cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
-    cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.contains('Confirm assignment').click()
 
-    cy.contains('Confirm assignment').click()
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+      cy.get('h1').contains('Caseworker assigned')
 
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
-    cy.get('h1').contains('Caseworker assigned')
+      cy.contains('Return to dashboard').click()
 
-    cy.contains('Return to dashboard').click()
+      cy.location('pathname').should('equal', `/service-provider/dashboard`)
+      cy.contains('john.smith')
 
-    cy.location('pathname').should('equal', `/service-provider/dashboard`)
-    cy.contains('john.smith')
+      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.contains('This intervention is assigned to John Smith.')
+    })
 
-    cy.visit(`/service-provider/referrals/${referral.id}/details`)
-    cy.contains('This intervention is assigned to John Smith.')
+    it('User re-assigns a referral to a different caseworker', () => {
+      const intervention = interventionFactory.build()
+      const conviction = deliusConvictionFactory.build()
+
+      const referralParams = {
+        referral: {
+          interventionId: intervention.id,
+          serviceCategoryIds: [intervention.serviceCategories[0].id],
+          relevantSentenceId: conviction.convictionId,
+        },
+      }
+
+      const currentAssignee = hmppsAuthUserFactory.build({
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john.smith',
+      })
+      const referral = sentReferralFactory
+        .assigned()
+        .build({ ...referralParams, assignedTo: { username: currentAssignee.username } })
+      const deliusUser = deliusUserFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
+      const staffDetails = deliusStaffDetailsFactory.build()
+      const responsibleOfficer = deliusOffenderManagerFactory.build()
+      let referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(referral, intervention)
+        .withAssignedUser(currentAssignee.username)
+        .build()
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetSentReferralsForUserToken([referral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+      cy.stubGetAuthUserByEmailAddress([currentAssignee])
+      cy.stubGetAuthUserByUsername(currentAssignee.username, currentAssignee)
+      cy.stubAssignSentReferral(referral.id, referral)
+      cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+      cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
+      cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+
+      cy.contains('This intervention is assigned to John Smith.')
+
+      cy.get('h2').contains('Who do you want to assign this referral to?')
+
+      const newAssignee = hmppsAuthUserFactory.build({
+        firstName: 'Anna',
+        lastName: 'Dawkins',
+        username: 'anna.dawkins',
+      })
+      cy.stubGetAuthUserByEmailAddress([newAssignee])
+      cy.stubGetAuthUserByUsername(newAssignee.username, newAssignee)
+
+      cy.get('#email').type('anna@harmonyliving.org.uk')
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/check`)
+      cy.get('h1').contains('Confirm the Accommodation referral assignment')
+      cy.contains('Anna Dawkins')
+
+      const reAssignedReferral = sentReferralFactory
+        .assigned()
+        .build({ ...referral, assignedTo: { username: newAssignee.username } })
+      referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(reAssignedReferral, intervention)
+        .withAssignedUser(newAssignee.username)
+        .build()
+      cy.stubGetSentReferral(reAssignedReferral.id, reAssignedReferral)
+      cy.stubGetSentReferralsForUserToken([reAssignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
+
+      cy.contains('Confirm assignment').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+      cy.get('h1').contains('Caseworker assigned')
+
+      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.contains('This intervention is assigned to Anna Dawkins.')
+    })
   })
 
   it('User creates an action plan and submits it for approval', () => {
@@ -378,9 +504,14 @@ describe('Service provider referrals dashboard', () => {
       actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 3 }),
       actionPlanAppointmentFactory.newlyCreated().build({ sessionNumber: 4 }),
     ]
+    const referralSummary = serviceProviderSentReferralSummaryFactory
+      .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
+      .withAssignedUser(hmppsAuthUser.username)
+      .build()
 
     cy.stubGetSentReferralsForUserToken([assignedReferral])
 
+    cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
     cy.stubGetActionPlan(draftActionPlan.id, draftActionPlan)
     cy.stubCreateDraftActionPlan(draftActionPlan)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
@@ -495,6 +626,7 @@ describe('Service provider referrals dashboard', () => {
 
     beforeEach(() => {
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetActionPlanAppointment(actionPlan.id, appointment.sessionNumber, appointment)
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
@@ -642,6 +774,7 @@ describe('Service provider referrals dashboard', () => {
       })
 
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
@@ -795,6 +928,7 @@ describe('Service provider referrals dashboard', () => {
       })
 
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(intervention.id, intervention)
@@ -946,6 +1080,7 @@ describe('Service provider referrals dashboard', () => {
         })
       cy.stubGetSentReferral(endedReferral.id, endedReferral)
       cy.stubGetSentReferralsForUserToken([endedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Intervention ended')
@@ -963,6 +1098,7 @@ describe('Service provider referrals dashboard', () => {
       })
       cy.stubGetSentReferral(endedReferral.id, endedReferral)
       cy.stubGetSentReferralsForUserToken([endedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Please note that an end of service report must still be submitted within 10 working days.')
@@ -975,6 +1111,7 @@ describe('Service provider referrals dashboard', () => {
       })
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.contains('Intervention cancelled').should('not.exist')
@@ -1034,6 +1171,7 @@ describe('Service provider referrals dashboard', () => {
     const draftEndOfServiceReport = endOfServiceReportFactory.justCreated().build({ referralId: referral.id })
 
     cy.stubGetSentReferralsForUserToken([referral])
+    cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
 
     cy.stubGetActionPlan(actionPlan.id, actionPlan)
     cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
@@ -1137,16 +1275,16 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Review the end of service report')
 
     cy.get('#change-outcome-2').click()
-    cy.contains('Do you have any further comments about their progression on this outcome?').type(
-      'They have done fairly well but could make some changes'
-    )
+    cy.contains('Do you have any further comments about their progression on this outcome?')
+      .type('{selectall}{backspace}')
+      .type('I think that overall it’s gone well but they could make some changes')
 
     cy.contains('Save and continue').click()
 
     cy.contains('Would you like to give any additional information about this intervention (optional)?')
-    cy.contains(
-      'Provide any further information that you believe is important for the probation practitioner to know.'
-    ).type('You should know x and y and p and q')
+    cy.contains('Provide any further information that you believe is important for the probation practitioner to know.')
+      .type('{selectall}{backspace}')
+      .type('It’s important that you know p and q')
 
     cy.contains('Save and continue').click()
 
@@ -1179,6 +1317,7 @@ describe('Service provider referrals dashboard', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
 
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
       cy.stubGetSentReferral(referral.id, referral)
@@ -1209,7 +1348,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
       const scheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-03-24T09:02:02Z',
+        appointmentTime: '3021-03-24T09:02:02Z',
         durationInMinutes: 75,
         appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
         appointmentDeliveryAddress: {
@@ -1244,7 +1383,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('View appointment details').click()
       cy.get('h1').contains('View appointment details')
 
-      cy.contains('24 March 2021')
+      cy.contains('24 March 3021')
       cy.contains('9:02am to 10:17am')
       cy.contains('In-person meeting')
       cy.contains('Harmony Living Office, Room 4')
@@ -1261,7 +1400,7 @@ describe('Service provider referrals dashboard', () => {
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const scheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-03-24T09:02:00Z',
+        appointmentTime: '3021-03-24T09:02:00Z',
         durationInMinutes: 75,
       })
       const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.justCreated.build({
@@ -1271,6 +1410,7 @@ describe('Service provider referrals dashboard', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
 
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
       cy.stubGetSentReferral(referral.id, referral)
@@ -1289,7 +1429,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('#date-day').should('have.value', '24')
       cy.get('#date-month').should('have.value', '3')
-      cy.get('#date-year').should('have.value', '2021')
+      cy.get('#date-year').should('have.value', '3021')
       cy.get('#time-hour').should('have.value', '9')
       cy.get('#time-minute').should('have.value', '02')
       // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -1307,7 +1447,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#duration-minutes').clear().type('45')
 
       const rescheduledAppointment = appointmentFactory.build({
-        appointmentTime: '2021-04-10T16:15:00Z',
+        appointmentTime: '3021-04-10T16:15:00Z',
         durationInMinutes: 45,
       })
       const supplierAssessmentWithRescheduledAppointment = supplierAssessmentFactory.build({
@@ -1329,6 +1469,276 @@ describe('Service provider referrals dashboard', () => {
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+    })
+
+    describe('Recording initial assessment feedback', () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const probationPractitioner = deliusUserFactory.build({
+        firstName: 'John',
+        surname: 'Smith',
+        username: 'john.smith',
+      })
+      const sentReferral = sentReferralFactory.assigned().build({
+        id: 'f437a412-078f-4bbf-82d8-569c2eb9ddb9',
+        assignedTo: { username: probationPractitioner.username },
+        referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
+      })
+      beforeEach(() => {
+        cy.stubGetSentReferralsForUserToken([sentReferral])
+        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+        cy.stubGetIntervention(intervention.id, intervention)
+        cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+        cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+        cy.stubGetSentReferral(sentReferral.id, sentReferral)
+        cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser)
+      })
+
+      describe('when user records the attendance as not attended', () => {
+        it('should allow user to add attendance, check their answers and submit the referral', () => {
+          const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+          })
+          let supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithNoFeedback],
+            currentAppointmentId: appointmentWithNoFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.login()
+
+          cy.visit(`/service-provider/referrals/${sentReferral.id}/progress`)
+
+          cy.contains('Initial assessment appointment')
+            .next()
+            .contains('Feedback needs to be added on the same day the assessment is delivered.')
+            .next()
+            .within(() => {
+              cy.contains('Appointment status').next().contains('awaiting feedback')
+              cy.contains('To do').next().contains('Add feedback').click()
+              cy.location('pathname').should(
+                'equal',
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
+              )
+            })
+          cy.contains('No').click()
+          cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
+
+          const appointmentWithAttendanceFeedback = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'no',
+                additionalAttendanceInformation: 'Alex did not attend the session',
+              },
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithAttendanceFeedback],
+            currentAppointmentId: appointmentWithAttendanceFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.stubRecordSupplierAssessmentAppointmentAttendance(sentReferral.id, appointmentWithAttendanceFeedback)
+          cy.contains('Save and continue').click()
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+          )
+
+          cy.contains('24 Mar 2021')
+          cy.contains('09:02')
+          cy.contains('Did Alex attend the initial assessment appointment?')
+          cy.contains('No')
+          cy.contains("Add additional information about Alex's attendance:")
+          cy.contains('Alex did not attend the session')
+
+          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithAttendanceFeedback)
+          cy.get('form').contains('Confirm').click()
+
+          cy.contains('Initial assessment added')
+
+          const submittedAppointment = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'no',
+                additionalAttendanceInformation: 'Alex did not attend this session',
+              },
+              submitted: true,
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [submittedAppointment],
+            currentAppointmentId: submittedAppointment.id,
+          })
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.contains('Return to progress').click()
+          cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
+
+          cy.contains('Initial assessment appointment')
+            .next()
+            .contains('The initial assessment has been delivered and feedback added.')
+            .next()
+            .within(() => {
+              cy.contains('Appointment status').next().contains('did not attend')
+              cy.contains('To do').next().contains('Reschedule').click()
+              cy.location('pathname').should(
+                'equal',
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule`
+              )
+            })
+        })
+      })
+
+      describe('when user records the attendance as attended', () => {
+        it('should allow user to add attendance, add behaviour, check their answers and submit the referral', () => {
+          const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+          })
+          let supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithNoFeedback],
+            currentAppointmentId: appointmentWithNoFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.login()
+
+          cy.visit(`/service-provider/referrals/${sentReferral.id}/progress`)
+
+          cy.contains('Initial assessment appointment')
+            .next()
+            .contains('Feedback needs to be added on the same day the assessment is delivered.')
+            .next()
+            .within(() => {
+              cy.contains('Appointment status').next().contains('awaiting feedback')
+              cy.contains('To do').next().contains('Add feedback').click()
+              cy.location('pathname').should(
+                'equal',
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
+              )
+            })
+          cy.contains('Yes').click()
+          cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
+
+          const appointmentWithAttendanceFeedback = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'Alex attended the session',
+              },
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithAttendanceFeedback],
+            currentAppointmentId: appointmentWithAttendanceFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.stubRecordSupplierAssessmentAppointmentAttendance(sentReferral.id, appointmentWithAttendanceFeedback)
+          cy.contains('Save and continue').click()
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/behaviour`
+          )
+
+          cy.contains("Describe Alex's behaviour in the assessment appointment").type(
+            'Alex was acting very suspicious.'
+          )
+          cy.contains('Yes').click()
+
+          const appointmentWithBehaviourFeedback = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'Alex attended the session',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was acting very suspicious.',
+                notifyProbationPractitioner: true,
+              },
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [appointmentWithBehaviourFeedback],
+            currentAppointmentId: appointmentWithBehaviourFeedback.id,
+          })
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.stubRecordSupplierAssessmentAppointmentBehaviour(sentReferral.id, appointmentWithBehaviourFeedback)
+
+          cy.contains('Save and continue').click()
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+          )
+          cy.contains('24 Mar 2021')
+          cy.contains('09:02')
+          cy.contains('Did Alex attend the initial assessment appointment?')
+          cy.contains('Yes, they were on time')
+          cy.contains("Add additional information about Alex's attendance:")
+          cy.contains('Alex attended the session')
+          cy.contains("Describe Alex's behaviour in the assessment appointment")
+          cy.contains('Alex was acting very suspicious.')
+          cy.contains('If you described poor behaviour, do you want to notify the probation practitioner?')
+          cy.contains('Yes')
+
+          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithBehaviourFeedback)
+          cy.get('form').contains('Confirm').click()
+
+          cy.contains('Initial assessment added')
+
+          const submittedAppointment = appointmentFactory.build({
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'Alex attended the session',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was acting very suspicious.',
+                notifyProbationPractitioner: true,
+              },
+              submitted: true,
+            },
+          })
+          supplierAssessment = supplierAssessmentFactory.build({
+            appointments: [submittedAppointment],
+            currentAppointmentId: submittedAppointment.id,
+          })
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
+          cy.contains('Return to progress').click()
+          cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
+
+          cy.contains('Initial assessment appointment')
+            .next()
+            .contains('The initial assessment has been delivered and feedback added.')
+            .next()
+            .within(() => {
+              cy.contains('Appointment status').next().contains('completed')
+              cy.contains('To do').next().contains('View feedback').click()
+              cy.location('pathname').should(
+                'equal',
+                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback`
+              )
+            })
+        })
+      })
     })
   })
 

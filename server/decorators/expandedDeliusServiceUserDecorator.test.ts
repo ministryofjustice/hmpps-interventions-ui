@@ -39,8 +39,8 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
 
       describe('when there are multiple addresses returned from nDelius', () => {
         describe('when all addresses have a non-null "from" field', () => {
-          it('uses the address with the most recent "from" date', () => {
-            const oldAddress = {
+          it('uses the address with the most recent "from" date but no elapsed "to" date', () => {
+            const oldAddressWithNullToDate = {
               addressNumber: 'Flat 2',
               buildingName: null,
               streetName: 'Test Walk',
@@ -48,12 +48,25 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
               town: 'London',
               district: 'City of London',
               county: 'Greater London',
-              from: '2019-01-01',
+              from: '2018-01-01',
               to: null,
               noFixedAbode: false,
             }
 
-            const newAddress = {
+            const mostRecentButNoLongerCurrentAddress = {
+              addressNumber: 'Flat 3',
+              buildingName: null,
+              streetName: 'Test Walk',
+              postcode: 'SW16 1AQ',
+              town: 'London',
+              district: 'City of London',
+              county: 'Greater London',
+              from: '2021-02-01',
+              to: '2019-02-03',
+              noFixedAbode: false,
+            }
+
+            const olderButCurrentAddress = {
               addressNumber: 'Flat 10',
               buildingName: null,
               streetName: 'Test Walk',
@@ -69,7 +82,7 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
             const serviceUser = new ExpandedDeliusServiceUserDecorator(
               expandedDeliusServiceUserFactory.build({
                 contactDetails: {
-                  addresses: [oldAddress, newAddress],
+                  addresses: [oldAddressWithNullToDate, mostRecentButNoLongerCurrentAddress, olderButCurrentAddress],
                 },
               })
             )
@@ -171,6 +184,36 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
               expandedDeliusServiceUserFactory.build({
                 contactDetails: {
                   addresses: [firstAddressNullFromDate, secondAddressUndefinedFromDate],
+                },
+              })
+            )
+
+            expect(serviceUser.address).toBeNull()
+          })
+        })
+
+        describe('when there is no current address added for the service user', () => {
+          it('should return null', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [
+                    {
+                      from: '2021-04-09',
+                      to: '2021-04-30',
+                      noFixedAbode: true,
+                      postcode: 'xxx',
+                    },
+                    {
+                      from: '2020-06-29',
+                      to: '2021-04-09',
+                      noFixedAbode: false,
+                      addressNumber: 'xxx',
+                      streetName: 'xxx',
+                      district: 'xxx',
+                      postcode: 'xxx',
+                    },
+                  ],
                 },
               })
             )

@@ -24,9 +24,16 @@ describe(ActionPlanSummaryPresenter, () => {
     })
 
     describe('when the action plan has not been submitted', () => {
-      it('returns the correct status', () => {
+      it('returns the correct status for service providers', () => {
         const actionPlan = actionPlanFactory.notSubmitted().build({ referralId: referral.id })
         const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
+
+        expect(presenter.text.actionPlanStatus).toEqual('In draft')
+      })
+
+      it('returns the correct status for probation practitioners', () => {
+        const actionPlan = actionPlanFactory.notSubmitted().build({ referralId: referral.id })
+        const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'probation-practitioner')
 
         expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
       })

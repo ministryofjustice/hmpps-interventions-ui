@@ -4,18 +4,18 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% block referralPageSection %}
-      {% if presenter.text.assignedTo == null %}
-         {% if presenter.canAssignReferral %}
-           <h2 class="govuk-heading-m">Who do you want to assign this referral to?</h2>
-           <form method="get" action={{ presenter.assignmentFormAction }}>
-                 {{ govukInput(emailInputArgs) }}
-                 {{ govukButton({ text: "Save and continue" }) }}
-           </form>
-         {% else %}
-           <p class="govuk-body">This intervention is not yet assigned to a caseworker.</p>
-         {% endif %}
-      {% else %}
+      {% if presenter.text.assignedTo != null %}
         <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
+      {% endif %}
+
+      {% if presenter.canAssignReferral %}
+        <h2 class="govuk-heading-m">Who do you want to assign this referral to?</h2>
+        <form method="get" action={{ presenter.assignmentFormAction }}>
+              {{ govukInput(emailInputArgs) }}
+              {{ govukButton({ text: "Save and continue" }) }}
+        </form>
+      {% elif presenter.text.assignedTo == null %}
+        <p class="govuk-body">This intervention is not yet assigned to a caseworker.</p>
       {% endif %}
 
       <h2 class="govuk-heading-m">Intervention details</h2>
@@ -45,6 +45,12 @@
 
       <h2 class="govuk-heading-m">Service user's needs</h2>
       {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
+
+      <h2 class="govuk-heading-m">Responsible officer details</h2>
+      {% for summaryListArgs in responsibleOfficerSummaryListsArgs %}
+        {{ govukSummaryList(summaryListArgs) }}
+      {% endfor %}
+
       <h2 class="govuk-heading-m">Referring probation practitioner details</h2>
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
       <h2 class="govuk-heading-m">Team contact details</h2>

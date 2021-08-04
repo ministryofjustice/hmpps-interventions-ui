@@ -5,6 +5,7 @@
 {% from "components/time-input/macro.njk" import appTimeInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -26,6 +27,12 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
         <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+        {% if presenter.appointmentAlreadyAttended %}
+            <h2 class="govuk-heading-l">Previous missed appointment</h2>
+            {{ govukSummaryList(appointmentSummaryListArgs) }}
+            <h2 class="govuk-heading-l">Details of the new appointment</h2>
+        {% endif %}
 
         <div id='session-input' {% if serverError != null %}class="{{serverError.classes}}"{% endif %}>
           {% if serverError !== null %}

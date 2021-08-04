@@ -45,4 +45,12 @@ export default class AppointmentDecorator {
     }
     return duration
   }
+
+  isInitialAssessmentAppointment(appointmentDetails: Appointment | ActionPlanAppointment): boolean {
+    return (<ActionPlanAppointment>appointmentDetails).sessionNumber === undefined
+  }
+
+  appointmentIsInThePast(appointment: Appointment | ActionPlanAppointment): boolean {
+    return new Date(appointment.appointmentTime!) < new Date()
+  }
 }
