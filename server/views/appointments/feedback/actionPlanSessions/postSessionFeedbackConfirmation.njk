@@ -1,0 +1,24 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../../../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Inteventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({titleText: "Session feedback added and submitted to the probation practitioner" }) }}
+
+      <h2 class="govuk-heading-m">What happens next?</h2>
+
+      <p class="govuk-body">
+        {{ presenter.text.whatHappensNext }}
+      </p>
+
+      <a href="{{ presenter.progressHref }}" class="govuk-button">Return to service progress</a>
+    </div>
+  </div>
+{% endblock %}

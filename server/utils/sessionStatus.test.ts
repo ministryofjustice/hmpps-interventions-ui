@@ -44,22 +44,35 @@ describe(sessionStatus.forAppointment, () => {
   })
 
   describe('when the appointment does not have feedback, but has an appointment time set', () => {
-    const scheduledAppointment = appointmentFactory.build({
-      sessionFeedback: {
-        submitted: false,
-        attendance: {
-          attended: null,
-          additionalAttendanceInformation: null,
-        },
-        behaviour: {
-          behaviourDescription: null,
-          notifyProbationPractitioner: null,
-        },
-      },
+    describe('and when the appointment time is in the past', () => {
+      const pastDate = new Date(Date.now() - 1000000).toISOString()
+      describe('and when the appointment is an action plan appointment', () => {
+        const pastAppointment = actionPlanAppointmentFactory.scheduled().build({
+          appointmentTime: pastDate,
+        })
+        it('returns "scheduled" status', () => {
+          expect(sessionStatus.forAppointment(pastAppointment)).toEqual(SessionStatus.scheduled)
+        })
+      })
+
+      describe('and when the appointment is an initial assessment appointment', () => {
+        it('returns "awaiting feedback" status', () => {
+          const pastAppointment = appointmentFactory.build({
+            appointmentTime: pastDate,
+          })
+          expect(sessionStatus.forAppointment(pastAppointment)).toEqual(SessionStatus.awaitingFeedback)
+        })
+      })
     })
 
-    it('returns "scheduled" status', () => {
-      expect(sessionStatus.forAppointment(scheduledAppointment)).toEqual(SessionStatus.scheduled)
+    describe('when the appointment time is in the future', () => {
+      const futureDate = new Date(Date.now() + 1000000).toISOString()
+      it('returns "scheduled" status', () => {
+        const futureAppointment = appointmentFactory.build({
+          appointmentTime: futureDate,
+        })
+        expect(sessionStatus.forAppointment(futureAppointment)).toEqual(SessionStatus.scheduled)
+      })
     })
   })
 

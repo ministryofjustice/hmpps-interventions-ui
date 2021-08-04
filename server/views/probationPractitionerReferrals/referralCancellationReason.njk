@@ -19,7 +19,7 @@
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.information }}</p>
     </div>
-    <form method="post" action="{{ presenter.checkAnswersHref }}">
+    <form method="post">
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
       {{ govukRadios(referralCancellationRadiosArgs) }}

@@ -14,6 +14,8 @@ export default class ReviewActionPlanPresenter {
     this.actionPlanPresenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
   }
 
+  readonly actionPlanId = this.actionPlan.id
+
   readonly submitFormAction = `/service-provider/action-plan/${this.actionPlan.id}/submit`
 
   readonly text = {

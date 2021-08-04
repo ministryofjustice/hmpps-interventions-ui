@@ -30,4 +30,8 @@ export default class ActionPlanNumberOfSessionsPresenter {
   readonly fields = {
     numberOfSessions: this.utils.stringValue(this.actionPlan.numberOfSessions, 'number-of-sessions'),
   }
+
+  readonly actionPlanId = this.actionPlan.id
+
+  readonly numberOfActivities = this.actionPlan.activities.length
 }

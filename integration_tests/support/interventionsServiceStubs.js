@@ -38,6 +38,10 @@ Cypress.Commands.add('stubGetSentReferralsForUserToken', responseJson => {
   cy.task('stubGetSentReferralsForUserToken', { responseJson })
 })
 
+Cypress.Commands.add('stubGetServiceProviderSentReferralsSummaryForUserToken', responseJson => {
+  cy.task('stubGetServiceProviderSentReferralsSummaryForUserToken', { responseJson })
+})
+
 Cypress.Commands.add('stubAssignSentReferral', (id, responseJson) => {
   cy.task('stubAssignSentReferral', { id, responseJson })
 })
@@ -126,12 +130,12 @@ Cypress.Commands.add('stubGetReferralCancellationReasons', responseJson => {
   cy.task('stubGetReferralCancellationReasons', { responseJson })
 })
 
-Cypress.Commands.add('stubRecordAppointmentAttendance', (id, responseJson) => {
-  cy.task('stubRecordAppointmentAttendance', { id, responseJson })
+Cypress.Commands.add('stubRecordSupplierAssessmentAppointmentAttendance', (referralId, responseJson) => {
+  cy.task('stubRecordSupplierAssessmentAppointmentAttendance', { referralId, responseJson })
 })
 
-Cypress.Commands.add('stubRecordAppointmentBehavior', (id, responseJson) => {
-  cy.task('stubRecordAppointmentBehavior', { id, responseJson })
+Cypress.Commands.add('stubRecordSupplierAssessmentAppointmentBehaviour', (referralId, responseJson) => {
+  cy.task('stubRecordSupplierAssessmentAppointmentBehaviour', { referralId, responseJson })
 })
 
 Cypress.Commands.add('stubGetSupplierAssessment', (referralId, responseJson) => {
@@ -142,8 +146,8 @@ Cypress.Commands.add('stubScheduleSupplierAssessmentAppointment', (supplierAsses
   cy.task('stubScheduleSupplierAssessmentAppointment', { supplierAssessmentId, responseJson })
 })
 
-Cypress.Commands.add('stubSubmitAppointmentFeedback', (id, responseJson) => {
-  cy.task('stubSubmitAppointmentFeedback', { id, responseJson })
+Cypress.Commands.add('stubSubmitSupplierAssessmentAppointmentFeedback', (referralId, responseJson) => {
+  cy.task('stubSubmitSupplierAssessmentAppointmentFeedback', { referralId, responseJson })
 })
 
 Cypress.Commands.add('stubGenerateServiceProviderPerformanceReport', () => {

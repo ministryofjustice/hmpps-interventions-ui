@@ -29,6 +29,7 @@ export default class ReferralCancellationReasonView {
       label: {
         text: this.presenter.text.additionalCommentsLabel,
       },
+      value: this.presenter.fields.cancellationComments,
     }
   }
 

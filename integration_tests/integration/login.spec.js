@@ -15,6 +15,7 @@ context('Login', () => {
     beforeEach(() => {
       cy.task('stubProbationPractitionerToken')
       cy.task('stubProbationPractitionerAuthUser')
+
       cy.stubGetSentReferralsForUserToken([])
       cy.stubGetDraftReferralsForUserToken([])
       cy.login()
@@ -38,6 +39,13 @@ context('Login', () => {
       cy.get('[data-qa=logout]').click()
       AuthLoginPage.verifyOnPage()
     })
+
+    it('the user cannot access service provider pages', () => {
+      cy.request({ url: '/service-provider/dashboard', failOnStatusCode: false }).its('status').should('equal', 403)
+
+      cy.visit('/service-provider/dashboard', { failOnStatusCode: false })
+      cy.contains('you are not authorised to access this page')
+    })
   })
 
   describe('after logging in as a service provider', () => {
@@ -45,6 +53,7 @@ context('Login', () => {
       cy.task('stubServiceProviderToken')
       cy.task('stubServiceProviderAuthUser')
       cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
       cy.login()
     })
 
@@ -60,15 +69,21 @@ context('Login', () => {
     it('the user can report a problem', () => {
       cy.contains('Report a problem').click()
       cy.location('pathname').should('equal', `/report-a-problem`)
-      cy.contains(
-        'To report a problem with this digital service, please contact your helpdesk who will contact the digital service team if necessary.'
-      )
-      cy.contains('If your organisation does not have an IT helpdesk, please contact the helpdesk')
+      cy.contains('To report a problem with this digital service, please contact the helpdesk')
     })
 
     it('the user can log out', () => {
       cy.get('[data-qa=logout]').click()
       AuthLoginPage.verifyOnPage()
+    })
+
+    it('the user cannot access probation practitioner pages', () => {
+      cy.request({ url: '/probation-practitioner/dashboard', failOnStatusCode: false })
+        .its('status')
+        .should('equal', 403)
+
+      cy.visit('/probation-practitioner/dashboard', { failOnStatusCode: false })
+      cy.contains('you are not authorised to access this page')
     })
   })
 })

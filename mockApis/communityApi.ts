@@ -98,4 +98,20 @@ export default class CommunityApiMocks {
       },
     })
   }
+
+  stubGetResponsibleOfficersForServiceUser = async (crn: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/community-api/secure/offenders/crn/${crn}/allOffenderManagers`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }

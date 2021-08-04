@@ -8,12 +8,18 @@ export default class ReviewActionPlanView {
     this.actionPlanView = new ActionPlanView(presenter.actionPlanPresenter)
   }
 
+  private readonly backLinkArgs = {
+    text: 'Back',
+    href: `/service-provider/action-plan/${this.presenter.actionPlanId}/number-of-sessions`,
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/reviewActionPlan',
       {
         presenter: this.presenter,
         insetTextArgs: this.actionPlanView.insetTextActivityArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }

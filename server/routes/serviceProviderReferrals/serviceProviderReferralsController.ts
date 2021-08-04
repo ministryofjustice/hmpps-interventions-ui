@@ -31,30 +31,28 @@ import ActionPlanNumberOfSessionsForm from '../service-provider/action-plan/numb
 import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import ScheduleAppointmentView from './scheduleAppointmentView'
 import ScheduleAppointmentForm from './scheduleAppointmentForm'
-import PostSessionAttendanceFeedbackView from '../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackView'
-import PostSessionAttendanceFeedbackPresenter from '../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackPresenter'
-import PostSessionAttendanceFeedbackForm from '../service-provider/action-plan/appointment/post-session-feedback/attendance/postSessionAttendanceFeedbackForm'
-import PostSessionFeedbackConfirmationPresenter from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationPresenter'
-import PostSessionFeedbackConfirmationView from '../service-provider/action-plan/appointment/post-session-feedback/confirmation/postSessionFeedbackConfirmationView'
-import PostSessionBehaviourFeedbackPresenter from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackPresenter'
-import PostSessionBehaviourFeedbackView from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackView'
-import PostSessionBehaviourFeedbackForm from '../service-provider/action-plan/appointment/post-session-feedback/behaviour/postSessionBehaviourFeedbackForm'
-import PostSessionFeedbackCheckAnswersView from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/postSessionFeedbackCheckAnswersView'
-import PostSessionFeedbackCheckAnswersPresenter from '../service-provider/action-plan/appointment/post-session-feedback/check-your-answers/postSessionFeedbackCheckAnswersPresenter'
-import SubmittedPostSessionFeedbackView from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackView'
-import SubmittedPostSessionFeedbackPresenter from '../shared/action-plan/appointment/post-session-feedback/submittedPostSessionFeedbackPresenter'
-import EndOfServiceReportOutcomeForm from './endOfServiceReportOutcomeForm'
-import EndOfServiceReportOutcomePresenter from './endOfServiceReportOutcomePresenter'
-import EndOfServiceReportOutcomeView from './endOfServiceReportOutcomeView'
-import EndOfServiceReportFurtherInformationForm from './endOfServiceReportFurtherInformationForm'
-import EndOfServiceReportFurtherInformationPresenter from './endOfServiceReportFurtherInformationPresenter'
-import EndOfServiceReportFurtherInformationView from './endOfServiceReportFurtherInformationView'
-import EndOfServiceReportCheckAnswersPresenter from './endOfServiceReportCheckAnswersPresenter'
-import EndOfServiceReportCheckAnswersView from './endOfServiceReportCheckAnswersView'
-import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
-import EndOfServiceReportConfirmationView from './endOfServiceReportConfirmationView'
+import AttendanceFeedbackView from '../appointments/feedback/shared/attendance/attendanceFeedbackView'
+import ActionPlanPostSessionAttendanceFeedbackPresenter from '../appointments/feedback/actionPlanSessions/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
+import AttendanceFeedbackForm from '../appointments/feedback/shared/attendance/attendanceFeedbackForm'
+import PostSessionFeedbackConfirmationPresenter from '../appointments/feedback/actionPlanSessions/confirmation/postSessionFeedbackConfirmationPresenter'
+import PostSessionFeedbackConfirmationView from '../appointments/feedback/actionPlanSessions/confirmation/postSessionFeedbackConfirmationView'
+import BehaviourFeedbackView from '../appointments/feedback/shared/behaviour/behaviourFeedbackView'
+import BehaviourFeedbackForm from '../appointments/feedback/shared/behaviour/behaviourFeedbackForm'
+import CheckFeedbackAnswersView from '../appointments/feedback/shared/checkYourAnswers/checkFeedbackAnswersView'
+import ActionPlanPostSessionFeedbackCheckAnswersPresenter from '../appointments/feedback/actionPlanSessions/checkYourAnswers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
+import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
+import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
+import EndOfServiceReportOutcomeForm from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomeForm'
+import EndOfServiceReportOutcomePresenter from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomePresenter'
+import EndOfServiceReportOutcomeView from '../service-provider/end-of-service-report/outcomes/endOfServiceReportOutcomeView'
+import EndOfServiceReportFurtherInformationForm from '../service-provider/end-of-service-report/further-information/endOfServiceReportFurtherInformationForm'
+import EndOfServiceReportFurtherInformationPresenter from '../service-provider/end-of-service-report/further-information/endOfServiceReportFurtherInformationPresenter'
+import EndOfServiceReportFurtherInformationView from '../service-provider/end-of-service-report/further-information/endOfServiceReportFurtherInformationView'
+import EndOfServiceReportCheckAnswersPresenter from '../service-provider/end-of-service-report/check-answers/endOfServiceReportCheckAnswersPresenter'
+import EndOfServiceReportCheckAnswersView from '../service-provider/end-of-service-report/check-answers/endOfServiceReportCheckAnswersView'
+import EndOfServiceReportConfirmationPresenter from '../service-provider/end-of-service-report/confirmation/endOfServiceReportConfirmationPresenter'
+import EndOfServiceReportConfirmationView from '../service-provider/end-of-service-report/confirmation/endOfServiceReportConfirmationView'
 import ControllerUtils from '../../utils/controllerUtils'
-import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import ActionPlanPresenter from '../shared/action-plan/actionPlanPresenter'
@@ -66,31 +64,39 @@ import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessment
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from './supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentAppointmentConfirmationView'
+import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
+import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
+import InitialAssessmentAttendanceFeedbackPresenter from '../appointments/feedback/initialAssessment/attendance/initialAssessmentAttendanceFeedbackPresenter'
+import InitialAssessmentFeedbackCheckAnswersPresenter from '../appointments/feedback/initialAssessment/checkYourAnswers/initialAssessmentFeedbackCheckAnswersPresenter'
+import InitialAssessmentFeedbackConfirmationPresenter from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationPresenter'
+import InitialAssessmentFeedbackConfirmationView from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
+import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
 import ReportingPresenter from './reportingPresenter'
 import ReportingView from './reportingView'
 import ReportingForm from './reportingForm'
-import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
-import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
 import PerformanceReportConfirmationView from './performanceReportConfirmationView'
+import DraftsService from '../../services/draftsService'
+
+export interface DraftAssignmentData {
+  email: string | null
+}
 
 export default class ServiceProviderReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
-    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
+    private readonly draftsService: DraftsService
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
-    const referrals = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken)
-
-    const dedupedInterventionIds = Array.from(new Set(referrals.map(referral => referral.referral.interventionId)))
-
-    const interventions = await Promise.all(
-      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken
     )
 
-    const presenter = new DashboardPresenter(referrals, interventions)
+    const presenter = new DashboardPresenter(referralsSummary)
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
@@ -101,16 +107,25 @@ export default class ServiceProviderReferralsController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
-    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary, staffDetails] =
-      await Promise.all([
-        this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-        this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-        this.communityApiService.getExpandedServiceUserByCRN(crn),
-        this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
-        this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
-        this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-        this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
-      ])
+    const [
+      intervention,
+      sentBy,
+      expandedServiceUser,
+      conviction,
+      riskInformation,
+      riskSummary,
+      staffDetails,
+      responsibleOfficers,
+    ] = await Promise.all([
+      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
+      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.communityApiService.getExpandedServiceUserByCRN(crn),
+      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
+      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+      this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
+      this.communityApiService.getResponsibleOfficersForServiceUser(crn),
+    ])
     const assignee =
       sentReferral.assignedTo === null
         ? null
@@ -144,7 +159,8 @@ export default class ServiceProviderReferralsController {
       true,
       expandedServiceUser,
       riskSummary,
-      staffDetails
+      staffDetails,
+      responsibleOfficers
     )
     const view = new ShowReferralView(presenter)
 
@@ -193,9 +209,15 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async checkAssignment(req: Request, res: Response): Promise<void> {
-    const email = req.query.email as string
+  async backwardsCompatibilityStartAssignment(req: Request, res: Response): Promise<void> {
+    await this.startAssignmentWithEmail(req.query.email as string | undefined, req, res)
+  }
 
+  async startAssignment(req: Request, res: Response): Promise<void> {
+    await this.startAssignmentWithEmail(req.body.email, req, res)
+  }
+
+  async startAssignmentWithEmail(email: string | undefined, req: Request, res: Response): Promise<void> {
     if (email === undefined || email === '') {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
@@ -204,11 +226,10 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    let assignee: AuthUserDetails
     const token = await this.hmppsAuthService.getApiClientToken()
 
     try {
-      assignee = await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
+      await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
     } catch (e) {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
@@ -217,25 +238,78 @@ export default class ServiceProviderReferralsController {
       )
     }
 
+    const draftAssignment = await this.draftsService.createDraft<DraftAssignmentData>(
+      'assignment',
+      { email },
+      { userId: res.locals.user.userId }
+    )
+
+    return res.redirect(`/service-provider/referrals/${req.params.id}/assignment/${draftAssignment.id}/check`)
+  }
+
+  private async fetchDraftAssignmentOrThrowSpecificError(req: Request, res: Response) {
+    const id = req.params.draftAssignmentId
+    const draftAssignment = await this.draftsService.fetchDraft<DraftAssignmentData>(id, {
+      userId: res.locals.user.userId,
+    })
+
+    if (draftAssignment === null) {
+      throw createError(500, `Draft assignment with ID ${id} not found by drafts service`, {
+        userMessage:
+          'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.',
+      })
+    }
+
+    return draftAssignment
+  }
+
+  async checkAssignment(req: Request, res: Response): Promise<void> {
+    const draftAssignment = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+
+    const { email } = draftAssignment.data
+
+    if (email === null) {
+      throw new Error('Got unexpectedly null email')
+    }
+
+    const token = await this.hmppsAuthService.getApiClientToken()
+    const assignee = await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
     const [intervention, serviceUser] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])
 
-    const presenter = new CheckAssignmentPresenter(referral.id, assignee, email, intervention)
+    const presenter = new CheckAssignmentPresenter(referral.id, draftAssignment.id, assignee, email, intervention)
     const view = new CheckAssignmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async assignReferral(req: Request, res: Response): Promise<void> {
+  async backwardsCompatibilitySubmitAssignment(req: Request, res: Response): Promise<void> {
     const { email } = req.body
     if (email === undefined || email === null || email === '') {
       res.sendStatus(400)
       return
     }
 
+    await this.submitAssignmentWithEmail(email, req, res)
+  }
+
+  async submitAssignment(req: Request, res: Response): Promise<void> {
+    const draftAssignment = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+
+    const { email } = draftAssignment.data
+    if (email === null) {
+      throw new Error('Got unexpectedly null email')
+    }
+
+    await this.submitAssignmentWithEmail(email, req, res)
+
+    await this.draftsService.deleteDraft(draftAssignment.id, { userId: res.locals.user.userId })
+  }
+
+  async submitAssignmentWithEmail(email: string, req: Request, res: Response): Promise<void> {
     const assignee = await this.hmppsAuthService.getSPUserByEmailAddress(res.locals.user.token.accessToken, email)
 
     await this.interventionsService.assignSentReferral(res.locals.user.token.accessToken, req.params.id, {
@@ -529,11 +603,12 @@ export default class ServiceProviderReferralsController {
       referralId
     )
 
-    const hasExistingAppointment = supplierAssessment.currentAppointmentId !== null
+    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
+    const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
 
     await this.scheduleAppointment(req, res, {
       getReferral: async () => referral,
-      getCurrentAppointment: async () => new SupplierAssessmentDecorator(supplierAssessment).currentAppointment,
+      getCurrentAppointment: async () => currentAppointment,
       scheduleAppointment: paramsForUpdate =>
         this.interventionsService
           .scheduleSupplierAssessmentAppointment(
@@ -543,7 +618,7 @@ export default class ServiceProviderReferralsController {
           )
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) => {
-        const overrideBackLinkHref = hasExistingAppointment
+        const overrideBackLinkHref = hasExistingScheduledAppointment
           ? `/service-provider/referrals/${referralId}/supplier-assessment`
           : undefined
         return new ScheduleAppointmentPresenter(
@@ -556,7 +631,7 @@ export default class ServiceProviderReferralsController {
         )
       },
       redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
-        hasExistingAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
+        hasExistingScheduledAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
       }`,
     })
   }
@@ -577,7 +652,9 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null, {
+      userType: 'service-provider',
+    })
     const view = new SupplierAssessmentAppointmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -651,7 +728,7 @@ export default class ServiceProviderReferralsController {
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
 
-    const data = await new PostSessionAttendanceFeedbackForm(req).data()
+    const data = await new AttendanceFeedbackForm(req).data()
 
     if (req.method === 'POST') {
       if (data.error) {
@@ -686,8 +763,183 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionAttendanceFeedbackPresenter(appointment, serviceUser, formError, userInputData)
-    const view = new PostSessionAttendanceFeedbackView(presenter)
+    const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
+      appointment,
+      serviceUser,
+      formError,
+      userInputData,
+      referral.id
+    )
+    const view = new AttendanceFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addInitialAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
+    }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    const data = await new AttendanceFeedbackForm(req).data()
+
+    if (req.method === 'POST') {
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        const updatedAppointment = await this.interventionsService.recordSupplierAssessmentAppointmentAttendance(
+          accessToken,
+          referralId,
+          data.paramsForUpdate
+        )
+        const redirectPath =
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/${redirectPath}`
+        )
+      }
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
+      appointment,
+      serviceUser,
+      formError,
+      userInputData,
+      referralId
+    )
+    const view = new AttendanceFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addInitialAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
+    }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+    if (req.method === 'POST') {
+      const data = await new BehaviourFeedbackForm(req).data()
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+          accessToken,
+          referralId,
+          data.paramsForUpdate
+        )
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+      }
+    }
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
+      appointment,
+      serviceUser,
+      referralId,
+      formError,
+      userInputData
+    )
+    const view = new BehaviourFeedbackView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async checkInitialAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to check supplier assessment feedback answers without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(appointment, serviceUser, referralId)
+    const view = new CheckFeedbackAnswersView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to submit supplier assessment feedback without a current appointment')
+    }
+
+    await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
+
+    return res.redirect(
+      `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`
+    )
+  }
+
+  async showPostAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new InitialAssessmentFeedbackConfirmationPresenter(referralId)
+    const view = new InitialAssessmentFeedbackConfirmationView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewSubmittedPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
+    if (currentAppointment === null) {
+      throw new Error('Attempting to view supplier assessment feedback without a current appointment')
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, 'service-provider', referralId)
+    const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -701,7 +953,7 @@ export default class ServiceProviderReferralsController {
     let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
-      const data = await new PostSessionBehaviourFeedbackForm(req).data()
+      const data = await new BehaviourFeedbackForm(req).data()
 
       if (data.error) {
         res.status(400)
@@ -731,8 +983,14 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionBehaviourFeedbackPresenter(appointment, serviceUser, formError, userInputData)
-    const view = new PostSessionBehaviourFeedbackView(presenter)
+    const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+      appointment,
+      serviceUser,
+      actionPlanId,
+      formError,
+      userInputData
+    )
+    const view = new BehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -754,8 +1012,12 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new PostSessionFeedbackCheckAnswersPresenter(currentAppointment, serviceUser, actionPlanId)
-    const view = new PostSessionFeedbackCheckAnswersView(presenter)
+    const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+      currentAppointment,
+      serviceUser,
+      actionPlanId
+    )
+    const view = new CheckFeedbackAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -788,8 +1050,8 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SubmittedPostSessionFeedbackPresenter(currentAppointment, serviceUser)
-    const view = new SubmittedPostSessionFeedbackView(presenter)
+    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, 'service-provider', referral.id)
+    const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -971,7 +1233,7 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategories[0])
+    const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategories)
     const view = new EndOfServiceReportCheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

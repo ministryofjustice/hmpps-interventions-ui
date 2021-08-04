@@ -21,6 +21,7 @@ import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import Appointment from '../models/appointment'
 import SupplierAssessment from '../models/supplierAssessment'
+import ServiceProviderSentReferralSummary from '../models/serviceProviderSentReferralSummary'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -207,6 +208,17 @@ export default class InterventionsService {
       path: `/sent-referrals`,
       headers: { Accept: 'application/json' },
     })) as SentReferral[]
+  }
+
+  async getServiceProviderSentReferralsSummaryForUserToken(
+    token: string
+  ): Promise<ServiceProviderSentReferralSummary[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/sent-referrals/summary/service-provider`,
+      headers: { Accept: 'application/json' },
+    })) as ServiceProviderSentReferralSummary[]
   }
 
   async assignSentReferral(token: string, id: string, assignee: User): Promise<SentReferral> {
@@ -506,49 +518,47 @@ export default class InterventionsService {
     })) as Appointment
   }
 
-  /*
-  async recordAppointmentAttendance(
+  async recordSupplierAssessmentAppointmentAttendance(
     token: string,
-    id: string,
+    referralId: string,
     appointmentAttendanceUpdate: Partial<AppointmentAttendance>
   ): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.put({
-      path: `/appointment/${id}/record-attendance`,
+      path: `/referral/${referralId}/supplier-assessment/record-attendance`,
       headers: { Accept: 'application/json' },
       data: appointmentAttendanceUpdate,
     })) as Appointment
   }
 
-  async recordAppointmentBehavior(
+  async recordSupplierAssessmentAppointmentBehaviour(
     token: string,
-    id: string,
+    referralId: string,
     appointmentBehaviourUpdate: Partial<AppointmentBehaviour>
   ): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.put({
-      path: `/appointment/${id}/record-behaviour`,
+      path: `/referral/${referralId}/supplier-assessment/record-behaviour`,
       headers: { Accept: 'application/json' },
       data: appointmentBehaviourUpdate,
     })) as Appointment
   }
 
-  async submitAppointmentFeedback(token: string, id: string): Promise<Appointment> {
+  async submitSupplierAssessmentAppointmentFeedback(token: string, referralId: string): Promise<Appointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/appointment/${id}/submit-feedback`,
+      path: `/referral/${referralId}/supplier-assessment/submit-feedback`,
       headers: { Accept: 'application/json' },
     })) as Appointment
   }
- */
 
   private static createReportDatesDTO(params: CreateReportDateParams): Record<string, unknown> {
     return {
-      fromIncludingDate: params.fromIncludingDate.iso8601,
-      toIncludingDate: params.toIncludingDate.iso8601,
+      fromDate: params.fromIncludingDate.iso8601,
+      toDate: params.toIncludingDate.iso8601,
     }
   }
 
@@ -556,7 +566,7 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     await restClient.post({
-      path: '/performance-report',
+      path: '/reports/service-provider/performance',
       data: InterventionsService.createReportDatesDTO(reportDates),
     })
   }

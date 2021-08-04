@@ -8,7 +8,6 @@ export default class ReferralCancellationCheckAnswersView {
       'probationPractitionerReferrals/referralCancellationCheckAnswers',
       {
         presenter: this.presenter,
-        hiddenFields: this.presenter.hiddenFields,
       },
     ]
   }

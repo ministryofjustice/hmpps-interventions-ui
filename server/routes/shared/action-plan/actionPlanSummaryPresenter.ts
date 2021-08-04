@@ -14,11 +14,8 @@ export default class ActionPlanSummaryPresenter {
   readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
 
   // this url is used to pick up action plan creation after it has been started.
-  // the url points to the screen for adding an additional activity
   readonly actionPlanFormUrl =
-    this.actionPlan !== null
-      ? `/service-provider/action-plan/${this.actionPlan.id}/add-activity/${this.actionPlan.activities.length + 1}`
-      : ''
+    this.actionPlan !== null ? `/service-provider/action-plan/${this.actionPlan.id}/add-activity/1` : ''
 
   readonly text = {
     actionPlanStatus: this.actionPlanStatus,
@@ -32,6 +29,9 @@ export default class ActionPlanSummaryPresenter {
     }
     if (this.actionPlanUnderReview) {
       return 'Awaiting approval'
+    }
+    if (this.actionPlanCreated && this.userType === 'service-provider') {
+      return 'In draft'
     }
     return 'Not submitted'
   }

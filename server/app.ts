@@ -14,6 +14,7 @@ import session from 'express-session'
 import connectRedis from 'connect-redis'
 import { randomBytes } from 'crypto'
 import indexRoutes from './routes'
+import serviceProviderRoutes, { serviceProviderUrlPrefix } from './routes/serviceProviderRoutes'
 import healthcheck from './services/healthCheck'
 import nunjucksSetup from './utils/nunjucksSetup'
 import config from './config'
@@ -26,6 +27,8 @@ import passportSetup from './authentication/passport'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ControllerUtils from './utils/controllerUtils'
 import broadcastMessageConfig from './broadcast-message-config.json'
+import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
+import DraftsService from './services/draftsService'
 
 const RedisStore = connectRedis(session)
 
@@ -94,7 +97,7 @@ export default function createApp(
 
   app.use(addRequestId())
 
-  const client = redis.createClient({
+  const redisClient = redis.createClient({
     port: config.redis.port,
     password: config.redis.password,
     host: config.redis.host,
@@ -103,7 +106,7 @@ export default function createApp(
 
   app.use(
     session({
-      store: new RedisStore({ client }),
+      store: new RedisStore({ client: redisClient }),
       cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this
@@ -196,15 +199,20 @@ export default function createApp(
     next()
   })
 
-  app.use(
-    '/',
-    indexRoutes(standardRouter(), {
-      communityApiService,
-      interventionsService,
-      hmppsAuthService,
-      assessRisksAndNeedsService,
-    })
-  )
+  const clock = { now: () => new Date() }
+  const draftsService = new DraftsService(redisClient, config.draftsService.expiry, clock)
+
+  const services = {
+    communityApiService,
+    interventionsService,
+    hmppsAuthService,
+    assessRisksAndNeedsService,
+    draftsService,
+  }
+
+  app.use('/', indexRoutes(standardRouter(), services))
+  app.use(serviceProviderUrlPrefix, serviceProviderRoutes(standardRouter(['ROLE_CRS_PROVIDER']), services))
+  app.use(probationPractitionerUrlPrefix, probationPractitionerRoutes(standardRouter(['ROLE_PROBATION']), services))
 
   // final regular middleware is for handling 404s
   app.use((req, res, next) => {

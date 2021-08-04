@@ -13,6 +13,7 @@ import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
 import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
 import deliusTeam from '../../../testutils/factories/deliusTeam'
+import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -47,9 +48,10 @@ describe(ShowReferralPresenter, () => {
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
   const defaultStaffDetails = deliusStaffDetailsFactory.build()
+  const responsibleOfficer = [deliusOffenderManagerFactory.build()]
 
   describe('assignmentFormAction', () => {
-    it('returns the relative URL for the check assignment page', () => {
+    it('returns the relative URL for the start assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)
 
       const presenter = new ShowReferralPresenter(
@@ -64,10 +66,11 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails
+        defaultStaffDetails,
+        responsibleOfficer
       )
 
-      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/check`)
+      expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/start`)
     })
   })
 
@@ -88,7 +91,8 @@ describe(ShowReferralPresenter, () => {
             true,
             deliusServiceUser,
             riskSummary,
-            defaultStaffDetails
+            defaultStaffDetails,
+            responsibleOfficer
           )
 
           expect(presenter.text.assignedTo).toBeNull()
@@ -110,7 +114,8 @@ describe(ShowReferralPresenter, () => {
             true,
             deliusServiceUser,
             riskSummary,
-            defaultStaffDetails
+            defaultStaffDetails,
+            responsibleOfficer
           )
 
           expect(presenter.text.assignedTo).toEqual('John Smith')
@@ -134,7 +139,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails
+        defaultStaffDetails,
+        responsibleOfficer
       )
 
       expect(presenter.probationPractitionerDetails).toEqual([
@@ -158,7 +164,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        staffDetails
+        staffDetails,
+        responsibleOfficer
       )
     }
 
@@ -280,6 +287,151 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('responsibleOfficerDetails', () => {
+    describe('when all fields are present', () => {
+      it('returns an array of summary lists of the responsible officer(s)', () => {
+        const sentReferral = sentReferralFactory.build(referralParams)
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          defaultStaffDetails,
+          [
+            deliusOffenderManagerFactory.build({
+              staff: {
+                forenames: 'Peter',
+                surname: 'Practitioner',
+                email: 'p.practitioner@example.com',
+                phoneNumber: '01234567890',
+              },
+            }),
+          ]
+        )
+
+        expect(presenter.responsibleOfficersDetails).toEqual([
+          [
+            { key: 'Name', lines: ['Peter Practitioner'] },
+            { key: 'Phone', lines: ['01234567890'] },
+            { key: 'Email address', lines: ['p.practitioner@example.com'] },
+          ],
+        ])
+      })
+    })
+
+    describe('when optional fields are missing', () => {
+      it('returns an array of summary lists of the responsible officer(s) with "not found" or empty values', () => {
+        const sentReferral = sentReferralFactory.build(referralParams)
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          defaultStaffDetails,
+          [
+            {
+              isResponsibleOfficer: true,
+              staff: undefined,
+            },
+            {
+              isResponsibleOfficer: true,
+              staff: {
+                forenames: undefined,
+                surname: undefined,
+                email: undefined,
+                phoneNumber: undefined,
+              },
+            },
+            {
+              isResponsibleOfficer: true,
+              staff: {
+                forenames: undefined,
+                surname: 'Practitioner',
+                email: undefined,
+                phoneNumber: undefined,
+              },
+            },
+            {
+              isResponsibleOfficer: true,
+              staff: {
+                forenames: 'Peter',
+                surname: undefined,
+                email: undefined,
+                phoneNumber: undefined,
+              },
+            },
+          ]
+        )
+
+        expect(presenter.responsibleOfficersDetails).toEqual([
+          [
+            { key: 'Name', lines: ['Not found'] },
+            { key: 'Phone', lines: ['Not found'] },
+            { key: 'Email address', lines: ['Not found'] },
+          ],
+          [
+            { key: 'Name', lines: ['Not found'] },
+            { key: 'Phone', lines: ['Not found'] },
+            { key: 'Email address', lines: ['Not found'] },
+          ],
+          [
+            { key: 'Name', lines: ['Practitioner'] },
+            { key: 'Phone', lines: ['Not found'] },
+            { key: 'Email address', lines: ['Not found'] },
+          ],
+          [
+            { key: 'Name', lines: ['Peter'] },
+            { key: 'Phone', lines: ['Not found'] },
+            { key: 'Email address', lines: ['Not found'] },
+          ],
+        ])
+      })
+    })
+
+    describe('when no Responsible Officers are passed in', () => {
+      it('returns an empty response', () => {
+        const sentReferral = sentReferralFactory.build(referralParams)
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          defaultStaffDetails,
+          []
+        )
+
+        expect(presenter.responsibleOfficersDetails).toEqual([
+          [
+            { key: 'Name', lines: ['Not found'] },
+            { key: 'Phone', lines: ['Not found'] },
+            { key: 'Email address', lines: ['Not found'] },
+          ],
+        ])
+      })
+    })
+  })
+
   describe('interventionDetails', () => {
     describe('when all possibly optional fields have been set on the referral', () => {
       const referralWithAllOptionalFields = sentReferralFactory.build({
@@ -350,7 +502,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails
+          defaultStaffDetails,
+          responsibleOfficer
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -440,7 +593,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails
+          defaultStaffDetails,
+          responsibleOfficer
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -496,7 +650,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails
+        defaultStaffDetails,
+        responsibleOfficer
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
@@ -536,7 +691,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails
+        defaultStaffDetails,
+        responsibleOfficer
       )
 
       expect(presenter.serviceUserDetails).toEqual([
@@ -579,7 +735,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails
+        defaultStaffDetails,
+        responsibleOfficer
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -646,7 +803,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails
+          defaultStaffDetails,
+          responsibleOfficer
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -735,7 +893,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails
+          defaultStaffDetails,
+          responsibleOfficer
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
