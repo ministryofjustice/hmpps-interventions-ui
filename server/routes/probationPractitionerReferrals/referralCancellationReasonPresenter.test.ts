@@ -4,6 +4,10 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import CancellationReason from '../../models/cancellationReason'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
+import { createDraftFactory } from '../../../testutils/factories/draft'
+import draftCancellationDataFactory from '../../../testutils/factories/draftCancellationData'
+
+const draftFactory = createDraftFactory(draftCancellationDataFactory.build())
 
 describe(ReferralCancellationReasonPresenter, () => {
   describe('text', () => {
@@ -15,6 +19,7 @@ describe(ReferralCancellationReasonPresenter, () => {
       const cancellationReasons: CancellationReason[] = []
 
       const presenter = new ReferralCancellationReasonPresenter(
+        draftFactory.build({ data: draftCancellationDataFactory.build() }),
         sentReferral,
         intervention,
         serviceUser,
@@ -29,16 +34,17 @@ describe(ReferralCancellationReasonPresenter, () => {
   })
 
   describe('referralCancellationFields', () => {
-    it('returns an array of fields to be passed as radio button args', () => {
-      const sentReferral = sentReferralFactory.build()
-      const serviceUser = deliusServiceUserFactory.build()
-      const intervention = interventionFactory.build()
-      const cancellationReasons: CancellationReason[] = [
-        { code: 'MIS', description: 'Referral was made by mistake' },
-        { code: 'MOV', description: 'Service user has moved out of delivery area' },
-      ]
+    const sentReferral = sentReferralFactory.build()
+    const serviceUser = deliusServiceUserFactory.build()
+    const intervention = interventionFactory.build()
+    const cancellationReasons: CancellationReason[] = [
+      { code: 'MIS', description: 'Referral was made by mistake' },
+      { code: 'MOV', description: 'Service user has moved out of delivery area' },
+    ]
 
+    it('returns an array of fields to be passed as radio button args', () => {
       const presenter = new ReferralCancellationReasonPresenter(
+        draftFactory.build({ data: draftCancellationDataFactory.build({ cancellationReason: null }) }),
         sentReferral,
         intervention,
         serviceUser,
@@ -49,6 +55,61 @@ describe(ReferralCancellationReasonPresenter, () => {
         { value: 'MIS', text: 'Referral was made by mistake', checked: false },
         { value: 'MOV', text: 'Service user has moved out of delivery area', checked: false },
       ])
+    })
+
+    describe('when the draft cancellation has a non-null cancellationReason', () => {
+      it('sets checked to true for that reason', () => {
+        const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build({ cancellationReason: 'MOV' }) }),
+          sentReferral,
+          intervention,
+          serviceUser,
+          cancellationReasons
+        )
+
+        expect(presenter.cancellationReasonsFields).toEqual([
+          { value: 'MIS', text: 'Referral was made by mistake', checked: false },
+          { value: 'MOV', text: 'Service user has moved out of delivery area', checked: true },
+        ])
+      })
+    })
+  })
+
+  describe('fields', () => {
+    describe('cancellationComments', () => {
+      const sentReferral = sentReferralFactory.build()
+      const serviceUser = deliusServiceUserFactory.build()
+      const intervention = interventionFactory.build()
+
+      describe('when the draft cancellation has null cancellationComments', () => {
+        it('returns an empty string', () => {
+          const presenter = new ReferralCancellationReasonPresenter(
+            draftFactory.build({ data: draftCancellationDataFactory.build({ cancellationComments: null }) }),
+            sentReferral,
+            intervention,
+            serviceUser,
+            []
+          )
+
+          expect(presenter.fields.cancellationComments).toEqual('')
+        })
+      })
+
+      describe('when the draft cancellation has a non-null cancellationComments', () => {
+        it('returns that value', () => {
+          const presenter = new ReferralCancellationReasonPresenter(
+            draftFactory.build({
+              data: draftCancellationDataFactory.build({ cancellationComments: 'David has been recalled' }),
+            }),
+            sentReferral,
+            intervention,
+            serviceUser,
+            []
+          )
+
+          expect(presenter.fields.cancellationComments).toEqual('David has been recalled')
+        })
+      })
     })
   })
 
@@ -61,6 +122,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is an error', () => {
       it('returns a summary of the error', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
@@ -85,6 +147,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is no error', () => {
       it('returns null', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
@@ -105,6 +168,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is an error', () => {
       it('returns the error message', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,
@@ -127,6 +191,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     describe('when there is no error', () => {
       it('returns null', () => {
         const presenter = new ReferralCancellationReasonPresenter(
+          draftFactory.build({ data: draftCancellationDataFactory.build() }),
           sentReferral,
           intervention,
           serviceUser,

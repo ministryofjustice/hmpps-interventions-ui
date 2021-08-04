@@ -28,6 +28,7 @@ import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ControllerUtils from './utils/controllerUtils'
 import broadcastMessageConfig from './broadcast-message-config.json'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
+import DraftsService from './services/draftsService'
 
 const RedisStore = connectRedis(session)
 
@@ -96,7 +97,7 @@ export default function createApp(
 
   app.use(addRequestId())
 
-  const client = redis.createClient({
+  const redisClient = redis.createClient({
     port: config.redis.port,
     password: config.redis.password,
     host: config.redis.host,
@@ -105,7 +106,7 @@ export default function createApp(
 
   app.use(
     session({
-      store: new RedisStore({ client }),
+      store: new RedisStore({ client: redisClient }),
       cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this
@@ -198,11 +199,15 @@ export default function createApp(
     next()
   })
 
+  const clock = { now: () => new Date() }
+  const draftsService = new DraftsService(redisClient, config.draftsService.expiry, clock)
+
   const services = {
     communityApiService,
     interventionsService,
     hmppsAuthService,
     assessRisksAndNeedsService,
+    draftsService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))

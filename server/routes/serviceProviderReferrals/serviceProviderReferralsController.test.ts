@@ -35,11 +35,17 @@ import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import CalendarDay from '../../utils/calendarDay'
+import { createDraftFactory } from '../../../testutils/factories/draft'
+import { DraftAssignmentData } from './serviceProviderReferralsController'
+import DraftsService from '../../services/draftsService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
 jest.mock('../../services/assessRisksAndNeedsService')
+jest.mock('../../services/draftsService')
+
+const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: null })
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -51,11 +57,24 @@ const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthSe
 
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
+const draftsService = {
+  createDraft: jest.fn(),
+  fetchDraft: jest.fn(),
+  updateDraft: jest.fn(),
+  deleteDraft: jest.fn(),
+} as unknown as jest.Mocked<DraftsService>
+
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService, hmppsAuthService, assessRisksAndNeedsService },
+    overrides: {
+      interventionsService,
+      communityApiService,
+      hmppsAuthService,
+      assessRisksAndNeedsService,
+      draftsService,
+    },
     userType: AppSetupUserType.serviceProvider,
   })
 })
@@ -241,24 +260,21 @@ describe('GET /service-provider/referrals/:id/progress', () => {
 })
 
 describe('GET /service-provider/referrals/:id/assignment/check', () => {
-  it('displays the name of the selected caseworker', async () => {
-    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const referral = sentReferralFactory.build({ referral: { interventionId: intervention.id } })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
-
-    interventionsService.getIntervention.mockResolvedValue(intervention)
-    interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+  it('creates a draft assignment using the drafts service and redirects to the check answers page', async () => {
+    const draftAssignment = draftAssignmentFactory.build({ data: { email: 'tom@tom.com' } })
+    draftsService.createDraft.mockResolvedValue(draftAssignment)
 
     await request(app)
-      .get(`/service-provider/referrals/${referral.id}/assignment/check`)
+      .get(`/service-provider/referrals/123456/assignment/check`)
       .query({ email: 'john@harmonyliving.org.uk' })
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Confirm the Accommodation referral assignment')
-        expect(res.text).toContain('John Smith')
-        expect(res.text).toContain('john@harmonyliving.org.uk')
-      })
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/123456/assignment/${draftAssignment.id}/check`)
+
+    expect(draftsService.createDraft).toHaveBeenCalledWith(
+      'assignment',
+      { email: 'john@harmonyliving.org.uk' },
+      { userId: '123' }
+    )
   })
   it('redirects to referral details page with an error if the assignee email address is missing from the URL', async () => {
     await request(app)
@@ -273,6 +289,130 @@ describe('GET /service-provider/referrals/:id/assignment/check', () => {
       .get(`/service-provider/referrals/123456/assignment/check?email=tom@tom.com`)
       .expect(302)
       .expect('Location', '/service-provider/referrals/123456/details?error=Email%20address%20not%20found')
+  })
+})
+
+describe('POST /service-provider/referrals/:id/assignment/start', () => {
+  it('creates a draft assignment using the drafts service and redirects to the check answers page', async () => {
+    const draftAssignment = draftAssignmentFactory.build({ data: { email: 'tom@tom.com' } })
+    draftsService.createDraft.mockResolvedValue(draftAssignment)
+
+    await request(app)
+      .post(`/service-provider/referrals/123456/assignment/start`)
+      .type('form')
+      .send({ email: 'tom@tom.com' })
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/123456/assignment/${draftAssignment.id}/check`)
+
+    expect(draftsService.createDraft).toHaveBeenCalledWith('assignment', { email: 'tom@tom.com' }, { userId: '123' })
+  })
+
+  it('redirects to referral details page with an error if the assignee email address is missing from the request body', async () => {
+    await request(app)
+      .post(`/service-provider/referrals/123456/assignment/start`)
+      .expect(302)
+      .expect('Location', '/service-provider/referrals/123456/details?error=An%20email%20address%20is%20required')
+
+    expect(draftsService.createDraft).not.toHaveBeenCalled()
+  })
+
+  it('redirects to referral details page with an error if the assignee email address is not found in HMPPS Auth', async () => {
+    hmppsAuthService.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
+
+    await request(app)
+      .post(`/service-provider/referrals/123456/assignment/start`)
+      .type('form')
+      .send({ email: 'tom@tom.com' })
+      .expect(302)
+      .expect('Location', '/service-provider/referrals/123456/details?error=Email%20address%20not%20found')
+
+    expect(draftsService.createDraft).not.toHaveBeenCalled()
+  })
+})
+
+describe('GET /service-provider/referrals/:id/assignment/:draftAssignmentId/check', () => {
+  it('displays the name of the selected caseworker', async () => {
+    const draftAssignment = draftAssignmentFactory.build({ data: { email: 'john@harmonyliving.org.uk' } })
+    draftsService.fetchDraft.mockResolvedValue(draftAssignment)
+
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const referral = sentReferralFactory.build({ referral: { interventionId: intervention.id } })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/assignment/${draftAssignment.id}/check`)
+      .query({ email: 'john@harmonyliving.org.uk' })
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm the Accommodation referral assignment')
+        expect(res.text).toContain('John Smith')
+        expect(res.text).toContain('john@harmonyliving.org.uk')
+      })
+  })
+
+  describe('when no draft exists with that ID', () => {
+    it('displays an error', async () => {
+      draftsService.fetchDraft.mockResolvedValue(null)
+
+      await request(app)
+        .get(`/service-provider/referrals/abc/assignment/def/check`)
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain(
+            'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.'
+          )
+        })
+    })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/:draftAssignmentId/submit', () => {
+  it('assigns the referral to the selected caseworker', async () => {
+    const draftAssignment = draftAssignmentFactory.build({ data: { email: 'john@harmonyliving.org.uk' } })
+    draftsService.fetchDraft.mockResolvedValue(draftAssignment)
+    draftsService.deleteDraft.mockResolvedValue()
+
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const referral = sentReferralFactory.build({
+      referral: { interventionId: intervention.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
+    })
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+    interventionsService.assignSentReferral.mockResolvedValue(referral)
+
+    await request(app)
+      .post(`/service-provider/referrals/${referral.id}/assignment/${draftAssignment.id}/submit`)
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
+
+    expect(interventionsService.assignSentReferral.mock.calls[0][2]).toEqual({
+      username: 'john.smith',
+      userId: hmppsAuthUser.userId,
+      authSource: 'auth',
+    })
+    expect(draftsService.deleteDraft).toHaveBeenCalledWith(draftAssignment.id, { userId: '123' })
+  })
+
+  describe('when no draft exists with that ID', () => {
+    it('displays an error', async () => {
+      draftsService.fetchDraft.mockResolvedValue(null)
+
+      await request(app)
+        .post(`/service-provider/referrals/abc/assignment/def/submit`)
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain(
+            'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.'
+          )
+        })
+    })
   })
 })
 

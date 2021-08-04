@@ -9,7 +9,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
     services.interventionsService,
     services.communityApiService,
     services.hmppsAuthService,
-    services.assessRisksAndNeedsService
+    services.assessRisksAndNeedsService,
+    services.draftsService
   )
 
   get(router, '/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
@@ -18,9 +19,22 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.showInterventionProgress(req, res)
   )
   get(router, '/referrals/:id/assignment/check', (req, res) =>
+    // This keeps the assign button on any pre-drafts version of the referral details page working
+    serviceProviderReferralsController.backwardsCompatibilityStartAssignment(req, res)
+  )
+  post(router, '/referrals/:id/assignment/start', (req, res) =>
+    serviceProviderReferralsController.startAssignment(req, res)
+  )
+  get(router, '/referrals/:id/assignment/:draftAssignmentId/check', (req, res) =>
     serviceProviderReferralsController.checkAssignment(req, res)
   )
-  post(router, '/referrals/:id/assignment', (req, res) => serviceProviderReferralsController.assignReferral(req, res))
+  post(router, '/referrals/:id/assignment', (req, res) =>
+    // This keeps a submission of the any pre-drafts version of the assignment check your answers page working
+    serviceProviderReferralsController.backwardsCompatibilitySubmitAssignment(req, res)
+  )
+  post(router, '/referrals/:id/assignment/:draftAssignmentId/submit', (req, res) =>
+    serviceProviderReferralsController.submitAssignment(req, res)
+  )
   get(router, '/referrals/:id/assignment/confirmation', (req, res) =>
     serviceProviderReferralsController.confirmAssignment(req, res)
   )

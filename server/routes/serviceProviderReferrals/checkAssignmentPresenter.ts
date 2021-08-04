@@ -7,6 +7,7 @@ import utils from '../../utils/utils'
 export default class CheckAssignmentPresenter {
   constructor(
     private readonly referralId: string,
+    private readonly draftAssignmentId: string,
     private readonly assignee: AuthUserDetails,
     private readonly email: string,
     private readonly intervention: Intervention
@@ -21,9 +22,5 @@ export default class CheckAssignmentPresenter {
     { key: 'Email address', lines: [this.email] },
   ]
 
-  readonly hiddenFields = {
-    email: this.email,
-  }
-
-  readonly formAction = `/service-provider/referrals/${this.referralId}/assignment`
+  readonly formAction = `/service-provider/referrals/${this.referralId}/assignment/${this.draftAssignmentId}/submit`
 }
