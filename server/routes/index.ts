@@ -174,6 +174,9 @@ export default function routes(router: Router, services: Services): Router {
   )
   get('/service-provider/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
   post('/service-provider/performance-report', (req, res) => serviceProviderReferralsController.createReport(req, res))
+  get('/service-provider/performance-report/confirmation', (req, res) =>
+    serviceProviderReferralsController.showPerformanceReportConfirmation(req, res)
+  )
 
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get('/static-pages', (req, res) => {

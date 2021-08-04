@@ -69,9 +69,9 @@ import SupplierAssessmentAppointmentConfirmationView from './supplierAssessmentA
 import ReportingPresenter from './reportingPresenter'
 import ReportingView from './reportingView'
 import ReportingForm from './reportingForm'
-import ServiceProviderCSVGenerator from '../../utils/serviceProviderCSVGenerator'
 import ActionPlanEditConfirmationPresenter from '../service-provider/action-plan/edit/actionPlanEditConfirmationPresenter'
 import ActionPlanEditConfirmationView from '../service-provider/action-plan/edit/actionPlanEditConfirmationView'
+import PerformanceReportConfirmationView from './performanceReportConfirmationView'
 
 export default class ServiceProviderReferralsController {
   constructor(
@@ -1047,15 +1047,14 @@ export default class ServiceProviderReferralsController {
       const view = new ReportingView(presenter)
       ControllerUtils.renderWithLayout(res, view, null)
     } else {
-      const reportReferrals = await this.interventionsService.getServiceProviderReportingData(accessToken, data.value)
-
-      const reportCSV = await ServiceProviderCSVGenerator.generate(reportReferrals)
-      const filename = ServiceProviderCSVGenerator.createFilename()
-
-      res.setHeader('Content-disposition', `attachment; filename=${filename}`)
-      res.set('Content-Type', 'text/csv')
-      res.status(200).send(reportCSV)
+      await this.interventionsService.generateServiceProviderPerformanceReport(accessToken, data.value)
+      res.redirect('/service-provider/performance-report/confirmation')
     }
+  }
+
+  async showPerformanceReportConfirmation(_req: Request, res: Response): Promise<void> {
+    const view = new PerformanceReportConfirmationView()
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {

@@ -586,18 +586,14 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubGetServiceProviderReportingData = async (responseJson: unknown): Promise<unknown> => {
+  stubGenerateServiceProviderPerformanceReport = async (): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
-        method: 'GET',
+        method: 'POST',
         urlPath: `${this.mockPrefix}/performance-report`,
       },
       response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        jsonBody: responseJson,
+        status: 202,
       },
     })
   }

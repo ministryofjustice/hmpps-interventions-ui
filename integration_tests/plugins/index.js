@@ -219,8 +219,8 @@ module.exports = on => {
       return interventionsService.stubSubmitAppointmentFeedback(arg.id, arg.responseJson)
     },
 
-    stubGetServiceProviderReportingData: arg => {
-      return interventionsService.stubGetServiceProviderReportingData(arg.responseJson)
+    stubGenerateServiceProviderPerformanceReport: () => {
+      return interventionsService.stubGenerateServiceProviderPerformanceReport()
     },
   })
 }

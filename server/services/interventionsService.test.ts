@@ -15,7 +15,6 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import appointmentFactory from '../../testutils/factories/appointment'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import CalendarDay from '../utils/calendarDay'
-import serviceProviderReportReferralFactory from '../../testutils/factories/serviceProviderReportReferral'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -3100,57 +3099,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
   */
 
-  describe('getServiceProviderReportingData', () => {
-    const reportingResponse = [
-      serviceProviderReportReferralFactory.build({
-        referralLink: 'https://refer-and-monitor.example/referral/c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
-        referralRef: 'SM1973AC',
-        referralId: 'c9f9e22f-ddd9-422a-a9af-76fc02b18b38',
-        contractId: 'some-contract-id',
-        organisationId: 'XYZ5678',
-        referringOfficerEmail: 'bernard.beaks@justice.gov.uk',
-        caseworkerId: 'liane.supplier@example.com',
-        serviceUserCRN: 'X017844',
-        dateReferralReceived: '2021-06-27T14:49:01+01:00',
-        dateSAABooked: '2021-06-27T14:49:01+01:00',
-        dateSAAAttended: '2021-06-27T14:49:01+01:00',
-        dateFirstActionPlanSubmitted: '2021-06-27T14:49:01+01:00',
-        dateOfFirstActionPlanApproval: '2021-06-27T14:49:01+01:00',
-        dateOfFirstAttendedSession: '2021-06-27T14:49:01+01:00',
-        outcomesToBeAchievedCount: 8,
-        outcomesAchieved: 5.5,
-        countOfSessionsExpected: 10,
-        countOfSessionsAttended: 6,
-        endRequestedByPPAt: '2021-06-27T14:49:01+01:00',
-        endRequestedByPPReason: 'REC',
-        dateEOSRSubmitted: '2021-06-27T14:49:01+01:00',
-        concludedAt: '2021-06-27T14:49:01+01:00',
-      }),
-    ]
-
-    it('returns a list of referrals for with data for reporting', async () => {
+  describe('generateServiceProviderPerformanceReport', () => {
+    it('returns a 202 response indicating that a performance report will be asynchronously generated', async () => {
       await provider.addInteraction({
         state: 'there are referrals available for the reporting period of 1 June 2021 to 10 June 2021',
-        uponReceiving: 'a service provider user’s GET request for referral reporting data',
+        uponReceiving: 'a service provider user’s POST request to generate a performance report',
         withRequest: {
-          method: 'GET',
+          method: 'POST',
           path: '/performance-report',
-          query: { fromIncludingDate: '2021-06-01', toIncludingDate: '2021-06-10' },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+          body: { fromIncludingDate: '2021-06-01', toIncludingDate: '2021-06-10' },
+          headers: { Authorization: `Bearer ${serviceProviderToken}` },
         },
         willRespondWith: {
-          status: 200,
-          body: Matchers.like(reportingResponse),
-          headers: { 'Content-Type': 'application/json' },
+          status: 202,
         },
       })
 
-      expect(
-        await interventionsService.getServiceProviderReportingData(serviceProviderToken, {
-          fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
-          toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
-        })
-      ).toMatchObject(reportingResponse)
+      await interventionsService.generateServiceProviderPerformanceReport(serviceProviderToken, {
+        fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
+        toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
+      })
     })
   })
 })

@@ -1,0 +1,20 @@
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({titleText: 'Your request has been submitted' }) }}
+
+      <h2 class="govuk-heading-m">What happens next?</h2>
+      <p class="govuk-body">When your report is ready to download, you will receive an email.</p>
+
+      <a href="/service-provider/dashboard" class="govuk-button">Return to dashboard</a>
+    </div>
+  </div>
+{% endblock %}
