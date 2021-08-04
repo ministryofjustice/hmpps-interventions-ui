@@ -19,4 +19,5 @@ export interface AppointmentSchedulingDetails {
   durationInMinutes: number | null
   appointmentDeliveryType: AppointmentDeliveryType | null
   appointmentDeliveryAddress: Address | null
+  npsOfficeCode: string | null
 }

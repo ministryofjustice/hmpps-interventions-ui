@@ -5,6 +5,7 @@
 {% from "components/time-input/macro.njk" import appTimeInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% extends "../partials/layout.njk" %}
@@ -45,6 +46,9 @@
           {{ govukDateInput(dateInputArgs) }}
           {{ appTimeInput(timeInputArgs) }}
           {{ govukDateInput(durationDateInputArgs) }}
+          {% set deliusOfficeLocationHtml %}
+            {{ govukSelect(deliusOfficeLocationSelectArgs) }}
+          {% endset -%}
           {% set otherLocationHtml %}
               {{ govukInput(address.firstAddressLineInputArgs) }}
               {{ govukInput(address.secondAddressLineInputArgs) }}
@@ -52,7 +56,7 @@
               {{ govukInput(address.countyInputArgs) }}
               {{ govukInput(address.postCodeInputArgs) }}
           {% endset -%}
-          {{ govukRadios(meetingMethodRadioInputArgs(otherLocationHtml)) }}
+          {{ govukRadios(meetingMethodRadioInputArgs(deliusOfficeLocationHtml, otherLocationHtml)) }}
         </div>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

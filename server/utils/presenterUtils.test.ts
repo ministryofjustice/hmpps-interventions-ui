@@ -597,6 +597,49 @@ describe(PresenterUtils, () => {
     })
   })
 
+  describe('selectionValue', () => {
+    describe('when there is no user input data', () => {
+      describe('and the model has a null value', () => {
+        it('returns a null value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.selectionValue(null, 'delius-office-location-code', null)
+          expect(value).toMatchObject({ errorMessage: null, value: null })
+        })
+      })
+      describe('and the model has a value', () => {
+        it('returns the model value', () => {
+          const utils = new PresenterUtils(null)
+          const value = utils.selectionValue('CRS0001', 'delius-office-location-code', null)
+          expect(value).toMatchObject({ errorMessage: null, value: 'CRS0001' })
+        })
+      })
+    })
+    describe('when there is user input data', () => {
+      describe('and the data is valid', () => {
+        it('returns a meeting method', () => {
+          const utils = new PresenterUtils({ 'delius-office-location-code': 'CRS0001' })
+          const value = utils.selectionValue(null, 'delius-office-location-code', null)
+          expect(value).toMatchObject({ errorMessage: null, value: 'CRS0001' })
+        })
+      })
+      describe('and the selection is invalid', () => {
+        it('returns an error message', () => {
+          const utils = new PresenterUtils({ 'delius-office-location-code': 'INVALID' })
+          const formValidationError: FormValidationError = {
+            errors: [
+              {
+                formFields: ['delius-office-location-code'],
+                errorSummaryLinkedField: 'delius-office-location-code0',
+                message: 'errorMessage',
+              },
+            ],
+          }
+          const value = utils.meetingMethodValue(null, 'delius-office-location-code', formValidationError)
+          expect(value).toMatchObject({ errorMessage: 'errorMessage', value: null })
+        })
+      })
+    })
+  })
   describe('address', () => {
     describe('when there are errors', () => {
       it('they should be linked to the correct field', () => {

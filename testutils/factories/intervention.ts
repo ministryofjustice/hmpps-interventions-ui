@@ -3,6 +3,7 @@ import Intervention from '../../server/models/intervention'
 import serviceCategoryFactory from './serviceCategory'
 import serviceProviderFactory from './serviceProvider'
 import eligibilityFactory from './eligibility'
+import pccRegionFactory from './pccRegion'
 
 export default Factory.define<Intervention>(({ sequence }) => {
   const serviceCategory = serviceCategoryFactory.build()
@@ -21,10 +22,10 @@ The service will use the following methods:
 • Hypnotherapy`,
     npsRegion: { id: 'B', name: 'North West' },
     pccRegions: [
-      { id: 'cheshire', name: 'Cheshire' },
-      { id: 'cumbria', name: 'Cumbria' },
-      { id: 'lancashire', name: 'Lancashire' },
-      { id: 'merseyside', name: 'Merseyside' },
+      pccRegionFactory.build({ id: 'cheshire', name: 'Cheshire', npsRegion: { id: 'B', name: 'North West' } }),
+      pccRegionFactory.build({ id: 'cumbria', name: 'Cumbria', npsRegion: { id: 'B', name: 'North West' } }),
+      pccRegionFactory.build({ id: 'lancashire', name: 'Lancashire', npsRegion: { id: 'B', name: 'North West' } }),
+      pccRegionFactory.build({ id: 'merseyside', name: 'Merseyside', npsRegion: { id: 'B', name: 'North West' } }),
     ],
     serviceCategories: [serviceCategory],
     serviceProvider: serviceProviderFactory.build(),

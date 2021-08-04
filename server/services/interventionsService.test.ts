@@ -2392,6 +2392,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 county: 'Lancashire',
                 postCode: 'SY40RE',
               },
+              npsOfficeCode: null,
             },
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
           },
@@ -2417,6 +2418,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               county: 'Lancashire',
               postCode: 'SY40RE',
             },
+            npsOfficeCode: null,
           })
         ).toMatchObject(actionPlanAppointment)
       })
