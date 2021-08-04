@@ -557,8 +557,8 @@ export default class InterventionsService {
 
   private static createReportDatesDTO(params: CreateReportDateParams): Record<string, unknown> {
     return {
-      fromIncludingDate: params.fromIncludingDate.iso8601,
-      toIncludingDate: params.toIncludingDate.iso8601,
+      fromDate: params.fromIncludingDate.iso8601,
+      toDate: params.toIncludingDate.iso8601,
     }
   }
 
@@ -566,7 +566,7 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     await restClient.post({
-      path: '/performance-report',
+      path: '/reports/service-provider/performance',
       data: InterventionsService.createReportDatesDTO(reportDates),
     })
   }

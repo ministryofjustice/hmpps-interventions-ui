@@ -615,7 +615,7 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',
-        urlPath: `${this.mockPrefix}/performance-report`,
+        urlPath: `${this.mockPrefix}/reports/service-provider/performance`,
       },
       response: {
         status: 202,

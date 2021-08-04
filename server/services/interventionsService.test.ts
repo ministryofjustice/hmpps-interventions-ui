@@ -3106,8 +3106,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         uponReceiving: 'a service provider user’s POST request to generate a performance report',
         withRequest: {
           method: 'POST',
-          path: '/performance-report',
-          body: { fromIncludingDate: '2021-06-01', toIncludingDate: '2021-06-10' },
+          path: '/reports/service-provider/performance',
+          body: { fromDate: '2021-06-01', toDate: '2021-06-10' },
           headers: { Authorization: `Bearer ${serviceProviderToken}` },
         },
         willRespondWith: {
