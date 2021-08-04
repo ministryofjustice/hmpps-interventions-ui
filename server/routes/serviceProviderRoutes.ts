@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { Services, get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
+import config from '../config'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 
@@ -167,11 +168,13 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.createNewDraftActionPlan(req, res)
   )
 
-  get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
-  post(router, '/performance-report', (req, res) => serviceProviderReferralsController.createReport(req, res))
-  get(router, '/performance-report/confirmation', (req, res) =>
-    serviceProviderReferralsController.showPerformanceReportConfirmation(req, res)
-  )
+  if (config.features.serviceProviderReporting.enabled) {
+    get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
+    post(router, '/performance-report', (req, res) => serviceProviderReferralsController.createReport(req, res))
+    get(router, '/performance-report/confirmation', (req, res) =>
+      serviceProviderReferralsController.showPerformanceReportConfirmation(req, res)
+    )
+  }
 
   return router
 }
