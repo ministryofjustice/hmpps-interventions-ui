@@ -1,13 +1,12 @@
 import { SummaryListItem } from '../../utils/summaryList'
-import { ActionPlanAppointment } from '../../models/actionPlan'
-import Appointment from '../../models/appointment'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import PresenterUtils from '../../utils/presenterUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import { InitialAssessmentAppointment, ActionPlanAppointment } from '../../models/appointment'
 
 export default class AppointmentSummary {
   constructor(
-    private readonly appointment: Appointment | ActionPlanAppointment,
+    private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment,
     private readonly assignedCaseworker: AuthUserDetails | null = null
   ) {}
 

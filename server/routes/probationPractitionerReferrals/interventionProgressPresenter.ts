@@ -1,5 +1,5 @@
 import SentReferral from '../../models/sentReferral'
-import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
+import ActionPlan from '../../models/actionPlan'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
 import DateUtils from '../../utils/dateUtils'
@@ -10,6 +10,7 @@ import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
+import { ActionPlanAppointment } from '../../models/appointment'
 
 interface ProgressSessionTableRow {
   sessionNumber: number

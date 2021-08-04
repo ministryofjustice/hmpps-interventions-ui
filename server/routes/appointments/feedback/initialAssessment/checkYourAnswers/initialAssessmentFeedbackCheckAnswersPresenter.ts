@@ -2,7 +2,7 @@ import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFeedbackAnswersPresenter'
 import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
 import InitialAssessmentAttendanceFeedbackPresenter from '../attendance/initialAssessmentAttendanceFeedbackPresenter'
-import Appointment from '../../../../../models/appointment'
+import { InitialAssessmentAppointment } from '../../../../../models/appointment'
 import InitialAssessmentBehaviourFeedbackPresenter from '../behaviour/initialAssessmentBehaviourFeedbackPresenter'
 
 export default class InitialAssessmentFeedbackCheckAnswersPresenter extends CheckFeedbackAnswersPresenter {
@@ -11,7 +11,7 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
   protected readonly behaviourPresenter: InitialAssessmentBehaviourFeedbackPresenter
 
   constructor(
-    appointment: Appointment,
+    appointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly referralId: string
   ) {

@@ -1,12 +1,12 @@
 // eslint-disable-next-line max-classes-per-file
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
-import { AppointmentDetails } from '../../appointmentDetails'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import CheckFeedbackAnswersPresenter from './checkFeedbackAnswersPresenter'
 import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
 import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInputsPresenter'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 
 describe('for a class that extends abstract class CheckFeedbackAnswersPresenter', () => {
   class ExtendedCheckFeedbackAnswersPresenter extends CheckFeedbackAnswersPresenter {
@@ -14,13 +14,16 @@ describe('for a class that extends abstract class CheckFeedbackAnswersPresenter'
 
     readonly backLinkHref = ''
 
-    constructor(appointment: AppointmentDetails, private readonly serviceUser: DeliusServiceUser) {
+    constructor(
+      appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+      private readonly serviceUser: DeliusServiceUser
+    ) {
       super(appointment)
     }
 
     protected get attendancePresenter(): AttendanceFeedbackPresenter {
       return new (class extends AttendanceFeedbackPresenter {
-        constructor(appointment: AppointmentDetails) {
+        constructor(appointment: ActionPlanAppointment | InitialAssessmentAppointment) {
           super(appointment)
         }
 

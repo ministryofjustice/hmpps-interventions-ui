@@ -1,5 +1,5 @@
 import actionPlanAppointmentFactory from '../../../../../testutils/factories/actionPlanAppointment'
-import appointmentFactory from '../../../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../../../testutils/factories/initialAssessmentAppointment'
 import deliusServiceUserFactory from '../../../../../testutils/factories/deliusServiceUser'
 import User from '../../../../models/hmppsAuth/user'
 import SubmittedFeedbackPresenter from './submittedFeedbackPresenter'
@@ -16,7 +16,7 @@ describe(SubmittedFeedbackPresenter, () => {
       expect(presenter.text).toMatchObject({
         title: 'View feedback',
       })
-      const initialAssessmentAppointment = appointmentFactory.build()
+      const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
       presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, userType, referralId)
       expect(presenter.text).toMatchObject({
         title: 'View feedback',
@@ -59,7 +59,7 @@ describe(SubmittedFeedbackPresenter, () => {
             lines: ['13:00'],
           },
         ])
-        const initialAssessmentAppointment = appointmentFactory.build({
+        const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
         presenter = new SubmittedFeedbackPresenter(
@@ -106,7 +106,7 @@ describe(SubmittedFeedbackPresenter, () => {
             lines: ['13:00'],
           },
         ])
-        const initialAssessmentAppointment = appointmentFactory.build({
+        const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
         })
         presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, userType, referralId)

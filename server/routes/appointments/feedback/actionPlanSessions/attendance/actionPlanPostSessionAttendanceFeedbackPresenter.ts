@@ -1,17 +1,17 @@
+import { ActionPlanAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
-import { ActionPlanAppointment } from '../../../../../models/actionPlan'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
 
 export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
   constructor(
-    private readonly appointment: ActionPlanAppointment,
+    private readonly actionPlanAppointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
     error: FormValidationError | null = null,
     userInputData: Record<string, unknown> | null = null,
     private readonly referralId: string | null = null
   ) {
-    super(appointment, error, userInputData)
+    super(actionPlanAppointment, error, userInputData)
   }
 
   readonly text = {
@@ -25,7 +25,7 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
   readonly backLinkHref = this.referralId ? `/service-provider/referrals/${this.referralId}/progress` : null
 
   private get attendanceQuestion(): string {
-    switch (this.appointment.appointmentDeliveryType) {
+    switch (this.actionPlanAppointment.appointmentDeliveryType) {
       case 'PHONE_CALL':
         return `Did ${this.serviceUser.firstName} join this phone call?`
       case 'VIDEO_CALL':

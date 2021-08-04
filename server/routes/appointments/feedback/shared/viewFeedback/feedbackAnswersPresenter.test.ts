@@ -1,22 +1,25 @@
 // eslint-disable-next-line max-classes-per-file
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
-import { AppointmentDetails } from '../../appointmentDetails'
 import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
 import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
 import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInputsPresenter'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 
 describe(FeedbackAnswersPresenter, () => {
   class ExtendedFeedbackAnswersPresenter extends FeedbackAnswersPresenter {
-    constructor(appointment: AppointmentDetails, private readonly serviceUser: DeliusServiceUser) {
+    constructor(appointment: ActionPlanAppointment, private readonly serviceUser: DeliusServiceUser) {
       super(appointment)
     }
 
     protected get attendancePresenter(): AttendanceFeedbackPresenter {
       return new (class extends AttendanceFeedbackPresenter {
-        constructor(appointment: AppointmentDetails, private readonly serviceUser: DeliusServiceUser) {
+        constructor(
+          appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+          private readonly serviceUser: DeliusServiceUser
+        ) {
           super(appointment)
         }
 

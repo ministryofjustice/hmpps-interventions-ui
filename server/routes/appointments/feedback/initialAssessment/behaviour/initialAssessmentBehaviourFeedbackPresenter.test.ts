@@ -1,13 +1,17 @@
-import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
+import initialAssessmentAppointmentFactory from '../../../../../../testutils/factories/initialAssessmentAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 import InitialAssessmentBehaviourFeedbackPresenter from './initialAssessmentBehaviourFeedbackPresenter'
 
 describe(InitialAssessmentBehaviourFeedbackPresenter, () => {
   describe('text', () => {
     it('contains the text for the title and questions to be displayed on the page', () => {
-      const appointment = actionPlanAppointmentFactory.build()
+      const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, serviceUser, 'test-referral-id')
+      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
+        initialAssessmentAppointment,
+        serviceUser,
+        'test-referral-id'
+      )
 
       expect(presenter.text).toMatchObject({
         title: 'Add behaviour feedback',
@@ -26,9 +30,13 @@ describe(InitialAssessmentBehaviourFeedbackPresenter, () => {
 
   describe('backLinkHref', () => {
     it('contains the link to the attendance page with the referral id', () => {
-      const appointment = actionPlanAppointmentFactory.build()
+      const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, serviceUser, 'test-referral-id')
+      const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
+        initialAssessmentAppointment,
+        serviceUser,
+        'test-referral-id'
+      )
 
       expect(presenter.backLinkHref).toEqual(
         '/service-provider/referrals/test-referral-id/supplier-assessment/post-assessment-feedback/attendance'

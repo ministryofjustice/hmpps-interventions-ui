@@ -1,10 +1,10 @@
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
-import appointmentFactory from '../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import sessionStatus, { SessionStatus } from './sessionStatus'
 
 describe(sessionStatus.forAppointment, () => {
   describe('when the appointment was not attended', () => {
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       sessionFeedback: {
         submitted: true,
         attendance: {
@@ -19,7 +19,7 @@ describe(sessionStatus.forAppointment, () => {
   })
 
   describe('when the appointment was attended or the user was late', () => {
-    const onTimeAppointment = appointmentFactory.build({
+    const onTimeAppointment = initialAssessmentAppointmentFactory.build({
       sessionFeedback: {
         submitted: true,
         attendance: {
@@ -28,7 +28,7 @@ describe(sessionStatus.forAppointment, () => {
       },
     })
 
-    const lateAppointment = appointmentFactory.build({
+    const lateAppointment = initialAssessmentAppointmentFactory.build({
       sessionFeedback: {
         submitted: true,
         attendance: {
@@ -57,7 +57,7 @@ describe(sessionStatus.forAppointment, () => {
 
       describe('and when the appointment is an initial assessment appointment', () => {
         it('returns "awaiting feedback" status', () => {
-          const pastAppointment = appointmentFactory.build({
+          const pastAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: pastDate,
           })
           expect(sessionStatus.forAppointment(pastAppointment)).toEqual(SessionStatus.awaitingFeedback)
@@ -68,7 +68,7 @@ describe(sessionStatus.forAppointment, () => {
     describe('when the appointment time is in the future', () => {
       const futureDate = new Date(Date.now() + 1000000).toISOString()
       it('returns "scheduled" status', () => {
-        const futureAppointment = appointmentFactory.build({
+        const futureAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: futureDate,
         })
         expect(sessionStatus.forAppointment(futureAppointment)).toEqual(SessionStatus.scheduled)
@@ -77,7 +77,7 @@ describe(sessionStatus.forAppointment, () => {
   })
 
   describe('when the appointment does have feedback, but it has not been submitted', () => {
-    const scheduledAppointment = appointmentFactory.build({
+    const scheduledAppointment = initialAssessmentAppointmentFactory.build({
       sessionFeedback: {
         submitted: false,
         attendance: {

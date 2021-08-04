@@ -2,8 +2,8 @@ import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService, { AppointmentUpdate } from '../../services/interventionsService'
-import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
+import InterventionsService from '../../services/interventionsService'
+import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
@@ -74,6 +74,7 @@ import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedbac
 import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
 import DraftsService from '../../services/draftsService'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -671,7 +672,7 @@ export default class ServiceProviderReferralsController {
     config: {
       getReferral: () => Promise<SentReferral>
       getCurrentAppointment: () => Promise<AppointmentType>
-      scheduleAppointment: (paramsForUpdate: AppointmentUpdate) => Promise<void>
+      scheduleAppointment: (paramsForUpdate: AppointmentSchedulingDetails) => Promise<void>
       createPresenter: (
         appointment: AppointmentType,
         validationError: FormValidationError | null,

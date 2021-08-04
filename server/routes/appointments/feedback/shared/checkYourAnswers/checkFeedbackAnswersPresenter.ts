@@ -1,10 +1,10 @@
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import DateUtils from '../../../../../utils/dateUtils'
 import { SummaryListItem } from '../../../../../utils/summaryList'
 import FeedbackAnswersPresenter from '../viewFeedback/feedbackAnswersPresenter'
-import { AppointmentDetails } from '../../appointmentDetails'
 
 export default abstract class CheckFeedbackAnswersPresenter extends FeedbackAnswersPresenter {
-  protected constructor(appointment: AppointmentDetails) {
+  protected constructor(appointment: ActionPlanAppointment | InitialAssessmentAppointment) {
     super(appointment)
   }
 

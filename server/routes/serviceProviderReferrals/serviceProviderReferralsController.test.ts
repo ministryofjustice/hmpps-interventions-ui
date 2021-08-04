@@ -21,7 +21,7 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
-import appointmentFactory from '../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
@@ -1868,7 +1868,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const referral = sentReferralFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const scheduledAppointment = appointmentFactory.build({
+        const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
@@ -1914,7 +1914,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const referral = sentReferralFactory.build()
         const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
 
-        const scheduledAppointment = appointmentFactory.build({
+        const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
@@ -2072,8 +2072,8 @@ describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
 
     const appointments = [
-      ...appointmentFactory.buildList(2),
-      appointmentFactory.newlyBooked().build({
+      ...initialAssessmentAppointmentFactory.buildList(2),
+      initialAssessmentAppointmentFactory.newlyBooked().build({
         appointmentTime: '2021-03-24T09:02:02Z',
         durationInMinutes: 75,
       }),
@@ -2098,7 +2098,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page with which the Service Provider can record the Service user‘s attendance for their initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
     const supplierAssessment = supplierAssessmentFactory.build({
@@ -2144,8 +2144,8 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   describe('when the Service Provider marks the Service user as having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
       const referral = sentReferralFactory.assigned().build()
-      const appointment = appointmentFactory.build()
-      const updatedAppointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const updatedAppointment = initialAssessmentAppointmentFactory.build({
         ...appointment,
         sessionFeedback: {
           attendance: {
@@ -2180,8 +2180,8 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   describe('when the Service Provider marks the Service user as not having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
       const referral = sentReferralFactory.assigned().build()
-      const appointment = appointmentFactory.build()
-      const updatedAppointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const updatedAppointment = initialAssessmentAppointmentFactory.build({
         ...appointment,
         sessionFeedback: {
           attendance: {
@@ -2236,7 +2236,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page with which the Service Provider can record the Service user‘s behaviour for their initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
     const supplierAssessment = supplierAssessmentFactory.build({
@@ -2282,8 +2282,8 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   describe('when the Service Provider records behaviour for the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check-your-answers page', async () => {
       const referral = sentReferralFactory.assigned().build()
-      const appointment = appointmentFactory.build()
-      const updatedAppointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const updatedAppointment = initialAssessmentAppointmentFactory.build({
         ...appointment,
         sessionFeedback: {
           behaviour: {
@@ -2338,7 +2338,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page with which the Service Provider can view the feedback for the initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
       sessionFeedback: {
         attendance: {
@@ -2393,7 +2393,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
 
 describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', () => {
   it('submits the action plan and redirects to the confirmation page', async () => {
-    const appointment = appointmentFactory.build()
+    const appointment = initialAssessmentAppointmentFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const supplierAssessment = supplierAssessmentFactory.build({
       appointments: [appointment],
@@ -2413,7 +2413,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
     expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith('token', referral.id)
   })
   it('renders an error if there is no current appointment for the supplier assessment', async () => {
-    const appointment = appointmentFactory.build()
+    const appointment = initialAssessmentAppointmentFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const supplierAssessment = supplierAssessmentFactory.build({
       appointments: [],
@@ -2449,7 +2449,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page showing the supplier assessment feedback', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
       sessionFeedback: {
         attendance: {

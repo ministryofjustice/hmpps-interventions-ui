@@ -1,6 +1,5 @@
-import { ActionPlanAppointment } from '../../models/actionPlan'
-import Appointment from '../../models/appointment'
 import PresenterUtils from '../../utils/presenterUtils'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import { FormValidationError } from '../../utils/formValidationError'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
@@ -11,7 +10,7 @@ import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 export default class ScheduleAppointmentPresenter {
   constructor(
     private readonly referral: SentReferral,
-    private readonly currentAppointment: Appointment | ActionPlanAppointment | null,
+    private readonly currentAppointment: InitialAssessmentAppointment | ActionPlanAppointment | null,
     private readonly assignedCaseworker: AuthUserDetails | null = null,
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
@@ -45,7 +44,7 @@ export default class ScheduleAppointmentPresenter {
   get appointmentAlreadyAttended(): boolean {
     if (this.appointmentDecorator !== null) {
       // Remove this check once action plan appointments allow rescheduling
-      if (this.appointmentDecorator.isInitialAssessmentAppointment(this.currentAppointment!)) {
+      if (this.appointmentDecorator.isInitialAssessmentAppointment) {
         return this.currentAppointment!.sessionFeedback.submitted
       }
     }

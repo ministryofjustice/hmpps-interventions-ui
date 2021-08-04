@@ -5,7 +5,7 @@ import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
-import appointmentFactory from '../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import { SessionStatus } from '../../utils/sessionStatus'
 
@@ -590,7 +590,7 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inThePast.build()).build()
+            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build()
           )
 
           expect(presenter.supplierAssessmentLink).toEqual([
@@ -611,7 +611,7 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inTheFuture.build()).build()
+            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build()).build()
           )
 
           expect(presenter.supplierAssessmentLink).toEqual([
@@ -696,7 +696,7 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inThePast.build()).build()
+            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build()
           )
 
           expect(presenter.supplierAssessmentMessage).toEqual(
@@ -714,7 +714,7 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(appointmentFactory.inTheFuture.build()).build()
+            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build()).build()
           )
 
           expect(presenter.supplierAssessmentMessage).toEqual(

@@ -32,7 +32,7 @@ import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
 import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
-import appointmentFactory from '../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DraftsService from '../../services/draftsService'
@@ -266,7 +266,7 @@ describe('GET /probation-practitioner/referrals/:id/supplier-assessment/post-ass
   it('renders a page showing the initial assessment feedback', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
       sessionFeedback: {
         attendance: {
@@ -871,8 +871,8 @@ describe('GET /probation-practitioner/referrals/:id/supplier-assessment', () => 
     interventionsService.getSentReferral.mockResolvedValue(referral)
 
     const appointments = [
-      ...appointmentFactory.buildList(2),
-      appointmentFactory.newlyBooked().build({
+      ...initialAssessmentAppointmentFactory.buildList(2),
+      initialAssessmentAppointmentFactory.newlyBooked().build({
         appointmentTime: '2021-03-24T09:02:02Z',
         durationInMinutes: 75,
       }),

@@ -1,5 +1,4 @@
 import { Request } from 'express'
-import { AppointmentUpdate } from '../../services/interventionsService'
 import TwelveHourBritishDateTimeInput from '../../utils/forms/inputs/twelveHourBritishDateTimeInput'
 import { FormData } from '../../utils/forms/formData'
 import DurationInput from '../../utils/forms/inputs/durationInput'
@@ -8,11 +7,12 @@ import MeetingMethodInput from '../../utils/forms/inputs/meetingMethodInput'
 import AddressInput from '../../utils/forms/inputs/addressInput'
 import { FormValidationResult } from '../../utils/forms/formValidationResult'
 import Address from '../../models/address'
+import { AppointmentSchedulingDetails } from '../../models/appointment'
 
 export default class ScheduleAppointmentForm {
   constructor(private readonly request: Request) {}
 
-  async data(): Promise<FormData<AppointmentUpdate>> {
+  async data(): Promise<FormData<AppointmentSchedulingDetails>> {
     const [dateResult, durationResult, appointmentDeliveryType] = await Promise.all([
       new TwelveHourBritishDateTimeInput(
         this.request,

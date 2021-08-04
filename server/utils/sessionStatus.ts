@@ -1,6 +1,5 @@
-import { ActionPlanAppointment } from '../models/actionPlan'
-import Appointment from '../models/appointment'
 import AppointmentDecorator from '../decorators/appointmentDecorator'
+import { InitialAssessmentAppointment, ActionPlanAppointment } from '../models/appointment'
 
 export enum SessionStatus {
   notScheduled,
@@ -10,7 +9,7 @@ export enum SessionStatus {
   didNotAttend,
 }
 export default {
-  forAppointment: (appointment: Appointment | ActionPlanAppointment | null): SessionStatus => {
+  forAppointment: (appointment: InitialAssessmentAppointment | ActionPlanAppointment | null): SessionStatus => {
     if (appointment === null) {
       return SessionStatus.notScheduled
     }
@@ -28,7 +27,7 @@ export default {
 
     if (appointment.appointmentTime) {
       if (
-        appointmentDecorator.isInitialAssessmentAppointment(appointment) &&
+        appointmentDecorator.isInitialAssessmentAppointment &&
         appointmentDecorator.appointmentIsInThePast(appointment)
       ) {
         return SessionStatus.awaitingFeedback

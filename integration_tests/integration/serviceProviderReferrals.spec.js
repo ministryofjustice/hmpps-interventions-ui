@@ -12,7 +12,7 @@ import supplementaryRiskInformationFactory from '../../testutils/factories/suppl
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
-import appointmentFactory from '../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import serviceProviderSentReferralSummaryFactory from '../../testutils/factories/serviceProviderSentReferralSummary'
 
@@ -1353,7 +1353,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#method-other-location-address-county').type('Lancashire')
       cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
-      const scheduledAppointment = appointmentFactory.build({
+      const scheduledAppointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '3021-03-24T09:02:02Z',
         durationInMinutes: 75,
         appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -1405,7 +1405,7 @@ describe('Service provider referrals dashboard', () => {
       const referral = sentReferralFactory.assigned().build({
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
-      const scheduledAppointment = appointmentFactory.build({
+      const scheduledAppointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '3021-03-24T09:02:00Z',
         durationInMinutes: 75,
       })
@@ -1452,7 +1452,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#duration-hours').clear()
       cy.get('#duration-minutes').clear().type('45')
 
-      const rescheduledAppointment = appointmentFactory.build({
+      const rescheduledAppointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '3021-04-10T16:15:00Z',
         durationInMinutes: 45,
       })
@@ -1503,7 +1503,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe('when user records the attendance as not attended', () => {
         it('should allow user to add attendance, check their answers and submit the referral', () => {
-          const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+          const appointmentWithNoFeedback = initialAssessmentAppointmentFactory.inThePast.build({
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
           })
@@ -1532,7 +1532,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('No').click()
           cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
 
-          const appointmentWithAttendanceFeedback = appointmentFactory.build({
+          const appointmentWithAttendanceFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -1568,7 +1568,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('Initial assessment added')
 
-          const submittedAppointment = appointmentFactory.build({
+          const submittedAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -1605,7 +1605,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe('when user records the attendance as attended', () => {
         it('should allow user to add attendance, add behaviour, check their answers and submit the referral', () => {
-          const appointmentWithNoFeedback = appointmentFactory.inThePast.build({
+          const appointmentWithNoFeedback = initialAssessmentAppointmentFactory.inThePast.build({
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
           })
@@ -1634,7 +1634,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Yes').click()
           cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
-          const appointmentWithAttendanceFeedback = appointmentFactory.build({
+          const appointmentWithAttendanceFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -1663,7 +1663,7 @@ describe('Service provider referrals dashboard', () => {
           )
           cy.contains('Yes').click()
 
-          const appointmentWithBehaviourFeedback = appointmentFactory.build({
+          const appointmentWithBehaviourFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -1707,7 +1707,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('Initial assessment added')
 
-          const submittedAppointment = appointmentFactory.build({
+          const submittedAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',

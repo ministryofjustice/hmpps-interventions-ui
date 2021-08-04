@@ -1,9 +1,9 @@
-import Appointment from '../../models/appointment'
 import SentReferral from '../../models/sentReferral'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import { SummaryListItem } from '../../utils/summaryList'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import AppointmentSummary from '../appointments/appointmentSummary'
+import { InitialAssessmentAppointment } from '../../models/appointment'
 
 interface SupplierAssessmentAppointmentPresenterOptions {
   readonly?: boolean
@@ -14,7 +14,7 @@ interface SupplierAssessmentAppointmentPresenterOptions {
 export default class SupplierAssessmentAppointmentPresenter {
   constructor(
     private readonly referral: SentReferral,
-    private readonly appointment: Appointment,
+    private readonly appointment: InitialAssessmentAppointment,
     private readonly assignee: AuthUserDetails | null,
     private readonly options: SupplierAssessmentAppointmentPresenterOptions = { userType: 'service-provider' }
   ) {}
