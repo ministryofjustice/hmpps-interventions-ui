@@ -73,6 +73,7 @@ import InitialAssessmentFeedbackConfirmationView from '../appointments/feedback/
 import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
 import DraftsService from '../../services/draftsService'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -569,7 +570,7 @@ export default class ServiceProviderReferralsController {
           .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
           .then(),
       createPresenter: (appointment, formError, userInputData, serverError) =>
-        new ScheduleActionPlanSessionPresenter(referral, appointment, formError, userInputData, serverError),
+        new ScheduleActionPlanSessionPresenter(referral, appointment, null, formError, userInputData, serverError),
       redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
     })
   }
@@ -601,6 +602,13 @@ export default class ServiceProviderReferralsController {
 
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
     const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
+    let assignedCaseworker: AuthUserDetails | null = null
+    if (currentAppointment?.sessionFeedback?.submitted) {
+      assignedCaseworker = await this.hmppsAuthService.getSPUserByUsername(
+        res.locals.user.token.accessToken,
+        currentAppointment!.sessionFeedback!.submittedBy!.username
+      )
+    }
 
     await this.scheduleAppointment(req, res, {
       getReferral: async () => referral,
@@ -620,6 +628,7 @@ export default class ServiceProviderReferralsController {
         return new ScheduleAppointmentPresenter(
           referral,
           appointment,
+          assignedCaseworker,
           formError,
           userInputData,
           serverError,

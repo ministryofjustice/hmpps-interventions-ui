@@ -2,6 +2,7 @@ import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import appointmentFactory from '../../../testutils/factories/appointment'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
+import authUserDetailsFactory from '../../../testutils/factories/hmppsAuthUser'
 
 describe(ScheduleAppointmentPresenter, () => {
   const referral = sentReferralFactory.build()
@@ -42,20 +43,42 @@ describe(ScheduleAppointmentPresenter, () => {
     })
 
     describe('when the appointment has been attended', () => {
-      it('should return appointment summary', () => {
-        const presenter = new ScheduleAppointmentPresenter(
-          referral,
-          appointmentFactory.attended('no').build({
-            appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
-            durationInMinutes: 60,
-            appointmentDeliveryType: 'VIDEO_CALL',
-          })
-        )
-        expect(presenter.appointmentSummary).toEqual([
-          { key: 'Date', lines: ['2 January 2021'] },
-          { key: 'Time', lines: ['12:00pm to 1:00pm'] },
-          { key: 'Method', lines: ['Video call'] },
-        ])
+      describe('when an assigned caseworker is provided', () => {
+        it('should return appointment summary with caseworker details', () => {
+          const presenter = new ScheduleAppointmentPresenter(
+            referral,
+            appointmentFactory.attended('no').build({
+              appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
+              durationInMinutes: 60,
+              appointmentDeliveryType: 'VIDEO_CALL',
+            }),
+            authUserDetailsFactory.build({ firstName: 'firstName', lastName: 'lastName' })
+          )
+          expect(presenter.appointmentSummary).toEqual([
+            { key: 'Caseworker', lines: ['firstName lastName'] },
+            { key: 'Date', lines: ['2 January 2021'] },
+            { key: 'Time', lines: ['12:00pm to 1:00pm'] },
+            { key: 'Method', lines: ['Video call'] },
+          ])
+        })
+      })
+      describe('when no assigned caseworker is provided', () => {
+        it('should return appointment summary without caseworker details', () => {
+          const presenter = new ScheduleAppointmentPresenter(
+            referral,
+            appointmentFactory.attended('no').build({
+              appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
+              durationInMinutes: 60,
+              appointmentDeliveryType: 'VIDEO_CALL',
+            }),
+            null
+          )
+          expect(presenter.appointmentSummary).toEqual([
+            { key: 'Date', lines: ['2 January 2021'] },
+            { key: 'Time', lines: ['12:00pm to 1:00pm'] },
+            { key: 'Method', lines: ['Video call'] },
+          ])
+        })
       })
     })
   })
@@ -102,6 +125,7 @@ describe(ScheduleAppointmentPresenter, () => {
         const presenter = new ScheduleAppointmentPresenter(
           referral,
           appointment,
+          null,
           {
             errors: [
               {
@@ -140,6 +164,7 @@ describe(ScheduleAppointmentPresenter, () => {
         const presenter = new ScheduleAppointmentPresenter(
           referral,
           appointment,
+          null,
           {
             errors: [
               {
@@ -309,7 +334,7 @@ describe(ScheduleAppointmentPresenter, () => {
 
     describe('when overrideBackLinkHref is provided to the constructor', () => {
       it('returns the overrideBacklinkHref', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, null, null, null, '/example-href')
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, null, null, null, '/example-href')
 
         expect(presenter.backLinkHref).toEqual('/example-href')
       })
