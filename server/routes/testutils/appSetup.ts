@@ -15,6 +15,7 @@ import LoggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import config from '../../config'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from '../probationPractitionerRoutes'
+import DraftsService from '../../services/draftsService'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -78,6 +79,7 @@ export default function appWithAllRoutes({
     interventionsService: {} as InterventionsService,
     hmppsAuthService: new MockedHmppsAuthService(),
     assessRisksAndNeedsService: {} as AssessRisksAndNeedsService,
+    draftsService: {} as DraftsService,
     ...overrides,
   }
 

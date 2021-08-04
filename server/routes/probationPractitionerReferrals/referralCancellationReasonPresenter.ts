@@ -5,9 +5,12 @@ import SentReferral from '../../models/sentReferral'
 import { FormValidationError } from '../../utils/formValidationError'
 import PresenterUtils from '../../utils/presenterUtils'
 import Intervention from '../../models/intervention'
+import DraftCancellationData from './draftCancellationData'
+import { Draft } from '../../services/draftsService'
 
 export default class ReferralCancellationReasonPresenter {
   constructor(
+    private readonly draftCancellation: Draft<DraftCancellationData>,
     private readonly sentReferral: SentReferral,
     private readonly intervention: Intervention,
     private readonly serviceUser: DeliusServiceUser,
@@ -27,13 +30,20 @@ export default class ReferralCancellationReasonPresenter {
     return this.cancellationReasons.map(cancellationReason => ({
       value: cancellationReason.code,
       text: cancellationReason.description,
-      checked: false,
+      checked: this.draftCancellation.data.cancellationReason === cancellationReason.code,
     }))
+  }
+
+  private readonly utils = new PresenterUtils(null)
+
+  readonly fields = {
+    cancellationComments: this.utils.stringValue(
+      this.draftCancellation.data.cancellationComments,
+      'cancellation-comments'
+    ),
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'cancellation-reason')
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
-
-  readonly checkAnswersHref = `/probation-practitioner/referrals/${this.sentReferral.id}/cancellation/check-your-answers`
 }

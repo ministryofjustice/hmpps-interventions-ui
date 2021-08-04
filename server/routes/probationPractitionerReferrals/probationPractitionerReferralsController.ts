@@ -34,13 +34,16 @@ import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDeco
 import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import FileUtils from '../../utils/fileUtils'
+import DraftsService from '../../services/draftsService'
+import DraftCancellationData from './draftCancellationData'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
-    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
+    private readonly draftsService: DraftsService
   ) {}
 
   async showMyCases(req: Request, res: Response): Promise<void> {
@@ -246,11 +249,122 @@ export default class ProbationPractitionerReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async showReferralCancellationReasonPage(req: Request, res: Response): Promise<void> {
+  async startCancellation(req: Request, res: Response): Promise<void> {
+    const draftCancellation = await this.draftsService.createDraft<DraftCancellationData>(
+      'cancellation',
+      {
+        cancellationReason: null,
+        cancellationComments: null,
+      },
+      { userId: res.locals.user.userId }
+    )
+    res.redirect(`/probation-practitioner/referrals/${req.params.id}/cancellation/${draftCancellation.id}/reason`)
+  }
+
+  async backwardsCompatibilityUpdateCancellationReason(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
+    const referralId = req.params.id
 
-    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+    const data = await new ReferralCancellationReasonForm(req).data()
+
+    let formError: FormValidationError | null = null
+
+    if (req.method === 'POST') {
+      if (!data.error) {
+        const draftCancellation = await this.draftsService.createDraft<DraftCancellationData>(
+          'cancellation',
+          data.paramsForUpdate,
+          { userId: res.locals.user.userId }
+        )
+
+        return res.redirect(
+          `/probation-practitioner/referrals/${referralId}/cancellation/${draftCancellation.id}/check-your-answers`
+        )
+      }
+
+      res.status(400)
+      formError = data.error
+    }
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const intervention = await this.interventionsService.getIntervention(
+      accessToken,
+      sentReferral.referral.interventionId
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
+
+    // We don’t use this draft, other than to pass it to the presenter for rendering
+    // (remember this controller action is only temporary)
+    const draftCancellation = await this.draftsService.createDraft<DraftCancellationData>(
+      'cancellation',
+      {
+        cancellationReason: null,
+        cancellationComments: null,
+      },
+      { userId: res.locals.user.userId }
+    )
+
+    const presenter = new ReferralCancellationReasonPresenter(
+      draftCancellation,
+      sentReferral,
+      intervention,
+      serviceUser,
+      cancellationReasons,
+      formError
+    )
+
+    await this.draftsService.deleteDraft(draftCancellation.id, { userId: res.locals.user.userId })
+
+    const view = new ReferralCancellationReasonView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async fetchDraftCancellationOrThrowSpecificError(req: Request, res: Response) {
+    const id = req.params.draftCancellationId
+    const draftCancellation = await this.draftsService.fetchDraft<DraftCancellationData>(id, {
+      userId: res.locals.user.userId,
+    })
+
+    if (draftCancellation === null) {
+      throw createError(500, `Draft cancellation with ID ${id} not found by drafts service`, {
+        userMessage:
+          'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
+      })
+    }
+
+    return draftCancellation
+  }
+
+  async editCancellationReason(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const draftCancellation = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+
+    const data = await new ReferralCancellationReasonForm(req).data()
+
+    let formError: FormValidationError | null = null
+
+    if (req.method === 'POST') {
+      if (!data.error) {
+        await this.draftsService.updateDraft<DraftCancellationData>(draftCancellation.id, data.paramsForUpdate, {
+          userId: res.locals.user.userId,
+        })
+
+        return res.redirect(
+          `/probation-practitioner/referrals/${referralId}/cancellation/${draftCancellation.id}/check-your-answers`
+        )
+      }
+
+      res.status(400)
+      formError = data.error
+    }
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const intervention = await this.interventionsService.getIntervention(
       accessToken,
       sentReferral.referral.interventionId
@@ -259,68 +373,66 @@ export default class ProbationPractitionerReferralsController {
     const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
 
     const presenter = new ReferralCancellationReasonPresenter(
+      draftCancellation,
       sentReferral,
       intervention,
       serviceUser,
-      cancellationReasons
+      cancellationReasons,
+      formError
     )
     const view = new ReferralCancellationReasonView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async submitFormAndShowCancellationCheckAnswersPage(req: Request, res: Response): Promise<void> {
+  async cancellationCheckAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    let formError: FormValidationError | null = null
+
+    const draftCancellation = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
 
-    const data = await new ReferralCancellationReasonForm(req).data()
-
-    if (data.error) {
-      res.status(400)
-      formError = data.error
-
-      const intervention = await this.interventionsService.getIntervention(
-        accessToken,
-        sentReferral.referral.interventionId
-      )
-      const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
-
-      const presenter = new ReferralCancellationReasonPresenter(
-        sentReferral,
-        intervention,
-        serviceUser,
-        cancellationReasons,
-        formError
-      )
-      const view = new ReferralCancellationReasonView(presenter)
-
-      return ControllerUtils.renderWithLayout(res, view, serviceUser)
-    }
-
-    const { cancellationReason, cancellationComments } = data.paramsForUpdate
-
-    const presenter = new ReferralCancellationCheckAnswersPresenter(
-      req.params.id,
-      cancellationReason,
-      cancellationComments
-    )
-
+    const presenter = new ReferralCancellationCheckAnswersPresenter(req.params.id, draftCancellation.id)
     const view = new ReferralCancellationCheckAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async cancelReferral(req: Request, res: Response): Promise<void> {
+  async backwardsCompatibilitySubmitCancellation(req: Request, res: Response): Promise<void> {
+    const cancellationReason = req.body['cancellation-reason']
+    const cancellationComments = req.body['cancellation-comments']
+
+    await this.submitCancellationWithValues(cancellationReason, cancellationComments, req, res)
+  }
+
+  async submitCancellation(req: Request, res: Response): Promise<void> {
+    const draftCancellation = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+
+    const { cancellationReason, cancellationComments } = draftCancellation.data
+
+    await this.submitCancellationWithValues(cancellationReason, cancellationComments, req, res)
+
+    await this.draftsService.deleteDraft(draftCancellation.id, { userId: res.locals.user.userId })
+  }
+
+  async submitCancellationWithValues(
+    cancellationReason: string | null,
+    cancellationComments: string | null,
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    if (cancellationReason === null) {
+      throw new Error('Got unexpectedly null cancellationReason')
+    }
+    if (cancellationComments === null) {
+      throw new Error('Got unexpectedly null cancellationComments')
+    }
+
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
-
-    const cancellationReason = req.body['cancellation-reason']
-    const cancellationComments = req.body['cancellation-comments']
 
     await this.interventionsService.endReferral(accessToken, referralId, cancellationReason, cancellationComments)
 
