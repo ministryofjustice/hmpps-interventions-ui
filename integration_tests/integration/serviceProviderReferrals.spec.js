@@ -1759,6 +1759,11 @@ describe('Service provider referrals dashboard', () => {
         }),
       ]
 
+      const sentReferralsSummary = [
+        serviceProviderSentReferralSummaryFactory.fromReferralAndIntervention(sentReferrals[0], intervention).build({}),
+        serviceProviderSentReferralSummaryFactory.fromReferralAndIntervention(sentReferrals[1], intervention).build({}),
+      ]
+
       const deliusUser = deliusUserFactory.build()
 
       cy.stubGetIntervention(intervention.id, intervention)
@@ -1766,6 +1771,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferralsForUserToken(sentReferrals)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGenerateServiceProviderPerformanceReport()
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken(sentReferralsSummary)
 
       cy.login()
 
