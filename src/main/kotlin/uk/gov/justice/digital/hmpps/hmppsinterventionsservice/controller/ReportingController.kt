@@ -4,11 +4,16 @@ import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReportingService
 import java.time.LocalDate
+
+data class DateInterval(
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) val fromDate: LocalDate,
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) val toDate: LocalDate,
+)
 
 @RestController
 class ReportingController(
@@ -17,11 +22,10 @@ class ReportingController(
 ) {
   @PostMapping("/reports/service-provider/performance")
   fun creatServiceProviderPerformanceReport(
-    @RequestParam("fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
-    @RequestParam("toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate,
+    @RequestBody dateInterval: DateInterval,
     authentication: JwtAuthenticationToken
   ): ResponseEntity<Any> {
-    reportingService.generateServiceProviderPerformanceReport(from, to, userMapper.fromToken(authentication))
+    reportingService.generateServiceProviderPerformanceReport(dateInterval.fromDate, dateInterval.toDate, userMapper.fromToken(authentication))
     return ResponseEntity.accepted().build()
   }
 }
