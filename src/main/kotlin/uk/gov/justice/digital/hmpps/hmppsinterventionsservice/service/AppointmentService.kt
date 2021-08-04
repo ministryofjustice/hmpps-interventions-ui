@@ -105,8 +105,10 @@ class AppointmentService(
     var appointmentDelivery = appointment.appointmentDelivery
     if (appointmentDelivery == null) {
       appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType, npsOfficeCode = npsOfficeCode)
+    } else {
+      appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
+      appointmentDelivery.npsOfficeCode = npsOfficeCode
     }
-    appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
     appointment.appointmentDelivery = appointmentDelivery
     appointmentRepository.saveAndFlush(appointment)
     if (appointmentDeliveryType == AppointmentDeliveryType.IN_PERSON_MEETING_OTHER) {

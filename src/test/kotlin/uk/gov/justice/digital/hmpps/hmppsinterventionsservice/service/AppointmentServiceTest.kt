@@ -15,6 +15,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
@@ -197,6 +198,39 @@ class AppointmentServiceTest {
     assertThat(arguments.deliusAppointmentId).isEqualTo(deliusAppointmentId)
     assertThat(arguments.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
     assertThat(arguments.appointmentDelivery?.npsOfficeCode).isEqualTo(npsOfficeCode)
+  }
+
+  @Nested
+  inner class UpdateAppointmentDeliveryAddress {
+    @Test
+    fun `overriding appointment delivery sets new values for npsOfficeCode`() {
+      // Given
+      val durationInMinutes = 60
+      val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+      val existingAppointment = appointmentFactory.create(deliusAppointmentId = 98L, attended = null)
+      val referral = referralFactory.createSent()
+      val rescheduledDeliusAppointmentId = 99L
+      val oldNpsCode = "CRS0001"
+      val newNpsCode = "CRS0002"
+
+      whenever(communityAPIBookingService.book(referral, existingAppointment, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null))
+        .thenReturn(rescheduledDeliusAppointmentId)
+      val savedAppointment = appointmentFactory.create(
+        appointmentTime = appointmentTime,
+        durationInMinutes = durationInMinutes,
+        deliusAppointmentId = rescheduledDeliusAppointmentId,
+      )
+      savedAppointment.appointmentDelivery = AppointmentDelivery(appointmentId = savedAppointment.id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = oldNpsCode)
+
+      whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
+
+      // When
+      val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = newNpsCode)
+
+      // Then
+      verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, newNpsCode)
+      verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, newNpsCode)
+    }
   }
 
   @Nested
