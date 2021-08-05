@@ -4,7 +4,7 @@ import DeliusOfficeLocation from '../models/deliusOfficeLocation'
 export default class ReferenceDataService {
   async getProbationOffices(): Promise<DeliusOfficeLocation[]> {
     return csv()
-      .fromFile('server/data/reference-data/probation-offices-v0.csv')
+      .fromFile('reference-data/probation-offices-v0.csv')
       .then(json => {
         return json.map(jsonFile => {
           return {
