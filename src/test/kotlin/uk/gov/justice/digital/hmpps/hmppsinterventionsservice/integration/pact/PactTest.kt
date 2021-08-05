@@ -54,6 +54,7 @@ class PactTest : IntegrationTestBase() {
       ServiceCategoryContracts(setupAssistant),
       EndOfServiceReportContracts(setupAssistant),
       SupplierAssessmentContracts(setupAssistant),
+      ReportingContracts(setupAssistant),
     )
   }
 

@@ -232,13 +232,15 @@ class SetupAssistant(
     id: UUID = UUID.randomUUID(),
     intervention: Intervention = createIntervention(),
     ppUser: AuthUser = createPPUser(),
+    sentAt: OffsetDateTime = OffsetDateTime.now()
   ): Referral {
     val referral = referralRepository.save(
       referralFactory.createSent(
         id = id,
         intervention = intervention,
         createdBy = ppUser,
-        sentBy = ppUser
+        sentBy = ppUser,
+        sentAt = sentAt,
       )
     )
     referral.supplierAssessment = createSupplierAssessment(referral = referral)
