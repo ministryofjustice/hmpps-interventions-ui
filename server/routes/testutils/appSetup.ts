@@ -60,6 +60,7 @@ function appSetup(
   app.use(createErrorHandler(production))
 
   config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+  config.features.serviceProviderReporting.enabled = true
 
   return app
 }
