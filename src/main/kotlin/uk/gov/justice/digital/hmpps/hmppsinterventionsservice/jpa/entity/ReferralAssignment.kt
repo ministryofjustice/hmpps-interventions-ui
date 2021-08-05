@@ -11,4 +11,5 @@ class ReferralAssignment(
   val assignedAt: OffsetDateTime,
   @ManyToOne @Fetch(FetchMode.JOIN) val assignedBy: AuthUser,
   @ManyToOne @Fetch(FetchMode.JOIN) val assignedTo: AuthUser,
+  var superseded: Boolean = false,
 )

@@ -153,6 +153,43 @@ class ReferralServiceTest @Autowired constructor(
   }
 
   @Test
+  fun `assignment to a user adds a new assignment record to the trail of assignments`() {
+    val r = referralFactory.createSent()
+    val assigner = userFactory.create(id = "1000", userName = "test-admin@example.org")
+    val assignedTo1 = userFactory.create(id = "5000", userName = "assignee1@example.org")
+    val assignedTo2 = userFactory.create(id = "5001", userName = "assignee2@example.org")
+
+    referralService.assignSentReferral(r, assigner, assignedTo1)
+    referralService.assignSentReferral(r, assigner, assignedTo2)
+
+    with(r.assignments[0]) {
+      assertThat(this.assignedBy).isEqualTo(assigner)
+      assertThat(this.assignedTo).isEqualTo(assignedTo1)
+    }
+    with(r.assignments[1]) {
+      assertThat(this.assignedAt).isAfterOrEqualTo(r.assignments[0].assignedAt)
+      assertThat(this.assignedBy).isEqualTo(assigner)
+      assertThat(this.assignedTo).isEqualTo(assignedTo2)
+    }
+  }
+
+  @Test
+  fun `assignment to a user marks older records superseded`() {
+    val r = referralFactory.createSent()
+    val assigner = userFactory.create(id = "1000", userName = "test-admin@example.org")
+    val assignedTo1 = userFactory.create(id = "5000", userName = "assignee1@example.org")
+    val assignedTo2 = userFactory.create(id = "5001", userName = "assignee2@example.org")
+    val assignedTo3 = userFactory.create(id = "5002", userName = "assignee3@example.org")
+
+    referralService.assignSentReferral(r, assigner, assignedTo1)
+    referralService.assignSentReferral(r, assigner, assignedTo2)
+    referralService.assignSentReferral(r, assigner, assignedTo3)
+
+    assertThat(r.assignments.map { it.superseded })
+      .containsExactly(true, true, false)
+  }
+
+  @Test
   fun `update cannot overwrite identifier fields`() {
     val draftReferral = DraftReferralDTO(
       id = UUID.fromString("ce364949-7301-497b-894d-130f34a98bff"),
