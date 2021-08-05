@@ -13,22 +13,28 @@ import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIReferralService
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.RisksAndNeedsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceUserAccessResult
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
 import java.util.UUID
 
 @PactBroker
 @Provider("Interventions Service")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class PactTest : IntegrationTestBase() {
-  @MockBean private lateinit var hmppsAuthService: HMPPSAuthService
   @MockBean private lateinit var communityAPIOffenderService: CommunityAPIOffenderService
   @MockBean private lateinit var communityAPIReferralService: CommunityAPIReferralService
   @MockBean private lateinit var risksAndNeedsService: RisksAndNeedsService
+  @MockBean private lateinit var serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper
+
+  private val serviceProviderFactory = ServiceProviderFactory()
+  private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
 
   @TestTemplate
   @ExtendWith(PactVerificationSpringProvider::class)
@@ -44,8 +50,13 @@ class PactTest : IntegrationTestBase() {
     whenever(communityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
       .thenReturn(ServiceUserAccessResult(true, emptyList()))
 
-    // required for SP user
-    whenever(hmppsAuthService.getUserGroups(any())).thenReturn(listOf("INT_SP_HAPPY_LIVING", "INT_CR_PACT_TEST"))
+    // required for SP users
+    whenever(serviceProviderAccessScopeMapper.fromUser(any())).thenReturn(
+      ServiceProviderAccessScope(
+        setOf(serviceProviderFactory.create()),
+        setOf(dynamicFrameworkContractFactory.create()),
+      )
+    )
 
     context.addStateChangeHandlers(
       ActionPlanContracts(setupAssistant),
