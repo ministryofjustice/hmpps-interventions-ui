@@ -122,6 +122,10 @@ export default {
       postCodeEmpty: 'Enter a postcode',
       postCodeInvalid: 'Enter a valid postcode',
     },
+    deliusOfficeLocation: {
+      empty: 'Select an office',
+      invalidOfficeSelection: 'Select an office from the list',
+    },
   },
   endOfServiceReportOutcome: {
     achievementLevel: {

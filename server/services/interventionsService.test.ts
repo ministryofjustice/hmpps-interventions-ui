@@ -12,7 +12,7 @@ import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
-import appointmentFactory from '../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import CalendarDay from '../utils/calendarDay'
 
@@ -2433,6 +2433,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 county: 'Lancashire',
                 postCode: 'SY40RE',
               },
+              npsOfficeCode: null,
             },
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
@@ -2462,6 +2463,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 county: 'Lancashire',
                 postCode: 'SY40RE',
               },
+              npsOfficeCode: null,
             }
           )
         ).toMatchObject(actionPlanAppointment)
@@ -2509,6 +2511,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: null,
               },
               submitted: false,
+              submittedBy: null,
             },
           }),
           headers: {
@@ -2563,6 +2566,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: false,
               },
               submitted: false,
+              submittedBy: null,
             },
           }),
           headers: {
@@ -2613,6 +2617,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 notifyProbationPractitioner: false,
               },
               submitted: true,
+              submittedBy: {
+                authSource: 'delius',
+                userId: '2500128586',
+                username: 'joe.smith',
+              },
             },
           }),
           headers: {
@@ -2864,7 +2873,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
-      const appointment = appointmentFactory.newlyBooked().phoneCall.build()
+      const appointment = initialAssessmentAppointmentFactory.newlyBooked().phoneCall.build()
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
         currentAppointmentId: appointment.id,
@@ -2907,17 +2916,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       [
         'a video call appointment',
         '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
-        appointmentFactory.videoCall.build(appointmentParams),
+        initialAssessmentAppointmentFactory.videoCall.build(appointmentParams),
       ],
       [
         'a phone call appointment',
         '4567945e-73be-43f0-9021-74c4a8ce49db',
-        appointmentFactory.phoneCall.build(appointmentParams),
+        initialAssessmentAppointmentFactory.phoneCall.build(appointmentParams),
       ],
       [
         'a face to face appointment',
         'fb10c5fe-12ce-482f-8ca1-104974ab21f5',
-        appointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams),
+        initialAssessmentAppointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams),
       ],
     ])('booking %s', (_, supplierAssessmentId, appointment) => {
       it('returns a supplier assessment appointment', async () => {
@@ -2953,7 +2962,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   /*
   describe('recordAppointmentAttendance', () => {
     it('returns an updated appointment with the service user‘s attendance', async () => {
-      const appointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 60,
         sessionFeedback: {
@@ -2966,6 +2975,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             notifyProbationPractitioner: null,
           },
           submitted: false,
+          submittedBy: null,
         },
       })
 
@@ -3006,7 +3016,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('recordAppointmentBehavior', () => {
     it('returns an supplier with the service user‘s behaviour', async () => {
-      const appointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 120,
         sessionFeedback: {
@@ -3019,6 +3029,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             notifyProbationPractitioner: false,
           },
           submitted: false,
+          submittedBy: null,
         },
       })
 
@@ -3059,7 +3070,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('submitAppointmentFeedback', () => {
     it('submits attendance and behaviour feedback to the PP', async () => {
-      const appointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-05-13T12:30:00Z',
         durationInMinutes: 120,
         sessionFeedback: {
@@ -3072,6 +3083,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             notifyProbationPractitioner: false,
           },
           submitted: true,
+          submittedBy: {
+            authSource: 'auth',
+            userId: '608955ae-52ed-44cc-884c-011597a77949',
+            username: 'AUTH_USER',
+          },
         },
       })
 

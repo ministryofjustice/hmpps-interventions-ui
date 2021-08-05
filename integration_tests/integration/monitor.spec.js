@@ -8,7 +8,7 @@ import expandedDeliusServiceUserFactory from '../../testutils/factories/expanded
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
-import appointmentFactory from '../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -420,7 +420,7 @@ describe('Probation Practitioner monitor journey', () => {
         assignedTo: { username: hmppsAuthUser.username },
       })
 
-      const appointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-03-24T09:02:02Z',
         durationInMinutes: 75,
         appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',

@@ -2,11 +2,22 @@ import Address from './address'
 import { AppointmentDeliveryType } from './appointmentDeliveryType'
 import SessionFeedback from './sessionFeedback'
 
-export default interface Appointment {
+export interface InitialAssessmentAppointment extends Appointment {
   id: string
-  appointmentTime: string
-  durationInMinutes: number
-  appointmentDeliveryType: AppointmentDeliveryType
-  appointmentDeliveryAddress: Address | null
+}
+
+export interface ActionPlanAppointment extends Appointment {
+  sessionNumber: number
+}
+
+interface Appointment extends AppointmentSchedulingDetails {
   sessionFeedback: SessionFeedback
+}
+
+export interface AppointmentSchedulingDetails {
+  appointmentTime: string | null
+  durationInMinutes: number | null
+  appointmentDeliveryType: AppointmentDeliveryType | null
+  appointmentDeliveryAddress: Address | null
+  npsOfficeCode: string | null
 }

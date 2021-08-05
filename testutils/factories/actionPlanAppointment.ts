@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
-import { ActionPlanAppointment } from '../../server/models/actionPlan'
+import { ActionPlanAppointment } from '../../server/models/appointment'
 import { Attended } from '../../server/models/appointmentAttendance'
-import appointmentFactory from './appointment'
+import initialAssessmentAppointmentFactory from './initialAssessmentAppointment'
 
 class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
   newlyCreated() {
@@ -10,13 +10,13 @@ class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
 
   scheduled() {
     return this.params({
-      ...appointmentFactory.newlyBooked().build(),
+      ...initialAssessmentAppointmentFactory.newlyBooked().build(),
     })
   }
 
   attended(attendance: Attended) {
     return this.params({
-      sessionFeedback: appointmentFactory.attended(attendance).build().sessionFeedback,
+      sessionFeedback: initialAssessmentAppointmentFactory.attended(attendance).build().sessionFeedback,
     })
   }
 }
@@ -27,5 +27,6 @@ export default ActionPlanAppointmentFactory.define(() => ({
   durationInMinutes: null,
   appointmentDeliveryType: null,
   appointmentDeliveryAddress: null,
-  sessionFeedback: appointmentFactory.newlyBooked().build().sessionFeedback,
+  sessionFeedback: initialAssessmentAppointmentFactory.newlyBooked().build().sessionFeedback,
+  npsOfficeCode: null,
 }))

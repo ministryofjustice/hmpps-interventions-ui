@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../../../../../models/actionPlan'
+import { ActionPlanAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
 import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFeedbackAnswersPresenter'

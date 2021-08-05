@@ -21,7 +21,7 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
-import appointmentFactory from '../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
@@ -897,6 +897,7 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', (
     interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
     interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
     interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+    interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
     await request(app)
       .get(`/service-provider/action-plan/1/sessions/1/edit`)
@@ -920,6 +921,8 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
 
       interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.updateActionPlanAppointment.mockResolvedValue(updatedAppointment)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
@@ -943,6 +946,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
         durationInMinutes: 75,
         appointmentDeliveryType: 'PHONE_CALL',
         appointmentDeliveryAddress: null,
+        npsOfficeCode: null,
       })
     })
 
@@ -951,6 +955,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
         interventionsService.getActionPlanAppointment.mockResolvedValue(actionPlanAppointmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = { status: 409 }
         interventionsService.updateActionPlanAppointment.mockRejectedValue(error)
@@ -978,6 +983,8 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
     describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
       it('renders an error message', async () => {
         interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = new Error('Failed to update appointment')
         interventionsService.updateActionPlanAppointment.mockRejectedValue(error)
@@ -1011,6 +1018,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
       interventionsService.getActionPlan.mockResolvedValue(actionPlan)
       interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .post(`/service-provider/action-plan/1/sessions/1/edit`)
@@ -1812,6 +1820,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
     it('renders an empty form', async () => {
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -1829,6 +1838,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         supplierAssessmentFactory.withSingleAppointment.build()
       )
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -1846,6 +1856,10 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         supplierAssessmentFactory.withNonAttendedAppointment.build()
       )
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+      hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+        hmppsAuthUserFactory.build({ firstName: 'caseWorkerFirstName', lastName: 'caseWorkerLastName' })
+      )
 
       await request(app)
         .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -1853,6 +1867,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
         .expect(res => {
           expect(res.text).toContain('Add appointment details')
           expect(res.text).toContain('Previous missed appointment')
+          expect(res.text).toContain('caseWorkerFirstName caseWorkerLastName')
         })
     })
   })
@@ -1865,7 +1880,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const referral = sentReferralFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const scheduledAppointment = appointmentFactory.build({
+        const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
@@ -1875,6 +1890,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
@@ -1901,6 +1917,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
           }
         )
       })
@@ -1911,7 +1928,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const referral = sentReferralFactory.build()
         const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
 
-        const scheduledAppointment = appointmentFactory.build({
+        const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
@@ -1921,6 +1938,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
@@ -1947,6 +1965,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
           }
         )
       })
@@ -1956,6 +1975,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
       it('renders a specific error message', async () => {
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = { status: 409 }
         interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
@@ -1984,6 +2004,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
       it('renders an error message', async () => {
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
         const error = new Error('Failed to update appointment')
         interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
@@ -2013,6 +2034,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
     it('does not try to schedule an appointment on the interventions service, and renders an error message', async () => {
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
         .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
@@ -2069,8 +2091,8 @@ describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
 
     const appointments = [
-      ...appointmentFactory.buildList(2),
-      appointmentFactory.newlyBooked().build({
+      ...initialAssessmentAppointmentFactory.buildList(2),
+      initialAssessmentAppointmentFactory.newlyBooked().build({
         appointmentTime: '2021-03-24T09:02:02Z',
         durationInMinutes: 75,
       }),
@@ -2142,7 +2164,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page with which the Service Provider can record the Service user‘s attendance for their initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
     const supplierAssessment = supplierAssessmentFactory.build({
@@ -2188,8 +2210,8 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   describe('when the Service Provider marks the Service user as having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
       const referral = sentReferralFactory.assigned().build()
-      const appointment = appointmentFactory.build()
-      const updatedAppointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const updatedAppointment = initialAssessmentAppointmentFactory.build({
         ...appointment,
         sessionFeedback: {
           attendance: {
@@ -2224,8 +2246,8 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   describe('when the Service Provider marks the Service user as not having attended the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
       const referral = sentReferralFactory.assigned().build()
-      const appointment = appointmentFactory.build()
-      const updatedAppointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const updatedAppointment = initialAssessmentAppointmentFactory.build({
         ...appointment,
         sessionFeedback: {
           attendance: {
@@ -2280,7 +2302,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page with which the Service Provider can record the Service user‘s behaviour for their initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
     })
     const supplierAssessment = supplierAssessmentFactory.build({
@@ -2326,8 +2348,8 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
   describe('when the Service Provider records behaviour for the initial assessment', () => {
     it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check-your-answers page', async () => {
       const referral = sentReferralFactory.assigned().build()
-      const appointment = appointmentFactory.build()
-      const updatedAppointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const updatedAppointment = initialAssessmentAppointmentFactory.build({
         ...appointment,
         sessionFeedback: {
           behaviour: {
@@ -2382,7 +2404,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page with which the Service Provider can view the feedback for the initial appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
       sessionFeedback: {
         attendance: {
@@ -2437,7 +2459,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
 
 describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', () => {
   it('submits the action plan and redirects to the confirmation page', async () => {
-    const appointment = appointmentFactory.build()
+    const appointment = initialAssessmentAppointmentFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const supplierAssessment = supplierAssessmentFactory.build({
       appointments: [appointment],
@@ -2457,7 +2479,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessme
     expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith('token', referral.id)
   })
   it('renders an error if there is no current appointment for the supplier assessment', async () => {
-    const appointment = appointmentFactory.build()
+    const appointment = initialAssessmentAppointmentFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const supplierAssessment = supplierAssessmentFactory.build({
       appointments: [],
@@ -2493,7 +2515,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
   it('renders a page showing the supplier assessment feedback', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
-    const appointment = appointmentFactory.build({
+    const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
       sessionFeedback: {
         attendance: {

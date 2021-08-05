@@ -1,16 +1,19 @@
-import { ActionPlanAppointment } from '../../models/actionPlan'
-import Appointment from '../../models/appointment'
 import PresenterUtils from '../../utils/presenterUtils'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import { FormValidationError } from '../../utils/formValidationError'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
+import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import { SummaryListItem } from '../../utils/summaryList'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 export default class ScheduleAppointmentPresenter {
   constructor(
     private readonly referral: SentReferral,
-    private readonly currentAppointment: Appointment | ActionPlanAppointment | null,
+    private readonly currentAppointment: InitialAssessmentAppointment | ActionPlanAppointment | null,
+    private readonly deliusOfficeLocations: DeliusOfficeLocation[],
+    private readonly assignedCaseworker: AuthUserDetails | null = null,
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
@@ -29,7 +32,7 @@ export default class ScheduleAppointmentPresenter {
 
   get appointmentSummary(): SummaryListItem[] {
     if (this.appointmentAlreadyAttended) {
-      return new AppointmentSummary(this.currentAppointment!, null).appointmentSummaryList
+      return new AppointmentSummary(this.currentAppointment!, this.assignedCaseworker).appointmentSummaryList
     }
     return []
   }
@@ -43,11 +46,21 @@ export default class ScheduleAppointmentPresenter {
   get appointmentAlreadyAttended(): boolean {
     if (this.appointmentDecorator !== null) {
       // Remove this check once action plan appointments allow rescheduling
-      if (this.appointmentDecorator.isInitialAssessmentAppointment(this.currentAppointment!)) {
+      if (this.appointmentDecorator.isInitialAssessmentAppointment) {
         return this.currentAppointment!.sessionFeedback.submitted
       }
     }
     return false
+  }
+
+  get deliusOfficeLocationsDetails(): { value: string; text: string; selected: boolean }[] {
+    return this.deliusOfficeLocations.map(officeLocation => {
+      return {
+        value: officeLocation.deliusCRSLocationId,
+        text: officeLocation.name,
+        selected: this.fields.deliusOfficeLocation.value === officeLocation.deliusCRSLocationId,
+      }
+    })
   }
 
   readonly fields = this.appointmentAlreadyAttended
@@ -57,6 +70,7 @@ export default class ScheduleAppointmentPresenter {
         duration: this.utils.durationValue(null, 'duration', this.validationError),
         meetingMethod: this.utils.meetingMethodValue(null, 'meeting-method', this.validationError),
         address: this.utils.addressValue(null, 'method-other-location', this.validationError),
+        deliusOfficeLocation: this.utils.selectionValue(null, 'delius-office-location-code', this.validationError),
       }
     : {
         date: this.utils.dateValue(this.appointmentDecorator?.britishDay ?? null, 'date', this.validationError),
@@ -78,6 +92,11 @@ export default class ScheduleAppointmentPresenter {
         address: this.utils.addressValue(
           this.currentAppointment?.appointmentDeliveryAddress ?? null,
           'method-other-location',
+          this.validationError
+        ),
+        deliusOfficeLocation: this.utils.selectionValue(
+          this.currentAppointment?.npsOfficeCode ?? null,
+          'delius-office-location-code',
           this.validationError
         ),
       }

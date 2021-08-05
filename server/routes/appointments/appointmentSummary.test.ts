@@ -1,4 +1,4 @@
-import appointmentFactory from '../../../testutils/factories/appointment'
+import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import AppointmentSummary from './appointmentSummary'
@@ -6,7 +6,7 @@ import AppointmentSummary from './appointmentSummary'
 describe(AppointmentSummary, () => {
   describe('appointmentDetails', () => {
     it('contains the date and time of the appointment', () => {
-      const appointment = appointmentFactory.build({
+      const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-03-09T11:00:00Z',
         durationInMinutes: 60,
       })
@@ -30,7 +30,7 @@ describe(AppointmentSummary, () => {
     ]
     describe.each(deliveryTypesTable)('for a %s', (_, deliveryType, expectedDisplayValue) => {
       it('contains the method of the appointment', () => {
-        const appointment = appointmentFactory.build({ appointmentDeliveryType: deliveryType })
+        const appointment = initialAssessmentAppointmentFactory.build({ appointmentDeliveryType: deliveryType })
         const summaryComponent = new AppointmentSummary(appointment, null)
 
         expect(summaryComponent.appointmentSummaryList[2]).toEqual({ key: 'Method', lines: [expectedDisplayValue] })
@@ -39,7 +39,7 @@ describe(AppointmentSummary, () => {
 
     describe('when the assigned case worker is provided', () => {
       it('contains the name of the referral’s assignee', () => {
-        const appointment = appointmentFactory.build()
+        const appointment = initialAssessmentAppointmentFactory.build()
         const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
         const summaryComponent = new AppointmentSummary(appointment, assignee)
 
@@ -49,7 +49,7 @@ describe(AppointmentSummary, () => {
 
     describe('when the appointment does not have a delivery address', () => {
       it('does not contain a row for the address', () => {
-        const appointment = appointmentFactory.build({ appointmentDeliveryAddress: null })
+        const appointment = initialAssessmentAppointmentFactory.build({ appointmentDeliveryAddress: null })
         const summaryComponent = new AppointmentSummary(appointment, null)
 
         expect(summaryComponent.appointmentSummaryList.map(row => row.key)).toEqual(['Date', 'Time', 'Method'])
@@ -66,7 +66,7 @@ describe(AppointmentSummary, () => {
       }
 
       it('contains the address', () => {
-        const appointment = appointmentFactory.build({
+        const appointment = initialAssessmentAppointmentFactory.build({
           appointmentDeliveryAddress: address,
         })
         const summaryComponent = new AppointmentSummary(appointment, null)
@@ -79,7 +79,7 @@ describe(AppointmentSummary, () => {
 
       describe('when the second address line is absent', () => {
         it('doesn’t contain a line for the second address line', () => {
-          const appointment = appointmentFactory.build({
+          const appointment = initialAssessmentAppointmentFactory.build({
             appointmentDeliveryAddress: { ...address, secondAddressLine: null },
           })
           const summaryComponent = new AppointmentSummary(appointment, null)

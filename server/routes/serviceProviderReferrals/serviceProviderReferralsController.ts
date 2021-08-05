@@ -2,8 +2,8 @@ import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService, { AppointmentUpdate } from '../../services/interventionsService'
-import ActionPlan, { ActionPlanAppointment } from '../../models/actionPlan'
+import InterventionsService from '../../services/interventionsService'
+import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
@@ -77,6 +77,10 @@ import ReportingView from './reportingView'
 import ReportingForm from './reportingForm'
 import PerformanceReportConfirmationView from './performanceReportConfirmationView'
 import DraftsService from '../../services/draftsService'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
+import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
+import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -88,7 +92,8 @@ export default class ServiceProviderReferralsController {
     private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
-    private readonly draftsService: DraftsService
+    private readonly draftsService: DraftsService,
+    private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
   ) {}
 
   async showDashboard(req: Request, res: Response): Promise<void> {
@@ -555,27 +560,46 @@ export default class ServiceProviderReferralsController {
   async editActionPlanSession(req: Request, res: Response): Promise<void> {
     const sessionNumber = Number(req.params.sessionNumber)
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
-    const referral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      actionPlan.referralId
-    )
+    const { accessToken } = res.locals.user.token
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
+    const deliusOfficeLocations: DeliusOfficeLocation[] =
+      await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
 
-    await this.scheduleAppointment(req, res, {
-      getReferral: async () => referral,
-      getCurrentAppointment: () =>
-        this.interventionsService.getActionPlanAppointment(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          sessionNumber
-        ),
-      scheduleAppointment: paramsForUpdate =>
-        this.interventionsService
-          .updateActionPlanAppointment(res.locals.user.token.accessToken, req.params.id, sessionNumber, paramsForUpdate)
-          .then(),
-      createPresenter: (appointment, formError, userInputData, serverError) =>
-        new ScheduleActionPlanSessionPresenter(referral, appointment, formError, userInputData, serverError),
-      redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
-    })
+    await this.scheduleAppointment(
+      req,
+      res,
+      {
+        getReferral: async () => referral,
+        getCurrentAppointment: () =>
+          this.interventionsService.getActionPlanAppointment(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            sessionNumber
+          ),
+        scheduleAppointment: paramsForUpdate =>
+          this.interventionsService
+            .updateActionPlanAppointment(
+              res.locals.user.token.accessToken,
+              req.params.id,
+              sessionNumber,
+              paramsForUpdate
+            )
+            .then(),
+        createPresenter: (appointment, formError, userInputData, serverError) =>
+          new ScheduleActionPlanSessionPresenter(
+            referral,
+            appointment,
+            deliusOfficeLocations,
+            null,
+            formError,
+            userInputData,
+            serverError
+          ),
+        redirectTo: `/service-provider/referrals/${actionPlan.referralId}/progress`,
+      },
+      deliusOfficeLocations
+    )
   }
 
   async showSupplierAssessmentAppointmentConfirmation(
@@ -596,44 +620,58 @@ export default class ServiceProviderReferralsController {
 
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
     const referralId = req.params.id
-    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
-
-    const supplierAssessment = await this.interventionsService.getSupplierAssessment(
-      res.locals.user.token.accessToken,
-      referralId
-    )
+    const { accessToken } = res.locals.user.token
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
+    const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
 
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
     const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
+    const deliusOfficeLocations: DeliusOfficeLocation[] =
+      await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
+    let assignedCaseworker: AuthUserDetails | null = null
+    if (currentAppointment?.sessionFeedback?.submitted) {
+      assignedCaseworker = await this.hmppsAuthService.getSPUserByUsername(
+        res.locals.user.token.accessToken,
+        currentAppointment!.sessionFeedback!.submittedBy!.username
+      )
+    }
 
-    await this.scheduleAppointment(req, res, {
-      getReferral: async () => referral,
-      getCurrentAppointment: async () => currentAppointment,
-      scheduleAppointment: paramsForUpdate =>
-        this.interventionsService
-          .scheduleSupplierAssessmentAppointment(
-            res.locals.user.token.accessToken,
-            supplierAssessment.id,
-            paramsForUpdate
+    await this.scheduleAppointment(
+      req,
+      res,
+      {
+        getReferral: async () => referral,
+        getCurrentAppointment: async () => currentAppointment,
+        scheduleAppointment: paramsForUpdate =>
+          this.interventionsService
+            .scheduleSupplierAssessmentAppointment(
+              res.locals.user.token.accessToken,
+              supplierAssessment.id,
+              paramsForUpdate
+            )
+            .then(),
+        createPresenter: (appointment, formError, userInputData, serverError) => {
+          const overrideBackLinkHref = hasExistingScheduledAppointment
+            ? `/service-provider/referrals/${referralId}/supplier-assessment`
+            : undefined
+          return new ScheduleAppointmentPresenter(
+            referral,
+            appointment,
+            deliusOfficeLocations,
+            assignedCaseworker,
+            formError,
+            userInputData,
+            serverError,
+            overrideBackLinkHref
           )
-          .then(),
-      createPresenter: (appointment, formError, userInputData, serverError) => {
-        const overrideBackLinkHref = hasExistingScheduledAppointment
-          ? `/service-provider/referrals/${referralId}/supplier-assessment`
-          : undefined
-        return new ScheduleAppointmentPresenter(
-          referral,
-          appointment,
-          formError,
-          userInputData,
-          serverError,
-          overrideBackLinkHref
-        )
+        },
+        redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
+          hasExistingScheduledAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
+        }`,
       },
-      redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
-        hasExistingScheduledAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
-      }`,
-    })
+      deliusOfficeLocations
+    )
   }
 
   async showSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
@@ -666,7 +704,7 @@ export default class ServiceProviderReferralsController {
     config: {
       getReferral: () => Promise<SentReferral>
       getCurrentAppointment: () => Promise<AppointmentType>
-      scheduleAppointment: (paramsForUpdate: AppointmentUpdate) => Promise<void>
+      scheduleAppointment: (paramsForUpdate: AppointmentSchedulingDetails) => Promise<void>
       createPresenter: (
         appointment: AppointmentType,
         validationError: FormValidationError | null,
@@ -674,14 +712,15 @@ export default class ServiceProviderReferralsController {
         serverError: FormValidationError | null
       ) => ScheduleAppointmentPresenter
       redirectTo: string
-    }
+    },
+    deliusOfficeLocations: DeliusOfficeLocation[]
   ): Promise<void> {
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req).data()
+      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations).data()
 
       if (data.error) {
         res.status(400)

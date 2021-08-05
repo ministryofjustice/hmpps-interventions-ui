@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../../../../../models/actionPlan'
+import { ActionPlanAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import BehaviourFeedbackInputsPresenter from '../../shared/behaviour/behaviourFeedbackInputsPresenter'

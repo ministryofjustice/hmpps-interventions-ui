@@ -1,5 +1,4 @@
 import { Request } from 'express'
-import { AppointmentUpdate } from '../../services/interventionsService'
 import TwelveHourBritishDateTimeInput from '../../utils/forms/inputs/twelveHourBritishDateTimeInput'
 import { FormData } from '../../utils/forms/formData'
 import DurationInput from '../../utils/forms/inputs/durationInput'
@@ -8,11 +7,14 @@ import MeetingMethodInput from '../../utils/forms/inputs/meetingMethodInput'
 import AddressInput from '../../utils/forms/inputs/addressInput'
 import { FormValidationResult } from '../../utils/forms/formValidationResult'
 import Address from '../../models/address'
+import { AppointmentSchedulingDetails } from '../../models/appointment'
+import DeliusOfficeLocationInput from '../../utils/forms/inputs/deliusOfficeLocationInput'
+import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 
 export default class ScheduleAppointmentForm {
-  constructor(private readonly request: Request) {}
+  constructor(private readonly request: Request, private readonly deliusOfficeLocations: DeliusOfficeLocation[]) {}
 
-  async data(): Promise<FormData<AppointmentUpdate>> {
+  async data(): Promise<FormData<AppointmentSchedulingDetails>> {
     const [dateResult, durationResult, appointmentDeliveryType] = await Promise.all([
       new TwelveHourBritishDateTimeInput(
         this.request,
@@ -35,8 +37,23 @@ export default class ScheduleAppointmentForm {
         errorMessages.scheduleAppointment.address
       ).validate()
     }
+    let deliusOfficeLocation: FormValidationResult<string | null> = { value: null, error: null }
+    if (appointmentDeliveryType.value === 'IN_PERSON_MEETING_PROBATION_OFFICE') {
+      deliusOfficeLocation = await new DeliusOfficeLocationInput(
+        this.request,
+        'delius-office-location-code',
+        this.deliusOfficeLocations,
+        errorMessages.scheduleAppointment.deliusOfficeLocation
+      ).validate()
+    }
 
-    if (dateResult.error || durationResult.error || appointmentDeliveryType.error || appointmentDeliveryAddress.error) {
+    if (
+      dateResult.error ||
+      durationResult.error ||
+      appointmentDeliveryType.error ||
+      appointmentDeliveryAddress.error ||
+      deliusOfficeLocation.error
+    ) {
       return {
         paramsForUpdate: null,
         error: {
@@ -45,6 +62,7 @@ export default class ScheduleAppointmentForm {
             ...(durationResult.error?.errors ?? []),
             ...(appointmentDeliveryType.error?.errors ?? []),
             ...(appointmentDeliveryAddress.error?.errors ?? []),
+            ...(deliusOfficeLocation.error?.errors ?? []),
           ],
         },
       }
@@ -57,6 +75,7 @@ export default class ScheduleAppointmentForm {
         durationInMinutes: durationResult.value.minutes!,
         appointmentDeliveryType: appointmentDeliveryType.value!,
         appointmentDeliveryAddress: appointmentDeliveryAddress.value,
+        npsOfficeCode: deliusOfficeLocation.value,
       },
     }
   }

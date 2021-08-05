@@ -7,6 +7,7 @@ import Intervention from '../../models/intervention'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import TestUtils from '../../../testutils/testUtils'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
+import pccRegion from '../../../testutils/factories/pccRegion'
 
 describe(InterventionDetailsPresenter, () => {
   describe('title', () => {
@@ -160,10 +161,7 @@ three lines.`,
       it('is a comma-separated list of PCC regions', () => {
         expect(
           linesForKey('Location', {
-            pccRegions: [
-              { id: '1', name: 'Region 1' },
-              { id: '2', name: 'Region 2' },
-            ],
+            pccRegions: [pccRegion.build({ name: 'Region 1' }), pccRegion.build({ name: 'Region 2' })],
           })
         ).toEqual(['Region 1, Region 2'])
       })

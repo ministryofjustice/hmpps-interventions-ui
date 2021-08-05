@@ -1,7 +1,18 @@
 import ScheduleAppointmentForm from './scheduleAppointmentForm'
 import TestUtils from '../../../testutils/testUtils'
+import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 
 describe(ScheduleAppointmentForm, () => {
+  const deliusOfficeLocations: DeliusOfficeLocation[] = [
+    {
+      probationOfficeId: 76,
+      name: 'Havering: Pioneer House',
+      address: 'Pioneer House, North Street, Hornchurch, Essex, RM11 1QZ',
+      probationRegionId: 'J',
+      govUkURL: 'https://www.gov.uk/guidance/havering-pioneer-house',
+      deliusCRSLocationId: 'CRS0001',
+    },
+  ]
   describe('data', () => {
     describe('with valid data', () => {
       describe('with a phone call appointment', () => {
@@ -18,13 +29,14 @@ describe(ScheduleAppointmentForm, () => {
             'meeting-method': 'PHONE_CALL',
           })
 
-          const data = await new ScheduleAppointmentForm(request).data()
+          const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
             durationInMinutes: 90,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
           })
         })
       })
@@ -47,7 +59,7 @@ describe(ScheduleAppointmentForm, () => {
             'method-other-location-address-postcode': 'SY4 0RE',
           })
 
-          const data = await new ScheduleAppointmentForm(request).data()
+          const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
@@ -60,6 +72,7 @@ describe(ScheduleAppointmentForm, () => {
               county: 'Lancashire',
               postCode: 'SY4 0RE',
             },
+            npsOfficeCode: null,
           })
         })
 
@@ -81,7 +94,7 @@ describe(ScheduleAppointmentForm, () => {
               'method-other-location-address-postcode': 'SY4 0RE',
             })
 
-            const data = await new ScheduleAppointmentForm(request).data()
+            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
             expect(data.paramsForUpdate).toEqual({
               appointmentTime: '2021-09-12T12:05:00.000Z',
               durationInMinutes: 90,
@@ -93,7 +106,34 @@ describe(ScheduleAppointmentForm, () => {
                 county: 'Lancashire',
                 postCode: 'SY4 0RE',
               },
+              npsOfficeCode: null,
             })
+          })
+        })
+      })
+      describe('with a delius office location appointment', () => {
+        it('returns a valid appointment with an office location code', async () => {
+          const request = TestUtils.createRequest({
+            'date-year': '2021',
+            'date-month': '09',
+            'date-day': '12',
+            'time-hour': '1',
+            'time-minute': '05',
+            'time-part-of-day': 'pm',
+            'duration-hours': '1',
+            'duration-minutes': '30',
+            'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+            'delius-office-location-code': 'CRS0001',
+          })
+
+          const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
+
+          expect(data.paramsForUpdate).toEqual({
+            appointmentTime: '2021-09-12T12:05:00.000Z',
+            durationInMinutes: 90,
+            appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
+            appointmentDeliveryAddress: null,
+            npsOfficeCode: 'CRS0001',
           })
         })
       })
@@ -112,7 +152,7 @@ describe(ScheduleAppointmentForm, () => {
           'duration-minutes': '',
         })
 
-        const data = await new ScheduleAppointmentForm(request).data()
+        const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
         expect(data.error).toEqual({
           errors: [
@@ -137,6 +177,64 @@ describe(ScheduleAppointmentForm, () => {
               message: 'Select a meeting method',
             },
           ],
+        })
+      })
+      describe('with a delius office location appointment', () => {
+        describe('having an empty office location selection', () => {
+          it('returns an error message for missing office location', async () => {
+            const request = TestUtils.createRequest({
+              'date-year': '2021',
+              'date-month': '09',
+              'date-day': '12',
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': '',
+            })
+
+            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'delius-office-location-code',
+                  formFields: ['delius-office-location-code'],
+                  message: 'Select an office',
+                },
+              ],
+            })
+          })
+        })
+        describe('having an invalid office location selection', () => {
+          it('returns an error message for invalid office location', async () => {
+            const request = TestUtils.createRequest({
+              'date-year': '2021',
+              'date-month': '09',
+              'date-day': '12',
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': 'CRS0002',
+            })
+
+            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'delius-office-location-code',
+                  formFields: ['delius-office-location-code'],
+                  message: 'Select an office from the list',
+                },
+              ],
+            })
+          })
         })
       })
     })

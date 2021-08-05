@@ -1,4 +1,11 @@
-import { BackLinkArgs, DateInputArgs, RadiosArgs, TimeInputArgs } from '../../utils/govukFrontendTypes'
+import {
+  BackLinkArgs,
+  DateInputArgs,
+  RadiosArgs,
+  SelectArgs,
+  SelectArgsItem,
+  TimeInputArgs,
+} from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import AddressFormComponent from '../shared/addressFormComponent'
@@ -16,6 +23,7 @@ export default class ScheduleAppointmentView {
         dateInputArgs: this.dateInputArgs,
         timeInputArgs: this.timeInputArgs,
         durationDateInputArgs: this.durationDateInputArgs,
+        deliusOfficeLocationSelectArgs: this.deliusOfficeLocationSelectArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         serverError: this.serverError,
         address: this.addressFormView.inputArgs,
@@ -142,7 +150,22 @@ export default class ScheduleAppointmentView {
     }
   }
 
-  private meetingMethodRadioInputArgs(otherLocationHTML: string): RadiosArgs {
+  private get deliusOfficeLocationSelectArgs(): SelectArgs {
+    const items: SelectArgsItem[] = [
+      {
+        text: '-- Select a Probation Delivery Unit --',
+        disabled: true,
+      },
+    ]
+    items.push(...this.presenter.deliusOfficeLocationsDetails)
+    return {
+      id: 'delius-office-location-code',
+      name: 'delius-office-location-code',
+      items,
+    }
+  }
+
+  private meetingMethodRadioInputArgs(deliusOfficeLocationHTML: string, otherLocationHTML: string): RadiosArgs {
     return {
       idPrefix: 'meeting-method',
       name: 'meeting-method',
@@ -169,8 +192,16 @@ export default class ScheduleAppointmentView {
           checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
         },
         {
+          value: 'IN_PERSON_MEETING_PROBATION_OFFICE',
+          text: 'In-person meeting - NPS offices',
+          checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_PROBATION_OFFICE',
+          conditional: {
+            html: deliusOfficeLocationHTML,
+          },
+        },
+        {
           value: 'IN_PERSON_MEETING_OTHER',
-          text: 'In-person meeting',
+          text: 'In-person meeting - Other locations',
           checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
           conditional: {
             html: otherLocationHTML,

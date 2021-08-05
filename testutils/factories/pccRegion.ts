@@ -4,4 +4,5 @@ import PCCRegion from '../../server/models/pccRegion'
 export default Factory.define<PCCRegion>(({ sequence }) => ({
   id: sequence.toString(),
   name: 'Cheshire',
+  npsRegion: { id: 'B', name: 'North West' },
 }))

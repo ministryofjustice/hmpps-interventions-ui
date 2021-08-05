@@ -58,7 +58,10 @@ describe(FindInterventionsController, () => {
 
     it('accepts filter params and makes a filtered request to the API', async () => {
       interventionsService.getInterventions.mockResolvedValue([])
-      const pccRegions = [pccRegionFactory.build({ name: 'Cheshire' }), pccRegionFactory.build({ name: 'Cumbria' })]
+      const pccRegions = [
+        pccRegionFactory.build({ id: '1', name: 'Cheshire' }),
+        pccRegionFactory.build({ id: '2', name: 'Cumbria' }),
+      ]
       interventionsService.getPccRegions.mockResolvedValue(pccRegions)
 
       await request(app)

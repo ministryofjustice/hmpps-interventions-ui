@@ -1,10 +1,10 @@
-import Appointment from '../models/appointment'
+import { InitialAssessmentAppointment } from '../models/appointment'
 import SupplierAssessment from '../models/supplierAssessment'
 
 export default class SupplierAssessmentDecorator {
   constructor(private readonly supplierAssessment: SupplierAssessment) {}
 
-  get currentAppointment(): Appointment | null {
+  get currentAppointment(): InitialAssessmentAppointment | null {
     if (this.supplierAssessment.currentAppointmentId === null) {
       return null
     }
