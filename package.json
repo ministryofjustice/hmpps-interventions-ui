@@ -5,7 +5,7 @@
   "repository": "git@github.com:ministryofjustice/hmpps-interventions-ui.git",
   "license": "MIT",
   "scripts": {
-    "build:ref-data": "cp -R reference-data dist/server/",
+    "build:ref-data": "cp -R reference-data dist/",
     "build:views": "cp -R server/views dist/server/",
     "build:sass": "sass --no-source-map --load-path=node_modules/govuk-frontend --load-path=node_modules/@ministryofjustice/frontend ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
     "build:typecheck": "tsc",
