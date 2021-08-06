@@ -161,3 +161,7 @@ webclient:
   connect-timeout-seconds: 20
   read-timeout-seconds: 10
   write-timeout-seconds: 10
+  hmpps-auth:
+    max-retry-attempts: 2
+    connect-timeout-seconds: 3
+    read-timeout-seconds: 3
