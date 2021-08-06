@@ -52,17 +52,15 @@ export default {
   },
   s3: {
     service: {
-      apiVersion: '2006-03-01',
       region: 'eu-west-2',
+      accessKeyId: get('AWS_S3_ACCESSKEYID', 'test', requiredInProduction),
+      secretAccessKey: get('AWS_S3_SECRETACCESSKEY', 'test', requiredInProduction),
+      apiVersion: '2006-03-01',
       signatureVersion: 'v4',
       endpoint: production ? undefined : 'http://localhost:4566',
     },
     bucket: {
       name: get('AWS_S3_BUCKET_NAME', 'interventions-bucket-local', requiredInProduction),
-    },
-    credentials: {
-      accessKeyId: get('AWS_S3_ACCESSKEYID', 'test', requiredInProduction),
-      secretAccessKey: get('AWS_S3_SECRETACCESSKEY', 'test', requiredInProduction),
     },
   },
   redis: {

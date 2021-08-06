@@ -1,0 +1,23 @@
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+    HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Get your report</h1>
+
+            <p class="govuk-body">Your download should start automatically; if it doesn't, click <a id="report-download-link" href="{{ downloadUrl }}" download="{{ filename }}">here</a>.</p>
+
+            <a href="/service-provider/dashboard" class="govuk-button">Return to dashboard</a>
+        </div>
+    </div>
+
+    <script {% if cspNonce %} nonce="{{ cspNonce }}"{% endif %}>
+        document.getElementById("report-download-link").click()
+    </script>
+{% endblock %}

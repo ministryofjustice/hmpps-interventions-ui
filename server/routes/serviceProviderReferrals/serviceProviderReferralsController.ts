@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
+import S3 from 'aws-sdk/clients/s3'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService from '../../services/interventionsService'
 import ActionPlan from '../../models/actionPlan'
@@ -81,12 +82,15 @@ import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
+import config from '../../config'
 
 export interface DraftAssignmentData {
   email: string | null
 }
 
 export default class ServiceProviderReferralsController {
+  s3Service: S3
+
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
@@ -94,7 +98,9 @@ export default class ServiceProviderReferralsController {
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
     private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
-  ) {}
+  ) {
+    this.s3Service = new S3(config.s3.service)
+  }
 
   async showDashboard(req: Request, res: Response): Promise<void> {
     const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
@@ -701,7 +707,7 @@ export default class ServiceProviderReferralsController {
   private async scheduleAppointment<AppointmentType>(
     req: Request,
     res: Response,
-    config: {
+    appointmentConfig: {
       getReferral: () => Promise<SentReferral>
       getCurrentAppointment: () => Promise<AppointmentType>
       scheduleAppointment: (paramsForUpdate: AppointmentSchedulingDetails) => Promise<void>
@@ -728,8 +734,8 @@ export default class ServiceProviderReferralsController {
         userInputData = req.body
       } else {
         try {
-          await config.scheduleAppointment(data.paramsForUpdate)
-          return res.redirect(config.redirectTo)
+          await appointmentConfig.scheduleAppointment(data.paramsForUpdate)
+          return res.redirect(appointmentConfig.redirectTo)
         } catch (e) {
           if (e.status === 409) {
             res.status(400)
@@ -750,11 +756,11 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const appointment = await config.getCurrentAppointment()
-    const referral = await config.getReferral()
+    const appointment = await appointmentConfig.getCurrentAppointment()
+    const referral = await appointmentConfig.getReferral()
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = config.createPresenter(appointment, formError, userInputData, serverError)
+    const presenter = appointmentConfig.createPresenter(appointment, formError, userInputData, serverError)
     const view = new ScheduleAppointmentView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -1356,6 +1362,25 @@ export default class ServiceProviderReferralsController {
   async showPerformanceReportConfirmation(_req: Request, res: Response): Promise<void> {
     const view = new PerformanceReportConfirmationView()
     ControllerUtils.renderWithLayout(res, view, null)
+  }
+
+  async downloadPerformanceReport(req: Request, res: Response): Promise<void> {
+    const { filename } = req.query
+    if (!filename) {
+      throw createError(400, "required query parameter 'filename' missing")
+    }
+
+    const downloadUrl = this.s3Service.getSignedUrl('getObject', {
+      Bucket: config.s3.bucket.name,
+      Key: `reports/service-provider/performance/${filename}`,
+      Expires: 60 * 15, // 15 minutes - the page can load without the download starting
+    })
+
+    ControllerUtils.renderWithLayout(
+      res,
+      { renderArgs: ['serviceProviderReferrals/performanceReportDownload', { downloadUrl, filename }] },
+      null
+    )
   }
 
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
