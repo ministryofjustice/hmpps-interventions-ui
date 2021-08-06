@@ -42,6 +42,14 @@ export default {
   staticResourceCacheDuration: 20,
   deploymentEnvironment: get('DEPLOYMENT_ENV', 'local', requiredInProduction),
   googleAnalyticsTrackingId: get('GA_ID', '', requiredInProduction),
+  features: {
+    npsOfficeLocationSelection: {
+      enabled: get('FEATURE_NPS_OFFICE_LOCATION_SELECTION_ENABLED', 'false') === 'true',
+    },
+    serviceProviderReporting: {
+      enabled: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
+    },
+  },
   redis: {
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT) || 6379,
@@ -110,10 +118,5 @@ export default {
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   draftsService: {
     expiry: { seconds: Number(get('DRAFTS_EXPIRY_IN_SECONDS', `${24 * 60 * 60}`)) },
-  },
-  features: {
-    npsOfficeLocationSelection: {
-      enabled: get('FEATURE_NPS_OFFICE_LOCATION_SELECTION_ENABLED', 'false') === 'true',
-    },
   },
 }

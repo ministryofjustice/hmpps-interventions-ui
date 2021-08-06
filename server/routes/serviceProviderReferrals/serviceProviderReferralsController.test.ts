@@ -34,6 +34,7 @@ import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
+import CalendarDay from '../../utils/calendarDay'
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import { DraftAssignmentData } from './serviceProviderReferralsController'
 import DraftsService from '../../services/draftsService'
@@ -2108,6 +2109,53 @@ describe('GET /service-provider/referrals/:id/supplier-assessment', () => {
       .expect(res => {
         expect(res.text).toContain('24 March 2021')
         expect(res.text).toContain('9:02am to 10:17am')
+      })
+  })
+})
+
+describe('GET /service-provider/reporting', () => {
+  it('displays a page to allow the Service Provider to download a report of referral data', async () => {
+    await request(app)
+      .get('/service-provider/performance-report')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Reporting')
+      })
+  })
+})
+
+describe('POST /service-provider/performance-report', () => {
+  it('makes a request to the interventions service to generate referral data and redirects to the confirmation page', async () => {
+    interventionsService.generateServiceProviderPerformanceReport.mockResolvedValue()
+
+    await request(app)
+      .post('/service-provider/performance-report')
+      .type('form')
+      .send({
+        'from-date-day': '20',
+        'from-date-month': '06',
+        'from-date-year': '2021',
+        'to-date-day': '25',
+        'to-date-month': '06',
+        'to-date-year': '2021',
+      })
+      .expect(302)
+      .expect('Location', '/service-provider/performance-report/confirmation')
+
+    expect(interventionsService.generateServiceProviderPerformanceReport).toHaveBeenCalledWith('token', {
+      fromIncludingDate: CalendarDay.fromComponents(20, 6, 2021),
+      toIncludingDate: CalendarDay.fromComponents(25, 6, 2021),
+    })
+  })
+})
+
+describe('GET /service-provider/performance-report/confirmation', () => {
+  it('renders a confirmation page', async () => {
+    await request(app)
+      .get('/service-provider/performance-report/confirmation')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Your request has been submitted')
       })
   })
 })

@@ -58,6 +58,11 @@ export interface UpdateDraftEndOfServiceReportParams {
   outcome: CreateEndOfServiceReportOutcome | null
 }
 
+export interface CreateReportDateParams {
+  fromIncludingDate: CalendarDay
+  toIncludingDate: CalendarDay
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -546,5 +551,21 @@ export default class InterventionsService {
       path: `/referral/${referralId}/supplier-assessment/submit-feedback`,
       headers: { Accept: 'application/json' },
     })) as InitialAssessmentAppointment
+  }
+
+  private static createReportDatesDTO(params: CreateReportDateParams): Record<string, unknown> {
+    return {
+      fromDate: params.fromIncludingDate.iso8601,
+      toDate: params.toIncludingDate.iso8601,
+    }
+  }
+
+  async generateServiceProviderPerformanceReport(token: string, reportDates: CreateReportDateParams): Promise<void> {
+    const restClient = this.createRestClient(token)
+
+    await restClient.post({
+      path: '/reports/service-provider/performance',
+      data: InterventionsService.createReportDatesDTO(reportDates),
+    })
   }
 }

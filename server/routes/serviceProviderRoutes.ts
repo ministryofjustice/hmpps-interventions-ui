@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { Services, get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
+import config from '../config'
 import DeliusOfficeLocationFilter from '../services/deliusOfficeLocationFilter'
 import ReferenceDataService from '../services/referenceDataService'
 
@@ -170,6 +171,14 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/referrals/:id/action-plan/edit', (req, res) =>
     serviceProviderReferralsController.createNewDraftActionPlan(req, res)
   )
+
+  if (config.features.serviceProviderReporting.enabled) {
+    get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
+    post(router, '/performance-report', (req, res) => serviceProviderReferralsController.createReport(req, res))
+    get(router, '/performance-report/confirmation', (req, res) =>
+      serviceProviderReferralsController.showPerformanceReportConfirmation(req, res)
+    )
+  }
 
   return router
 }

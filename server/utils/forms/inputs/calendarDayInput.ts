@@ -19,8 +19,12 @@ export default class CalendarDayInput {
     private readonly errorMessages: CalendarDayErrorMessages
   ) {}
 
+  private static keys(key: string) {
+    return { day: `${key}-day`, month: `${key}-month`, year: `${key}-year` }
+  }
+
   private get keys() {
-    return { day: `${this.key}-day`, month: `${this.key}-month`, year: `${this.key}-year` }
+    return CalendarDayInput.keys(this.key)
   }
 
   async validate(): Promise<FormValidationResult<CalendarDay>> {
@@ -37,6 +41,20 @@ export default class CalendarDayInput {
     }
   }
 
+  static createError(key: string, message: string): FormValidationError {
+    const keys = this.keys(key)
+
+    return {
+      errors: [
+        {
+          errorSummaryLinkedField: keys.day,
+          formFields: [keys.day, keys.month, keys.year],
+          message,
+        },
+      ],
+    }
+  }
+
   private error(result: ExpressValidator.Result): FormValidationError | null {
     const error = FormUtils.validationErrorFromResult(result)
     if (error !== null) {
@@ -44,15 +62,7 @@ export default class CalendarDayInput {
     }
 
     if (this.calendarDay === null) {
-      return {
-        errors: [
-          {
-            errorSummaryLinkedField: this.keys.day,
-            formFields: [this.keys.day, this.keys.month, this.keys.year],
-            message: this.errorMessages.invalidDate,
-          },
-        ],
-      }
+      return CalendarDayInput.createError(this.key, this.errorMessages.invalidDate)
     }
 
     return null

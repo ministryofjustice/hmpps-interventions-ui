@@ -11,6 +11,9 @@ export default class DashboardView {
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
-    return ['serviceProviderReferrals/dashboard', { tableArgs: this.tableArgs }]
+    return [
+      'serviceProviderReferrals/dashboard',
+      { tableArgs: this.tableArgs, primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items) },
+    ]
   }
 }

@@ -72,6 +72,10 @@ import InitialAssessmentFeedbackConfirmationPresenter from '../appointments/feed
 import InitialAssessmentFeedbackConfirmationView from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
 import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
+import ReportingPresenter from './reportingPresenter'
+import ReportingView from './reportingView'
+import ReportingForm from './reportingForm'
+import PerformanceReportConfirmationView from './performanceReportConfirmationView'
 import DraftsService from '../../services/draftsService'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
@@ -1320,6 +1324,38 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
     const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewReporting(_req: Request, res: Response): Promise<void> {
+    const presenter = new ReportingPresenter()
+    const view = new ReportingView(presenter)
+    ControllerUtils.renderWithLayout(res, view, null)
+  }
+
+  async createReport(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    let userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+
+    const data = await new ReportingForm(req).data()
+
+    if (data.error) {
+      res.status(400)
+      formError = data.error
+      userInputData = req.body
+      const presenter = new ReportingPresenter(formError, userInputData)
+      const view = new ReportingView(presenter)
+      ControllerUtils.renderWithLayout(res, view, null)
+    } else {
+      await this.interventionsService.generateServiceProviderPerformanceReport(accessToken, data.value)
+      res.redirect('/service-provider/performance-report/confirmation')
+    }
+  }
+
+  async showPerformanceReportConfirmation(_req: Request, res: Response): Promise<void> {
+    const view = new PerformanceReportConfirmationView()
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {

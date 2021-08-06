@@ -19,6 +19,24 @@ export default {
     invalidDate: 'The date by which the service needs to be completed must be a real date',
     mustBeInFuture: 'The date by which the service needs to be completed must be in the future',
   },
+  reportingDate: {
+    from: {
+      dayEmpty: 'The "from" date must include a day',
+      monthEmpty: 'The "from" date must include a month',
+      yearEmpty: 'The "from" date must include a year',
+      invalidDate: 'The "from" date must be a real date',
+      mustBeAfterDayOne: 'Data before 01 June 2021 is not available',
+      mustBeBeforeToDate: 'The "from" date must be before the "to" date',
+      mustNotBeInFuture: `Data after today is not available`,
+    },
+    to: {
+      dayEmpty: 'The "to" date must include a day',
+      monthEmpty: 'The "to" date must include a month',
+      yearEmpty: 'The "to" date must include a year',
+      invalidDate: 'The "to" date must be a real date',
+      mustNotBeInFuture: `Data after today is not available`,
+    },
+  },
   serviceCategories: {
     empty: 'At least one service category must be selected',
   },

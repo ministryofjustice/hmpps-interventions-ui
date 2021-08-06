@@ -1,0 +1,35 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "components/time-input/macro.njk" import appTimeInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block pageTitle %}
+  HMPPS Interventions - GOV.UK
+{% endblock %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <form method="post" novalidate="novalidate">
+
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">{{ presenter.text.title }}</h1>
+        <p class="govuk-body-m govuk-!-margin-bottom-7">{{ presenter.text.subtitle }}</p>
+
+        {{ govukDateInput(fromDateInputArgs) }}
+        {{ govukDateInput(toDateInputArgs) }}
+
+        {{ govukButton({ text: "Request data" }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -14,6 +14,7 @@ import endOfServiceReportFactory from '../../testutils/factories/endOfServiceRep
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
+import CalendarDay from '../utils/calendarDay'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -36,14 +37,14 @@ jest.setTimeout(30000)
 
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
-  let token: string
+  let probationPractitionerToken: string
   let serviceProviderToken: string
 
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
-    token = oauth2TokenFactory.deliusToken().build()
-    serviceProviderToken = oauth2TokenFactory.authToken().build()
+    probationPractitionerToken = oauth2TokenFactory.probationPractitionerToken().build()
+    serviceProviderToken = oauth2TokenFactory.serviceProviderToken().build()
   })
 
   describe('getDraftReferral', () => {
@@ -54,7 +55,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/draft-referral/ac386c25-52c8-41fa-9213-fcf42e24b0b5',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -66,7 +67,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.getDraftReferral(token, 'ac386c25-52c8-41fa-9213-fcf42e24b0b5')
+      const referral = await interventionsService.getDraftReferral(
+        probationPractitionerToken,
+        'ac386c25-52c8-41fa-9213-fcf42e24b0b5'
+      )
       expect(referral.id).toBe('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
     })
 
@@ -79,7 +83,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -94,7 +98,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the service category id field populated', async () => {
-        const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          'd496e4a7-7cc1-44ea-ba67-c295084f1962'
+        )
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
         expect(referral.serviceCategoryIds![0]).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
@@ -110,7 +117,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/d496e4a7-7cc1-44ea-ba67-c295084f1962',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -126,7 +133,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the serviceProviderId field populated', async () => {
-        const referral = await interventionsService.getDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          'd496e4a7-7cc1-44ea-ba67-c295084f1962'
+        )
 
         expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
         expect(referral.serviceProvider!.name).toEqual('Harmony Living')
@@ -142,7 +152,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/037cc90b-beaa-4a32-9ab7-7f79136e1d27',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -162,7 +172,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the desired outcomes selected', async () => {
-        const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          '037cc90b-beaa-4a32-9ab7-7f79136e1d27'
+        )
 
         expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
         expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
@@ -180,7 +193,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -201,7 +214,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        const referral = await interventionsService.getDraftReferral(token, '06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          '06716f8e-f507-42d4-bdcc-44c90e18dbd7'
+        )
 
         expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
         expect(referral.desiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
@@ -226,7 +242,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/037cc90b-beaa-4a32-9ab7-7f79136e1d27',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -245,7 +261,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the desired outcomes selected', async () => {
-        const referral = await interventionsService.getDraftReferral(token, '037cc90b-beaa-4a32-9ab7-7f79136e1d27')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          '037cc90b-beaa-4a32-9ab7-7f79136e1d27'
+        )
 
         expect(referral.id).toBe('037cc90b-beaa-4a32-9ab7-7f79136e1d27')
         expect(referral.complexityLevels![0].complexityLevelId).toEqual('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
@@ -260,7 +279,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -281,7 +300,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        const referral = await interventionsService.getDraftReferral(token, '06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          '06716f8e-f507-42d4-bdcc-44c90e18dbd7'
+        )
 
         expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
         expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
@@ -301,7 +323,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/draft-referral/1219a064-709b-4b6c-a11e-10b8cb3966f6',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -326,7 +348,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       it('returns a referral for the given ID, with the service user details', async () => {
-        const referral = await interventionsService.getDraftReferral(token, '1219a064-709b-4b6c-a11e-10b8cb3966f6')
+        const referral = await interventionsService.getDraftReferral(
+          probationPractitionerToken,
+          '1219a064-709b-4b6c-a11e-10b8cb3966f6'
+        )
 
         expect(referral.id).toBe('1219a064-709b-4b6c-a11e-10b8cb3966f6')
         expect(referral.serviceUser.crn).toEqual('X862134')
@@ -354,7 +379,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-referral',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           body: {
             serviceUserCrn,
             interventionId,
@@ -377,7 +402,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.createDraftReferral(token, serviceUserCrn, interventionId)
+      const referral = await interventionsService.createDraftReferral(
+        probationPractitionerToken,
+        serviceUserCrn,
+        interventionId
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.serviceUser.crn).toBe(serviceUserCrn)
       expect(referral.interventionId).toBe(interventionId)
@@ -395,7 +424,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { completionDeadline: '2020-04-01' },
         },
@@ -418,7 +447,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await expect(
-        interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
+        interventionsService.patchDraftReferral(probationPractitionerToken, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
           completionDeadline: '2020-04-01',
         })
       ).rejects.toMatchObject({
@@ -449,7 +478,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             serviceUser,
@@ -468,9 +497,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        serviceUser,
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          serviceUser,
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.serviceUser).toEqual(serviceUser)
     })
@@ -485,7 +518,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { completionDeadline: '2045-04-01' },
         },
@@ -502,9 +535,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        completionDeadline: '2045-04-01',
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          completionDeadline: '2045-04-01',
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.completionDeadline).toBe('2045-04-01')
     })
@@ -520,7 +557,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -545,7 +582,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.setComplexityLevelForServiceCategory(
-        token,
+        probationPractitionerToken,
         'd496e4a7-7cc1-44ea-ba67-c295084f1962',
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -566,7 +603,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { furtherInformation: 'Some information about the service user' },
         },
@@ -582,9 +619,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        furtherInformation: 'Some information about the service user',
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          furtherInformation: 'Some information about the service user',
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.furtherInformation).toBe('Some information about the service user')
     })
@@ -599,7 +640,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             relevantSentenceId: 2600295124,
@@ -617,9 +658,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
-        relevantSentenceId: 2600295124,
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+        {
+          relevantSentenceId: 2600295124,
+        }
+      )
       expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
       expect(referral.relevantSentenceId).toEqual(2600295124)
     })
@@ -635,7 +680,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -660,7 +705,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
-        token,
+        probationPractitionerToken,
         'd496e4a7-7cc1-44ea-ba67-c295084f1962',
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -684,7 +729,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             accessibilityNeeds: 'She uses a wheelchair',
@@ -704,10 +749,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        accessibilityNeeds: 'She uses a wheelchair',
-        additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          accessibilityNeeds: 'She uses a wheelchair',
+          additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.accessibilityNeeds).toBe('She uses a wheelchair')
       expect(referral.additionalNeedsInformation).toBe('Alex is currently sleeping on her aunt’s sofa')
@@ -723,7 +772,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { needsInterpreter: true, interpreterLanguage: 'Spanish' },
         },
@@ -740,10 +789,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        needsInterpreter: true,
-        interpreterLanguage: 'Spanish',
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          needsInterpreter: true,
+          interpreterLanguage: 'Spanish',
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.needsInterpreter).toBe(true)
       expect(referral.interpreterLanguage).toEqual('Spanish')
@@ -759,7 +812,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { needsInterpreter: false, interpreterLanguage: null },
         },
@@ -776,10 +829,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        needsInterpreter: false,
-        interpreterLanguage: null,
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          needsInterpreter: false,
+          interpreterLanguage: null,
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.needsInterpreter).toBe(false)
       expect(referral.interpreterLanguage).toBeNull()
@@ -795,7 +852,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { hasAdditionalResponsibilities: true, whenUnavailable: 'She works Mondays 9am - midday' },
         },
@@ -812,10 +869,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        hasAdditionalResponsibilities: true,
-        whenUnavailable: 'She works Mondays 9am - midday',
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          hasAdditionalResponsibilities: true,
+          whenUnavailable: 'She works Mondays 9am - midday',
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.hasAdditionalResponsibilities).toBe(true)
       expect(referral.whenUnavailable).toEqual('She works Mondays 9am - midday')
@@ -831,7 +892,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { hasAdditionalResponsibilities: false, whenUnavailable: null },
         },
@@ -848,10 +909,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        hasAdditionalResponsibilities: false,
-        whenUnavailable: null,
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          hasAdditionalResponsibilities: false,
+          whenUnavailable: null,
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.hasAdditionalResponsibilities).toBe(false)
       expect(referral.whenUnavailable).toBeNull()
@@ -867,7 +932,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { additionalRiskInformation: 'A danger to the elderly' },
         },
@@ -883,9 +948,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        additionalRiskInformation: 'A danger to the elderly',
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          additionalRiskInformation: 'A danger to the elderly',
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.additionalRiskInformation).toEqual('A danger to the elderly')
     })
@@ -900,7 +969,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: { maximumEnforceableDays: 4 },
         },
@@ -916,9 +985,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'dfb64747-f658-40e0-a827-87b4b0bdcfed', {
-        maximumEnforceableDays: 4,
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+        {
+          maximumEnforceableDays: 4,
+        }
+      )
       expect(referral.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(referral.maximumEnforceableDays).toEqual(4)
     })
@@ -934,7 +1007,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             serviceCategoryIds: ['ca374ac3-84eb-4b91-bea7-9005398f426f', '428ee70f-3001-4399-95a6-ad25eaaede16'],
@@ -952,9 +1025,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const referral = await interventionsService.patchDraftReferral(token, 'd496e4a7-7cc1-44ea-ba67-c295084f1962', {
-        serviceCategoryIds: ['ca374ac3-84eb-4b91-bea7-9005398f426f', '428ee70f-3001-4399-95a6-ad25eaaede16'],
-      })
+      const referral = await interventionsService.patchDraftReferral(
+        probationPractitionerToken,
+        'd496e4a7-7cc1-44ea-ba67-c295084f1962',
+        {
+          serviceCategoryIds: ['ca374ac3-84eb-4b91-bea7-9005398f426f', '428ee70f-3001-4399-95a6-ad25eaaede16'],
+        }
+      )
       expect(referral.id).toBe('d496e4a7-7cc1-44ea-ba67-c295084f1962')
       expect(referral.serviceCategoryIds).toEqual([
         'ca374ac3-84eb-4b91-bea7-9005398f426f',
@@ -974,7 +1051,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -999,7 +1076,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
-        token,
+        probationPractitionerToken,
         '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -1027,7 +1104,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -1052,7 +1129,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const referral = await interventionsService.setComplexityLevelForServiceCategory(
-        token,
+        probationPractitionerToken,
         '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
         {
           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
@@ -1133,7 +1210,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/service-category/428ee70f-3001-4399-95a6-ad25eaaede16',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${probationPractitionerToken}`,
           },
         },
         willRespondWith: {
@@ -1153,7 +1230,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns a service category', async () => {
       const serviceCategory = await interventionsService.getServiceCategory(
-        token,
+        probationPractitionerToken,
         '428ee70f-3001-4399-95a6-ad25eaaede16'
       )
 
@@ -1166,7 +1243,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getDraftReferralsForUserToken', () => {
     it('returns a list of draft referrals for a given userID', async () => {
-      const userToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '8751622134' } })
+      const userToken = oauth2TokenFactory
+        .probationPractitionerToken()
+        .build('', { transient: { userID: '8751622134' } })
 
       await provider.addInteraction({
         state: 'a single referral for user with ID 8751622134 exists',
@@ -1199,7 +1278,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns an empty list for an unknown user ID', async () => {
-      const unknownUserToken = oauth2TokenFactory.deliusToken().build('', { transient: { userID: '123344556' } })
+      const unknownUserToken = oauth2TokenFactory
+        .probationPractitionerToken()
+        .build('', { transient: { userID: '123344556' } })
 
       await provider.addInteraction({
         state: 'a referral does not exist for user with ID 123344556',
@@ -1297,7 +1378,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6/send',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 201,
@@ -1313,9 +1394,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns a sent referral', async () => {
-      expect(await interventionsService.sendDraftReferral(token, '2a67075a-9c77-4103-9de0-63c4cfe3e8d6')).toEqual(
-        sentReferral
-      )
+      expect(
+        await interventionsService.sendDraftReferral(probationPractitionerToken, '2a67075a-9c77-4103-9de0-63c4cfe3e8d6')
+      ).toEqual(sentReferral)
     })
   })
 
@@ -1327,7 +1408,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1336,9 +1417,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getSentReferral(token, '81d754aa-d868-4347-9c0f-50690773014e')).toEqual(
-        sentReferral
-      )
+      expect(
+        await interventionsService.getSentReferral(probationPractitionerToken, '81d754aa-d868-4347-9c0f-50690773014e')
+      ).toEqual(sentReferral)
     })
 
     describe('for a referral that has had a caseworker assigned', () => {
@@ -1350,7 +1431,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/sent-referral/2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1361,11 +1442,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        expect(await interventionsService.getSentReferral(token, '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')).toMatchObject(
-          {
-            assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
-          }
-        )
+        expect(
+          await interventionsService.getSentReferral(probationPractitionerToken, '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')
+        ).toMatchObject({
+          assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+        })
       })
     })
 
@@ -1378,7 +1459,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/sent-referral/8b423e17-9b60-4cc2-a927-8941ac76fdf9',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1389,11 +1470,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        expect(await interventionsService.getSentReferral(token, '8b423e17-9b60-4cc2-a927-8941ac76fdf9')).toMatchObject(
-          {
-            actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
-          }
-        )
+        expect(
+          await interventionsService.getSentReferral(probationPractitionerToken, '8b423e17-9b60-4cc2-a927-8941ac76fdf9')
+        ).toMatchObject({
+          actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+        })
       })
     })
 
@@ -1408,7 +1489,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: `/sent-referral/${id}`,
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1419,7 +1500,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        expect(await interventionsService.getSentReferral(token, id)).toMatchObject({
+        expect(await interventionsService.getSentReferral(probationPractitionerToken, id)).toMatchObject({
           endOfServiceReport,
         })
       })
@@ -1435,7 +1516,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/sent-referral/c5554f8f-aac6-4eaf-ba70-63281de35685',
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1444,7 +1525,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        const referral = await interventionsService.getSentReferral(token, 'c5554f8f-aac6-4eaf-ba70-63281de35685')
+        const referral = await interventionsService.getSentReferral(
+          probationPractitionerToken,
+          'c5554f8f-aac6-4eaf-ba70-63281de35685'
+        )
         expect(referral.endRequestedAt).not.toBeNull()
         expect(referral.endRequestedReason).not.toBeNull()
         expect(referral.endRequestedComments).not.toBeNull()
@@ -1460,7 +1544,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/sent-referrals',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1469,88 +1553,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getSentReferralsForUserToken(token)).toEqual([sentReferral, sentReferral])
-    })
-  })
-
-  describe('getServiceProviderSentReferralsSummaryForUserToken', () => {
-    it('returns a list of assigned referrals', async () => {
-      await provider.addInteraction({
-        state: 'There is a sent referral with ID 4afb07a0-e50b-490c-a8c1-c858d5a1e912 with an assigned user',
-        uponReceiving: 'a request for all sent referrals summary for the service user',
-        withRequest: {
-          method: 'GET',
-          path: '/sent-referrals/summary/service-provider',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like([
-            {
-              referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
-              sentAt: '2021-01-26T13:00:00.000000Z',
-              referenceNumber: 'ABCABCA1',
-              interventionTitle: 'Accommodation Services - West Midlands',
-              assignedToUserName: 'bernard.beaks',
-              serviceUserFirstName: 'George',
-              serviceUserLastName: 'Michael',
-            },
-          ]),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      })
-
-      const referralSummary = {
-        referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
-        sentAt: '2021-01-26T13:00:00.000000Z',
-        referenceNumber: 'ABCABCA1',
-        interventionTitle: 'Accommodation Services - West Midlands',
-        assignedToUserName: 'bernard.beaks',
-        serviceUserFirstName: 'George',
-        serviceUserLastName: 'Michael',
-      }
-      expect(
-        await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(serviceProviderToken)
-      ).toEqual([referralSummary])
-    })
-    it('returns a list of unassigned referrals', async () => {
-      await provider.addInteraction({
-        state: 'There is a sent referral with ID dc94fbd6-354b-4edc-863b-cffc8358f1ec without an assigned user',
-        uponReceiving: 'a request for all sent referrals summary for the service user',
-        withRequest: {
-          method: 'GET',
-          path: '/sent-referrals/summary/service-provider',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like([
-            {
-              referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
-              sentAt: '2021-01-26T13:00:00.000000Z',
-              referenceNumber: 'ABCABCA1',
-              interventionTitle: 'Accommodation Services - West Midlands',
-              assignedToUserName: null,
-              serviceUserFirstName: 'George',
-              serviceUserLastName: 'Michael',
-            },
-          ]),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      })
-
-      const referralSummary = {
-        referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
-        sentAt: '2021-01-26T13:00:00.000000Z',
-        referenceNumber: 'ABCABCA1',
-        interventionTitle: 'Accommodation Services - West Midlands',
-        assignedToUserName: null,
-        serviceUserFirstName: 'George',
-        serviceUserLastName: 'Michael',
-      }
-      expect(
-        await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(serviceProviderToken)
-      ).toEqual([referralSummary])
+      expect(await interventionsService.getSentReferralsForUserToken(probationPractitionerToken)).toEqual([
+        sentReferral,
+        sentReferral,
+      ])
     })
   })
 
@@ -1567,7 +1573,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: {
             assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
           },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1579,11 +1585,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       expect(
-        await interventionsService.assignSentReferral(token, '400be4c6-1aa4-4f52-ae86-cbd5d23309bf', {
-          username: 'UserABC',
-          userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-          authSource: 'auth',
-        })
+        await interventionsService.assignSentReferral(
+          probationPractitionerToken,
+          '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+          {
+            username: 'UserABC',
+            userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+            authSource: 'auth',
+          }
+        )
       ).toMatchObject({
         assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
       })
@@ -1600,7 +1610,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/interventions',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1609,7 +1619,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getInterventions(token, {})).toEqual(interventions)
+      expect(await interventionsService.getInterventions(probationPractitionerToken, {})).toEqual(interventions)
     })
 
     describe('allowsMale filter', () => {
@@ -1623,7 +1633,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'GET',
             path: '/interventions',
             query: { allowsMale: value ? 'true' : 'false' },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1632,7 +1642,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        expect(await interventionsService.getInterventions(token, { allowsMale: value })).toEqual(interventions)
+        expect(await interventionsService.getInterventions(probationPractitionerToken, { allowsMale: value })).toEqual(
+          interventions
+        )
       })
     })
 
@@ -1647,7 +1659,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'GET',
             path: '/interventions',
             query: { allowsFemale: value ? 'true' : 'false' },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1656,7 +1668,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        expect(await interventionsService.getInterventions(token, { allowsFemale: value })).toEqual(interventions)
+        expect(
+          await interventionsService.getInterventions(probationPractitionerToken, { allowsFemale: value })
+        ).toEqual(interventions)
       })
     })
 
@@ -1671,7 +1685,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'GET',
             path: '/interventions',
             query: { pccRegionIds: 'cheshire,cumbria,merseyside' },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1681,7 +1695,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         })
 
         expect(
-          await interventionsService.getInterventions(token, { pccRegionIds: ['cheshire', 'cumbria', 'merseyside'] })
+          await interventionsService.getInterventions(probationPractitionerToken, {
+            pccRegionIds: ['cheshire', 'cumbria', 'merseyside'],
+          })
         ).toEqual([intervention, intervention])
       })
     })
@@ -1697,7 +1713,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'GET',
             path: '/interventions',
             query: { maximumAge: '25' },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -1706,7 +1722,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
-        expect(await interventionsService.getInterventions(token, { maximumAge: 25 })).toEqual(interventions)
+        expect(await interventionsService.getInterventions(probationPractitionerToken, { maximumAge: 25 })).toEqual(
+          interventions
+        )
       })
     })
   })
@@ -1722,7 +1740,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: `/intervention/${interventionId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1731,7 +1749,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getIntervention(token, interventionId)).toEqual(intervention)
+      expect(await interventionsService.getIntervention(probationPractitionerToken, interventionId)).toEqual(
+        intervention
+      )
     })
   })
 
@@ -1750,7 +1770,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: `/pcc-regions`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1759,7 +1779,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getPccRegions(token)).toEqual(pccRegions)
+      expect(await interventionsService.getPccRegions(probationPractitionerToken)).toEqual(pccRegions)
     })
   })
 
@@ -1772,7 +1792,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-action-plan',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           body: {
             referralId,
           },
@@ -1794,7 +1814,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const draftActionPlan = await interventionsService.createDraftActionPlan(token, referralId)
+      const draftActionPlan = await interventionsService.createDraftActionPlan(probationPractitionerToken, referralId)
       expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
     })
@@ -1807,7 +1827,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-action-plan',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           body: {
             referralId,
             numberOfSessions: 5,
@@ -1842,10 +1862,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const draftActionPlan = await interventionsService.createDraftActionPlan(token, referralId, 5, [
-        { description: 'activity 1' },
-        { description: 'activity 2' },
-      ])
+      const draftActionPlan = await interventionsService.createDraftActionPlan(
+        probationPractitionerToken,
+        referralId,
+        5,
+        [{ description: 'activity 1' }, { description: 'activity 2' }]
+      )
       expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
       expect(draftActionPlan.numberOfSessions).toBe(5)
@@ -1864,7 +1886,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: `/action-plan/${actionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1884,7 +1906,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
       expect(actionPlan).toMatchObject({
         id: actionPlanId,
         referralId,
@@ -1919,7 +1941,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: `/action-plan/${actionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1938,7 +1960,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
       expect(actionPlan).toMatchObject({
         id: actionPlanId,
         referralId,
@@ -1972,7 +1994,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: `/action-plan/${actionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -1991,7 +2013,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const actionPlan = await interventionsService.getActionPlan(token, actionPlanId)
+      const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
       expect(actionPlan).toMatchObject({
         id: actionPlanId,
         referralId,
@@ -2014,7 +2036,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'PATCH',
           path: `/draft-action-plan/${draftActionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           body: {
             newActivity: {
               description: 'Attend training course',
@@ -2041,11 +2063,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
-        newActivity: {
-          description: 'Attend training course',
-        },
-      })
+      const draftActionPlan = await interventionsService.updateDraftActionPlan(
+        probationPractitionerToken,
+        draftActionPlanId,
+        {
+          newActivity: {
+            description: 'Attend training course',
+          },
+        }
+      )
 
       expect(draftActionPlan.id).toBe(draftActionPlanId)
       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
@@ -2064,7 +2090,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'PATCH',
           path: `/draft-action-plan/${draftActionPlanId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           body: {
             numberOfSessions: 4,
           },
@@ -2095,9 +2121,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const draftActionPlan = await interventionsService.updateDraftActionPlan(token, draftActionPlanId, {
-        numberOfSessions: 4,
-      })
+      const draftActionPlan = await interventionsService.updateDraftActionPlan(
+        probationPractitionerToken,
+        draftActionPlanId,
+        {
+          numberOfSessions: 4,
+        }
+      )
       expect(draftActionPlan.id).toBe(draftActionPlanId)
       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
       expect(draftActionPlan.numberOfSessions).toBe(4)
@@ -2118,7 +2148,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'PATCH',
           path: `/action-plan/${draftActionPlanId}/activities/${activityId}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           body: {
             description: 'do something totally different!',
           },
@@ -2142,7 +2172,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const draftActionPlan = await interventionsService.updateActionPlanActivity(
-        token,
+        probationPractitionerToken,
         draftActionPlanId,
         activityId,
         'do something totally different!'
@@ -2188,7 +2218,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/draft-action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27/submit',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 201,
@@ -2204,9 +2234,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns a submitted action plan', async () => {
-      expect(await interventionsService.submitActionPlan(token, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')).toMatchObject(
-        submittedActionPlan
-      )
+      expect(
+        await interventionsService.submitActionPlan(probationPractitionerToken, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')
+      ).toMatchObject(submittedActionPlan)
     })
   })
 
@@ -2218,7 +2248,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/action-plan/7a165933-d851-48c1-9ab0-ff5b8da12695/approve',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2226,7 +2256,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
     it('returns successfully', async () => {
-      await interventionsService.approveActionPlan(token, '7a165933-d851-48c1-9ab0-ff5b8da12695')
+      await interventionsService.approveActionPlan(probationPractitionerToken, '7a165933-d851-48c1-9ab0-ff5b8da12695')
     })
   })
 
@@ -2259,7 +2289,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2273,7 +2303,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns action plan appointments', async () => {
       expect(
-        await interventionsService.getActionPlanAppointments(token, 'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d')
+        await interventionsService.getActionPlanAppointments(
+          probationPractitionerToken,
+          'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d'
+        )
       ).toMatchObject(actionPlanAppointments)
     })
   })
@@ -2295,7 +2328,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments/1',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2309,7 +2342,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns the requested action plan appointment', async () => {
       const appointment = await interventionsService.getActionPlanAppointment(
-        token,
+        probationPractitionerToken,
         'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
         1
       )
@@ -2327,9 +2360,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       it('fetches the subsequent action plan appointment', async () => {
         interventionsService.getActionPlanAppointment = jest.fn()
-        await interventionsService.getSubsequentActionPlanAppointment(token, actionPlan, appointment)
+        await interventionsService.getSubsequentActionPlanAppointment(
+          probationPractitionerToken,
+          actionPlan,
+          appointment
+        )
 
-        expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(token, actionPlan.id, 2)
+        expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(
+          probationPractitionerToken,
+          actionPlan.id,
+          2
+        )
       })
     })
 
@@ -2341,7 +2382,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         interventionsService.getActionPlanAppointment = jest.fn()
 
         const subsequentAppointment = await interventionsService.getSubsequentActionPlanAppointment(
-          token,
+          probationPractitionerToken,
           actionPlan,
           appointment
         )
@@ -2394,7 +2435,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               },
               npsOfficeCode: null,
             },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           // note - this is an exact match
           willRespondWith: {
@@ -2407,19 +2448,24 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         })
 
         expect(
-          await interventionsService.updateActionPlanAppointment(token, '345059d4-1697-467b-8914-fedec9957279', 2, {
-            appointmentTime: '2021-05-13T12:30:00Z',
-            durationInMinutes: 60,
-            appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-            appointmentDeliveryAddress: {
-              firstAddressLine: 'Harmony Living Office, Room 4',
-              secondAddressLine: '44 Bouverie Road',
-              townOrCity: 'Blackpool',
-              county: 'Lancashire',
-              postCode: 'SY40RE',
-            },
-            npsOfficeCode: null,
-          })
+          await interventionsService.updateActionPlanAppointment(
+            probationPractitionerToken,
+            '345059d4-1697-467b-8914-fedec9957279',
+            2,
+            {
+              appointmentTime: '2021-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+            }
+          )
         ).toMatchObject(actionPlanAppointment)
       })
     })
@@ -2439,7 +2485,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
           },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2475,7 +2521,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const appointment = await interventionsService.recordActionPlanAppointmentAttendance(
-        token,
+        probationPractitionerToken,
         '345059d4-1697-467b-8914-fedec9957279',
         2,
         {
@@ -2502,7 +2548,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             behaviourDescription: 'Alex was well behaved',
             notifyProbationPractitioner: false,
           },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2530,7 +2576,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const appointment = await interventionsService.recordActionPlanAppointmentBehavior(
-        token,
+        probationPractitionerToken,
         '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         1,
         {
@@ -2553,7 +2599,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: '/action-plan/0f5afe04-e323-4699-9423-fb6122580638/appointment/1/submit',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2585,7 +2631,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const appointment = await interventionsService.submitActionPlanSessionFeedback(
-        token,
+        probationPractitionerToken,
         '0f5afe04-e323-4699-9423-fb6122580638',
         1
       )
@@ -2605,7 +2651,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'POST',
           path: '/draft-end-of-service-report',
           body: { referralId },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 201,
@@ -2616,7 +2662,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.createDraftEndOfServiceReport(token, referralId)
+      const result = await interventionsService.createDraftEndOfServiceReport(probationPractitionerToken, referralId)
       expect(result).toEqual(endOfServiceReport)
     })
   })
@@ -2632,7 +2678,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: `/end-of-service-report/${id}`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2643,7 +2689,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.getEndOfServiceReport(token, id)
+      const result = await interventionsService.getEndOfServiceReport(probationPractitionerToken, id)
       expect(result).toEqual(endOfServiceReport)
     })
   })
@@ -2683,7 +2729,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'PATCH',
           path: `/draft-end-of-service-report/${id}`,
           body: patch,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2694,7 +2740,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.updateDraftEndOfServiceReport(token, id, patch)
+      const result = await interventionsService.updateDraftEndOfServiceReport(probationPractitionerToken, id, patch)
       expect(result).toEqual(updatedEndOfServiceReport)
     })
   })
@@ -2710,7 +2756,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'POST',
           path: `/draft-end-of-service-report/${id}/submit`,
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2721,7 +2767,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.submitEndOfServiceReport(token, id)
+      const result = await interventionsService.submitEndOfServiceReport(probationPractitionerToken, id)
       expect(result).toEqual(submittedEndOfServiceReport)
     })
   })
@@ -2742,7 +2788,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             reasonCode: 'REC',
             comments: 'Alex was arrested for driving without insurance and immediately recalled.',
           },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2755,7 +2801,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns an ended referral', async () => {
       expect(
         await interventionsService.endReferral(
-          token,
+          probationPractitionerToken,
           '5f71c68f-3e43-46b6-8f25-027a88637ee1',
           'REC',
           'Alex was arrested for driving without insurance and immediately recalled.'
@@ -2777,7 +2823,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/referral-cancellation-reasons',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2788,7 +2834,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns cancellation reasons', async () => {
-      expect(await interventionsService.getReferralCancellationReasons(token)).toMatchObject(reasons)
+      expect(await interventionsService.getReferralCancellationReasons(probationPractitionerToken)).toMatchObject(
+        reasons
+      )
     })
   })
 
@@ -2806,7 +2854,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/sent-referral/cbf2f82b-4581-4fe1-9de1-1b52465f1afa/supplier-assessment',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2818,7 +2866,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
-        token,
+        probationPractitionerToken,
         'cbf2f82b-4581-4fe1-9de1-1b52465f1afa'
       )
       expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
@@ -2839,7 +2887,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'GET',
           path: '/sent-referral/a38d9184-5498-4049-af16-3d8eb2547962/supplier-assessment',
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
@@ -2851,7 +2899,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
-        token,
+        probationPractitionerToken,
         'a38d9184-5498-4049-af16-3d8eb2547962'
       )
       expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
@@ -2889,7 +2937,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PUT',
             path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
             body: appointment,
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
@@ -2901,12 +2949,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         })
 
         expect(
-          await interventionsService.scheduleSupplierAssessmentAppointment(token, supplierAssessmentId, appointment)
+          await interventionsService.scheduleSupplierAssessmentAppointment(
+            probationPractitionerToken,
+            supplierAssessmentId,
+            appointment
+          )
         ).toMatchObject(appointment)
       })
     })
   })
 
+  /*
   describe('recordAppointmentAttendance', () => {
     it('returns an updated appointment with the service user‘s attendance', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
@@ -2927,13 +2980,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state:
-          'There is an existing sent referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2 and the supplier assessment has been booked but no feedback details have yet been submitted',
+        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists and no feedback has been recorded',
         uponReceiving:
-          'a PUT request to set the attendance for the supplier assessment appointment for the referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2',
+          'a PUT request to set the attendance for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
         withRequest: {
           method: 'PUT',
-          path: '/referral/58963698-0f2e-4d6e-a072-0e2cf351f3b2/supplier-assessment/record-attendance',
+          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-attendance',
           body: {
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
@@ -2949,9 +3001,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordSupplierAssessmentAppointmentAttendance(
+      const result = await interventionsService.recordAppointmentAttendance(
         token,
-        '58963698-0f2e-4d6e-a072-0e2cf351f3b2',
+        '578e9360-8938-4fea-8889-19a3309ad840',
         {
           attended: 'late',
           additionalAttendanceInformation: 'Alex missed the bus',
@@ -2969,8 +3021,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         durationInMinutes: 120,
         sessionFeedback: {
           attendance: {
-            attended: 'yes',
-            additionalAttendanceInformation: 'Alex picked up the phone on time.',
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
           },
           behaviour: {
             behaviourDescription: 'Alex was well behaved',
@@ -2982,13 +3034,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state:
-          'There is an existing sent referral with ID caac2a85-578f-4b0b-996d-2893311eb60e and the supplier assessment attendance details have been recorded',
+        state: 'an appointment with ID 578e9360-8938-4fea-8889-19a3309ad840 exists',
         uponReceiving:
-          'a PUT request to set the behaviour for the supplier assessment for the referral with ID caac2a85-578f-4b0b-996d-2893311eb60e',
+          'a PUT request to set the behaviour for the appointment with ID 578e9360-8938-4fea-8889-19a3309ad840',
         withRequest: {
           method: 'PUT',
-          path: '/referral/caac2a85-578f-4b0b-996d-2893311eb60e/supplier-assessment/record-behaviour',
+          path: '/appointment/578e9360-8938-4fea-8889-19a3309ad840/record-behaviour',
           body: {
             behaviourDescription: 'Alex was well behaved',
             notifyProbationPractitioner: false,
@@ -3004,9 +3055,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+      const result = await interventionsService.recordAppointmentBehavior(
         token,
-        'caac2a85-578f-4b0b-996d-2893311eb60e',
+        '578e9360-8938-4fea-8889-19a3309ad840',
         {
           behaviourDescription: 'Alex was well behaved',
           notifyProbationPractitioner: false,
@@ -3024,11 +3075,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         durationInMinutes: 120,
         sessionFeedback: {
           attendance: {
-            attended: 'yes',
-            additionalAttendanceInformation: 'Alex picked up the phone on time.',
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
           },
           behaviour: {
-            behaviourDescription: 'We were having a good time on the phone.',
+            behaviourDescription: 'Alex was well behaved',
             notifyProbationPractitioner: false,
           },
           submitted: true,
@@ -3041,13 +3092,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
 
       await provider.addInteraction({
-        state:
-          'There is an existing sent referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1 and the supplier assessment attendance and behaviour details have been recorded',
+        state: 'an appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb exists',
         uponReceiving:
-          'a POST request to submit the feedback for the supplier assessment of the referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1',
+          'a POST request to submit the feedback for the appointment with ID 86c422b4-4c55-42ec-b9a6-3ae1ab000adb',
         withRequest: {
           method: 'POST',
-          path: '/referral/cd8f46a2-78f2-457b-ab14-7d77adce73d1/supplier-assessment/submit-feedback',
+          path: '/appointment/86c422b4-4c55-42ec-b9a6-3ae1ab000adb/submit-feedback',
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         },
         willRespondWith: {
@@ -3059,11 +3109,32 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.submitSupplierAssessmentAppointmentFeedback(
-        token,
-        'cd8f46a2-78f2-457b-ab14-7d77adce73d1'
-      )
+      const result = await interventionsService.submitAppointmentFeedback(token, '86c422b4-4c55-42ec-b9a6-3ae1ab000adb')
       expect(result.sessionFeedback!.submitted).toEqual(true)
+    })
+  })
+  */
+
+  describe('generateServiceProviderPerformanceReport', () => {
+    it('returns a 202 response indicating that a performance report will be asynchronously generated', async () => {
+      await provider.addInteraction({
+        state: 'there are referrals available for the reporting period of 1 June 2021 to 10 June 2021',
+        uponReceiving: 'a service provider user’s POST request to generate a performance report',
+        withRequest: {
+          method: 'POST',
+          path: '/reports/service-provider/performance',
+          body: { fromDate: '2021-06-01', toDate: '2021-06-10' },
+          headers: { Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 202,
+        },
+      })
+
+      await interventionsService.generateServiceProviderPerformanceReport(serviceProviderToken, {
+        fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
+        toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
+      })
     })
   })
 })

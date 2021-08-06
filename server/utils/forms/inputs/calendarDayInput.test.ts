@@ -145,4 +145,18 @@ describe(CalendarDayInput, () => {
       })
     })
   })
+
+  describe('.createErrors', () => {
+    it('creates a formError object from the key and message passed in', () => {
+      expect(CalendarDayInput.createError('deadline', 'The deadline must be a real date')).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'deadline-day',
+            formFields: ['deadline-day', 'deadline-month', 'deadline-year'],
+            message: 'The deadline must be a real date',
+          },
+        ],
+      })
+    })
+  })
 })
