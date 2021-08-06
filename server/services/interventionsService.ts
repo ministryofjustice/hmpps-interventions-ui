@@ -24,6 +24,7 @@ import {
   AppointmentSchedulingDetails,
   InitialAssessmentAppointment,
 } from '../models/appointment'
+import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -323,6 +324,14 @@ export default class InterventionsService {
       path: `/draft-action-plan/${id}/submit`,
       headers: { Accept: 'application/json' },
     })) as ActionPlan
+  }
+
+  async getApprovedActionPlanSummaries(token: string, referralId: string): Promise<ApprovedActionPlanSummary[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/sent-referral/${referralId}/approved-action-plans`,
+      headers: { Accept: 'application/json' },
+    })) as ApprovedActionPlanSummary[]
   }
 
   async getActionPlanAppointments(token: string, actionPlanId: string): Promise<ActionPlanAppointment[]> {

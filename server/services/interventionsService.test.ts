@@ -15,6 +15,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import CalendarDay from '../utils/calendarDay'
+import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -2257,6 +2258,42 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
     it('returns successfully', async () => {
       await interventionsService.approveActionPlan(probationPractitionerToken, '7a165933-d851-48c1-9ab0-ff5b8da12695')
+    })
+  })
+
+  describe('getApprovedActionPlanSummaries', () => {
+    it('returns a list of approved action plans for the given referral id', async () => {
+      const actionPlanVersionOneSummary = approvedActionPlanSummaryFactory.build({
+        id: 'f3ade2c5-075a-4235-9826-eed289e4d17a',
+      })
+
+      const actionPlanVersionTwoSummary = approvedActionPlanSummaryFactory.build({
+        id: '8f3e1895-9c46-40ad-bdb3-d33eacbb693e',
+      })
+      const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+      await provider.addInteraction({
+        state: `two approved action plans exists with IDs ${actionPlanVersionOneSummary.id} and ${actionPlanVersionTwoSummary.id}`,
+        uponReceiving: `a GET request to view the approved action plans for a referral with ID ${referralId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/sent-referral/${referralId}/approved-action-plans`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([actionPlanVersionOneSummary, actionPlanVersionTwoSummary]),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const approvedActionPlanSummaries = await interventionsService.getApprovedActionPlanSummaries(
+        probationPractitionerToken,
+        referralId
+      )
+      expect(approvedActionPlanSummaries).toEqual([actionPlanVersionOneSummary, actionPlanVersionTwoSummary])
     })
   })
 

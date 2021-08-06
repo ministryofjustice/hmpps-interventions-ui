@@ -127,6 +127,10 @@ module.exports = on => {
       return interventionsService.stubGetActionPlan(arg.id, arg.responseJson)
     },
 
+    stubGetApprovedActionPlanSummaries: arg => {
+      return interventionsService.stubGetApprovedActionPlanSummaries(arg.id, arg.responseJson)
+    },
+
     stubCreateDraftActionPlan: arg => {
       return interventionsService.stubCreateDraftActionPlan(arg.responseJson)
     },
