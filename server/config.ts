@@ -111,4 +111,9 @@ export default {
   draftsService: {
     expiry: { seconds: Number(get('DRAFTS_EXPIRY_IN_SECONDS', `${24 * 60 * 60}`)) },
   },
+  features: {
+    npsOfficeLocationSelection: {
+      enabled: get('FEATURE_NPS_OFFICE_LOCATION_SELECTION_ENABLED', 'false') === 'true',
+    },
+  },
 }

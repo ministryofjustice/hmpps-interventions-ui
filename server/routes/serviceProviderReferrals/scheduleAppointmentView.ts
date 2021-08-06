@@ -166,6 +166,35 @@ export default class ScheduleAppointmentView {
   }
 
   private meetingMethodRadioInputArgs(deliusOfficeLocationHTML: string, otherLocationHTML: string): RadiosArgs {
+    const items = []
+    items.push({
+      value: 'PHONE_CALL',
+      text: 'Phone call',
+      checked: this.presenter.fields.meetingMethod.value === 'PHONE_CALL',
+    })
+    items.push({
+      value: 'VIDEO_CALL',
+      text: 'Video call',
+      checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
+    })
+    if (this.presenter.deliusOfficeLocationSelectionEnabled) {
+      items.push({
+        value: 'IN_PERSON_MEETING_PROBATION_OFFICE',
+        text: 'In-person meeting - NPS offices',
+        checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_PROBATION_OFFICE',
+        conditional: {
+          html: deliusOfficeLocationHTML,
+        },
+      })
+    }
+    items.push({
+      value: 'IN_PERSON_MEETING_OTHER',
+      text: 'In-person meeting - Other locations',
+      checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
+      conditional: {
+        html: otherLocationHTML,
+      },
+    })
     return {
       idPrefix: 'meeting-method',
       name: 'meeting-method',
@@ -180,34 +209,7 @@ export default class ScheduleAppointmentView {
       hint: {
         text: 'Select one option.',
       },
-      items: [
-        {
-          value: 'PHONE_CALL',
-          text: 'Phone call',
-          checked: this.presenter.fields.meetingMethod.value === 'PHONE_CALL',
-        },
-        {
-          value: 'VIDEO_CALL',
-          text: 'Video call',
-          checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
-        },
-        {
-          value: 'IN_PERSON_MEETING_PROBATION_OFFICE',
-          text: 'In-person meeting - NPS offices',
-          checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_PROBATION_OFFICE',
-          conditional: {
-            html: deliusOfficeLocationHTML,
-          },
-        },
-        {
-          value: 'IN_PERSON_MEETING_OTHER',
-          text: 'In-person meeting - Other locations',
-          checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
-          conditional: {
-            html: otherLocationHTML,
-          },
-        },
-      ],
+      items,
     }
   }
 
