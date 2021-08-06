@@ -23,6 +23,7 @@ class CommunityAPIBookingService(
   @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment}") private val ppSupplierAssessmentLocation: String,
   @Value("\${community-api.locations.book-appointment}") private val communityApiBookAppointmentLocation: String,
   @Value("\${community-api.locations.reschedule-appointment}") private val communityApiRescheduleAppointmentLocation: String,
+  @Value("\${community-api.locations.relocate-appointment}") private val communityApiRelocateAppointmentLocation: String,
   @Value("\${community-api.appointments.office-location}") private val defaultOfficeLocation: String,
   @Value("#{\${community-api.appointments.notes-field-qualifier}}") private val notesFieldQualifier: Map<AppointmentType, String>,
   @Value("#{\${community-api.appointments.counts-towards-rar-days}}") private val countsTowardsRarDays: Map<AppointmentType, Boolean>,
@@ -41,13 +42,16 @@ class CommunityAPIBookingService(
 
   private fun processingBooking(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int, appointmentType: AppointmentType, npsOfficeCode: String?): Long? {
     return existingAppointment?.let {
-      if (!isRescheduleBooking(existingAppointment, appointmentTime, durationInMinutes, npsOfficeCode)) {
+      if (isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes)) {
+        val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime, durationInMinutes, npsOfficeCode ?: defaultOfficeLocation)
+        makeBooking(referral.serviceUserCRN, it.deliusAppointmentId!!, appointmentRequestDTO, communityApiRescheduleAppointmentLocation)
+      } else if (isDifferentLocation(existingAppointment, npsOfficeCode)) {
+        val appointmentRequestDTO = buildAppointmentRelocateRequestDTO(npsOfficeCode ?: defaultOfficeLocation)
+        makeBooking(referral.serviceUserCRN, it.deliusAppointmentId!!, appointmentRequestDTO, communityApiRelocateAppointmentLocation)
+      } else {
         // nothing to do !
         return existingAppointment.deliusAppointmentId
       }
-
-      val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime, durationInMinutes, npsOfficeCode ?: defaultOfficeLocation)
-      makeBooking(referral.serviceUserCRN, it.deliusAppointmentId!!, appointmentRequestDTO, communityApiRescheduleAppointmentLocation)
     } ?: run {
       val appointmentRequestDTO = buildAppointmentCreateRequestDTO(referral, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode ?: defaultOfficeLocation)
       makeBooking(referral.serviceUserCRN, referral.relevantSentenceId!!, appointmentRequestDTO, communityApiBookAppointmentLocation)
@@ -80,6 +84,12 @@ class CommunityAPIBookingService(
     )
   }
 
+  private fun buildAppointmentRelocateRequestDTO(npsOfficeCode: String): AppointmentRelocateRequestDTO {
+    return AppointmentRelocateRequestDTO(
+      officeLocationCode = npsOfficeCode
+    )
+  }
+
   private fun buildAppointmentRescheduleRequestDTO(appointmentTime: OffsetDateTime, durationInMinutes: Int, npsOfficeCode: String): AppointmentRescheduleRequestDTO {
     return AppointmentRescheduleRequestDTO(
       updatedAppointmentStart = appointmentTime,
@@ -102,7 +112,7 @@ class CommunityAPIBookingService(
   }
 
   fun isRescheduleBooking(existingAppointment: Appointment, appointmentTime: OffsetDateTime, durationInMinutes: Int, npsOfficeCode: String?): Boolean =
-    isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes) || isDifferentLocation(existingAppointment, npsOfficeCode)
+    isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes)
 
   private fun isDifferentLocation(existingAppointment: Appointment, npsOfficeCode: String?): Boolean {
     return !npsOfficeCode.equals(existingAppointment.appointmentDelivery?.npsOfficeCode)
@@ -132,6 +142,10 @@ data class AppointmentRescheduleRequestDTO(
   val updatedAppointmentStart: OffsetDateTime?,
   val updatedAppointmentEnd: OffsetDateTime?,
   val initiatedByServiceProvider: Boolean,
+  val officeLocationCode: String,
+) : AppointmentRequestDTO()
+
+data class AppointmentRelocateRequestDTO(
   val officeLocationCode: String,
 ) : AppointmentRequestDTO()
 
