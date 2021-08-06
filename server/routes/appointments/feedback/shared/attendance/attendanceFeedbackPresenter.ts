@@ -3,6 +3,7 @@ import { SummaryListItem } from '../../../../../utils/summaryList'
 import DateUtils from '../../../../../utils/dateUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
+import AttendanceFeedbackQuestionnaire from './attendanceFeedbackQuestionnaire'
 
 interface AttendanceFeedbackFormText {
   title: string
@@ -13,13 +14,24 @@ interface AttendanceFeedbackFormText {
 }
 
 export default abstract class AttendanceFeedbackPresenter {
+  readonly text: AttendanceFeedbackFormText
+
   protected constructor(
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+    private readonly title: string,
+    private readonly subTitle: string,
+    private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
-
-  abstract readonly text: AttendanceFeedbackFormText
+  ) {
+    this.text = {
+      title,
+      subTitle,
+      attendanceQuestion: attendanceFeedbackQuestionnaire.attendanceQuestion.text,
+      attendanceQuestionHint: attendanceFeedbackQuestionnaire.attendanceQuestion.hint,
+      additionalAttendanceInformationLabel: attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
+    }
+  }
 
   readonly backLinkHref: string | null = null
 

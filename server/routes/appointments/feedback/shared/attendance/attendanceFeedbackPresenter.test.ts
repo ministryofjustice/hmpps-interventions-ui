@@ -2,6 +2,8 @@ import AttendanceFeedbackPresenter from './attendanceFeedbackPresenter'
 import initialAssessmentAppointmentFactory from '../../../../../../testutils/factories/initialAssessmentAppointment'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import { InitialAssessmentAppointment } from '../../../../../models/appointment'
+import AttendanceFeedbackQuestionnaire from './attendanceFeedbackQuestionnaire'
+import deliusServiceUser from '../../../../../../testutils/factories/deliusServiceUser'
 
 describe(AttendanceFeedbackPresenter, () => {
   class ExtendedAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
@@ -10,15 +12,14 @@ describe(AttendanceFeedbackPresenter, () => {
       error: FormValidationError | null = null,
       userInputData: Record<string, unknown> | null = null
     ) {
-      super(appointment, error, userInputData)
-    }
-
-    readonly text = {
-      title: 'title',
-      subTitle: 'subTitle',
-      attendanceQuestion: 'attendanceQuestion',
-      attendanceQuestionHint: 'attendanceQuestionHint',
-      additionalAttendanceInformationLabel: 'additionalAttendanceInformationLabel',
+      super(
+        appointment,
+        'title',
+        'subTitle',
+        new AttendanceFeedbackQuestionnaire(appointment, deliusServiceUser.build()),
+        error,
+        userInputData
+      )
     }
   }
 

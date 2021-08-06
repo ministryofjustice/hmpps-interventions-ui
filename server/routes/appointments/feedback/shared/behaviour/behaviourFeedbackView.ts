@@ -19,12 +19,12 @@ export default class BehaviourFeedbackView {
       name: 'behaviour-description',
       id: 'behaviour-description',
       label: {
-        text: this.presenter.text.behaviourDescription.question,
+        text: this.presenter.questionnaire.behaviourQuestion.text,
         classes: 'govuk-label--m govuk-!-margin-bottom-4',
         isPageHeading: false,
       },
       hint: {
-        text: this.presenter.text.behaviourDescription.hint,
+        text: this.presenter.questionnaire.behaviourQuestion.hint,
       },
       value: this.inputsPresenter.fields.behaviourDescription.value,
       errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.behaviourDescription.errorMessage),
@@ -39,15 +39,15 @@ export default class BehaviourFeedbackView {
       fieldset: {
         legend: {
           html: `<h2 class=govuk-fieldset__legend--m>${ViewUtils.escape(
-            this.presenter.text.notifyProbationPractitioner.question
+            this.presenter.questionnaire.notifyProbationPractitionerQuestion.text
           )}</h2><p class="govuk-body--m">${ViewUtils.escape(
-            this.presenter.text.notifyProbationPractitioner.explanation
+            this.presenter.questionnaire.notifyProbationPractitionerQuestion.explanation
           )}</p>`,
           isPageHeading: false,
         },
       },
       hint: {
-        text: this.presenter.text.notifyProbationPractitioner.hint,
+        text: this.presenter.questionnaire.notifyProbationPractitionerQuestion.hint,
       },
       items: [
         {

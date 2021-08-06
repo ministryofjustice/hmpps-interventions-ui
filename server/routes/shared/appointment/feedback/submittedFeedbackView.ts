@@ -18,6 +18,7 @@ export default class SubmittedFeedbackView {
       'shared/viewSubmittedPostSessionFeedback',
       {
         presenter: this.presenter,
+        feedbackAnswersPresenter: this.presenter.feedbackAnswersPresenter,
         summaryListArgs: this.summaryListArgs,
         backLinkArgs: this.backLinkArgs,
       },

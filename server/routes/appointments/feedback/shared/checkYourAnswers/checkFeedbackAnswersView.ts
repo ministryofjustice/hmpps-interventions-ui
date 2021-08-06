@@ -18,6 +18,7 @@ export default class CheckFeedbackAnswersView {
       'appointments/feedback/shared/postSessionFeedbackCheckAnswers',
       {
         presenter: this.presenter,
+        feedbackAnswersPresenter: this.presenter.feedbackAnswersPresenter,
         summaryListArgs: this.summaryListArgs,
         backLinkArgs: this.backLinkArgs,
       },
