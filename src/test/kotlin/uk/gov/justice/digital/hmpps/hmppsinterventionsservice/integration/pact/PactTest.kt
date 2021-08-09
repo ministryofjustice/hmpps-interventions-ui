@@ -18,8 +18,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.Serv
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIReferralService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.RisksAndNeedsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceUserAccessResult
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.UserDetail
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
 import java.util.UUID
@@ -31,6 +33,7 @@ class PactTest : IntegrationTestBase() {
   @MockBean private lateinit var communityAPIOffenderService: CommunityAPIOffenderService
   @MockBean private lateinit var communityAPIReferralService: CommunityAPIReferralService
   @MockBean private lateinit var risksAndNeedsService: RisksAndNeedsService
+  @MockBean private lateinit var hmppsAuthService: HMPPSAuthService
   @MockBean private lateinit var serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper
 
   private val serviceProviderFactory = ServiceProviderFactory()
@@ -51,6 +54,7 @@ class PactTest : IntegrationTestBase() {
       .thenReturn(ServiceUserAccessResult(true, emptyList()))
 
     // required for SP users
+    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("tom", "tom@tom.tom"))
     whenever(serviceProviderAccessScopeMapper.fromUser(any())).thenReturn(
       ServiceProviderAccessScope(
         setOf(serviceProviderFactory.create()),

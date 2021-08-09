@@ -91,6 +91,7 @@ notify:
     concerning-behaviour: "a8ef6769-4c8e-4459-938c-19dd4b661b04"
     end-of-service-report-submitted: "f79cb53f-dc5c-42aa-947e-f599f9ad7942"
     initial-assessment-scheduled: "28256bed-6433-485c-857d-cb52a7937dff"
+    service-provider-performance-report-ready: "9839e772-cd88-435d-9d18-61ea14d3531b"
 
 interventions-ui:
   locations:
@@ -98,6 +99,7 @@ interventions-ui:
       referral-details: "/service-provider/referrals/{id}/details"
       intervention-progress: "/service-provider/referrals/{id}/progress"
       action-plan: "/service-provider/referrals/{id}/action-plan"
+      download-report: "/service-provider/performance-report/download?filename={filename}"
     probation-practitioner:
       referral-details: "/probation-practitioner/referrals/{id}/details"
       intervention-progress: "/probation-practitioner/referrals/{id}/progress"
