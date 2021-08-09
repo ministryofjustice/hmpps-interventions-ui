@@ -33,4 +33,13 @@ data class EndOfServiceReport(
   @CollectionTable(name = "end_of_service_report_outcome", joinColumns = [JoinColumn(name = "end_of_service_report_id")])
   @NotNull val outcomes: MutableSet<EndOfServiceReportOutcome> = mutableSetOf(),
 
-)
+) {
+  val achievementScore: Float
+    get() = if (submittedAt != null) outcomes.fold(0.0F) { score, outcome ->
+      score + when (outcome.achievementLevel) {
+        AchievementLevel.ACHIEVED -> 1F
+        AchievementLevel.PARTIALLY_ACHIEVED -> 0.5F
+        else -> 0F
+      }
+    } else 0F
+}
