@@ -6,6 +6,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.job.DefaultJobParametersValidator
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.data.RepositoryItemReader
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder
@@ -66,7 +67,20 @@ class PerformanceReportJobConfiguration(
 
   @Bean
   fun performanceReportJob(writeToCsvStep: Step): Job {
+    val validator = DefaultJobParametersValidator()
+    validator.setRequiredKeys(
+      arrayOf(
+        "user.id",
+        "user.firstName",
+        "user.email",
+        "from",
+        "to",
+        "timestamp",
+      )
+    )
+
     return jobBuilderFactory["performanceReportJob"]
+      .validator(validator)
       .listener(listener)
       .start(writeToCsvStep)
       .build()
