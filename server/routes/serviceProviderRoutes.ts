@@ -178,6 +178,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
     get(router, '/performance-report/confirmation', (req, res) =>
       serviceProviderReferralsController.showPerformanceReportConfirmation(req, res)
     )
+    get(router, '/performance-report/download', (req, res) =>
+      serviceProviderReferralsController.downloadPerformanceReport(req, res)
+    )
   }
 
   return router
