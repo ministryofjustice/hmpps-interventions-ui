@@ -2,17 +2,79 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.service
 
 import java.time.OffsetDateTime
 import java.util.UUID
-import kotlin.reflect.full.memberProperties
 
 data class PerformanceReportData(
-  val id: UUID,
+  // val referralLink: String,
   val referralReference: String,
-  val serviceUserCRN: String,
-  val dateReferralReceived: OffsetDateTime,
+  val referralId: UUID,
   val contractReference: String,
   val organisationId: String,
+  // val referringOfficerEmail: String,
+  val currentAssigneeId: String?,
+  val serviceUserCRN: String,
+  val dateReferralReceived: OffsetDateTime,
+  val initialAssessmentBookedAt: OffsetDateTime?,
+  val initialAssessmentAttendedAt: OffsetDateTime?,
+  val firstActionPlanSubmittedAt: OffsetDateTime?,
+  val firstActionPlanApprovedAt: OffsetDateTime?,
+  val firstSessionAttendedAt: OffsetDateTime?,
+  val numberOfOutcomes: Int?,
+  val achievementScore: Float?,
+  val numberOfSessions: Int?,
+  val numberOfSessionsAttended: Int?,
+  val endRequestedAt: OffsetDateTime?,
+  val endRequestedReason: String?,
+  val eosrSubmittedAt: OffsetDateTime?,
+  val concludedAt: OffsetDateTime?,
 ) {
   companion object {
-    val fields = PerformanceReportData::class.memberProperties.map { it.name }.sorted()
+    // it would be neater to use reflection to get the fields, but we cannot guarantee the order
+    val fields = listOf(
+      // "referralLink",
+      "referralReference",
+      "referralId",
+      "contractReference",
+      "organisationId",
+      // "referringOfficerEmail",
+      "currentAssigneeId",
+      "serviceUserCRN",
+      "dateReferralReceived",
+      "initialAssessmentBookedAt",
+      "initialAssessmentAttendedAt",
+      "firstActionPlanSubmittedAt",
+      "firstActionPlanApprovedAt",
+      "firstSessionAttendedAt",
+      "numberOfOutcomes",
+      "achievementScore",
+      "numberOfSessions",
+      "numberOfSessionsAttended",
+      "endRequestedAt",
+      "endRequestedReason",
+      "eosrSubmittedAt",
+      "concludedAt",
+    )
+    val headers = listOf(
+      // "referral_link",
+      "referral_ref",
+      "referral_id",
+      "organisation_id",
+      // "referring_officer_email",
+      "caseworker_id",
+      "service_user_crn",
+      "date_referral_received",
+      "date_saa_booked",
+      "date_saa_attended",
+      "date_first_action_plan_submitted",
+      "date_of_first_action_plan_approval",
+      "date_of_first_attended_session",
+      "outcomes_to_be_achieved_count",
+      "outcomes_achieved",
+      "count_of_sessions_expected",
+      "count_of_sessions_attended",
+      "end_requested_by_pp_at",
+      "end_requested_by_pp_reason",
+      "date_eosr_submitted",
+      "concluded_at",
+    )
   }
 }
