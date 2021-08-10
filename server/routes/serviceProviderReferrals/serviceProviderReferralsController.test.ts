@@ -36,7 +36,7 @@ import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOff
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import CalendarDay from '../../utils/calendarDay'
 import { createDraftFactory } from '../../../testutils/factories/draft'
-import { DraftAssignmentData } from './serviceProviderReferralsController'
+import { DraftAssignmentData, DraftAppointmentBooking } from './serviceProviderReferralsController'
 import DraftsService from '../../services/draftsService'
 import MockReferenceDataService from '../testutils/mocks/mockReferenceDataService'
 import ReferenceDataService from '../../services/referenceDataService'
@@ -48,6 +48,7 @@ jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
 
 const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: null })
+const draftAppointmentBookingFactory = createDraftFactory<DraftAppointmentBooking>(null)
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -1834,25 +1835,61 @@ describe('GET /service-provider/end-of-service-report/:id/confirmation', () => {
   })
 })
 
+describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/start', () => {
+  it('creates a draft booking using the drafts service, and redirects to the scheduling details form', async () => {
+    const draftBooking = draftAppointmentBookingFactory.build()
+    draftsService.createDraft.mockResolvedValue(draftBooking)
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/schedule/start`)
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
+
+    expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
+  })
+})
+
 describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () => {
+  it('creates a draft booking using the drafts service, and redirects to the scheduling details form', async () => {
+    const draftBooking = draftAppointmentBookingFactory.build()
+    draftsService.createDraft.mockResolvedValue(draftBooking)
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
+
+    expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', () => {
   describe('when this is the first time to schedule an initial assessment', () => {
     it('renders an empty form', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
       interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
-        .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('Add appointment details')
           expect(res.text).not.toContain('Previous missed appointment')
         })
+
+      expect(draftsService.fetchDraft).toHaveBeenCalledWith(draftBooking.id, { userId: '123' })
     })
   })
 
   describe('when there already is a scheduled appointment', () => {
     it('renders an empty form', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
       interventionsService.getSupplierAssessment.mockResolvedValue(
         supplierAssessmentFactory.withSingleAppointment.build()
       )
@@ -1860,17 +1897,22 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
       interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
       await request(app)
-        .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('Change appointment details')
           expect(res.text).not.toContain('Previous missed appointment')
         })
+
+      expect(draftsService.fetchDraft).toHaveBeenCalledWith(draftBooking.id, { userId: '123' })
     })
   })
 
   describe('when the existing current appointment has already been attended', () => {
     it('renders the form and includes current appointment details within previous missed appointment', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
       interventionsService.getSupplierAssessment.mockResolvedValue(
         supplierAssessmentFactory.withNonAttendedAppointment.build()
       )
@@ -1881,12 +1923,47 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
       )
 
       await request(app)
-        .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('Add appointment details')
           expect(res.text).toContain('Previous missed appointment')
           expect(res.text).toContain('caseWorkerFirstName caseWorkerLastName')
+        })
+
+      expect(draftsService.fetchDraft).toHaveBeenCalledWith(draftBooking.id, { userId: '123' })
+    })
+  })
+
+  describe('when no draft exists with that ID', () => {
+    it('displays an error', async () => {
+      draftsService.fetchDraft.mockResolvedValue(null)
+
+      await request(app)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule/abc/details`)
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain(
+            'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.'
+          )
+        })
+    })
+  })
+
+  describe('when clash=true is passed as a param', () => {
+    it('displays an message explaining that the chosen date and time cause a clash', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+      await request(app)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details?clash=true`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
         })
     })
   })
@@ -1894,171 +1971,60 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () 
 
 describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', () => {
   describe('with valid data', () => {
-    describe('when there is no existing appointment scheduled', () => {
-      it('schedules the appointment on the interventions service and redirects to the confirmation page', async () => {
-        const referral = sentReferralFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+    it('creates and updates a draft booking, and redirects to the check-answers page', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.createDraft.mockResolvedValue(draftBooking)
 
-        const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-          appointmentTime: '2021-03-24T09:02:02Z',
+      const referral = sentReferralFactory.build()
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+      await request(app)
+        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
+        .type('form')
+        .send({
+          'date-day': '24',
+          'date-month': '3',
+          'date-year': '2021',
+          'time-hour': '9',
+          'time-minute': '02',
+          'time-part-of-day': 'am',
+          'duration-hours': '1',
+          'duration-minutes': '15',
+          'session-type': 'ONE_TO_ONE',
+          'meeting-method': 'PHONE_CALL',
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/${draftBooking.id}/check-answers`
+        )
+
+      expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
+
+      expect(draftsService.updateDraft).toHaveBeenCalledWith(
+        draftBooking.id,
+        {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
           durationInMinutes: 75,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
-        })
-
-        interventionsService.getSentReferral.mockResolvedValue(referral)
-        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-        interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
-        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-        await request(app)
-          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
-          .type('form')
-          .send({
-            'date-day': '24',
-            'date-month': '3',
-            'date-year': '2021',
-            'time-hour': '9',
-            'time-minute': '02',
-            'time-part-of-day': 'am',
-            'duration-hours': '1',
-            'duration-minutes': '15',
-            'session-type': 'ONE_TO_ONE',
-            'meeting-method': 'PHONE_CALL',
-          })
-          .expect(302)
-          .expect('Location', `/service-provider/referrals/${referral.id}/supplier-assessment/scheduled-confirmation`)
-
-        expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
-          'token',
-          supplierAssessment.id,
-          {
-            appointmentTime: '2021-03-24T09:02:00.000Z',
-            durationInMinutes: 75,
-            sessionType: 'ONE_TO_ONE',
-            appointmentDeliveryType: 'PHONE_CALL',
-            appointmentDeliveryAddress: null,
-            npsOfficeCode: null,
-          }
-        )
-      })
-    })
-
-    describe('when there is an existing appointment scheduled', () => {
-      it('schedules the appointment on the interventions service and redirects to the rescheduled-confirmation page', async () => {
-        const referral = sentReferralFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
-
-        const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-          appointmentTime: '2021-03-24T09:02:02Z',
-          durationInMinutes: 75,
-          sessionType: 'ONE_TO_ONE',
-          appointmentDeliveryType: 'PHONE_CALL',
-          appointmentDeliveryAddress: null,
-        })
-
-        interventionsService.getSentReferral.mockResolvedValue(referral)
-        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-        interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
-        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-        await request(app)
-          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
-          .type('form')
-          .send({
-            'date-day': '24',
-            'date-month': '3',
-            'date-year': '2021',
-            'time-hour': '9',
-            'time-minute': '02',
-            'time-part-of-day': 'am',
-            'duration-hours': '1',
-            'duration-minutes': '15',
-            'session-type': 'ONE_TO_ONE',
-            'meeting-method': 'PHONE_CALL',
-          })
-          .expect(302)
-          .expect('Location', `/service-provider/referrals/${referral.id}/supplier-assessment/rescheduled-confirmation`)
-
-        expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
-          'token',
-          supplierAssessment.id,
-          {
-            appointmentTime: '2021-03-24T09:02:00.000Z',
-            durationInMinutes: 75,
-            sessionType: 'ONE_TO_ONE',
-            appointmentDeliveryType: 'PHONE_CALL',
-            appointmentDeliveryAddress: null,
-            npsOfficeCode: null,
-          }
-        )
-      })
-    })
-
-    describe('when the interventions service responds with a 409 status code', () => {
-      it('renders a specific error message', async () => {
-        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
-        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-        const error = { status: 409 }
-        interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
-
-        await request(app)
-          .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
-          .send({
-            'date-day': '24',
-            'date-month': '3',
-            'date-year': '2021',
-            'time-hour': '9',
-            'time-minute': '02',
-            'time-part-of-day': 'am',
-            'duration-hours': '1',
-            'duration-minutes': '15',
-            'session-type': 'ONE_TO_ONE',
-            'meeting-method': 'PHONE_CALL',
-          })
-          .expect(400)
-          .expect(res => {
-            expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
-          })
-      })
-    })
-
-    describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
-      it('renders an error message', async () => {
-        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
-        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-        const error = new Error('Failed to update appointment')
-        interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
-
-        await request(app)
-          .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
-          .send({
-            'date-day': '24',
-            'date-month': '3',
-            'date-year': '2021',
-            'time-hour': '9',
-            'time-minute': '02',
-            'time-part-of-day': 'am',
-            'duration-hours': '1',
-            'duration-minutes': '15',
-            'session-type': 'ONE_TO_ONE',
-            'meeting-method': 'PHONE_CALL',
-          })
-          .expect(500)
-          .expect(res => {
-            expect(res.text).toContain('Failed to update appointment')
-          })
-      })
+          npsOfficeCode: null,
+        },
+        { userId: '123' }
+      )
     })
   })
 
   describe('with invalid data', () => {
-    it('does not try to schedule an appointment on the interventions service, and renders an error message', async () => {
+    it('renders an error message', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.createDraft.mockResolvedValue(draftBooking)
+
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
       interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
@@ -2082,8 +2048,227 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         .expect(res => {
           expect(res.text).toContain('The session date must be a real date')
         })
+    })
+  })
+})
 
-      expect(interventionsService.scheduleSupplierAssessmentAppointment).not.toHaveBeenCalled()
+describe('POST /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', () => {
+  describe('with valid data', () => {
+    it('updates the draft booking, and redirects to the check-answers page', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build()
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      draftsService.updateDraft.mockResolvedValue()
+
+      const referral = sentReferralFactory.build()
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+      await request(app)
+        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule/${draftBooking.id}/details`)
+        .type('form')
+        .send({
+          'date-day': '24',
+          'date-month': '3',
+          'date-year': '2021',
+          'time-hour': '9',
+          'time-minute': '02',
+          'time-part-of-day': 'am',
+          'duration-hours': '1',
+          'duration-minutes': '15',
+          'session-type': 'ONE_TO_ONE',
+          'meeting-method': 'PHONE_CALL',
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/${draftBooking.id}/check-answers`
+        )
+
+      expect(draftsService.updateDraft).toHaveBeenCalledWith(
+        draftBooking.id,
+        {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
+          durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+          npsOfficeCode: null,
+        },
+        { userId: '123' }
+      )
+    })
+
+    describe('with invalid data', () => {
+      it('does not update the draft booking, and renders an error message', async () => {
+        const draftBooking = draftAppointmentBookingFactory.build()
+        draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+        await request(app)
+          .post(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
+          .type('form')
+          .send({
+            'date-day': '32',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(400)
+          .expect(res => {
+            expect(res.text).toContain('The session date must be a real date')
+          })
+
+        expect(draftsService.updateDraft).not.toHaveBeenCalled()
+      })
+    })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/check-answers', () => {
+  it('renders a page that replays the user’s answers from the draft booking', async () => {
+    const draftBooking = draftAppointmentBookingFactory.build({
+      data: {
+        appointmentTime: '2021-03-24T09:02:00.000Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+        appointmentDeliveryAddress: null,
+        npsOfficeCode: null,
+      },
+    })
+    draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+    const referral = sentReferralFactory.build()
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+
+    await request(app)
+      .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/check-answers`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm appointment details')
+        expect(res.text).toContain('24 March 2021')
+        expect(res.text).toContain('9:02am to 10:17am')
+        expect(res.text).toContain('Phone call')
+      })
+  })
+})
+
+describe('POST /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/submit', () => {
+  it('updates the draft booking, schedules the appointment on the interventions service, deletes the draft booking, and redirects to the confirmation page', async () => {
+    const draftBooking = draftAppointmentBookingFactory.build({
+      data: {
+        appointmentTime: '2021-03-24T09:02:00.000Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+        appointmentDeliveryAddress: null,
+        npsOfficeCode: null,
+      },
+    })
+    draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+    draftsService.updateDraft.mockResolvedValue()
+    draftsService.deleteDraft.mockResolvedValue()
+
+    const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+    const scheduledAppointment = initialAssessmentAppointmentFactory.build({
+      appointmentTime: '2021-03-24T09:02:02Z',
+      durationInMinutes: 75,
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+    })
+
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+    interventionsService.scheduleSupplierAssessmentAppointment.mockResolvedValue(scheduledAppointment)
+
+    await request(app)
+      .post(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/submit`)
+      .expect(302)
+      .expect('Location', `/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
+
+    expect(interventionsService.scheduleSupplierAssessmentAppointment).toHaveBeenCalledWith(
+      'token',
+      supplierAssessment.id,
+      {
+        appointmentTime: '2021-03-24T09:02:00.000Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+        appointmentDeliveryAddress: null,
+        npsOfficeCode: null,
+      }
+    )
+
+    expect(draftsService.deleteDraft).toHaveBeenCalledWith(draftBooking.id, { userId: '123' })
+  })
+
+  describe('when the interventions service responds with a 409 status code', () => {
+    it('redirects to the booking form, passing a clash=true parameter, and does not delete the draft booking', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build({
+        data: {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+          npsOfficeCode: null,
+        },
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+
+      const error = { status: 409 }
+      interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
+
+      await request(app)
+        .post(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/submit`)
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details?clash=true`
+        )
+
+      expect(draftsService.deleteDraft).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
+    it('renders an error message, and does not delete the draft booking', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build({
+        data: {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+          npsOfficeCode: null,
+        },
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+
+      const error = new Error('Failed to update appointment')
+      interventionsService.scheduleSupplierAssessmentAppointment.mockRejectedValue(error)
+
+      await request(app)
+        .post(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/submit`)
+        .expect(500)
+        .expect(res => {
+          expect(res.text).toContain('Failed to update appointment')
+        })
+
+      expect(draftsService.deleteDraft).not.toHaveBeenCalled()
     })
   })
 })

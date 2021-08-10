@@ -1429,6 +1429,8 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#method-other-location-address-county').type('Lancashire')
       cy.get('#method-other-location-address-postcode').type('SY4 0RE')
 
+      cy.contains('Save and continue').click()
+
       const scheduledAppointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '3021-03-24T09:02:02Z',
         durationInMinutes: 75,
@@ -1448,7 +1450,17 @@ describe('Service provider referrals dashboard', () => {
       })
       cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
 
-      cy.contains('Save and continue').click()
+      cy.get('h1').contains('Confirm appointment details')
+      cy.contains('24 March 2021')
+      cy.contains('9:02am to 10:17am')
+      cy.contains('In-person meeting')
+      cy.contains('Harmony Living Office, Room 4')
+      cy.contains('44 Bouverie Road')
+      cy.contains('Blackpool')
+      cy.contains('Lancashire')
+      cy.contains('SY4 0RE')
+
+      cy.get('button').contains('Confirm').click()
       // We need to switch out the response _after_ the update, since the
       // redirect to the correct confirmation page depends on the pre-update
       // state. The best way to handle this would be using Wiremock scenarios
@@ -1473,6 +1485,91 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Blackpool')
       cy.contains('Lancashire')
       cy.contains('SY4 0RE')
+    })
+
+    it('User schedules a supplier assessment appointment, changing their chosen time after it turns out to cause a clash of appointments', () => {
+      const serviceCategory = serviceCategoryFactory.build()
+      const intervention = interventionFactory.build()
+      const referral = sentReferralFactory.assigned().build({
+        referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
+      })
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+      const deliusServiceUser = deliusServiceUserFactory.build()
+
+      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`)
+
+      cy.get('#date-day').type('24')
+      cy.get('#date-month').type('3')
+      cy.get('#date-year').type('2021')
+      cy.get('#time-hour').type('9')
+      cy.get('#time-minute').type('02')
+      cy.get('#time-part-of-day').select('AM')
+      cy.get('#duration-hours').type('1')
+      cy.get('#duration-minutes').type('15')
+      cy.contains('In-person meeting - Other locations').click()
+      cy.get('#method-other-location-address-line-1').type('Harmony Living Office, Room 4')
+      cy.get('#method-other-location-address-line-2').type('44 Bouverie Road')
+      cy.get('#method-other-location-address-town-or-city').type('Blackpool')
+      cy.get('#method-other-location-address-county').type('Lancashire')
+      cy.get('#method-other-location-address-postcode').type('SY4 0RE')
+
+      cy.contains('Save and continue').click()
+
+      cy.stubScheduleSupplierAssessmentAppointmentClash(supplierAssessment.id)
+
+      cy.get('h1').contains('Confirm appointment details')
+      cy.get('button').contains('Confirm').click()
+
+      cy.contains('The proposed date and time you selected clashes with another appointment.')
+
+      cy.get('h1').contains('Add appointment details')
+      cy.get('#date-day').should('have.value', '24')
+      cy.get('#date-month').should('have.value', '3')
+      cy.get('#date-year').should('have.value', '2021')
+      cy.get('#time-hour').should('have.value', '9')
+      cy.get('#time-minute').should('have.value', '02')
+      cy.get('#time-part-of-day').get('[selected]').should('have.text', 'AM')
+      cy.get('#duration-hours').should('have.value', '1')
+      cy.get('#duration-minutes').should('have.value', '15')
+      cy.get('#meeting-method-meeting-other').should('be.checked')
+      cy.get('#method-other-location-address-line-1').should('have.value', 'Harmony Living Office, Room 4')
+      cy.get('#method-other-location-address-line-2').should('have.value', '44 Bouverie Road')
+      cy.get('#method-other-location-address-town-or-city').should('have.value', 'Blackpool')
+      cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
+      cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
+
+      cy.get('#date-day').type('{selectall}{backspace}25')
+
+      cy.contains('Save and continue').click()
+
+      const scheduledAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: '2021-03-25T09:02:02Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+        appointmentDeliveryAddress: {
+          firstAddressLine: 'Harmony Living Office, Room 4',
+          secondAddressLine: '44 Bouverie Road',
+          townOrCity: 'Blackpool',
+          county: 'Lancashire',
+          postCode: 'SY4 0RE',
+        },
+      })
+      cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
+
+      cy.get('h1').contains('Confirm appointment details')
+      cy.get('button').contains('Confirm').click()
+
+      cy.get('h1').contains('Initial assessment appointment added')
     })
 
     it('User reschedules a supplier assessment appointment', () => {
@@ -1528,6 +1625,8 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#duration-hours').clear()
       cy.get('#duration-minutes').clear().type('45')
 
+      cy.contains('Save and continue').click()
+
       const rescheduledAppointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '3021-04-10T16:15:00Z',
         durationInMinutes: 45,
@@ -1542,7 +1641,11 @@ describe('Service provider referrals dashboard', () => {
         scheduledAppointment
       )
 
-      cy.contains('Save and continue').click()
+      cy.get('h1').contains('Confirm appointment details')
+      cy.contains('10 April 2021')
+      cy.contains('4:15pm to 5:00pm')
+
+      cy.get('button').contains('Confirm').click()
       // See comment in previous test about why we do this after the update
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
@@ -1679,8 +1782,10 @@ describe('Service provider referrals dashboard', () => {
               cy.contains('Appointment status').next().contains('did not attend')
               cy.contains('To do').next().contains('Reschedule').click()
               cy.location('pathname').should(
-                'equal',
-                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule`
+                'match',
+                new RegExp(
+                  `/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule/[a-z0-9-]+/details`
+                )
               )
             })
         })

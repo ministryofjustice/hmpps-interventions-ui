@@ -1,5 +1,9 @@
 import PresenterUtils from '../../utils/presenterUtils'
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
+import {
+  ActionPlanAppointment,
+  AppointmentSchedulingDetails,
+  InitialAssessmentAppointment,
+} from '../../models/appointment'
 import { FormValidationError } from '../../utils/formValidationError'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
@@ -16,6 +20,7 @@ export default class ScheduleAppointmentPresenter {
     private readonly currentAppointmentSummary: AppointmentSummary | null,
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
     private readonly validationError: FormValidationError | null = null,
+    private readonly draftSchedulingDetails: AppointmentSchedulingDetails | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
     private readonly overrideBackLinkHref?: string
@@ -78,51 +83,52 @@ export default class ScheduleAppointmentPresenter {
   // Supplier assessment appointments are always one to one
   readonly sessionTypeWhenSelectionNotAllowed = 'ONE_TO_ONE'
 
-  readonly fields = this.appointmentAlreadyAttended
-    ? {
-        date: this.utils.dateValue(null, 'date', this.validationError),
-        time: this.utils.twelveHourTimeValue(null, 'time', this.validationError),
-        duration: this.utils.durationValue(null, 'duration', this.validationError),
-        sessionType: {
-          errorMessage: PresenterUtils.errorMessage(this.validationError, 'session-type'),
-          value: this.utils.stringValue(null, 'session-type'),
-        },
-        meetingMethod: this.utils.meetingMethodValue(null, 'meeting-method', this.validationError),
-        address: this.utils.addressValue(null, 'method-other-location', this.validationError),
-        deliusOfficeLocation: this.utils.selectionValue(null, 'delius-office-location-code', this.validationError),
-      }
-    : {
-        date: this.utils.dateValue(this.appointmentDecorator?.britishDay ?? null, 'date', this.validationError),
-        time: this.utils.twelveHourTimeValue(
-          this.appointmentDecorator?.britishTime ?? null,
-          'time',
-          this.validationError
-        ),
-        duration: this.utils.durationValue(
-          this.appointmentDecorator?.duration ?? null,
-          'duration',
-          this.validationError
-        ),
-        sessionType: {
-          errorMessage: PresenterUtils.errorMessage(this.validationError, 'session-type'),
-          value: this.utils.stringValue(this.currentAppointment?.sessionType ?? null, 'session-type'),
-        },
-        meetingMethod: this.utils.meetingMethodValue(
-          this.currentAppointment?.appointmentDeliveryType ?? null,
-          'meeting-method',
-          this.validationError
-        ),
-        address: this.utils.addressValue(
-          this.currentAppointment?.appointmentDeliveryAddress ?? null,
-          'method-other-location',
-          this.validationError
-        ),
-        deliusOfficeLocation: this.utils.selectionValue(
-          this.currentAppointment?.npsOfficeCode ?? null,
-          'delius-office-location-code',
-          this.validationError
-        ),
-      }
+  private get schedulingDetailsToEdit() {
+    if (this.draftSchedulingDetails !== null) {
+      return this.draftSchedulingDetails
+    }
+
+    return this.appointmentAlreadyAttended ? null : this.currentAppointment
+  }
+
+  readonly fields = (() => {
+    const schedulingDetailsToEditDecorator = this.schedulingDetailsToEdit
+      ? new AppointmentDecorator(this.schedulingDetailsToEdit)
+      : null
+
+    return {
+      date: this.utils.dateValue(schedulingDetailsToEditDecorator?.britishDay ?? null, 'date', this.validationError),
+      time: this.utils.twelveHourTimeValue(
+        schedulingDetailsToEditDecorator?.britishTime ?? null,
+        'time',
+        this.validationError
+      ),
+      duration: this.utils.durationValue(
+        schedulingDetailsToEditDecorator?.duration ?? null,
+        'duration',
+        this.validationError
+      ),
+      sessionType: {
+        errorMessage: PresenterUtils.errorMessage(this.validationError, 'session-type'),
+        value: this.utils.stringValue(this.schedulingDetailsToEdit?.sessionType ?? null, 'session-type'),
+      },
+      meetingMethod: this.utils.meetingMethodValue(
+        this.schedulingDetailsToEdit?.appointmentDeliveryType ?? null,
+        'meeting-method',
+        this.validationError
+      ),
+      address: this.utils.addressValue(
+        this.schedulingDetailsToEdit?.appointmentDeliveryAddress ?? null,
+        'method-other-location',
+        this.validationError
+      ),
+      deliusOfficeLocation: this.utils.selectionValue(
+        this.schedulingDetailsToEdit?.npsOfficeCode ?? null,
+        'delius-office-location-code',
+        this.validationError
+      ),
+    }
+  })()
 
   readonly backLinkHref = this.overrideBackLinkHref ?? `/service-provider/referrals/${this.referral.id}/progress`
 }

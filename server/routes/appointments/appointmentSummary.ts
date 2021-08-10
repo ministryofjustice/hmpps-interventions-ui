@@ -1,10 +1,10 @@
 import { SummaryListItem } from '../../utils/summaryList'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import PresenterUtils from '../../utils/presenterUtils'
-import { InitialAssessmentAppointment, ActionPlanAppointment } from '../../models/appointment'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import Address from '../../models/address'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
+import { AppointmentSchedulingDetails } from '../../models/appointment'
 
 interface Caseworker {
   username?: string
@@ -13,7 +13,7 @@ interface Caseworker {
 }
 export default class AppointmentSummary {
   constructor(
-    private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment,
+    private readonly appointment: AppointmentSchedulingDetails,
     private readonly assignedCaseworker: Caseworker | null = null,
     private readonly deliusOfficeLocation: DeliusOfficeLocation | null = null
   ) {}

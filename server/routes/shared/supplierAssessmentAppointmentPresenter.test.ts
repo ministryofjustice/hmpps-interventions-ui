@@ -138,7 +138,7 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
 
         expect(presenter.actionLink).toEqual({
           text: 'Change appointment details',
-          href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule`,
+          href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`,
         })
       })
 
