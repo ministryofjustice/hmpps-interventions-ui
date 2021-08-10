@@ -57,6 +57,7 @@ data class PerformanceReportData(
       // "referral_link",
       "referral_ref",
       "referral_id",
+      "contract_ref",
       "organisation_id",
       // "referring_officer_email",
       "caseworker_id",
