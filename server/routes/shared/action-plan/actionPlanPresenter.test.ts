@@ -3,6 +3,7 @@ import referralFactory from '../../../../testutils/factories/sentReferral'
 import ActionPlanPresenter from './actionPlanPresenter'
 import InterventionProgressPresenter from '../../serviceProviderReferrals/interventionProgressPresenter'
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
+import approvedActionPlanSummaryFactory from '../../../../testutils/factories/approvedActionPlanSummary'
 
 describe(InterventionProgressPresenter, () => {
   const desiredOutcomes = [
@@ -51,6 +52,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           actionPlan,
           serviceCategories,
+
           'service-provider',
           validationError
         )
@@ -198,6 +200,95 @@ describe(InterventionProgressPresenter, () => {
         'probation-practitioner'
       )
       expect(approvedActionPlanPresenter.showEditButton).toBe(false)
+    })
+  })
+
+  describe('actionPlanVersions', () => {
+    it('returns a list of created dates for approved action plans in descending order by date', () => {
+      const submittedActionPlan = actionPlanFactory.submitted().build()
+      const approvedActionPlanSummaries = [
+        approvedActionPlanSummaryFactory.build({
+          approvedAt: '2021-06-10:00:00.000000Z',
+        }),
+        approvedActionPlanSummaryFactory.build({
+          approvedAt: '2021-06-11:00:00.000000Z',
+        }),
+      ]
+      const submittedActionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider',
+        null,
+        approvedActionPlanSummaries
+      )
+      expect(submittedActionPlanPresenter.actionPlanVersions).toEqual([
+        { approvalDate: '11 Jun 2021' },
+        { approvalDate: '10 Jun 2021' },
+      ])
+    })
+  })
+
+  describe('showActionPlanVersions', () => {
+    it('returns true when there is one or more approved versions of the action plan', () => {
+      const submittedActionPlan = actionPlanFactory.build()
+      const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+      const actionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'probation-practitioner',
+        null,
+        approvedActionPlanSummaries
+      )
+
+      expect(actionPlanPresenter.showActionPlanVersions).toEqual(true)
+    })
+
+    it('returns false when there are no approved versions of the action plan', () => {
+      const submittedActionPlan = actionPlanFactory.build()
+
+      const actionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'probation-practitioner',
+        null,
+        []
+      )
+
+      expect(actionPlanPresenter.showActionPlanVersions).toEqual(false)
+    })
+
+    it('returns false for SPs', () => {
+      const submittedActionPlan = actionPlanFactory.build()
+      const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+      const actionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider',
+        null,
+        approvedActionPlanSummaries
+      )
+
+      expect(actionPlanPresenter.showActionPlanVersions).toEqual(false)
+    })
+
+    it('returns false by default', () => {
+      const submittedActionPlan = actionPlanFactory.build()
+
+      const actionPlanPresenter = new ActionPlanPresenter(
+        referral,
+        submittedActionPlan,
+        serviceCategories,
+        'service-provider',
+        null
+      )
+
+      expect(actionPlanPresenter.showActionPlanVersions).toEqual(false)
     })
   })
 })

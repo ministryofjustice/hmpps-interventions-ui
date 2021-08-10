@@ -5,6 +5,8 @@ import PresenterUtils from '../../../utils/presenterUtils'
 import ActionPlanSummaryPresenter from './actionPlanSummaryPresenter'
 import utils from '../../../utils/utils'
 import ServiceCategory from '../../../models/serviceCategory'
+import ApprovedActionPlanSummary from '../../../models/approvedActionPlanSummary'
+import dateUtils from '../../../utils/dateUtils'
 
 export default class ActionPlanPresenter {
   actionPlanSummaryPresenter: ActionPlanSummaryPresenter
@@ -14,7 +16,8 @@ export default class ActionPlanPresenter {
     private readonly actionPlan: ActionPlan,
     private readonly serviceCategories: ServiceCategory[],
     readonly userType: 'service-provider' | 'probation-practitioner',
-    private readonly validationError: FormValidationError | null = null
+    private readonly validationError: FormValidationError | null = null,
+    private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[] = []
   ) {
     this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(referral, actionPlan, userType)
   }
@@ -62,6 +65,18 @@ export default class ActionPlanPresenter {
   get probationPractitionerBlockedFromViewing(): boolean {
     // probation practitioners can only view submitted action plans
     return this.userType === 'probation-practitioner' && !this.actionPlanSummaryPresenter.actionPlanSubmitted
+  }
+
+  get actionPlanVersions(): { approvalDate: string }[] {
+    return this.approvedActionPlanSummaries
+      .sort((summaryA, summaryB) => new Date(summaryB.approvedAt).getTime() - new Date(summaryA.approvedAt).getTime())
+      .map(summary => ({
+        approvalDate: dateUtils.getDateStringFromDateTimeString(summary.approvedAt),
+      }))
+  }
+
+  get showActionPlanVersions(): boolean {
+    return this.userType === 'probation-practitioner' && this.actionPlanVersions.length > 0
   }
 
   get showEditButton(): boolean {

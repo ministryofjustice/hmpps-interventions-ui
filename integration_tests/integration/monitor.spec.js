@@ -2,6 +2,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
+import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import interventionFactory from '../../testutils/factories/intervention'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
@@ -497,16 +498,27 @@ describe('Probation Practitioner monitor journey', () => {
         currentAppointmentId: appointment.id,
       })
 
+      const activities = [
+        actionPlanActivity.build({
+          description: 'Achieve a thing',
+        }),
+      ]
+
       const actionPlan = actionPlanFactory.submitted().build({
         id: actionPlanId,
         referralId: referral.id,
         numberOfSessions: 4,
-        activities: [
-          actionPlanActivity.build({
-            description: 'Achieve a thing',
-          }),
-        ],
+        activities,
       })
+
+      const approvedActionPlanSummaries = [
+        approvedActionPlanSummaryFactory.build({
+          approvedAt: '2021-06-03T00:30:00+01:00',
+        }),
+        approvedActionPlanSummaryFactory.build({
+          approvedAt: '2021-06-04T00:30:00+01:00',
+        }),
+      ]
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(intervention.id, intervention)
@@ -517,6 +529,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetActionPlan(actionPlanId, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubApproveActionPlan(actionPlanId, actionPlan)
+      cy.stubGetApprovedActionPlanSummaries(referral.id, approvedActionPlanSummaries)
 
       cy.login()
 
@@ -537,11 +550,27 @@ describe('Probation Practitioner monitor journey', () => {
       const approvedActionPlan = actionPlanFactory.approved().build({
         id: actionPlanId,
         referralId: referral.id,
+        activities,
+        numberOfSessions: 4,
       })
 
       cy.stubGetActionPlan(actionPlanId, approvedActionPlan)
       cy.contains('Return to intervention progress').click()
       cy.contains('Action plan status').next().contains('Approved')
+
+      cy.contains('View action plan').click()
+      cy.contains('Action plan versions')
+
+      cy.get('table')
+        .getTable()
+        .should('deep.equal', [
+          {
+            'Approval date': '04 Jun 2021',
+          },
+          {
+            'Approval date': '03 Jun 2021',
+          },
+        ])
     })
   })
 })

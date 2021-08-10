@@ -38,6 +38,7 @@ import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager
 import DraftsService from '../../services/draftsService'
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import draftCancellationDataFactory from '../../../testutils/factories/draftCancellationData'
+import approvedActionPlanSummaryFactory from '../../../testutils/factories/approvedActionPlanSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -784,11 +785,13 @@ describe('GET /probation-practitioner/referrals/:id/action-plan', () => {
     const serviceCategory = serviceCategoryFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()
     const actionPlan = actionPlanFactory.submitted().build({ referralId: sentReferral.id })
+    const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(2)
     sentReferral.actionPlanId = actionPlan.id
 
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedActionPlanSummaries)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
@@ -816,6 +819,7 @@ describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () =>
     expect(interventionsService.approveActionPlan.mock.calls.length).toBe(1)
     expect(interventionsService.approveActionPlan.mock.calls[0][1]).toBe('724bf133-65cb-43d4-bff9-ca692ad1d381')
   })
+
   it("redirects back to action-plan if approval hasn't been confirmed", async () => {
     const sentReferral = sentReferralFactory.assigned().build()
     const serviceCategory = serviceCategoryFactory.build()
@@ -827,6 +831,7 @@ describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () =>
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
 
     await request(app)
       .post(`/probation-practitioner/referrals/${sentReferral.id}/action-plan/approve`)
