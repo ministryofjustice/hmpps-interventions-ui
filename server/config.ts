@@ -80,7 +80,7 @@ export default {
   },
   apis: {
     communityApi: {
-      url: get('COMMUNITY_API_URL', 'http://localhost:8091', requiredInProduction),
+      url: get('COMMUNITY_API_URL', 'http://localhost:9092', requiredInProduction),
       timeout: {
         response: Number(get('COMMUNITY_API_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('COMMUNITY_API_TIMEOUT_DEADLINE', 10000)),

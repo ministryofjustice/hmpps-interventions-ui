@@ -8,7 +8,7 @@ import AssessRisksAndNeedsServiceMocks from '../../mockApis/assessRisksAndNeedsS
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
 const tokenVerification = new TokenVerificationMocks(wiremock)
-const communityApi = new CommunityApiMocks(wiremock)
+const communityApi = new CommunityApiMocks(wiremock, '/community-api')
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
 const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock)
 
