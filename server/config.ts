@@ -49,6 +49,9 @@ export default {
     serviceProviderReporting: {
       enabled: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
     },
+    previouslyApprovedActionPlans: {
+      enabled: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
+    },
   },
   s3: {
     service: {

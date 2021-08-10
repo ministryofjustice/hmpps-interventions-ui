@@ -36,6 +36,7 @@ import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppoi
 import FileUtils from '../../utils/fileUtils'
 import DraftsService from '../../services/draftsService'
 import DraftCancellationData from './draftCancellationData'
+import config from '../../config'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -501,7 +502,9 @@ export default class ProbationPractitionerReferralsController {
       ),
       this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
-      this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id),
+      config.features.previouslyApprovedActionPlans
+        ? this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id)
+        : [],
     ])
 
     const presenter = new ActionPlanPresenter(
