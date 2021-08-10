@@ -65,7 +65,7 @@ class CommunityAPIReferralEventService(
         // However a race condition arises with the referral end
         // notification. To Avoid a NSI not found in community-api
         // this must be sent and processed before referral end
-        postNotificationRequest(event.referral.endOfServiceReport)
+        postSyncNotificationRequest(event.referral.endOfServiceReport)
 
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(ppEndOfServiceReportLocation)
@@ -96,7 +96,7 @@ class CommunityAPIReferralEventService(
     communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, referralEndRequest)
   }
 
-  private fun postNotificationRequest(endOfServiceReport: EndOfServiceReport?) {
+  private fun postSyncNotificationRequest(endOfServiceReport: EndOfServiceReport?) {
 
     endOfServiceReport?.submittedAt ?: run {
       throw IllegalStateException("End of service report not submitted so should not get to this point")
@@ -107,10 +107,10 @@ class CommunityAPIReferralEventService(
       .buildAndExpand(endOfServiceReport!!.id)
       .toString()
 
-    postNotificationRequest(endOfServiceReport, url)
+    postSyncNotificationRequest(endOfServiceReport, url)
   }
 
-  private fun postNotificationRequest(endOfServiceReport: EndOfServiceReport, url: String) {
+  private fun postSyncNotificationRequest(endOfServiceReport: EndOfServiceReport, url: String) {
 
     val referral = endOfServiceReport.referral
 
@@ -126,7 +126,7 @@ class CommunityAPIReferralEventService(
       .buildAndExpand(referral.serviceUserCRN, referral.relevantSentenceId!!, integrationContext)
       .toString()
 
-    communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
+    communityAPIClient.makeSyncPostRequest(communityApiSentReferralPath, request, Unit::class.java)
   }
 }
 
