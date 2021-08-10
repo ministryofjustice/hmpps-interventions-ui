@@ -17,6 +17,7 @@ import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ApprovedActionPlanSummaryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
@@ -32,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
@@ -45,6 +47,7 @@ class ReferralController(
   private val serviceCategoryService: ServiceCategoryService,
   private val userMapper: UserMapper,
   private val cancellationReasonMapper: CancellationReasonMapper,
+  private val actionPlanService: ActionPlanService,
 ) {
   companion object : KLogging()
 
@@ -215,6 +218,14 @@ class ReferralController(
 
     val supplierAssessment = getSupplierAssessment(sentReferral)
     return SupplierAssessmentDTO.from(supplierAssessment)
+  }
+
+  @GetMapping("sent-referral/{id}/approved-action-plans")
+  fun getReferralApprovedActionPlans(
+    @PathVariable id: UUID,
+  ): List<ApprovedActionPlanSummaryDTO> {
+    val actionPlans = actionPlanService.getActionPlanByReferral(id)
+    return ApprovedActionPlanSummaryDTO.from(actionPlans)
   }
 
   private fun getSupplierAssessment(sentReferral: Referral): SupplierAssessment {

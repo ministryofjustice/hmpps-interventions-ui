@@ -247,10 +247,10 @@ internal class ActionPlanServiceTest {
   @Test
   fun `get action plan using referral id`() {
     val actionPlanId = UUID.randomUUID()
-    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId)
-    whenever(actionPlanRepository.findByReferralId(actionPlan.referral.id)).thenReturn(actionPlan)
+    val actionPlan = actionPlanFactory.create(id = actionPlanId)
+    whenever(actionPlanRepository.findByReferralId(actionPlan.referral.id)).thenReturn(listOf(actionPlan))
 
-    assertThat(actionPlanService.getActionPlanByReferral(actionPlan.referral.id)).isSameAs(actionPlan)
+    assertThat(actionPlanService.getActionPlanByReferral(actionPlan.referral.id)).isEqualTo(listOf(actionPlan))
   }
 
   @Test
@@ -261,7 +261,7 @@ internal class ActionPlanServiceTest {
     val exception = Assertions.assertThrows(EntityNotFoundException::class.java) {
       actionPlanService.getActionPlanByReferral(referralId)
     }
-    assertThat(exception.message).isEqualTo("action plan not found [referralId=$referralId]")
+    assertThat(exception.message).isEqualTo("no action plans found for referral [referralId=$referralId]")
   }
 
   @Test
