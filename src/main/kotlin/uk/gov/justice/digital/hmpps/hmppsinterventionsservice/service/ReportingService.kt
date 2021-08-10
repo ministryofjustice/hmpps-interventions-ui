@@ -16,16 +16,20 @@ class ReportingService(
   private val performanceReportJob: Job,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val batchUtils: BatchUtils,
+  private val hmppsAuthService: HMPPSAuthService,
 ) {
   fun generateServiceProviderPerformanceReport(from: LocalDate, to: LocalDate, user: AuthUser) {
     // this is really not ideal - but the intention here is validate the user has
     // a valid access scope before launching the job (which will also call this method).
     serviceProviderAccessScopeMapper.fromUser(user)
 
+    val userDetail = hmppsAuthService.getUserDetail(user)
     asyncJobLauncher.run(
       performanceReportJob,
       JobParametersBuilder()
         .addString("user.id", user.id)
+        .addString("user.firstName", userDetail.firstName)
+        .addString("user.email", userDetail.email)
         .addDate("from", batchUtils.parseLocalDateToDate(from))
         .addDate("to", batchUtils.parseLocalDateToDate(to.plusDays(1))) // 'to' is inclusive
         .addString("timestamp", Instant.now().toEpochMilli().toString())
