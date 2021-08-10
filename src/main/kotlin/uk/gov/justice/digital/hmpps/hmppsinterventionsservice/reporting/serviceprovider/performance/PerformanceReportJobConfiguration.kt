@@ -60,7 +60,7 @@ class PerformanceReportJobConfiguration(
     return batchUtils.csvFileWriter(
       "performanceReportWriter",
       FileSystemResource(path),
-      PerformanceReportData.fields,
+      PerformanceReportData.headers,
       PerformanceReportData.fields
     )
   }

@@ -4,6 +4,7 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import java.util.UUID
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull
 @Table(name = "supplier_assessment")
 data class SupplierAssessment(
   @Id val id: UUID,
-  @NotNull @OneToOne val referral: Referral,
+  @NotNull @OneToOne(fetch = FetchType.LAZY) val referral: Referral,
 
   @JoinTable(
     name = "supplier_assessment_appointment",
