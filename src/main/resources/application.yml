@@ -115,6 +115,7 @@ community-api:
     ended-referral: "/secure/offenders/crn/{crn}/referral/end/context/{contextName}"
     book-appointment: "/secure/offenders/crn/{crn}/sentence/{sentenceId}/appointments/context/{contextName}"
     reschedule-appointment: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/reschedule/context/{contextName}"
+    relocate-appointment: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/relocate"
     appointment-outcome-request: "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}"
     notification-request: "/secure/offenders/crn/{crn}/sentences/{sentenceId}/notifications/context/{contextName}"
     offender-access: "/secure/offenders/crn/{crn}/user/{username}/userAccess"
