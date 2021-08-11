@@ -71,7 +71,7 @@ class CommunityAPIReferralEventServiceTest {
 
     val inOrder = inOrder(communityAPIClient)
 
-    inOrder.verify(communityAPIClient).makeAsyncPostRequest(
+    inOrder.verify(communityAPIClient).makeSyncPostRequest(
       "secure/offenders/crn/X123456/sentence/123456789/notifications/context/commissioned-rehabilitation-services",
       NotificationCreateRequestDTO(
         "ACC",
@@ -80,7 +80,8 @@ class CommunityAPIReferralEventServiceTest {
         submittedAtDefault,
         "End of Service Report Submitted for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
           "http://testUrl/pp/referral/120b1a45-8ac7-4920-b05b-acecccf4734b/end-of-service-report",
-      )
+      ),
+      Unit::class.java
     )
 
     inOrder.verify(communityAPIClient).makeAsyncPostRequest(
@@ -113,7 +114,7 @@ class CommunityAPIReferralEventServiceTest {
 
     val inOrder = inOrder(communityAPIClient)
 
-    inOrder.verify(communityAPIClient).makeAsyncPostRequest(
+    inOrder.verify(communityAPIClient).makeSyncPostRequest(
       "secure/offenders/crn/X123456/sentence/123456789/notifications/context/commissioned-rehabilitation-services",
       NotificationCreateRequestDTO(
         "ACC",
@@ -122,7 +123,8 @@ class CommunityAPIReferralEventServiceTest {
         submittedAtDefault,
         "End of Service Report Submitted for Accommodation Referral HAS71263 with Prime Provider Harmony Living\n" +
           "http://testUrl/pp/referral/120b1a45-8ac7-4920-b05b-acecccf4734b/end-of-service-report",
-      )
+      ),
+      Unit::class.java
     )
 
     inOrder.verify(communityAPIClient).makeAsyncPostRequest(
