@@ -94,7 +94,7 @@ class Referral(
   fun cancelled(): Boolean = concludedAt != null && endRequestedAt != null && endOfServiceReport == null
 
   val approvedActionPlan: ActionPlan?
-    get() = actionPlans?.filter { it.approvedAt != null }?.maxByOrNull { it.createdAt }
+    get() = actionPlans?.filter { it.approvedAt != null }?.maxByOrNull { it.approvedAt!! }
 
   val currentActionPlan: ActionPlan?
     get() = actionPlans?.maxByOrNull { it.createdAt }

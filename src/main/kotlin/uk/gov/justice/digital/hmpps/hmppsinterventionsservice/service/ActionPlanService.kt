@@ -6,8 +6,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPl
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
@@ -25,6 +28,7 @@ class ActionPlanService(
   val actionPlanValidator: ActionPlanValidator,
   val actionPlanEventPublisher: ActionPlanEventPublisher,
   val actionPlanSessionsService: ActionPlanSessionsService,
+  private val actionPlanSessionRepository: ActionPlanSessionRepository,
 ) {
 
   fun createDraftActionPlan(
@@ -103,6 +107,19 @@ class ActionPlanService(
   fun getActionPlanByReferral(referralId: UUID): ActionPlan {
     return actionPlanRepository.findByReferralId(referralId)
       ?: throw EntityNotFoundException("action plan not found [referralId=$referralId]")
+  }
+
+  fun getAllAttendedAppointments(actionPlan: ActionPlan): List<Appointment> {
+    return actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)
+      .flatMap { it.appointments }
+      .filter {
+        it.appointmentFeedbackSubmittedAt != null &&
+          listOf(Attended.LATE, Attended.YES).contains(it.attended)
+      }
+  }
+
+  fun getFirstAttendedAppointment(actionPlan: ActionPlan): Appointment? {
+    return getAllAttendedAppointments(actionPlan).minByOrNull { it.appointmentTime }
   }
 
   private fun updateDraftActivityPlan(
