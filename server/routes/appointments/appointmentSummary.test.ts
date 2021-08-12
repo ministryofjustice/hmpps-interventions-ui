@@ -5,6 +5,19 @@ import AppointmentSummary from './appointmentSummary'
 
 describe(AppointmentSummary, () => {
   describe('appointmentDetails', () => {
+    describe('with empty values', () => {
+      it('should show an empty list without throwing any error', () => {
+        const emptyAppointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: null,
+          durationInMinutes: null,
+          sessionType: null,
+          appointmentDeliveryType: null,
+        })
+        const summaryComponent = new AppointmentSummary(emptyAppointment, null)
+
+        expect(summaryComponent.appointmentSummaryList).toEqual([])
+      })
+    })
     it('contains the date and time of the appointment', () => {
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-03-09T11:00:00Z',
@@ -38,12 +51,45 @@ describe(AppointmentSummary, () => {
     })
 
     describe('when the assigned case worker is provided', () => {
-      it('contains the name of the referral’s assignee', () => {
-        const appointment = initialAssessmentAppointmentFactory.build()
-        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
-        const summaryComponent = new AppointmentSummary(appointment, assignee)
+      describe('and it is an DeliusAuthUser', () => {
+        describe('and only firstname is provided', () => {
+          it('contains the firstname as the caseworker', () => {
+            const appointment = initialAssessmentAppointmentFactory.build()
+            const summaryComponent = new AppointmentSummary(appointment, { firstName: 'Liam' })
+            expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam'] })
+          })
+        })
 
-        expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
+        describe('and only lastname is provided', () => {
+          it('contains the lastname as the caseworker', () => {
+            const appointment = initialAssessmentAppointmentFactory.build()
+            const summaryComponent = new AppointmentSummary(appointment, { lastName: 'Johnson' })
+            expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Johnson'] })
+          })
+        })
+
+        describe('and fullname is provided', () => {
+          it('contains the fullname as the caseworker', () => {
+            const appointment = initialAssessmentAppointmentFactory.build()
+            const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+            const summaryComponent = new AppointmentSummary(appointment, assignee)
+
+            expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
+          })
+        })
+      })
+
+      describe('and it is a User', () => {
+        it('contains the username of the referral’s assignee', () => {
+          const appointment = initialAssessmentAppointmentFactory.build()
+          const assignee = { username: 'hellouser@username', userId: 'userId', authSource: 'authSource' }
+          const summaryComponent = new AppointmentSummary(appointment, assignee)
+
+          expect(summaryComponent.appointmentSummaryList[0]).toEqual({
+            key: 'Caseworker',
+            lines: ['hellouser@username'],
+          })
+        })
       })
     })
 
