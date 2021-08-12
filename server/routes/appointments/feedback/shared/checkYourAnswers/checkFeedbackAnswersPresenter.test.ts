@@ -1,12 +1,10 @@
 // eslint-disable-next-line max-classes-per-file
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
-import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
-import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import CheckFeedbackAnswersPresenter from './checkFeedbackAnswersPresenter'
-import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
-import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInputsPresenter'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
+import FeedbackAnswersPresenter from '../viewFeedback/feedbackAnswersPresenter'
+import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
 describe('for a class that extends abstract class CheckFeedbackAnswersPresenter', () => {
   class ExtendedCheckFeedbackAnswersPresenter extends CheckFeedbackAnswersPresenter {
@@ -14,46 +12,11 @@ describe('for a class that extends abstract class CheckFeedbackAnswersPresenter'
 
     readonly backLinkHref = ''
 
-    constructor(
-      appointment: ActionPlanAppointment | InitialAssessmentAppointment,
-      private readonly serviceUser: DeliusServiceUser
-    ) {
+    readonly feedbackAnswersPresenter
+
+    constructor(appointment: ActionPlanAppointment | InitialAssessmentAppointment, serviceUser: DeliusServiceUser) {
       super(appointment)
-    }
-
-    protected get attendancePresenter(): AttendanceFeedbackPresenter {
-      return new (class extends AttendanceFeedbackPresenter {
-        constructor(appointment: ActionPlanAppointment | InitialAssessmentAppointment) {
-          super(appointment)
-        }
-
-        readonly text = {
-          title: `title`,
-          subTitle: 'subTitle',
-          attendanceQuestion: 'attendanceQuestion',
-          attendanceQuestionHint: 'attendanceQuestionHint',
-          additionalAttendanceInformationLabel: 'additionalAttendanceInformationLabel',
-        }
-      })(this.appointment)
-    }
-
-    protected get behaviourPresenter(): BehaviourFeedbackPresenter {
-      return {
-        backLinkHref: null,
-        inputsPresenter: new BehaviourFeedbackInputsPresenter(this.appointment),
-        text: {
-          title: `Add behaviour feedback`,
-          behaviourDescription: {
-            question: `Describe ${this.serviceUser.firstName}'s behaviour in this session`,
-            hint: 'For example, consider how well-engaged they were and what their body language was like.',
-          },
-          notifyProbationPractitioner: {
-            question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
-            explanation: 'If you select yes, the probation practitioner will be notified by email.',
-            hint: 'Select one option',
-          },
-        },
-      }
+      this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
     }
   }
 

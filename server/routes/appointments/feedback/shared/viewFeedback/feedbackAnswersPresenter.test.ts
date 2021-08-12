@@ -1,58 +1,9 @@
 // eslint-disable-next-line max-classes-per-file
-import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
-import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
-import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
-import BehaviourFeedbackInputsPresenter from '../behaviour/behaviourFeedbackInputsPresenter'
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 
 describe(FeedbackAnswersPresenter, () => {
-  class ExtendedFeedbackAnswersPresenter extends FeedbackAnswersPresenter {
-    constructor(appointment: ActionPlanAppointment, private readonly serviceUser: DeliusServiceUser) {
-      super(appointment)
-    }
-
-    protected get attendancePresenter(): AttendanceFeedbackPresenter {
-      return new (class extends AttendanceFeedbackPresenter {
-        constructor(
-          appointment: ActionPlanAppointment | InitialAssessmentAppointment,
-          private readonly serviceUser: DeliusServiceUser
-        ) {
-          super(appointment)
-        }
-
-        readonly text = {
-          title: `Add attendance feedback`,
-          subTitle: 'Session details',
-          attendanceQuestion: `Did ${this.serviceUser.firstName} attend this session?`,
-          attendanceQuestionHint: 'Select one option',
-          additionalAttendanceInformationLabel: `Add additional information about ${this.serviceUser.firstName}'s attendance:`,
-        }
-      })(this.appointment, this.serviceUser)
-    }
-
-    protected get behaviourPresenter(): BehaviourFeedbackPresenter {
-      return {
-        backLinkHref: null,
-        inputsPresenter: new BehaviourFeedbackInputsPresenter(this.appointment),
-        text: {
-          title: `Add behaviour feedback`,
-          behaviourDescription: {
-            question: `Describe ${this.serviceUser.firstName}'s behaviour in this session`,
-            hint: 'For example, consider how well-engaged they were and what their body language was like.',
-          },
-          notifyProbationPractitioner: {
-            question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
-            explanation: 'If you select yes, the probation practitioner will be notified by email.',
-            hint: 'Select one option',
-          },
-        },
-      }
-    }
-  }
-
   describe('attendedAnswers', () => {
     it('returns an object with the question and answer given', () => {
       const appointment = actionPlanAppointmentFactory.build({
@@ -68,7 +19,7 @@ describe(FeedbackAnswersPresenter, () => {
       })
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-      const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+      const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
       expect(presenter.attendedAnswers).toEqual({
         question: 'Did Alex attend this session?',
@@ -91,7 +42,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
         expect(presenter.attendedAnswers).toBeNull()
       })
     })
@@ -114,7 +65,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.additionalAttendanceAnswers).toEqual({
           question: "Add additional information about Alex's attendance:",
@@ -139,7 +90,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.additionalAttendanceAnswers).toEqual({
           question: "Add additional information about Alex's attendance:",
@@ -164,7 +115,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
         expect(presenter.additionalAttendanceAnswers).toBeNull()
       })
     })
@@ -186,7 +137,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.behaviourDescriptionAnswers).toEqual({
           question: "Describe Alex's behaviour in this session",
@@ -210,7 +161,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.behaviourDescriptionAnswers).toBeNull()
       })
@@ -231,7 +182,7 @@ describe(FeedbackAnswersPresenter, () => {
 
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
           question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
@@ -253,7 +204,7 @@ describe(FeedbackAnswersPresenter, () => {
 
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
           question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
@@ -274,7 +225,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
 
-        const presenter = new ExtendedFeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.notifyProbationPractitionerAnswers).toBeNull()
       })

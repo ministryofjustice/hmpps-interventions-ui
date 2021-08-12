@@ -1,29 +1,52 @@
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
-import AttendanceFeedbackPresenter from '../attendance/attendanceFeedbackPresenter'
-import { BehaviourFeedbackPresenter } from '../behaviour/behaviourFeedbackPresenter'
+import AttendanceFeedbackQuestionnaire from '../attendance/attendanceFeedbackQuestionnaire'
+import BehaviourFeedbackQuestionnaire from '../behaviour/behaviourFeedbackQuestionnaire'
+import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
-export default abstract class FeedbackAnswersPresenter {
-  protected abstract get attendancePresenter(): AttendanceFeedbackPresenter
+export default class FeedbackAnswersPresenter {
+  private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire
 
-  protected abstract get behaviourPresenter(): BehaviourFeedbackPresenter
+  private readonly behaviourFeedbackQuestionnaire: BehaviourFeedbackQuestionnaire
 
-  protected constructor(protected readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment) {}
+  constructor(
+    private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+    private readonly serviceUser: DeliusServiceUser
+  ) {
+    this.attendanceFeedbackQuestionnaire = new AttendanceFeedbackQuestionnaire(appointment, serviceUser)
+    this.behaviourFeedbackQuestionnaire = new BehaviourFeedbackQuestionnaire(appointment, serviceUser)
+  }
 
   get attendedAnswers(): { question: string; answer: string } | null {
     if (this.appointment.sessionFeedback.attendance.attended === null) {
       return null
     }
-
-    const selectedRadio = this.attendancePresenter.attendanceResponses.find(response => response.checked)
-
-    if (!selectedRadio) {
+    const selected = this.possibleAttendanceAnswers.find(
+      selection => selection.value === this.appointment.sessionFeedback.attendance.attended
+    )
+    if (!selected) {
       return null
     }
-
     return {
-      question: this.attendancePresenter.text.attendanceQuestion,
-      answer: selectedRadio.text,
+      question: this.attendanceFeedbackQuestionnaire.attendanceQuestion.text,
+      answer: selected.text,
     }
+  }
+
+  private get possibleAttendanceAnswers(): { value: string; text: string }[] {
+    return [
+      {
+        value: 'yes',
+        text: 'Yes, they were on time',
+      },
+      {
+        value: 'late',
+        text: 'They were late',
+      },
+      {
+        value: 'no',
+        text: 'No',
+      },
+    ]
   }
 
   get additionalAttendanceAnswers(): { question: string; answer: string } | null {
@@ -32,7 +55,7 @@ export default abstract class FeedbackAnswersPresenter {
     }
 
     return {
-      question: this.attendancePresenter.text.additionalAttendanceInformationLabel,
+      question: this.attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
       answer: this.appointment.sessionFeedback.attendance.additionalAttendanceInformation || 'None',
     }
   }
@@ -43,7 +66,7 @@ export default abstract class FeedbackAnswersPresenter {
     }
 
     return {
-      question: this.behaviourPresenter.text.behaviourDescription.question,
+      question: this.behaviourFeedbackQuestionnaire.behaviourQuestion.text,
       answer: this.appointment.sessionFeedback.behaviour.behaviourDescription,
     }
   }
@@ -54,7 +77,7 @@ export default abstract class FeedbackAnswersPresenter {
     }
 
     return {
-      question: this.behaviourPresenter.text.notifyProbationPractitioner.question,
+      question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
       answer: this.appointment.sessionFeedback.behaviour.notifyProbationPractitioner ? 'Yes' : 'No',
     }
   }

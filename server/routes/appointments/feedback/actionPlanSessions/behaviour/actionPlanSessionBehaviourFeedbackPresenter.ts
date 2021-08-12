@@ -2,6 +2,7 @@ import { ActionPlanAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import BehaviourFeedbackInputsPresenter from '../../shared/behaviour/behaviourFeedbackInputsPresenter'
+import BehaviourFeedbackQuestionnaire from '../../shared/behaviour/behaviourFeedbackQuestionnaire'
 
 export default class ActionPlanSessionBehaviourFeedbackPresenter {
   constructor(
@@ -14,16 +15,9 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
 
   readonly text = {
     title: `Add behaviour feedback`,
-    behaviourDescription: {
-      question: `Describe ${this.serviceUser.firstName}'s behaviour in this session`,
-      hint: 'For example, consider how well-engaged they were and what their body language was like.',
-    },
-    notifyProbationPractitioner: {
-      question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
-      explanation: 'If you select yes, the probation practitioner will be notified by email.',
-      hint: 'Select one option',
-    },
   }
+
+  readonly questionnaire = new BehaviourFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   readonly backLinkHref = this.actionPlanId
     ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/attendance`

@@ -1,14 +1,10 @@
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFeedbackAnswersPresenter'
-import AttendanceFeedbackPresenter from '../../shared/attendance/attendanceFeedbackPresenter'
-import InitialAssessmentAttendanceFeedbackPresenter from '../attendance/initialAssessmentAttendanceFeedbackPresenter'
 import { InitialAssessmentAppointment } from '../../../../../models/appointment'
-import InitialAssessmentBehaviourFeedbackPresenter from '../behaviour/initialAssessmentBehaviourFeedbackPresenter'
+import FeedbackAnswersPresenter from '../../shared/viewFeedback/feedbackAnswersPresenter'
 
 export default class InitialAssessmentFeedbackCheckAnswersPresenter extends CheckFeedbackAnswersPresenter {
-  protected readonly attendancePresenter: AttendanceFeedbackPresenter
-
-  protected readonly behaviourPresenter: InitialAssessmentBehaviourFeedbackPresenter
+  readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
 
   constructor(
     appointment: InitialAssessmentAppointment,
@@ -16,8 +12,7 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
     private readonly referralId: string
   ) {
     super(appointment)
-    this.attendancePresenter = new InitialAssessmentAttendanceFeedbackPresenter(appointment, this.serviceUser)
-    this.behaviourPresenter = new InitialAssessmentBehaviourFeedbackPresenter(appointment, this.serviceUser)
+    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
   }
 
   readonly submitHref = `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/submit`

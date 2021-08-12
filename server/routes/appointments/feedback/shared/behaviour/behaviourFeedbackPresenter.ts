@@ -1,20 +1,9 @@
 import BehaviourFeedbackInputsPresenter from './behaviourFeedbackInputsPresenter'
-
-interface BehaviourText {
-  title: string
-  behaviourDescription: {
-    question: string
-    hint: string
-  }
-  notifyProbationPractitioner: {
-    question: string
-    explanation: string
-    hint: string
-  }
-}
+import BehaviourFeedbackQuestionnaire from './behaviourFeedbackQuestionnaire'
 
 export interface BehaviourFeedbackPresenter {
-  text: BehaviourText
+  text: { title: string }
+  questionnaire: BehaviourFeedbackQuestionnaire
   inputsPresenter: BehaviourFeedbackInputsPresenter
   backLinkHref: string | null
 }

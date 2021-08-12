@@ -3,14 +3,14 @@ import DateUtils from '../../../../../utils/dateUtils'
 import { SummaryListItem } from '../../../../../utils/summaryList'
 import FeedbackAnswersPresenter from '../viewFeedback/feedbackAnswersPresenter'
 
-export default abstract class CheckFeedbackAnswersPresenter extends FeedbackAnswersPresenter {
-  protected constructor(appointment: ActionPlanAppointment | InitialAssessmentAppointment) {
-    super(appointment)
-  }
+export default abstract class CheckFeedbackAnswersPresenter {
+  protected constructor(protected appointment: ActionPlanAppointment | InitialAssessmentAppointment) {}
 
   abstract readonly submitHref: string
 
   abstract readonly backLinkHref: string
+
+  abstract readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
 
   readonly text = {
     title: `Confirm feedback`,
