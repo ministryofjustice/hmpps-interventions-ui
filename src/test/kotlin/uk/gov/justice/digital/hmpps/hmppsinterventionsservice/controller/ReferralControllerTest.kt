@@ -26,9 +26,11 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssign
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -43,13 +45,15 @@ internal class ReferralControllerTest {
   private val authUserRepository = mock<AuthUserRepository>()
   private val userMapper = UserMapper(authUserRepository)
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
+  private val actionPlanService = mock<ActionPlanService>()
   private val referralController = ReferralController(
-    referralService, referralConcluder, serviceCategoryService, userMapper, cancellationReasonMapper
+    referralService, referralConcluder, serviceCategoryService, userMapper, cancellationReasonMapper, actionPlanService
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
   private val supplierAssessmentFactory = SupplierAssessmentFactory()
+  private val actionPlanFactory = ActionPlanFactory()
 
   @Test
   fun `createDraftReferral handles EntityNotFound exceptions from InterventionsService`() {
@@ -264,5 +268,17 @@ internal class ReferralControllerTest {
       val response = referralController.endSentReferral(referral.id, endReferralDTO, token)
       assertThat(response.endOfServiceReportCreationRequired).isTrue
     }
+  }
+
+  @Test
+  fun `get action plans for referral returns only approved action plans`() {
+    val referralId = UUID.randomUUID()
+    val approvedActionPlan = actionPlanFactory.createApproved()
+    val nonApprovedActionPlan = actionPlanFactory.create()
+
+    whenever(actionPlanService.getApprovedActionPlansByReferral(referralId)).thenReturn(listOf(approvedActionPlan, nonApprovedActionPlan))
+    val response = referralController.getReferralApprovedActionPlans(referralId)
+
+    assertThat(response.size).isEqualTo(2)
   }
 }

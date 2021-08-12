@@ -65,3 +65,20 @@ data class UpdateActionPlanDTO(
 data class UpdateActionPlanActivityDTO(
   val description: String,
 )
+
+data class ActionPlanSummaryDTO(
+  val id: UUID,
+  val approvedAt: OffsetDateTime?,
+) {
+  companion object {
+    fun from(actionPlan: ActionPlan): ActionPlanSummaryDTO {
+      return ActionPlanSummaryDTO(
+        id = actionPlan.id,
+        approvedAt = actionPlan.approvedAt,
+      )
+    }
+    fun from(actionPlans: List<ActionPlan>): List<ActionPlanSummaryDTO> {
+      return actionPlans.map { from(it) }
+    }
+  }
+}

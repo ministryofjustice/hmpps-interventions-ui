@@ -125,4 +125,16 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       notifyPPOfBehaviour = false
     )
   }
+
+  @State("two approved action plans exists with IDs f3ade2c5-075a-4235-9826-eed289e4d17a and 8f3e1895-9c46-40ad-bdb3-d33eacbb693e")
+  fun `create two action plans for a referral`() {
+    val referralId = UUID.fromString("8d107952-9bde-4854-ad1e-dee09daab992")
+    val actionPlan1Id = UUID.fromString("f3ade2c5-075a-4235-9826-eed289e4d17")
+    val actionPlan2Id = UUID.fromString("8f3e1895-9c46-40ad-bdb3-d33eacbb693e")
+
+    val referral = setupAssistant.createSentReferral(id = referralId)
+
+    setupAssistant.createActionPlan(id = actionPlan1Id, referral = referral)
+    setupAssistant.createActionPlan(id = actionPlan2Id, referral = referral)
+  }
 }
