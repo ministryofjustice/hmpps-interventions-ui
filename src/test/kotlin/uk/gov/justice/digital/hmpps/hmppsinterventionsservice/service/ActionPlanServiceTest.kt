@@ -15,12 +15,18 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPl
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.Optional.empty
@@ -37,8 +43,11 @@ internal class ActionPlanServiceTest {
   private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
   private val actionPlanSessionsService: ActionPlanSessionsService = mock()
   private val desiredOutcomeRepository: DesiredOutcomeRepository = mock()
+  private val actionPlanSessionRepository: ActionPlanSessionRepository = mock()
 
   private val referralFactory = ReferralFactory()
+  private val actionPlanFactory = ActionPlanFactory()
+  private val appointmentFactory = AppointmentFactory()
 
   private val actionPlanService = ActionPlanService(
     authUserRepository,
@@ -47,6 +56,7 @@ internal class ActionPlanServiceTest {
     actionPlanValidator,
     actionPlanEventPublisher,
     actionPlanSessionsService,
+    actionPlanSessionRepository,
   )
 
   @Test
@@ -273,5 +283,89 @@ internal class ActionPlanServiceTest {
     assertThat(
       savedActionPlan.activities[1].description == SampleData.sampleActionPlanActivity().description
     )
+  }
+
+  @Test
+  fun `getAllAttendedAppointments gets appointments from all sessions`() {
+    val referral = referralFactory.createSent()
+
+    val actionPlan = actionPlanFactory.createApproved(referral = referral)
+    referral.actionPlans = mutableListOf(actionPlan)
+
+    // then make a bunch of appointments
+    val unattendedAppointments = (1..5).map {
+      appointmentFactory.create(referral = referral)
+    }
+    val attendedAppointments = (1..5).map {
+      appointmentFactory.create(referral = referral, attended = Attended.YES, appointmentFeedbackSubmittedAt = OffsetDateTime.now())
+    }
+    val lateAppointments = (1..5).map {
+      appointmentFactory.create(referral = referral, attended = Attended.LATE, appointmentFeedbackSubmittedAt = OffsetDateTime.now())
+    }
+
+    // now we'll make a bunch of sessions with various unattended and attended appointments on them
+    val session1 = ActionPlanSession(
+      appointments = mutableSetOf(
+        unattendedAppointments[0],
+        unattendedAppointments[1],
+        lateAppointments[0]
+      ),
+      1, actionPlan, UUID.randomUUID()
+    )
+
+    val session2 = ActionPlanSession(
+      appointments = mutableSetOf(unattendedAppointments[2], attendedAppointments[0]),
+      2,
+      actionPlan,
+      UUID.randomUUID()
+    )
+
+    val session3 = ActionPlanSession(
+      appointments = mutableSetOf(
+        unattendedAppointments[3],
+        unattendedAppointments[4],
+        lateAppointments[1]
+      ),
+      3, actionPlan, UUID.randomUUID()
+    )
+
+    whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(listOf(session1, session2, session3))
+    assertThat(actionPlanService.getAllAttendedAppointments(actionPlan)).hasSameElementsAs(listOf(lateAppointments[0], lateAppointments[1], attendedAppointments[0]))
+  }
+
+  @Test
+  fun `getAllAttendedAppointments returns empty list when actionPlan has no sessions`() {
+    val actionPlan = actionPlanFactory.createSubmitted()
+    assertThat(actionPlanService.getAllAttendedAppointments(actionPlan)).isEqualTo(emptyList<Appointment>())
+  }
+
+  @Test
+  fun `getFirstAttendedAppointment returns the appointment with the earliest time`() {
+    val referral = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.createApproved(referral = referral)
+    referral.actionPlans = mutableListOf(actionPlan)
+
+    val first = appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(2), attended = Attended.LATE, appointmentFeedbackSubmittedAt = OffsetDateTime.now())
+    val second = appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(1), attended = Attended.YES, appointmentFeedbackSubmittedAt = OffsetDateTime.now())
+
+    val session1 = ActionPlanSession(appointments = mutableSetOf(first), 1, actionPlan, UUID.randomUUID())
+    val session2 = ActionPlanSession(appointments = mutableSetOf(second), 2, actionPlan, UUID.randomUUID())
+
+    whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(listOf(session1, session2))
+    assertThat(actionPlanService.getFirstAttendedAppointment(actionPlan)).isEqualTo(first)
+  }
+
+  @Test
+  fun `getFirstAttendedAppointment returns null when there are no attended appointments`() {
+    val referral = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.createApproved(referral = referral)
+    whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(emptyList())
+    assertThat(actionPlanService.getFirstAttendedAppointment(actionPlan)).isNull()
+
+    val session1 = ActionPlanSession(appointments = mutableSetOf(appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(2), attended = Attended.NO, appointmentFeedbackSubmittedAt = OffsetDateTime.now())), 1, actionPlan, UUID.randomUUID())
+    val session2 = ActionPlanSession(appointments = mutableSetOf(appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(1), attended = Attended.NO, appointmentFeedbackSubmittedAt = OffsetDateTime.now())), 2, actionPlan, UUID.randomUUID())
+
+    whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(listOf(session1, session2))
+    assertThat(actionPlanService.getFirstAttendedAppointment(actionPlan)).isNull()
   }
 }

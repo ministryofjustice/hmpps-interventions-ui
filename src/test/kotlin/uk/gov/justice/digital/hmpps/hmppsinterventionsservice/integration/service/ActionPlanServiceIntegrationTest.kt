@@ -9,6 +9,7 @@ import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
 
@@ -27,6 +28,7 @@ class ActionPlanServiceIntegrationTest @Autowired constructor(
       this.actionPlanValidator,
       mock<ActionPlanEventPublisher>(),
       mock<ActionPlanSessionsService>(),
+      mock<ActionPlanSessionRepository>(),
     )
   }
 
