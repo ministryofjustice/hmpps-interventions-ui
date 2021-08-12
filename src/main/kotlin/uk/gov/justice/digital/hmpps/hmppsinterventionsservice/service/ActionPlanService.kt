@@ -106,7 +106,6 @@ class ActionPlanService(
 
   fun getApprovedActionPlansByReferral(referralId: UUID): List<ActionPlan> {
     return actionPlanRepository.findAllByReferralIdAndApprovedAtIsNotNull(referralId)
-      ?: throw EntityNotFoundException("no action plans found for referral [referralId=$referralId]")
   }
 
   fun getAllAttendedAppointments(actionPlan: ActionPlan): List<Appointment> {
