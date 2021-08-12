@@ -44,7 +44,7 @@ export default {
   googleAnalyticsTrackingId: get('GA_ID', '', requiredInProduction),
   features: {
     npsOfficeLocationSelection: {
-      enabled: get('FEATURE_NPS_OFFICE_LOCATION_SELECTION_ENABLED', 'false') === 'true',
+      enabled: get('FEATURE_NPS_OFFICE_LOCATION_SELECTION_ENABLED', 'true') === 'true',
     },
     serviceProviderReporting: {
       enabled: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
