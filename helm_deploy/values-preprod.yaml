@@ -24,3 +24,4 @@ env:
   COMMUNITYAPI_BASEURL: "https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io"
   ASSESSRISKSANDNEEDS_BASEURL: "https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk"
   SENTRY_ENVIRONMENT: "preprod"
+  AWS_S3_ENABLED: "true"
