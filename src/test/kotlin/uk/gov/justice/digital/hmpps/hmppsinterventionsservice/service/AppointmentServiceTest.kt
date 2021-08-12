@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
@@ -75,11 +76,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = npsOfficeCode)
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, npsOfficeCode = npsOfficeCode)
 
     // Then
-    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode)
-    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode)
+    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, npsOfficeCode)
+    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, npsOfficeCode)
   }
 
   @Test
@@ -100,11 +101,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, null, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
     // Then
-    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL)
-    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.PHONE_CALL)
+    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
   }
 
   @Test
@@ -126,11 +127,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
+    val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
     // Then
-    verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL)
-    verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL)
+    verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
   }
 
   @Test
@@ -151,11 +152,11 @@ class AppointmentServiceTest {
     whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
     // When
-    val newAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
     // Then
-    verifyResponse(newAppointment, existingAppointment.id, true, additionalDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL)
-    verifySavedAppointment(appointmentTime, durationInMinutes, additionalDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL)
+    verifyResponse(newAppointment, existingAppointment.id, true, additionalDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verifySavedAppointment(appointmentTime, durationInMinutes, additionalDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
   }
 
   @Test
@@ -167,12 +168,12 @@ class AppointmentServiceTest {
     val referral = referralFactory.createSent()
 
     val error = assertThrows<IllegalStateException> {
-      appointmentService.createOrUpdateAppointment(referral, appointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL)
+      appointmentService.createOrUpdateAppointment(referral, appointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
     }
     assertThat(error.message).contains("Is it not possible to update an appointment that has already been attended")
   }
 
-  private fun verifyResponse(appointment: Appointment, originalId: UUID?, expectNewId: Boolean, deliusAppointmentId: Long, appointmentTime: OffsetDateTime?, durationInMinutes: Int, appointmentDeliveryType: AppointmentDeliveryType, npsOfficeCode: String? = null) {
+  private fun verifyResponse(appointment: Appointment, originalId: UUID?, expectNewId: Boolean, deliusAppointmentId: Long, appointmentTime: OffsetDateTime?, durationInMinutes: Int, appointmentDeliveryType: AppointmentDeliveryType, appointmentSessionType: AppointmentSessionType, npsOfficeCode: String? = null) {
 
     // Verifying create or update route
     if (expectNewId)
@@ -184,10 +185,11 @@ class AppointmentServiceTest {
     assertThat(appointment.appointmentTime).isEqualTo(appointmentTime)
     assertThat(appointment.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
+    assertThat(appointment.appointmentDelivery?.appointmentSessionType).isEqualTo(appointmentSessionType)
     assertThat(appointment.appointmentDelivery?.npsOfficeCode).isEqualTo(npsOfficeCode)
   }
 
-  private fun verifySavedAppointment(appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long, appointmentDeliveryType: AppointmentDeliveryType, npsOfficeCode: String? = null) {
+  private fun verifySavedAppointment(appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long, appointmentDeliveryType: AppointmentDeliveryType, appointmentSessionType: AppointmentSessionType, npsOfficeCode: String? = null) {
     val argumentCaptor = argumentCaptor<Appointment>()
     verify(appointmentRepository, atLeast(1)).saveAndFlush(argumentCaptor.capture())
     val arguments = argumentCaptor.lastValue
@@ -197,6 +199,7 @@ class AppointmentServiceTest {
     assertThat(arguments.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(arguments.deliusAppointmentId).isEqualTo(deliusAppointmentId)
     assertThat(arguments.appointmentDelivery?.appointmentDeliveryType).isEqualTo(appointmentDeliveryType)
+    assertThat(arguments.appointmentDelivery?.appointmentSessionType).isEqualTo(appointmentSessionType)
     assertThat(arguments.appointmentDelivery?.npsOfficeCode).isEqualTo(npsOfficeCode)
   }
 
@@ -220,16 +223,16 @@ class AppointmentServiceTest {
         durationInMinutes = durationInMinutes,
         deliusAppointmentId = rescheduledDeliusAppointmentId,
       )
-      savedAppointment.appointmentDelivery = AppointmentDelivery(appointmentId = savedAppointment.id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = oldNpsCode)
+      savedAppointment.appointmentDelivery = AppointmentDelivery(appointmentId = savedAppointment.id, appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, npsOfficeCode = oldNpsCode)
 
       whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
 
       // When
-      val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, npsOfficeCode = newNpsCode)
+      val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, npsOfficeCode = newNpsCode)
 
       // Then
-      verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, newNpsCode)
-      verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, newNpsCode)
+      verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, newNpsCode)
+      verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE, AppointmentSessionType.ONE_TO_ONE, newNpsCode)
     }
   }
 

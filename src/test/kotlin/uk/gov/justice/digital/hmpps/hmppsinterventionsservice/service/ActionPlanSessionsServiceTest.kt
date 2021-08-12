@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -100,10 +101,11 @@ internal class ActionPlanSessionsServiceTest {
       durationInMinutes,
       user,
       AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
@@ -130,10 +132,11 @@ internal class ActionPlanSessionsServiceTest {
       newDuration,
       user,
       AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(newTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(newDuration)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isNotEqualTo("re-scheduler")
@@ -170,11 +173,12 @@ internal class ActionPlanSessionsServiceTest {
       durationInMinutes,
       createdByUser,
       AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
       null
     )
 
     assertThat(updatedSession).isEqualTo(session)
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
     verify(communityAPIBookingService).book(
       referral,
       session.currentAppointment,
@@ -220,10 +224,11 @@ internal class ActionPlanSessionsServiceTest {
       durationInMinutes,
       createdByUser,
       AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
       null
     )
 
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), isNull(), isNull())
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
     verify(appointmentRepository, times(1)).saveAndFlush(
       ArgumentMatchers.argThat {
         it.deliusAppointmentId == null
@@ -248,6 +253,7 @@ internal class ActionPlanSessionsServiceTest {
         durationInMinutes,
         authUserFactory.create(),
         AppointmentDeliveryType.PHONE_CALL,
+        AppointmentSessionType.ONE_TO_ONE,
         null
       )
     }
@@ -546,12 +552,13 @@ internal class ActionPlanSessionsServiceTest {
       durationInMinutes,
       createdByUser,
       AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+      AppointmentSessionType.ONE_TO_ONE,
       null,
       npsOfficeCode
     )
 
     assertThat(updatedSession).isEqualTo(session)
-    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE), isNull(), eq(npsOfficeCode))
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), eq(npsOfficeCode))
     verify(communityAPIBookingService).book(
       referral,
       session.currentAppointment,

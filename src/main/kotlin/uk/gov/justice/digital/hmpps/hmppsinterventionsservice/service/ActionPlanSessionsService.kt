@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SERVICE_DELIVERY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -63,6 +64,7 @@ class ActionPlanSessionsService(
     durationInMinutes: Int,
     updatedBy: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
   ): ActionPlanSession {
@@ -90,14 +92,14 @@ class ActionPlanSessionsService(
         referral = session.actionPlan.referral,
       )
       appointmentRepository.saveAndFlush(appointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
     } else {
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
       appointmentRepository.saveAndFlush(existingAppointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
+      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     }
     return actionPlanSessionRepository.save(session)
   }

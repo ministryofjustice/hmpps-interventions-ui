@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.SetupAssistant
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -37,8 +38,8 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   fun `create an empty draft plan with 2 2 hours appointments`() {
     val actionPlan = setupAssistant.createActionPlan(id = UUID.fromString("345059d4-1697-467b-8914-fedec9957279"), numberOfSessions = 2)
     val appointmentDeliveryAddress = AddressDTO(firstAddressLine = "Harmony Living Office, Room 4", secondAddressLine = "44 Bouverie Road", townOrCity = "Blackpool", county = "Lancashire", postCode = "SY40RE")
-    setupAssistant.createActionPlanSession(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"), appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = appointmentDeliveryAddress)
-    setupAssistant.createActionPlanSession(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"), appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = appointmentDeliveryAddress)
+    setupAssistant.createActionPlanSession(actionPlan, 1, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"), appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = appointmentDeliveryAddress, appointmentSessionType = AppointmentSessionType.GROUP)
+    setupAssistant.createActionPlanSession(actionPlan, 2, 120, OffsetDateTime.parse("2021-05-13T12:30:00+00:00"), appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_OTHER, appointmentDeliveryAddress = appointmentDeliveryAddress, appointmentSessionType = AppointmentSessionType.GROUP)
   }
 
   @State("an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted")

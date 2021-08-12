@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryAddress
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -39,6 +40,7 @@ class AppointmentService(
     appointmentType: AppointmentType,
     createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
   ): Appointment {
@@ -53,6 +55,7 @@ class AppointmentService(
           deliusAppointmentId,
           createdByUser,
           appointmentDeliveryType,
+          appointmentSessionType,
           appointmentDeliveryAddress,
           referral,
           npsOfficeCode
@@ -68,6 +71,7 @@ class AppointmentService(
           appointmentTime,
           deliusAppointmentId,
           appointmentDeliveryType,
+          appointmentSessionType,
           appointmentDeliveryAddress,
           npsOfficeCode
         )
@@ -82,6 +86,7 @@ class AppointmentService(
           deliusAppointmentId,
           createdByUser,
           appointmentDeliveryType,
+          appointmentSessionType,
           appointmentDeliveryAddress,
           referral,
           npsOfficeCode
@@ -99,14 +104,16 @@ class AppointmentService(
   fun createOrUpdateAppointmentDeliveryDetails(
     appointment: Appointment,
     appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddressDTO: AddressDTO?,
     npsOfficeCode: String? = null
   ) {
     var appointmentDelivery = appointment.appointmentDelivery
     if (appointmentDelivery == null) {
-      appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType, npsOfficeCode = npsOfficeCode)
+      appointmentDelivery = AppointmentDelivery(appointmentId = appointment.id, appointmentDeliveryType = appointmentDeliveryType, appointmentSessionType = appointmentSessionType, npsOfficeCode = npsOfficeCode)
     } else {
       appointmentDelivery.appointmentDeliveryType = appointmentDeliveryType
+      appointmentDelivery.appointmentSessionType = appointmentSessionType
       appointmentDelivery.npsOfficeCode = npsOfficeCode
     }
     appointment.appointmentDelivery = appointmentDelivery
@@ -223,6 +230,7 @@ class AppointmentService(
     deliusAppointmentId: Long?,
     createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddress: AddressDTO? = null,
     referral: Referral,
     npsOfficeCode: String?,
@@ -237,7 +245,7 @@ class AppointmentService(
       referral = referral,
     )
     appointmentRepository.saveAndFlush(appointment)
-    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
+    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
   }
 
@@ -247,6 +255,7 @@ class AppointmentService(
     appointmentTime: OffsetDateTime,
     deliusAppointmentId: Long?,
     appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String?,
   ): Appointment {
@@ -254,7 +263,7 @@ class AppointmentService(
     appointment.appointmentTime = appointmentTime
     appointment.deliusAppointmentId = deliusAppointmentId
     val appointment = appointmentRepository.save(appointment)
-    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentDeliveryAddress, npsOfficeCode)
+    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
   }
 

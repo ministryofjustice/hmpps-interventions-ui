@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
+import org.hibernate.annotations.TypeDefs
 import java.util.UUID
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -14,13 +15,22 @@ import javax.persistence.PrimaryKeyJoinColumn
 import javax.validation.constraints.NotNull
 
 @Entity
-@TypeDef(name = "appointment_delivery_type", typeClass = PostgreSQLEnumType::class)
+@TypeDefs(
+  value = [
+    TypeDef(name = "appointment_delivery_type", typeClass = PostgreSQLEnumType::class),
+    TypeDef(name = "appointment_session_type", typeClass = PostgreSQLEnumType::class)
+  ]
+)
 data class AppointmentDelivery(
   @Id
   var appointmentId: UUID,
   @Type(type = "appointment_delivery_type")
   @Enumerated(EnumType.STRING)
   @NotNull var appointmentDeliveryType: AppointmentDeliveryType,
+  @Type(type = "appointment_session_type")
+  @Enumerated(EnumType.STRING)
+  // TODO: Transform to @NotNull this change is live
+  var appointmentSessionType: AppointmentSessionType? = null,
   var npsOfficeCode: String? = null,
   @OneToOne(cascade = [CascadeType.ALL])
   @PrimaryKeyJoinColumn
@@ -32,4 +42,8 @@ enum class AppointmentDeliveryType {
   VIDEO_CALL,
   IN_PERSON_MEETING_PROBATION_OFFICE,
   IN_PERSON_MEETING_OTHER;
+}
+
+enum class AppointmentSessionType {
+  ONE_TO_ONE, GROUP
 }

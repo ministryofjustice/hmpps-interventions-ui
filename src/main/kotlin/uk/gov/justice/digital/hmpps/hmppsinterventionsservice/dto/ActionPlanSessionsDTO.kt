@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.time.OffsetDateTime
@@ -30,6 +31,7 @@ data class UpdateAppointmentDTO(
   val appointmentTime: OffsetDateTime,
   @JsonProperty(required = true) val durationInMinutes: Int,
   val appointmentDeliveryType: AppointmentDeliveryType,
+  val sessionType: AppointmentSessionType? = null,
   val appointmentDeliveryAddress: AddressDTO? = null,
   val npsOfficeCode: String? = null,
 )
@@ -50,6 +52,7 @@ data class ActionPlanSessionDTO(
   val appointmentTime: OffsetDateTime?,
   val durationInMinutes: Int?,
   val appointmentDeliveryType: AppointmentDeliveryType?,
+  val sessionType: AppointmentSessionType?,
   val npsOfficeCode: String?,
   val appointmentDeliveryAddress: AddressDTO?,
   val sessionFeedback: SessionFeedbackDTO,
@@ -75,6 +78,7 @@ data class ActionPlanSessionDTO(
         appointmentTime = session.currentAppointment?.appointmentTime,
         durationInMinutes = session.currentAppointment?.durationInMinutes,
         appointmentDeliveryType = session.currentAppointment?.appointmentDelivery?.appointmentDeliveryType,
+        sessionType = session.currentAppointment?.appointmentDelivery?.appointmentSessionType,
         appointmentDeliveryAddress = address,
         npsOfficeCode = session.currentAppointment?.appointmentDelivery?.npsOfficeCode,
         sessionFeedback = SessionFeedbackDTO.from(

@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionP
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
@@ -420,6 +421,7 @@ class SetupAssistant(
     behaviour: String? = null,
     notifyPPOfBehaviour: Boolean? = null,
     appointmentDeliveryType: AppointmentDeliveryType? = null,
+    appointmentSessionType: AppointmentSessionType = AppointmentSessionType.ONE_TO_ONE,
     appointmentDeliveryAddress: AddressDTO? = null,
     referral: Referral = createSentReferral()
   ): ActionPlanSession {
@@ -442,7 +444,8 @@ class SetupAssistant(
     if (appointmentDeliveryType != null) {
       val appointmentDelivery = appointmentDeliveryFactory.create(
         appointmentId = appointment.id,
-        appointmentDeliveryType = appointmentDeliveryType
+        appointmentDeliveryType = appointmentDeliveryType,
+        appointmentSessionType = appointmentSessionType,
       )
       appointmentDeliveryRepository.save(appointmentDelivery)
       if (appointmentDeliveryAddress != null) {

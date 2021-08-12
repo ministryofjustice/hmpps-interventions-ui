@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSess
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
@@ -42,7 +43,7 @@ internal class ActionPlanSessionControllerTest {
     val actionPlanId = actionPlanSession.actionPlan.id
     val sessionNumber = actionPlanSession.sessionNumber
 
-    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, null, null)
+    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null)
 
     whenever(
       sessionsService.updateSessionAppointment(
@@ -52,6 +53,7 @@ internal class ActionPlanSessionControllerTest {
         updateAppointmentDTO.durationInMinutes,
         user,
         AppointmentDeliveryType.PHONE_CALL,
+        AppointmentSessionType.ONE_TO_ONE,
         null,
         null
       )

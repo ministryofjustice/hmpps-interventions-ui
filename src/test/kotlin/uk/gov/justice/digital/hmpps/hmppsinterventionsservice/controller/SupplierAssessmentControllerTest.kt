@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
@@ -56,6 +57,7 @@ class SupplierAssessmentControllerTest {
       val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
       val appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
       val npsOfficeCode = "CRSEXT"
+      val appointmentSessionType = AppointmentSessionType.ONE_TO_ONE
       val addressDTO = AddressDTO(
         firstAddressLine = "Harmony Living Office, Room 4",
         secondAddressLine = "44 Bouverie Road",
@@ -63,7 +65,7 @@ class SupplierAssessmentControllerTest {
         county = "Lancashire",
         postCode = "SY40RE"
       )
-      val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes, appointmentDeliveryType, addressDTO, npsOfficeCode)
+      val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode)
       val user = authUserFactory.create()
       val token = tokenFactory.create()
       val supplierAssessment = supplierAssessmentFactory.create()
@@ -71,7 +73,7 @@ class SupplierAssessmentControllerTest {
       whenever(userMapper.fromToken(token)).thenReturn(user)
       whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
       whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
-      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, addressDTO, npsOfficeCode)).thenReturn(supplierAssessment.currentAppointment)
+      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode)).thenReturn(supplierAssessment.currentAppointment)
 
       val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
       verify(appointmentValidator).validateUpdateAppointment(eq(update))
