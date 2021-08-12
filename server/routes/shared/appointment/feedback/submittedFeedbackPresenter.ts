@@ -1,9 +1,8 @@
 import DeliusServiceUser from '../../../../models/delius/deliusServiceUser'
 import User from '../../../../models/hmppsAuth/user'
-import DateUtils from '../../../../utils/dateUtils'
-import { SummaryListItem } from '../../../../utils/summaryList'
 import FeedbackAnswersPresenter from '../../../appointments/feedback/shared/viewFeedback/feedbackAnswersPresenter'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../models/appointment'
+import AppointmentSummary from '../../../appointments/appointmentSummary'
 
 export default class SubmittedFeedbackPresenter {
   readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
@@ -25,28 +24,5 @@ export default class SubmittedFeedbackPresenter {
     title: `View feedback`,
   }
 
-  get sessionDetailsSummary(): SummaryListItem[] {
-    const dateAndTimeSummary = [
-      {
-        key: 'Date',
-        lines: [DateUtils.getDateStringFromDateTimeString(this.appointment.appointmentTime)],
-      },
-      {
-        key: 'Time',
-        lines: [DateUtils.getTimeStringFromDateTimeString(this.appointment.appointmentTime)],
-      },
-    ]
-
-    if (this.assignedCaseworker) {
-      return [
-        {
-          key: 'Caseworker',
-          lines: [this.assignedCaseworker.username],
-        },
-        ...dateAndTimeSummary,
-      ]
-    }
-
-    return dateAndTimeSummary
-  }
+  readonly appointmentSummary = new AppointmentSummary(this.appointment, this.assignedCaseworker)
 }

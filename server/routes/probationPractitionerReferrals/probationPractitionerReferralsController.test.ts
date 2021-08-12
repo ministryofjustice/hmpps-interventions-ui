@@ -162,6 +162,9 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
     const serviceUser = deliusServiceUserFactory.build()
 
     const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
       sessionNumber: 1,
       sessionFeedback: {
         attendance: {

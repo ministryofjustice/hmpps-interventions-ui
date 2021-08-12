@@ -1,9 +1,8 @@
 import PresenterUtils from '../../../../../utils/presenterUtils'
-import { SummaryListItem } from '../../../../../utils/summaryList'
-import DateUtils from '../../../../../utils/dateUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import AttendanceFeedbackQuestionnaire from './attendanceFeedbackQuestionnaire'
+import AppointmentSummary from '../../../appointmentSummary'
 
 interface AttendanceFeedbackFormText {
   title: string
@@ -37,16 +36,7 @@ export default abstract class AttendanceFeedbackPresenter {
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
-  readonly sessionDetailsSummary: SummaryListItem[] = [
-    {
-      key: 'Date',
-      lines: [DateUtils.getDateStringFromDateTimeString(this.appointment.appointmentTime)],
-    },
-    {
-      key: 'Time',
-      lines: [DateUtils.getTimeStringFromDateTimeString(this.appointment.appointmentTime)],
-    },
-  ]
+  readonly appointmentSummary = new AppointmentSummary(this.appointment, null)
 
   readonly fields = {
     attended: {

@@ -3,20 +3,19 @@ import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import PresenterUtils from '../../utils/presenterUtils'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import { InitialAssessmentAppointment, ActionPlanAppointment } from '../../models/appointment'
+import User from '../../models/hmppsAuth/user'
 
 export default class AppointmentSummary {
   constructor(
     private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment,
-    private readonly assignedCaseworker: AuthUserDetails | null = null
+    private readonly assignedCaseworker: AuthUserDetails | User | null = null
   ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
 
   get appointmentSummaryList(): SummaryListItem[] {
     return [
-      this.assignedCaseworker !== null
-        ? { key: 'Caseworker', lines: [`${this.assignedCaseworker.firstName} ${this.assignedCaseworker.lastName}`] }
-        : null,
+      this.assignedCaseworkerListItem,
       {
         key: 'Date',
         lines: [PresenterUtils.govukFormattedDate(this.appointmentDecorator.britishDay!)],
@@ -36,6 +35,23 @@ export default class AppointmentSummary {
       },
       this.addressLines === null ? null : { key: 'Address', lines: this.addressLines },
     ].flatMap(val => (val === null ? [] : [val]))
+  }
+
+  private get assignedCaseworkerListItem(): { key: 'Caseworker'; lines: [string] } | null {
+    if (this.assignedCaseworker == null) {
+      return null
+    }
+    if (this.isAuthUser(this.assignedCaseworker)) {
+      return { key: 'Caseworker', lines: [`${this.assignedCaseworker.firstName} ${this.assignedCaseworker.lastName}`] }
+    }
+    return { key: 'Caseworker', lines: [this.assignedCaseworker.username] }
+  }
+
+  private isAuthUser(user: AuthUserDetails | User): user is AuthUserDetails {
+    if ((<AuthUserDetails>user).firstName) {
+      return true
+    }
+    return false
   }
 
   private get deliveryMethod(): string {

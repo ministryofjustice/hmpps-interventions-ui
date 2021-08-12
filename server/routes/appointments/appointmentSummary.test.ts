@@ -38,12 +38,27 @@ describe(AppointmentSummary, () => {
     })
 
     describe('when the assigned case worker is provided', () => {
-      it('contains the name of the referral’s assignee', () => {
-        const appointment = initialAssessmentAppointmentFactory.build()
-        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
-        const summaryComponent = new AppointmentSummary(appointment, assignee)
+      describe('and it is an DeliusAuthUser', () => {
+        it('contains the name of the referral’s assignee', () => {
+          const appointment = initialAssessmentAppointmentFactory.build()
+          const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+          const summaryComponent = new AppointmentSummary(appointment, assignee)
 
-        expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
+          expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
+        })
+      })
+
+      describe('and it is a User', () => {
+        it('contains the username of the referral’s assignee', () => {
+          const appointment = initialAssessmentAppointmentFactory.build()
+          const assignee = { username: 'hellouser@username', userId: 'userId', authSource: 'authSource' }
+          const summaryComponent = new AppointmentSummary(appointment, assignee)
+
+          expect(summaryComponent.appointmentSummaryList[0]).toEqual({
+            key: 'Caseworker',
+            lines: ['hellouser@username'],
+          })
+        })
       })
     })
 

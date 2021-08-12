@@ -5,7 +5,7 @@ import SubmittedFeedbackPresenter from './submittedFeedbackPresenter'
 export default class SubmittedFeedbackView {
   constructor(private readonly presenter: SubmittedFeedbackPresenter) {}
 
-  private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
+  private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.appointmentSummary.appointmentSummaryList)
 
   private get backLinkArgs(): BackLinkArgs {
     return {
