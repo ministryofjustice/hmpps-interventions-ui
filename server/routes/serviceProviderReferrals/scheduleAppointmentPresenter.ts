@@ -68,11 +68,21 @@ export default class ScheduleAppointmentPresenter {
     return config.features.npsOfficeLocationSelection.enabled
   }
 
+  get isInitialAssessmentAppointment(): boolean {
+    return this.currentAppointment === null
+  }
+
+  readonly initialAssessmentSessionType = 'ONE_TO_ONE'
+
   readonly fields = this.appointmentAlreadyAttended
     ? {
         date: this.utils.dateValue(null, 'date', this.validationError),
         time: this.utils.twelveHourTimeValue(null, 'time', this.validationError),
         duration: this.utils.durationValue(null, 'duration', this.validationError),
+        sessionType: {
+          errorMessage: PresenterUtils.errorMessage(this.validationError, 'session-type'),
+          value: this.utils.stringValue(null, 'session-type'),
+        },
         meetingMethod: this.utils.meetingMethodValue(null, 'meeting-method', this.validationError),
         address: this.utils.addressValue(null, 'method-other-location', this.validationError),
         deliusOfficeLocation: this.utils.selectionValue(null, 'delius-office-location-code', this.validationError),
@@ -89,6 +99,10 @@ export default class ScheduleAppointmentPresenter {
           'duration',
           this.validationError
         ),
+        sessionType: {
+          errorMessage: PresenterUtils.errorMessage(this.validationError, 'session-type'),
+          value: this.utils.stringValue(this.currentAppointment?.sessionType ?? null, 'session-type'),
+        },
         meetingMethod: this.utils.meetingMethodValue(
           this.currentAppointment?.appointmentDeliveryType ?? null,
           'meeting-method',

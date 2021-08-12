@@ -27,6 +27,7 @@ export default class ScheduleAppointmentView {
         errorSummaryArgs: this.errorSummaryArgs,
         serverError: this.serverError,
         address: this.addressFormView.inputArgs,
+        sessionTypeRadioInputArgs: this.sessionTypeRadioInputArgs,
         meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         appointmentSummaryListArgs: ViewUtils.summaryListArgs(this.presenter.appointmentSummary),
@@ -165,6 +166,36 @@ export default class ScheduleAppointmentView {
     }
   }
 
+  private get sessionTypeRadioInputArgs(): RadiosArgs {
+    return {
+      idPrefix: 'session-type',
+      name: 'session-type',
+      fieldset: {
+        legend: {
+          text: 'Type of session',
+          isPageHeading: false,
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.sessionType.errorMessage),
+      hint: {
+        text: 'Select one option',
+      },
+      items: [
+        {
+          value: 'ONE_TO_ONE',
+          text: '1:1',
+          checked: this.presenter.fields.sessionType.value === 'ONE_TO_ONE',
+        },
+        {
+          value: 'GROUP',
+          text: 'Group session',
+          checked: this.presenter.fields.sessionType.value === 'GROUP',
+        },
+      ],
+    }
+  }
+
   private meetingMethodRadioInputArgs(deliusOfficeLocationHTML: string, otherLocationHTML: string): RadiosArgs {
     const items = []
     items.push({
@@ -207,7 +238,7 @@ export default class ScheduleAppointmentView {
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.meetingMethod.errorMessage),
       hint: {
-        text: 'Select one option.',
+        text: 'Select one option',
       },
       items,
     }

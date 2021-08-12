@@ -112,6 +112,9 @@ export default {
       empty: 'Enter a duration',
       invalidDuration: 'The session duration must be a real duration',
     },
+    sessionType: {
+      empty: 'Select the session type',
+    },
     meetingMethod: {
       empty: 'Select a meeting method',
     },

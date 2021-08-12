@@ -936,6 +936,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
           'time-part-of-day': 'am',
           'duration-hours': '1',
           'duration-minutes': '15',
+          'session-type': 'ONE_TO_ONE',
           'meeting-method': 'PHONE_CALL',
         })
         .expect(302)
@@ -944,6 +945,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
       expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith('token', actionPlan.id, 1, {
         appointmentTime: '2021-03-24T09:02:00.000Z',
         durationInMinutes: 75,
+        sessionType: 'ONE_TO_ONE',
         appointmentDeliveryType: 'PHONE_CALL',
         appointmentDeliveryAddress: null,
         npsOfficeCode: null,
@@ -971,6 +973,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
           .expect(400)
@@ -1000,6 +1003,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
           .expect(500)
@@ -1032,6 +1036,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
           'time-part-of-day': 'am',
           'duration-hours': '1',
           'duration-minutes': '15',
+          'session-type': 'ONE_TO_ONE',
           'meeting-method': 'PHONE_CALL',
         })
         .expect(400)
@@ -1883,6 +1888,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
         })
@@ -1904,6 +1910,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
           .expect(302)
@@ -1915,6 +1922,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
           {
             appointmentTime: '2021-03-24T09:02:00.000Z',
             durationInMinutes: 75,
+            sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
             npsOfficeCode: null,
@@ -1931,6 +1939,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
         const scheduledAppointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
+          sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
         })
@@ -1952,6 +1961,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
           .expect(302)
@@ -1963,6 +1973,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
           {
             appointmentTime: '2021-03-24T09:02:00.000Z',
             durationInMinutes: 75,
+            sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
             npsOfficeCode: null,
@@ -1991,6 +2002,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
           .expect(400)
@@ -2020,6 +2032,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
           .expect(500)
@@ -2048,6 +2061,7 @@ describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', ()
           'time-part-of-day': 'am',
           'duration-hours': '1',
           'duration-minutes': '15',
+          'session-type': 'ONE_TO_ONE',
           'meeting-method': 'PHONE_CALL',
         })
         .expect(400)

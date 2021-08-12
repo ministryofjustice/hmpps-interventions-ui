@@ -26,6 +26,7 @@ describe(ScheduleAppointmentForm, () => {
             'time-part-of-day': 'pm',
             'duration-hours': '1',
             'duration-minutes': '30',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
 
@@ -34,12 +35,14 @@ describe(ScheduleAppointmentForm, () => {
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
             durationInMinutes: 90,
+            sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
             npsOfficeCode: null,
           })
         })
       })
+
       describe('with an other locations appointment', () => {
         it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
           const request = TestUtils.createRequest({
@@ -51,6 +54,7 @@ describe(ScheduleAppointmentForm, () => {
             'time-part-of-day': 'pm',
             'duration-hours': '1',
             'duration-minutes': '30',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'IN_PERSON_MEETING_OTHER',
             'method-other-location-address-line-1': 'Harmony Living Office, Room 4',
             'method-other-location-address-line-2': '44 Bouverie Road',
@@ -64,6 +68,7 @@ describe(ScheduleAppointmentForm, () => {
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
             durationInMinutes: 90,
+            sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: {
               firstAddressLine: 'Harmony Living Office, Room 4',
@@ -87,6 +92,7 @@ describe(ScheduleAppointmentForm, () => {
               'time-part-of-day': 'pm',
               'duration-hours': '1',
               'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
               'meeting-method': 'IN_PERSON_MEETING_OTHER',
               'method-other-location-address-line-1': 'Harmony Living Office, Room 4',
               'method-other-location-address-town-or-city': 'Blackpool',
@@ -98,6 +104,7 @@ describe(ScheduleAppointmentForm, () => {
             expect(data.paramsForUpdate).toEqual({
               appointmentTime: '2021-09-12T12:05:00.000Z',
               durationInMinutes: 90,
+              sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
               appointmentDeliveryAddress: {
                 firstAddressLine: 'Harmony Living Office, Room 4',
@@ -122,6 +129,7 @@ describe(ScheduleAppointmentForm, () => {
             'time-part-of-day': 'pm',
             'duration-hours': '1',
             'duration-minutes': '30',
+            'session-type': 'ONE_TO_ONE',
             'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
             'delius-office-location-code': 'CRS0001',
           })
@@ -131,6 +139,7 @@ describe(ScheduleAppointmentForm, () => {
           expect(data.paramsForUpdate).toEqual({
             appointmentTime: '2021-09-12T12:05:00.000Z',
             durationInMinutes: 90,
+            sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
             appointmentDeliveryAddress: null,
             npsOfficeCode: 'CRS0001',
@@ -172,6 +181,11 @@ describe(ScheduleAppointmentForm, () => {
               message: 'Enter a duration',
             },
             {
+              errorSummaryLinkedField: 'session-type',
+              formFields: ['session-type'],
+              message: 'Select the session type',
+            },
+            {
               errorSummaryLinkedField: 'meeting-method',
               formFields: ['meeting-method'],
               message: 'Select a meeting method',
@@ -191,6 +205,7 @@ describe(ScheduleAppointmentForm, () => {
               'time-part-of-day': 'pm',
               'duration-hours': '1',
               'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
               'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
               'delius-office-location-code': '',
             })
@@ -219,6 +234,7 @@ describe(ScheduleAppointmentForm, () => {
               'time-part-of-day': 'pm',
               'duration-hours': '1',
               'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
               'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
               'delius-office-location-code': 'CRS0002',
             })
