@@ -66,19 +66,19 @@ data class UpdateActionPlanActivityDTO(
   val description: String,
 )
 
-data class ApprovedActionPlanSummaryDTO(
+data class ActionPlanSummaryDTO(
   val id: UUID,
-  val approvedAt: OffsetDateTime,
+  val approvedAt: OffsetDateTime?,
 ) {
   companion object {
-    fun from(actionPlan: ActionPlan): ApprovedActionPlanSummaryDTO {
-      return ApprovedActionPlanSummaryDTO(
+    fun from(actionPlan: ActionPlan): ActionPlanSummaryDTO {
+      return ActionPlanSummaryDTO(
         id = actionPlan.id,
-        approvedAt = actionPlan.approvedAt!!,
+        approvedAt = actionPlan.approvedAt,
       )
     }
-    fun from(actionPlans: List<ActionPlan>): List<ApprovedActionPlanSummaryDTO> {
-      return actionPlans.filter { it.approvedAt != null }.map { from(it) }
+    fun from(actionPlans: List<ActionPlan>): List<ActionPlanSummaryDTO> {
+      return actionPlans.map { from(it) }
     }
   }
 }

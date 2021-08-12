@@ -273,14 +273,12 @@ internal class ReferralControllerTest {
   @Test
   fun `get action plans for referral returns only approved action plans`() {
     val referralId = UUID.randomUUID()
-    val actionPlanId = UUID.randomUUID()
-    val approvedActionPlan = actionPlanFactory.createApproved(id = actionPlanId)
+    val approvedActionPlan = actionPlanFactory.createApproved()
     val nonApprovedActionPlan = actionPlanFactory.create()
 
-    whenever(actionPlanService.getActionPlanByReferral(referralId)).thenReturn(listOf(approvedActionPlan, nonApprovedActionPlan))
+    whenever(actionPlanService.getApprovedActionPlansByReferral(referralId)).thenReturn(listOf(approvedActionPlan, nonApprovedActionPlan))
     val response = referralController.getReferralApprovedActionPlans(referralId)
 
-    assertThat(response.size).isEqualTo(1)
-    assertThat(response[0].id).isEqualTo(actionPlanId)
+    assertThat(response.size).isEqualTo(2)
   }
 }

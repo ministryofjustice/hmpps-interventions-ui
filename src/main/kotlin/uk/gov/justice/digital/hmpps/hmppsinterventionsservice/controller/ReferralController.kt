@@ -17,7 +17,7 @@ import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ApprovedActionPlanSummaryDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSummaryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
@@ -220,12 +220,12 @@ class ReferralController(
     return SupplierAssessmentDTO.from(supplierAssessment)
   }
 
-  @GetMapping("sent-referral/{id}/approved-action-plans")
+  @GetMapping("/sent-referral/{id}/approved-action-plans")
   fun getReferralApprovedActionPlans(
     @PathVariable id: UUID,
-  ): List<ApprovedActionPlanSummaryDTO> {
-    val actionPlans = actionPlanService.getActionPlanByReferral(id)
-    return ApprovedActionPlanSummaryDTO.from(actionPlans)
+  ): List<ActionPlanSummaryDTO> {
+    val actionPlans = actionPlanService.getApprovedActionPlansByReferral(id)
+    return ActionPlanSummaryDTO.from(actionPlans)
   }
 
   private fun getSupplierAssessment(sentReferral: Referral): SupplierAssessment {
