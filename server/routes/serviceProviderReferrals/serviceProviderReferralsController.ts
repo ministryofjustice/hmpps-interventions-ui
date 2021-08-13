@@ -83,6 +83,7 @@ import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../model
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
 import config from '../../config'
+import AppointmentSummary from '../appointments/appointmentSummary'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -596,8 +597,8 @@ export default class ServiceProviderReferralsController {
           new ScheduleActionPlanSessionPresenter(
             referral,
             appointment,
+            new AppointmentSummary(appointment),
             deliusOfficeLocations,
-            null,
             formError,
             userInputData,
             serverError
@@ -664,8 +665,8 @@ export default class ServiceProviderReferralsController {
           return new ScheduleAppointmentPresenter(
             referral,
             appointment,
+            appointment === null ? null : new AppointmentSummary(appointment, assignedCaseworker),
             deliusOfficeLocations,
-            assignedCaseworker,
             formError,
             userInputData,
             serverError,
@@ -696,9 +697,14 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null, {
-      userType: 'service-provider',
-    })
+    const presenter = new SupplierAssessmentAppointmentPresenter(
+      referral,
+      appointment,
+      new AppointmentSummary(appointment),
+      {
+        userType: 'service-provider',
+      }
+    )
     const view = new SupplierAssessmentAppointmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -811,6 +817,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
+      new AppointmentSummary(appointment),
       formError,
       userInputData,
       referral.id
@@ -862,6 +869,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
+      new AppointmentSummary(appointment),
       formError,
       userInputData,
       referralId
@@ -930,7 +938,12 @@ export default class ServiceProviderReferralsController {
     }
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(appointment, serviceUser, referralId)
+    const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
+      appointment,
+      serviceUser,
+      referralId,
+      new AppointmentSummary(appointment)
+    )
     const view = new CheckFeedbackAnswersView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -983,7 +996,13 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, 'service-provider', referralId)
+    const presenter = new SubmittedFeedbackPresenter(
+      currentAppointment,
+      new AppointmentSummary(currentAppointment),
+      serviceUser,
+      'service-provider',
+      referralId
+    )
     const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -1060,7 +1079,8 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
       currentAppointment,
       serviceUser,
-      actionPlanId
+      actionPlanId,
+      new AppointmentSummary(currentAppointment)
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
@@ -1095,7 +1115,13 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SubmittedFeedbackPresenter(currentAppointment, serviceUser, 'service-provider', referral.id)
+    const presenter = new SubmittedFeedbackPresenter(
+      currentAppointment,
+      new AppointmentSummary(currentAppointment),
+      serviceUser,
+      'service-provider',
+      referral.id
+    )
     const view = new SubmittedFeedbackView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)

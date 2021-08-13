@@ -2,6 +2,7 @@ import actionPlanAppointmentFactory from '../../../../../testutils/factories/act
 import initialAssessmentAppointmentFactory from '../../../../../testutils/factories/initialAssessmentAppointment'
 import deliusServiceUserFactory from '../../../../../testutils/factories/deliusServiceUser'
 import SubmittedFeedbackPresenter from './submittedFeedbackPresenter'
+import AppointmentSummary from '../../../appointments/appointmentSummary'
 
 describe(SubmittedFeedbackPresenter, () => {
   const userType = 'service-provider'
@@ -11,12 +12,24 @@ describe(SubmittedFeedbackPresenter, () => {
     it('includes the title of the page', () => {
       const serviceUser = deliusServiceUserFactory.build()
       const actionPlanAppointment = actionPlanAppointmentFactory.build()
-      let presenter = new SubmittedFeedbackPresenter(actionPlanAppointment, serviceUser, userType, referralId)
+      let presenter = new SubmittedFeedbackPresenter(
+        actionPlanAppointment,
+        new AppointmentSummary(actionPlanAppointment),
+        serviceUser,
+        userType,
+        referralId
+      )
       expect(presenter.text).toMatchObject({
         title: 'View feedback',
       })
       const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
-      presenter = new SubmittedFeedbackPresenter(initialAssessmentAppointment, serviceUser, userType, referralId)
+      presenter = new SubmittedFeedbackPresenter(
+        initialAssessmentAppointment,
+        new AppointmentSummary(actionPlanAppointment),
+        serviceUser,
+        userType,
+        referralId
+      )
       expect(presenter.text).toMatchObject({
         title: 'View feedback',
       })
@@ -29,6 +42,7 @@ describe(SubmittedFeedbackPresenter, () => {
       const actionPlanAppointment = actionPlanAppointmentFactory.build()
       const presenter = new SubmittedFeedbackPresenter(
         actionPlanAppointment,
+        new AppointmentSummary(actionPlanAppointment),
         serviceUser,
         'probation-practitioner',
         'test-referral-id'

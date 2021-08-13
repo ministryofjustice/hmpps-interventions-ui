@@ -37,6 +37,7 @@ import FileUtils from '../../utils/fileUtils'
 import DraftsService from '../../services/draftsService'
 import DraftCancellationData from './draftCancellationData'
 import config from '../../config'
+import AppointmentSummary from '../appointments/appointmentSummary'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -207,11 +208,11 @@ export default class ProbationPractitionerReferralsController {
 
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
+      new AppointmentSummary(currentAppointment, referral.assignedTo),
       serviceUser,
       'probation-practitioner',
       referral.id,
-      null,
-      referral.assignedTo
+      null
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -241,6 +242,7 @@ export default class ProbationPractitionerReferralsController {
 
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
+      new AppointmentSummary(currentAppointment),
       serviceUser,
       'probation-practitioner',
       referralId
@@ -589,11 +591,15 @@ export default class ProbationPractitionerReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, assignee, {
-      includeAssignee: true,
-      readonly: true,
-      userType: 'probation-practitioner',
-    })
+    const presenter = new SupplierAssessmentAppointmentPresenter(
+      referral,
+      appointment,
+      new AppointmentSummary(appointment, assignee),
+      {
+        readonly: true,
+        userType: 'probation-practitioner',
+      }
+    )
     const view = new SupplierAssessmentAppointmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)

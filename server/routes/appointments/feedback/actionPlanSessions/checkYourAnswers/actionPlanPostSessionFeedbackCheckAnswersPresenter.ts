@@ -2,6 +2,7 @@ import { ActionPlanAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFeedbackAnswersPresenter'
 import FeedbackAnswersPresenter from '../../shared/viewFeedback/feedbackAnswersPresenter'
+import AppointmentSummary from '../../../appointmentSummary'
 
 export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends CheckFeedbackAnswersPresenter {
   readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
@@ -9,9 +10,10 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
   constructor(
     private readonly actionPlanAppointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly actionPlanId: string
+    private readonly actionPlanId: string,
+    readonly appointmentSummary: AppointmentSummary
   ) {
-    super(actionPlanAppointment)
+    super(actionPlanAppointment, appointmentSummary)
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(actionPlanAppointment, serviceUser)
   }
 

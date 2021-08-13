@@ -4,6 +4,7 @@ import { FormValidationError } from '../../../../../utils/formValidationError'
 import { InitialAssessmentAppointment } from '../../../../../models/appointment'
 import AttendanceFeedbackQuestionnaire from './attendanceFeedbackQuestionnaire'
 import deliusServiceUser from '../../../../../../testutils/factories/deliusServiceUser'
+import AppointmentSummary from '../../../appointmentSummary'
 
 describe(AttendanceFeedbackPresenter, () => {
   class ExtendedAttendanceFeedbackPresenter extends AttendanceFeedbackPresenter {
@@ -17,6 +18,7 @@ describe(AttendanceFeedbackPresenter, () => {
         'title',
         'subTitle',
         new AttendanceFeedbackQuestionnaire(appointment, deliusServiceUser.build()),
+        new AppointmentSummary(appointment),
         error,
         userInputData
       )

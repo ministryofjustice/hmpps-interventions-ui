@@ -1,6 +1,7 @@
 import InitialAssessmentFeedbackCheckAnswersPresenter from './initialAssessmentFeedbackCheckAnswersPresenter'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 import initialAssessmentAppointmentFactory from '../../../../../../testutils/factories/initialAssessmentAppointment'
+import AppointmentSummary from '../../../appointmentSummary'
 
 describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
   describe('submitHref', () => {
@@ -9,7 +10,12 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
       const serviceUser = deliusServiceUserFactory.build()
       const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
-      const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(appointment, serviceUser, referralId)
+      const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
+        appointment,
+        serviceUser,
+        referralId,
+        new AppointmentSummary(appointment)
+      )
 
       expect(presenter.submitHref).toEqual(
         '/service-provider/referrals/77f0d8fc-9443-492c-b352-4cab66acbf3c/supplier-assessment/post-assessment-feedback/submit'
@@ -29,7 +35,12 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
         const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
         attendedAppointments.forEach(appointment => {
-          const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(appointment, serviceUser, referralId)
+          const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
+            appointment,
+            serviceUser,
+            referralId,
+            new AppointmentSummary(appointment)
+          )
 
           expect(presenter.backLinkHref).toEqual(
             '/service-provider/referrals/77f0d8fc-9443-492c-b352-4cab66acbf3c/supplier-assessment/post-assessment-feedback/behaviour'
@@ -46,7 +57,12 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
         const serviceUser = deliusServiceUserFactory.build()
         const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
-        const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(appointment, serviceUser, referralId)
+        const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
+          appointment,
+          serviceUser,
+          referralId,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.backLinkHref).toEqual(
           '/service-provider/referrals/77f0d8fc-9443-492c-b352-4cab66acbf3c/supplier-assessment/post-assessment-feedback/attendance'

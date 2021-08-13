@@ -20,6 +20,7 @@ export default abstract class AttendanceFeedbackPresenter {
     private readonly title: string,
     private readonly subTitle: string,
     private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire,
+    readonly appointmentSummary: AppointmentSummary,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
@@ -35,8 +36,6 @@ export default abstract class AttendanceFeedbackPresenter {
   readonly backLinkHref: string | null = null
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
-
-  readonly appointmentSummary = new AppointmentSummary(this.appointment, null)
 
   readonly fields = {
     attended: {
