@@ -4,22 +4,19 @@ import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
-import java.util.UUID
 
 @Component
 class PerformanceReportProcessor(
-  private val referralRepository: ReferralRepository,
   private val actionPlanService: ActionPlanService,
-) : ItemProcessor<UUID, PerformanceReportData> {
+) : ItemProcessor<Referral, PerformanceReportData> {
   companion object : KLogging()
 
-  override fun process(referralId: UUID): PerformanceReportData {
-    logger.info("processing referral {}", kv("referralId", referralId))
+  override fun process(referral: Referral): PerformanceReportData {
+    logger.info("processing referral {}", kv("referralId", referral.id))
 
-    val referral = referralRepository.findByIdAndSentAtIsNotNull(referralId)
-      ?: throw RuntimeException("invalid referral id passed to report processor")
+    if (referral.sentAt == null) throw RuntimeException("invalid referral passed to report processor; referral has not been sent")
 
     // note: all referrals here are 'sent', we can safely access fields like 'referenceNumber'
     val contract = referral.intervention.dynamicFrameworkContract
