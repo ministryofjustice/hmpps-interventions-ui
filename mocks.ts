@@ -9,9 +9,12 @@ import interventionFactory from './testutils/factories/intervention'
 import actionPlanAppointmentFactory from './testutils/factories/actionPlanAppointment'
 import draftReferralFactory from './testutils/factories/draftReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
+import CommunityApiMocks from './mockApis/communityApi'
+import deliusConvictionFactory from './testutils/factories/deliusConviction'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
+const communityApiMocks = new CommunityApiMocks(wiremock, '')
 
 export default async function setUpMocks(): Promise<void> {
   await wiremock.resetStubs()
@@ -144,8 +147,8 @@ export default async function setUpMocks(): Promise<void> {
         disabilities: ['Autism spectrum condition', 'sciatica'],
       },
     })
-
   await Promise.all([
+    communityApiMocks.stubGetActiveConvictionsByCRN('CRN11', [deliusConvictionFactory.build()]),
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
       1,
@@ -155,7 +158,6 @@ export default async function setUpMocks(): Promise<void> {
         durationInMinutes: 75,
       })
     ),
-
     interventionsMocks.stubGetIntervention(draftReferral.interventionId, intervention),
     interventionsMocks.stubGetDraftReferral(draftReferral.id, draftReferral),
     [accommodationServiceCategory, socialInclusionServiceCategory].forEach(async serviceCategory => {

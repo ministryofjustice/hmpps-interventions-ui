@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "ANY",
+    "urlPattern": "/secure/.*"
+  },
+  "response": {
+    "proxyBaseUrl": "http://community-api:8080"
+  },
+  "priority": 9
+}
