@@ -67,6 +67,6 @@ interface ReferralRepository : JpaRepository<Referral, UUID> {
   fun findByCreatedByIdAndSentAtIsNull(userId: String): List<Referral>
 
   // queries for reporting
-  @Query("select r.id from Referral r where r.sentAt > :from and r.sentAt < :to and r.intervention.dynamicFrameworkContract in :contracts")
-  fun serviceProviderReportReferralIds(from: OffsetDateTime, to: OffsetDateTime, contracts: Set<DynamicFrameworkContract>, pageable: Pageable): Page<UUID>
+  @Query("select r from Referral r where r.sentAt > :from and r.sentAt < :to and r.intervention.dynamicFrameworkContract in :contracts")
+  fun serviceProviderReportReferrals(from: OffsetDateTime, to: OffsetDateTime, contracts: Set<DynamicFrameworkContract>, pageable: Pageable): Page<Referral>
 }

@@ -1,25 +1,23 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance.PerformanceReportProcessor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.lang.RuntimeException
-import java.util.UUID
 
 internal class PerformanceReportDataProcessorTest {
-  private val referralRepository = mock<ReferralRepository>()
   private val actionPlanService = mock<ActionPlanService>()
-  private val processor = PerformanceReportProcessor(referralRepository, actionPlanService)
+  private val processor = PerformanceReportProcessor(actionPlanService)
+
+  private val referralFactory = ReferralFactory()
 
   @Test
   fun `will not process draft referrals`() {
-    whenever(referralRepository.findByIdAndSentAtIsNotNull(any())).thenReturn(null)
+    val referral = referralFactory.createDraft()
 
-    assertThrows<RuntimeException> { processor.process(UUID.randomUUID()) }
+    assertThrows<RuntimeException> { processor.process(referral) }
   }
 }

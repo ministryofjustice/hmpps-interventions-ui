@@ -47,6 +47,11 @@ spring:
     concurrency:
       pool-size: 1 # run one job at a time...
       queue-size: 10000 # unless the number of queued jobs exceeds this number
+    jobs:
+      service-provider:
+        performance-report:
+          page-size: 100
+          chunk-size: 20
 
 server:
   port: 8080

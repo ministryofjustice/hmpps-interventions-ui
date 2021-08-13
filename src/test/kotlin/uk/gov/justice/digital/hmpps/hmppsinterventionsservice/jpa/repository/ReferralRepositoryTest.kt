@@ -315,7 +315,7 @@ class ReferralRepositoryTest @Autowired constructor(
     val referral = referralFactory.createSent()
     referralFactory.createSent(sentAt = OffsetDateTime.now().minusHours(2), intervention = referral.intervention)
 
-    val referrals = referralRepository.serviceProviderReportReferralIds(
+    val referrals = referralRepository.serviceProviderReportReferrals(
       OffsetDateTime.now().minusHours(1),
       OffsetDateTime.now().plusHours(1),
       setOf(referral.intervention.dynamicFrameworkContract),

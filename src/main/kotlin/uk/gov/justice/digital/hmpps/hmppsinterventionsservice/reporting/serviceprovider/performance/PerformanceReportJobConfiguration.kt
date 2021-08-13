@@ -18,10 +18,10 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.data.domain.Sort
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
 import java.util.Date
-import java.util.UUID
 
 @Configuration
 @EnableBatchProcessing
@@ -33,6 +33,8 @@ class PerformanceReportJobConfiguration(
   private val batchUtils: BatchUtils,
   private val listener: PerformanceReportJobListener,
   private val referralRepository: ReferralRepository,
+  @Value("\${spring.batch.jobs.service-provider.performance-report.page-size}") private val pageSize: Int,
+  @Value("\${spring.batch.jobs.service-provider.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
   @Bean
   @JobScope
@@ -40,16 +42,16 @@ class PerformanceReportJobConfiguration(
     @Value("#{jobParameters['user.id']}") userId: String,
     @Value("#{jobParameters['from']}") from: Date,
     @Value("#{jobParameters['to']}") to: Date,
-  ): RepositoryItemReader<UUID> {
-    // this reader returns referral IDs which need processing for the report.
+  ): RepositoryItemReader<Referral> {
+    // this reader returns referral entities which need processing for the report.
 
     val contracts = serviceProviderAccessScopeMapper.fromUser(userMapper.fromId(userId)).contracts
-    return RepositoryItemReaderBuilder<UUID>()
+    return RepositoryItemReaderBuilder<Referral>()
       .name("performanceReportReader")
       .repository(referralRepository)
-      .methodName("serviceProviderReportReferralIds")
+      .methodName("serviceProviderReportReferrals")
       .arguments(batchUtils.parseDateToOffsetDateTime(from), batchUtils.parseDateToOffsetDateTime(to), contracts)
-      .pageSize(1)
+      .pageSize(pageSize)
       .sorts(mapOf("sentAt" to Sort.Direction.ASC))
       .build()
   }
@@ -88,12 +90,12 @@ class PerformanceReportJobConfiguration(
 
   @Bean
   fun writeToCsvStep(
-    reader: RepositoryItemReader<UUID>,
-    processor: ItemProcessor<UUID, PerformanceReportData>,
+    reader: RepositoryItemReader<Referral>,
+    processor: ItemProcessor<Referral, PerformanceReportData>,
     writer: FlatFileItemWriter<PerformanceReportData>,
   ): Step {
     return stepBuilderFactory["writeToCsvStep"]
-      .chunk<UUID, PerformanceReportData>(5)
+      .chunk<Referral, PerformanceReportData>(chunkSize)
       .reader(reader)
       .processor(processor)
       .writer(writer)
