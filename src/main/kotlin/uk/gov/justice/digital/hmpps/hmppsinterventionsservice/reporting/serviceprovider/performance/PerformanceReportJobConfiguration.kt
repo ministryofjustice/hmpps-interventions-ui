@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance
 
+import org.hibernate.SessionFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
@@ -8,18 +9,16 @@ import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.job.DefaultJobParametersValidator
 import org.springframework.batch.item.ItemProcessor
-import org.springframework.batch.item.data.RepositoryItemReader
-import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder
+import org.springframework.batch.item.database.HibernateCursorItemReader
+import org.springframework.batch.item.database.builder.HibernateCursorItemReaderBuilder
 import org.springframework.batch.item.file.FlatFileItemWriter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.FileSystemResource
-import org.springframework.data.domain.Sort
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
 import java.util.Date
 
@@ -32,7 +31,6 @@ class PerformanceReportJobConfiguration(
   private val stepBuilderFactory: StepBuilderFactory,
   private val batchUtils: BatchUtils,
   private val listener: PerformanceReportJobListener,
-  private val referralRepository: ReferralRepository,
   @Value("\${spring.batch.jobs.service-provider.performance-report.page-size}") private val pageSize: Int,
   @Value("\${spring.batch.jobs.service-provider.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
@@ -42,17 +40,22 @@ class PerformanceReportJobConfiguration(
     @Value("#{jobParameters['user.id']}") userId: String,
     @Value("#{jobParameters['from']}") from: Date,
     @Value("#{jobParameters['to']}") to: Date,
-  ): RepositoryItemReader<Referral> {
+    sessionFactory: SessionFactory,
+  ): HibernateCursorItemReader<Referral> {
     // this reader returns referral entities which need processing for the report.
 
     val contracts = serviceProviderAccessScopeMapper.fromUser(userMapper.fromId(userId)).contracts
-    return RepositoryItemReaderBuilder<Referral>()
+    return HibernateCursorItemReaderBuilder<Referral>()
       .name("performanceReportReader")
-      .repository(referralRepository)
-      .methodName("serviceProviderReportReferrals")
-      .arguments(batchUtils.parseDateToOffsetDateTime(from), batchUtils.parseDateToOffsetDateTime(to), contracts)
-      .pageSize(pageSize)
-      .sorts(mapOf("sentAt" to Sort.Direction.ASC))
+      .sessionFactory(sessionFactory)
+      .queryString("select r from Referral r where r.sentAt > :from and r.sentAt < :to and r.intervention.dynamicFrameworkContract in :contracts")
+      .parameterValues(
+        mapOf(
+          "from" to batchUtils.parseDateToOffsetDateTime(from),
+          "to" to batchUtils.parseDateToOffsetDateTime(to),
+          "contracts" to contracts
+        )
+      )
       .build()
   }
 
@@ -90,11 +93,11 @@ class PerformanceReportJobConfiguration(
 
   @Bean
   fun writeToCsvStep(
-    reader: RepositoryItemReader<Referral>,
+    reader: HibernateCursorItemReader<Referral>,
     processor: ItemProcessor<Referral, PerformanceReportData>,
     writer: FlatFileItemWriter<PerformanceReportData>,
   ): Step {
-    return stepBuilderFactory["writeToCsvStep"]
+    return stepBuilderFactory.get("writeToCsvStep")
       .chunk<Referral, PerformanceReportData>(chunkSize)
       .reader(reader)
       .processor(processor)
