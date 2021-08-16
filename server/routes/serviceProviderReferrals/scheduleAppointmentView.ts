@@ -199,17 +199,20 @@ export default class ScheduleAppointmentView {
   private meetingMethodRadioInputArgs(deliusOfficeLocationHTML: string, otherLocationHTML: string): RadiosArgs {
     const items = []
     items.push({
+      id: 'meeting-method-phone-call',
       value: 'PHONE_CALL',
       text: 'Phone call',
       checked: this.presenter.fields.meetingMethod.value === 'PHONE_CALL',
     })
     items.push({
+      id: 'meeting-method-video-call',
       value: 'VIDEO_CALL',
       text: 'Video call',
       checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
     })
     if (this.presenter.deliusOfficeLocationSelectionEnabled) {
       items.push({
+        id: 'meeting-method-meeting-probation-office',
         value: 'IN_PERSON_MEETING_PROBATION_OFFICE',
         text: 'In-person meeting - NPS offices',
         checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_PROBATION_OFFICE',
@@ -219,6 +222,7 @@ export default class ScheduleAppointmentView {
       })
     }
     items.push({
+      id: 'meeting-method-meeting-other',
       value: 'IN_PERSON_MEETING_OTHER',
       text: 'In-person meeting - Other locations',
       checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_OTHER',
