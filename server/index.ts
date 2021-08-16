@@ -5,6 +5,7 @@ import config from './config'
 import InterventionsService from './services/interventionsService'
 import RestClient from './data/restClient'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
+import ReferenceDataService from './services/referenceDataService'
 
 const assessRisksAndNeedsRestClient = new RestClient('assessRisksAndNeedsClient', config.apis.assessRisksAndNeedsApi)
 const communityApiRestClient = new RestClient('communityApiClient', config.apis.communityApi)
@@ -16,7 +17,14 @@ const assessRisksAndNeedsService = new AssessRisksAndNeedsService(
   assessRisksAndNeedsRestClient,
   config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
 )
+const referenceDataService = new ReferenceDataService()
 
-const app = createApp(communityApiService, interventionsService, hmppsAuthService, assessRisksAndNeedsService)
+const app = createApp(
+  communityApiService,
+  interventionsService,
+  hmppsAuthService,
+  assessRisksAndNeedsService,
+  referenceDataService
+)
 
 export default app

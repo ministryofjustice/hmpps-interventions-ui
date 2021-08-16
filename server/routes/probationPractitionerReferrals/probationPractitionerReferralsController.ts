@@ -38,15 +38,22 @@ import DraftsService from '../../services/draftsService'
 import DraftCancellationData from './draftCancellationData'
 import config from '../../config'
 import AppointmentSummary from '../appointments/appointmentSummary'
+import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
+import ReferenceDataService from '../../services/referenceDataService'
 
 export default class ProbationPractitionerReferralsController {
+  private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
+
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
-    private readonly draftsService: DraftsService
-  ) {}
+    private readonly draftsService: DraftsService,
+    private readonly referenceDataService: ReferenceDataService
+  ) {
+    this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
+  }
 
   async showMyCases(req: Request, res: Response): Promise<void> {
     const cases = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken)
@@ -199,6 +206,7 @@ export default class ProbationPractitionerReferralsController {
       actionPlanId,
       Number(sessionNumber)
     )
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
@@ -208,7 +216,7 @@ export default class ProbationPractitionerReferralsController {
 
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
-      new AppointmentSummary(currentAppointment, referral.assignedTo),
+      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
       serviceUser,
       'probation-practitioner',
       referral.id,
@@ -237,12 +245,13 @@ export default class ProbationPractitionerReferralsController {
     if (currentAppointment === null) {
       throw new Error('Attempting to view initial assessment feedback without a current appointment')
     }
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
-      new AppointmentSummary(currentAppointment),
+      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation),
       serviceUser,
       'probation-practitioner',
       referralId
@@ -588,13 +597,14 @@ export default class ProbationPractitionerReferralsController {
     if (appointment === null) {
       throw new Error('Attempting to view initial assessment without a current appointment')
     }
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new SupplierAssessmentAppointmentPresenter(
       referral,
       appointment,
-      new AppointmentSummary(appointment, assignee),
+      new AppointmentSummary(appointment, assignee, deliusOfficeLocation),
       {
         readonly: true,
         userType: 'probation-practitioner',
