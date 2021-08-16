@@ -18,9 +18,12 @@ export default class ScheduleAppointmentPresenter {
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
-    private readonly overrideBackLinkHref?: string,
-    private readonly appointmentDecorator = currentAppointment ? new AppointmentDecorator(currentAppointment) : null
+    private readonly overrideBackLinkHref?: string
   ) {}
+
+  private readonly appointmentDecorator = this.currentAppointment
+    ? new AppointmentDecorator(this.currentAppointment)
+    : null
 
   readonly text = {
     title:
