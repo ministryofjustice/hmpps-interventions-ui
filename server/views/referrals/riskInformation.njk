@@ -24,6 +24,9 @@
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body">{{ presenter.introText }}</p>
 
+      <h1 class="govuk-heading-l">Current risk to self</h1>
+      {{ govukSummaryList(riskToSelfSummaryListArgs) }}
+
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 

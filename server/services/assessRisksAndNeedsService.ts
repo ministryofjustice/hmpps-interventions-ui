@@ -16,10 +16,10 @@ export default class AssessRisksAndNeedsService {
   }
 
   async getRiskSummary(crn: string, token: string): Promise<RiskSummary | null> {
-    if (!this.riskSummaryEnabled) {
-      logger.info('not getting risk summary information; disabled')
-      return null
-    }
+    // if (!this.riskSummaryEnabled) {
+    //   logger.info('not getting risk summary information; disabled')
+    //   return null
+    // }
 
     logger.info({ crn }, 'getting risk summary information')
     try {

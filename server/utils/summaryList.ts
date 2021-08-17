@@ -8,4 +8,6 @@ export interface SummaryListItem {
   lines: string[]
   listStyle?: ListStyle
   changeLink?: string
+  hasRowLabel?: boolean
+  isRowLabel?: boolean
 }

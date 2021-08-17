@@ -1,6 +1,7 @@
-import { DetailsArgs, TableArgs, TagArgs } from '../../utils/govukFrontendTypes'
+import { DetailsArgs, SummaryListArgs, TableArgs, TagArgs } from '../../utils/govukFrontendTypes'
 import utils from '../../utils/utils'
 import RiskPresenter from './riskPresenter'
+import ViewUtils from '../../utils/viewUtils'
 
 export default class RiskView {
   constructor(
@@ -61,5 +62,12 @@ export default class RiskView {
               </li>
             </ul>`,
     }
+  }
+
+  get riskToSelfSummaryListArgs(): SummaryListArgs {
+    return ViewUtils.summaryListArgs(this.presenter.riskToSelf, [
+      'govuk-summary-list--labeled-rows',
+      'govuk-summary-list--questionnaire',
+    ])
   }
 }

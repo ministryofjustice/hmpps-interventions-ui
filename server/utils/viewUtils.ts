@@ -33,10 +33,18 @@ export default class ViewUtils {
     }
   }
 
-  static summaryListArgs(summaryListItems: SummaryListItem[]): SummaryListArgs {
+  static summaryListArgs(summaryListItems: SummaryListItem[], listClasses?: string[]): SummaryListArgs {
     return {
+      classes: listClasses ? listClasses.join(' ') : null,
       rows: summaryListItems.map(item => {
+        let rowClasses: string | null = null
+        if (item.hasRowLabel) {
+          rowClasses = 'govuk-summary-list__row--labeled-row'
+        } else if (item.isRowLabel) {
+          rowClasses = 'govuk-summary-list__row--row-label'
+        }
         return {
+          classes: rowClasses,
           key: {
             text: item.key,
           },

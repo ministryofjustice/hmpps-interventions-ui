@@ -6,3 +6,56 @@
     padding-bottom: 0;
   }
 }
+
+// A description list <dl> with labeled rows allows for label descriptions to be shown below a row tagged with "--labeled-row".
+
+.govuk-summary-list--labeled-rows {
+  .govuk-summary-list__row--labeled-row {
+    border-bottom: 0 !important;
+  }
+
+  .govuk-summary-list__row {
+    border-bottom: 1px solid #b1b4b6;
+    display: flex;
+
+    .govuk-summary-list__key {
+      border-bottom: 0;
+    }
+
+    .govuk-summary-list__value {
+      border-bottom: 0;
+    }
+  }
+
+
+
+  .govuk-summary-list__row--row-label {
+    .govuk-summary-list__key {
+      display: none;
+    }
+  }
+}
+
+
+// A description list <dl> as a questionnaire swaps the width ratio of description term <dt> and description details <dd> from 30%/70% to 70%/30%.
+
+.govuk-summary-list--questionnaire {
+  .govuk-summary-list__row {
+    border-bottom: 1px solid #b1b4b6;
+    display: flex;
+
+    .govuk-summary-list__key {
+      border-bottom: 0;
+      width: 70%;
+    }
+
+    .govuk-summary-list__value {
+      border-bottom: 0;
+      width: 30%;
+    }
+  }
+}
+
+
+
+
