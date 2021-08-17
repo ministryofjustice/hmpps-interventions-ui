@@ -10,6 +10,7 @@ import config from '../../config'
 
 export default class ScheduleAppointmentPresenter {
   constructor(
+    private readonly formType: 'supplierAssessment' | 'actionPlan',
     private readonly referral: SentReferral,
     private readonly currentAppointment: InitialAssessmentAppointment | ActionPlanAppointment | null,
     private readonly currentAppointmentSummary: AppointmentSummary | null,
@@ -67,11 +68,12 @@ export default class ScheduleAppointmentPresenter {
     return config.features.npsOfficeLocationSelection.enabled
   }
 
-  get isInitialAssessmentAppointment(): boolean {
-    return this.currentAppointment === null
+  get allowSessionTypeSelection(): boolean {
+    return this.formType !== 'supplierAssessment'
   }
 
-  readonly initialAssessmentSessionType = 'ONE_TO_ONE'
+  // Supplier assessment appointments are always one to one
+  readonly sessionTypeWhenSelectionNotAllowed = 'ONE_TO_ONE'
 
   readonly fields = this.appointmentAlreadyAttended
     ? {

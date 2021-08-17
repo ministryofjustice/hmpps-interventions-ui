@@ -16,6 +16,7 @@ export default class ScheduleActionPlanSessionPresenter extends ScheduleAppointm
     serverError: FormValidationError | null = null
   ) {
     super(
+      'actionPlan',
       referral,
       currentAppointment,
       currentAppointmentSummary,

@@ -671,6 +671,7 @@ export default class ServiceProviderReferralsController {
             ? `/service-provider/referrals/${referralId}/supplier-assessment`
             : undefined
           return new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             currentAppointment,
             appointmentSummary,
