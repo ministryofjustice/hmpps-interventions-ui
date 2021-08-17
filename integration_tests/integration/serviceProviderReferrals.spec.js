@@ -1644,6 +1644,12 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('Initial assessment added')
 
+          const hmppsAuthUser = hmppsAuthUserFactory.build({
+            firstName: 'John',
+            lastName: 'Smith',
+            username: 'john.smith',
+          })
+          cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
           const submittedAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
@@ -1654,6 +1660,7 @@ describe('Service provider referrals dashboard', () => {
                 additionalAttendanceInformation: 'Alex did not attend this session',
               },
               submitted: true,
+              submittedBy: { username: hmppsAuthUser.username, userId: hmppsAuthUser.username, authSource: 'auth' },
             },
           })
           supplierAssessment = supplierAssessmentFactory.build({
