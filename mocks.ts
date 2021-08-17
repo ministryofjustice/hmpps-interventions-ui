@@ -11,10 +11,14 @@ import draftReferralFactory from './testutils/factories/draftReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 import CommunityApiMocks from './mockApis/communityApi'
 import deliusConvictionFactory from './testutils/factories/deliusConviction'
+import AssessRisksAndNeedsServiceMocks from './mockApis/assessRisksAndNeedsService'
+import riskSummaryFactory from './testutils/factories/riskSummary'
+import supplementaryRiskInformationFactory from './testutils/factories/supplementaryRiskInformation'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
 const communityApiMocks = new CommunityApiMocks(wiremock, '')
+const assessRisksAndNeedsApiMocks = new AssessRisksAndNeedsServiceMocks(wiremock, '')
 
 export default async function setUpMocks(): Promise<void> {
   await wiremock.resetStubs()
@@ -148,7 +152,13 @@ export default async function setUpMocks(): Promise<void> {
       },
     })
   await Promise.all([
-    communityApiMocks.stubGetActiveConvictionsByCRN('CRN11', [deliusConvictionFactory.build()]),
+    assessRisksAndNeedsApiMocks.stubGetRiskSummary('CRN24', riskSummaryFactory.build()),
+    assessRisksAndNeedsApiMocks.stubGetSupplementaryRiskInformation(
+      '5f2debc5-4c6a-4972-84ce-0689b8f9ec52',
+      supplementaryRiskInformationFactory.build()
+    ),
+    communityApiMocks.stubGetActiveConvictionsByCRN('CRN24', [deliusConvictionFactory.build()]),
+    communityApiMocks.stubGetConvictionById('CRN24', 'null', deliusConvictionFactory.build()),
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
       1,

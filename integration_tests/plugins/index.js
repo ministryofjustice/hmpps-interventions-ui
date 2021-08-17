@@ -10,7 +10,7 @@ const auth = new AuthServiceMocks(wiremock)
 const tokenVerification = new TokenVerificationMocks(wiremock)
 const communityApi = new CommunityApiMocks(wiremock, '/community-api')
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
-const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock)
+const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock, '/assess-risks-and-needs')
 
 module.exports = on => {
   on('task', {
