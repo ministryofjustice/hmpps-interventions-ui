@@ -23,26 +23,6 @@ describe(AttendanceFeedbackPresenter, () => {
     }
   }
 
-  describe('sessionDetailsSummary', () => {
-    it('extracts the date and time from the appointmentTime and puts it in a SummaryList format', () => {
-      const appointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '2021-02-01T13:00:00Z',
-      })
-      const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
-
-      expect(presenter.sessionDetailsSummary).toEqual([
-        {
-          key: 'Date',
-          lines: ['01 Feb 2021'],
-        },
-        {
-          key: 'Time',
-          lines: ['13:00'],
-        },
-      ])
-    })
-  })
-
   describe('errorSummary', () => {
     const appointment = initialAssessmentAppointmentFactory.build()
 

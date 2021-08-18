@@ -5,7 +5,7 @@ import AttendanceFeedbackPresenter from './attendanceFeedbackPresenter'
 export default class AttendanceFeedbackView {
   constructor(private readonly presenter: AttendanceFeedbackPresenter) {}
 
-  private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.sessionDetailsSummary)
+  private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.appointmentSummary.appointmentSummaryList)
 
   private get radioButtonArgs(): Record<string, unknown> {
     return {

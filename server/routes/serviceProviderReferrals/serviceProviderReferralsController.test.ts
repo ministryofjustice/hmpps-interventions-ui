@@ -1056,6 +1056,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
     const appointment = actionPlanAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
     })
 
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
@@ -1071,8 +1073,8 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
       .expect(res => {
         expect(res.text).toContain('Add attendance feedback')
         expect(res.text).toContain('Session details')
-        expect(res.text).toContain('01 Feb 2021')
-        expect(res.text).toContain('13:00')
+        expect(res.text).toContain('1 February 2021')
+        expect(res.text).toContain('1:00pm to 2:00pm')
       })
   })
 })
@@ -1213,6 +1215,8 @@ describe('GET /service-provider/action-plan:actionPlanId/appointment/:sessionNum
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
     const appointment = actionPlanAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
     })
 
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
@@ -1349,6 +1353,9 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
     const deliusServiceUser = deliusServiceUserFactory.build()
 
     const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
       sessionNumber: 1,
       sessionFeedback: {
         attendance: {
@@ -2180,6 +2187,8 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
     const referral = sentReferralFactory.assigned().build()
     const appointment = initialAssessmentAppointmentFactory.build({
       appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
     })
     const supplierAssessment = supplierAssessmentFactory.build({
       appointments: [appointment],
@@ -2195,8 +2204,8 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
       .expect(res => {
         expect(res.text).toContain('Add feedback')
         expect(res.text).toContain('Appointment details')
-        expect(res.text).toContain('01 Feb 2021')
-        expect(res.text).toContain('13:00')
+        expect(res.text).toContain('1 February 2021')
+        expect(res.text).toContain('1:00pm to 2:00pm')
       })
   })
   it('renders an error if there is no current appointment for the supplier assessment', async () => {

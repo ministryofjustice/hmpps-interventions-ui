@@ -1632,8 +1632,8 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
 
-          cy.contains('24 Mar 2021')
-          cy.contains('09:02')
+          cy.contains('24 March 2021')
+          cy.contains('9:02am to 10:17am')
           cy.contains('Did Alex attend the initial assessment appointment?')
           cy.contains('No')
           cy.contains("Add additional information about Alex's attendance:")
@@ -1767,8 +1767,8 @@ describe('Service provider referrals dashboard', () => {
             'equal',
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
-          cy.contains('24 Mar 2021')
-          cy.contains('09:02')
+          cy.contains('24 March 2021')
+          cy.contains('9:02am to 10:17am')
           cy.contains('Did Alex attend the initial assessment appointment?')
           cy.contains('Yes, they were on time')
           cy.contains("Add additional information about Alex's attendance:")

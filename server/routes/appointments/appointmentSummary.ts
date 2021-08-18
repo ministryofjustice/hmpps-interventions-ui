@@ -1,27 +1,37 @@
 import { SummaryListItem } from '../../utils/summaryList'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import PresenterUtils from '../../utils/presenterUtils'
-import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import { InitialAssessmentAppointment, ActionPlanAppointment } from '../../models/appointment'
+import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
+import Address from '../../models/address'
 
+interface Caseworker {
+  username?: string
+  firstName?: string
+  lastName?: string
+}
 export default class AppointmentSummary {
   constructor(
     private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment,
-    private readonly assignedCaseworker: AuthUserDetails | null = null
+    private readonly assignedCaseworker: Caseworker | null = null
   ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
 
   get appointmentSummaryList(): SummaryListItem[] {
-    return [
-      this.assignedCaseworker !== null
-        ? { key: 'Caseworker', lines: [`${this.assignedCaseworker.firstName} ${this.assignedCaseworker.lastName}`] }
-        : null,
-      {
+    const summary: SummaryListItem[] = []
+    const caseworkerName = this.assignedCaseworkerName
+    if (caseworkerName !== null) {
+      summary.push({ key: 'Caseworker', lines: [caseworkerName] })
+    }
+    if (this.appointmentDecorator.britishDay) {
+      summary.push({
         key: 'Date',
         lines: [PresenterUtils.govukFormattedDate(this.appointmentDecorator.britishDay!)],
-      },
-      {
+      })
+    }
+    if (this.appointmentDecorator.britishTime && this.appointmentDecorator.britishEndsAtTime) {
+      summary.push({
         key: 'Time',
         lines: [
           PresenterUtils.formattedTimeRange(
@@ -29,17 +39,34 @@ export default class AppointmentSummary {
             this.appointmentDecorator.britishEndsAtTime!
           ),
         ],
-      },
-      {
+      })
+    }
+    if (this.appointment.appointmentDeliveryType) {
+      summary.push({
         key: 'Method',
-        lines: [this.deliveryMethod],
-      },
-      this.addressLines === null ? null : { key: 'Address', lines: this.addressLines },
-    ].flatMap(val => (val === null ? [] : [val]))
+        lines: [this.deliveryMethod(this.appointment.appointmentDeliveryType)],
+      })
+    }
+    if (this.appointment.appointmentDeliveryAddress) {
+      summary.push({ key: 'Address', lines: this.addressLines(this.appointment.appointmentDeliveryAddress) })
+    }
+    return summary
   }
 
-  private get deliveryMethod(): string {
-    switch (this.appointment.appointmentDeliveryType) {
+  private get assignedCaseworkerName(): string | null {
+    if (this.assignedCaseworker?.firstName || this.assignedCaseworker?.lastName) {
+      const firstName = this.assignedCaseworker.firstName ? this.assignedCaseworker.firstName : ''
+      const lastName = this.assignedCaseworker.lastName ? this.assignedCaseworker.lastName : ''
+      return `${firstName} ${lastName}`.trim()
+    }
+    if (this.assignedCaseworker?.username) {
+      return this.assignedCaseworker.username
+    }
+    return null
+  }
+
+  private deliveryMethod(appointmentDeliveryType: AppointmentDeliveryType): string {
+    switch (appointmentDeliveryType) {
       case 'PHONE_CALL':
         return 'Phone call'
       case 'VIDEO_CALL':
@@ -50,16 +77,11 @@ export default class AppointmentSummary {
       case 'IN_PERSON_MEETING_OTHER':
         return 'In-person meeting'
       default:
-        throw new Error(`Unexpected delivery type ${this.appointment.appointmentDeliveryType}`)
+        throw new Error(`Unexpected delivery type ${appointmentDeliveryType}`)
     }
   }
 
-  private get addressLines(): string[] | null {
-    if (this.appointment.appointmentDeliveryAddress === null) {
-      return null
-    }
-
-    const address = this.appointment.appointmentDeliveryAddress
+  private addressLines(address: Address): string[] {
     return [
       address.firstAddressLine,
       address.secondAddressLine,

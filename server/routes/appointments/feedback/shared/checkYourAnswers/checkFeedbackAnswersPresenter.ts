@@ -1,7 +1,6 @@
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
-import DateUtils from '../../../../../utils/dateUtils'
-import { SummaryListItem } from '../../../../../utils/summaryList'
 import FeedbackAnswersPresenter from '../viewFeedback/feedbackAnswersPresenter'
+import AppointmentSummary from '../../../appointmentSummary'
 
 export default abstract class CheckFeedbackAnswersPresenter {
   protected constructor(protected appointment: ActionPlanAppointment | InitialAssessmentAppointment) {}
@@ -16,14 +15,5 @@ export default abstract class CheckFeedbackAnswersPresenter {
     title: `Confirm feedback`,
   }
 
-  readonly sessionDetailsSummary: SummaryListItem[] = [
-    {
-      key: 'Date',
-      lines: [DateUtils.getDateStringFromDateTimeString(this.appointment.appointmentTime)],
-    },
-    {
-      key: 'Time',
-      lines: [DateUtils.getTimeStringFromDateTimeString(this.appointment.appointmentTime)],
-    },
-  ]
+  readonly appointmentSummary = new AppointmentSummary(this.appointment, null)
 }
