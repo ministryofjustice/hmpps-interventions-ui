@@ -864,20 +864,6 @@ describe(PresenterUtils, () => {
     })
   })
 
-  describe('govukFormattedDate', () => {
-    it('returns a formatted date', () => {
-      const date = CalendarDay.fromComponents(4, 6, 2017)!
-      expect(PresenterUtils.govukFormattedDate(date)).toEqual('4 June 2017')
-    })
-  })
-
-  describe('govukShortFormattedDate', () => {
-    it('returns a formatted date', () => {
-      const date = CalendarDay.fromComponents(4, 6, 2017)!
-      expect(PresenterUtils.govukShortFormattedDate(date)).toEqual('4 Jun 2017')
-    })
-  })
-
   describe('fullName', () => {
     // There’s probably going to turn out to be a whole bunch of nuance here but let’s start with this
     it('returns the service user’s first name followed by last name', () => {
@@ -899,26 +885,6 @@ describe(PresenterUtils, () => {
     it('returns a value which, when lexicographically sorted, gives a (last name, first name) sort order', () => {
       const { serviceUser } = draftReferralFactory.build({ serviceUser: { firstName: 'Daniel', lastName: 'Grove' } })
       expect(PresenterUtils.fullNameSortValue(serviceUser)).toEqual('grove, daniel')
-    })
-  })
-
-  describe('formattedTime', () => {
-    it('returns a 12-hour description of the time', () => {
-      expect(PresenterUtils.formattedTime(ClockTime.fromTwentyFourHourComponents(9, 5, 0)!)).toEqual('9:05am')
-      expect(PresenterUtils.formattedTime(ClockTime.fromTwentyFourHourComponents(10, 30, 0)!)).toEqual('10:30am')
-      expect(PresenterUtils.formattedTime(ClockTime.fromTwentyFourHourComponents(12, 30, 0)!)).toEqual('12:30pm')
-      expect(PresenterUtils.formattedTime(ClockTime.fromTwentyFourHourComponents(15, 45, 0)!)).toEqual('3:45pm')
-    })
-  })
-
-  describe('formattedTimeRange', () => {
-    it('returns a 12-hour description of the period from the start time to the end time', () => {
-      expect(
-        PresenterUtils.formattedTimeRange(
-          ClockTime.fromTwentyFourHourComponents(10, 30, 0)!,
-          ClockTime.fromTwentyFourHourComponents(15, 45, 0)!
-        )
-      ).toEqual('10:30am to 3:45pm')
     })
   })
 

@@ -72,7 +72,7 @@ export default class ActionPlanPresenter {
     return this.approvedActionPlanSummaries
       .sort((summaryA, summaryB) => new Date(summaryB.approvedAt).getTime() - new Date(summaryA.approvedAt).getTime())
       .map(summary => ({
-        approvalDate: dateUtils.getDateStringFromDateTimeString(summary.approvedAt),
+        approvalDate: dateUtils.formattedDate(summary.approvedAt, { month: 'short' }),
       }))
   }
 

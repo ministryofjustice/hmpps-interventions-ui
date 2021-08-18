@@ -85,7 +85,9 @@ export default class InterventionProgressPresenter {
 
         return {
           sessionNumber: appointment.sessionNumber,
-          appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
+          appointmentTime: appointment.appointmentTime
+            ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short' })
+            : '',
           ...sessionTableParams,
         }
       })

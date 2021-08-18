@@ -10,8 +10,8 @@ import Intervention from '../../../models/intervention'
 import InterventionDecorator from '../../../decorators/interventionDecorator'
 import DeliusConviction from '../../../models/delius/deliusConviction'
 import SentencePresenter from '../relevant-sentence/sentencePresenter'
-import PresenterUtils from '../../../utils/presenterUtils'
 import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
+import DateUtils from '../../../utils/dateUtils'
 
 export default class CheckAnswersPresenter {
   constructor(
@@ -173,7 +173,7 @@ export default class CheckAnswersPresenter {
       summary: [
         {
           key: 'Date',
-          lines: [PresenterUtils.govukFormattedDate(completionDeadline)],
+          lines: [DateUtils.formattedDate(completionDeadline)],
           changeLink: `/referrals/${this.referral.id}/completion-deadline`,
         },
       ],

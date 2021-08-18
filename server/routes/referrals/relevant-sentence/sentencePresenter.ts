@@ -1,5 +1,5 @@
 import DeliusConviction from '../../../models/delius/deliusConviction'
-import PresenterUtils from '../../../utils/presenterUtils'
+import DateUtils from '../../../utils/dateUtils'
 
 export default class SentencePresenter {
   readonly category: string
@@ -22,7 +22,8 @@ export default class SentencePresenter {
     this.category = mainOffence.detail.mainCategoryDescription
     this.subcategory = mainOffence.detail.subCategoryDescription
 
-    this.endOfSentenceDate =
-      PresenterUtils.govukFormattedDateFromStringOrNull(this.conviction.sentence.expectedSentenceEndDate) ?? 'Not found'
+    this.endOfSentenceDate = this.conviction?.sentence?.expectedSentenceEndDate
+      ? DateUtils.formattedDate(this.conviction.sentence.expectedSentenceEndDate)
+      : 'Not found'
   }
 }

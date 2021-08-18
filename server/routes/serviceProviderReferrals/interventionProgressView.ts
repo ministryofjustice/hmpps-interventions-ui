@@ -23,9 +23,7 @@ export default class InterventionProgressView {
     let cancellationCommentsHTML = ''
     let notConcludedWarningHTML = ''
     if (this.presenter.referralEndedFields.endRequestedAt && this.presenter.referralEndedFields.endRequestedReason) {
-      const formattedEndDate = DateUtils.getDateStringFromDateTimeString(
-        this.presenter.referralEndedFields.endRequestedAt
-      )
+      const formattedEndDate = DateUtils.formattedDate(this.presenter.referralEndedFields.endRequestedAt)
       cancellationReasonHTML = `
         <p>
             The probation practitioner ended this intervention on ${formattedEndDate} 

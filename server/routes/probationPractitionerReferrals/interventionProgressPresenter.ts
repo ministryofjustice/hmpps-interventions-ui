@@ -62,12 +62,10 @@ export default class InterventionProgressPresenter {
   }
 
   get referralEndRequestedText(): string {
-    const shortenedDateString = DateUtils.getDateStringFromDateTimeString(this.referral.endRequestedAt)
-
-    if (!shortenedDateString) {
+    if (!this.referral.endRequestedAt) {
       return ''
     }
-
+    const shortenedDateString = DateUtils.formattedDate(this.referral.endRequestedAt)
     return `You requested to end this service on ${shortenedDateString}.`
   }
 
@@ -91,7 +89,9 @@ export default class InterventionProgressPresenter {
 
       return {
         sessionNumber: appointment.sessionNumber,
-        appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
+        appointmentTime: appointment.appointmentTime
+          ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short' })
+          : '',
         tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
         link: sessionTableParams.link,
       }

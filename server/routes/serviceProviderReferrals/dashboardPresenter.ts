@@ -1,9 +1,9 @@
 import CalendarDay from '../../utils/calendarDay'
-import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import utils from '../../utils/utils'
+import DateUtils from '../../utils/dateUtils'
 
 export default class DashboardPresenter {
   constructor(private readonly referralsSummary: ServiceProviderSentReferralSummary[]) {}
@@ -23,7 +23,7 @@ export default class DashboardPresenter {
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
     return [
       {
-        text: PresenterUtils.govukShortFormattedDate(sentAtDay),
+        text: DateUtils.formattedDate(sentAtDay, { month: 'short' }),
         sortValue: sentAtDay.iso8601,
         href: null,
       },

@@ -44,7 +44,7 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
           const presenter = new PostSessionFeedbackConfirmationPresenter(actionPlan, appointments[0], appointments[1])
 
           expect(presenter.text.whatHappensNext).toEqual(
-            'You can now deliver the next session scheduled for 31 Mar 2021.'
+            'You can now deliver the next session scheduled for 31 March 2021.'
           )
         })
       })
@@ -81,7 +81,6 @@ describe(PostSessionFeedbackConfirmationPresenter, () => {
               },
             }),
             actionPlanAppointment.build({
-              appointmentTime: '',
               durationInMinutes: 60,
               sessionNumber: 2,
             }),

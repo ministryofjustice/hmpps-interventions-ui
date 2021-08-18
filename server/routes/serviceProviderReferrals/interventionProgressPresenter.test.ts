@@ -156,7 +156,7 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.sessionTableRows).toEqual([
           {
             sessionNumber: 1,
-            appointmentTime: '07 Dec 2020, 13:00',
+            appointmentTime: '1:00pm on 7 Dec 2020',
             statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
             links: [
               {

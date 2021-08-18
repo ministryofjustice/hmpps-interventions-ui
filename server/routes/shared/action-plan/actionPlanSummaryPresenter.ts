@@ -19,8 +19,8 @@ export default class ActionPlanSummaryPresenter {
 
   readonly text = {
     actionPlanStatus: this.actionPlanStatus,
-    actionPlanSubmittedDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.submittedAt || null),
-    actionPlanApprovalDate: DateUtils.getDateStringFromDateTimeString(this.actionPlan?.approvedAt || null),
+    actionPlanSubmittedDate: this.actionPlan?.submittedAt ? DateUtils.formattedDate(this.actionPlan?.submittedAt) : '',
+    actionPlanApprovalDate: this.actionPlan?.approvedAt ? DateUtils.formattedDate(this.actionPlan?.approvedAt) : '',
   }
 
   private get actionPlanStatus(): string {

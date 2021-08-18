@@ -1343,7 +1343,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNu
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('You can now deliver the next session scheduled for 31 Mar 2021.')
+          expect(res.text).toContain('You can now deliver the next session scheduled for 31 March 2021.')
         })
     })
   })

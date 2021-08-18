@@ -209,19 +209,19 @@ describe('Probation Practitioner monitor journey', () => {
         .should('deep.equal', [
           {
             'Session details': 'Session 1',
-            'Date and time': '24 Mar 2021, 09:02',
+            'Date and time': '9:02am on 24 Mar 2021',
             Status: 'completed',
             Action: 'View feedback form',
           },
           {
             'Session details': 'Session 2',
-            'Date and time': '30 Apr 2021, 10:02',
+            'Date and time': '10:02am on 30 Apr 2021',
             Status: 'did not attend',
             Action: 'View feedback form',
           },
           {
             'Session details': 'Session 3',
-            'Date and time': '31 May 2021, 10:02',
+            'Date and time': '10:02am on 31 May 2021',
             Status: 'scheduled',
             Action: '',
           },
@@ -394,7 +394,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.visit(`/probation-practitioner/referrals/${referralWithEndRequested.id}/progress`)
 
-      cy.contains('You requested to end this service on 04 Apr 2021')
+      cy.contains('You requested to end this service on 4 April 2021')
     })
   })
 
@@ -565,10 +565,10 @@ describe('Probation Practitioner monitor journey', () => {
         .getTable()
         .should('deep.equal', [
           {
-            'Approval date': '04 Jun 2021',
+            'Approval date': '4 Jun 2021',
           },
           {
-            'Approval date': '03 Jun 2021',
+            'Approval date': '3 Jun 2021',
           },
         ])
     })
