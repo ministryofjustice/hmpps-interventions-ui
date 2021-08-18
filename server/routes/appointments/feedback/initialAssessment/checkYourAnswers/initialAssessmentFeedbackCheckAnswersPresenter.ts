@@ -2,6 +2,7 @@ import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import CheckFeedbackAnswersPresenter from '../../shared/checkYourAnswers/checkFeedbackAnswersPresenter'
 import { InitialAssessmentAppointment } from '../../../../../models/appointment'
 import FeedbackAnswersPresenter from '../../shared/viewFeedback/feedbackAnswersPresenter'
+import AppointmentSummary from '../../../appointmentSummary'
 
 export default class InitialAssessmentFeedbackCheckAnswersPresenter extends CheckFeedbackAnswersPresenter {
   readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
@@ -9,9 +10,10 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
   constructor(
     appointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
-    private readonly referralId: string
+    private readonly referralId: string,
+    readonly appointmentSummary: AppointmentSummary
   ) {
-    super(appointment)
+    super(appointment, appointmentSummary)
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
   }
 

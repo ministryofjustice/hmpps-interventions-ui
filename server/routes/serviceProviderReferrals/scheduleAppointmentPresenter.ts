@@ -6,15 +6,14 @@ import SentReferral from '../../models/sentReferral'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import { SummaryListItem } from '../../utils/summaryList'
-import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import config from '../../config'
 
 export default class ScheduleAppointmentPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly currentAppointment: InitialAssessmentAppointment | ActionPlanAppointment | null,
+    private readonly currentAppointmentSummary: AppointmentSummary | null,
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
-    private readonly assignedCaseworker: AuthUserDetails | null = null,
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
@@ -32,8 +31,8 @@ export default class ScheduleAppointmentPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   get appointmentSummary(): SummaryListItem[] {
-    if (this.appointmentAlreadyAttended) {
-      return new AppointmentSummary(this.currentAppointment!, this.assignedCaseworker).appointmentSummaryList
+    if (this.appointmentAlreadyAttended && this.currentAppointmentSummary) {
+      return this.currentAppointmentSummary.appointmentSummaryList
     }
     return []
   }

@@ -3,19 +3,24 @@ import initialAssessmentAppointmentFactory from '../../../testutils/factories/in
 import SupplierAssessmentAppointmentPresenter from './supplierAssessmentAppointmentPresenter'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
+import AppointmentSummary from '../appointments/appointmentSummary'
 
 describe(SupplierAssessmentAppointmentPresenter, () => {
   const referral = sentReferralFactory.build()
 
   describe('summary', () => {
-    describe('when the includeAssignee option is true', () => {
+    describe('when the assignee is included', () => {
       it('contains the name of the referral’s assignee', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
-        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, assignee, {
-          includeAssignee: true,
-          userType: 'probation-practitioner',
-        })
+        const presenter = new SupplierAssessmentAppointmentPresenter(
+          referral,
+          appointment,
+          new AppointmentSummary(appointment, assignee),
+          {
+            userType: 'probation-practitioner',
+          }
+        )
 
         expect(presenter.summary[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
       })
@@ -26,7 +31,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
         appointmentTime: '2021-03-09T11:00:00Z',
         durationInMinutes: 60,
       })
-      const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+      const presenter = new SupplierAssessmentAppointmentPresenter(
+        referral,
+        appointment,
+        new AppointmentSummary(appointment)
+      )
 
       expect(presenter.summary.slice(0, 2)).toEqual([
         { key: 'Date', lines: ['9 March 2021'] },
@@ -47,7 +56,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
     describe.each(deliveryTypesTable)('for a %s', (_, deliveryType, expectedDisplayValue) => {
       it('contains the method of the appointment', () => {
         const appointment = initialAssessmentAppointmentFactory.build({ appointmentDeliveryType: deliveryType })
-        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+        const presenter = new SupplierAssessmentAppointmentPresenter(
+          referral,
+          appointment,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.summary[2]).toEqual({ key: 'Method', lines: [expectedDisplayValue] })
       })
@@ -56,7 +69,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
     describe('when the appointment does not have a delivery address', () => {
       it('does not contain a row for the address', () => {
         const appointment = initialAssessmentAppointmentFactory.build({ appointmentDeliveryAddress: null })
-        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+        const presenter = new SupplierAssessmentAppointmentPresenter(
+          referral,
+          appointment,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.summary.map(row => row.key)).toEqual(['Date', 'Time', 'Method'])
       })
@@ -75,7 +92,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
         const appointment = initialAssessmentAppointmentFactory.build({
           appointmentDeliveryAddress: address,
         })
-        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+        const presenter = new SupplierAssessmentAppointmentPresenter(
+          referral,
+          appointment,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.summary[3]).toEqual({
           key: 'Address',
@@ -88,7 +109,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
           const appointment = initialAssessmentAppointmentFactory.build({
             appointmentDeliveryAddress: { ...address, secondAddressLine: null },
           })
-          const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+          const presenter = new SupplierAssessmentAppointmentPresenter(
+            referral,
+            appointment,
+            new AppointmentSummary(appointment)
+          )
 
           expect(presenter.summary[3]).toEqual({
             key: 'Address',
@@ -103,7 +128,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
     describe('when there is not yet any feedback recorded for the appointment', () => {
       it('returns a link to the scheduling page', () => {
         const appointment = initialAssessmentAppointmentFactory.newlyBooked().build()
-        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+        const presenter = new SupplierAssessmentAppointmentPresenter(
+          referral,
+          appointment,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.actionLink).toEqual({
           text: 'Change appointment details',
@@ -114,10 +143,15 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
       describe('when the readonly option is true', () => {
         it('returns null', () => {
           const appointment = initialAssessmentAppointmentFactory.newlyBooked().build()
-          const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null, {
-            readonly: true,
-            userType: 'probation-practitioner',
-          })
+          const presenter = new SupplierAssessmentAppointmentPresenter(
+            referral,
+            appointment,
+            new AppointmentSummary(appointment),
+            {
+              readonly: true,
+              userType: 'probation-practitioner',
+            }
+          )
 
           expect(presenter.actionLink).toBeNull()
         })
@@ -127,7 +161,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
     describe('when there is already feedback recorded for the appointment', () => {
       it('returns null', () => {
         const appointment = initialAssessmentAppointmentFactory.attended('yes').build()
-        const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, null)
+        const presenter = new SupplierAssessmentAppointmentPresenter(
+          referral,
+          appointment,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.actionLink).toBeNull()
       })
@@ -137,10 +175,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
   describe('backLinkHref', () => {
     describe('when user is a service-provider', () => {
       it('returns the URL of the service-provider intervention progress page', () => {
+        const appointment = initialAssessmentAppointmentFactory.build()
         const presenter = new SupplierAssessmentAppointmentPresenter(
           referral,
-          initialAssessmentAppointmentFactory.build(),
-          null,
+          appointment,
+          new AppointmentSummary(appointment),
           {
             userType: 'service-provider',
           }
@@ -152,10 +191,11 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
 
     describe('when user is a probation-practitioner', () => {
       it('returns the URL of the probation-practitioner intervention progress page', () => {
+        const appointment = initialAssessmentAppointmentFactory.build()
         const presenter = new SupplierAssessmentAppointmentPresenter(
           referral,
-          initialAssessmentAppointmentFactory.build(),
-          null,
+          appointment,
+          new AppointmentSummary(appointment),
           {
             userType: 'probation-practitioner',
           }

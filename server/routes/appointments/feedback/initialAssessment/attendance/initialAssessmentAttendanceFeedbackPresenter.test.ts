@@ -1,13 +1,18 @@
 import initialAssessmentAppointmentFactory from '../../../../../../testutils/factories/initialAssessmentAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 import InitialAssessmentAttendanceFeedbackPresenter from './initialAssessmentAttendanceFeedbackPresenter'
+import AppointmentSummary from '../../../appointmentSummary'
 
 describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
   describe('text', () => {
     it('contains a title including the name of the service category and a subtitle, and the attendance questions', () => {
       const appointment = initialAssessmentAppointmentFactory.build()
       const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-      const presenter = new InitialAssessmentAttendanceFeedbackPresenter(appointment, serviceUser)
+      const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
+        appointment,
+        serviceUser,
+        new AppointmentSummary(appointment)
+      )
 
       expect(presenter.text).toMatchObject({
         title: 'Add feedback',
@@ -27,6 +32,7 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
         const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
+          new AppointmentSummary(appointment),
           null,
           null,
           'test-referral-id'
@@ -40,7 +46,11 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
       it('is null', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const serviceUser = deliusServiceUserFactory.build()
-        const presenter = new InitialAssessmentAttendanceFeedbackPresenter(appointment, serviceUser)
+        const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
+          appointment,
+          serviceUser,
+          new AppointmentSummary(appointment)
+        )
 
         expect(presenter.backLinkHref).toEqual(null)
       })

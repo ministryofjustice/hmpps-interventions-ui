@@ -1,5 +1,4 @@
 import DeliusServiceUser from '../../../../models/delius/deliusServiceUser'
-import User from '../../../../models/hmppsAuth/user'
 import FeedbackAnswersPresenter from '../../../appointments/feedback/shared/viewFeedback/feedbackAnswersPresenter'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../models/appointment'
 import AppointmentSummary from '../../../appointments/appointmentSummary'
@@ -9,11 +8,11 @@ export default class SubmittedFeedbackPresenter {
 
   constructor(
     protected readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+    readonly appointmentSummary: AppointmentSummary,
     private readonly serviceUser: DeliusServiceUser,
     private readonly userType: 'probation-practitioner' | 'service-provider',
     private readonly referralId: string,
-    private readonly actionPlanId: string | null = null,
-    private readonly assignedCaseworker: User | null = null
+    private readonly actionPlanId: string | null = null
   ) {
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
   }
@@ -23,6 +22,4 @@ export default class SubmittedFeedbackPresenter {
   readonly text = {
     title: `View feedback`,
   }
-
-  readonly appointmentSummary = new AppointmentSummary(this.appointment, this.assignedCaseworker)
 }

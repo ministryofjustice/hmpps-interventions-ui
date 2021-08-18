@@ -3,6 +3,7 @@ import initialAssessmentAppointmentFactory from '../../../testutils/factories/in
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import authUserDetailsFactory from '../../../testutils/factories/hmppsAuthUser'
+import AppointmentSummary from '../appointments/appointmentSummary'
 
 describe(ScheduleAppointmentPresenter, () => {
   const referral = sentReferralFactory.build()
@@ -11,7 +12,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('title', () => {
       describe('when the session has not yet been scheduled', () => {
         it('returns an appropriate title', () => {
-          const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+          const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
 
           expect(presenter.text).toEqual({ title: 'Add appointment details' })
         })
@@ -19,7 +20,12 @@ describe(ScheduleAppointmentPresenter, () => {
 
       describe('when the session has already been scheduled', () => {
         it('returns an appropriate title', () => {
-          const presenter = new ScheduleAppointmentPresenter(referral, initialAssessmentAppointmentFactory.build(), [])
+          const presenter = new ScheduleAppointmentPresenter(
+            referral,
+            initialAssessmentAppointmentFactory.build(),
+            null,
+            []
+          )
 
           expect(presenter.text).toEqual({ title: 'Change appointment details' })
         })
@@ -30,6 +36,7 @@ describe(ScheduleAppointmentPresenter, () => {
           const presenter = new ScheduleAppointmentPresenter(
             referral,
             initialAssessmentAppointmentFactory.attended('no').build(),
+            null,
             []
           )
           expect(presenter.text).toEqual({ title: 'Add appointment details' })
@@ -41,7 +48,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('appointmentSummary', () => {
     describe('when the appointment has not yet been scheduled', () => {
       it('should return an empty summary', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
         expect(presenter.appointmentSummary).toEqual([])
       })
     })
@@ -49,15 +56,19 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when the appointment has been attended', () => {
       describe('when an assigned caseworker is provided', () => {
         it('should return appointment summary with caseworker details', () => {
+          const appointment = initialAssessmentAppointmentFactory.attended('no').build({
+            appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
+            durationInMinutes: 60,
+            appointmentDeliveryType: 'VIDEO_CALL',
+          })
           const presenter = new ScheduleAppointmentPresenter(
             referral,
-            initialAssessmentAppointmentFactory.attended('no').build({
-              appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
-              durationInMinutes: 60,
-              appointmentDeliveryType: 'VIDEO_CALL',
-            }),
-            [],
-            authUserDetailsFactory.build({ firstName: 'firstName', lastName: 'lastName' })
+            appointment,
+            new AppointmentSummary(
+              appointment,
+              authUserDetailsFactory.build({ firstName: 'firstName', lastName: 'lastName' })
+            ),
+            []
           )
           expect(presenter.appointmentSummary).toEqual([
             { key: 'Caseworker', lines: ['firstName lastName'] },
@@ -69,13 +80,15 @@ describe(ScheduleAppointmentPresenter, () => {
       })
       describe('when no assigned caseworker is provided', () => {
         it('should return appointment summary without caseworker details', () => {
+          const appointment = initialAssessmentAppointmentFactory.attended('no').build({
+            appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
+            durationInMinutes: 60,
+            appointmentDeliveryType: 'VIDEO_CALL',
+          })
           const presenter = new ScheduleAppointmentPresenter(
             referral,
-            initialAssessmentAppointmentFactory.attended('no').build({
-              appointmentTime: new Date('2021-01-02T12:00:00Z').toISOString(),
-              durationInMinutes: 60,
-              appointmentDeliveryType: 'VIDEO_CALL',
-            }),
+            appointment,
+            new AppointmentSummary(appointment),
             [],
             null
           )
@@ -92,14 +105,19 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('appointmentAlreadyAttended', () => {
     describe('when the appointment has not yet been scheduled', () => {
       it('should return false', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
         expect(presenter.appointmentAlreadyAttended).toBe(false)
       })
     })
 
     describe('when the appointment has been scheduled but not yet attended', () => {
       it('should return false', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, initialAssessmentAppointmentFactory.build(), [])
+        const presenter = new ScheduleAppointmentPresenter(
+          referral,
+          initialAssessmentAppointmentFactory.build(),
+          null,
+          []
+        )
         expect(presenter.appointmentAlreadyAttended).toBe(false)
       })
     })
@@ -110,6 +128,7 @@ describe(ScheduleAppointmentPresenter, () => {
           const presenter = new ScheduleAppointmentPresenter(
             referral,
             initialAssessmentAppointmentFactory.attended('no').build(),
+            null,
             []
           )
           expect(presenter.appointmentAlreadyAttended).toBe(true)
@@ -121,6 +140,7 @@ describe(ScheduleAppointmentPresenter, () => {
           const presenter = new ScheduleAppointmentPresenter(
             referral,
             actionPlanAppointmentFactory.attended('no').build(),
+            null,
             []
           )
           expect(presenter.appointmentAlreadyAttended).toBe(false)
@@ -136,8 +156,8 @@ describe(ScheduleAppointmentPresenter, () => {
         const presenter = new ScheduleAppointmentPresenter(
           referral,
           appointment,
-          [],
           null,
+          [],
           {
             errors: [
               {
@@ -176,8 +196,8 @@ describe(ScheduleAppointmentPresenter, () => {
         const presenter = new ScheduleAppointmentPresenter(
           referral,
           appointment,
-          [],
           null,
+          [],
           {
             errors: [
               {
@@ -198,7 +218,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
-        const presenter = new ScheduleAppointmentPresenter(referral, appointment, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
 
         expect(presenter.errorSummary).toEqual(null)
       })
@@ -208,7 +228,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('fields', () => {
     describe('with a null appointment', () => {
       it('returns empty fields', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
 
         expect(presenter.fields).toEqual({
           date: {
@@ -253,6 +273,7 @@ describe(ScheduleAppointmentPresenter, () => {
         const presenter = new ScheduleAppointmentPresenter(
           referral,
           initialAssessmentAppointmentFactory.attended('no').build(),
+          null,
           []
         )
 
@@ -309,7 +330,7 @@ describe(ScheduleAppointmentPresenter, () => {
             postCode: 'SY4 0RE',
           },
         })
-        const presenter = new ScheduleAppointmentPresenter(referral, appointment, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
 
         expect(presenter.fields).toEqual({
           date: {
@@ -364,7 +385,7 @@ describe(ScheduleAppointmentPresenter, () => {
           appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
           npsOfficeCode: 'CRS00001',
         })
-        const presenter = new ScheduleAppointmentPresenter(referral, appointment, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
 
         expect(presenter.fields).toEqual({
           date: {
@@ -408,7 +429,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('backLinkHref', () => {
     describe('when overrideBackLinkHref is not provided to the constructor', () => {
       it('returns the URL of the intervention progress page', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
 
         expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
       })
@@ -416,7 +437,7 @@ describe(ScheduleAppointmentPresenter, () => {
 
     describe('when overrideBackLinkHref is provided to the constructor', () => {
       it('returns the overrideBacklinkHref', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, [], null, null, null, null, '/example-href')
+        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [], null, null, null, '/example-href')
 
         expect(presenter.backLinkHref).toEqual('/example-href')
       })
@@ -425,14 +446,14 @@ describe(ScheduleAppointmentPresenter, () => {
 
   describe('isInitialAssessmentAppointment', () => {
     it('returns true when there is no "current appointment" passed in', () => {
-      const presenter = new ScheduleAppointmentPresenter(referral, null, [])
+      const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
 
       expect(presenter.isInitialAssessmentAppointment).toEqual(true)
     })
 
     it('returns false when a "current appointment" is passed in', () => {
       const appointment = initialAssessmentAppointmentFactory.build()
-      const presenter = new ScheduleAppointmentPresenter(referral, appointment, [])
+      const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
 
       expect(presenter.isInitialAssessmentAppointment).toEqual(false)
     })
