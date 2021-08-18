@@ -66,6 +66,10 @@ Cypress.Commands.add('stubGetActionPlan', (id, responseJson) => {
   cy.task('stubGetActionPlan', { id, responseJson })
 })
 
+Cypress.Commands.add('stubApproveActionPlan', (id, responseJson) => {
+  cy.task('stubApproveActionPlan', { id, responseJson })
+})
+
 Cypress.Commands.add('stubGetApprovedActionPlanSummaries', (id, responseJson) => {
   cy.task('stubGetApprovedActionPlanSummaries', { id, responseJson })
 })

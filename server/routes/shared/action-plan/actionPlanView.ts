@@ -1,5 +1,5 @@
 import ActionPlanPresenter from './actionPlanPresenter'
-import { CheckboxesArgs, InsetTextArgs } from '../../../utils/govukFrontendTypes'
+import { CheckboxesArgs, InsetTextArgs, TableArgs } from '../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../utils/viewUtils'
 import ActionPlanSummaryView from './actionPlanSummaryView'
 
@@ -39,6 +39,13 @@ export default class ActionPlanView {
     }
   }
 
+  get approvedActionPlansTableArgs(): TableArgs | null {
+    return {
+      head: [{ text: 'Approval date' }],
+      rows: this.presenter.actionPlanVersions.map(actionPlan => [{ text: actionPlan.approvalDate }]),
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'shared/actionPlan',
@@ -47,6 +54,7 @@ export default class ActionPlanView {
         backLinkArgs: this.backLinkArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
+        approvedActionPlansTableArgs: this.approvedActionPlansTableArgs,
         insetTextActivityArgs: this.insetTextActivityArgs.bind(this),
         confirmApprovalCheckboxArgs: this.confirmApprovalCheckboxArgs,
       },

@@ -36,6 +36,7 @@ import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppoi
 import FileUtils from '../../utils/fileUtils'
 import DraftsService from '../../services/draftsService'
 import DraftCancellationData from './draftCancellationData'
+import config from '../../config'
 
 export default class ProbationPractitionerReferralsController {
   constructor(
@@ -493,7 +494,7 @@ export default class ProbationPractitionerReferralsController {
       })
     }
 
-    const [serviceCategories, actionPlan, serviceUser] = await Promise.all([
+    const [serviceCategories, actionPlan, serviceUser, actionPlanVersions] = await Promise.all([
       Promise.all(
         sentReferral.referral.serviceCategoryIds.map(id =>
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
@@ -501,6 +502,9 @@ export default class ProbationPractitionerReferralsController {
       ),
       this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      config.features.previouslyApprovedActionPlans
+        ? this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id)
+        : [],
     ])
 
     const presenter = new ActionPlanPresenter(
@@ -508,7 +512,8 @@ export default class ProbationPractitionerReferralsController {
       actionPlan,
       serviceCategories,
       'probation-practitioner',
-      formValidationError
+      formValidationError,
+      actionPlanVersions
     )
     const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)

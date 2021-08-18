@@ -2,6 +2,7 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
+import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
 import interventionFactory from '../../testutils/factories/intervention'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
@@ -9,6 +10,7 @@ import supplierAssessmentFactory from '../../testutils/factories/supplierAssessm
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
+import actionPlanActivity from '../../testutils/factories/actionPlanActivity'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -460,6 +462,115 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('Blackpool')
       cy.contains('Lancashire')
       cy.contains('SY4 0RE')
+    })
+  })
+
+  describe('Action plans', () => {
+    it('the PP can view and approve an action plan', () => {
+      cy.stubGetSentReferralsForUserToken([])
+
+      const serviceCategory = serviceCategoryFactory.build()
+
+      const intervention = interventionFactory.build({
+        serviceCategories: [serviceCategory],
+      })
+
+      const hmppsAuthUser = hmppsAuthUserFactory.build({
+        firstName: 'Liam',
+        lastName: 'Johnson',
+        username: 'liam.johnson',
+      })
+
+      const actionPlanId = '053fd4f6-ec78-4655-99b8-02b2e867387b'
+
+      const referral = sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: intervention.id,
+          serviceCategoryIds: [serviceCategory.id],
+        },
+        actionPlanId,
+        assignedTo: { username: hmppsAuthUser.username },
+      })
+
+      const appointment = initialAssessmentAppointmentFactory.attended().build()
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+
+      const activities = [
+        actionPlanActivity.build({
+          description: 'Achieve a thing',
+        }),
+      ]
+
+      const actionPlan = actionPlanFactory.submitted().build({
+        id: actionPlanId,
+        referralId: referral.id,
+        numberOfSessions: 4,
+        activities,
+      })
+
+      const approvedActionPlanSummaries = [
+        approvedActionPlanSummaryFactory.build({
+          approvedAt: '2021-06-03T00:30:00+01:00',
+        }),
+        approvedActionPlanSummaryFactory.build({
+          approvedAt: '2021-06-04T00:30:00+01:00',
+        }),
+      ]
+
+      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+      cy.stubGetActionPlanAppointments(actionPlanId, actionPlanAppointmentFactory.buildList(4))
+      cy.stubGetActionPlan(actionPlanId, actionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubApproveActionPlan(actionPlanId, actionPlan)
+      cy.stubGetApprovedActionPlanSummaries(referral.id, approvedActionPlanSummaries)
+
+      cy.login()
+
+      cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
+
+      cy.contains('View action plan').click()
+
+      cy.get('h1').contains('View action plan')
+
+      cy.contains('Achieve a thing')
+      cy.contains('Suggested number of sessions: 4')
+
+      cy.contains('I confirm that I want to approve the action plan').click()
+      cy.contains('Approve').click()
+
+      cy.contains('Action plan approved')
+
+      const approvedActionPlan = actionPlanFactory.approved().build({
+        id: actionPlanId,
+        referralId: referral.id,
+        activities,
+        numberOfSessions: 4,
+      })
+
+      cy.stubGetActionPlan(actionPlanId, approvedActionPlan)
+      cy.contains('Return to intervention progress').click()
+      cy.contains('Action plan status').next().contains('Approved')
+
+      cy.contains('View action plan').click()
+      cy.contains('Action plan versions')
+
+      cy.get('table')
+        .getTable()
+        .should('deep.equal', [
+          {
+            'Approval date': '04 Jun 2021',
+          },
+          {
+            'Approval date': '03 Jun 2021',
+          },
+        ])
     })
   })
 })

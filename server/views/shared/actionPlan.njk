@@ -7,75 +7,85 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}%}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% block pageTitle %}
-    HMPPS Interventions - GOV.UK
+  HMPPS Interventions - GOV.UK
 {% endblock %}
 
 {% block pageContent %}
-    {% block content %}
+  {% block content %}
     <div class="govuk-!-width-two-thirds">
-        {% if presenter.probationPractitionerBlockedFromViewing %}
+      {% if presenter.probationPractitionerBlockedFromViewing %}
 
-            {{ govukWarningText({
+        {{ govukWarningText({
                 text: "Action plan cannot be reviewed.",
                 iconFallbackText: "Warning"
             }) }}
 
-            <p class="govuk-body">
-                If you arrived at this page after clicking a link in an email, it is likely the service provider has withdrawn the action plan for editing.
-                You will receive another email when the action plan is resubmitted and ready for approval.
-            </p>
+        <p class="govuk-body">
+          If you arrived at this page after clicking a link in an email, it is likely the service provider has withdrawn the action plan for editing. You will receive another email when the action plan is resubmitted and ready for approval.
+        </p>
 
-            <p class="govuk-body"><a href="{{ presenter.interventionProgressURL }}">Return to intervention progress</a></p>
+        <p class="govuk-body">
+          <a href="{{ presenter.interventionProgressURL }}">Return to intervention progress</a>
+        </p>
 
-        {% else %}
+      {% else %}
 
-            {{ govukBackLink(backLinkArgs) }}
-            {% if errorSummaryArgs !== null %}
-                {{ govukErrorSummary(errorSummaryArgs) }}
-            {% endif %}
-            <h1 class="govuk-heading-l">View action plan</h1>
-
-            {{ govukSummaryList(actionPlanSummaryListArgs(govukTag)) }}
-
-            {% if presenter.showEditButton %}
-                <a href="{{ presenter.actionPlanEditConfirmationUrl }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-                    Edit action plan
-                </a>
-            {% endif %}
-
-            <h2 class="govuk-heading-m">Desired outcomes and activities</h2>
-
-            {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
-                <h3 class="govuk-heading-s">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
-                <ul class="govuk-list govuk-list--bullet">
-                    {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
-                        <li>{{ desiredOutcome }}</li>
-                    {% endfor %}
-                </ul>
-            {% endfor %}
-
-            <ul class="govuk-list">
-            {% for activity in presenter.orderedActivities %}
-                <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity.description)) }}</li>
-            {% endfor %}
-            </ul>
-
-            <h2 class="govuk-heading-m">Suggested number of sessions for the action plan</h2>
-            <p class="govuk-body">Suggested number of sessions: {{ presenter.text.actionPlanNumberOfSessions }}</p>
-
-            {% if presenter.showApprovalForm %}
-                <h2 class="govuk-heading-m">Do you want to approve this action plan?</h2>
-                <p class="govuk-body">Note: If you want to suggest any changes, contact <i>{{ presenter.text.spEmailAddress }}</i> before approving this action plan.</p>
-
-                <form method="post" action="{{ presenter.actionPlanApprovalUrl }}">
-                    {{ govukCheckboxes(confirmApprovalCheckboxArgs) }}
-                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-                    {{ govukButton({ text: "Approve", preventDoubleClick: true }) }}
-                </form>
-            {% endif %}
+        {{ govukBackLink(backLinkArgs) }}
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
         {% endif %}
+        <h1 class="govuk-heading-l">View action plan</h1>
+
+        {{ govukSummaryList(actionPlanSummaryListArgs(govukTag)) }}
+
+        {% if presenter.showEditButton %}
+          <a href="{{ presenter.actionPlanEditConfirmationUrl }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            Edit action plan
+          </a>
+        {% endif %}
+
+        <h2 class="govuk-heading-m">Desired outcomes and activities</h2>
+
+        {% for serviceCategoryWithDesiredOutcomes in presenter.desiredOutcomesByServiceCategory %}
+          <h3 class="govuk-heading-s">{{ serviceCategoryWithDesiredOutcomes.serviceCategory }}</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            {% for desiredOutcome in serviceCategoryWithDesiredOutcomes.desiredOutcomes %}
+              <li>{{ desiredOutcome }}</li>
+            {% endfor %}
+          </ul>
+        {% endfor %}
+
+        <ul class="govuk-list">
+          {% for activity in presenter.orderedActivities %}
+            <li>{{ govukInsetText(insetTextActivityArgs(loop.index, activity.description)) }}</li>
+          {% endfor %}
+        </ul>
+
+        <h2 class="govuk-heading-m">Suggested number of sessions for the action plan</h2>
+        <p class="govuk-body">Suggested number of sessions:
+          {{ presenter.text.actionPlanNumberOfSessions }}</p>
+
+        {% if presenter.showApprovalForm %}
+          <h2 class="govuk-heading-m">Do you want to approve this action plan?</h2>
+          <p class="govuk-body">Note: If you want to suggest any changes, contact
+            <i>{{ presenter.text.spEmailAddress }}</i>
+            before approving this action plan.</p>
+
+          <form method="post" action="{{ presenter.actionPlanApprovalUrl }}">
+            {{ govukCheckboxes(confirmApprovalCheckboxArgs) }}
+            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+            {{ govukButton({ text: "Approve", preventDoubleClick: true }) }}
+          </form>
+        {% endif %}
+
+        {% if presenter.showActionPlanVersions %}
+          <h2 class="govuk-heading-m">Action plan versions</h2>
+          {{ govukTable(approvedActionPlansTableArgs) }}
+        {% endif %}
+      {% endif %}
     </div>
-    {% endblock %}
+  {% endblock %}
 {% endblock %}
