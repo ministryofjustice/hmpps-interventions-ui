@@ -39,8 +39,8 @@ COPY (
     r.relevant_sentence_id  AS relevant_sentence_id,
     r.service_usercrn       AS service_user_crn,
     r.sent_at               AS date_referral_received,
-    TIMESTAMP WITH TIME ZONE '3000-01-01+00' AS date_saa_booked,                    -- default value, coming later
-    TIMESTAMP WITH TIME ZONE '3000-01-01+00' AS date_saa_attended,                  -- default value, coming later
+    null AS date_saa_booked,                    -- default value, coming later
+    null AS date_saa_attended,                  -- default value, coming later
     fsaap.first_submitted_at       AS date_first_action_plan_submitted,
     fsaap.first_approved_at        AS date_of_first_action_plan_approval,
     shows.first_appointment AS date_of_first_session,
@@ -49,7 +49,7 @@ COPY (
       from referral_desired_outcome o
       where o.referral_id = r.id
     )                       AS outcomes_to_be_achieved_count,
-    9000                    AS outcomes_progress,                                   -- default value, coming later
+    null                    AS outcomes_progress,                                   -- default value, coming later
     cap.number_of_sessions   AS count_of_sessions_expected,
     shows.attended          AS count_of_sessions_attended,
     r.concluded_at          AS date_intervention_ended,
