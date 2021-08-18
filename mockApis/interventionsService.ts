@@ -315,6 +315,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetApprovedActionPlanSummaries = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/approved-action-plans`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubRecordActionPlanAppointmentAttendance = async (
     actionPlanId: string,
     sessionNumber: string,
