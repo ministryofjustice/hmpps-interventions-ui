@@ -46,6 +46,7 @@ describe(DraftsService, () => {
         createdAt: new Date('2021-04-01T10:25:00Z'),
         createdBy: { id: 'someUserId' },
         updatedAt: new Date('2021-04-01T10:25:00Z'),
+        softDeleted: false,
         data: { a: 1, b: 2 },
       })
 
@@ -58,11 +59,13 @@ describe(DraftsService, () => {
       )
 
       expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
+        version: 2,
         id: '2dc7ef56-58dd-4339-9924-c33318738068',
         type: 'someExampleType',
         createdAt: '2021-04-01T10:25:00.000Z',
         createdBy: { id: 'someUserId' },
         updatedAt: '2021-04-01T10:25:00.000Z',
+        softDeleted: false,
         data: { a: 1, b: 2 },
       })
     })
@@ -96,6 +99,7 @@ describe(DraftsService, () => {
           createdAt: new Date('2021-04-01T10:25:00Z'),
           createdBy: { id: 'someUserId' },
           updatedAt: new Date('2021-04-01T10:25:00Z'),
+          softDeleted: false,
           data: { a: 1, b: 2 },
         })
 
@@ -146,6 +150,76 @@ describe(DraftsService, () => {
         expect(redis.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything())
       })
     })
+
+    describe('handling of DTO versions', () => {
+      describe('when the object in Redis does not have a version field', () => {
+        it('returns a draft with softDeleted: false', async () => {
+          const dto = {
+            id: '2dc7ef56-58dd-4339-9924-c33318738068',
+            type: 'someExampleType',
+            createdAt: '2021-04-01T10:25:00Z',
+            createdBy: { id: 'someUserId' },
+            updatedAt: '2021-04-01T10:25:00Z',
+            data: { a: 1, b: 2 },
+          }
+          const data = JSON.stringify(dto)
+
+          redis.get.mockImplementation((_key, cb) => {
+            cb!(null, data)
+            return true
+          })
+
+          const draftsService = new DraftsService(redis, expiry, clock)
+
+          const draft = await draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
+
+          expect(draft).toEqual({
+            id: '2dc7ef56-58dd-4339-9924-c33318738068',
+            type: 'someExampleType',
+            createdAt: new Date('2021-04-01T10:25:00Z'),
+            createdBy: { id: 'someUserId' },
+            updatedAt: new Date('2021-04-01T10:25:00Z'),
+            softDeleted: false,
+            data: { a: 1, b: 2 },
+          })
+        })
+      })
+
+      describe('when the object in Redis has a version field with value >= 2', () => {
+        it('returns a draft whose softDeleted property comes from the object in Redis', async () => {
+          const dto = {
+            version: 2,
+            id: '2dc7ef56-58dd-4339-9924-c33318738068',
+            type: 'someExampleType',
+            createdAt: '2021-04-01T10:25:00Z',
+            createdBy: { id: 'someUserId' },
+            updatedAt: '2021-04-01T10:25:00Z',
+            softDeleted: true,
+            data: { a: 1, b: 2 },
+          }
+          const data = JSON.stringify(dto)
+
+          redis.get.mockImplementation((_key, cb) => {
+            cb!(null, data)
+            return true
+          })
+
+          const draftsService = new DraftsService(redis, expiry, clock)
+
+          const draft = await draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
+
+          expect(draft).toEqual({
+            id: '2dc7ef56-58dd-4339-9924-c33318738068',
+            type: 'someExampleType',
+            createdAt: new Date('2021-04-01T10:25:00Z'),
+            createdBy: { id: 'someUserId' },
+            updatedAt: new Date('2021-04-01T10:25:00Z'),
+            softDeleted: true,
+            data: { a: 1, b: 2 },
+          })
+        })
+      })
+    })
   })
 
   describe('.updateDraft', () => {
@@ -188,11 +262,13 @@ describe(DraftsService, () => {
         )
 
         expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
+          version: 2,
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
           createdAt: '2021-03-10T11:50:00.000Z',
           createdBy: { id: 'someUserId' },
           updatedAt: '2021-04-01T10:25:00.000Z',
+          softDeleted: false,
           data: { c: 3, d: 4 },
         })
       })

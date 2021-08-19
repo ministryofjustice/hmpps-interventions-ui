@@ -8,10 +8,11 @@ export interface Draft<T> {
   createdAt: Date
   createdBy: { id: string }
   updatedAt: Date
+  softDeleted: boolean
   data: T
 }
 
-interface DraftDTO {
+interface DraftV1DTO {
   id: string
   type: string
   createdAt: string
@@ -19,6 +20,14 @@ interface DraftDTO {
   updatedAt: string
   data: unknown
 }
+
+interface DraftV2DTO extends DraftV1DTO {
+  version: 2
+  softDeleted: boolean
+}
+
+type DraftDTO = DraftV1DTO | DraftV2DTO
+type LatestDraftDTO = DraftV2DTO
 
 export interface Clock {
   now: () => Date
@@ -35,19 +44,30 @@ export default class DraftsService {
     return `draft:${id}`
   }
 
-  private async fetchDraftDTO(id: string): Promise<DraftDTO | null> {
+  private async fetchDraftDTO(id: string): Promise<LatestDraftDTO | null> {
     const response = await promisify(this.redis.get).bind(this.redis)(this.redisKey(id))
 
     if (response === null) {
       return null
     }
 
-    return JSON.parse(response)
+    const dto: DraftDTO = JSON.parse(response)
+
+    return DraftsService.migrateDraftDTO(dto)
+  }
+
+  private static migrateDraftDTO(dto: DraftDTO): LatestDraftDTO {
+    if (!('version' in dto)) {
+      return { ...dto, version: 2, softDeleted: false }
+    }
+
+    return dto
   }
 
   private async writeDraft<Data>(draft: Draft<Data>): Promise<void> {
-    const dto: DraftDTO = {
+    const dto: LatestDraftDTO = {
       ...draft,
+      version: 2,
       createdAt: draft.createdAt.toISOString(),
       updatedAt: draft.updatedAt.toISOString(),
     }
@@ -69,6 +89,7 @@ export default class DraftsService {
       createdAt: now,
       createdBy: { id: userId },
       updatedAt: now,
+      softDeleted: false,
     }
 
     await this.writeDraft(draft)
@@ -87,7 +108,14 @@ export default class DraftsService {
       throw new Error(`Attempted to fetch DTO for draft ${id} not created by requesting user.`)
     }
 
-    return { ...dto, createdAt: new Date(dto.createdAt), updatedAt: new Date(dto.updatedAt), data: dto.data as Data }
+    const { version, ...dtoWithoutVersion } = dto
+
+    return {
+      ...dtoWithoutVersion,
+      createdAt: new Date(dto.createdAt),
+      updatedAt: new Date(dto.updatedAt),
+      data: dto.data as Data,
+    }
   }
 
   async updateDraft<Data>(id: string, newData: Data, { userId }: { userId: string }): Promise<void> {

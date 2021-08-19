@@ -7,6 +7,7 @@ export function createDraftFactory<Data>(defaultData: Data): Factory<Draft<Data>
     const now = new Date()
     return {
       id: sequence.toString(),
+      softDeleted: false,
       type: 'someExampleType',
       createdAt: now,
       createdBy: { id: 'someUserId' },
