@@ -5,6 +5,17 @@ import LayoutView, { PageContentView } from '../routes/shared/layoutView'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import DraftsService, { Draft } from '../services/draftsService'
 
+interface DraftFetchSuccessResult<T> {
+  rendered: false
+  draft: Draft<T>
+}
+
+interface DraftFetchRenderedResult {
+  rendered: true
+}
+
+type DraftFetchResult<T> = DraftFetchSuccessResult<T> | DraftFetchRenderedResult
+
 export default class ControllerUtils {
   static renderWithLayout(res: Response, contentView: PageContentView, serviceUser: DeliusServiceUser | null): void {
     const presenter = new LayoutPresenter(res.locals.user, serviceUser)
@@ -22,7 +33,7 @@ export default class ControllerUtils {
       notFoundUserMessage,
       typeName,
     }: { idParamName: string; notFoundUserMessage: string; typeName: string }
-  ): Promise<Draft<T>> {
+  ): Promise<DraftFetchResult<T>> {
     const id = req.params[idParamName]
     const draft = await draftsService.fetchDraft<T>(id, {
       userId: res.locals.user.userId,
@@ -34,6 +45,6 @@ export default class ControllerUtils {
       })
     }
 
-    return draft
+    return { rendered: false, draft }
   }
 }

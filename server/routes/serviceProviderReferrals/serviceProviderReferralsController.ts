@@ -277,7 +277,11 @@ export default class ServiceProviderReferralsController {
   }
 
   async checkAssignment(req: Request, res: Response): Promise<void> {
-    const draftAssignment = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const draftAssignment = fetchResult.draft
 
     const { email } = draftAssignment.data
 
@@ -296,7 +300,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new CheckAssignmentPresenter(referral.id, draftAssignment.id, assignee, email, intervention)
     const view = new CheckAssignmentView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async backwardsCompatibilitySubmitAssignment(req: Request, res: Response): Promise<void> {
@@ -310,7 +314,11 @@ export default class ServiceProviderReferralsController {
   }
 
   async submitAssignment(req: Request, res: Response): Promise<void> {
-    const draftAssignment = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const draftAssignment = fetchResult.draft
 
     const { email } = draftAssignment.data
     if (email === null) {
@@ -643,9 +651,12 @@ export default class ServiceProviderReferralsController {
   }
 
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
-    const draft = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
 
-    await this.scheduleSupplierAssessmentAppointmentWithDraft(draft, req, res)
+    await this.scheduleSupplierAssessmentAppointmentWithDraft(fetchResult.draft, req, res)
   }
 
   async scheduleSupplierAssessmentAppointmentWithDraft(
@@ -720,12 +731,15 @@ export default class ServiceProviderReferralsController {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const draft = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
 
-    const presenter = new InitialAssessmentCheckAnswersPresenter(draft, referral.id)
+    const presenter = new InitialAssessmentCheckAnswersPresenter(fetchResult.draft, referral.id)
     const view = new InitialAssessmentCheckAnswersView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitSupplierAssessment(req: Request, res: Response): Promise<void> {
@@ -909,7 +923,11 @@ export default class ServiceProviderReferralsController {
       redirectToOnClash: string
     }
   ): Promise<void> {
-    const draft = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const { draft } = fetchResult
 
     if (draft.data === null) {
       throw new Error('Draft data was unexpectedly null when submitting appointment')

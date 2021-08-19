@@ -62,7 +62,7 @@ describe(ControllerUtils, () => {
         const draft = exampleDraftFactory.build({ data: { a: 1 } })
         draftsService.fetchDraft.mockResolvedValue(draft)
 
-        const fetchedDraft = await ControllerUtils.fetchDraft(
+        const result = await ControllerUtils.fetchDraft(
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           { locals: { user: { userId: 'jane.bloggs' } } } as unknown as Response,
           draftsService,
@@ -73,7 +73,7 @@ describe(ControllerUtils, () => {
           }
         )
 
-        expect(fetchedDraft).toEqual(draft)
+        expect(result).toEqual({ rendered: false, draft })
 
         expect(draftsService.fetchDraft).toHaveBeenCalledWith('abc123', { userId: 'jane.bloggs' })
       })
