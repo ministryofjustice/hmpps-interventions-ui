@@ -9,13 +9,11 @@ const mockedUuid = mocked(uuid)
 interface ChosenRedisOverloads {
   get: (key: string, cb?: Callback<string | null>) => boolean
   set: (key: string, value: string, mode: string, duration: number, cb?: Callback<'OK' | undefined>) => boolean
-  del: (key: string, cb?: Callback<number>) => boolean
 }
 
 const redis = {
   get: jest.fn(),
   set: jest.fn(),
-  del: jest.fn(),
 } as unknown as jest.Mocked<ChosenRedisOverloads> & RedisClient
 
 const expiry = { seconds: 24 * 60 * 60 }
@@ -323,7 +321,7 @@ describe(DraftsService, () => {
 
   describe('.deleteDraft', () => {
     describe('when Redis contains a draft for that ID, created by the specified user', () => {
-      it('removes that draft from Redis', async () => {
+      it('updates the draft in Redis, setting its softDeleted property to true, with the given expiry time', async () => {
         const dto = {
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
@@ -339,8 +337,8 @@ describe(DraftsService, () => {
           return true
         })
 
-        redis.del.mockImplementation((_key, cb) => {
-          cb!(null, 1)
+        redis.set.mockImplementation((_key, _value, _mode, _duration, cb) => {
+          cb!(null, 'OK')
           return true
         })
 
@@ -348,12 +346,29 @@ describe(DraftsService, () => {
 
         await draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
 
-        expect(redis.del).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything())
+        expect(redis.set).toHaveBeenCalledWith(
+          'draft:2dc7ef56-58dd-4339-9924-c33318738068',
+          expect.anything(),
+          'EX',
+          expiry.seconds,
+          expect.anything()
+        )
+
+        expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
+          version: 2,
+          id: '2dc7ef56-58dd-4339-9924-c33318738068',
+          type: 'someExampleType',
+          createdAt: '2021-04-01T10:25:00.000Z',
+          createdBy: { id: 'someUserId' },
+          updatedAt: '2021-04-01T10:25:00.000Z',
+          softDeleted: true,
+          data: { a: 1, b: 2 },
+        })
       })
     })
 
     describe('when Redis contains a draft for that ID, created by a different user', () => {
-      it('throws an error and does not remove that draft', async () => {
+      it('throws an error and does not update that draft', async () => {
         const dto = {
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
@@ -375,7 +390,7 @@ describe(DraftsService, () => {
           draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.del).not.toHaveBeenCalled()
+        expect(redis.set).not.toHaveBeenCalled()
       })
     })
 
@@ -392,37 +407,7 @@ describe(DraftsService, () => {
           draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.del).not.toHaveBeenCalled()
-      })
-    })
-
-    describe('when Redis doesn’t contain a draft for that ID, as indicated by the Redis DEL command', () => {
-      it('throws an error', async () => {
-        const dto = {
-          id: '2dc7ef56-58dd-4339-9924-c33318738068',
-          type: 'someExampleType',
-          createdAt: '2021-04-01T10:25:00Z',
-          createdBy: { id: 'someUserId' },
-          updatedAt: '2021-04-01T10:25:00Z',
-          data: { a: 1, b: 2 },
-        }
-        const data = JSON.stringify(dto)
-
-        redis.get.mockImplementation((_key, cb) => {
-          cb!(null, data)
-          return true
-        })
-
-        redis.del.mockImplementation((_key, cb) => {
-          cb!(null, 0)
-          return true
-        })
-
-        const draftsService = new DraftsService(redis, expiry, clock)
-
-        await expect(
-          draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
-        ).rejects.toThrow()
+        expect(redis.set).not.toHaveBeenCalled()
       })
     })
   })

@@ -135,10 +135,6 @@ export default class DraftsService {
       throw new Error(`Draft with ID ${id} not found in Redis`)
     }
 
-    const numberRemoved = await promisify<string, number>(this.redis.del).bind(this.redis)(this.redisKey(id))
-
-    if (numberRemoved === 0) {
-      throw new Error(`Draft with ID ${id} not found in Redis`)
-    }
+    await this.writeDraft({ ...draft, softDeleted: true })
   }
 }
