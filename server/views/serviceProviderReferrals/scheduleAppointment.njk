@@ -46,8 +46,8 @@
           {{ govukDateInput(dateInputArgs) }}
           {{ appTimeInput(timeInputArgs) }}
           {{ govukDateInput(durationDateInputArgs) }}
-          {% if presenter.isInitialAssessmentAppointment %}
-            <input type="hidden" name="session-type" value="{{ presenter.initialAssessmentSessionType }}">
+          {% if not presenter.allowSessionTypeSelection %}
+            <input type="hidden" name="session-type" value="{{ presenter.sessionTypeWhenSelectionNotAllowed }}">
           {% else %}
             {{ govukRadios(sessionTypeRadioInputArgs) }}
           {% endif %}

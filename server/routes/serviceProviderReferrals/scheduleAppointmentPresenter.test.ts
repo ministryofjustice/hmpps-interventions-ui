@@ -12,7 +12,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('title', () => {
       describe('when the session has not yet been scheduled', () => {
         it('returns an appropriate title', () => {
-          const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
+          const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
 
           expect(presenter.text).toEqual({ title: 'Add appointment details' })
         })
@@ -21,6 +21,7 @@ describe(ScheduleAppointmentPresenter, () => {
       describe('when the session has already been scheduled', () => {
         it('returns an appropriate title', () => {
           const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             initialAssessmentAppointmentFactory.build(),
             null,
@@ -34,6 +35,7 @@ describe(ScheduleAppointmentPresenter, () => {
       describe('when the session has already been attended', () => {
         it('returns an appropriate title', () => {
           const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             initialAssessmentAppointmentFactory.attended('no').build(),
             null,
@@ -48,7 +50,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('appointmentSummary', () => {
     describe('when the appointment has not yet been scheduled', () => {
       it('should return an empty summary', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
         expect(presenter.appointmentSummary).toEqual([])
       })
     })
@@ -62,6 +64,7 @@ describe(ScheduleAppointmentPresenter, () => {
             appointmentDeliveryType: 'VIDEO_CALL',
           })
           const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             appointment,
             new AppointmentSummary(
@@ -86,6 +89,7 @@ describe(ScheduleAppointmentPresenter, () => {
             appointmentDeliveryType: 'VIDEO_CALL',
           })
           const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             appointment,
             new AppointmentSummary(appointment),
@@ -105,7 +109,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('appointmentAlreadyAttended', () => {
     describe('when the appointment has not yet been scheduled', () => {
       it('should return false', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
         expect(presenter.appointmentAlreadyAttended).toBe(false)
       })
     })
@@ -113,6 +117,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when the appointment has been scheduled but not yet attended', () => {
       it('should return false', () => {
         const presenter = new ScheduleAppointmentPresenter(
+          'supplierAssessment',
           referral,
           initialAssessmentAppointmentFactory.build(),
           null,
@@ -126,6 +131,7 @@ describe(ScheduleAppointmentPresenter, () => {
       describe('and the appointment is an initial assessment', () => {
         it('should return true', () => {
           const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             initialAssessmentAppointmentFactory.attended('no').build(),
             null,
@@ -138,6 +144,7 @@ describe(ScheduleAppointmentPresenter, () => {
       describe('and the appointment is part of an action plan', () => {
         it('should return false', () => {
           const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
             referral,
             actionPlanAppointmentFactory.attended('no').build(),
             null,
@@ -154,6 +161,7 @@ describe(ScheduleAppointmentPresenter, () => {
       it('displays the message from the server error', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const presenter = new ScheduleAppointmentPresenter(
+          'supplierAssessment',
           referral,
           appointment,
           null,
@@ -194,6 +202,7 @@ describe(ScheduleAppointmentPresenter, () => {
       it('displays the message from the server error', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const presenter = new ScheduleAppointmentPresenter(
+          'supplierAssessment',
           referral,
           appointment,
           null,
@@ -218,7 +227,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
-        const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [])
 
         expect(presenter.errorSummary).toEqual(null)
       })
@@ -228,7 +237,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('fields', () => {
     describe('with a null appointment', () => {
       it('returns empty fields', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
 
         expect(presenter.fields).toEqual({
           date: {
@@ -271,6 +280,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when the appointment has already been attended', () => {
       it('should return empty fields', () => {
         const presenter = new ScheduleAppointmentPresenter(
+          'supplierAssessment',
           referral,
           initialAssessmentAppointmentFactory.attended('no').build(),
           null,
@@ -330,7 +340,7 @@ describe(ScheduleAppointmentPresenter, () => {
             postCode: 'SY4 0RE',
           },
         })
-        const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [])
 
         expect(presenter.fields).toEqual({
           date: {
@@ -385,7 +395,7 @@ describe(ScheduleAppointmentPresenter, () => {
           appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
           npsOfficeCode: 'CRS00001',
         })
-        const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [])
 
         expect(presenter.fields).toEqual({
           date: {
@@ -429,7 +439,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('backLinkHref', () => {
     describe('when overrideBackLinkHref is not provided to the constructor', () => {
       it('returns the URL of the intervention progress page', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
 
         expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
       })
@@ -437,25 +447,34 @@ describe(ScheduleAppointmentPresenter, () => {
 
     describe('when overrideBackLinkHref is provided to the constructor', () => {
       it('returns the overrideBacklinkHref', () => {
-        const presenter = new ScheduleAppointmentPresenter(referral, null, null, [], null, null, null, '/example-href')
+        const presenter = new ScheduleAppointmentPresenter(
+          'supplierAssessment',
+          referral,
+          null,
+          null,
+          [],
+          null,
+          null,
+          null,
+          '/example-href'
+        )
 
         expect(presenter.backLinkHref).toEqual('/example-href')
       })
     })
   })
 
-  describe('isInitialAssessmentAppointment', () => {
-    it('returns true when there is no "current appointment" passed in', () => {
-      const presenter = new ScheduleAppointmentPresenter(referral, null, null, [])
+  describe('allowSessionTypeSelection', () => {
+    it('returns true when the form type is actionPlan', () => {
+      const presenter = new ScheduleAppointmentPresenter('actionPlan', referral, null, null, [])
 
-      expect(presenter.isInitialAssessmentAppointment).toEqual(true)
+      expect(presenter.allowSessionTypeSelection).toEqual(true)
     })
 
-    it('returns false when a "current appointment" is passed in', () => {
-      const appointment = initialAssessmentAppointmentFactory.build()
-      const presenter = new ScheduleAppointmentPresenter(referral, appointment, null, [])
+    it('returns false when the form type is supplierAssessment', () => {
+      const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
 
-      expect(presenter.isInitialAssessmentAppointment).toEqual(false)
+      expect(presenter.allowSessionTypeSelection).toEqual(false)
     })
   })
 })
