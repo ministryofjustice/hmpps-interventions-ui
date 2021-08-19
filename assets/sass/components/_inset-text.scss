@@ -1,4 +1,8 @@
-.app-inset-text--grey {
+.app-inset-text {
   background: govuk-colour('light-grey');
-  border-left: 10px solid govuk-colour('blue');
+  padding: 15px;
+
+  &--left-border {
+    border-left: 10px solid govuk-colour('blue');
+  }
 }
