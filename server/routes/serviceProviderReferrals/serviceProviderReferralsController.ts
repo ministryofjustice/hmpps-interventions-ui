@@ -268,19 +268,12 @@ export default class ServiceProviderReferralsController {
   }
 
   private async fetchDraftAssignmentOrThrowSpecificError(req: Request, res: Response) {
-    const id = req.params.draftAssignmentId
-    const draftAssignment = await this.draftsService.fetchDraft<DraftAssignmentData>(id, {
-      userId: res.locals.user.userId,
+    return ControllerUtils.fetchDraft<DraftAssignmentData>(req, res, this.draftsService, {
+      idParamName: 'draftAssignmentId',
+      notFoundUserMessage:
+        'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.',
+      typeName: 'assignment',
     })
-
-    if (draftAssignment === null) {
-      throw createError(500, `Draft assignment with ID ${id} not found by drafts service`, {
-        userMessage:
-          'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.',
-      })
-    }
-
-    return draftAssignment
   }
 
   async checkAssignment(req: Request, res: Response): Promise<void> {
@@ -899,19 +892,12 @@ export default class ServiceProviderReferralsController {
   }
 
   private async fetchDraftBookingOrThrowSpecificError(req: Request, res: Response) {
-    const id = req.params.draftBookingId
-    const draftAssignment = await this.draftsService.fetchDraft<DraftAppointmentBooking>(id, {
-      userId: res.locals.user.userId,
+    return ControllerUtils.fetchDraft<DraftAppointmentBooking>(req, res, this.draftsService, {
+      idParamName: 'draftBookingId',
+      notFoundUserMessage:
+        'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
+      typeName: 'booking',
     })
-
-    if (draftAssignment === null) {
-      throw createError(500, `Draft assignment with ID ${id} not found by drafts service`, {
-        userMessage:
-          'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
-      })
-    }
-
-    return draftAssignment
   }
 
   private async submitAppointment(

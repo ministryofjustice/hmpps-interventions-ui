@@ -335,19 +335,12 @@ export default class ProbationPractitionerReferralsController {
   }
 
   private async fetchDraftCancellationOrThrowSpecificError(req: Request, res: Response) {
-    const id = req.params.draftCancellationId
-    const draftCancellation = await this.draftsService.fetchDraft<DraftCancellationData>(id, {
-      userId: res.locals.user.userId,
+    return ControllerUtils.fetchDraft<DraftCancellationData>(req, res, this.draftsService, {
+      idParamName: 'draftCancellationId',
+      notFoundUserMessage:
+        'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
+      typeName: 'cancellation',
     })
-
-    if (draftCancellation === null) {
-      throw createError(500, `Draft cancellation with ID ${id} not found by drafts service`, {
-        userMessage:
-          'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
-      })
-    }
-
-    return draftCancellation
   }
 
   async editCancellationReason(req: Request, res: Response): Promise<void> {
