@@ -4,6 +4,7 @@ import LayoutPresenter from '../routes/shared/layoutPresenter'
 import LayoutView, { PageContentView } from '../routes/shared/layoutView'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import DraftsService, { Draft } from '../services/draftsService'
+import DraftSoftDeletedView from '../routes/shared/draftSoftDeletedView'
 
 interface DraftFetchSuccessResult<T> {
   rendered: false
@@ -24,7 +25,7 @@ export default class ControllerUtils {
     res.render(...view.renderArgs)
   }
 
-  static async fetchDraft<T>(
+  static async fetchDraftOrRenderMessage<T>(
     req: Request,
     res: Response,
     draftsService: DraftsService,
@@ -43,6 +44,13 @@ export default class ControllerUtils {
       throw createError(500, `Draft ${typeName} with ID ${id} not found by drafts service`, {
         userMessage: notFoundUserMessage,
       })
+    }
+
+    if (draft.softDeleted) {
+      res.status(410 /* Gone */)
+      const view = new DraftSoftDeletedView()
+      this.renderWithLayout(res, view, null)
+      return { rendered: true }
     }
 
     return { rendered: false, draft }

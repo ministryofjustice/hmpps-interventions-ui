@@ -267,8 +267,8 @@ export default class ServiceProviderReferralsController {
     return res.redirect(`/service-provider/referrals/${req.params.id}/assignment/${draftAssignment.id}/check`)
   }
 
-  private async fetchDraftAssignmentOrThrowSpecificError(req: Request, res: Response) {
-    return ControllerUtils.fetchDraft<DraftAssignmentData>(req, res, this.draftsService, {
+  private async fetchDraftAssignmentOrRenderMessage(req: Request, res: Response) {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftAssignmentData>(req, res, this.draftsService, {
       idParamName: 'draftAssignmentId',
       notFoundUserMessage:
         'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.',
@@ -277,7 +277,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async checkAssignment(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftAssignmentOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -314,7 +314,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async submitAssignment(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftAssignmentOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftAssignmentOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -651,7 +651,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -731,7 +731,7 @@ export default class ServiceProviderReferralsController {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const fetchResult = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -905,8 +905,8 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  private async fetchDraftBookingOrThrowSpecificError(req: Request, res: Response) {
-    return ControllerUtils.fetchDraft<DraftAppointmentBooking>(req, res, this.draftsService, {
+  private async fetchDraftBookingOrRenderMessage(req: Request, res: Response) {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking>(req, res, this.draftsService, {
       idParamName: 'draftBookingId',
       notFoundUserMessage:
         'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
@@ -923,7 +923,7 @@ export default class ServiceProviderReferralsController {
       redirectToOnClash: string
     }
   ): Promise<void> {
-    const fetchResult = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }

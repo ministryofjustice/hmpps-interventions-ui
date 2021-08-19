@@ -334,8 +334,8 @@ export default class ProbationPractitionerReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  private async fetchDraftCancellationOrThrowSpecificError(req: Request, res: Response) {
-    return ControllerUtils.fetchDraft<DraftCancellationData>(req, res, this.draftsService, {
+  private async fetchDraftCancellationOrRenderMessage(req: Request, res: Response) {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftCancellationData>(req, res, this.draftsService, {
       idParamName: 'draftCancellationId',
       notFoundUserMessage:
         'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
@@ -348,7 +348,7 @@ export default class ProbationPractitionerReferralsController {
     const { accessToken } = user.token
     const referralId = req.params.id
 
-    const fetchResult = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftCancellationOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -399,7 +399,7 @@ export default class ProbationPractitionerReferralsController {
     const { user } = res.locals
     const { accessToken } = user.token
 
-    const fetchResult = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftCancellationOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -422,7 +422,7 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async submitCancellation(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftCancellationOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }

@@ -62,7 +62,7 @@ describe(ControllerUtils, () => {
         const draft = exampleDraftFactory.build({ data: { a: 1 } })
         draftsService.fetchDraft.mockResolvedValue(draft)
 
-        const result = await ControllerUtils.fetchDraft(
+        const result = await ControllerUtils.fetchDraftOrRenderMessage(
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           { locals: { user: { userId: 'jane.bloggs' } } } as unknown as Response,
           draftsService,
@@ -79,6 +79,31 @@ describe(ControllerUtils, () => {
       })
     })
 
+    describe('when the draft has been soft-deleted', () => {
+      it('renders an explanatory page', async () => {
+        const draft = exampleDraftFactory.build({ softDeleted: true })
+        draftsService.fetchDraft.mockResolvedValue(draft)
+
+        const res = { status: jest.fn(), locals: { user: { userId: 'jane.bloggs' } }, render: jest.fn() }
+
+        const result = await ControllerUtils.fetchDraftOrRenderMessage(
+          { params: { draftBookingId: 'abc123' } } as unknown as Request,
+          res as unknown as Response,
+          draftsService,
+          {
+            idParamName: 'draftBookingId',
+            typeName: 'booking',
+            notFoundUserMessage: 'Timed out, start again',
+          }
+        )
+
+        expect(result).toEqual({ rendered: true })
+
+        expect(res.status).toHaveBeenCalledWith(410)
+        expect(res.render).toHaveBeenCalledWith('shared/draftSoftDeleted', expect.anything())
+      })
+    })
+
     describe('when a draft is not found by the drafts service', () => {
       it('throws an error', async () => {
         draftsService.fetchDraft.mockResolvedValue(null)
@@ -86,7 +111,7 @@ describe(ControllerUtils, () => {
         let thrownError: Error | null = null
 
         try {
-          await ControllerUtils.fetchDraft(
+          await ControllerUtils.fetchDraftOrRenderMessage(
             { params: { draftBookingId: 'abc123' } } as unknown as Request,
             { locals: { user: { userId: 'jane.bloggs' } } } as unknown as Response,
             draftsService,
