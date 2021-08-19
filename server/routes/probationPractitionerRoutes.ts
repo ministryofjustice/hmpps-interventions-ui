@@ -10,7 +10,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.communityApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
-    services.draftsService
+    services.draftsService,
+    services.referenceDataService
   )
 
   get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showMyCases(req, res))

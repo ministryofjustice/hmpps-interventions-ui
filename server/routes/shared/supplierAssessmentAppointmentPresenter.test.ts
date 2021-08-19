@@ -90,6 +90,7 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
 
       it('contains the address', () => {
         const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
           appointmentDeliveryAddress: address,
         })
         const presenter = new SupplierAssessmentAppointmentPresenter(
@@ -107,6 +108,7 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
       describe('when the second address line is absent', () => {
         it('doesn’t contain a line for the second address line', () => {
           const appointment = initialAssessmentAppointmentFactory.build({
+            appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: { ...address, secondAddressLine: null },
           })
           const presenter = new SupplierAssessmentAppointmentPresenter(

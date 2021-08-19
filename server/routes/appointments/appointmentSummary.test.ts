@@ -2,6 +2,7 @@ import initialAssessmentAppointmentFactory from '../../../testutils/factories/in
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import AppointmentSummary from './appointmentSummary'
+import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 
 describe(AppointmentSummary, () => {
   describe('appointmentDetails', () => {
@@ -102,7 +103,7 @@ describe(AppointmentSummary, () => {
       })
     })
 
-    describe('when the appointment has a delivery address', () => {
+    describe('when the appointment has an in-person meeting other address', () => {
       const address = {
         firstAddressLine: '123 Fake Street',
         secondAddressLine: 'Fakesvillage',
@@ -113,6 +114,7 @@ describe(AppointmentSummary, () => {
 
       it('contains the address', () => {
         const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
           appointmentDeliveryAddress: address,
         })
         const summaryComponent = new AppointmentSummary(appointment, null)
@@ -126,6 +128,7 @@ describe(AppointmentSummary, () => {
       describe('when the second address line is absent', () => {
         it('doesn’t contain a line for the second address line', () => {
           const appointment = initialAssessmentAppointmentFactory.build({
+            appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: { ...address, secondAddressLine: null },
           })
           const summaryComponent = new AppointmentSummary(appointment, null)
@@ -134,6 +137,29 @@ describe(AppointmentSummary, () => {
             key: 'Address',
             lines: ['123 Fake Street', 'Manchester', 'Greater Manchester', 'N4 1HG'],
           })
+        })
+      })
+    })
+    describe('when the appointment has an in-person meeting probation office address', () => {
+      const deliusOfficeLocation: DeliusOfficeLocation = {
+        probationOfficeId: 1,
+        name: 'name',
+        address: 'address line 1,address line 2,address line 3',
+        probationRegionId: 'probationRegionId',
+        govUkURL: 'govUkURL',
+        deliusCRSLocationId: 'deliusCRSLocationId',
+      }
+
+      it('contains the address', () => {
+        const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
+          npsOfficeCode: 'NPS_CODE',
+        })
+        const summaryComponent = new AppointmentSummary(appointment, null, deliusOfficeLocation)
+
+        expect(summaryComponent.appointmentSummaryList[3]).toEqual({
+          key: 'Address',
+          lines: ['name', 'address line 1', 'address line 2', 'address line 3'],
         })
       })
     })

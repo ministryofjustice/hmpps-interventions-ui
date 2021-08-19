@@ -2,20 +2,17 @@ import { Router } from 'express'
 import { Services, get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import config from '../config'
-import DeliusOfficeLocationFilter from '../services/deliusOfficeLocationFilter'
-import ReferenceDataService from '../services/referenceDataService'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 
 export default function serviceProviderRoutes(router: Router, services: Services): Router {
-  const deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(new ReferenceDataService())
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
     services.communityApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
     services.draftsService,
-    deliusOfficeLocationFilter
+    services.referenceDataService
   )
 
   get(router, '/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))

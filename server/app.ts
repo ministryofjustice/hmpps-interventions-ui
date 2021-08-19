@@ -29,6 +29,7 @@ import ControllerUtils from './utils/controllerUtils'
 import broadcastMessageConfig from './broadcast-message-config.json'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
 import DraftsService from './services/draftsService'
+import ReferenceDataService from './services/referenceDataService'
 
 const RedisStore = connectRedis(session)
 
@@ -36,7 +37,8 @@ export default function createApp(
   communityApiService: CommunityApiService,
   interventionsService: InterventionsService,
   hmppsAuthService: HmppsAuthService,
-  assessRisksAndNeedsService: AssessRisksAndNeedsService
+  assessRisksAndNeedsService: AssessRisksAndNeedsService,
+  referenceDataService: ReferenceDataService
 ): express.Application {
   const app = express()
 
@@ -208,6 +210,7 @@ export default function createApp(
     hmppsAuthService,
     assessRisksAndNeedsService,
     draftsService,
+    referenceDataService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))

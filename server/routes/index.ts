@@ -10,6 +10,7 @@ import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
 import ReferralsController from './referrals/referralsController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
 import DraftsService from '../services/draftsService'
+import ReferenceDataService from '../services/referenceDataService'
 
 export interface Services {
   communityApiService: CommunityApiService
@@ -17,6 +18,7 @@ export interface Services {
   hmppsAuthService: HmppsAuthService
   assessRisksAndNeedsService: AssessRisksAndNeedsService
   draftsService: DraftsService
+  referenceDataService: ReferenceDataService
 }
 
 export const get = (router: Router, path: string, handler: RequestHandler): Router =>

@@ -4,6 +4,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import { InitialAssessmentAppointment, ActionPlanAppointment } from '../../models/appointment'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import Address from '../../models/address'
+import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 
 interface Caseworker {
   username?: string
@@ -13,7 +14,8 @@ interface Caseworker {
 export default class AppointmentSummary {
   constructor(
     private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment,
-    private readonly assignedCaseworker: Caseworker | null = null
+    private readonly assignedCaseworker: Caseworker | null = null,
+    private readonly deliusOfficeLocation: DeliusOfficeLocation | null = null
   ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
@@ -47,8 +49,23 @@ export default class AppointmentSummary {
         lines: [this.deliveryMethod(this.appointment.appointmentDeliveryType)],
       })
     }
-    if (this.appointment.appointmentDeliveryAddress) {
-      summary.push({ key: 'Address', lines: this.addressLines(this.appointment.appointmentDeliveryAddress) })
+    if (
+      this.appointment.appointmentDeliveryType === 'IN_PERSON_MEETING_OTHER' &&
+      this.appointment.appointmentDeliveryAddress
+    ) {
+      summary.push({
+        key: 'Address',
+        lines: this.inPersonMeetingOtherAddressLines(this.appointment.appointmentDeliveryAddress),
+      })
+    } else if (
+      this.appointment.appointmentDeliveryType === 'IN_PERSON_MEETING_PROBATION_OFFICE' &&
+      this.appointment.npsOfficeCode &&
+      this.deliusOfficeLocation
+    ) {
+      summary.push({
+        key: 'Address',
+        lines: this.inPersonMeetingProbationOfficeAddressLines(this.deliusOfficeLocation),
+      })
     }
     return summary
   }
@@ -81,7 +98,13 @@ export default class AppointmentSummary {
     }
   }
 
-  private addressLines(address: Address): string[] {
+  private inPersonMeetingProbationOfficeAddressLines(officeLocation: DeliusOfficeLocation): string[] {
+    const addressLines = [officeLocation.name]
+    officeLocation.address.split(',').forEach(line => addressLines.push(line))
+    return addressLines
+  }
+
+  private inPersonMeetingOtherAddressLines(address: Address): string[] {
     return [
       address.firstAddressLine,
       address.secondAddressLine,

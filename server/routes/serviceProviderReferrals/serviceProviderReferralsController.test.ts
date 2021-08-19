@@ -38,6 +38,8 @@ import CalendarDay from '../../utils/calendarDay'
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import { DraftAssignmentData } from './serviceProviderReferralsController'
 import DraftsService from '../../services/draftsService'
+import MockReferenceDataService from '../testutils/mocks/mockReferenceDataService'
+import ReferenceDataService from '../../services/referenceDataService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -50,6 +52,8 @@ const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
+
+const referenceDataService = new MockReferenceDataService() as jest.Mocked<ReferenceDataService>
 
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
@@ -74,6 +78,7 @@ beforeEach(() => {
       hmppsAuthService,
       assessRisksAndNeedsService,
       draftsService,
+      referenceDataService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
@@ -917,6 +922,8 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', 
         sessionNumber: 1,
         appointmentTime: '2021-03-24T09:02:02Z',
         durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+        sessionType: 'ONE_TO_ONE',
       })
 
       interventionsService.getActionPlan.mockResolvedValue(actionPlan)
