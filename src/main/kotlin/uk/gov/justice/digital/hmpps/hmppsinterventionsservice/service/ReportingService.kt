@@ -28,6 +28,8 @@ class ReportingService(
       performanceReportJob,
       JobParametersBuilder()
         .addString("user.id", user.id)
+        .addString("user.authSource", user.authSource)
+        .addString("user.userName", user.userName)
         .addString("user.firstName", userDetail.firstName)
         .addString("user.email", userDetail.email)
         .addDate("from", batchUtils.parseLocalDateToDate(from))
