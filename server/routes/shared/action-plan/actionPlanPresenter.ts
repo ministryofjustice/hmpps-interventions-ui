@@ -7,6 +7,7 @@ import utils from '../../../utils/utils'
 import ServiceCategory from '../../../models/serviceCategory'
 import ApprovedActionPlanSummary from '../../../models/approvedActionPlanSummary'
 import dateUtils from '../../../utils/dateUtils'
+import config from '../../../config'
 
 export default class ActionPlanPresenter {
   actionPlanSummaryPresenter: ActionPlanSummaryPresenter
@@ -84,6 +85,10 @@ export default class ActionPlanPresenter {
   }
 
   get showCreateNewActionPlanVersionButton(): boolean {
-    return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanApproved
+    if (config.features.previouslyApprovedActionPlans) {
+      return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanApproved
+    }
+
+    return false
   }
 }
