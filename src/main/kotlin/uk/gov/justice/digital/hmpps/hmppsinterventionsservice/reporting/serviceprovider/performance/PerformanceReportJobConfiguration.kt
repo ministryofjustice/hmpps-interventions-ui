@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.FileSystemResource
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
 import java.util.Date
@@ -25,7 +25,6 @@ import java.util.Date
 @Configuration
 @EnableBatchProcessing
 class PerformanceReportJobConfiguration(
-  private val userMapper: UserMapper,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val jobBuilderFactory: JobBuilderFactory,
   private val stepBuilderFactory: StepBuilderFactory,
@@ -38,13 +37,14 @@ class PerformanceReportJobConfiguration(
   @JobScope
   fun reader(
     @Value("#{jobParameters['user.id']}") userId: String,
+    @Value("#{jobParameters['user.authSource']}") authSource: String,
+    @Value("#{jobParameters['user.userName']}") userName: String,
     @Value("#{jobParameters['from']}") from: Date,
     @Value("#{jobParameters['to']}") to: Date,
     sessionFactory: SessionFactory,
   ): HibernateCursorItemReader<Referral> {
     // this reader returns referral entities which need processing for the report.
-
-    val contracts = serviceProviderAccessScopeMapper.fromUser(userMapper.fromId(userId)).contracts
+    val contracts = serviceProviderAccessScopeMapper.fromUser(AuthUser(userId, authSource, userName)).contracts
     return HibernateCursorItemReaderBuilder<Referral>()
       .name("performanceReportReader")
       .sessionFactory(sessionFactory)
@@ -76,6 +76,8 @@ class PerformanceReportJobConfiguration(
     validator.setRequiredKeys(
       arrayOf(
         "user.id",
+        "user.authSource",
+        "user.userName",
         "user.firstName",
         "user.email",
         "from",
