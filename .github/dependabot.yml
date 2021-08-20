@@ -7,3 +7,6 @@ updates:
     time: "03:00"
     timezone: Europe/London
   open-pull-requests-limit: 10
+  ignore:
+    - dependency-name: "software.amazon.awssdk:*"
+      update-types: ["version-update:semver-patch"]
