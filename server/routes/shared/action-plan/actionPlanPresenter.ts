@@ -82,4 +82,8 @@ export default class ActionPlanPresenter {
   get showEditButton(): boolean {
     return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanUnderReview
   }
+
+  get showCreateNewActionPlanVersionButton(): boolean {
+    return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanApproved
+  }
 }

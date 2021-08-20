@@ -81,6 +81,16 @@
           </form>
         {% endif %}
 
+        {% if presenter.showCreateNewActionPlanVersionButton %}
+          <h2 class="govuk-heading-m">Create a new action plan</h2>
+          <div class="app-inset-text">
+            <p class="govuk-body">If you want to amend the activities or number of sessions, please click the button below to start a new action plan.</p>
+            <form method="get" action="{{ presenter.actionPlanEditConfirmationUrl }}">
+              {{ govukButton({ text: "Create action plan", preventDoubleClick: true, classes: 'govuk-!-margin-bottom-4' }) }}
+            </form>
+          </div>
+        {% endif %}
+
         {% if presenter.showActionPlanVersions %}
           <h2 class="govuk-heading-m">Action plan versions</h2>
           {{ govukTable(approvedActionPlansTableArgs) }}

@@ -9,9 +9,9 @@
         <div class="govuk-grid-column-two-thirds">
             {{ govukBackLink(backLinkArgs) }}
 
-            <h1 class="govuk-heading-l">Are you sure you want to change the action plan while it is being reviewed?</h1>
+            <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
 
-            <p class="govuk-body">Note: This will withdraw the current action plan and the probation practitioner will no longer be able to view it.</p>
+            <p class="govuk-body">{{ presenter.text.note }}</p>
 
             <form action="{{ presenter.editConfirmAction }}" method="post">
                 <input type="hidden" name="_csrf" value="{{csrfToken}}">

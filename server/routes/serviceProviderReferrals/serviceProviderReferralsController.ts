@@ -1419,10 +1419,8 @@ export default class ServiceProviderReferralsController {
   }
 
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
-    const sentReferral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      req.params.id
-    )
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     if (sentReferral.actionPlanId === null) {
       throw createError(500, `could not edit action plan for referral with id '${req.params.id}'`, {
@@ -1430,9 +1428,12 @@ export default class ServiceProviderReferralsController {
       })
     }
 
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const [serviceUser, actionPlan] = await Promise.all([
+      await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
+    ])
 
-    const presenter = new ActionPlanEditConfirmationPresenter(sentReferral)
+    const presenter = new ActionPlanEditConfirmationPresenter(sentReferral, actionPlan)
     const view = new ActionPlanEditConfirmationView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
