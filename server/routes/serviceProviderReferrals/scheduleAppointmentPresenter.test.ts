@@ -176,6 +176,7 @@ describe(ScheduleAppointmentPresenter, () => {
             ],
           },
           null,
+          null,
           {
             errors: [
               {
@@ -235,7 +236,7 @@ describe(ScheduleAppointmentPresenter, () => {
   })
 
   describe('fields', () => {
-    describe('with a null appointment', () => {
+    describe('with null draft scheduling details and a null appointment', () => {
       it('returns empty fields', () => {
         const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
 
@@ -434,6 +435,117 @@ describe(ScheduleAppointmentPresenter, () => {
         })
       })
     })
+
+    describe('with non-null draft scheduling details', () => {
+      describe('with a null current appointment', () => {
+        it('uses the values from the draft scheduling details', () => {
+          const draftSchedulingDetails = initialAssessmentAppointmentFactory.build({
+            appointmentTime: '2021-03-24T10:30:00Z',
+            durationInMinutes: 75,
+            sessionType: 'ONE_TO_ONE',
+            appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+            appointmentDeliveryAddress: {
+              firstAddressLine: 'Harmony Living Office, Room 4',
+              secondAddressLine: '44 Bouverie Road',
+              townOrCity: 'Blackpool',
+              county: 'Lancashire',
+              postCode: 'SY4 0RE',
+            },
+          })
+          const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
+            referral,
+            null,
+            null,
+            [],
+            null,
+            draftSchedulingDetails
+          )
+
+          expect(presenter.fields).toEqual({
+            date: {
+              errorMessage: null,
+              day: { value: '24', hasError: false },
+              month: { value: '3', hasError: false },
+              year: { value: '2021', hasError: false },
+            },
+            time: {
+              errorMessage: null,
+              hour: { value: '10', hasError: false },
+              minute: { value: '30', hasError: false },
+              partOfDay: {
+                value: 'am',
+                hasError: false,
+              },
+            },
+            duration: {
+              errorMessage: null,
+              hours: { value: '1', hasError: false },
+              minutes: { value: '15', hasError: false },
+            },
+            meetingMethod: { value: 'IN_PERSON_MEETING_OTHER', errorMessage: null },
+            sessionType: { value: 'ONE_TO_ONE', errorMessage: null },
+            address: {
+              value: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY4 0RE',
+              },
+              errors: {
+                firstAddressLine: null,
+                postcode: null,
+              },
+            },
+            deliusOfficeLocation: {
+              value: null,
+              errorMessage: null,
+            },
+          })
+        })
+      })
+
+      describe('with a non-null, not attended current appointment', () => {
+        it('still uses the values from the draft scheduling details', () => {
+          const draftSchedulingDetails = initialAssessmentAppointmentFactory.build({
+            appointmentTime: '2021-03-24T10:30:00Z',
+          })
+          const currentAppointment = initialAssessmentAppointmentFactory.build({
+            appointmentTime: '2021-03-27T19:30:00Z',
+          })
+          const presenter = new ScheduleAppointmentPresenter(
+            'supplierAssessment',
+            referral,
+            currentAppointment,
+            null,
+            [],
+            null,
+            draftSchedulingDetails,
+            null,
+            null
+          )
+
+          expect(presenter.fields).toMatchObject({
+            date: {
+              errorMessage: null,
+              day: { value: '24', hasError: false },
+              month: { value: '3', hasError: false },
+              year: { value: '2021', hasError: false },
+            },
+            time: {
+              errorMessage: null,
+              hour: { value: '10', hasError: false },
+              minute: { value: '30', hasError: false },
+              partOfDay: {
+                value: 'am',
+                hasError: false,
+              },
+            },
+          })
+        })
+      })
+    })
   })
 
   describe('backLinkHref', () => {
@@ -453,6 +565,7 @@ describe(ScheduleAppointmentPresenter, () => {
           null,
           null,
           [],
+          null,
           null,
           null,
           null,

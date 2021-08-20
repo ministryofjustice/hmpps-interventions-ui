@@ -28,7 +28,7 @@ export default class SupplierAssessmentAppointmentPresenter {
 
     return sessionStatus.forAppointment(this.appointment) === SessionStatus.scheduled
       ? {
-          href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+          href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
           text: 'Change appointment details',
         }
       : null

@@ -200,7 +200,7 @@ export default class InterventionProgressPresenter {
           {
             text: 'Schedule',
             hiddenText: ' initial assessment',
-            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
           },
         ]
       case SessionStatus.scheduled:
@@ -221,7 +221,7 @@ export default class InterventionProgressPresenter {
         return [
           {
             text: 'Reschedule',
-            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule`,
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
           },
         ]
       case SessionStatus.completed:

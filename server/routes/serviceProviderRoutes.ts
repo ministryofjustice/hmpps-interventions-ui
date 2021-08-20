@@ -120,10 +120,28 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.showEndOfServiceReportConfirmation(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/schedule', (req, res) =>
+    // This keeps the Schedule / Change buttons working on any pre-drafts versions
+    // of the intervention details / view supplier assessment pages
+    serviceProviderReferralsController.startSupplierAssessmentAppointmentScheduling(req, res)
+  )
+  get(router, '/referrals/:id/supplier-assessment/schedule/start', (req, res) =>
+    serviceProviderReferralsController.startSupplierAssessmentAppointmentScheduling(req, res)
+  )
+  get(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', (req, res) =>
+    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+  )
+  post(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', (req, res) =>
     serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/schedule', (req, res) =>
-    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+    // This keeps the submit button working on any pre-drafts version of the booking form
+    serviceProviderReferralsController.backwardsCompatibilityScheduleSupplierAssessmentAppointment(req, res)
+  )
+  get(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/check-answers', (req, res) =>
+    serviceProviderReferralsController.checkSupplierAssessmentAnswers(req, res)
+  )
+  post(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/submit', (req, res) =>
+    serviceProviderReferralsController.submitSupplierAssessment(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment', (req, res) =>
     serviceProviderReferralsController.showSupplierAssessmentAppointment(req, res)

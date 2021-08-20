@@ -77,7 +77,7 @@ import ReportingPresenter from './reportingPresenter'
 import ReportingView from './reportingView'
 import ReportingForm from './reportingForm'
 import PerformanceReportConfirmationView from './performanceReportConfirmationView'
-import DraftsService from '../../services/draftsService'
+import DraftsService, { Draft } from '../../services/draftsService'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
@@ -85,10 +85,14 @@ import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilte
 import config from '../../config'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import ReferenceDataService from '../../services/referenceDataService'
+import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
+import InitialAssessmentCheckAnswersView from './initialAssessmentCheckAnswersView'
 
 export interface DraftAssignmentData {
   email: string | null
 }
+
+export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
 
 export default class ServiceProviderReferralsController {
   s3Service: S3
@@ -629,7 +633,33 @@ export default class ServiceProviderReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async startSupplierAssessmentAppointmentScheduling(req: Request, res: Response): Promise<void> {
+    const draftBooking = await this.draftsService.createDraft('supplierAssessmentBooking', null, {
+      userId: res.locals.user.userId,
+    })
+
+    res.redirect(`/service-provider/referrals/${req.params.id}/supplier-assessment/schedule/${draftBooking.id}/details`)
+  }
+
+  async backwardsCompatibilityScheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+    const draft = await this.draftsService.createDraft<DraftAppointmentBooking>('supplierAssessmentBooking', null, {
+      userId: res.locals.user.userId,
+    })
+
+    await this.scheduleSupplierAssessmentAppointmentWithDraft(draft, req, res)
+  }
+
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+    const draft = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+
+    await this.scheduleSupplierAssessmentAppointmentWithDraft(draft, req, res)
+  }
+
+  async scheduleSupplierAssessmentAppointmentWithDraft(
+    draft: Draft<DraftAppointmentBooking>,
+    req: Request,
+    res: Response
+  ): Promise<void> {
     const referralId = req.params.id
     const { accessToken } = res.locals.user.token
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
@@ -639,9 +669,11 @@ export default class ServiceProviderReferralsController {
       await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
     const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
-    await this.scheduleAppointment(
+
+    await this.scheduleAppointmentUsingDrafts(
       req,
       res,
+      draft,
       {
         getReferral: async () => referral,
         scheduleAppointment: paramsForUpdate =>
@@ -677,17 +709,55 @@ export default class ServiceProviderReferralsController {
             appointmentSummary,
             deliusOfficeLocations,
             formError,
+            draft.data,
             userInputData,
             serverError,
             overrideBackLinkHref
           )
         },
-        redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/${
-          hasExistingScheduledAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
-        }`,
+        redirectTo: `/service-provider/referrals/${referralId}/supplier-assessment/schedule/${draft.id}/check-answers`,
       },
       deliusOfficeLocations
     )
+  }
+
+  async checkSupplierAssessmentAnswers(req: Request, res: Response): Promise<void> {
+    const referralId = req.params.id
+
+    const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const draft = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+
+    const presenter = new InitialAssessmentCheckAnswersPresenter(draft, referral.id)
+    const view = new InitialAssessmentCheckAnswersView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitSupplierAssessment(req: Request, res: Response): Promise<void> {
+    const referralId = req.params.id
+    const { draftBookingId } = req.params
+    const { accessToken } = res.locals.user.token
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
+
+    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
+    const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
+
+    await this.submitAppointment(req, res, {
+      scheduleAppointment: paramsForUpdate =>
+        this.interventionsService
+          .scheduleSupplierAssessmentAppointment(
+            res.locals.user.token.accessToken,
+            supplierAssessment.id,
+            paramsForUpdate
+          )
+          .then(),
+      redirectToOnSuccess: `/service-provider/referrals/${referralId}/supplier-assessment/${
+        hasExistingScheduledAppointment ? 'rescheduled-confirmation' : 'scheduled-confirmation'
+      }`,
+      redirectToOnClash: `/service-provider/referrals/${req.params.id}/supplier-assessment/schedule/${draftBookingId}/details?clash=true`,
+    })
   }
 
   async showSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
@@ -774,6 +844,104 @@ export default class ServiceProviderReferralsController {
     const presenter = await appointmentConfig.createPresenter(formError, userInputData, serverError)
     const view = new ScheduleAppointmentView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async scheduleAppointmentUsingDrafts(
+    req: Request,
+    res: Response,
+    draft: Draft<DraftAppointmentBooking>,
+    appointmentConfig: {
+      getReferral: () => Promise<SentReferral>
+      scheduleAppointment: (paramsForUpdate: AppointmentSchedulingDetails) => Promise<void>
+      createPresenter: (
+        validationError: FormValidationError | null,
+        userInputData: Record<string, unknown> | null,
+        serverError: FormValidationError | null
+      ) => Promise<ScheduleAppointmentPresenter>
+      redirectTo: string
+    },
+    deliusOfficeLocations: DeliusOfficeLocation[]
+  ): Promise<void> {
+    let userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+    let serverError: FormValidationError | null = null
+
+    if (req.method === 'POST') {
+      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.draftsService.updateDraft(draft.id, data.paramsForUpdate, { userId: res.locals.user.userId })
+        return res.redirect(appointmentConfig.redirectTo)
+      }
+    } else if (req.query.clash === 'true') {
+      serverError = {
+        errors: [
+          {
+            formFields: ['session-input'],
+            errorSummaryLinkedField: 'session-input',
+            message:
+              'The proposed date and time you selected clashes with another appointment. Please select a different date and time.',
+          },
+        ],
+      }
+    }
+
+    const referral = await appointmentConfig.getReferral()
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = await appointmentConfig.createPresenter(formError, userInputData, serverError)
+    const view = new ScheduleAppointmentView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async fetchDraftBookingOrThrowSpecificError(req: Request, res: Response) {
+    const id = req.params.draftBookingId
+    const draftAssignment = await this.draftsService.fetchDraft<DraftAppointmentBooking>(id, {
+      userId: res.locals.user.userId,
+    })
+
+    if (draftAssignment === null) {
+      throw createError(500, `Draft assignment with ID ${id} not found by drafts service`, {
+        userMessage:
+          'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
+      })
+    }
+
+    return draftAssignment
+  }
+
+  private async submitAppointment(
+    req: Request,
+    res: Response,
+    appointmentConfig: {
+      scheduleAppointment: (paramsForUpdate: AppointmentSchedulingDetails) => Promise<void>
+      redirectToOnSuccess: string
+      redirectToOnClash: string
+    }
+  ): Promise<void> {
+    const draft = await this.fetchDraftBookingOrThrowSpecificError(req, res)
+
+    if (draft.data === null) {
+      throw new Error('Draft data was unexpectedly null when submitting appointment')
+    }
+
+    try {
+      await appointmentConfig.scheduleAppointment(draft.data)
+    } catch (e) {
+      if (e.status === 409) {
+        res.redirect(appointmentConfig.redirectToOnClash)
+        return
+      }
+
+      throw e
+    }
+
+    await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+    res.redirect(appointmentConfig.redirectToOnSuccess)
   }
 
   async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {

@@ -574,7 +574,7 @@ describe(InterventionProgressPresenter, () => {
           {
             text: 'Schedule',
             hiddenText: ' initial assessment',
-            href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule`,
+            href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`,
           },
         ])
       })
@@ -660,7 +660,7 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.supplierAssessmentLink).toEqual([
           {
             text: 'Reschedule',
-            href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule`,
+            href: `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`,
           },
         ])
       })

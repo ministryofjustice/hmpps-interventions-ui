@@ -22,6 +22,7 @@ export default class ScheduleActionPlanSessionPresenter extends ScheduleAppointm
       currentAppointmentSummary,
       deliusOfficeLocations,
       validationError,
+      null,
       userInputData,
       serverError
     )

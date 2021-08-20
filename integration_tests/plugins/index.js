@@ -231,6 +231,10 @@ module.exports = on => {
       return interventionsService.stubScheduleSupplierAssessmentAppointment(arg.supplierAssessmentId, arg.responseJson)
     },
 
+    stubScheduleSupplierAssessmentAppointmentClash: arg => {
+      return interventionsService.stubScheduleSupplierAssessmentAppointmentClash(arg.supplierAssessmentId)
+    },
+
     stubSubmitSupplierAssessmentAppointmentFeedback: arg => {
       return interventionsService.stubSubmitSupplierAssessmentAppointmentFeedback(arg.referralId, arg.responseJson)
     },

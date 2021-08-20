@@ -1,10 +1,14 @@
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../models/appointment'
+import {
+  ActionPlanAppointment,
+  AppointmentSchedulingDetails,
+  InitialAssessmentAppointment,
+} from '../models/appointment'
 import CalendarDay from '../utils/calendarDay'
 import ClockTime from '../utils/clockTime'
 import Duration from '../utils/duration'
 
 export default class AppointmentDecorator {
-  constructor(private readonly appointment: InitialAssessmentAppointment | ActionPlanAppointment) {}
+  constructor(private readonly appointment: AppointmentSchedulingDetails) {}
 
   get britishDay(): CalendarDay | null {
     if (this.appointment.appointmentTime === null) {
