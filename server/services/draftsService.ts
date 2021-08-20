@@ -1,5 +1,5 @@
 import { RedisClient } from 'redis'
-import uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { promisify } from 'util'
 
 export interface Draft<T> {
@@ -63,7 +63,7 @@ export default class DraftsService {
   async createDraft<Data>(type: string, initialData: Data, { userId }: { userId: string }): Promise<Draft<Data>> {
     const now = this.clock.now()
     const draft: Draft<Data> = {
-      id: uuid.v4(),
+      id: uuidv4(),
       type,
       data: initialData,
       createdAt: now,
