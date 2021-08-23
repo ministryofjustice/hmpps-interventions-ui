@@ -5,6 +5,9 @@
 
 {% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
 
+{% set pageTitle = "Appointment feedback" %}
+{% set pageSubTitle = "Add behaviour feedback" %}
+
 {% block formSection %}
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
