@@ -28,7 +28,7 @@ class PerformanceReportProcessor(
       referralId = referral.id,
       contractReference = contract.contractReference,
       organisationId = contract.primeProvider.id,
-      currentAssigneeId = referral.currentAssignee?.id,
+      currentAssigneeEmail = referral.currentAssignee?.userName,
       serviceUserCRN = referral.serviceUserCRN,
       dateReferralReceived = referral.sentAt!!,
       initialAssessmentBookedAt = initialAssessmentAppointment?.createdAt,
