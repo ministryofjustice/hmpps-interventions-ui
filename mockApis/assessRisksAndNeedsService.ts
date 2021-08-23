@@ -1,13 +1,13 @@
 import Wiremock from './wiremock'
 
 export default class AssessRisksAndNeedsServiceMocks {
-  constructor(private readonly wiremock: Wiremock) {}
+  constructor(private readonly wiremock: Wiremock, private readonly mockPrefix: string) {}
 
   stubGetSupplementaryRiskInformation = async (riskId: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/assess-risks-and-needs/risks/supplementary/${riskId}`,
+        urlPattern: `${this.mockPrefix}/risks/supplementary/${riskId}`,
       },
       response: {
         status: 200,
@@ -23,7 +23,7 @@ export default class AssessRisksAndNeedsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/assess-risks-and-needs/risks/crn/${crn}`,
+        urlPattern: `${this.mockPrefix}/risks/crn/${crn}`,
       },
       response: {
         status: 200,

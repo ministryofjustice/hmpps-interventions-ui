@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "ANY",
+    "urlPattern": "/risks/.*"
+  },
+  "response": {
+    "proxyBaseUrl": "http://assess-risks-and-needs:8080"
+  },
+  "priority": 8
+}
