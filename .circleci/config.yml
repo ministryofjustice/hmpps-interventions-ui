@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.10
+  hmpps: ministryofjustice/hmpps@3.11
   snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
   veracode: orb-01scan/sast-orb@0.0.9
