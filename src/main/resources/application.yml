@@ -97,6 +97,7 @@ notify:
     end-of-service-report-submitted: "f79cb53f-dc5c-42aa-947e-f599f9ad7942"
     initial-assessment-scheduled: "28256bed-6433-485c-857d-cb52a7937dff"
     service-provider-performance-report-ready: "9839e772-cd88-435d-9d18-61ea14d3531b"
+    service-provider-performance-report-failed: "b4a09047-bf01-4ca1-ba55-f08bcce524f2"
 
 interventions-ui:
   locations:
