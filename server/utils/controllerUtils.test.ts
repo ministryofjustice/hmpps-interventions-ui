@@ -127,7 +127,7 @@ describe(ControllerUtils, () => {
 
         expect(thrownError).toMatchObject({
           status: 500,
-          message: `Draft booking with ID abc123 not found by drafts service`,
+          message: `UI-only draft booking with ID abc123 not found`,
           userMessage: 'Timed out, start again',
         })
       })

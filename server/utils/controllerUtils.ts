@@ -41,7 +41,7 @@ export default class ControllerUtils {
     })
 
     if (draft === null) {
-      throw createError(500, `Draft ${typeName} with ID ${id} not found by drafts service`, {
+      throw createError(500, `UI-only draft ${typeName} with ID ${id} not found`, {
         userMessage: notFoundUserMessage,
       })
     }
