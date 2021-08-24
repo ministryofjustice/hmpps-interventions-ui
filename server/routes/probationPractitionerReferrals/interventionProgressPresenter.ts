@@ -90,7 +90,7 @@ export default class InterventionProgressPresenter {
       return {
         sessionNumber: appointment.sessionNumber,
         appointmentTime: appointment.appointmentTime
-          ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short' })
+          ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short', timeCasing: 'capitalized' })
           : '',
         tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
         link: sessionTableParams.link,

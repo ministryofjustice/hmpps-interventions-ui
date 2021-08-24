@@ -57,7 +57,7 @@ describe(InterventionProgressPresenter, () => {
             [
               actionPlanAppointmentFactory.build({
                 sessionNumber: 1,
-                appointmentTime: '3020-12-07T13:00:00.000000Z',
+                appointmentTime: '3020-12-07T12:00:00.000000Z',
                 durationInMinutes: 120,
               }),
             ],
@@ -68,7 +68,7 @@ describe(InterventionProgressPresenter, () => {
           expect(presenter.sessionTableRows).toEqual([
             {
               sessionNumber: 1,
-              appointmentTime: '1:00pm on 7 Dec 3020',
+              appointmentTime: 'Midday on 7 Dec 3020',
               tagArgs: {
                 text: 'scheduled',
                 classes: 'govuk-tag--blue',

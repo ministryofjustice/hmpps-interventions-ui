@@ -38,7 +38,8 @@ export default class AppointmentSummary {
         lines: [
           DateUtils.formattedTimeRange(
             this.appointmentDecorator.britishTime!,
-            this.appointmentDecorator.britishEndsAtTime!
+            this.appointmentDecorator.britishEndsAtTime!,
+            { casing: 'capitalized' }
           ),
         ],
       })

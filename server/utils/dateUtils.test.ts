@@ -71,6 +71,11 @@ describe('DateUtils', () => {
       // Note that js Dates are 0 indexed for months
       expect(DateUtils.formattedTime(new Date(Date.UTC(2021, 5, 2, 17, 30)))).toEqual('6:30pm')
     })
+
+    it('returns capitalized words when capitalized option is specified', () => {
+      expect(DateUtils.formattedTime('2021-06-02T12:00:00+01:00', { casing: 'capitalized' })).toEqual('Midday')
+      expect(DateUtils.formattedTime('2021-06-02T24:00:00+01:00', { casing: 'capitalized' })).toEqual('Midnight')
+    })
   })
 
   describe('formattedTimeRange', () => {
@@ -93,6 +98,19 @@ describe('DateUtils', () => {
       expect(
         DateUtils.formattedTimeRange(new Date(Date.UTC(2021, 5, 2, 5, 30)), new Date(Date.UTC(2021, 5, 2, 18, 30)))
       ).toEqual('6:30am to 7:30pm')
+    })
+
+    it('returns capitalized words when capitalized option is specified', () => {
+      expect(
+        DateUtils.formattedTimeRange('2021-06-02T12:00:00+01:00', '2021-06-02T24:00:00+01:00', {
+          casing: 'capitalized',
+        })
+      ).toEqual('Midday to midnight')
+      expect(
+        DateUtils.formattedTimeRange('2021-06-02T24:00:00+01:00', '2021-06-02T12:00:00+01:00', {
+          casing: 'capitalized',
+        })
+      ).toEqual('Midnight to midday')
     })
   })
 })

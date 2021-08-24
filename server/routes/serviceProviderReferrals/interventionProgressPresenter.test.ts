@@ -147,7 +147,7 @@ describe(InterventionProgressPresenter, () => {
           [
             actionPlanAppointmentFactory.build({
               sessionNumber: 1,
-              appointmentTime: '2020-12-07T13:00:00.000000Z',
+              appointmentTime: '2020-12-07T12:00:00.000000Z',
               durationInMinutes: 120,
             }),
           ],
@@ -156,7 +156,7 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.sessionTableRows).toEqual([
           {
             sessionNumber: 1,
-            appointmentTime: '1:00pm on 7 Dec 2020',
+            appointmentTime: 'Midday on 7 Dec 2020',
             statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
             links: [
               {
