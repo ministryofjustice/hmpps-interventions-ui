@@ -79,15 +79,17 @@ export default class InterventionProgressPresenter {
       return []
     }
 
-    return this.actionPlanAppointments.map(appointment => {
-      const sessionTableParams = this.sessionTableParams(appointment)
+    return this.actionPlanAppointments
+      .map(appointment => {
+        const sessionTableParams = this.sessionTableParams(appointment)
 
-      return {
-        sessionNumber: appointment.sessionNumber,
-        appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
-        ...sessionTableParams,
-      }
-    })
+        return {
+          sessionNumber: appointment.sessionNumber,
+          appointmentTime: DateUtils.formatDateTimeOrEmptyString(appointment.appointmentTime),
+          ...sessionTableParams,
+        }
+      })
+      .sort((a, b) => a.sessionNumber - b.sessionNumber)
   }
 
   private sessionTableParams(appointment: ActionPlanAppointment): {

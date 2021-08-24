@@ -87,6 +87,26 @@ describe(InterventionProgressPresenter, () => {
       expect(presenter.sessionTableRows).toEqual([])
     })
 
+    describe('when there are multiple sessions', () => {
+      it('they must be ordered by session number', () => {
+        const referral = sentReferralFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [
+            actionPlanAppointmentFactory.build({ sessionNumber: 2 }),
+            actionPlanAppointmentFactory.build({ sessionNumber: 3 }),
+            actionPlanAppointmentFactory.build({ sessionNumber: 1 }),
+          ],
+          supplierAssessmentFactory.build()
+        )
+        expect(presenter.sessionTableRows.map(row => row.sessionNumber)).toEqual([1, 2, 3])
+      })
+    })
+
     describe('when a session exists but an appointment has not yet been scheduled', () => {
       it('populates the table with formatted session information, with the "Edit session details" link displayed', () => {
         const referral = sentReferralFactory.build()
