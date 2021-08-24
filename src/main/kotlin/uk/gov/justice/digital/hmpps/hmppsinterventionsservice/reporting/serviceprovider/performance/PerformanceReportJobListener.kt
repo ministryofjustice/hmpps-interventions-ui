@@ -30,7 +30,7 @@ class PerformanceReportJobListener(
     val params = jobExecution.jobParameters.parameters
     val path = createTempDirectory().resolve("${params["user.id"]}_${params["timestamp"]}.csv")
 
-    logger.info("creating csv file for service provider performance report {}", kv("path", path))
+    logger.debug("creating csv file for service provider performance report {}", kv("path", path))
 
     jobExecution.executionContext.put("output.file.path", path.toString())
   }
@@ -74,7 +74,7 @@ class PerformanceReportJobListener(
     }
 
     // delete the temporary csv file regardless of the job status
-    logger.info("deleting csv file for service provider report {}", kv("path", path))
+    logger.debug("deleting csv file for service provider report {}", kv("path", path))
     File(path.toString()).delete()
   }
 }
