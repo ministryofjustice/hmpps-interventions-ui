@@ -374,6 +374,29 @@ describe('GET /service-provider/referrals/:id/assignment/:draftAssignmentId/chec
         })
     })
   })
+
+  describe('when the draft assignment has been soft deleted', () => {
+    it('responds with a 410 Gone status and renders an error message', async () => {
+      const draftAssignment = draftAssignmentFactory.build({ softDeleted: true })
+      draftsService.fetchDraft.mockResolvedValue(draftAssignment)
+
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+      const referral = sentReferralFactory.build({ referral: { interventionId: intervention.id } })
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
+
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
+
+      await request(app)
+        .get(`/service-provider/referrals/${referral.id}/assignment/${draftAssignment.id}/check`)
+        .query({ email: 'john@harmonyliving.org.uk' })
+        .expect(410)
+        .expect(res => {
+          expect(res.text).toContain('This page is no longer available')
+        })
+    })
+  })
 })
 
 describe('POST /service-provider/referrals/:id/:draftAssignmentId/submit', () => {
@@ -2162,6 +2185,25 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draf
         expect(res.text).toContain('9:02am to 10:17am')
         expect(res.text).toContain('Phone call')
       })
+  })
+
+  describe('when the draft booking has been soft deleted', () => {
+    it('responds with a 410 Gone status and renders an error message', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build({
+        softDeleted: true,
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      const referral = sentReferralFactory.build()
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+
+      await request(app)
+        .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/check-answers`)
+        .expect(410)
+        .expect(res => {
+          expect(res.text).toContain('This page is no longer available')
+        })
+    })
   })
 })
 

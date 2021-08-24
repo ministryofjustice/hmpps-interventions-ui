@@ -334,20 +334,13 @@ export default class ProbationPractitionerReferralsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  private async fetchDraftCancellationOrThrowSpecificError(req: Request, res: Response) {
-    const id = req.params.draftCancellationId
-    const draftCancellation = await this.draftsService.fetchDraft<DraftCancellationData>(id, {
-      userId: res.locals.user.userId,
+  private async fetchDraftCancellationOrRenderMessage(req: Request, res: Response) {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftCancellationData>(req, res, this.draftsService, {
+      idParamName: 'draftCancellationId',
+      notFoundUserMessage:
+        'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
+      typeName: 'cancellation',
     })
-
-    if (draftCancellation === null) {
-      throw createError(500, `Draft cancellation with ID ${id} not found by drafts service`, {
-        userMessage:
-          'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
-      })
-    }
-
-    return draftCancellation
   }
 
   async editCancellationReason(req: Request, res: Response): Promise<void> {
@@ -355,7 +348,11 @@ export default class ProbationPractitionerReferralsController {
     const { accessToken } = user.token
     const referralId = req.params.id
 
-    const draftCancellation = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftCancellationOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const draftCancellation = fetchResult.draft
 
     const data = await new ReferralCancellationReasonForm(req).data()
 
@@ -367,9 +364,10 @@ export default class ProbationPractitionerReferralsController {
           userId: res.locals.user.userId,
         })
 
-        return res.redirect(
+        res.redirect(
           `/probation-practitioner/referrals/${referralId}/cancellation/${draftCancellation.id}/check-your-answers`
         )
+        return
       }
 
       res.status(400)
@@ -394,14 +392,18 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new ReferralCancellationReasonView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async cancellationCheckAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
 
-    const draftCancellation = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftCancellationOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const draftCancellation = fetchResult.draft
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
@@ -409,7 +411,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new ReferralCancellationCheckAnswersPresenter(req.params.id, draftCancellation.id)
     const view = new ReferralCancellationCheckAnswersView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async backwardsCompatibilitySubmitCancellation(req: Request, res: Response): Promise<void> {
@@ -420,7 +422,11 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async submitCancellation(req: Request, res: Response): Promise<void> {
-    const draftCancellation = await this.fetchDraftCancellationOrThrowSpecificError(req, res)
+    const fetchResult = await this.fetchDraftCancellationOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const draftCancellation = fetchResult.draft
 
     const { cancellationReason, cancellationComments } = draftCancellation.data
 

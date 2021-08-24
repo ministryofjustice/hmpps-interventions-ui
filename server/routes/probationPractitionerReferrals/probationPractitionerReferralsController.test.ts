@@ -594,6 +594,30 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
         })
     })
   })
+
+  describe('when the draft cancellation has been soft deleted', () => {
+    it('responds with a 410 Gone status and renders an error message', async () => {
+      const draftCancellation = draftCancellationFactory.build({
+        softDeleted: true,
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftCancellation)
+
+      const referral = sentReferralFactory.assigned().build()
+      const intervention = interventionFactory.build()
+      const serviceUser = deliusServiceUserFactory.build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+
+      await request(app)
+        .get(`/probation-practitioner/referrals/${referral.id}/cancellation/${draftCancellation.id}/check-your-answers`)
+        .expect(410)
+        .expect(res => {
+          expect(res.text).toContain('This page is no longer available')
+        })
+    })
+  })
 })
 
 describe('POST /probation-practitioner/referrals/:id/cancellation/submit', () => {
