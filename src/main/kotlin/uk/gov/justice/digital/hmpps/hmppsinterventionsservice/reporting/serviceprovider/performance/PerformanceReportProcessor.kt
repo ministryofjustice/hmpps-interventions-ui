@@ -14,7 +14,7 @@ class PerformanceReportProcessor(
   companion object : KLogging()
 
   override fun process(referral: Referral): PerformanceReportData {
-    logger.info("processing referral {}", kv("referralId", referral.id))
+    logger.debug("processing referral {}", kv("referralId", referral.id))
 
     if (referral.sentAt == null) throw RuntimeException("invalid referral passed to report processor; referral has not been sent")
 

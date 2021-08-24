@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance
 
+import mu.KLogging
+import net.logstash.logback.argument.StructuredArguments.kv
 import org.hibernate.SessionFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -33,6 +35,8 @@ class PerformanceReportJobConfiguration(
   @Value("\${spring.batch.jobs.service-provider.performance-report.page-size}") private val pageSize: Int,
   @Value("\${spring.batch.jobs.service-provider.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
+  companion object : KLogging()
+
   @Bean
   @JobScope
   fun reader(
@@ -45,6 +49,15 @@ class PerformanceReportJobConfiguration(
   ): HibernateCursorItemReader<Referral> {
     // this reader returns referral entities which need processing for the report.
     val contracts = serviceProviderAccessScopeMapper.fromUser(AuthUser(userId, authSource, userName)).contracts
+
+    logger.info(
+      "creating reader for referrals associated with user's contract scope",
+      kv("userId", userId),
+      kv("contracts", contracts.map { it.contractReference }),
+      kv("from", from),
+      kv("to", to)
+    )
+
     return HibernateCursorItemReaderBuilder<Referral>()
       .name("performanceReportReader")
       .sessionFactory(sessionFactory)
