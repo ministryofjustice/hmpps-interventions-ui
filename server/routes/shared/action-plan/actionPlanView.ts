@@ -20,7 +20,7 @@ export default class ActionPlanView {
   insetTextActivityArgs(index: number, description: string): InsetTextArgs {
     return {
       html: `<h3 class="govuk-heading-m govuk-!-font-weight-bold">Activity ${index}</h3><p class="govuk-body">${description}</p>`,
-      classes: 'app-inset-text--grey',
+      classes: 'app-inset-text app-inset-text--left-border',
     }
   }
 

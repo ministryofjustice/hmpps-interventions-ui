@@ -15,6 +15,7 @@ import supplierAssessmentFactory from '../../testutils/factories/supplierAssessm
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import serviceProviderSentReferralSummaryFactory from '../../testutils/factories/serviceProviderSentReferralSummary'
+import actionPlanActivityFactory from '../../testutils/factories/actionPlanActivity'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -616,6 +617,239 @@ describe('Service provider referrals dashboard', () => {
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
     cy.get('#action-plan-status').contains('Awaiting approval')
     cy.get('.action-plan-submitted-date').contains(/\d{1,2} [A-Z][a-z]{2} \d{4}/)
+  })
+
+  describe('editing a submitted action plan', () => {
+    it('User edits an unapproved action plan and submits it for approval', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const accommodationIntervention = interventionFactory.build({
+        contractType: { code: 'SOC', name: 'Social inclusion' },
+        serviceCategories: [serviceCategory],
+      })
+
+      const actionPlanId = '2763d6e8-1847-4191-9c3f-0eea9a3b0c41'
+      const referralParams = {
+        referral: {
+          interventionId: accommodationIntervention.id,
+          serviceCategoryIds: [serviceCategory.id],
+        },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const deliusUser = deliusUserFactory.build()
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+      const assignedReferral = sentReferralFactory
+        .assigned()
+        .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username }, actionPlanId })
+
+      const activityId = '1'
+      const submittedActionPlan = actionPlanFactory.submitted(assignedReferral.id).build({
+        id: actionPlanId,
+        activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
+        submittedAt: '2021-08-19T11:03:47.061Z',
+      })
+      const referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
+        .withAssignedUser(hmppsAuthUser.username)
+        .build()
+
+      cy.stubGetSentReferralsForUserToken([assignedReferral])
+
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
+      cy.stubGetActionPlan(submittedActionPlan.id, submittedActionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetActionPlanAppointments(submittedActionPlan.id, [])
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+      cy.get('#action-plan-status').contains('Awaiting approval')
+      cy.contains('19 Aug 2021')
+      cy.contains('View action plan').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/action-plan`)
+
+      cy.contains('Edit action plan').click()
+      cy.contains('Are you sure you want to change the action plan while it is being reviewed?')
+      cy.stubCreateDraftActionPlan(submittedActionPlan)
+      cy.stubGetSentReferral(submittedActionPlan.referralId, assignedReferral)
+
+      cy.contains('Confirm and continue').click()
+
+      const activity = actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 2' })
+
+      const actionPlanWithUpdatedActivities = actionPlanFactory.build({
+        ...submittedActionPlan,
+        activities: [activity],
+      })
+
+      cy.contains('First activity version 1').clear().type('First activity version 2')
+      cy.stubUpdateActionPlanActivity(submittedActionPlan.id, activity.id, actionPlanWithUpdatedActivities)
+      cy.contains('Save and add activity 1').click()
+
+      cy.contains('Continue without adding other activities').click()
+
+      cy.get('#number-of-sessions').clear().type('5')
+
+      const actionPlanWithUpdatedSessions = actionPlanFactory.build({
+        ...actionPlanWithUpdatedActivities,
+        numberOfSessions: 5,
+      })
+
+      cy.stubUpdateDraftActionPlan(actionPlanWithUpdatedActivities.id, actionPlanWithUpdatedSessions)
+      cy.stubGetActionPlan(actionPlanWithUpdatedSessions.id, {
+        ...actionPlanWithUpdatedSessions,
+        submittedAt: '2021-08-20T11:03:47.061Z',
+      })
+      cy.contains('Save and continue').click()
+
+      cy.contains('First activity version 2')
+      cy.contains('Suggested number of sessions: 5')
+
+      cy.stubSubmitActionPlan(actionPlanWithUpdatedSessions.id, actionPlanWithUpdatedSessions)
+
+      cy.contains('Submit for approval').click()
+
+      cy.contains('Action plan submitted for approval')
+      cy.location('pathname').should(
+        'equal',
+        `/service-provider/action-plan/${actionPlanWithUpdatedSessions.id}/confirmation`
+      )
+      cy.contains('Return to service progress').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
+      cy.get('#action-plan-status').contains('Awaiting approval')
+      cy.contains('20 Aug 2021')
+    })
+
+    it('User edits an approved action plan and submits it for approval', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const accommodationIntervention = interventionFactory.build({
+        contractType: { code: 'SOC', name: 'Social inclusion' },
+        serviceCategories: [serviceCategory],
+      })
+
+      const actionPlanId = '2763d6e8-1847-4191-9c3f-0eea9a3b0c41'
+      const referralParams = {
+        referral: {
+          interventionId: accommodationIntervention.id,
+          serviceCategoryIds: [serviceCategory.id],
+        },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const deliusUser = deliusUserFactory.build()
+      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+      const assignedReferral = sentReferralFactory
+        .assigned()
+        .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username }, actionPlanId })
+
+      const activityId = '1'
+      const approvedActionPlan = actionPlanFactory.approved(assignedReferral.id).build({
+        id: actionPlanId,
+        activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
+        submittedAt: '2021-08-19T11:03:47.061Z',
+      })
+      const referralSummary = serviceProviderSentReferralSummaryFactory
+        .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
+        .withAssignedUser(hmppsAuthUser.username)
+        .build()
+
+      cy.stubGetSentReferralsForUserToken([assignedReferral])
+
+      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
+      cy.stubGetActionPlan(approvedActionPlan.id, approvedActionPlan)
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetActionPlanAppointments(approvedActionPlan.id, [])
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+
+      cy.login()
+
+      cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+      cy.get('#action-plan-status').contains('Approved')
+      cy.contains('19 Aug 2021')
+      cy.contains('View action plan').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/action-plan`)
+
+      cy.contains('Create action plan').click()
+      cy.contains('Are you sure you want to create a new action plan?')
+
+      const newActionPlanVersion = actionPlanFactory.build({
+        referralId: assignedReferral.id,
+        activities: approvedActionPlan.activities,
+        numberOfSessions: approvedActionPlan.numberOfSessions,
+      })
+
+      cy.stubCreateDraftActionPlan(newActionPlanVersion)
+      cy.stubGetActionPlan(newActionPlanVersion.id, newActionPlanVersion)
+      cy.stubGetSentReferral(newActionPlanVersion.referralId, assignedReferral)
+
+      cy.contains('Confirm and continue').click()
+
+      const activity = actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 2' })
+
+      const actionPlanWithUpdatedActivities = actionPlanFactory.build({
+        ...newActionPlanVersion,
+        activities: [activity],
+      })
+
+      cy.contains('First activity version 1').clear().type('First activity version 2')
+      cy.stubUpdateActionPlanActivity(newActionPlanVersion.id, activity.id, actionPlanWithUpdatedActivities)
+      cy.contains('Save and add activity 1').click()
+
+      cy.contains('Continue without adding other activities').click()
+
+      cy.get('#number-of-sessions').clear().type('5')
+
+      const actionPlanWithUpdatedSessions = actionPlanFactory.build({
+        ...actionPlanWithUpdatedActivities,
+        numberOfSessions: 5,
+      })
+
+      cy.stubUpdateDraftActionPlan(actionPlanWithUpdatedActivities.id, actionPlanWithUpdatedSessions)
+      const submittedActionPlanVersionTwo = actionPlanFactory.build({
+        ...actionPlanWithUpdatedSessions,
+        submittedAt: '2021-08-20T11:03:47.061Z',
+      })
+      cy.stubGetActionPlan(actionPlanWithUpdatedSessions.id, submittedActionPlanVersionTwo)
+
+      cy.contains('Save and continue').click()
+
+      cy.contains('First activity version 2')
+      cy.contains('Suggested number of sessions: 5')
+
+      cy.stubSubmitActionPlan(submittedActionPlanVersionTwo.id, submittedActionPlanVersionTwo)
+
+      cy.contains('Submit for approval').click()
+
+      cy.contains('Action plan submitted for approval')
+      cy.location('pathname').should(
+        'equal',
+        `/service-provider/action-plan/${submittedActionPlanVersionTwo.id}/confirmation`
+      )
+
+      cy.stubGetSentReferral(assignedReferral.id, {
+        ...assignedReferral,
+        actionPlanId: actionPlanWithUpdatedSessions.id,
+      })
+      cy.stubGetActionPlanAppointments(actionPlanWithUpdatedSessions.id, [])
+
+      cy.contains('Return to service progress').click()
+
+      cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
+      cy.get('#action-plan-status').contains('Awaiting approval')
+      cy.contains('20 Aug 2021')
+    })
   })
 
   describe('User schedules and views an action plan appointment', () => {

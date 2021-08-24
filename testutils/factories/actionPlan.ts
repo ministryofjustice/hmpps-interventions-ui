@@ -9,7 +9,11 @@ class ActionPlanFactory extends Factory<ActionPlan> {
   }
 
   submitted() {
-    return this.params({ submittedAt: new Date().toISOString() })
+    return this.params({
+      submittedAt: new Date().toISOString(),
+      numberOfSessions: 4,
+      activities: actionPlanActivityFactory.buildList(2),
+    })
   }
 
   approved() {

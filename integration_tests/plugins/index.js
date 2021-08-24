@@ -144,7 +144,7 @@ module.exports = on => {
     },
 
     stubUpdateActionPlanActivity: arg => {
-      return interventionsService.stubActionPlanActivity(arg.actionPlanId, arg.activityId, arg.responseJson)
+      return interventionsService.stubUpdateActionPlanActivity(arg.actionPlanId, arg.activityId, arg.responseJson)
     },
 
     stubSubmitActionPlan: arg => {
