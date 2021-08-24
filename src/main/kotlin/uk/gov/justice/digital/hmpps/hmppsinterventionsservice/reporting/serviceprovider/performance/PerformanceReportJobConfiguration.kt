@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance
 
-import mu.KLogging
-import net.logstash.logback.argument.StructuredArguments.kv
 import org.hibernate.SessionFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -18,8 +16,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.FileSystemResource
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
 import java.util.Date
@@ -27,7 +23,6 @@ import java.util.Date
 @Configuration
 @EnableBatchProcessing
 class PerformanceReportJobConfiguration(
-  private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val jobBuilderFactory: JobBuilderFactory,
   private val stepBuilderFactory: StepBuilderFactory,
   private val batchUtils: BatchUtils,
@@ -35,38 +30,24 @@ class PerformanceReportJobConfiguration(
   @Value("\${spring.batch.jobs.service-provider.performance-report.page-size}") private val pageSize: Int,
   @Value("\${spring.batch.jobs.service-provider.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
-  companion object : KLogging()
-
   @Bean
   @JobScope
   fun reader(
-    @Value("#{jobParameters['user.id']}") userId: String,
-    @Value("#{jobParameters['user.authSource']}") authSource: String,
-    @Value("#{jobParameters['user.userName']}") userName: String,
+    @Value("#{jobParameters['contractReferences']}") contractReferences: String,
     @Value("#{jobParameters['from']}") from: Date,
     @Value("#{jobParameters['to']}") to: Date,
     sessionFactory: SessionFactory,
   ): HibernateCursorItemReader<Referral> {
     // this reader returns referral entities which need processing for the report.
-    val contracts = serviceProviderAccessScopeMapper.fromUser(AuthUser(userId, authSource, userName)).contracts
-
-    logger.info(
-      "creating reader for referrals associated with user's contract scope",
-      kv("userId", userId),
-      kv("contracts", contracts.map { it.contractReference }),
-      kv("from", from),
-      kv("to", to)
-    )
-
     return HibernateCursorItemReaderBuilder<Referral>()
       .name("performanceReportReader")
       .sessionFactory(sessionFactory)
-      .queryString("select r from Referral r where r.sentAt > :from and r.sentAt < :to and r.intervention.dynamicFrameworkContract in :contracts")
+      .queryString("select r from Referral r where r.sentAt > :from and r.sentAt < :to and r.intervention.dynamicFrameworkContract.contractReference in :contractReferences")
       .parameterValues(
         mapOf(
           "from" to batchUtils.parseDateToOffsetDateTime(from),
           "to" to batchUtils.parseDateToOffsetDateTime(to),
-          "contracts" to contracts
+          "contractReferences" to contractReferences.split(",")
         )
       )
       .build()
@@ -88,9 +69,8 @@ class PerformanceReportJobConfiguration(
     val validator = DefaultJobParametersValidator()
     validator.setRequiredKeys(
       arrayOf(
+        "contractReferences",
         "user.id",
-        "user.authSource",
-        "user.userName",
         "user.firstName",
         "user.email",
         "from",
