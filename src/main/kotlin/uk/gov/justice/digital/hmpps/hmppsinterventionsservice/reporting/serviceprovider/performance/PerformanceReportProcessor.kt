@@ -41,7 +41,7 @@ class PerformanceReportProcessor(
       numberOfSessions = approvedActionPlan?.numberOfSessions,
       numberOfSessionsAttended = approvedActionPlan?.let { actionPlanService.getAllAttendedAppointments(it).size },
       endRequestedAt = referral.endRequestedAt,
-      endRequestedReason = referral.endRequestedReason?.code,
+      endRequestedReason = referral.endRequestedReason?.description,
       eosrSubmittedAt = referral.endOfServiceReport?.submittedAt,
       concludedAt = referral.concludedAt,
     )
