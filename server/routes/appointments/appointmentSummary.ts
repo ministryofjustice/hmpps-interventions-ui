@@ -1,9 +1,9 @@
 import { SummaryListItem } from '../../utils/summaryList'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
-import PresenterUtils from '../../utils/presenterUtils'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import Address from '../../models/address'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
+import DateUtils from '../../utils/dateUtils'
 import { AppointmentSchedulingDetails } from '../../models/appointment'
 
 interface Caseworker {
@@ -29,16 +29,17 @@ export default class AppointmentSummary {
     if (this.appointmentDecorator.britishDay) {
       summary.push({
         key: 'Date',
-        lines: [PresenterUtils.govukFormattedDate(this.appointmentDecorator.britishDay!)],
+        lines: [DateUtils.formattedDate(this.appointmentDecorator.britishDay!)],
       })
     }
     if (this.appointmentDecorator.britishTime && this.appointmentDecorator.britishEndsAtTime) {
       summary.push({
         key: 'Time',
         lines: [
-          PresenterUtils.formattedTimeRange(
+          DateUtils.formattedTimeRange(
             this.appointmentDecorator.britishTime!,
-            this.appointmentDecorator.britishEndsAtTime!
+            this.appointmentDecorator.britishEndsAtTime!,
+            { casing: 'capitalized' }
           ),
         ],
       })

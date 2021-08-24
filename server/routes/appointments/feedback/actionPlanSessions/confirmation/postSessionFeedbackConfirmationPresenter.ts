@@ -16,10 +16,9 @@ export default class PostSessionFeedbackConfirmationPresenter {
   }
 
   get whatHappensNextText(): string {
-    if (this.hasNextSessionDate) {
-      return `You can now deliver the next session scheduled for ${DateUtils.getDateStringFromDateTimeString(
-        this.nextAppointment!.appointmentTime
-      )}.`
+    if (this.nextAppointment !== null && this.nextAppointment.appointmentTime !== null) {
+      const formattedDate = DateUtils.formattedDate(this.nextAppointment.appointmentTime)
+      return `You can now deliver the next session scheduled for ${formattedDate}.`
     }
 
     if (this.isFinalSession) {
@@ -27,12 +26,6 @@ export default class PostSessionFeedbackConfirmationPresenter {
     }
 
     return 'The probation practitioner has been sent a copy of the session feedback form.'
-  }
-
-  private get hasNextSessionDate() {
-    return (
-      this.nextAppointment !== null && DateUtils.getDateStringFromDateTimeString(this.nextAppointment!.appointmentTime)
-    )
   }
 
   private get isFinalSession() {

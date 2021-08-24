@@ -344,44 +344,12 @@ export default class PresenterUtils {
     return !!error.errors.find(subError => subError.formFields.includes(field))
   }
 
-  // https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style#dates
-  static govukFormattedDate(day: CalendarDay): string {
-    const format = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
-    const date = day.utcDate
-
-    return format.format(date)
-  }
-
-  static govukShortFormattedDate(day: CalendarDay): string {
-    const format = new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      timeZone: 'UTC',
-    })
-    const date = day.utcDate
-
-    return format.format(date)
-  }
-
   static fullName(user: ServiceUser | AuthUserDetails): string {
     return utils.convertToTitleCase(`${user.firstName ?? ''} ${user.lastName ?? ''}`)
   }
 
   static fullNameSortValue(serviceUser: ServiceUser): string {
     return `${serviceUser.lastName ?? ''}, ${serviceUser.firstName ?? ''}`.toLocaleLowerCase('en-GB')
-  }
-
-  static govukFormattedDateFromStringOrNull(date: string | null): string {
-    const notFoundMessage = 'Not found'
-
-    if (date) {
-      const iso8601date = CalendarDay.parseIso8601Date(date)
-
-      return iso8601date ? this.govukFormattedDate(iso8601date) : notFoundMessage
-    }
-
-    return notFoundMessage
   }
 
   static complexityLevelTagArgs(complexityLevel: ComplexityLevel): TagArgs {
@@ -412,14 +380,6 @@ export default class PresenterUtils {
       text: 'UNKNOWN',
       classes: 'govuk-tag--grey',
     }
-  }
-
-  static formattedTime(time: ClockTime): string {
-    return `${time.twelveHourClockHour}:${time.minute.toString().padStart(2, '0')}${time.partOfDay}`
-  }
-
-  static formattedTimeRange(startsAt: ClockTime, endsAt: ClockTime): string {
-    return `${this.formattedTime(startsAt)} to ${this.formattedTime(endsAt)}`
   }
 
   // This is a useful type guard that can be used to filter an array to modify the types defined in the array.

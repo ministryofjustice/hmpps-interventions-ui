@@ -1,7 +1,7 @@
 import DraftReferral from '../../models/draftReferral'
-import CalendarDay from '../../utils/calendarDay'
 import PresenterUtils from '../../utils/presenterUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
+import DateUtils from '../../utils/dateUtils'
 
 export default class FindStartPresenter {
   constructor(
@@ -17,7 +17,7 @@ export default class FindStartPresenter {
       .sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? -1 : 1))
       .map(referral => ({
         serviceUserFullName: PresenterUtils.fullName(referral.serviceUser),
-        createdAt: PresenterUtils.govukShortFormattedDate(CalendarDay.britishDayForDate(new Date(referral.createdAt))),
+        createdAt: DateUtils.formattedDate(referral.createdAt, { month: 'short' }),
         url: `/referrals/${referral.id}/form`,
       }))
   }

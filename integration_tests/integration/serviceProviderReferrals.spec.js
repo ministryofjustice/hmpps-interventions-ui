@@ -596,7 +596,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Save and continue').click()
 
     const referralWithActionPlanId = { ...assignedReferral, actionPlanId: draftActionPlan.id }
-    const submittedActionPlan = { ...draftActionPlanWithNumberOfSessions, submittedAt: new Date().toISOString() }
+    const submittedActionPlan = { ...draftActionPlanWithNumberOfSessions, submittedAt: new Date(2021, 7, 18) }
 
     cy.stubGetSentReferral(assignedReferral.id, referralWithActionPlanId)
     cy.stubSubmitActionPlan(draftActionPlan.id, submittedActionPlan)
@@ -616,7 +616,7 @@ describe('Service provider referrals dashboard', () => {
 
     cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
     cy.get('#action-plan-status').contains('Awaiting approval')
-    cy.get('.action-plan-submitted-date').contains(/\d{1,2} [A-Z][a-z]{2} \d{4}/)
+    cy.get('.action-plan-submitted-date').contains('18 August 2021')
   })
 
   describe('editing a submitted action plan', () => {
@@ -669,7 +669,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.get('#action-plan-status').contains('Awaiting approval')
-      cy.contains('19 Aug 2021')
+      cy.contains('19 August 2021')
       cy.contains('View action plan').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/action-plan`)
@@ -724,7 +724,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.get('#action-plan-status').contains('Awaiting approval')
-      cy.contains('20 Aug 2021')
+      cy.contains('20 August 2021')
     })
 
     it('User edits an approved action plan and submits it for approval', () => {
@@ -776,7 +776,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.get('#action-plan-status').contains('Approved')
-      cy.contains('19 Aug 2021')
+      cy.contains('19 August 2021')
       cy.contains('View action plan').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/action-plan`)
@@ -848,7 +848,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.get('#action-plan-status').contains('Awaiting approval')
-      cy.contains('20 Aug 2021')
+      cy.contains('20 August 2021')
     })
   })
 
@@ -1176,7 +1176,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('form').contains('Confirm').click()
 
       cy.contains('Session feedback added and submitted to the probation practitioner')
-      cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+      cy.contains('You can now deliver the next session scheduled for 31 March 2021.')
 
       const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
       cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
@@ -1188,13 +1188,13 @@ describe('Service provider referrals dashboard', () => {
         .should('deep.equal', [
           {
             'Session details': 'Session 1',
-            'Date and time': '24 Mar 2021, 09:02',
+            'Date and time': '9:02am on 24 Mar 2021',
             Status: 'completed',
             Action: 'View feedback form',
           },
           {
             'Session details': 'Session 2',
-            'Date and time': '31 Mar 2021, 10:02',
+            'Date and time': '10:02am on 31 Mar 2021',
             Status: 'scheduled',
             Action: 'Reschedule sessionGive feedback',
           },
@@ -1310,7 +1310,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('form').contains('Confirm').click()
 
       cy.contains('Session feedback added and submitted to the probation practitioner')
-      cy.contains('You can now deliver the next session scheduled for 31 Mar 2021.')
+      cy.contains('You can now deliver the next session scheduled for 31 March 2021.')
 
       const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
       cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
@@ -1322,13 +1322,13 @@ describe('Service provider referrals dashboard', () => {
         .should('deep.equal', [
           {
             'Session details': 'Session 1',
-            'Date and time': '24 Mar 2021, 09:02',
+            'Date and time': '9:02am on 24 Mar 2021',
             Status: 'did not attend',
             Action: 'View feedback form',
           },
           {
             'Session details': 'Session 2',
-            'Date and time': '31 Mar 2021, 10:02',
+            'Date and time': '10:02am on 31 Mar 2021',
             Status: 'scheduled',
             Action: 'Reschedule sessionGive feedback',
           },
@@ -1401,7 +1401,7 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Intervention ended')
       cy.contains(
-        'The probation practitioner ended this intervention on 28 Apr 2021 with reason: Service user was recalled'
+        'The probation practitioner ended this intervention on 28 April 2021 with reason: Service user was recalled'
       )
       cy.contains('Please note that an end of service report must still be submitted within 10 working days.').should(
         'not.exist'

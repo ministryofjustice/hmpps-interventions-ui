@@ -1,9 +1,8 @@
 import ServiceUser from '../../../models/serviceUser'
-import CalendarDay from '../../../utils/calendarDay'
-import PresenterUtils from '../../../utils/presenterUtils'
 import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
 import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeliusServiceUserDecorator'
+import DateUtils from '../../../utils/dateUtils'
 
 export default class ServiceUserDetailsPresenter {
   constructor(
@@ -67,13 +66,6 @@ export default class ServiceUserDetailsPresenter {
     if (this.serviceUser.dateOfBirth === null) {
       return ''
     }
-
-    const day = CalendarDay.parseIso8601Date(this.serviceUser.dateOfBirth)
-
-    if (day === null) {
-      return ''
-    }
-
-    return PresenterUtils.govukFormattedDate(day)
+    return DateUtils.formattedDate(this.serviceUser.dateOfBirth)
   }
 }

@@ -1,6 +1,6 @@
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import utils from '../../utils/utils'
-import PresenterUtils from '../../utils/presenterUtils'
+import DateUtils from '../../utils/dateUtils'
 
 export default class ServiceUserBannerPresenter {
   constructor(private readonly serviceUser: DeliusServiceUser) {}
@@ -10,7 +10,7 @@ export default class ServiceUserBannerPresenter {
   }
 
   get dateOfBirth(): string {
-    return PresenterUtils.govukFormattedDateFromStringOrNull(this.serviceUser.dateOfBirth)
+    return this.serviceUser.dateOfBirth ? DateUtils.formattedDate(this.serviceUser.dateOfBirth) : 'Not found'
   }
 
   get serviceUserEmail(): string {

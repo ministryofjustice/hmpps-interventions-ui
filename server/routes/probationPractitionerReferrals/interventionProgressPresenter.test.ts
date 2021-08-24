@@ -57,7 +57,7 @@ describe(InterventionProgressPresenter, () => {
             [
               actionPlanAppointmentFactory.build({
                 sessionNumber: 1,
-                appointmentTime: '3020-12-07T13:00:00.000000Z',
+                appointmentTime: '3020-12-07T12:00:00.000000Z',
                 durationInMinutes: 120,
               }),
             ],
@@ -68,7 +68,7 @@ describe(InterventionProgressPresenter, () => {
           expect(presenter.sessionTableRows).toEqual([
             {
               sessionNumber: 1,
-              appointmentTime: '07 Dec 3020, 13:00',
+              appointmentTime: 'Midday on 7 Dec 3020',
               tagArgs: {
                 text: 'scheduled',
                 classes: 'govuk-tag--blue',
@@ -101,7 +101,7 @@ describe(InterventionProgressPresenter, () => {
           expect(presenter.sessionTableRows).toEqual([
             {
               sessionNumber: 1,
-              appointmentTime: '07 Dec 1920, 13:00',
+              appointmentTime: '1:00pm on 7 Dec 1920',
               tagArgs: {
                 text: 'scheduled',
                 classes: 'govuk-tag--blue',
@@ -266,7 +266,7 @@ describe(InterventionProgressPresenter, () => {
       const supplierAssessment = supplierAssessmentFactory.build()
       const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
 
-      expect(presenter.referralEndRequestedText).toEqual('You requested to end this service on 28 Apr 2021.')
+      expect(presenter.referralEndRequestedText).toEqual('You requested to end this service on 28 April 2021.')
     })
 
     it('returns an empty string when an end has not been requested', () => {

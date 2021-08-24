@@ -22,6 +22,7 @@ import RiskPresenter from './riskPresenter'
 import { DeliusStaffDetails, DeliusTeam } from '../../models/delius/deliusStaffDetails'
 import CalendarDay from '../../utils/calendarDay'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
+import DateUtils from '../../utils/dateUtils'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -256,7 +257,11 @@ export default class ShowReferralPresenter {
       },
       {
         key: 'Date to be completed by',
-        lines: [PresenterUtils.govukFormattedDateFromStringOrNull(this.sentReferral.referral.completionDeadline)],
+        lines: [
+          this.sentReferral.referral.completionDeadline
+            ? DateUtils.formattedDate(this.sentReferral.referral.completionDeadline)
+            : '',
+        ],
       },
       {
         key: 'Maximum number of enforceable days',

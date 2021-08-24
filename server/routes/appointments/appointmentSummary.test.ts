@@ -19,16 +19,16 @@ describe(AppointmentSummary, () => {
         expect(summaryComponent.appointmentSummaryList).toEqual([])
       })
     })
-    it('contains the date and time of the appointment', () => {
+    it('contains the date and time of the appointment and it is capitalized', () => {
       const appointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '2021-03-09T11:00:00Z',
+        appointmentTime: '2021-03-09T12:00:00Z',
         durationInMinutes: 60,
       })
       const summaryComponent = new AppointmentSummary(appointment, null)
 
       expect(summaryComponent.appointmentSummaryList.slice(0, 2)).toEqual([
         { key: 'Date', lines: ['9 March 2021'] },
-        { key: 'Time', lines: ['11:00am to 12:00pm'] },
+        { key: 'Time', lines: ['Midday to 1:00pm'] },
       ])
     })
 
