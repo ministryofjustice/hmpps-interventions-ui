@@ -164,7 +164,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-prettier": "^3.4.1",
     "fishery": "^1.4.0",
-    "husky": "^7.0.1",
+    "husky": "^7.0.2",
     "jest": "^27.0.6",
     "jest-html-reporter": "^3.3.0",
     "jest-junit": "^12.2.0",
