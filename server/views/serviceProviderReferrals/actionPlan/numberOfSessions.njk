@@ -3,6 +3,9 @@
 
 {% extends "./actionPlanFormTemplate.njk" %}
 
+{% set pageTitle = "Action plan" %}
+{% set pageSubTitle = "Add number of sessions" %}
+
 {% block formSection %}
     <h3 class="govuk-heading-m">Add number of sessions for {{ presenter.text.serviceUserFirstName | capitalize }}’s action plan</h3>
 
