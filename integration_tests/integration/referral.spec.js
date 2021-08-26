@@ -304,8 +304,8 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
-      cy.get('h1').contains('How many enforceable days will you use for this service?')
-      cy.contains('How many enforceable days will you use for this service?').type('10')
+      cy.get('h1').contains('How many days will you use for this service?')
+      cy.contains('How many days will you use for this service?').type('10')
 
       cy.contains('Save and continue').click()
 
@@ -770,8 +770,8 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
-      cy.get('h1').contains('How many enforceable days will you use for this service?')
-      cy.contains('How many enforceable days will you use for this service?').type('10')
+      cy.get('h1').contains('How many days will you use for this service?')
+      cy.contains('How many days will you use for this service?').type('10')
 
       cy.contains('Save and continue').click()
 

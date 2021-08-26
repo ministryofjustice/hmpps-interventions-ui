@@ -1183,7 +1183,7 @@ describe('GET /referrals/:id/enforceable-days', () => {
       .get('/referrals/1/enforceable-days')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('How many enforceable days will you use for this service?')
+        expect(res.text).toContain('How many days will you use for this service?')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
@@ -1243,7 +1243,7 @@ describe('POST /referrals/:id/enforceable-days', () => {
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('How many enforceable days will you use for this service?')
+          expect(res.text).toContain('How many days will you use for this service?')
         })
 
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()

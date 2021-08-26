@@ -7,10 +7,11 @@ describe(EnforceableDaysPresenter, () => {
       const draftReferral = draftReferralFactory.build()
       const presenter = new EnforceableDaysPresenter(draftReferral)
 
-      expect(presenter.text.title).toEqual('How many enforceable days will you use for this service?')
-      expect(presenter.text.hint).toEqual(
-        'Note: You are setting the maximum number of enforceable days (including RAR days). Any unused days will be given back.'
-      )
+      expect(presenter.text.title).toEqual('How many days will you use for this service?')
+      expect(presenter.text.hintParagraphs).toEqual([
+        'You are setting the maximum number of days you want to use and any unused days will be given back. For community orders or suspended sentences, consider how many RAR days to allocate.',
+        'Note: Sessions delivered in the community are enforceable.',
+      ])
     })
   })
 

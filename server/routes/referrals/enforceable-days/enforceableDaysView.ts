@@ -18,7 +18,10 @@ export default class EnforceableDaysView {
         isPageHeading: true,
       },
       hint: {
-        text: this.presenter.text.hint,
+        html: this.presenter.text.hintParagraphs
+          .map(ViewUtils.escape)
+          .map(val => `<p>${val}</p>`)
+          .join('\n'),
       },
       value: this.presenter.fields.maximumEnforceableDays,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
