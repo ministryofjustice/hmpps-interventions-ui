@@ -2,6 +2,7 @@ import { Application } from 'express'
 import passport from 'passport'
 import OAuth2Strategy from 'passport-oauth2'
 import jwtDecode from 'jwt-decode'
+import type { Request, Response } from 'express'
 import config from '../config'
 import generateOauthClientBaiscAuthHeader from './clientCredentials'
 import logger from '../../log'
@@ -86,31 +87,40 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
     next()
   })
 
-  app.get('/login', passport.authenticate('oauth2'))
+  const signIn = passport.authenticate('oauth2')
+  app.get('/sign-in', signIn)
+  app.get('/login', signIn)
 
-  app.get(
-    '/login/callback',
+  const signInCallback = (redirectUri: string) =>
     passport.authenticate('oauth2', {
       successReturnToOrRedirect: '/',
-      failureRedirect: '/login',
+      failureRedirect: redirectUri,
     })
-  )
+  app.get('/sign-in/callback', signInCallback('/sign-in'))
+  app.get('/login/callback', signInCallback('/login'))
 
-  app.get('/logout', (req, res) => {
+  const signOut = (logoutTerm: string, req: Request, res: Response) => {
     const { redirectUrl } = req.query
-    const logoutUrl = `${authConfig.url}/logout?client_id=${authConfig.loginClientId}&redirect_uri=${config.domain}${
-      redirectUrl || '/logout/success'
-    }`
-
+    const logoutUrl = `${authConfig.url}/${logoutTerm}?client_id=${authConfig.loginClientId}&redirect_uri=${
+      config.domain
+    }${redirectUrl || `/${logoutTerm}/success`}`
     if (req.isAuthenticated()) {
       req.logout()
       req.session!.destroy(() => res.redirect(logoutUrl))
     } else {
       res.redirect(logoutUrl)
     }
+  }
+  app.get('/logout', (req, res) => {
+    signOut('logout', req, res)
+  })
+  app.get('/sign-out', (req, res) => {
+    signOut('sign-out', req, res)
   })
 
-  app.get('/logout/success', (req, res) => {
+  const signOutSuccess = (req: Request, res: Response) => {
     res.render('logoutSuccess')
-  })
+  }
+  app.get('/logout/success', signOutSuccess)
+  app.get('/sign-out/success', signOutSuccess)
 }
