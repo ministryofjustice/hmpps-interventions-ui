@@ -47,6 +47,10 @@ export default function routes(router: Router, services: Services): Router {
     return commonController.reportAProblem(req, res)
   })
 
+  get(router, '/delivery-schedule', (req, res) => {
+    return commonController.deliverySchedule(req, res)
+  })
+
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     get(router, '/static-pages', (req, res) => {
       return staticContentController.index(req, res)
