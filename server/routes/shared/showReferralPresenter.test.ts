@@ -48,7 +48,7 @@ describe(ShowReferralPresenter, () => {
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
   const defaultStaffDetails = deliusStaffDetailsFactory.build()
-  const responsibleOfficer = [deliusOffenderManagerFactory.build()]
+  const responsibleOfficer = deliusOffenderManagerFactory.build()
 
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the start assignment page', () => {
@@ -289,7 +289,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('responsibleOfficerDetails', () => {
     describe('when all fields are present', () => {
-      it('returns an array of summary lists of the responsible officer(s)', () => {
+      it('returns a summary list of the responsible officer details', () => {
         const sentReferral = sentReferralFactory.build(referralParams)
         const presenter = new ShowReferralPresenter(
           sentReferral,
@@ -304,30 +304,27 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           defaultStaffDetails,
-          [
-            deliusOffenderManagerFactory.build({
-              staff: {
-                forenames: 'Peter',
-                surname: 'Practitioner',
-                email: 'p.practitioner@example.com',
-                phoneNumber: '01234567890',
-              },
-            }),
-          ]
+
+          deliusOffenderManagerFactory.build({
+            staff: {
+              forenames: 'Peter',
+              surname: 'Practitioner',
+              email: 'p.practitioner@example.com',
+              phoneNumber: '01234567890',
+            },
+          })
         )
 
         expect(presenter.responsibleOfficersDetails).toEqual([
-          [
-            { key: 'Name', lines: ['Peter Practitioner'] },
-            { key: 'Phone', lines: ['01234567890'] },
-            { key: 'Email address', lines: ['p.practitioner@example.com'] },
-          ],
+          { key: 'Name', lines: ['Peter Practitioner'] },
+          { key: 'Phone', lines: ['01234567890'] },
+          { key: 'Email address', lines: ['p.practitioner@example.com'] },
         ])
       })
     })
 
     describe('when optional fields are missing', () => {
-      it('returns an array of summary lists of the responsible officer(s) with "not found" or empty values', () => {
+      it('returns a summary list of the responsible officer details with "not found" or empty values', () => {
         const sentReferral = sentReferralFactory.build(referralParams)
         const presenter = new ShowReferralPresenter(
           sentReferral,
@@ -342,62 +339,24 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           defaultStaffDetails,
-          [
-            {
-              isResponsibleOfficer: true,
-              staff: undefined,
+          {
+            isResponsibleOfficer: true,
+            staff: {
+              forenames: 'Peter',
+              surname: undefined,
+              email: undefined,
+              phoneNumber: undefined,
             },
-            {
-              isResponsibleOfficer: true,
-              staff: {
-                forenames: undefined,
-                surname: undefined,
-                email: undefined,
-                phoneNumber: undefined,
-              },
-            },
-            {
-              isResponsibleOfficer: true,
-              staff: {
-                forenames: undefined,
-                surname: 'Practitioner',
-                email: undefined,
-                phoneNumber: undefined,
-              },
-            },
-            {
-              isResponsibleOfficer: true,
-              staff: {
-                forenames: 'Peter',
-                surname: undefined,
-                email: undefined,
-                phoneNumber: undefined,
-              },
-            },
-          ]
+          }
         )
 
         expect(presenter.responsibleOfficersDetails).toEqual([
-          [
-            { key: 'Name', lines: ['Not found'] },
-            { key: 'Phone', lines: ['Not found'] },
-            { key: 'Email address', lines: ['Not found'] },
-          ],
-          [
-            { key: 'Name', lines: ['Not found'] },
-            { key: 'Phone', lines: ['Not found'] },
-            { key: 'Email address', lines: ['Not found'] },
-          ],
-          [
-            { key: 'Name', lines: ['Practitioner'] },
-            { key: 'Phone', lines: ['Not found'] },
-            { key: 'Email address', lines: ['Not found'] },
-          ],
-          [
-            { key: 'Name', lines: ['Peter'] },
-            { key: 'Phone', lines: ['Not found'] },
-            { key: 'Email address', lines: ['Not found'] },
-          ],
+          { key: 'Name', lines: ['Peter'] },
+          { key: 'Phone', lines: ['Not found'] },
+          {
+            key: 'Email address',
+            lines: ['Not found - email notifications for this referral will be sent to the referring officer'],
+          },
         ])
       })
     })
@@ -418,16 +377,10 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           defaultStaffDetails,
-          []
+          null
         )
 
-        expect(presenter.responsibleOfficersDetails).toEqual([
-          [
-            { key: 'Name', lines: ['Not found'] },
-            { key: 'Phone', lines: ['Not found'] },
-            { key: 'Email address', lines: ['Not found'] },
-          ],
-        ])
+        expect(presenter.responsibleOfficersDetails).toEqual([])
       })
     })
   })

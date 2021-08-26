@@ -198,7 +198,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetStaffDetails(referralToSelect.sentBy.username, staffDetails)
-    cy.stubGetResponsibleOfficersForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
+    cy.stubGetResponsibleOfficerForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
 
     cy.login()
 
@@ -328,7 +328,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
-      cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+      cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
       cy.login()
 
@@ -414,7 +414,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
-      cy.stubGetResponsibleOfficersForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+      cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
       cy.login()
 

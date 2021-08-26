@@ -135,7 +135,7 @@ export default class ServiceProviderReferralsController {
       riskInformation,
       riskSummary,
       staffDetails,
-      responsibleOfficers,
+      responsibleOfficer,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
@@ -144,7 +144,7 @@ export default class ServiceProviderReferralsController {
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
       this.communityApiService.getStaffDetails(sentReferral.sentBy.username),
-      this.communityApiService.getResponsibleOfficersForServiceUser(crn),
+      this.communityApiService.getResponsibleOfficerForServiceUser(crn),
     ])
     const assignee =
       sentReferral.assignedTo === null
@@ -180,7 +180,7 @@ export default class ServiceProviderReferralsController {
       expandedServiceUser,
       riskSummary,
       staffDetails,
-      responsibleOfficers
+      responsibleOfficer
     )
     const view = new ShowReferralView(presenter)
 

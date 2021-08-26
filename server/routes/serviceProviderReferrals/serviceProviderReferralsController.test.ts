@@ -136,7 +136,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
   let deliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
   let staffDetails: DeliusStaffDetails
-  let responsibleOfficers: DeliusOffenderManager[]
+  let responsibleOfficer: DeliusOffenderManager
 
   beforeEach(() => {
     sentReferral = sentReferralFactory.build()
@@ -144,7 +144,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     deliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
     staffDetails = deliusStaffDetailsFactory.build()
-    responsibleOfficers = [deliusOffenderManagerFactory.responsibleOfficer().build()]
+    responsibleOfficer = deliusOffenderManagerFactory.responsibleOfficer().build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
@@ -155,7 +155,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
-    communityApiService.getResponsibleOfficersForServiceUser.mockResolvedValue(responsibleOfficers)
+    communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
   })
 
   it('displays information about the referral and service user', async () => {
@@ -195,18 +195,16 @@ describe('GET /service-provider/referrals/:id/details', () => {
         ],
       },
     })
-    responsibleOfficers = [
-      deliusOffenderManagerFactory
-        .responsibleOfficer()
-        .build({ staff: { forenames: 'Peter', surname: 'Practitioner' } }),
-    ]
+    responsibleOfficer = deliusOffenderManagerFactory
+      .responsibleOfficer()
+      .build({ staff: { forenames: 'Peter', surname: 'Practitioner' } })
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
-    communityApiService.getResponsibleOfficersForServiceUser.mockResolvedValue(responsibleOfficers)
+    communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)

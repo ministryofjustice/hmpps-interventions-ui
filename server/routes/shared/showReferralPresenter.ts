@@ -42,7 +42,7 @@ export default class ShowReferralPresenter {
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     private readonly riskSummary: RiskSummary | null,
     private readonly staffDetails: DeliusStaffDetails | null,
-    private readonly responsibleOfficers: DeliusOffenderManager[]
+    private readonly responsibleOfficer: DeliusOffenderManager | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -78,46 +78,26 @@ export default class ShowReferralPresenter {
         ]
   }
 
-  get responsibleOfficersDetails(): SummaryListItem[][] {
-    // This is a temporary step - I want to not break the page if fields are missing, most likely with dev data.
-    // It will be removed / simplified when we switch to using a dedicated Responsible Officer endpoint.
-    if (this.responsibleOfficers.length < 1) {
-      return [
-        [
-          {
-            key: 'Name',
-            lines: ['Not found'],
-          },
-          {
-            key: 'Phone',
-            lines: ['Not found'],
-          },
-          {
-            key: 'Email address',
-            lines: ['Not found'],
-          },
+  get responsibleOfficersDetails(): SummaryListItem[] {
+    if (this.responsibleOfficer === null) return []
+
+    const { staff } = this.responsibleOfficer
+    return [
+      {
+        key: 'Name',
+        lines: [`${staff?.forenames || ''} ${staff?.surname || ''}`.trim() || 'Not found'],
+      },
+      {
+        key: 'Phone',
+        lines: [staff?.phoneNumber || 'Not found'],
+      },
+      {
+        lines: [
+          staff?.email || 'Not found - email notifications for this referral will be sent to the referring officer',
         ],
-      ]
-    }
-
-    return this.responsibleOfficers.map(responsibleOfficer => {
-      const { staff } = responsibleOfficer
-
-      return [
-        {
-          key: 'Name',
-          lines: [`${staff?.forenames || ''} ${staff?.surname || ''}`.trim() || 'Not found'],
-        },
-        {
-          key: 'Phone',
-          lines: [staff?.phoneNumber || 'Not found'],
-        },
-        {
-          key: 'Email address',
-          lines: [staff?.email || 'Not found'],
-        },
-      ]
-    })
+        key: 'Email address',
+      },
+    ]
   }
 
   get referralServiceCategories(): ServiceCategory[] {

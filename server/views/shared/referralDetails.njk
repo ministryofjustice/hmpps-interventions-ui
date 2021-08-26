@@ -51,9 +51,11 @@
       {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
 
       <h2 class="govuk-heading-m">Responsible officer details</h2>
-      {% for summaryListArgs in responsibleOfficerSummaryListsArgs %}
-        {{ govukSummaryList(summaryListArgs) }}
-      {% endfor %}
+      {%  if responsibleOfficerSummaryListArgs | length %}
+          {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
+      {% else %}
+          <p class="govuk-body">No responsible officer details found in nDelius. Email notifications for this referral will be sent to the referring officer.</p>
+      {% endif %}
 
       <h2 class="govuk-heading-m">Referring probation practitioner details</h2>
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}

@@ -80,7 +80,7 @@ export default class CommunityApiService {
     }
   }
 
-  async getResponsibleOfficersForServiceUser(crn: string): Promise<DeliusOffenderManager[]> {
+  async getResponsibleOfficerForServiceUser(crn: string): Promise<DeliusOffenderManager | null> {
     const token = await this.hmppsAuthService.getApiClientToken()
 
     logger.info({ crn }, 'getting offender managers for service user')
@@ -90,7 +90,9 @@ export default class CommunityApiService {
         token,
       })) as DeliusOffenderManager[]
 
-      return deliusOffenderManagers.filter(offenderManager => offenderManager.isResponsibleOfficer)
+      // we have an assumption that a SU only ever has one RO. this has been tested
+      // in production and found to be true in 100% of cases we have seen so far.
+      return deliusOffenderManagers.find(offenderManager => offenderManager.isResponsibleOfficer) || null
     } catch (err) {
       throw createError(err.status, err, { userMessage: 'Could retrieve Responsible Officer from nDelius.' })
     }
