@@ -28,29 +28,17 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.viewEndOfServiceReport(req, res)
   )
 
-  get(router, '/referrals/:id/cancellation/reason', (req, res) =>
-    // This keeps the cancel link on any pre-drafts version of the intervention progress page working
-    probationPractitionerReferralsController.startCancellation(req, res)
-  )
   get(router, '/referrals/:id/cancellation/start', (req, res) =>
     probationPractitionerReferralsController.startCancellation(req, res)
   )
   get(router, '/referrals/:id/cancellation/:draftCancellationId/reason', (req, res) =>
     probationPractitionerReferralsController.editCancellationReason(req, res)
   )
-  post(router, '/referrals/:id/cancellation/check-your-answers', (req, res) =>
-    // This keeps a submission of any pre-drafts version of the cancellation reason form working
-    probationPractitionerReferralsController.backwardsCompatibilityUpdateCancellationReason(req, res)
-  )
   post(router, '/referrals/:id/cancellation/:draftCancellationId/reason', (req, res) =>
     probationPractitionerReferralsController.editCancellationReason(req, res)
   )
   get(router, '/referrals/:id/cancellation/:draftCancellationId/check-your-answers', (req, res) =>
     probationPractitionerReferralsController.cancellationCheckAnswers(req, res)
-  )
-  post(router, '/referrals/:id/cancellation/submit', (req, res) =>
-    // This keeps a submission of any pre-drafts version of the cancellation check your answers page working
-    probationPractitionerReferralsController.backwardsCompatibilitySubmitCancellation(req, res)
   )
   post(router, '/referrals/:id/cancellation/:draftCancellationId/submit', (req, res) =>
     probationPractitionerReferralsController.submitCancellation(req, res)
