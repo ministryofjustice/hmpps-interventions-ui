@@ -192,6 +192,24 @@ class SampleData {
       )
     }
 
+    fun sampleCaseNote(
+      id: UUID = UUID.randomUUID(),
+      subject: String = "subject",
+      body: String = "body",
+      referral: Referral = sampleReferral("CRN123", "Service Provider"),
+      sentAt: OffsetDateTime = OffsetDateTime.now(),
+      sentBy: AuthUser = AuthUser("CRN123", "auth", "user"),
+    ): CaseNote {
+      return CaseNote(
+        id = id,
+        subject = subject,
+        body = body,
+        referral = referral,
+        sentAt = sentAt,
+        sentBy = sentBy
+      )
+    }
+
     fun sampleActionPlan(
       id: UUID? = null,
       referral: Referral = sampleReferral("CRN123", "Service Provider"),

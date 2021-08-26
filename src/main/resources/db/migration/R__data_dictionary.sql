@@ -113,3 +113,11 @@ COMMENT ON COLUMN appointment_delivery_address.second_address_line IS 'second ad
 COMMENT ON COLUMN appointment_delivery_address.town_city IS 'town or city of appointment delivery address location';
 COMMENT ON COLUMN appointment_delivery_address.county IS 'county of appointment delivery address location';
 COMMENT ON COLUMN appointment_delivery_address.post_code IS 'postcode of appointment delivery address location';
+
+
+COMMENT ON TABLE case_note IS 'case note provided by officer for a referral';
+COMMENT ON COLUMN case_note.referral_id IS 'referral connected to this case note';
+COMMENT ON COLUMN case_note.subject IS 'subject of the case note';
+COMMENT ON COLUMN case_note.body IS 'main body text of the case note';
+COMMENT ON COLUMN case_note.sent_at IS 'date time for when the case note was created';
+COMMENT ON COLUMN case_note.sent_by_id IS 'the officer who created the case note';
