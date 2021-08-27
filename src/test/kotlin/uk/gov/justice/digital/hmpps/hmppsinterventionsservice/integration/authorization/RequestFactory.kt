@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.autho
 
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateCaseNoteDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
@@ -20,6 +21,7 @@ enum class Request {
   GetDraftReferrals,
   GetSentReferrals,
   GetServiceProviderReferralsSummary,
+  CreateCaseNote,
 }
 
 class RequestFactory(private val webTestClient: WebTestClient, private val setupAssistant: SetupAssistant) {
@@ -46,6 +48,10 @@ class RequestFactory(private val webTestClient: WebTestClient, private val setup
       Request.GetDraftReferrals -> webTestClient.get().uri("/draft-referrals")
       Request.GetSentReferrals -> webTestClient.get().uri("/sent-referrals")
       Request.GetServiceProviderReferralsSummary -> webTestClient.get().uri("/sent-referrals/summary/service-provider")
+
+      Request.CreateCaseNote -> webTestClient.post().uri("/case-note").bodyValue(
+        if (body != null) body as CreateCaseNoteDTO else CreateCaseNoteDTO(urlParams[0] as UUID, "subject", "body")
+      )
     }
 
     return if (token != null) {
