@@ -104,52 +104,6 @@ class HMPPSAuthServiceRetryTest {
   }
 
   @Test
-  fun `getServiceProviderOrganizationForUser when no response`() {
-    mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
-
-    val exception = assertThrows<IllegalStateException> {
-      hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
-    }
-
-    assertThat(exception.javaClass.canonicalName).isEqualTo("reactor.core.Exceptions.RetryExhaustedException")
-    assertThat(exception.message).isEqualTo("Retries exhausted: 2/2")
-  }
-
-  @Test
-  fun `getServiceProviderOrganizationForUser when body delayed on all attempts`() {
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setHeadersDelay(3, SECONDS))
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setHeadersDelay(3, SECONDS))
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setHeadersDelay(3, SECONDS))
-
-    val exception = assertThrows<IllegalStateException> {
-      hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
-    }
-
-    assertThat(exception.javaClass.canonicalName).isEqualTo("reactor.core.Exceptions.RetryExhaustedException")
-    assertThat(exception.message).isEqualTo("Retries exhausted: 2/2")
-  }
-
-  @Test
-  fun `getServiceProviderOrganizationForUser when body delayed on all but last attempt`() {
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setBodyDelay(3, SECONDS))
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setBodyDelay(3, SECONDS))
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setBodyDelay(1, SECONDS).setHeader("content-type", "application/json"))
-
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
-
-    assertThat(org).isEqualTo("HARMONY_LIVING")
-  }
-
-  @Test
-  fun `getServiceProviderOrganizationForUser when body not delayed on first attempt`() {
-    mockWebServer.enqueue(MockResponse().setBody(orgForUserBody).setBodyDelay(1, SECONDS).setHeader("content-type", "application/json"))
-
-    val org = hmppsAuthService.getServiceProviderOrganizationForUser(AuthUser("id", "auth", "username"))
-
-    assertThat(org).isEqualTo("HARMONY_LIVING")
-  }
-
-  @Test
   fun `getUserDetail for auth user when no response`() {
     mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
 
