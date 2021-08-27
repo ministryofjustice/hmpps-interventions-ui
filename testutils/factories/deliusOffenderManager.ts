@@ -19,4 +19,9 @@ export default DeliusOffenderManagerFactory.define(() => ({
     phoneNumber: '0123411278',
     surname: 'Hancock',
   },
+  team: {
+    telephone: '07890 123456',
+    emailAddress: 'probation-team4692@justice.gov.uk',
+    startDate: '2021-01-01',
+  },
 }))

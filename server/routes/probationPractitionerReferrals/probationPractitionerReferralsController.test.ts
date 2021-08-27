@@ -28,8 +28,6 @@ import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
-import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
-import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
@@ -694,7 +692,6 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
   let deliusUser: DeliusUser
   let expandedDeliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
-  let staffDetails: DeliusStaffDetails
   let responsibleOfficer: DeliusOffenderManager
 
   beforeEach(() => {
@@ -702,7 +699,6 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     deliusUser = deliusUserFactory.build()
     expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-    staffDetails = deliusStaffDetailsFactory.build()
     responsibleOfficer = deliusOffenderManagerFactory.responsibleOfficer().build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
@@ -713,7 +709,6 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
-    communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
     communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
   })
 
@@ -779,7 +774,6 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         expect(res.text).toContain("service user's Risk of Serious Harm (ROSH) levels")
         expect(res.text).toContain('Children')
         expect(res.text).toContain('HIGH')
-        expect(res.text).toContain('Team contact details')
         expect(res.text).toContain('07890 123456')
         expect(res.text).toContain('probation-team4692@justice.gov.uk')
       })

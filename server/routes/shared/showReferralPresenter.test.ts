@@ -10,9 +10,6 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
-import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
-import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
-import deliusTeam from '../../../testutils/factories/deliusTeam'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 
 describe(ShowReferralPresenter, () => {
@@ -47,7 +44,6 @@ describe(ShowReferralPresenter, () => {
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
-  const defaultStaffDetails = deliusStaffDetailsFactory.build()
   const responsibleOfficer = deliusOffenderManagerFactory.build()
 
   describe('assignmentFormAction', () => {
@@ -66,7 +62,6 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails,
         responsibleOfficer
       )
 
@@ -91,7 +86,6 @@ describe(ShowReferralPresenter, () => {
             true,
             deliusServiceUser,
             riskSummary,
-            defaultStaffDetails,
             responsibleOfficer
           )
 
@@ -114,7 +108,6 @@ describe(ShowReferralPresenter, () => {
             true,
             deliusServiceUser,
             riskSummary,
-            defaultStaffDetails,
             responsibleOfficer
           )
 
@@ -139,7 +132,6 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails,
         responsibleOfficer
       )
 
@@ -147,143 +139,6 @@ describe(ShowReferralPresenter, () => {
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
       ])
-    })
-  })
-
-  describe('probationPractitionerTeamDetails', () => {
-    function createShowReferralPresenterWithStaffDetails(staffDetails: DeliusStaffDetails) {
-      return new ShowReferralPresenter(
-        sentReferralFactory.build(referralParams),
-        intervention,
-        deliusConviction,
-        supplementaryRiskInformation,
-        deliusUser,
-        null,
-        null,
-        'service-provider',
-        true,
-        deliusServiceUser,
-        riskSummary,
-        staffDetails,
-        responsibleOfficer
-      )
-    }
-
-    describe('when a single active team exists on staff details', () => {
-      it('should display the team details', () => {
-        const presenter = createShowReferralPresenterWithStaffDetails(defaultStaffDetails)
-        expect(presenter.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: ['07890 123456'] },
-          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-        ])
-      })
-      describe('when start date is empty', () => {
-        it('should display the team details', () => {
-          const staffDetails = deliusStaffDetailsFactory.build({
-            teams: [
-              {
-                telephone: '07890 123456',
-                emailAddress: 'probation-team4692@justice.gov.uk',
-              },
-            ],
-          })
-          const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
-          expect(presenter.probationPractitionerTeamDetails).toEqual([
-            { key: 'Phone', lines: ['07890 123456'] },
-            { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-          ])
-        })
-      })
-      describe('when ended date is null', () => {
-        it('should display the team details', () => {
-          const staffDetails = deliusStaffDetailsFactory.build({
-            teams: [deliusTeam.build({ endDate: null })],
-          })
-          const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
-          expect(presenter.probationPractitionerTeamDetails).toEqual([
-            { key: 'Phone', lines: ['07890 123456'] },
-            { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-          ])
-        })
-      })
-    })
-    describe('when no teams exist for staff', () => {
-      it('should not show any team details', () => {
-        const presenterWithEmptyListTeams = createShowReferralPresenterWithStaffDetails(
-          deliusStaffDetailsFactory.build({ teams: [] })
-        )
-        expect(presenterWithEmptyListTeams.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: [] },
-          { key: 'Email address', lines: [] },
-        ])
-        const presenterWithUndefinedTeams = createShowReferralPresenterWithStaffDetails({ username: 'username' })
-        expect(presenterWithUndefinedTeams.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: [] },
-          { key: 'Email address', lines: [] },
-        ])
-      })
-    })
-    describe('when all teams are ended in the past', () => {
-      it('should not show any team details', () => {
-        const staffDetails = deliusStaffDetailsFactory.build({
-          teams: [deliusTeam.build({ endDate: '2021-01-01' })],
-        })
-        const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
-        expect(presenter.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: [] },
-          { key: 'Email address', lines: [] },
-        ])
-      })
-    })
-
-    describe('when a team is ended in the future', () => {
-      it('should show the team details', () => {
-        const staffDetails = deliusStaffDetailsFactory.build({
-          teams: [deliusTeam.build({ endDate: '3021-01-01' })],
-        })
-        const presenter = createShowReferralPresenterWithStaffDetails(staffDetails)
-        expect(presenter.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: ['07890 123456'] },
-          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-        ])
-      })
-    })
-    describe('when there are multiple active teams', () => {
-      it('should show the latest team details', () => {
-        const newerTeam = deliusTeam.build({
-          telephone: '07890 123456',
-          emailAddress: 'probation-team4692@justice.gov.uk',
-          startDate: '2021-01-02',
-        })
-        const olderTeam = deliusTeam.build({
-          telephone: 'incorrect number',
-          emailAddress: 'incorrect-team@justice.gov.uk',
-          startDate: '2021-01-01',
-        })
-        const teamWithNoStartDate = deliusTeam.build({
-          telephone: 'incorrect number - nsd',
-          emailAddress: 'incorrect-team@justice.gov.uk',
-        })
-        const orderedAsc = createShowReferralPresenterWithStaffDetails(
-          deliusStaffDetailsFactory.build({
-            teams: [teamWithNoStartDate, teamWithNoStartDate, olderTeam, newerTeam],
-          })
-        )
-        const orderedDesc = createShowReferralPresenterWithStaffDetails(
-          deliusStaffDetailsFactory.build({
-            teams: [newerTeam, olderTeam, teamWithNoStartDate, teamWithNoStartDate],
-          })
-        )
-
-        expect(orderedAsc.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: ['07890 123456'] },
-          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-        ])
-        expect(orderedDesc.probationPractitionerTeamDetails).toEqual([
-          { key: 'Phone', lines: ['07890 123456'] },
-          { key: 'Email address', lines: ['probation-team4692@justice.gov.uk'] },
-        ])
-      })
     })
   })
 
@@ -303,14 +158,16 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
-
           deliusOffenderManagerFactory.build({
             staff: {
               forenames: 'Peter',
               surname: 'Practitioner',
               email: 'p.practitioner@example.com',
               phoneNumber: '01234567890',
+            },
+            team: {
+              telephone: '01141234567',
+              emailAddress: 'team@nps.gov.uk',
             },
           })
         )
@@ -319,6 +176,8 @@ describe(ShowReferralPresenter, () => {
           { key: 'Name', lines: ['Peter Practitioner'] },
           { key: 'Phone', lines: ['01234567890'] },
           { key: 'Email address', lines: ['p.practitioner@example.com'] },
+          { key: 'Team phone', lines: ['01141234567'] },
+          { key: 'Team email address', lines: ['team@nps.gov.uk'] },
         ])
       })
     })
@@ -338,7 +197,6 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
           {
             isResponsibleOfficer: true,
             staff: {
@@ -357,6 +215,8 @@ describe(ShowReferralPresenter, () => {
             key: 'Email address',
             lines: ['Not found - email notifications for this referral will be sent to the referring officer'],
           },
+          { key: 'Team phone', lines: ['Not found'] },
+          { key: 'Team email address', lines: ['Not found'] },
         ])
       })
     })
@@ -376,7 +236,6 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
           null
         )
 
@@ -455,7 +314,6 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
           responsibleOfficer
         )
 
@@ -546,7 +404,6 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
           responsibleOfficer
         )
 
@@ -603,7 +460,6 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails,
         responsibleOfficer
       )
       expect(
@@ -644,7 +500,6 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails,
         responsibleOfficer
       )
 
@@ -688,7 +543,6 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        defaultStaffDetails,
         responsibleOfficer
       )
 
@@ -756,7 +610,6 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
           responsibleOfficer
         )
 
@@ -846,7 +699,6 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          defaultStaffDetails,
           responsibleOfficer
         )
 

@@ -5,7 +5,6 @@ import logger from '../../log'
 import DeliusUser from '../models/delius/deliusUser'
 import DeliusServiceUser, { ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
 import DeliusConviction from '../models/delius/deliusConviction'
-import { DeliusStaffDetails } from '../models/delius/deliusStaffDetails'
 import { DeliusOffenderManager } from '../models/delius/deliusOffenderManager'
 
 export default class CommunityApiService {
@@ -59,25 +58,6 @@ export default class CommunityApiService {
       path: `/secure/offenders/crn/${crn}/convictions/${id}`,
       token,
     })) as DeliusConviction
-  }
-
-  async getStaffDetails(username: string): Promise<DeliusStaffDetails | null> {
-    const token = await this.hmppsAuthService.getApiClientToken()
-
-    logger.info({ username }, 'getting staff details for officer')
-    try {
-      return (await this.restClient.get({
-        path: `/secure/staff/username/${username}`,
-        token,
-      })) as DeliusStaffDetails
-    } catch (err) {
-      if (err.status === 404) {
-        // not all users will have staff details on delius
-        return null
-      }
-
-      throw createError(err.status, err, { userMessage: 'Could retrieve staff details from nDelius.' })
-    }
   }
 
   async getResponsibleOfficerForServiceUser(crn: string): Promise<DeliusOffenderManager | null> {
