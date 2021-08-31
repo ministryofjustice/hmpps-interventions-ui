@@ -258,39 +258,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
   })
 })
 
-describe('GET /service-provider/referrals/:id/assignment/check', () => {
-  it('creates a draft assignment using the drafts service and redirects to the check answers page', async () => {
-    const draftAssignment = draftAssignmentFactory.build({ data: { email: 'tom@tom.com' } })
-    draftsService.createDraft.mockResolvedValue(draftAssignment)
-
-    await request(app)
-      .get(`/service-provider/referrals/123456/assignment/check`)
-      .query({ email: 'john@harmonyliving.org.uk' })
-      .expect(302)
-      .expect('Location', `/service-provider/referrals/123456/assignment/${draftAssignment.id}/check`)
-
-    expect(draftsService.createDraft).toHaveBeenCalledWith(
-      'assignment',
-      { email: 'john@harmonyliving.org.uk' },
-      { userId: '123' }
-    )
-  })
-  it('redirects to referral details page with an error if the assignee email address is missing from the URL', async () => {
-    await request(app)
-      .get(`/service-provider/referrals/123456/assignment/check`)
-      .expect(302)
-      .expect('Location', '/service-provider/referrals/123456/details?error=An%20email%20address%20is%20required')
-  })
-  it('redirects to referral details page with an error if the assignee email address is not found in hmpps auth', async () => {
-    hmppsAuthService.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
-
-    await request(app)
-      .get(`/service-provider/referrals/123456/assignment/check?email=tom@tom.com`)
-      .expect(302)
-      .expect('Location', '/service-provider/referrals/123456/details?error=Email%20address%20not%20found')
-  })
-})
-
 describe('POST /service-provider/referrals/:id/assignment/start', () => {
   it('creates a draft assignment using the drafts service and redirects to the check answers page', async () => {
     const draftAssignment = draftAssignmentFactory.build({ data: { email: 'tom@tom.com' } })
@@ -435,37 +402,6 @@ describe('POST /service-provider/referrals/:id/:draftAssignmentId/submit', () =>
           )
         })
     })
-  })
-})
-
-describe('POST /service-provider/referrals/:id/assignment', () => {
-  it('assigns the referral to the selected caseworker', async () => {
-    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const referral = sentReferralFactory.build({
-      referral: { interventionId: intervention.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
-    })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
-
-    interventionsService.getIntervention.mockResolvedValue(intervention)
-    interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
-    interventionsService.assignSentReferral.mockResolvedValue(referral)
-
-    await request(app)
-      .post(`/service-provider/referrals/${referral.id}/assignment`)
-      .type('form')
-      .send({ email: 'john@harmonyliving.org.uk' })
-      .expect(302)
-      .expect('Location', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
-
-    expect(interventionsService.assignSentReferral.mock.calls[0][2]).toEqual({
-      username: 'john.smith',
-      userId: hmppsAuthUser.userId,
-      authSource: 'auth',
-    })
-  })
-  it('fails if the assignee email address is missing', async () => {
-    await request(app).post(`/service-provider/referrals/123456/assignment`).type('form').send({}).expect(400)
   })
 })
 
