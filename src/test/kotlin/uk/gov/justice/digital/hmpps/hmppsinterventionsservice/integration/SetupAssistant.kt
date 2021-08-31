@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ContractType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
@@ -32,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.App
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CaseNoteRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
@@ -45,6 +47,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Sup
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentDeliveryAddressFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentDeliveryFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CaseNoteFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.EndOfServiceReportFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
@@ -80,6 +83,7 @@ class SetupAssistant(
   private val supplierAssessmentRepository: SupplierAssessmentRepository,
   private val appointmentDeliveryRepository: AppointmentDeliveryRepository,
   private val appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository,
+  private val caseNoteRepository: CaseNoteRepository,
 ) {
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
   private val interventionFactory = InterventionFactory()
@@ -91,6 +95,7 @@ class SetupAssistant(
   private val appointmentDeliveryAddressFactory = AppointmentDeliveryAddressFactory()
   private val supplierAssessmentFactory = SupplierAssessmentFactory()
   private val serviceUserFactory = ServiceUserFactory()
+  private val caseNoteFactory = CaseNoteFactory()
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
@@ -526,5 +531,14 @@ class SetupAssistant(
     )
     referral.endOfServiceReport = eosr
     return eosr
+  }
+
+  fun createCaseNote(
+    referral: Referral,
+    subject: String,
+    body: String
+  ): CaseNote {
+    val caseNote = caseNoteFactory.create(referral = referral, subject = subject, body = body)
+    return caseNoteRepository.save(caseNote)
   }
 }
