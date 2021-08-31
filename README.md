@@ -36,7 +36,7 @@ Navigate to `http://localhost:3000` and log in:
 - To log in as a service provider user, use HMPPS Auth dev credentials e.g. `TEST_INTERVENTIONS_SP_1 / password123456` (and, this user has an email address of `test.interventions.sp.1@digital.justice.gov.uk` if you want to assign a referral to them)
 - To log in as a probation practitioner user, use [Community API dev credentials](https://github.com/ministryofjustice/community-api/blob/main/src/main/resources/schema.ldif) e.g. `bernard.beaks/secret`.
 
-If you need a service user’s CRN in local development, you can use anything from `CRN11` through to `CRN30`.
+If you need a service user’s CRN for making a referral in local development, you can use `X320741`.
 
 ### How to use the local services
 
