@@ -2,7 +2,16 @@ import Logger from 'bunyan'
 import type { ResponseError } from 'superagent'
 import config from './server/config'
 
-const level = config.production || config.testMode ? 'warn' : 'debug'
+const level = (() => {
+  if (config.production) {
+    return 'warn'
+  }
+  if (config.testMode) {
+    return 'fatal'
+  }
+
+  return 'debug'
+})()
 
 function responseErrorSerializer(err: ResponseError) {
   const baseErr = Logger.stdSerializers.err(err)
