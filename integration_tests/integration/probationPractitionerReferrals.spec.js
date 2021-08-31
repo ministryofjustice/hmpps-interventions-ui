@@ -7,7 +7,6 @@ import deliusUserFactory from '../../testutils/factories/deliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
-import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
@@ -192,7 +191,6 @@ describe('Probation practitioner referrals dashboard', () => {
           },
         })
         const deliusUser = deliusUserFactory.build()
-        const staffDetails = deliusStaffDetailsFactory.build()
         cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
         cy.stubGetIntervention(intervention.id, intervention)
         cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
@@ -206,7 +204,6 @@ describe('Probation practitioner referrals dashboard', () => {
           assignedReferral.supplementaryRiskId,
           supplementaryRiskInformationFactory.build()
         )
-        cy.stubGetStaffDetails(assignedReferral.sentBy.username, staffDetails)
 
         cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
         cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
@@ -428,22 +425,17 @@ describe('Probation practitioner referrals dashboard', () => {
       },
     })
 
-    const staffDetails = deliusStaffDetailsFactory.build({
-      teams: [
-        {
-          telephone: '07890 123456',
-          emailAddress: 'probation-team4692@justice.gov.uk',
-          startDate: '2021-01-01',
-        },
-      ],
-    })
-
     const responsibleOfficer = deliusOffenderManagerFactory.build({
       staff: {
         forenames: 'Peter',
         surname: 'Practitioner',
         email: 'p.practitioner@justice.gov.uk',
         phoneNumber: '01234567890',
+      },
+      team: {
+        telephone: '07890 123456',
+        emailAddress: 'probation-team4692@justice.gov.uk',
+        startDate: '2021-01-01',
       },
     })
 
@@ -454,7 +446,6 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-    cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
     cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
     cy.login()
@@ -512,16 +503,14 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Responsible officer details').next().contains('Name').next().contains('Peter Practitioner')
     cy.contains('Responsible officer details').next().contains('Phone').next().contains('01234567890')
     cy.contains('Responsible officer details').next().contains('Email').next().contains('p.practitioner@justice.gov.uk')
+    cy.contains('Responsible officer details').next().contains('Team phone').next().contains('07890 123456')
+    cy.contains('Responsible officer details')
+      .next()
+      .contains('Team email address')
+      .next()
+      .contains('probation-team4692@justice.gov.uk')
 
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
-
-    cy.contains('Team contact details').next().contains('Phone').next().contains('07890 123456')
-
-    cy.contains('Team contact details')
-      .next()
-      .contains('Email address')
-      .next()
-      .contains('probation-team4692@justice.gov.uk')
   })
 })

@@ -10,7 +10,6 @@ import interventionFactory from '../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
-import deliusStaffDetailsFactory from '../../testutils/factories/deliusStaffDetails'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
@@ -160,22 +159,17 @@ describe('Service provider referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const staffDetails = deliusStaffDetailsFactory.build({
-      teams: [
-        {
-          telephone: '07890 123456',
-          emailAddress: 'probation-team4692@justice.gov.uk',
-          startDate: '2021-01-01',
-        },
-      ],
-    })
-
     const responsibleOfficer = deliusOffenderManagerFactory.build({
       staff: {
         forenames: 'Peter',
         surname: 'Practitioner',
         email: 'p.practitioner@justice.gov.uk',
         phoneNumber: '01234567890',
+      },
+      team: {
+        telephone: '07890 123456',
+        emailAddress: 'probation-team4692@justice.gov.uk',
+        startDate: '2021-01-01',
       },
     })
     const sentReferralsSummary = [
@@ -197,7 +191,6 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
-    cy.stubGetStaffDetails(referralToSelect.sentBy.username, staffDetails)
     cy.stubGetResponsibleOfficerForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
 
     cy.login()
@@ -278,17 +271,15 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Responsible officer details').next().contains('Name').next().contains('Peter Practitioner')
     cy.contains('Responsible officer details').next().contains('Phone').next().contains('01234567890')
     cy.contains('Responsible officer details').next().contains('Email').next().contains('p.practitioner@justice.gov.uk')
+    cy.contains('Responsible officer details').next().contains('Team phone').next().contains('07890 123456')
+    cy.contains('Responsible officer details')
+      .next()
+      .contains('Team email address')
+      .next()
+      .contains('probation-team4692@justice.gov.uk')
 
     cy.contains('Bernard Beaks')
     cy.contains('bernard.beaks@justice.gov.uk')
-
-    cy.contains('Team contact details').next().contains('Phone').next().contains('07890 123456')
-
-    cy.contains('Team contact details')
-      .next()
-      .contains('Email address')
-      .next()
-      .contains('probation-team4692@justice.gov.uk')
   })
 
   describe('Assigning a referral to a caseworker', () => {
@@ -310,7 +301,6 @@ describe('Service provider referrals dashboard', () => {
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
       const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-      const staffDetails = deliusStaffDetailsFactory.build()
       const responsibleOfficer = deliusOffenderManagerFactory.build()
       let referralSummary = serviceProviderSentReferralSummaryFactory
         .fromReferralAndIntervention(referral, intervention)
@@ -327,7 +317,6 @@ describe('Service provider referrals dashboard', () => {
       cy.stubAssignSentReferral(referral.id, referral)
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-      cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
       cy.login()
@@ -395,7 +384,6 @@ describe('Service provider referrals dashboard', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-      const staffDetails = deliusStaffDetailsFactory.build()
       const responsibleOfficer = deliusOffenderManagerFactory.build()
       let referralSummary = serviceProviderSentReferralSummaryFactory
         .fromReferralAndIntervention(referral, intervention)
@@ -413,7 +401,6 @@ describe('Service provider referrals dashboard', () => {
       cy.stubAssignSentReferral(referral.id, referral)
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-      cy.stubGetStaffDetails(referral.sentBy.username, staffDetails)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
       cy.login()

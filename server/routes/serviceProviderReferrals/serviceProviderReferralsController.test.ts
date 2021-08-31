@@ -24,12 +24,10 @@ import expandedDeliusServiceUserFactory from '../../../testutils/factories/expan
 import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
-import deliusStaffDetailsFactory from '../../../testutils/factories/deliusStaffDetails'
 import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
-import { DeliusStaffDetails } from '../../models/delius/deliusStaffDetails'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
@@ -135,7 +133,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
   let deliusUser: DeliusUser
   let deliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
-  let staffDetails: DeliusStaffDetails
   let responsibleOfficer: DeliusOffenderManager
 
   beforeEach(() => {
@@ -143,7 +140,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
     deliusUser = deliusUserFactory.build()
     deliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-    staffDetails = deliusStaffDetailsFactory.build()
     responsibleOfficer = deliusOffenderManagerFactory.responsibleOfficer().build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
@@ -154,7 +150,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
-    communityApiService.getStaffDetails.mockResolvedValue(staffDetails)
     communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
   })
 

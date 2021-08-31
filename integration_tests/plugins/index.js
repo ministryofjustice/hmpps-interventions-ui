@@ -55,10 +55,6 @@ module.exports = on => {
       return communityApi.stubGetConvictionById(arg.crn, arg.id, arg.responseJson)
     },
 
-    stubGetStaffDetails: arg => {
-      return communityApi.stubGetStaffDetails(arg.username, arg.responseJson)
-    },
-
     stubGetResponsibleOfficerForServiceUser: arg => {
       return communityApi.stubGetResponsibleOfficerForServiceUser(arg.crn, arg.responseJson)
     },

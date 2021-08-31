@@ -1,3 +1,5 @@
+import { DeliusTeam } from './deliusStaffDetails'
+
 export interface DeliusOffenderManager {
   isResponsibleOfficer: boolean
   staff?: {
@@ -6,4 +8,5 @@ export interface DeliusOffenderManager {
     email?: string | null
     phoneNumber?: string | null
   }
+  team?: DeliusTeam
 }
