@@ -10,7 +10,6 @@ import deliusConviction from '../../testutils/factories/deliusConviction'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusStaffDetails from '../../testutils/factories/deliusStaffDetails'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
-import { DeliusOffenderManager } from '../models/delius/deliusOffenderManager'
 
 jest.mock('../data/restClient')
 
@@ -162,7 +161,6 @@ describe(CommunityApiService, () => {
       it('makes a request to the Community API, retrieves the Responsible Officers and casts them as a DeliusResponsibleOfficer', async () => {
         const deliusOffenderManagers = [
           deliusOffenderManagerFactory.responsibleOfficer().build({ staff: { forenames: 'Jerry' } }),
-          deliusOffenderManagerFactory.responsibleOfficer().build({ staff: { forenames: 'Linda' } }),
           deliusOffenderManagerFactory.notResponsibleOfficer().build({ staff: { forenames: 'Roger' } }),
         ]
 
@@ -170,17 +168,16 @@ describe(CommunityApiService, () => {
 
         hmppsAuthClientMock.getApiClientToken.mockResolvedValue('token')
 
-        const responsibleOfficers = await service.getResponsibleOfficersForServiceUser('X123456')
+        const responsibleOfficer = await service.getResponsibleOfficerForServiceUser('X123456')
 
         expect(restClientMock.get).toHaveBeenCalledWith({
           path: '/secure/offenders/crn/X123456/allOffenderManagers',
           token: 'token',
         })
 
-        const names = responsibleOfficers!.map((officer: DeliusOffenderManager) => officer.staff!.forenames)
+        const name = responsibleOfficer!.staff!.forenames
 
-        expect(names).toEqual(['Jerry', 'Linda'])
-        expect(names).not.toContainEqual('Roger')
+        expect(name).toEqual('Jerry')
       })
     })
 
@@ -189,7 +186,7 @@ describe(CommunityApiService, () => {
         restClientMock.get.mockRejectedValue(createError(500))
 
         try {
-          await service.getResponsibleOfficersForServiceUser('X123456')
+          await service.getResponsibleOfficerForServiceUser('X123456')
         } catch (err) {
           expect(err.status).toBe(500)
           expect(err.userMessage).toBe('Could retrieve Responsible Officer from nDelius.')

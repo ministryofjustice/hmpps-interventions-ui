@@ -21,8 +21,8 @@ export default class ShowReferralView {
     this.presenter.probationPractitionerTeamDetails
   )
 
-  private readonly responsibleOfficerSummaryListsArgs = this.presenter.responsibleOfficersDetails.map(details =>
-    ViewUtils.summaryListArgs(details)
+  private readonly responsibleOfficerSummaryListArgs = ViewUtils.summaryListArgs(
+    this.presenter.responsibleOfficersDetails
   )
 
   private readonly interventionDetailsSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.interventionDetails)
@@ -68,7 +68,7 @@ export default class ShowReferralView {
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
         probationPractitionerTeamSummaryListArgs: this.probationPractitionerTeamSummaryListArgs,
-        responsibleOfficerSummaryListsArgs: this.responsibleOfficerSummaryListsArgs,
+        responsibleOfficerSummaryListArgs: this.responsibleOfficerSummaryListArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,

@@ -22,6 +22,6 @@ Cypress.Commands.add('stubGetStaffDetails', (username, responseJson) => {
   cy.task('stubGetStaffDetails', { username, responseJson })
 })
 
-Cypress.Commands.add('stubGetResponsibleOfficersForServiceUser', (crn, responseJson) => {
-  cy.task('stubGetResponsibleOfficersForServiceUser', { crn, responseJson })
+Cypress.Commands.add('stubGetResponsibleOfficerForServiceUser', (crn, responseJson) => {
+  cy.task('stubGetResponsibleOfficerForServiceUser', { crn, responseJson })
 })

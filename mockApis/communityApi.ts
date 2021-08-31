@@ -99,7 +99,7 @@ export default class CommunityApiMocks {
     })
   }
 
-  stubGetResponsibleOfficersForServiceUser = async (crn: string, responseJson: unknown): Promise<unknown> => {
+  stubGetResponsibleOfficerForServiceUser = async (crn: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
