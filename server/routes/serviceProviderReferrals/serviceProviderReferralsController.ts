@@ -617,28 +617,13 @@ export default class ServiceProviderReferralsController {
     res.redirect(`/service-provider/referrals/${req.params.id}/supplier-assessment/schedule/${draftBooking.id}/details`)
   }
 
-  async backwardsCompatibilityScheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
-    const draft = await this.draftsService.createDraft<DraftAppointmentBooking>('supplierAssessmentBooking', null, {
-      userId: res.locals.user.userId,
-    })
-
-    await this.scheduleSupplierAssessmentAppointmentWithDraft(draft, req, res)
-  }
-
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
     const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
+    const { draft } = fetchResult
 
-    await this.scheduleSupplierAssessmentAppointmentWithDraft(fetchResult.draft, req, res)
-  }
-
-  async scheduleSupplierAssessmentAppointmentWithDraft(
-    draft: Draft<DraftAppointmentBooking>,
-    req: Request,
-    res: Response
-  ): Promise<void> {
     const referralId = req.params.id
     const { accessToken } = res.locals.user.token
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)

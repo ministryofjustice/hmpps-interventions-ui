@@ -1801,20 +1801,6 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/start
   })
 })
 
-describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () => {
-  it('creates a draft booking using the drafts service, and redirects to the scheduling details form', async () => {
-    const draftBooking = draftAppointmentBookingFactory.build()
-    draftsService.createDraft.mockResolvedValue(draftBooking)
-
-    await request(app)
-      .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
-      .expect(302)
-      .expect('Location', `/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
-
-    expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
-  })
-})
-
 describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', () => {
   describe('when this is the first time to schedule an initial assessment', () => {
     it('renders an empty form', async () => {
@@ -1916,89 +1902,6 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draf
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
-        })
-    })
-  })
-})
-
-describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', () => {
-  describe('with valid data', () => {
-    it('creates and updates a draft booking, and redirects to the check-answers page', async () => {
-      const draftBooking = draftAppointmentBookingFactory.build()
-      draftsService.createDraft.mockResolvedValue(draftBooking)
-
-      const referral = sentReferralFactory.build()
-      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
-
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-      await request(app)
-        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
-        .type('form')
-        .send({
-          'date-day': '24',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-          'session-type': 'ONE_TO_ONE',
-          'meeting-method': 'PHONE_CALL',
-        })
-        .expect(302)
-        .expect(
-          'Location',
-          `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/${draftBooking.id}/check-answers`
-        )
-
-      expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
-
-      expect(draftsService.updateDraft).toHaveBeenCalledWith(
-        draftBooking.id,
-        {
-          appointmentTime: '2021-03-24T09:02:00.000Z',
-          durationInMinutes: 75,
-          sessionType: 'ONE_TO_ONE',
-          appointmentDeliveryType: 'PHONE_CALL',
-          appointmentDeliveryAddress: null,
-          npsOfficeCode: null,
-        },
-        { userId: '123' }
-      )
-    })
-  })
-
-  describe('with invalid data', () => {
-    it('renders an error message', async () => {
-      const draftBooking = draftAppointmentBookingFactory.build()
-      draftsService.createDraft.mockResolvedValue(draftBooking)
-
-      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
-      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-      await request(app)
-        .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
-        .type('form')
-        .send({
-          'date-day': '32',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-          'session-type': 'ONE_TO_ONE',
-          'meeting-method': 'PHONE_CALL',
-        })
-        .expect(400)
-        .expect(res => {
-          expect(res.text).toContain('The session date must be a real date')
         })
     })
   })
