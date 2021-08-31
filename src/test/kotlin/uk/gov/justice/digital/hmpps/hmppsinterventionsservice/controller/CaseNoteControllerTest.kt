@@ -6,6 +6,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
@@ -18,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFacto
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CaseNoteFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
+import java.util.UUID
 
 class CaseNoteControllerTest {
   private val caseNoteFactory = CaseNoteFactory()
@@ -58,6 +61,42 @@ class CaseNoteControllerTest {
         caseNoteController.createCaseNote(createCaseNoteDTO, userToken)
       }
       assertThat(e.status).isEqualTo(HttpStatus.BAD_REQUEST)
+      assertThat(e.message).contains("sent referral not found")
+    }
+  }
+
+  @Nested
+  inner class GetCaseNotes {
+    @Test
+    fun `can get case notes`() {
+      val user = authUserFactory.create()
+      val userToken = tokenFactory.create(user)
+      val referralId = UUID.randomUUID()
+      val pageable: Pageable = Pageable.ofSize(1)
+      val caseNote = caseNoteFactory.create(subject = "subject", body = "body")
+      whenever(referralService.getSentReferralForUser(id = referralId, user = user)).thenReturn(referralFactory.createSent(id = referralId))
+      whenever(caseNoteService.findByReferral(referralId, pageable = pageable)).thenReturn(PageImpl(listOf(caseNote)))
+
+      val caseNotes = caseNoteController.getCaseNotes(pageable, referralId = referralId, authentication = userToken)
+      assertThat(caseNotes.numberOfElements).isEqualTo(1)
+      assertThat(caseNotes.number).isEqualTo(0)
+      assertThat(caseNotes.totalPages).isEqualTo(1)
+      assertThat(caseNotes.content.size).isEqualTo(1)
+      assertThat(caseNotes.content[0]).isEqualTo(CaseNoteDTO.from(caseNote))
+    }
+
+    @Test
+    fun `returns not found when sent referral does not exist`() {
+      val user = authUserFactory.create()
+      val userToken = tokenFactory.create(user)
+      val referralId = UUID.randomUUID()
+
+      whenever(referralService.getSentReferralForUser(id = referralId, user = user)).thenReturn(null)
+
+      val e = assertThrows<ResponseStatusException> {
+        caseNoteController.getCaseNotes(Pageable.ofSize(1), referralId = referralId, authentication = userToken)
+      }
+      assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
       assertThat(e.message).contains("sent referral not found")
     }
   }
