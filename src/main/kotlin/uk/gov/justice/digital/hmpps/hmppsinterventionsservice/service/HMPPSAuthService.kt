@@ -71,31 +71,6 @@ class HMPPSAuthService(
       .collectList().block()
   }
 
-  fun getServiceProviderOrganizationForUser(user: AuthUser): AuthGroupID? {
-    if (user.authSource != "auth") {
-      return null
-    }
-
-    val url = UriComponentsBuilder.fromPath(authUserGroupsLocation)
-      .buildAndExpand(user.userName)
-      .toString()
-
-    val groups = hmppsAuthApiClient.get(url)
-      .retrieve()
-      .bodyToFlux(AuthGroupResponse::class.java)
-      .withRetryPolicy()
-      .collectList().block()
-
-    val serviceProviderOrgs = groups
-      .filter { it.groupCode.startsWith(AuthServiceProviderGroupPrefix) }
-      .map { it.groupCode.removePrefix(AuthServiceProviderGroupPrefix) }
-
-    // in the future, we will have to handle multiple group memberships
-    // which represent SP admins managing subcontractor organizations.
-    // for now we can assume there is only one group per user.
-    return if (serviceProviderOrgs.isEmpty()) null else serviceProviderOrgs[0]
-  }
-
   fun getUserDetail(user: AuthUser): UserDetail {
     return if (user.authSource == "auth") {
       val url = UriComponentsBuilder.fromPath(authUserDetailLocation).buildAndExpand(user.userName).toString()
