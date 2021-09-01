@@ -329,7 +329,7 @@ workflows:
           env: "prod"
           show_changelog: true
           slack_notification: true
-          slack_channel_name: "interventions-alerts"
+          slack_channel_name: "interventions"
           requires:
             - approve_prod
           context:
