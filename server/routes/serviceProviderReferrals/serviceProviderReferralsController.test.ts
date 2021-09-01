@@ -258,39 +258,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
   })
 })
 
-describe('GET /service-provider/referrals/:id/assignment/check', () => {
-  it('creates a draft assignment using the drafts service and redirects to the check answers page', async () => {
-    const draftAssignment = draftAssignmentFactory.build({ data: { email: 'tom@tom.com' } })
-    draftsService.createDraft.mockResolvedValue(draftAssignment)
-
-    await request(app)
-      .get(`/service-provider/referrals/123456/assignment/check`)
-      .query({ email: 'john@harmonyliving.org.uk' })
-      .expect(302)
-      .expect('Location', `/service-provider/referrals/123456/assignment/${draftAssignment.id}/check`)
-
-    expect(draftsService.createDraft).toHaveBeenCalledWith(
-      'assignment',
-      { email: 'john@harmonyliving.org.uk' },
-      { userId: '123' }
-    )
-  })
-  it('redirects to referral details page with an error if the assignee email address is missing from the URL', async () => {
-    await request(app)
-      .get(`/service-provider/referrals/123456/assignment/check`)
-      .expect(302)
-      .expect('Location', '/service-provider/referrals/123456/details?error=An%20email%20address%20is%20required')
-  })
-  it('redirects to referral details page with an error if the assignee email address is not found in hmpps auth', async () => {
-    hmppsAuthService.getSPUserByEmailAddress.mockRejectedValue(new Error(''))
-
-    await request(app)
-      .get(`/service-provider/referrals/123456/assignment/check?email=tom@tom.com`)
-      .expect(302)
-      .expect('Location', '/service-provider/referrals/123456/details?error=Email%20address%20not%20found')
-  })
-})
-
 describe('POST /service-provider/referrals/:id/assignment/start', () => {
   it('creates a draft assignment using the drafts service and redirects to the check answers page', async () => {
     const draftAssignment = draftAssignmentFactory.build({ data: { email: 'tom@tom.com' } })
@@ -435,37 +402,6 @@ describe('POST /service-provider/referrals/:id/:draftAssignmentId/submit', () =>
           )
         })
     })
-  })
-})
-
-describe('POST /service-provider/referrals/:id/assignment', () => {
-  it('assigns the referral to the selected caseworker', async () => {
-    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const referral = sentReferralFactory.build({
-      referral: { interventionId: intervention.id, serviceUser: { firstName: 'Alex', lastName: 'River' } },
-    })
-    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
-
-    interventionsService.getIntervention.mockResolvedValue(intervention)
-    interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthService.getSPUserByEmailAddress.mockResolvedValue(hmppsAuthUser)
-    interventionsService.assignSentReferral.mockResolvedValue(referral)
-
-    await request(app)
-      .post(`/service-provider/referrals/${referral.id}/assignment`)
-      .type('form')
-      .send({ email: 'john@harmonyliving.org.uk' })
-      .expect(302)
-      .expect('Location', `/service-provider/referrals/${referral.id}/assignment/confirmation`)
-
-    expect(interventionsService.assignSentReferral.mock.calls[0][2]).toEqual({
-      username: 'john.smith',
-      userId: hmppsAuthUser.userId,
-      authSource: 'auth',
-    })
-  })
-  it('fails if the assignee email address is missing', async () => {
-    await request(app).post(`/service-provider/referrals/123456/assignment`).type('form').send({}).expect(400)
   })
 })
 
@@ -1865,20 +1801,6 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/start
   })
 })
 
-describe('GET /service-provider/referrals/:id/supplier-assessment/schedule', () => {
-  it('creates a draft booking using the drafts service, and redirects to the scheduling details form', async () => {
-    const draftBooking = draftAppointmentBookingFactory.build()
-    draftsService.createDraft.mockResolvedValue(draftBooking)
-
-    await request(app)
-      .get(`/service-provider/referrals/1/supplier-assessment/schedule`)
-      .expect(302)
-      .expect('Location', `/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
-
-    expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
-  })
-})
-
 describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', () => {
   describe('when this is the first time to schedule an initial assessment', () => {
     it('renders an empty form', async () => {
@@ -1980,89 +1902,6 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draf
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('The proposed date and time you selected clashes with another appointment.')
-        })
-    })
-  })
-})
-
-describe('POST /service-provider/referrals/:id/supplier-assessment/schedule', () => {
-  describe('with valid data', () => {
-    it('creates and updates a draft booking, and redirects to the check-answers page', async () => {
-      const draftBooking = draftAppointmentBookingFactory.build()
-      draftsService.createDraft.mockResolvedValue(draftBooking)
-
-      const referral = sentReferralFactory.build()
-      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
-
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-      await request(app)
-        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule`)
-        .type('form')
-        .send({
-          'date-day': '24',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-          'session-type': 'ONE_TO_ONE',
-          'meeting-method': 'PHONE_CALL',
-        })
-        .expect(302)
-        .expect(
-          'Location',
-          `/service-provider/referrals/${referral.id}/supplier-assessment/schedule/${draftBooking.id}/check-answers`
-        )
-
-      expect(draftsService.createDraft).toHaveBeenCalledWith('supplierAssessmentBooking', null, { userId: '123' })
-
-      expect(draftsService.updateDraft).toHaveBeenCalledWith(
-        draftBooking.id,
-        {
-          appointmentTime: '2021-03-24T09:02:00.000Z',
-          durationInMinutes: 75,
-          sessionType: 'ONE_TO_ONE',
-          appointmentDeliveryType: 'PHONE_CALL',
-          appointmentDeliveryAddress: null,
-          npsOfficeCode: null,
-        },
-        { userId: '123' }
-      )
-    })
-  })
-
-  describe('with invalid data', () => {
-    it('renders an error message', async () => {
-      const draftBooking = draftAppointmentBookingFactory.build()
-      draftsService.createDraft.mockResolvedValue(draftBooking)
-
-      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
-      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-      await request(app)
-        .post(`/service-provider/referrals/1/supplier-assessment/schedule`)
-        .type('form')
-        .send({
-          'date-day': '32',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-          'session-type': 'ONE_TO_ONE',
-          'meeting-method': 'PHONE_CALL',
-        })
-        .expect(400)
-        .expect(res => {
-          expect(res.text).toContain('The session date must be a real date')
         })
     })
   })
