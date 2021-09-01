@@ -35,6 +35,14 @@ context('Login', () => {
       cy.contains('To report a problem with this digital service, please contact the helpdesk')
     })
 
+    it('the user can view the delivery schedule', () => {
+      cy.contains('Delivery schedule').click()
+      cy.location('pathname').should('equal', `/delivery-schedule`)
+      cy.contains(
+        'The Refer and monitor an intervention delivery schedule shows the things we’re working on and when we expect to have them ready for you to use.'
+      )
+    })
+
     it('the user can log out', () => {
       cy.get('[data-qa=logout]').click()
       AuthLoginPage.verifyOnPage()
@@ -70,6 +78,14 @@ context('Login', () => {
       cy.contains('Report a problem').click()
       cy.location('pathname').should('equal', `/report-a-problem`)
       cy.contains('To report a problem with this digital service, please contact the helpdesk')
+    })
+
+    it('the user can view the delivery schedule', () => {
+      cy.contains('Delivery schedule').click()
+      cy.location('pathname').should('equal', `/delivery-schedule`)
+      cy.contains(
+        'The Refer and monitor an intervention delivery schedule shows the things we’re working on and when we expect to have them ready for you to use.'
+      )
     })
 
     it('the user can log out', () => {
