@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -71,6 +72,11 @@ class ResourceServerConfiguration(private val tokenVerifier: TokenVerifier) : We
   @Profile("test")
   fun testJwtDecoder(): JwtDecoder {
     return TestJwtDecoder()
+  }
+
+  @Bean
+  fun pageableResolver(): PageableHandlerMethodArgumentResolver? {
+    return PageableHandlerMethodArgumentResolver()
   }
 }
 

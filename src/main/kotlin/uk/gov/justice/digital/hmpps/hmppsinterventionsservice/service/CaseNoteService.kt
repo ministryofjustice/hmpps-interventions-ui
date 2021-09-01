@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CaseNote
@@ -28,5 +30,9 @@ class CaseNoteService(
       sentAt = OffsetDateTime.now(),
     )
     return caseNoteRepository.save(caseNote)
+  }
+
+  fun findByReferral(referralId: UUID, pageable: Pageable?): Page<CaseNote> {
+    return caseNoteRepository.findAllByReferralId(referralId, pageable)
   }
 }
