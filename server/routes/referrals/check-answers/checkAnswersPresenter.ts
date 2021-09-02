@@ -28,11 +28,16 @@ export default class CheckAnswersPresenter {
     }
   }
 
-  get riskSection(): { title: string; text: string; changeLink: string } {
+  get riskSection(): { title: string; summary: SummaryListItem[] } {
     return {
       title: `${this.serviceUserName}’s risk information`,
-      text: this.referral.additionalRiskInformation ?? '',
-      changeLink: `/referrals/${this.referral.id}/risk-information`,
+      summary: [
+        {
+          key: 'Additional risk information',
+          lines: [this.referral.additionalRiskInformation ?? ''],
+          changeLink: `/referrals/${this.referral.id}/risk-information`,
+        },
+      ],
     }
   }
 

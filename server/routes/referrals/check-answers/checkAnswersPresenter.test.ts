@@ -110,12 +110,21 @@ describe(CheckAnswersPresenter, () => {
       conviction,
       deliusServiceUser
     )
-    it('returns the risk information section values', () => {
-      expect(presenter.riskSection.title).toEqual('Alex’s risk information')
-      expect(presenter.riskSection.text).toEqual('Past assault of strangers')
-      expect(presenter.riskSection.changeLink).toEqual(
-        `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/risk-information`
-      )
+
+    describe('title', () => {
+      it('returns the risk information section title', () => {
+        expect(presenter.riskSection.title).toEqual('Alex’s risk information')
+      })
+    })
+
+    describe('summary', () => {
+      it('additional risk information', () => {
+        expect(presenter.riskSection.summary[0]).toEqual({
+          key: 'Additional risk information',
+          lines: ['Past assault of strangers'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/risk-information',
+        })
+      })
     })
   })
 
