@@ -1,17 +1,17 @@
 
 {% if feedbackAnswersPresenter.attendedAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.attendedAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.attendedAnswers.answer }}</p>
+  <p>{{ feedbackAnswersPresenter.attendedAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
 {% if feedbackAnswersPresenter.additionalAttendanceAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.additionalAttendanceAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.additionalAttendanceAnswers.answer }}</p>
+  <p>{{ feedbackAnswersPresenter.additionalAttendanceAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
 {% if feedbackAnswersPresenter.behaviourDescriptionAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.answer }}</p>
+  <p>{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
 {% if feedbackAnswersPresenter.notifyProbationPractitionerAnswers %}
