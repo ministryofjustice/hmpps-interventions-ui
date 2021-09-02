@@ -238,5 +238,9 @@ module.exports = on => {
     stubGenerateServiceProviderPerformanceReport: () => {
       return interventionsService.stubGenerateServiceProviderPerformanceReport()
     },
+
+    stubGetCaseNotes: arg => {
+      return interventionsService.stubGetCaseNotes(arg.referralId, arg.responseJson)
+    },
   })
 }
