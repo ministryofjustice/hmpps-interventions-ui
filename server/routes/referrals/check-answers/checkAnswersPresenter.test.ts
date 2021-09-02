@@ -222,7 +222,7 @@ describe(CheckAnswersPresenter, () => {
           it('also includes the language', () => {
             expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
               key: 'Does Alex need an interpreter?',
-              lines: ['Yes. Spanish'],
+              lines: ['Yes', 'Spanish'],
               changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
           })
@@ -265,7 +265,7 @@ describe(CheckAnswersPresenter, () => {
           it('includes information about when they’re unavailable', () => {
             expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
               key: 'Does Alex have caring or employment responsibilities?',
-              lines: ['Yes. Alex can’t attend on Fridays'],
+              lines: ['Yes', 'Alex can’t attend on Fridays'],
               changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
           })
