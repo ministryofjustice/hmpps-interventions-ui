@@ -1,5 +1,5 @@
 import createError from 'http-errors'
-import AssessRisksAndNeedsService from './assessRisksAndNeedsService'
+import AssessRisksAndNeedsService, { AssessRisksAndNeedsServiceError } from './assessRisksAndNeedsService'
 
 import RestClient from '../data/restClient'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
@@ -44,8 +44,9 @@ describe(AssessRisksAndNeedsService, () => {
       try {
         await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
       } catch (err) {
-        expect(err.status).toBe(409)
-        expect(err.userMessage).toBe("Could not get service user's risk scores from OASys.")
+        const assessRisksAndNeedsServiceError = err as AssessRisksAndNeedsServiceError
+        expect(assessRisksAndNeedsServiceError.status).toBe(409)
+        expect(assessRisksAndNeedsServiceError.userMessage).toBe("Could not get service user's risk scores from OASys.")
       }
     })
 
@@ -54,8 +55,9 @@ describe(AssessRisksAndNeedsService, () => {
       try {
         await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
       } catch (err) {
-        expect(err.status).toBe(500)
-        expect(err.userMessage).toBe("Could not get service user's risk scores from OASys.")
+        const assessRisksAndNeedsServiceError = err as AssessRisksAndNeedsServiceError
+        expect(assessRisksAndNeedsServiceError.status).toBe(500)
+        expect(assessRisksAndNeedsServiceError.userMessage).toBe("Could not get service user's risk scores from OASys.")
       }
     })
 

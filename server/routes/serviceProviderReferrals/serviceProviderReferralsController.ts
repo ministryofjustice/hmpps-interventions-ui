@@ -3,7 +3,7 @@ import createError from 'http-errors'
 import querystring from 'querystring'
 import S3 from 'aws-sdk/clients/s3'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
@@ -788,7 +788,8 @@ export default class ServiceProviderReferralsController {
           await appointmentConfig.scheduleAppointment(data.paramsForUpdate)
           return res.redirect(appointmentConfig.redirectTo)
         } catch (e) {
-          if (e.status === 409) {
+          const interventionsServiceError = e as InterventionsServiceError
+          if (interventionsServiceError.status === 409) {
             res.status(400)
             serverError = {
               errors: [
@@ -896,7 +897,8 @@ export default class ServiceProviderReferralsController {
     try {
       await appointmentConfig.scheduleAppointment(draft.data)
     } catch (e) {
-      if (e.status === 409) {
+      const interventionsServiceError = e as InterventionsServiceError
+      if (interventionsServiceError.status === 409) {
         res.redirect(appointmentConfig.redirectToOnClash)
         return
       }

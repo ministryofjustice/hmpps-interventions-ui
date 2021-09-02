@@ -1,7 +1,7 @@
-import superagent from 'superagent'
+import superagent, { HTTPError as SuperagentHttpError } from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import Logger from 'bunyan'
-import createError from 'http-errors'
+import createError, { HttpError } from 'http-errors'
 import { ApiConfig } from '../config'
 import { loggerFactory } from '../../log'
 
@@ -27,6 +27,8 @@ interface PostRequest {
   token?: string | null
 }
 
+export type RestClientError = HttpError
+
 export default class RestClient {
   agent: Agent
 
@@ -47,6 +49,11 @@ export default class RestClient {
 
   private timeoutConfig() {
     return this.config.timeout
+  }
+
+  private static createErrorFromCaughtValue(value: unknown): RestClientError {
+    const error = value as SuperagentHttpError
+    return createError(error.status, error, { external: true })
   }
 
   async get({
@@ -82,7 +89,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, query, path, verb: 'GET' }, 'rest client error')
-      throw createError(error.status, error, { external: true })
+      throw RestClient.createErrorFromCaughtValue(error)
     }
   }
 
@@ -112,7 +119,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, path, verb: 'POST' }, 'rest client error')
-      throw createError(error.status, error, { external: true })
+      throw RestClient.createErrorFromCaughtValue(error)
     }
   }
 
@@ -143,7 +150,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, path, verb: 'PATCH' }, 'rest client error')
-      throw createError(error.status, error, { external: true })
+      throw RestClient.createErrorFromCaughtValue(error)
     }
   }
 
@@ -174,7 +181,7 @@ export default class RestClient {
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, path, verb: 'PUT' }, 'rest client error')
-      throw createError(error.status, error, { external: true })
+      throw RestClient.createErrorFromCaughtValue(error)
     }
   }
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import ReferralFormPresenter from './form/referralFormPresenter'
@@ -27,7 +27,7 @@ import CheckAnswersView from './check-answers/checkAnswersView'
 import CheckAnswersPresenter from './check-answers/checkAnswersPresenter'
 import ConfirmationView from './confirmation/confirmationView'
 import ConfirmationPresenter from './confirmation/confirmationPresenter'
-import CommunityApiService from '../../services/communityApiService'
+import CommunityApiService, { CommunityApiServiceError } from '../../services/communityApiService'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import errorMessages from '../../utils/errorMessages'
 import logger from '../../../log'
@@ -78,7 +78,9 @@ export default class ReferralsController {
       try {
         serviceUser = await this.communityApiService.getServiceUserByCRN(crn)
       } catch (e) {
-        if (e.status === 404) {
+        const communityApiServiceError = e as CommunityApiServiceError
+
+        if (communityApiServiceError.status === 404) {
           error = {
             errors: [
               {
@@ -89,7 +91,7 @@ export default class ReferralsController {
             ],
           }
         } else {
-          logger.error({ err: e }, 'crn lookup failed')
+          logger.error({ err: communityApiServiceError }, 'crn lookup failed')
           error = {
             errors: [
               {
@@ -203,7 +205,8 @@ export default class ReferralsController {
           form.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
       }
     } else {
       error = form.error
@@ -263,7 +266,8 @@ export default class ReferralsController {
 
           return res.redirect(`/referrals/${referralId}/completion-deadline`)
         } catch (e) {
-          formError = createFormValidationErrorOrRethrow(e)
+          const interventionsServiceError = e as InterventionsServiceError
+          formError = createFormValidationErrorOrRethrow(interventionsServiceError)
         }
       }
     }
@@ -307,7 +311,8 @@ export default class ReferralsController {
           data.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
       }
     } else {
       error = data.error
@@ -363,7 +368,8 @@ export default class ReferralsController {
         paramsForUpdate
       )
     } catch (e) {
-      error = createFormValidationErrorOrRethrow(e)
+      const interventionsServiceError = e as InterventionsServiceError
+      error = createFormValidationErrorOrRethrow(interventionsServiceError)
     }
 
     if (!error) {
@@ -409,7 +415,8 @@ export default class ReferralsController {
 
           return res.redirect(`/referrals/${referralId}/service-category/${serviceCategoryId}/complexity-level`)
         } catch (e) {
-          formError = createFormValidationErrorOrRethrow(e)
+          const interventionsServiceError = e as InterventionsServiceError
+          formError = createFormValidationErrorOrRethrow(interventionsServiceError)
         }
       }
     }
@@ -460,7 +467,8 @@ export default class ReferralsController {
           form.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
       }
     } else {
       error = form.error
@@ -506,7 +514,8 @@ export default class ReferralsController {
           data.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
       }
     }
 
@@ -556,7 +565,8 @@ export default class ReferralsController {
           data.paramsForUpdate
         )
       } catch (e) {
-        error = createFormValidationErrorOrRethrow(e)
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
       }
     } else {
       error = data.error

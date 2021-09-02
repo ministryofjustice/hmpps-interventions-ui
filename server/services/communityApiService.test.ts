@@ -1,5 +1,5 @@
 import createError from 'http-errors'
-import CommunityApiService from './communityApiService'
+import CommunityApiService, { CommunityApiServiceError } from './communityApiService'
 import RestClient from '../data/restClient'
 import MockRestClient from '../data/testutils/mockRestClient'
 import HmppsAuthService from './hmppsAuthService'
@@ -150,8 +150,9 @@ describe(CommunityApiService, () => {
         try {
           await service.getResponsibleOfficerForServiceUser('X123456')
         } catch (err) {
-          expect(err.status).toBe(500)
-          expect(err.userMessage).toBe('Could retrieve Responsible Officer from nDelius.')
+          const communityApiServiceError = err as CommunityApiServiceError
+          expect(communityApiServiceError.status).toBe(500)
+          expect(communityApiServiceError.userMessage).toBe('Could retrieve Responsible Officer from nDelius.')
         }
       })
     })

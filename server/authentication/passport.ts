@@ -66,6 +66,12 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
 
           verified(null, loggedInUser)
         } catch (error) {
+          // It almost certainly is an Error, but we need to convince the compiler
+          // so we can pass it to the callback
+          if (!(error instanceof Error)) {
+            throw new Error(`${error} is not an Error`)
+          }
+
           logger.error({ err: error, username: res.user_name }, 'failed to decode token or get user details')
           verified(error)
         }
