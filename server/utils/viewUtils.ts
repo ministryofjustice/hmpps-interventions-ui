@@ -13,6 +13,16 @@ export default class ViewUtils {
     return escape(val).val
   }
 
+  static nl2br(val: string): string {
+    // this is a weird condition - but it's possible to trick the compiler into letting you call this method
+    // with non string objects via the template callback mechanism we have for govuk frontend macros.
+    // in that instance the type of val is a nunjucks `SafeString`, and everything still works as expected.
+    if (typeof val !== 'string') return val
+
+    const nl2br = new nunjucks.Environment().getFilter('nl2br')
+    return nl2br(val)
+  }
+
   static govukErrorMessage(message: string | null | undefined): { text: string } | null {
     return message === null || message === undefined ? null : { text: message }
   }
@@ -48,11 +58,11 @@ export default class ViewUtils {
                 .join('\n')}</ul>`
               return { html }
             }
-            if (item.lines.length > 1) {
-              const html = item.lines.map(line => `<p class="govuk-body">${ViewUtils.escape(line)}</p>`).join('\n')
-              return { html }
-            }
-            return { text: item.lines[0] || '' }
+
+            const html = item.lines
+              .map(line => `<p class="govuk-body">${ViewUtils.nl2br(ViewUtils.escape(line))}</p>`)
+              .join('\n')
+            return { html }
           })(),
           actions: (() => {
             if (item.changeLink) {
