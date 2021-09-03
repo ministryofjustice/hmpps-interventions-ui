@@ -85,7 +85,7 @@
     "**/*.scss": [
       "stylelint --fix"
     ],
-    "*.{json}": [
+    "*.json": [
       "prettier --write"
     ]
   },

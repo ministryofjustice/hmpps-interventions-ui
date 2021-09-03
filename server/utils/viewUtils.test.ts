@@ -1,3 +1,4 @@
+import * as nunjucks from 'nunjucks'
 import { ListStyle } from './summaryList'
 import ViewUtils from './viewUtils'
 
@@ -9,6 +10,24 @@ describe('ViewUtils', () => {
 
     it('escapes HTML reserved characters', () => {
       expect(ViewUtils.escape('It’s a great day for you & me')).toBe('It’s a great day for you &amp; me')
+    })
+  })
+
+  describe('nl2br', () => {
+    it('converts newline characters with html break tags', () => {
+      expect(ViewUtils.nl2br('tom\ntom\r\ntom')).toBe('tom<br />\ntom<br />\ntom')
+    })
+
+    it('does not touch tag macro html', () => {
+      // this is a weird test - but it's possible to trick the compiler into letting you call this method
+      // with these SafeString objects via the template callback mechanism we have for govuk frontend macros
+      const tagValue = new nunjucks.runtime.SafeString('<strong class="govuk-tag govuk-tag--green">\nTag\n</strong>')
+
+      expect(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        ViewUtils.nl2br(tagValue)
+      ).toBe(tagValue)
     })
   })
 
@@ -80,7 +99,7 @@ describe('ViewUtils', () => {
               text: 'Risks',
             },
             value: {
-              text: 'No risk',
+              html: '<p class="govuk-body">No risk</p>',
             },
             actions: {
               items: [
@@ -114,7 +133,7 @@ describe('ViewUtils', () => {
               text: 'Gender',
             },
             value: {
-              text: 'Male',
+              html: '<p class="govuk-body">Male</p>',
             },
             actions: null,
           },

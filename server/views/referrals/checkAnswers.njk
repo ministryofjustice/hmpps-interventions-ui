@@ -17,16 +17,7 @@
 
       <h2 class="govuk-heading-l">{{ presenter.riskSection.title }}</h2>
 
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dd class="govuk-summary-list__value">
-            {{ presenter.riskSection.text | escape | nl2br }}
-          </dd>
-          <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="{{presenter.riskSection.changeLink}}">Change</a>
-          </dd>
-        </div>
-      </dl>
+      {{ govukSummaryList(riskInformationSummaryListArgs) }}
 
       <h2 class="govuk-heading-l">{{ presenter.needsAndRequirementsSection.title }}</h2>
 

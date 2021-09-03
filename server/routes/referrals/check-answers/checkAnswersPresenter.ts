@@ -28,11 +28,16 @@ export default class CheckAnswersPresenter {
     }
   }
 
-  get riskSection(): { title: string; text: string; changeLink: string } {
+  get riskSection(): { title: string; summary: SummaryListItem[] } {
     return {
       title: `${this.serviceUserName}’s risk information`,
-      text: this.referral.additionalRiskInformation ?? '',
-      changeLink: `/referrals/${this.referral.id}/risk-information`,
+      summary: [
+        {
+          key: 'Additional risk information',
+          lines: [this.referral.additionalRiskInformation ?? ''],
+          changeLink: `/referrals/${this.referral.id}/risk-information`,
+        },
+      ],
     }
   }
 
@@ -54,22 +59,18 @@ export default class CheckAnswersPresenter {
         },
         {
           key: needsAndRequirementsPresenter.text.needsInterpreter.label,
-          lines: [
-            this.conditionalValue(
-              needsAndRequirementsPresenter.fields.needsInterpreter,
-              needsAndRequirementsPresenter.fields.interpreterLanguage
-            ),
-          ],
+          lines: this.conditionalValue(
+            needsAndRequirementsPresenter.fields.needsInterpreter,
+            needsAndRequirementsPresenter.fields.interpreterLanguage
+          ),
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
           key: needsAndRequirementsPresenter.text.hasAdditionalResponsibilities.label,
-          lines: [
-            this.conditionalValue(
-              needsAndRequirementsPresenter.fields.hasAdditionalResponsibilities,
-              needsAndRequirementsPresenter.fields.whenUnavailable
-            ),
-          ],
+          lines: this.conditionalValue(
+            needsAndRequirementsPresenter.fields.hasAdditionalResponsibilities,
+            needsAndRequirementsPresenter.fields.whenUnavailable
+          ),
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
       ],
@@ -78,9 +79,9 @@ export default class CheckAnswersPresenter {
 
   private conditionalValue(isSelected: boolean | null, dependentAnswerText: string) {
     if (isSelected) {
-      return `Yes. ${dependentAnswerText}`
+      return ['Yes', dependentAnswerText]
     }
-    return 'No'
+    return ['No']
   }
 
   get referralDetailsSections(): { title: string; summary: SummaryListItem[] }[] {
