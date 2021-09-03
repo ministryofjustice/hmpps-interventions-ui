@@ -536,9 +536,10 @@ class SetupAssistant(
   fun createCaseNote(
     referral: Referral,
     subject: String,
-    body: String
+    body: String,
+    id: UUID = UUID.randomUUID(),
   ): CaseNote {
-    val caseNote = caseNoteFactory.create(referral = referral, subject = subject, body = body)
+    val caseNote = caseNoteFactory.create(id = id, referral = referral, subject = subject, body = body)
     return caseNoteRepository.save(caseNote)
   }
 }
