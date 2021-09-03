@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CaseNoteRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
@@ -25,8 +29,9 @@ class CaseNoteServiceTest @Autowired constructor(
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
 ) {
+  private val referralService = mock<ReferralService>()
   private val userFactory = AuthUserFactory(entityManager)
-  private val caseNoteService = CaseNoteService(caseNoteRepository, referralRepository, authUserRepository)
+  private val caseNoteService = CaseNoteService(caseNoteRepository, referralRepository, referralService, authUserRepository)
   private val caseNoteFactory = CaseNoteFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
 
@@ -119,6 +124,27 @@ class CaseNoteServiceTest @Autowired constructor(
       assertThat(caseNotes.numberOfElements).isEqualTo(0)
       assertThat(caseNotes.number).isEqualTo(2)
       assertThat(caseNotes.content).isEmpty()
+    }
+  }
+
+  @Nested
+  inner class GetCaseNoteForUser {
+    @Test
+    fun `can get case note by id`() {
+      val referral = referralFactory.createSent()
+      val caseNote = caseNoteService.createCaseNote(referral.id, subject = "subject", body = "body", sentByUser = referral.sentBy!!)
+
+      val retrievedCaseNote = caseNoteService.getCaseNoteForUser(caseNote.id, referral.sentBy!!)
+      assertThat(retrievedCaseNote).isEqualTo(caseNote)
+    }
+
+    @Test
+    fun `user can't get case note without access to referral`() {
+      val referral = referralFactory.createSent()
+      val caseNote = caseNoteService.createCaseNote(referral.id, subject = "subject", body = "body", sentByUser = referral.sentBy!!)
+      whenever(referralService.getSentReferralForUser(caseNote.id, caseNote.sentBy)).thenThrow(AccessError(caseNote.sentBy, "denied", emptyList()))
+
+      assertThrows<AccessError> { caseNoteService.getCaseNoteForUser(caseNote.id, referral.sentBy!!) }
     }
   }
 }

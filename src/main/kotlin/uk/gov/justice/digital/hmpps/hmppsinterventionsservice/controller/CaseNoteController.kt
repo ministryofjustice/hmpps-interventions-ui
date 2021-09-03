@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateCaseNote
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CaseNoteService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 
 @RestController
 class CaseNoteController(
@@ -53,5 +54,12 @@ class CaseNoteController(
       HttpStatus.NOT_FOUND, "sent referral not found [id=$referralId]"
     )
     return caseNoteService.findByReferral(sentReferral.id, pageable).map { caseNote -> CaseNoteDTO.from(caseNote) }
+  }
+
+  @GetMapping("/case-note/{id}")
+  fun getCaseNote(@PathVariable id: UUID, authentication: JwtAuthenticationToken): CaseNoteDTO {
+    return caseNoteService.getCaseNoteForUser(id, userMapper.fromToken(authentication))
+      ?.let { CaseNoteDTO.from(it) }
+      ?: throw EntityNotFoundException("case note not found [id=$id]")
   }
 }

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CaseNoteFacto
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 
 class CaseNoteControllerTest {
   private val caseNoteFactory = CaseNoteFactory()
@@ -98,6 +100,29 @@ class CaseNoteControllerTest {
       }
       assertThat(e.status).isEqualTo(HttpStatus.NOT_FOUND)
       assertThat(e.message).contains("sent referral not found")
+    }
+  }
+
+  @Nested
+  inner class GetCaseNote {
+    @Test
+    fun `can get an individual case note`() {
+      val id = UUID.randomUUID()
+      val caseNote = caseNoteFactory.create(id = id, subject = "subject", body = "body")
+      whenever(caseNoteService.getCaseNoteForUser(id, caseNote.sentBy)).thenReturn(caseNote)
+
+      val caseNoteDTO = caseNoteController.getCaseNote(id, tokenFactory.create(caseNote.sentBy))
+      assertThat(caseNoteDTO.id).isEqualTo(id)
+    }
+
+    @Test
+    fun `returns not found when the case note does not exist`() {
+      whenever(caseNoteService.getCaseNoteForUser(any(), any())).thenReturn(null)
+
+      val e = assertThrows<EntityNotFoundException> {
+        caseNoteController.getCaseNote(UUID.randomUUID(), tokenFactory.create(authUserFactory.createSP()))
+      }
+      assertThat(e.message).contains("case note not found")
     }
   }
 }
