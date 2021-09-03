@@ -6,6 +6,10 @@ export default class CaseNotesView {
   constructor(private presenter: CaseNotesPresenter) {}
 
   private get tableArgs(): TableArgs {
+    if (this.presenter.tableRows.length === 0) {
+      return { rows: [] }
+    }
+
     return {
       head: [
         { text: 'Details', classes: 'govuk-!-width-one-quarter' },

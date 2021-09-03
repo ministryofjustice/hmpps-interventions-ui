@@ -171,7 +171,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.createNewDraftActionPlan(req, res)
   )
 
-  const caseNotesController = new CaseNotesController(services.interventionsService)
+  const caseNotesController = new CaseNotesController(services.interventionsService, services.hmppsAuthService)
   get(router, '/referrals/:id/case-notes', (req, res) => caseNotesController.showCaseNotes(req, res))
 
   if (config.features.serviceProviderReporting.enabled) {
