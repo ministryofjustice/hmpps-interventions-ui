@@ -70,6 +70,7 @@ class PactTest : IntegrationTestBase() {
       EndOfServiceReportContracts(setupAssistant),
       SupplierAssessmentContracts(setupAssistant),
       ReportingContracts(setupAssistant),
+      CaseNoteContracts(setupAssistant)
     )
   }
 
