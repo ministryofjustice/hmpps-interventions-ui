@@ -109,6 +109,7 @@ describe.each([
         communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
+          .expect(200)
           .expect(res => {
             expect(res.text).toContain('username')
           })
