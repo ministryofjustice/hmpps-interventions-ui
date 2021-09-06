@@ -725,6 +725,32 @@ describe('GET /probation-practitioner/referrals/:id/action-plan', () => {
   })
 })
 
+describe('GET /probation-practitioner/action-plan/:actionPlanId', () => {
+  it('displays information about the specified action plan and service user', async () => {
+    const sentReferral = sentReferralFactory.assigned().build()
+    const serviceCategory = serviceCategoryFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const actionPlan = actionPlanFactory.approved().build()
+    const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(2)
+    sentReferral.actionPlanId = actionPlan.id
+
+    interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedActionPlanSummaries)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/action-plan/${actionPlan.id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('X123456')
+        expect(res.text).toContain('Action plan status')
+        expect(res.text).toContain('Approved')
+      })
+  })
+})
+
 describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () => {
   it('calls interventions service to approve action plan', async () => {
     const sentReferral = sentReferralFactory.assigned().build({ actionPlanId: '724bf133-65cb-43d4-bff9-ca692ad1d381' })
