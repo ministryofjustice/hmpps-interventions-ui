@@ -615,11 +615,6 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.serviceUserNeeds).toEqual([
           {
-            key: 'Criminogenic needs',
-            lines: ['Thinking and attitudes', 'Accommodation'],
-            listStyle: ListStyle.noMarkers,
-          },
-          {
             key: 'Identify needs',
             lines: ["Alex is currently sleeping on her aunt's sofa"],
           },
@@ -703,11 +698,6 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
-          {
-            key: 'Criminogenic needs',
-            lines: ['Thinking and attitudes', 'Accommodation'],
-            listStyle: ListStyle.noMarkers,
-          },
           {
             key: 'Identify needs',
             lines: ['N/A'],
