@@ -64,6 +64,16 @@ export interface CreateReportDateParams {
   toIncludingDate: CalendarDay
 }
 
+// Pagination parameters for resources that use spring pageable
+export interface PaginationParams {
+  // Page number to retrieve -- starts from 1
+  page?: number
+  // Number of elements in a page
+  size?: number
+  // Sort by property, defaults to ascending order. If descending is required then add ',DESC' at the end of the property you want sorted i.e. ['$PROPERTY_NAME,DESC']
+  sort?: string[]
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
