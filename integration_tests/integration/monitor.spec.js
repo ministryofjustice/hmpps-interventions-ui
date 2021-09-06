@@ -565,9 +565,11 @@ describe('Probation Practitioner monitor journey', () => {
         .getTable()
         .should('deep.equal', [
           {
+            'Version number': '2',
             'Approval date': '4 Jun 2021',
           },
           {
+            'Version number': '1',
             'Approval date': '3 Jun 2021',
           },
         ])
