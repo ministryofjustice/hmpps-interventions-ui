@@ -4,6 +4,7 @@
 {% set pageSubTitle = "Case notes" %}
 
 {% block pageContent %}
+    <p class="govuk-body">See all case notes about {{ serviceUserName }}</p>
     {{ govukTable(tableArgs) }}
     {% include "../partials/pagination.njk" %}
 {% endblock %}

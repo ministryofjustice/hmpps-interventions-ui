@@ -3,11 +3,13 @@ import InterventionsService from '../../services/interventionsService'
 import CaseNotesPresenter from './caseNotesPresenter'
 import CaseNotesView from './caseNotesView'
 import ControllerUtils from '../../utils/controllerUtils'
+import CommunityApiService from '../../services/communityApiService'
 import HmppsAuthService from '../../services/hmppsAuthService'
 
 export default class CaseNotesController {
   constructor(
     private readonly interventionsService: InterventionsService,
+    private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService
   ) {}
 
@@ -17,7 +19,12 @@ export default class CaseNotesController {
       page: Number(req.query.page),
       size: 5,
     }
-    const caseNotesPage = await this.interventionsService.getCaseNotes(accessToken, req.params.id, paginationQuery)
+    const referralId = req.params.id
+    const [referral, caseNotesPage] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getCaseNotes(accessToken, referralId, paginationQuery),
+    ])
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const uniqueUsers = new Set(caseNotesPage.content.map(caseNote => caseNote.sentBy.username))
     const userDetails: Map<string, undefined | string> = new Map(
       (
@@ -35,7 +42,7 @@ export default class CaseNotesController {
         )
       ).map(user => [user.username, user.fullName])
     )
-    const presenter = new CaseNotesPresenter(caseNotesPage, userDetails)
+    const presenter = new CaseNotesPresenter(caseNotesPage, userDetails, serviceUser)
     const view = new CaseNotesView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }

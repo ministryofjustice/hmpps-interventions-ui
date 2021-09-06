@@ -36,6 +36,7 @@ export default class CaseNotesView {
       {
         pagination: this.presenter.pagination.mojPaginationArgs,
         tableArgs: this.tableArgs,
+        serviceUserName: this.presenter.serviceUserName,
       },
     ]
   }

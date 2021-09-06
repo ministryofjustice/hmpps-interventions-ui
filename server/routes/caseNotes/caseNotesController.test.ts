@@ -8,9 +8,12 @@ import pageFactory from '../../../testutils/factories/page'
 import { CaseNote } from '../../models/caseNote'
 import { Page } from '../../models/pagination'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
+import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
+import CommunityApiService from '../../services/communityApiService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import userDetailsFactory from '../../../testutils/factories/userDetails'
+import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -19,6 +22,7 @@ jest.mock('../../services/hmppsAuthService')
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
+const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
 let app: Express
@@ -35,6 +39,7 @@ describe.each([
     app = appWithAllRoutes({
       overrides: {
         interventionsService,
+        communityApiService,
         hmppsAuthService,
       },
       userType: user.source,
@@ -46,7 +51,9 @@ describe.each([
     it('displays all case notes', async () => {
       const caseNote = caseNoteFactory.build({ subject: 'case note 1 subject', body: 'case note 1 body text' })
       const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
@@ -62,10 +69,13 @@ describe.each([
         sentBy: { authSource: 'auth' },
       })
       const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(
         userDetailsFactory.build({ name: 'firstName lastName' })
       )
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
         .expect(200)
@@ -80,10 +90,12 @@ describe.each([
           sentBy: { username: 'username', authSource: 'auth' },
         })
         const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
+        interventionsService.getSentReferral.mockResolvedValue(sentReferral)
         interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
         hmppsAuthService.getUserDetailsByUsername.mockImplementation(() => {
           return Promise.reject()
         })
+        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
           .expect(res => {
@@ -101,8 +113,10 @@ describe.each([
       sentBy: { userId: '1', username: 'username', authSource: 'delius' },
     })
     const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote1, caseNote2]).build() as Page<CaseNote>
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
     hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build({ name: 'firstName surname' }))
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
     await request(app)
       .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
       .expect(200)

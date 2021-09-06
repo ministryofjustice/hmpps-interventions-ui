@@ -2,6 +2,8 @@ import { Page } from '../../models/pagination'
 import { CaseNote } from '../../models/caseNote'
 import Pagination from '../../utils/pagination/pagination'
 import DateUtils from '../../utils/dateUtils'
+import utils from '../../utils/utils'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 
 interface CaseNotesTableRow {
   sentAtDay: string
@@ -15,9 +17,15 @@ interface CaseNotesTableRow {
 export default class CaseNotesPresenter {
   public readonly pagination: Pagination
 
-  constructor(private caseNotes: Page<CaseNote>, private officerUserNameMapping: Map<string, undefined | string>) {
+  constructor(
+    private caseNotes: Page<CaseNote>,
+    private officerUserNameMapping: Map<string, undefined | string>,
+    private serviceUser: DeliusServiceUser
+  ) {
     this.pagination = new Pagination(caseNotes)
   }
+
+  readonly serviceUserName = utils.convertToTitleCase(`${this.serviceUser.firstName} ${this.serviceUser.surname}`)
 
   readonly tableHeadings: string[] = ['Details', 'Case notes']
 
