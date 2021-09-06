@@ -699,7 +699,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
 })
 
 describe('GET /probation-practitioner/referrals/:id/action-plan', () => {
-  it('displays information about the action plan and service user', async () => {
+  it('displays information about the latest action plan and service user', async () => {
     const sentReferral = sentReferralFactory.assigned().build()
     const serviceCategory = serviceCategoryFactory.build()
     const deliusServiceUser = deliusServiceUserFactory.build()

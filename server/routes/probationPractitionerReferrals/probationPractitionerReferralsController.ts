@@ -405,7 +405,7 @@ export default class ProbationPractitionerReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewActionPlan(req: Request, res: Response): Promise<void> {
+  async viewLatestActionPlan(req: Request, res: Response): Promise<void> {
     await this.renderViewActionPlan(req, res)
   }
 
