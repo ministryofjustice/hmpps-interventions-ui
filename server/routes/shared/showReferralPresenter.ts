@@ -1,6 +1,6 @@
 import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
-import { ListStyle, SummaryListItem } from '../../utils/summaryList'
+import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../referrals/service-user-details/serviceUserDetailsPresenter'
@@ -249,7 +249,6 @@ export default class ShowReferralPresenter {
 
   get serviceUserNeeds(): SummaryListItem[] {
     return [
-      { key: 'Criminogenic needs', lines: ['Thinking and attitudes', 'Accommodation'], listStyle: ListStyle.noMarkers },
       {
         key: 'Identify needs',
         lines: [this.sentReferral.referral.additionalNeedsInformation || 'N/A'],
