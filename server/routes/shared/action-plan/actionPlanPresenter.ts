@@ -68,10 +68,11 @@ export default class ActionPlanPresenter {
     return this.userType === 'probation-practitioner' && !this.actionPlanSummaryPresenter.actionPlanSubmitted
   }
 
-  get actionPlanVersions(): { approvalDate: string }[] {
+  get actionPlanVersions(): { approvalDate: string; versionNumber: number }[] {
     return this.approvedActionPlanSummaries
       .sort((summaryA, summaryB) => new Date(summaryB.approvedAt).getTime() - new Date(summaryA.approvedAt).getTime())
-      .map(summary => ({
+      .map((summary, index) => ({
+        versionNumber: this.approvedActionPlanSummaries.length - index,
         approvalDate: dateUtils.formattedDate(summary.approvedAt, { month: 'short' }),
       }))
   }

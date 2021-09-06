@@ -43,8 +43,11 @@ export default class ActionPlanView {
 
   get approvedActionPlansTableArgs(): TableArgs | null {
     return {
-      head: [{ text: 'Approval date' }],
-      rows: this.presenter.actionPlanVersions.map(actionPlan => [{ text: actionPlan.approvalDate }]),
+      head: [{ text: 'Version number' }, { text: 'Approval date' }],
+      rows: this.presenter.actionPlanVersions.map(actionPlan => [
+        { text: String(actionPlan.versionNumber) },
+        { text: actionPlan.approvalDate },
+      ]),
     }
   }
 

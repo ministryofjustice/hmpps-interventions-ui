@@ -204,7 +204,7 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('actionPlanVersions', () => {
-    it('returns a list of created dates for approved action plans in descending order by date', () => {
+    it('returns a list of created dates and version numbers for approved action plans in descending order by date', () => {
       const submittedActionPlan = actionPlanFactory.submitted().build()
       const approvedActionPlanSummaries = [
         approvedActionPlanSummaryFactory.build({
@@ -223,8 +223,8 @@ describe(InterventionProgressPresenter, () => {
         approvedActionPlanSummaries
       )
       expect(submittedActionPlanPresenter.actionPlanVersions).toEqual([
-        { approvalDate: '11 Jun 2021' },
-        { approvalDate: '10 Jun 2021' },
+        { approvalDate: '11 Jun 2021', versionNumber: 2 },
+        { approvalDate: '10 Jun 2021', versionNumber: 1 },
       ])
     })
   })
