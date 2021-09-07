@@ -1,5 +1,6 @@
 import request from 'supertest'
 import { Express } from 'express'
+import createError from 'http-errors'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
@@ -771,6 +772,46 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
         })
 
       expect(interventionsService.updateDraftActionPlan).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('when the interventions service with an error when trying to reduce the number of sessions on a previously-approved action plan', () => {
+    it('renders a specific error message', async () => {
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const referral = sentReferralFactory.assigned().build({
+        referral: {
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Alex', lastName: 'River' },
+        },
+      })
+      const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
+
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+
+      interventionsService.updateDraftActionPlan.mockRejectedValue(
+        createError(400, 'bad request', {
+          response: {
+            body: {
+              validationErrors: [{ field: 'numberOfSessions', error: 'CANNOT_BE_REDUCED' }],
+            },
+          },
+        })
+      )
+
+      await request(app)
+        .post(`/service-provider/action-plan/1/number-of-sessions`)
+        .type('form')
+        .send({ 'number-of-sessions': '3' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('You cannot reduce the number of sessions for a previously-approved action plan.')
+        })
+
+      expect(interventionsService.updateDraftActionPlan).toHaveBeenCalled()
     })
   })
 })
