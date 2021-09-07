@@ -99,6 +99,10 @@ export default class ActionPlanPresenter {
     return `/probation-practitioner/action-plan/${summaryId}`
   }
 
+  get showPreviousActionPlanNotificationBanner(): boolean {
+    return this.userType === 'probation-practitioner' && this.actionPlan.id !== this.referral.actionPlanId
+  }
+
   get showEditButton(): boolean {
     return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanUnderReview
   }

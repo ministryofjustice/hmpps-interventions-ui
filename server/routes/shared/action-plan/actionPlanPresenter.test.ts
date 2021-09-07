@@ -311,4 +311,62 @@ describe(InterventionProgressPresenter, () => {
       expect(actionPlanPresenter.showActionPlanVersions).toEqual(false)
     })
   })
+
+  describe('showPreviousActionPlanNotificationBanner', () => {
+    describe('when the user is an SP', () => {
+      it("returns false, as they can't view previous revisions", () => {
+        const actionPlan = actionPlanFactory.build()
+        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+        const actionPlanPresenter = new ActionPlanPresenter(
+          referral,
+          actionPlan,
+          serviceCategories,
+          'service-provider',
+          null,
+          approvedActionPlanSummaries
+        )
+
+        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
+      })
+    })
+
+    describe('when the user is a PP', () => {
+      it("returns false when the viewed action plan's ID matches the latest action plan's ID on the referral", () => {
+        const referralWithLatestActionPlan = referralFactory.assigned().build({ actionPlanId: 'latest-id' })
+        const latestActionPlan = actionPlanFactory.build({ id: 'latest-id' })
+
+        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+        const actionPlanPresenter = new ActionPlanPresenter(
+          referralWithLatestActionPlan,
+          latestActionPlan,
+          serviceCategories,
+          'probation-practitioner',
+          null,
+          approvedActionPlanSummaries
+        )
+
+        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
+      })
+
+      it("returns true when the viewed action plan's ID doesn't match the latest action plan's ID on the referral", () => {
+        const referralWithNewerActionPlan = referralFactory.assigned().build({ actionPlanId: 'latest-id' })
+        const actionPlan = actionPlanFactory.build({ id: 'not-latest-id' })
+
+        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+        const actionPlanPresenter = new ActionPlanPresenter(
+          referralWithNewerActionPlan,
+          actionPlan,
+          serviceCategories,
+          'probation-practitioner',
+          null,
+          approvedActionPlanSummaries
+        )
+
+        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(true)
+      })
+    })
+  })
 })

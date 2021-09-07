@@ -1,5 +1,5 @@
 import ActionPlanPresenter from './actionPlanPresenter'
-import { CheckboxesArgs, InsetTextArgs, TableArgs } from '../../../utils/govukFrontendTypes'
+import { CheckboxesArgs, InsetTextArgs, NotificationBannerArgs, TableArgs } from '../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../utils/viewUtils'
 import ActionPlanSummaryView from './actionPlanSummaryView'
 
@@ -54,6 +54,12 @@ export default class ActionPlanView {
     }
   }
 
+  get viewingPreviousActionPlanNotificationBannerArgs(): NotificationBannerArgs {
+    return {
+      html: `<p class="govuk-body-m">You are looking at an older version of the action plan.</p><a href="${this.presenter.viewProbationPractitionerLatestActionPlanURL}">Click here to see the current action plan.</a>`,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'shared/actionPlan',
@@ -64,6 +70,7 @@ export default class ActionPlanView {
         actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
         approvedActionPlansTableArgs: this.approvedActionPlansTableArgs,
         insetTextActivityArgs: this.insetTextActivityArgs.bind(this),
+        viewingPreviousActionPlanNotificationBannerArgs: this.viewingPreviousActionPlanNotificationBannerArgs,
         confirmApprovalCheckboxArgs: this.confirmApprovalCheckboxArgs,
       },
     ]
