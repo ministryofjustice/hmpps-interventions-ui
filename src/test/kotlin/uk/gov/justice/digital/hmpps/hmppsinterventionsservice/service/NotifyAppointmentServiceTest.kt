@@ -65,7 +65,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment attendance recorded event calls email client`() {
-    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.ATTENDANCE_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
@@ -92,7 +92,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment behaviour recorded event calls email client`() {
-    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.BEHAVIOUR_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
@@ -110,7 +110,7 @@ class NotifyAppointmentServiceTest {
 
   @Test
   fun `appointment scheduled event sends email to pp`() {
-    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ContactableProbationPractitioner("abc", "abc@abc.com"))
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
 
     notifyService().onApplicationEvent(appointmentEvent(AppointmentEventType.SCHEDULED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

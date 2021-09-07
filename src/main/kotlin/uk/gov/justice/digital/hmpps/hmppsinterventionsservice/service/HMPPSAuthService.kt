@@ -20,9 +20,9 @@ import javax.transaction.Transactional
 class UnverifiedEmailException : RuntimeException()
 
 data class UserDetail(
-  val firstName: String,
-  val email: String,
-)
+  override val firstName: String,
+  override val email: String,
+) : ContactablePerson
 
 private const val AuthServiceProviderGroupPrefix = "INT_SP_"
 

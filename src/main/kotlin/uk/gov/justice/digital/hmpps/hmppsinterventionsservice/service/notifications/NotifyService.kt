@@ -26,6 +26,11 @@ interface NotifyService {
   }
 }
 
+interface ContactablePerson {
+  val firstName: String
+  val email: String
+}
+
 @Service
 class NotifyActionPlanService(
   @Value("\${notify.templates.action-plan-submitted}") private val actionPlanSubmittedTemplateID: String,

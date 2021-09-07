@@ -52,7 +52,7 @@ class NotifyEndOfServiceReportTest {
   @Test
   fun `end of service report submitted event generates valid url and sends an email`() {
     whenever(referralService.getResponsibleProbationPractitioner(any()))
-      .thenReturn(ContactableProbationPractitioner("abc", "abc@abc.abc"))
+      .thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.abc", null, null))
 
     notifyService().onApplicationEvent(endOfServiceReportSubmittedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

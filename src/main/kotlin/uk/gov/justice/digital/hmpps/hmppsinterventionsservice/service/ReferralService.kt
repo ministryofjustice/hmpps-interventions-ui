@@ -36,10 +36,12 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import javax.transaction.Transactional
 
-data class ContactableProbationPractitioner(
-  val firstName: String,
-  val email: String,
-)
+data class ResponsibleProbationPractitioner(
+  override val firstName: String,
+  override val email: String,
+  val deliusStaffId: Long?,
+  val authUser: AuthUser?,
+) : ContactablePerson
 
 @Service
 @Transactional
@@ -458,26 +460,38 @@ class ReferralService(
     return null
   }
 
-  fun getResponsibleProbationPractitioner(referral: Referral): ContactableProbationPractitioner {
-    val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
-    if (responsibleOfficer.email != null) {
-      return ContactableProbationPractitioner(
-        responsibleOfficer.firstName ?: "",
-        responsibleOfficer.email,
+  fun getResponsibleProbationPractitioner(referral: Referral): ResponsibleProbationPractitioner {
+    try {
+      val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
+      if (responsibleOfficer.email != null) {
+        return ResponsibleProbationPractitioner(
+          responsibleOfficer.firstName ?: "",
+          responsibleOfficer.email,
+          responsibleOfficer.staffId,
+          null,
+        )
+      }
+
+      telemetryService.reportInvalidAssumption(
+        "all responsible officers have email addresses",
+        mapOf("staffId" to responsibleOfficer.staffId.toString())
+      )
+
+      logger.warn("no email address for responsible officer; falling back to referring probation practitioner")
+    } catch (e: Exception) {
+      logger.error(
+        "could not get responsible officer due to unexpected error; falling back to referring probation practitioner",
+        e
       )
     }
 
-    telemetryService.reportInvalidAssumption(
-      "all responsible officers have email addresses",
-      mapOf("staffId" to responsibleOfficer.staffId.toString())
-    )
-
-    logger.warn("no email address for responsible officer; falling back to referring probation practitioner")
-
-    val referringProbationPractitioner = hmppsAuthService.getUserDetail(referral.sentBy ?: referral.createdBy)
-    return ContactableProbationPractitioner(
-      referringProbationPractitioner.firstName,
-      referringProbationPractitioner.email
+    val referringProbationPractitioner = referral.sentBy ?: referral.createdBy
+    val userDetail = hmppsAuthService.getUserDetail(referringProbationPractitioner)
+    return ResponsibleProbationPractitioner(
+      userDetail.firstName,
+      userDetail.email,
+      null,
+      referringProbationPractitioner,
     )
   }
 }

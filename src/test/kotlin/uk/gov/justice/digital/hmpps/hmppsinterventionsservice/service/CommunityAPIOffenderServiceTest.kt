@@ -90,7 +90,7 @@ internal class CommunityAPIOffenderServiceTest {
 
   @Test
   fun `getManagedOffendersForDeliusUser returns list of offenders`() {
-    val staffResponse = MockedResponse(staffDetailsLocation, HttpStatus.OK, "{\"staffIdentifier\": \"tom\"}")
+    val staffResponse = MockedResponse(staffDetailsLocation, HttpStatus.OK, "{\"staffIdentifier\": \"123\"}")
     val offendersResponse = MockedResponse(managedOffendersLocation, HttpStatus.OK, "[{\"crnNumber\": \"CRN123\"}, {\"crnNumber\": \"CRN456\"}]")
     val offenderService = offenderServiceFactory(createMockedRestClient(staffResponse, offendersResponse))
     val result = offenderService.getManagedOffendersForDeliusUser(user)
