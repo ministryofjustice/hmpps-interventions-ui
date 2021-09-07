@@ -76,6 +76,12 @@ export interface PaginationParams {
   sort?: string[]
 }
 
+export interface CreateCaseNoteParams {
+  referralId: string
+  subject: string
+  body: string
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -598,5 +604,19 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
       query: { ...paginationParams },
     })) as Page<CaseNote>
+  }
+
+  async addCaseNotes(token: string, createCaseNoteParam: CreateCaseNoteParams): Promise<CaseNote> {
+    const restClient = this.createRestClient(token)
+    const createCaseNoteDTO: Record<string, unknown> = {
+      referralId: createCaseNoteParam.referralId,
+      subject: createCaseNoteParam.subject,
+      body: createCaseNoteParam.body,
+    }
+    return (await restClient.post({
+      path: `/case-note`,
+      headers: { Accept: 'application/json' },
+      data: createCaseNoteDTO,
+    })) as CaseNote
   }
 }
