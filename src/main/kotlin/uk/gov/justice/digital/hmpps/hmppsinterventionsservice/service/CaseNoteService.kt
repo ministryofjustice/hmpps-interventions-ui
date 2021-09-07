@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CaseNoteEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -20,6 +21,7 @@ class CaseNoteService(
   val referralRepository: ReferralRepository,
   val referralService: ReferralService,
   val authUserRepository: AuthUserRepository,
+  val caseNoteEventPublisher: CaseNoteEventPublisher,
 ) {
 
   fun createCaseNote(referralId: UUID, subject: String, body: String, sentByUser: AuthUser): CaseNote {
@@ -31,7 +33,9 @@ class CaseNoteService(
       sentBy = authUserRepository.save(sentByUser),
       sentAt = OffsetDateTime.now(),
     )
-    return caseNoteRepository.save(caseNote)
+    return caseNoteRepository.save(caseNote).also {
+      caseNoteEventPublisher.caseNoteSentEvent(it)
+    }
   }
 
   fun findByReferral(referralId: UUID, pageable: Pageable?): Page<CaseNote> {
