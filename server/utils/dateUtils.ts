@@ -3,6 +3,16 @@ import CalendarDay from './calendarDay'
 
 type casing = 'lowercase' | 'capitalized'
 export default class DateUtils {
+  static formattedDayOfWeek(inputDate: Date | string): string {
+    let date: Date
+    if (inputDate instanceof Date) {
+      date = inputDate
+    } else {
+      date = new Date(inputDate)
+    }
+    return date.toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Europe/London' })
+  }
+
   // example output: 1:00pm on 12 April 2021
   static formattedDateTime(
     dateTime: Date | string,
