@@ -174,9 +174,22 @@ export default function serviceProviderRoutes(router: Router, services: Services
   const caseNotesController = new CaseNotesController(
     services.interventionsService,
     services.communityApiService,
-    services.hmppsAuthService
+    services.hmppsAuthService,
+    services.draftsService
   )
   get(router, '/referrals/:id/case-notes', (req, res) => caseNotesController.showCaseNotes(req, res))
+
+  post(router, '/referrals/:id/add-case-note/start', (req, res) =>
+    caseNotesController.startAddCaseNote(req, res, 'service-provider')
+  )
+
+  get(router, '/referrals/:id/add-case-note/:draftCaseNoteId/details', (req, res) =>
+    caseNotesController.addCaseNote(req, res, 'service-provider')
+  )
+
+  post(router, '/referrals/:id/add-case-note/:draftCaseNoteId/details', (req, res) =>
+    caseNotesController.addCaseNote(req, res, 'service-provider')
+  )
 
   if (config.features.serviceProviderReporting.enabled) {
     get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
