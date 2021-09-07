@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.netty.handler.timeout.ReadTimeoutException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Nested
@@ -666,6 +667,16 @@ class ReferralServiceUnitTest {
     val pp = referralService.getResponsibleProbationPractitioner(referralFactory.createSent())
     assertThat(pp.firstName).isEqualTo("tom")
     assertThat(pp.email).isEqualTo("tom@tom.tom")
+  }
+
+  @Test
+  fun `getResponsibleProbationPractitioner uses sender if there is an unexpected error`() {
+    val sender = authUserFactory.create("sender")
+    whenever(communityAPIOffenderService.getResponsibleOfficer(any())).thenThrow(ReadTimeoutException.INSTANCE)
+    whenever(hmppsAuthService.getUserDetail(sender)).thenReturn(UserDetail("andrew", "andrew@tom.tom"))
+    val pp = referralService.getResponsibleProbationPractitioner(referralFactory.createSent(sentBy = sender))
+    assertThat(pp.firstName).isEqualTo("andrew")
+    assertThat(pp.email).isEqualTo("andrew@tom.tom")
   }
 
   @Test

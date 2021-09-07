@@ -461,22 +461,29 @@ class ReferralService(
   }
 
   fun getResponsibleProbationPractitioner(referral: Referral): ResponsibleProbationPractitioner {
-    val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
-    if (responsibleOfficer.email != null) {
-      return ResponsibleProbationPractitioner(
-        responsibleOfficer.firstName ?: "",
-        responsibleOfficer.email,
-        responsibleOfficer.staffId,
-        null,
+    try {
+      val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
+      if (responsibleOfficer.email != null) {
+        return ResponsibleProbationPractitioner(
+          responsibleOfficer.firstName ?: "",
+          responsibleOfficer.email,
+          responsibleOfficer.staffId,
+          null,
+        )
+      }
+
+      telemetryService.reportInvalidAssumption(
+        "all responsible officers have email addresses",
+        mapOf("staffId" to responsibleOfficer.staffId.toString())
+      )
+
+      logger.warn("no email address for responsible officer; falling back to referring probation practitioner")
+    } catch (e: Exception) {
+      logger.error(
+        "could not get responsible officer due to unexpected error; falling back to referring probation practitioner",
+        e
       )
     }
-
-    telemetryService.reportInvalidAssumption(
-      "all responsible officers have email addresses",
-      mapOf("staffId" to responsibleOfficer.staffId.toString())
-    )
-
-    logger.warn("no email address for responsible officer; falling back to referring probation practitioner")
 
     val referringProbationPractitioner = referral.sentBy ?: referral.createdBy
     val userDetail = hmppsAuthService.getUserDetail(referringProbationPractitioner)
