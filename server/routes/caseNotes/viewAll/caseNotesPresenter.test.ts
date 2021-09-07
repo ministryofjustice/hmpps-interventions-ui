@@ -1,9 +1,9 @@
-import caseNoteFactory from '../../../testutils/factories/caseNote'
-import pageFactory from '../../../testutils/factories/page'
+import caseNoteFactory from '../../../../testutils/factories/caseNote'
+import pageFactory from '../../../../testutils/factories/page'
 import CaseNotesPresenter from './caseNotesPresenter'
-import { CaseNote } from '../../models/caseNote'
-import { Page } from '../../models/pagination'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import { CaseNote } from '../../../models/caseNote'
+import { Page } from '../../../models/pagination'
+import deliusServiceUserFactory from '../../../../testutils/factories/deliusServiceUser'
 
 describe('CaseNotesPresenter', () => {
   describe('tableRows', () => {
