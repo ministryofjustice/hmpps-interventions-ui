@@ -470,6 +470,7 @@ class SetupAssistant(
       sessionNumber = sessionNumber,
       appointments = mutableSetOf(appointment),
       actionPlan = actionPlan,
+      referral = actionPlan.referral,
     )
     return actionPlanSessionRepository.save(session)
   }

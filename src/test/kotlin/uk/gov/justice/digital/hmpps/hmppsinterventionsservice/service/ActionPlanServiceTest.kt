@@ -299,14 +299,15 @@ internal class ActionPlanServiceTest {
         unattendedAppointments[1],
         lateAppointments[0]
       ),
-      1, actionPlan, UUID.randomUUID()
+      1, actionPlan, UUID.randomUUID(), actionPlan.referral,
     )
 
     val session2 = ActionPlanSession(
       appointments = mutableSetOf(unattendedAppointments[2], attendedAppointments[0]),
       2,
       actionPlan,
-      UUID.randomUUID()
+      UUID.randomUUID(),
+      actionPlan.referral,
     )
 
     val session3 = ActionPlanSession(
@@ -315,7 +316,7 @@ internal class ActionPlanServiceTest {
         unattendedAppointments[4],
         lateAppointments[1]
       ),
-      3, actionPlan, UUID.randomUUID()
+      3, actionPlan, UUID.randomUUID(), actionPlan.referral,
     )
 
     whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(listOf(session1, session2, session3))
@@ -337,8 +338,8 @@ internal class ActionPlanServiceTest {
     val first = appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(2), attended = Attended.LATE, appointmentFeedbackSubmittedAt = OffsetDateTime.now())
     val second = appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(1), attended = Attended.YES, appointmentFeedbackSubmittedAt = OffsetDateTime.now())
 
-    val session1 = ActionPlanSession(appointments = mutableSetOf(first), 1, actionPlan, UUID.randomUUID())
-    val session2 = ActionPlanSession(appointments = mutableSetOf(second), 2, actionPlan, UUID.randomUUID())
+    val session1 = ActionPlanSession(appointments = mutableSetOf(first), 1, actionPlan, UUID.randomUUID(), actionPlan.referral)
+    val session2 = ActionPlanSession(appointments = mutableSetOf(second), 2, actionPlan, UUID.randomUUID(), actionPlan.referral)
 
     whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(listOf(session1, session2))
     assertThat(actionPlanService.getFirstAttendedAppointment(actionPlan)).isEqualTo(first)
@@ -351,8 +352,8 @@ internal class ActionPlanServiceTest {
     whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(emptyList())
     assertThat(actionPlanService.getFirstAttendedAppointment(actionPlan)).isNull()
 
-    val session1 = ActionPlanSession(appointments = mutableSetOf(appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(2), attended = Attended.NO, appointmentFeedbackSubmittedAt = OffsetDateTime.now())), 1, actionPlan, UUID.randomUUID())
-    val session2 = ActionPlanSession(appointments = mutableSetOf(appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(1), attended = Attended.NO, appointmentFeedbackSubmittedAt = OffsetDateTime.now())), 2, actionPlan, UUID.randomUUID())
+    val session1 = ActionPlanSession(appointments = mutableSetOf(appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(2), attended = Attended.NO, appointmentFeedbackSubmittedAt = OffsetDateTime.now())), 1, actionPlan, UUID.randomUUID(), actionPlan.referral)
+    val session2 = ActionPlanSession(appointments = mutableSetOf(appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now().minusHours(1), attended = Attended.NO, appointmentFeedbackSubmittedAt = OffsetDateTime.now())), 2, actionPlan, UUID.randomUUID(), actionPlan.referral)
 
     whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)).thenReturn(listOf(session1, session2))
     assertThat(actionPlanService.getFirstAttendedAppointment(actionPlan)).isNull()
