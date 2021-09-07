@@ -608,17 +608,12 @@ export default class InterventionsService {
     })) as Page<CaseNote>
   }
 
-  async addCaseNotes(token: string, createCaseNoteParam: CreateCaseNoteParams): Promise<CaseNote> {
+  async addCaseNotes(token: string, caseNote: Partial<CaseNote>): Promise<CaseNote> {
     const restClient = this.createRestClient(token)
-    const createCaseNoteDTO: Record<string, unknown> = {
-      referralId: createCaseNoteParam.referralId,
-      subject: createCaseNoteParam.subject,
-      body: createCaseNoteParam.body,
-    }
     return (await restClient.post({
       path: `/case-note`,
       headers: { Accept: 'application/json' },
-      data: createCaseNoteDTO,
+      data: caseNote,
     })) as CaseNote
   }
 
