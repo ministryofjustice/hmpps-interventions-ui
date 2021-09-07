@@ -707,6 +707,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetCaseNote = async (caseNoteId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/case-note/${caseNoteId}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubAddCaseNote = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
