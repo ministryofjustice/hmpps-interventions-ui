@@ -38,6 +38,11 @@ export default class HmppsAuthService {
     return (await this.restClient(userToken).get({ path: '/api/user/me' })) as UserDetails
   }
 
+  async getUserDetailsByUsername(userToken: string, username: string): Promise<UserDetails> {
+    logger.info(`Getting user details: calling HMPPS Auth`)
+    return (await this.restClient(userToken).get({ path: `/api/user/${username}` })) as UserDetails
+  }
+
   async getUserOrganizations(token: string, user: User): Promise<Array<ServiceProviderOrganization>> {
     return user.authSource === 'auth'
       ? (await this.getAuthUserGroups(token, user.username))

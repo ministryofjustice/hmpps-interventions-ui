@@ -54,6 +54,21 @@ describe('hmppsAuthService', () => {
     })
   })
 
+  describe('getUserDetailsByUsername', () => {
+    it('should return user details from api', async () => {
+      const response = { username: 'user_1' }
+      const username = 'user_1'
+
+      fakeHmppsAuthApi
+        .get('/api/user/user_1')
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(200, response)
+
+      const output = await hmppsAuthService.getUserDetailsByUsername(token.access_token, username)
+      expect(output).toEqual(response)
+    })
+  })
+
   describe('getSPUserByEmailAddress', () => {
     describe('when a matching user is found with the requested email address', () => {
       it('should return the first active and verified user from the API response', async () => {
