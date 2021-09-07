@@ -103,7 +103,7 @@ class NotifyActionPlanServiceTest {
   @Test
   fun `action plan submitted event generates valid url and sends an email`() {
     whenever(referralService.getResponsibleProbationPractitioner(any()))
-      .thenReturn(ContactableProbationPractitioner("tom", "tom@tom.tom"))
+      .thenReturn(ResponsibleProbationPractitioner("tom", "tom@tom.tom", null, null))
 
     notifyService().onApplicationEvent(actionPlanSubmittedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

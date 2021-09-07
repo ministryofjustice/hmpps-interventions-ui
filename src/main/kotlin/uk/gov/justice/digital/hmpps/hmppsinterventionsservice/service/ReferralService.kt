@@ -36,10 +36,12 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import javax.transaction.Transactional
 
-data class ContactableProbationPractitioner(
-  val firstName: String,
-  val email: String,
-)
+data class ResponsibleProbationPractitioner(
+  override val firstName: String,
+  override val email: String,
+  val staffId: Long?,
+  val authUser: AuthUser?,
+) : ContactablePerson
 
 @Service
 @Transactional
@@ -458,12 +460,14 @@ class ReferralService(
     return null
   }
 
-  fun getResponsibleProbationPractitioner(referral: Referral): ContactableProbationPractitioner {
+  fun getResponsibleProbationPractitioner(referral: Referral): ResponsibleProbationPractitioner {
     val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
     if (responsibleOfficer.email != null) {
-      return ContactableProbationPractitioner(
+      return ResponsibleProbationPractitioner(
         responsibleOfficer.firstName ?: "",
         responsibleOfficer.email,
+        responsibleOfficer.staffId,
+        null,
       )
     }
 
@@ -474,10 +478,13 @@ class ReferralService(
 
     logger.warn("no email address for responsible officer; falling back to referring probation practitioner")
 
-    val referringProbationPractitioner = hmppsAuthService.getUserDetail(referral.sentBy ?: referral.createdBy)
-    return ContactableProbationPractitioner(
-      referringProbationPractitioner.firstName,
-      referringProbationPractitioner.email
+    val referringProbationPractitioner = referral.sentBy ?: referral.createdBy
+    val userDetail = hmppsAuthService.getUserDetail(referringProbationPractitioner)
+    return ResponsibleProbationPractitioner(
+      userDetail.firstName,
+      userDetail.email,
+      null,
+      referringProbationPractitioner,
     )
   }
 }
