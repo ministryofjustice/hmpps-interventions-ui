@@ -30,7 +30,7 @@ private data class UserAccessResponse(
 )
 
 private data class StaffDetailsResponse(
-  val staffIdentifier: String,
+  val staffIdentifier: Long,
 )
 
 private data class ContactableHumanResponse(
@@ -89,7 +89,7 @@ class CommunityAPIOffenderService(
       .block()
   }
 
-  private fun getStaffIdentifier(user: AuthUser): String? {
+  private fun getStaffIdentifier(user: AuthUser): Long? {
     val staffDetailsPath = UriComponentsBuilder.fromPath(staffDetailsLocation)
       .buildAndExpand(user.userName)
       .toString()
