@@ -51,6 +51,7 @@ class ActionPlanSessionsService(
     val session = ActionPlanSession(
       id = UUID.randomUUID(),
       sessionNumber = sessionNumber,
+      referral = actionPlan.referral,
       actionPlan = actionPlan,
     )
 

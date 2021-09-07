@@ -24,6 +24,7 @@ data class ActionPlanSession(
 
   @NotNull @ManyToOne val actionPlan: ActionPlan,
   @Id val id: UUID,
+  @ManyToOne val referral: Referral?,
 ) {
   // this class is designed to allow multiple appointments per session,
   // however this functionality is not currently used. to make life

@@ -22,7 +22,8 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
         id = id,
         actionPlan = actionPlan,
         sessionNumber = sessionNumber,
-        appointments = mutableSetOf()
+        appointments = mutableSetOf(),
+        referral = actionPlan.referral
       )
     )
   }
@@ -51,7 +52,8 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
         id = id,
         actionPlan = actionPlan,
         sessionNumber = sessionNumber,
-        appointments = mutableSetOf(appointment)
+        appointments = mutableSetOf(appointment),
+        referral = actionPlan.referral
       )
     )
   }
@@ -91,7 +93,8 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
         id = id,
         actionPlan = actionPlan,
         sessionNumber = sessionNumber,
-        appointments = mutableSetOf(appointment)
+        appointments = mutableSetOf(appointment),
+        referral = actionPlan.referral
       )
     )
   }
