@@ -89,7 +89,7 @@ class CommunityAPIOffenderService(
       .block()
   }
 
-  private fun getStaffIdentifier(user: AuthUser): Long? {
+  fun getStaffIdentifier(user: AuthUser): Long? {
     val staffDetailsPath = UriComponentsBuilder.fromPath(staffDetailsLocation)
       .buildAndExpand(user.userName)
       .toString()

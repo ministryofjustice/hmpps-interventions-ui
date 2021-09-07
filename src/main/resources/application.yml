@@ -102,6 +102,7 @@ notify:
     initial-assessment-scheduled: "28256bed-6433-485c-857d-cb52a7937dff"
     service-provider-performance-report-ready: "9839e772-cd88-435d-9d18-61ea14d3531b"
     service-provider-performance-report-failed: "b4a09047-bf01-4ca1-ba55-f08bcce524f2"
+    case-note-sent: "83868039-3d42-4af6-86da-df14e9d4a8b7"
 
 interventions-ui:
   locations:
@@ -110,6 +111,7 @@ interventions-ui:
       intervention-progress: "/service-provider/referrals/{id}/progress"
       action-plan: "/service-provider/referrals/{id}/action-plan"
       download-report: "/service-provider/performance-report/download?filename={filename}"
+      case-note-details: "/service-provider/case-note/{id}"
     probation-practitioner:
       referral-details: "/probation-practitioner/referrals/{id}/details"
       intervention-progress: "/probation-practitioner/referrals/{id}/progress"
@@ -118,6 +120,7 @@ interventions-ui:
       session-feedback: "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback"
       supplier-assessment-feedback: "/probation-practitioner/referrals/{id}/supplier-assessment/post-assessment-feedback"
       end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
+      case-note-details: "/probation-practitioner/case-note/{id}"
 
 community-api:
   locations:

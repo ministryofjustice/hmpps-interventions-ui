@@ -39,7 +39,7 @@ import javax.transaction.Transactional
 data class ResponsibleProbationPractitioner(
   override val firstName: String,
   override val email: String,
-  val staffId: Long?,
+  val deliusStaffId: Long?,
   val authUser: AuthUser?,
 ) : ContactablePerson
 

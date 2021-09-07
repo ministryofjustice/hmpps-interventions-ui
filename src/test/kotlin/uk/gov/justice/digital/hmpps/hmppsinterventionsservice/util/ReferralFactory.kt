@@ -94,6 +94,50 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     return referral
   }
 
+  fun createAssigned(
+    id: UUID = UUID.randomUUID(),
+    createdAt: OffsetDateTime = OffsetDateTime.now(),
+    createdBy: AuthUser = authUserFactory.create(),
+    serviceUserCRN: String = "X123456",
+    relevantSentenceId: Long = 1234567L,
+    intervention: Intervention = interventionFactory.create(),
+    selectedServiceCategories: MutableSet<ServiceCategory>? = null,
+    desiredOutcomes: List<DesiredOutcome> = emptyList(),
+    actionPlans: MutableList<ActionPlan>? = null,
+
+    sentAt: OffsetDateTime = OffsetDateTime.now(),
+    sentBy: AuthUser = authUserFactory.create(),
+    referenceNumber: String? = "JS18726AC",
+    supplementaryRiskId: UUID = UUID.randomUUID(),
+
+    assignments: List<ReferralAssignment> = listOf(
+      ReferralAssignment(OffsetDateTime.now(), authUserFactory.createSP(), authUserFactory.createSP())
+    ),
+
+    supplierAssessment: SupplierAssessment? = null,
+  ): Referral {
+    val referral = create(
+      id = id,
+      createdAt = createdAt,
+      createdBy = createdBy,
+      serviceUserCRN = serviceUserCRN,
+      relevantSentenceId = relevantSentenceId,
+      intervention = intervention,
+      selectedServiceCategories = selectedServiceCategories,
+      desiredOutcomes = desiredOutcomes,
+      actionPlans = actionPlans,
+
+      sentAt = sentAt,
+      sentBy = sentBy,
+      referenceNumber = referenceNumber,
+      supplementaryRiskId = supplementaryRiskId,
+
+      assignments = assignments,
+      supplierAssessment = supplierAssessment
+    )
+    return referral
+  }
+
   fun createEnded(
     id: UUID = UUID.randomUUID(),
     createdAt: OffsetDateTime = OffsetDateTime.now(),
