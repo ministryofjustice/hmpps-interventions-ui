@@ -621,4 +621,12 @@ export default class InterventionsService {
       data: createCaseNoteDTO,
     })) as CaseNote
   }
+
+  async getCaseNote(token: string, caseNoteId: string): Promise<CaseNote> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/case-note/${caseNoteId}`,
+      headers: { Accept: 'application/json' },
+    })) as CaseNote
+  }
 }
