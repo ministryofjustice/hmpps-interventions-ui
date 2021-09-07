@@ -517,6 +517,7 @@ describe('Probation Practitioner monitor journey', () => {
         }),
         approvedActionPlanSummaryFactory.build({
           approvedAt: '2021-06-04T00:30:00+01:00',
+          id: actionPlanId,
         }),
       ]
 
@@ -567,10 +568,12 @@ describe('Probation Practitioner monitor journey', () => {
           {
             'Version number': '2',
             'Approval date': '4 Jun 2021',
+            Action: 'This version',
           },
           {
             'Version number': '1',
             'Approval date': '3 Jun 2021',
+            Action: 'View',
           },
         ])
     })

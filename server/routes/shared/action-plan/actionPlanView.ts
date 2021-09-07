@@ -43,11 +43,14 @@ export default class ActionPlanView {
 
   get approvedActionPlansTableArgs(): TableArgs | null {
     return {
-      head: [{ text: 'Version number' }, { text: 'Approval date' }],
-      rows: this.presenter.actionPlanVersions.map(actionPlan => [
-        { text: String(actionPlan.versionNumber) },
-        { text: actionPlan.approvalDate },
-      ]),
+      head: [{ text: 'Version number' }, { text: 'Approval date' }, { text: 'Action' }],
+      rows: this.presenter.actionPlanVersions.map(actionPlan => {
+        const actionRow =
+          actionPlan.href === null
+            ? { text: 'This version' }
+            : { html: `<a href="${ViewUtils.escape(actionPlan.href)}">View</a>` }
+        return [{ text: String(actionPlan.versionNumber) }, { text: actionPlan.approvalDate }, actionRow]
+      }),
     }
   }
 

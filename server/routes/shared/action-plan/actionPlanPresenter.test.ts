@@ -204,27 +204,47 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('actionPlanVersions', () => {
-    it('returns a list of created dates and version numbers for approved action plans in descending order by date', () => {
-      const submittedActionPlan = actionPlanFactory.submitted().build()
+    it('returns a list of created dates, version numbers, and an href for viewing the action plan (or null for the current version) for approved action plans in descending order by date', () => {
+      const viewedActionPlanId = '490cc3a9-28d6-4316-8b89-92d9ccae0e1d'
+      const otherActionPlanId = '820f2dfc-06ba-4719-b94f-673b3ef86cbe'
+      const latestActionPlanId = 'f12a3dcd-9d8a-4bb9-b65d-b0a99d227f0e'
+
+      const referralWithLatestActionPlan = referralFactory.assigned().build({ actionPlanId: latestActionPlanId })
+      const currentlyViewedActionPlan = actionPlanFactory.submitted().build({ id: viewedActionPlanId })
       const approvedActionPlanSummaries = [
         approvedActionPlanSummaryFactory.build({
+          id: viewedActionPlanId,
           approvedAt: '2021-06-10:00:00.000000Z',
         }),
         approvedActionPlanSummaryFactory.build({
+          id: otherActionPlanId,
           approvedAt: '2021-06-11:00:00.000000Z',
+        }),
+        approvedActionPlanSummaryFactory.build({
+          id: latestActionPlanId,
+          approvedAt: '2021-06-12:00:00.000000Z',
         }),
       ]
       const submittedActionPlanPresenter = new ActionPlanPresenter(
-        referral,
-        submittedActionPlan,
+        referralWithLatestActionPlan,
+        currentlyViewedActionPlan,
         serviceCategories,
         'service-provider',
         null,
         approvedActionPlanSummaries
       )
       expect(submittedActionPlanPresenter.actionPlanVersions).toEqual([
-        { approvalDate: '11 Jun 2021', versionNumber: 2 },
-        { approvalDate: '10 Jun 2021', versionNumber: 1 },
+        {
+          approvalDate: '12 Jun 2021',
+          versionNumber: 3,
+          href: `/probation-practitioner/referrals/${referralWithLatestActionPlan.id}/action-plan`,
+        },
+        {
+          approvalDate: '11 Jun 2021',
+          versionNumber: 2,
+          href: `/probation-practitioner/action-plan/${otherActionPlanId}`,
+        },
+        { approvalDate: '10 Jun 2021', versionNumber: 1, href: null },
       ])
     })
   })

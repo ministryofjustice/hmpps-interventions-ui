@@ -34,6 +34,8 @@ export default class ActionPlanPresenter {
 
   readonly actionPlanEditConfirmationUrl = `/service-provider/referrals/${this.referral.id}/action-plan/edit`
 
+  readonly viewProbationPractitionerLatestActionPlanURL = `/probation-practitioner/referrals/${this.referral.id}/action-plan`
+
   readonly errorSummary = PresenterUtils.errorSummary(this.validationError)
 
   readonly fieldErrors = {
@@ -68,17 +70,33 @@ export default class ActionPlanPresenter {
     return this.userType === 'probation-practitioner' && !this.actionPlanSummaryPresenter.actionPlanSubmitted
   }
 
-  get actionPlanVersions(): { approvalDate: string; versionNumber: number }[] {
+  get actionPlanVersions(): { approvalDate: string; versionNumber: number; href: string | null }[] {
     return this.approvedActionPlanSummaries
       .sort((summaryA, summaryB) => new Date(summaryB.approvedAt).getTime() - new Date(summaryA.approvedAt).getTime())
       .map((summary, index) => ({
         versionNumber: this.approvedActionPlanSummaries.length - index,
         approvalDate: dateUtils.formattedDate(summary.approvedAt, { month: 'short' }),
+        href: this.determineActionPlanHref(summary.id),
       }))
   }
 
   get showActionPlanVersions(): boolean {
     return this.userType === 'probation-practitioner' && this.actionPlanVersions.length > 0
+  }
+
+  private determineActionPlanHref(summaryId: string): string | null {
+    const isCurrentlyViewedActionPlan = summaryId === this.actionPlan.id
+    const isLatestActionPlan = summaryId === this.referral.actionPlanId
+
+    if (isCurrentlyViewedActionPlan) {
+      return null
+    }
+
+    if (isLatestActionPlan) {
+      return this.viewProbationPractitionerLatestActionPlanURL
+    }
+
+    return `/probation-practitioner/action-plan/${summaryId}`
   }
 
   get showEditButton(): boolean {
