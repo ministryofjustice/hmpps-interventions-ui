@@ -36,8 +36,8 @@ class ActionPlanValidator {
 
   private fun validateNumberOfSessionsIsNotReduced(update: ActionPlan, errors: MutableList<FieldError>) {
     update.numberOfSessions?.let { requiredNumberOfSessions ->
-      update.referral.maximumNumberOfSessionsInPreviousAllApprovedPlans?.let { previousNumberOfSessions ->
-        if (requiredNumberOfSessions < previousNumberOfSessions) {
+      update.referral.approvedActionPlan?.let { latestApprovedPlan ->
+        if (requiredNumberOfSessions < latestApprovedPlan.numberOfSessions!!) {
           errors.add(FieldError(field = "numberOfSessions", error = CANNOT_BE_REDUCED))
         }
       }

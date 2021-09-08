@@ -104,7 +104,4 @@ class Referral(
 
   val currentAssignee: AuthUser?
     get() = currentAssignment?.assignedTo
-
-  val maximumNumberOfSessionsInPreviousAllApprovedPlans: Int?
-    get() = actionPlans?.filter { it.approvedAt != null }?.maxOfOrNull { it.numberOfSessions!! }
 }
