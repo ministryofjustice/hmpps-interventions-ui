@@ -104,6 +104,7 @@ class SetupAssistant(
 
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
+    caseNoteRepository.deleteAll()
     actionPlanSessionRepository.deleteAll()
     supplierAssessmentRepository.deleteAll()
     actionPlanRepository.deleteAll()
