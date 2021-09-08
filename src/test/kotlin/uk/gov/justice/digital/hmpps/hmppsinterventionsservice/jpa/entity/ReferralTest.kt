@@ -70,4 +70,41 @@ internal class ReferralTest {
       assertThat(referral.approvedActionPlan?.id).isEqualTo(correctId)
     }
   }
+
+  @Nested
+  inner class NumberOfSessions {
+    @Test
+    fun `maximum number of sessions in previous plans gets largest number`() {
+      val referral = referralFactory.createSent(
+        actionPlans = mutableListOf(
+          actionPlanFactory.createApproved(numberOfSessions = 2),
+          actionPlanFactory.createApproved(numberOfSessions = 1)
+        )
+      )
+      assertThat(referral.maximumNumberOfSessionsInPreviousAllApprovedPlans).isEqualTo(2)
+    }
+
+    @Test
+    fun `maximum number of sessions in previous plans ignores non approved plans`() {
+      val referral = referralFactory.createSent(
+        actionPlans = mutableListOf(
+          actionPlanFactory.createSubmitted(numberOfSessions = 3),
+          actionPlanFactory.createApproved(numberOfSessions = 2),
+        )
+      )
+      assertThat(referral.maximumNumberOfSessionsInPreviousAllApprovedPlans).isEqualTo(2)
+    }
+
+    @Test
+    fun `maximum number of sessions is null when no plan list exist`() {
+      val referral = referralFactory.createSent(actionPlans = mutableListOf())
+      assertThat(referral.maximumNumberOfSessionsInPreviousAllApprovedPlans).isNull()
+    }
+
+    @Test
+    fun `maximum number of sessions is null when no plans exist`() {
+      val referral = referralFactory.createSent(actionPlans = null)
+      assertThat(referral.maximumNumberOfSessionsInPreviousAllApprovedPlans).isNull()
+    }
+  }
 }

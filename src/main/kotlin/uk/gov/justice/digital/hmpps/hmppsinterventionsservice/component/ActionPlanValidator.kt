@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code.CANNOT_BE_EMPTY
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code.CANNOT_BE_NEGATIVE_OR_ZERO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code.CANNOT_BE_REDUCED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
@@ -13,6 +14,10 @@ class ActionPlanValidator {
     val errors = mutableListOf<FieldError>()
 
     validateNumberOfSessionsIsGreaterThanZero(update, errors)
+
+    if (errors.isEmpty()) {
+      validateNumberOfSessionsIsNotReduced(update, errors)
+    }
 
     if (errors.isNotEmpty()) {
       throw ValidationError("draft action plan update invalid", errors)
@@ -26,6 +31,16 @@ class ActionPlanValidator {
 
     if (errors.isNotEmpty()) {
       throw ValidationError("submitted action plan invalid", errors)
+    }
+  }
+
+  private fun validateNumberOfSessionsIsNotReduced(update: ActionPlan, errors: MutableList<FieldError>) {
+    update.numberOfSessions?.let { requiredNumberOfSessions ->
+      update.referral.maximumNumberOfSessionsInPreviousAllApprovedPlans?.let { previousNumberOfSessions ->
+        if (requiredNumberOfSessions < previousNumberOfSessions) {
+          errors.add(FieldError(field = "numberOfSessions", error = CANNOT_BE_REDUCED))
+        }
+      }
     }
   }
 
