@@ -1,10 +1,10 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% extends "../partials/layout.njk" %}
+{% extends "../partials/referralNavigationTemplate.njk" %}
 {% set pageTitle = "Referral" %}
 {% set pageSubTitle = "Case notes" %}
 
-{% block pageContent %}
+{% block referralPageSection %}
     <form action="{{ presenter.hrefCaseNoteStart }}" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukButton({ text: "Add case note" }) }}
