@@ -48,6 +48,65 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     serviceProviderToken = oauth2TokenFactory.serviceProviderToken().build()
   })
 
+  describe('get case notes', () => {
+    it('returns a list of case notes', async () => {
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID of 7197d9b1-ca8b-475c-9f44-1fed47778c23, and it has 20 case notes',
+        uponReceiving: 'a request for 2 case notes and the 2nd page',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/7197d9b1-ca8b-475c-9f44-1fed47778c23/case-notes',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          query: {
+            page: '2',
+            size: '2',
+            sort: 'sentBy,DESC',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            content: [
+              {
+                referralId: '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9',
+                subject: 'subject for case note 3 of 20',
+                body: 'body for case note 3 of 20',
+                sentBy: {
+                  userId: '608955ae-52ed-44cc-884c-011597a77949',
+                  username: 'AUTH_USER',
+                  authSource: 'auth',
+                },
+              },
+              {
+                referralId: '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9',
+                subject: 'subject for case note 4 of 20',
+                body: 'body for case note 4 of 20',
+                sentBy: {
+                  userId: '608955ae-52ed-44cc-884c-011597a77949',
+                  username: 'AUTH_USER',
+                  authSource: 'auth',
+                },
+              },
+            ],
+            totalElements: 20,
+            totalPages: 10,
+            numberOfElements: 2,
+            number: 1,
+            size: 2,
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      await interventionsService.getCaseNotes(probationPractitionerToken, '7197d9b1-ca8b-475c-9f44-1fed47778c23', {
+        page: 2,
+        size: 2,
+        sort: ['sentBy,DESC'],
+      })
+    })
+  })
+
   describe('getDraftReferral', () => {
     it('returns a referral for the given ID', async () => {
       await provider.addInteraction({

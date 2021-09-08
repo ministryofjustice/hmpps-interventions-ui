@@ -165,3 +165,7 @@ Cypress.Commands.add('stubSubmitSupplierAssessmentAppointmentFeedback', (referra
 Cypress.Commands.add('stubGenerateServiceProviderPerformanceReport', () => {
   cy.task('stubGenerateServiceProviderPerformanceReport', {})
 })
+
+Cypress.Commands.add('stubGetCaseNotes', (referralId, responseJson) => {
+  cy.task('stubGetCaseNotes', { referralId, responseJson })
+})

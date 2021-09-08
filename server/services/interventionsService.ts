@@ -25,6 +25,8 @@ import {
   InitialAssessmentAppointment,
 } from '../models/appointment'
 import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
+import { Page } from '../models/pagination'
+import { CaseNote } from '../models/caseNote'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -586,5 +588,15 @@ export default class InterventionsService {
       path: '/reports/service-provider/performance',
       data: InterventionsService.createReportDatesDTO(reportDates),
     })
+  }
+
+  async getCaseNotes(token: string, referralId: string, paginationParams: PaginationParams): Promise<Page<CaseNote>> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/sent-referral/${referralId}/case-notes`,
+      headers: { Accept: 'application/json' },
+      query: { ...paginationParams },
+    })) as Page<CaseNote>
   }
 }

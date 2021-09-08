@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { Services, get, post } from './index'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
+import CaseNotesController from './caseNotes/caseNotesController'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
@@ -61,6 +62,13 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/referrals/:id/action-plan/approved', (req, res) =>
     probationPractitionerReferralsController.actionPlanApproved(req, res)
   )
+
+  const caseNotesController = new CaseNotesController(
+    services.interventionsService,
+    services.communityApiService,
+    services.hmppsAuthService
+  )
+  get(router, '/referrals/:id/case-notes', (req, res) => caseNotesController.showCaseNotes(req, res))
 
   return router
 }

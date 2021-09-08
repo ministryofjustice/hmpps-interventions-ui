@@ -3,6 +3,22 @@ import CalendarDay from './calendarDay'
 import ClockTime from './clockTime'
 
 describe('DateUtils', () => {
+  describe('formattedDayOfWeek', () => {
+    it('returns a formatted string with local timezone offset for a valid ISO8601 datetime input', () => {
+      expect(DateUtils.formattedDayOfWeek('2021-02-01T13:00:00Z')).toEqual('Monday')
+      // BST should display as GMT during winter if before 1am
+      expect(DateUtils.formattedDayOfWeek('2021-02-02T00:59:00+01:00')).toEqual('Monday')
+      expect(DateUtils.formattedDayOfWeek('2021-02-02T01:00:00+01:00')).toEqual('Tuesday')
+      // GMT
+      expect(DateUtils.formattedDayOfWeek('2021-02-01T23:30:00+00:00')).toEqual('Monday')
+      // BST should display as BST
+      expect(DateUtils.formattedDayOfWeek('2021-06-02T00:30:00+01:00')).toEqual('Wednesday')
+      // GMT should transform to BST during summer if after 11pm
+      expect(DateUtils.formattedDayOfWeek('2021-06-01T22:59:00+00:00')).toEqual('Tuesday')
+      expect(DateUtils.formattedDayOfWeek('2021-06-01T23:00:00+00:00')).toEqual('Wednesday')
+    })
+  })
+
   describe('formattedDateTime', () => {
     it('returns a formatted string with local timezone offset for a valid ISO8601 datetime input', () => {
       expect(DateUtils.formattedDateTime('2021-02-01T13:00:00Z')).toEqual('1:00pm on 1 February 2021')

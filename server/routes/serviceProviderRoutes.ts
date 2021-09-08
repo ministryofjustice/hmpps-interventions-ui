@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { Services, get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import config from '../config'
+import CaseNotesController from './caseNotes/caseNotesController'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 
@@ -169,6 +170,13 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/referrals/:id/action-plan/edit', (req, res) =>
     serviceProviderReferralsController.createNewDraftActionPlan(req, res)
   )
+
+  const caseNotesController = new CaseNotesController(
+    services.interventionsService,
+    services.communityApiService,
+    services.hmppsAuthService
+  )
+  get(router, '/referrals/:id/case-notes', (req, res) => caseNotesController.showCaseNotes(req, res))
 
   if (config.features.serviceProviderReporting.enabled) {
     get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
