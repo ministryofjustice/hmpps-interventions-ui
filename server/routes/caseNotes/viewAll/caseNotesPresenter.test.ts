@@ -4,6 +4,7 @@ import CaseNotesPresenter from './caseNotesPresenter'
 import { CaseNote } from '../../../models/caseNote'
 import { Page } from '../../../models/pagination'
 import deliusServiceUserFactory from '../../../../testutils/factories/deliusServiceUser'
+import interventionFactory from '../../../../testutils/factories/intervention'
 
 describe('CaseNotesPresenter', () => {
   const referralId = 'e2e62d97-97ec-4f90-ae3d-006e42b0fc2d'
@@ -13,6 +14,7 @@ describe('CaseNotesPresenter', () => {
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       const presenter = new CaseNotesPresenter(
         referralId,
+        interventionFactory.build(),
         page,
         new Map(),
         deliusServiceUserFactory.build(),
@@ -26,6 +28,7 @@ describe('CaseNotesPresenter', () => {
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       const presenter = new CaseNotesPresenter(
         referralId,
+        interventionFactory.build(),
         page,
         new Map(),
         deliusServiceUserFactory.build(),
@@ -39,6 +42,7 @@ describe('CaseNotesPresenter', () => {
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       const presenter = new CaseNotesPresenter(
         referralId,
+        interventionFactory.build(),
         page,
         new Map(),
         deliusServiceUserFactory.build(),
@@ -55,6 +59,7 @@ describe('CaseNotesPresenter', () => {
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       let presenter = new CaseNotesPresenter(
         referralId,
+        interventionFactory.build(),
         page,
         new Map(),
         deliusServiceUserFactory.build(),
@@ -65,6 +70,7 @@ describe('CaseNotesPresenter', () => {
       )
       presenter = new CaseNotesPresenter(
         referralId,
+        interventionFactory.build(),
         page,
         new Map(),
         deliusServiceUserFactory.build(),
@@ -88,6 +94,7 @@ describe('CaseNotesPresenter', () => {
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
           const presenter = new CaseNotesPresenter(
             referralId,
+            interventionFactory.build(),
             page,
             new Map(),
             deliusServiceUserFactory.build(),
@@ -109,6 +116,7 @@ describe('CaseNotesPresenter', () => {
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
           const presenter = new CaseNotesPresenter(
             referralId,
+            interventionFactory.build(),
             page,
             new Map([['USER_1', undefined]]),
             deliusServiceUserFactory.build(),
@@ -130,6 +138,7 @@ describe('CaseNotesPresenter', () => {
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
           const presenter = new CaseNotesPresenter(
             referralId,
+            interventionFactory.build(),
             page,
             new Map([['USER_1', 'firstName lastName']]),
             deliusServiceUserFactory.build(),
@@ -147,6 +156,7 @@ describe('CaseNotesPresenter', () => {
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       const presenter = new CaseNotesPresenter(
         referralId,
+        interventionFactory.build(),
         page,
         new Map(),
         deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),

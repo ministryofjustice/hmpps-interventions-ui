@@ -23,6 +23,11 @@ export default class ReferralOverviewPagePresenter {
         href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/details`,
         active: this.section === ReferralOverviewPageSection.Details,
       },
+      {
+        text: 'Case notes',
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/case-notes`,
+        active: this.section === ReferralOverviewPageSection.CaseNotes,
+      },
     ],
   }
 
