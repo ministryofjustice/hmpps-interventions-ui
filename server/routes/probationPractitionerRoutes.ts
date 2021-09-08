@@ -91,5 +91,9 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     caseNotesController.submitCaseNote(req, res, 'probation-practitioner')
   )
 
+  get(router, '/referrals/:id/add-case-note/confirmation', (req, res) =>
+    caseNotesController.newCaseNoteConfirmation(req, res, 'probation-practitioner')
+  )
+
   return router
 }

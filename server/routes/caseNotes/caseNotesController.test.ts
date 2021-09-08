@@ -17,6 +17,7 @@ import deliusServiceUserFactory from '../../../testutils/factories/deliusService
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import DraftsService from '../../services/draftsService'
 import { DraftCaseNote } from './caseNotesController'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -250,7 +251,20 @@ describe.each([
       await request(app)
         .post(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/submit`)
         .expect(302)
-        .expect('Location', `/${user.userType}/referrals/${sentReferral.id}/case-notes`)
+        .expect('Location', `/${user.userType}/referrals/${sentReferral.id}/add-case-note/confirmation`)
+    })
+  })
+
+  describe(`GET /${user.userType}/referrals/:id/add-case-note/confirmation`, () => {
+    it('should show confirmation of case note added', async () => {
+      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build({}))
+      await request(app)
+        .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/confirmation`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('New case note added')
+        })
     })
   })
 })

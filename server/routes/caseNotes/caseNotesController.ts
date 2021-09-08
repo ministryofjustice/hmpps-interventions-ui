@@ -15,6 +15,8 @@ import DraftsService from '../../services/draftsService'
 import CheckAddCaseNoteAnswersPresenter from './checkAnswers/checkAddCaseNoteAnswersPresenter'
 import CheckAddCaseNoteAnswersView from './checkAnswers/checkAddCaseNoteAnswersView'
 import { CaseNote } from '../../models/caseNote'
+import NewCaseNoteConfirmationPresenter from './confirmation/newCaseNoteConfirmationPresenter'
+import NewCaseNoteConfirmationView from './confirmation/newCaseNoteConfirmationView'
 
 export type DraftCaseNote = null | CaseNote
 
@@ -160,7 +162,24 @@ export default class CaseNotesController {
     }
     await this.interventionsService.addCaseNotes(accessToken, draft.data)
     await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
-    res.redirect(`/${loggedInUserType}/referrals/${referralId}/case-notes`)
+    res.redirect(`/${loggedInUserType}/referrals/${referralId}/add-case-note/confirmation`)
+  }
+
+  async newCaseNoteConfirmation(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const intervention = await this.interventionsService.getIntervention(
+      accessToken,
+      sentReferral.referral.interventionId
+    )
+    const presenter = new NewCaseNoteConfirmationPresenter(sentReferral, intervention, loggedInUserType)
+    const view = new NewCaseNoteConfirmationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, null)
   }
 
   private async fetchDraftCaseNoteOrRenderMessage(req: Request, res: Response) {
