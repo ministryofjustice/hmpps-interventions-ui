@@ -13,11 +13,7 @@ class ActionPlanValidator {
   fun validateDraftActionPlanUpdate(update: ActionPlan) {
     val errors = mutableListOf<FieldError>()
 
-    validateNumberOfSessionsIsGreaterThanZero(update, errors)
-
-    if (errors.isEmpty()) {
-      validateNumberOfSessionsIsNotReduced(update, errors)
-    }
+    validateNumberOfSessionsIsNotReduced(update, errors)
 
     if (errors.isNotEmpty()) {
       throw ValidationError("draft action plan update invalid", errors)
@@ -35,20 +31,14 @@ class ActionPlanValidator {
   }
 
   private fun validateNumberOfSessionsIsNotReduced(update: ActionPlan, errors: MutableList<FieldError>) {
-    update.numberOfSessions?.let { requiredNumberOfSessions ->
-      update.referral.approvedActionPlan?.let { latestApprovedPlan ->
-        if (requiredNumberOfSessions < latestApprovedPlan.numberOfSessions!!) {
-          errors.add(FieldError(field = "numberOfSessions", error = CANNOT_BE_REDUCED))
-        }
-      }
+    val newNumberOfSessions = update.numberOfSessions ?: return
+    if (newNumberOfSessions <= 0) {
+      errors.add(FieldError(field = "numberOfSessions", error = CANNOT_BE_NEGATIVE_OR_ZERO))
     }
-  }
 
-  private fun validateNumberOfSessionsIsGreaterThanZero(update: ActionPlan, errors: MutableList<FieldError>) {
-    update.numberOfSessions?.let {
-      if (it <= 0) {
-        errors.add(FieldError(field = "numberOfSessions", error = CANNOT_BE_NEGATIVE_OR_ZERO))
-      }
+    val existingNumberOfSessions = update.referral.approvedActionPlan?.numberOfSessions ?: return
+    if (newNumberOfSessions < existingNumberOfSessions) {
+      errors.add(FieldError(field = "numberOfSessions", error = CANNOT_BE_REDUCED))
     }
   }
 
