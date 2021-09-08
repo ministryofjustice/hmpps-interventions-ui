@@ -63,7 +63,7 @@ export default class CaseNotesController {
         )
       ).map(user => [user.username, user.fullName])
     )
-    const presenter = new CaseNotesPresenter(caseNotesPage, userDetails, serviceUser, loggedInUserType)
+    const presenter = new CaseNotesPresenter(referralId, caseNotesPage, userDetails, serviceUser, loggedInUserType)
     const view = new CaseNotesView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
