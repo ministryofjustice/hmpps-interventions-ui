@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Communit
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.YES
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import java.time.OffsetDateTime
@@ -20,20 +22,63 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
 
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
 
-  @Test
-  fun `got service successfully`() {
+  private val communityAPIService = CommunityAPIActionPlanAppointmentEventService(
+    "http://baseUrl",
+    "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback",
+    "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",
+    "commissioned-rehabilitation-services",
+    communityAPIClient
+  )
 
-    val communityAPIService = CommunityAPIActionPlanAppointmentEventService(
-      "http://baseUrl",
-      "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback",
-      "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",
-      "commissioned-rehabilitation-services",
-      communityAPIClient
-    )
+  @Test
+  fun `notifies community-api of late attended appointment outcome`() {
+
     appointmentEvent.actionPlanSession.actionPlan.referral.referenceNumber = "X123456"
+    appointmentEvent.actionPlanSession.currentAppointment!!.attended = LATE
+    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
 
     communityAPIService.onApplicationEvent(appointmentEvent)
 
+    verifyNotification(LATE.name, false)
+  }
+
+  @Test
+  fun `notifies community-api of attended appointment outcome`() {
+
+    appointmentEvent.actionPlanSession.actionPlan.referral.referenceNumber = "X123456"
+    appointmentEvent.actionPlanSession.currentAppointment!!.attended = YES
+    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
+
+    communityAPIService.onApplicationEvent(appointmentEvent)
+
+    verifyNotification(YES.name, false)
+  }
+
+  @Test
+  fun `notifies community-api of non attended appointment outcome and notify PP set is always set`() {
+
+    appointmentEvent.actionPlanSession.actionPlan.referral.referenceNumber = "X123456"
+    appointmentEvent.actionPlanSession.currentAppointment!!.attended = NO
+    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
+
+    communityAPIService.onApplicationEvent(appointmentEvent)
+
+    verifyNotification(NO.name, true)
+  }
+
+  @Test
+  fun `notifies community-api of appointment outcome with notify PP set`() {
+
+    appointmentEvent.actionPlanSession.actionPlan.referral.referenceNumber = "X123456"
+    appointmentEvent.actionPlanSession.currentAppointment!!.attended = YES
+    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = true
+
+    communityAPIService.onApplicationEvent(appointmentEvent)
+
+    verifyNotification(YES.name, true)
+  }
+
+  private fun verifyNotification(attended: String, notifyPP: Boolean) {
     val urlCaptor = argumentCaptor<String>()
     val payloadCaptor = argumentCaptor<Any>()
     val actionPlanId = appointmentEvent.actionPlanSession.actionPlan.id
@@ -43,8 +88,8 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
       AppointmentOutcomeRequest(
         "Session Feedback Recorded for Accommodation Referral X123456 with Prime Provider Service Provider\n" +
           "http://baseUrl/probation-practitioner/action-plan/$actionPlanId/appointment/1/post-session-feedback",
-        "LATE",
-        true
+        attended,
+        notifyPP
       ).toString()
     )
   }
@@ -59,10 +104,8 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
       appointmentTime = OffsetDateTime.now(),
       durationInMinutes = 60,
       createdBy = SampleData.sampleAuthUser("userId", "auth", "me"),
-      attended = LATE,
       additionalAttendanceInformation = "dded notes",
       attendanceSubmittedAt = OffsetDateTime.now(),
-      notifyPPOfAttendanceBehaviour = true,
       deliusAppointmentId = 123456L
     ),
     "http://localhost:8080/url/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",

@@ -14,6 +14,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.lang.IllegalStateException
@@ -26,6 +28,9 @@ interface CommunityAPIService {
     val primeProviderName = referral.intervention.dynamicFrameworkContract.primeProvider.name
     return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
   }
+
+  fun setNotifyPPIfRequired(appointment: Appointment) =
+    NO == appointment.attended!! || appointment.notifyPPOfAttendanceBehaviour ?: false
 }
 
 @Service
@@ -200,11 +205,12 @@ class CommunityAPIActionPlanAppointmentEventService(
           .toString()
 
         val appointment = event.actionPlanSession.currentAppointment!!
+        val notifyPP = setNotifyPPIfRequired(appointment)
 
         val request = AppointmentOutcomeRequest(
           getNotes(event.actionPlanSession.actionPlan.referral, url, "Session Feedback Recorded"),
           appointment.attended!!.name,
-          appointment.notifyPPOfAttendanceBehaviour ?: false
+          notifyPP
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
@@ -237,11 +243,12 @@ class CommunityAPIAppointmentEventService(
           .toString()
 
         val appointment = event.appointment
+        val notifyPP = setNotifyPPIfRequired(appointment)
 
         val request = AppointmentOutcomeRequest(
           getNotes(event.appointment.referral, url, "Session Feedback Recorded"),
           appointment.attended!!.name,
-          appointment.notifyPPOfAttendanceBehaviour ?: false
+          notifyPP
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
