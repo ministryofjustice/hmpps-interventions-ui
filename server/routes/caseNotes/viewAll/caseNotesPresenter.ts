@@ -18,12 +18,16 @@ export default class CaseNotesPresenter {
   public readonly pagination: Pagination
 
   constructor(
+    private referralId: string,
     private caseNotes: Page<CaseNote>,
     private officerUserNameMapping: Map<string, undefined | string>,
-    private serviceUser: DeliusServiceUser
+    private serviceUser: DeliusServiceUser,
+    private loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {
     this.pagination = new Pagination(caseNotes)
   }
+
+  readonly hrefCaseNoteStart = `/${this.loggedInUserType}/referrals/${this.referralId}/add-case-note/start`
 
   readonly serviceUserName = utils.convertToTitleCase(`${this.serviceUser.firstName} ${this.serviceUser.surname}`)
 

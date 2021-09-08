@@ -69,7 +69,9 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.hmppsAuthService,
     services.draftsService
   )
-  get(router, '/referrals/:id/case-notes', (req, res) => caseNotesController.showCaseNotes(req, res))
+  get(router, '/referrals/:id/case-notes', (req, res) =>
+    caseNotesController.showCaseNotes(req, res, 'probation-practitioner')
+  )
 
   post(router, '/referrals/:id/add-case-note/start', (req, res) =>
     caseNotesController.startAddCaseNote(req, res, 'probation-practitioner')

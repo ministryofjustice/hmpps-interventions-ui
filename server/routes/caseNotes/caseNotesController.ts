@@ -28,7 +28,11 @@ export default class CaseNotesController {
     private readonly draftsService: DraftsService
   ) {}
 
-  async showCaseNotes(req: Request, res: Response): Promise<void> {
+  async showCaseNotes(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const paginationQuery = {
       page: Number(req.query.page),
@@ -57,7 +61,7 @@ export default class CaseNotesController {
         )
       ).map(user => [user.username, user.fullName])
     )
-    const presenter = new CaseNotesPresenter(caseNotesPage, userDetails, serviceUser)
+    const presenter = new CaseNotesPresenter(referralId, caseNotesPage, userDetails, serviceUser, loggedInUserType)
     const view = new CaseNotesView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
