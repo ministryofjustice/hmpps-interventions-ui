@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../../../../../models/appointment'
+import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../../../../models/appointment'
 import SentReferral from '../../../../../models/sentReferral'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import ScheduleAppointmentPresenter from '../../../../serviceProviderReferrals/scheduleAppointmentPresenter'
@@ -12,6 +12,7 @@ export default class ScheduleActionPlanSessionPresenter extends ScheduleAppointm
     currentAppointmentSummary: AppointmentSummary,
     deliusOfficeLocations: DeliusOfficeLocation[],
     validationError: FormValidationError | null = null,
+    draftSchedulingDetails: AppointmentSchedulingDetails | null = null,
     userInputData: Record<string, unknown> | null = null,
     serverError: FormValidationError | null = null
   ) {
@@ -22,7 +23,7 @@ export default class ScheduleActionPlanSessionPresenter extends ScheduleAppointm
       currentAppointmentSummary,
       deliusOfficeLocations,
       validationError,
-      null,
+      draftSchedulingDetails,
       userInputData,
       serverError
     )
