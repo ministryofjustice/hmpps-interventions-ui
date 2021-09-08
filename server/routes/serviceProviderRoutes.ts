@@ -191,6 +191,14 @@ export default function serviceProviderRoutes(router: Router, services: Services
     caseNotesController.addCaseNote(req, res, 'service-provider')
   )
 
+  get(router, '/referrals/:id/add-case-note/:draftCaseNoteId/check-answers', (req, res) =>
+    caseNotesController.checkCaseNoteAnswers(req, res, 'service-provider')
+  )
+
+  post(router, '/referrals/:id/add-case-note/:draftCaseNoteId/submit', (req, res) =>
+    caseNotesController.submitCaseNote(req, res, 'service-provider')
+  )
+
   if (config.features.serviceProviderReporting.enabled) {
     get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
     post(router, '/performance-report', (req, res) => serviceProviderReferralsController.createReport(req, res))
