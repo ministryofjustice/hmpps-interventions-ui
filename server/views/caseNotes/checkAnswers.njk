@@ -1,0 +1,21 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Referral" %}
+{% set pageSubTitle = "Review case note" %}
+
+{% block pageContent %}
+    {{ govukBackLink(backLinkArgs) }}
+    <h1 class="govuk-heading-l">Review case note</h1>
+    {{ govukSummaryList(caseNoteSummaryListArgs) }}
+    <p class="govuk-body">
+        {{ caseNoteBody | escape | nl2br }}
+    </p>
+
+    <form method="post" action="{{ presenter.submitHref }}">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukButton({ text: "Confirm case note" }) }}
+    </form>
+{% endblock %}
