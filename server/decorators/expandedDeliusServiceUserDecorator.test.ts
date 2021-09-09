@@ -4,239 +4,300 @@ import ExpandedDeliusServiceUserDecorator from './expandedDeliusServiceUserDecor
 describe(ExpandedDeliusServiceUserDecorator, () => {
   describe('address', () => {
     describe('selecting the current address', () => {
-      describe('when there is only one address returned from nDelius', () => {
-        it('uses that address as the current address', () => {
-          const serviceUser = new ExpandedDeliusServiceUserDecorator(
-            expandedDeliusServiceUserFactory.build({
-              contactDetails: {
-                addresses: [
-                  {
-                    addressNumber: 'Flat 2',
-                    buildingName: null,
-                    streetName: 'Test Walk',
-                    postcode: 'SW16 1AQ',
-                    town: 'London',
-                    district: 'City of London',
-                    county: 'Greater London',
-                    from: '2019-01-01',
-                    to: null,
-                    noFixedAbode: false,
+      describe('when there is a "Main" address in nDelius', () => {
+        const serviceUser = new ExpandedDeliusServiceUserDecorator(
+          expandedDeliusServiceUserFactory.build({
+            contactDetails: {
+              addresses: [
+                {
+                  addressNumber: 'Flat 2',
+                  buildingName: null,
+                  streetName: 'Test Walk',
+                  postcode: 'SW16 1AQ',
+                  town: 'London',
+                  district: 'City of London',
+                  county: 'Greater London',
+                  from: '2019-01-01',
+                  to: null,
+                  noFixedAbode: false,
+                  status: {
+                    code: 'M',
                   },
-                ],
-              },
-            })
-          )
+                },
+                {
+                  addressNumber: 'Flat 10',
+                  buildingName: null,
+                  streetName: 'Test Walk',
+                  postcode: 'SW16 1AQ',
+                  town: 'London',
+                  district: 'City of London',
+                  county: 'Greater London',
+                  from: '2021-01-01',
+                  to: null,
+                  noFixedAbode: false,
+                  status: undefined,
+                },
+              ],
+            },
+          })
+        )
 
-          expect(serviceUser.address).toEqual([
-            'Flat 2 Test Walk',
-            'London',
-            'City of London',
-            'Greater London',
-            'SW16 1AQ',
-          ])
-        })
+        expect(serviceUser.address).toEqual([
+          'Flat 2 Test Walk',
+          'London',
+          'City of London',
+          'Greater London',
+          'SW16 1AQ',
+        ])
       })
 
-      describe('when there are multiple addresses returned from nDelius', () => {
-        describe('when all addresses have a non-null "from" field', () => {
-          it('uses the address with the most recent "from" date but no elapsed "to" date', () => {
-            const oldAddressWithNullToDate = {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2018-01-01',
-              to: null,
-              noFixedAbode: false,
-            }
-
-            const mostRecentButNoLongerCurrentAddress = {
-              addressNumber: 'Flat 3',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2021-02-01',
-              to: '2019-02-03',
-              noFixedAbode: false,
-            }
-
-            const olderButCurrentAddress = {
-              addressNumber: 'Flat 10',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2021-01-01',
-              to: null,
-              noFixedAbode: false,
-            }
-
-            const serviceUser = new ExpandedDeliusServiceUserDecorator(
-              expandedDeliusServiceUserFactory.build({
-                contactDetails: {
-                  addresses: [oldAddressWithNullToDate, mostRecentButNoLongerCurrentAddress, olderButCurrentAddress],
-                },
-              })
-            )
-
-            expect(serviceUser.address).toEqual([
-              'Flat 10 Test Walk',
-              'London',
-              'City of London',
-              'Greater London',
-              'SW16 1AQ',
-            ])
-          })
-        })
-
-        describe('when one address has a null "from" field', () => {
-          it('returns the address with the most recent "from" field, ignoring the null value', () => {
-            const oldAddress = {
-              addressNumber: 'Flat 10',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2020-01-01',
-              to: null,
-              noFixedAbode: false,
-            }
-            const newAddress = {
-              addressNumber: 'Flat 10',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2021-01-01',
-              to: null,
-              noFixedAbode: false,
-            }
-            const addressWithNullFromValue = {
-              addressNumber: 'Flat 10',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: null,
-              to: null,
-              noFixedAbode: false,
-            }
-
-            const serviceUser = new ExpandedDeliusServiceUserDecorator(
-              expandedDeliusServiceUserFactory.build({
-                contactDetails: {
-                  addresses: [oldAddress, newAddress, addressWithNullFromValue],
-                },
-              })
-            )
-
-            expect(serviceUser.address).toEqual([
-              'Flat 10 Test Walk',
-              'London',
-              'City of London',
-              'Greater London',
-              'SW16 1AQ',
-            ])
-          })
-        })
-
-        describe('when all addresses have a null or undefined "from" field', () => {
-          it('returns "null" as we are unable to determine the most recent', () => {
-            const firstAddressNullFromDate = {
-              addressNumber: 'Flat 10',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: null,
-              to: null,
-              noFixedAbode: false,
-            }
-            const secondAddressUndefinedFromDate = {
-              addressNumber: 'Flat 10',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              to: null,
-              noFixedAbode: false,
-            }
-
-            const serviceUser = new ExpandedDeliusServiceUserDecorator(
-              expandedDeliusServiceUserFactory.build({
-                contactDetails: {
-                  addresses: [firstAddressNullFromDate, secondAddressUndefinedFromDate],
-                },
-              })
-            )
-
-            expect(serviceUser.address).toBeNull()
-          })
-        })
-
-        describe('when there is no current address added for the service user', () => {
-          it('should return null', () => {
+      describe('when there is no "Main" address in nDelius', () => {
+        describe('when there is only one address returned from nDelius', () => {
+          it('uses that address as the current address', () => {
             const serviceUser = new ExpandedDeliusServiceUserDecorator(
               expandedDeliusServiceUserFactory.build({
                 contactDetails: {
                   addresses: [
                     {
-                      from: '2021-04-09',
-                      to: '2021-04-30',
-                      noFixedAbode: true,
-                      postcode: 'xxx',
-                    },
-                    {
-                      from: '2020-06-29',
-                      to: '2021-04-09',
+                      addressNumber: 'Flat 2',
+                      buildingName: null,
+                      streetName: 'Test Walk',
+                      postcode: 'SW16 1AQ',
+                      town: 'London',
+                      district: 'City of London',
+                      county: 'Greater London',
+                      from: '2019-01-01',
+                      to: null,
                       noFixedAbode: false,
-                      addressNumber: 'xxx',
-                      streetName: 'xxx',
-                      district: 'xxx',
-                      postcode: 'xxx',
+                      status: undefined,
                     },
                   ],
                 },
               })
             )
 
+            expect(serviceUser.address).toEqual([
+              'Flat 2 Test Walk',
+              'London',
+              'City of London',
+              'Greater London',
+              'SW16 1AQ',
+            ])
+          })
+        })
+
+        describe('when there are multiple addresses returned from nDelius', () => {
+          describe('when all addresses have a non-null "from" field', () => {
+            it('uses the address with the most recent "from" date but no elapsed "to" date', () => {
+              const oldAddressWithNullToDate = {
+                addressNumber: 'Flat 2',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: '2018-01-01',
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+
+              const mostRecentButNoLongerCurrentAddress = {
+                addressNumber: 'Flat 3',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: '2021-02-01',
+                to: '2019-02-03',
+                noFixedAbode: false,
+                status: undefined,
+              }
+
+              const olderButCurrentAddress = {
+                addressNumber: 'Flat 10',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: '2021-01-01',
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+
+              const serviceUser = new ExpandedDeliusServiceUserDecorator(
+                expandedDeliusServiceUserFactory.build({
+                  contactDetails: {
+                    addresses: [oldAddressWithNullToDate, mostRecentButNoLongerCurrentAddress, olderButCurrentAddress],
+                  },
+                })
+              )
+
+              expect(serviceUser.address).toEqual([
+                'Flat 10 Test Walk',
+                'London',
+                'City of London',
+                'Greater London',
+                'SW16 1AQ',
+              ])
+            })
+          })
+
+          describe('when one address has a null "from" field', () => {
+            it('returns the address with the most recent "from" field, ignoring the null value', () => {
+              const oldAddress = {
+                addressNumber: 'Flat 10',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: '2020-01-01',
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+              const newAddress = {
+                addressNumber: 'Flat 10',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: '2021-01-01',
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+              const addressWithNullFromValue = {
+                addressNumber: 'Flat 10',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: null,
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+
+              const serviceUser = new ExpandedDeliusServiceUserDecorator(
+                expandedDeliusServiceUserFactory.build({
+                  contactDetails: {
+                    addresses: [oldAddress, newAddress, addressWithNullFromValue],
+                  },
+                })
+              )
+
+              expect(serviceUser.address).toEqual([
+                'Flat 10 Test Walk',
+                'London',
+                'City of London',
+                'Greater London',
+                'SW16 1AQ',
+              ])
+            })
+          })
+
+          describe('when all addresses have a null or undefined "from" field', () => {
+            it('returns "null" as we are unable to determine the most recent', () => {
+              const firstAddressNullFromDate = {
+                addressNumber: 'Flat 10',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                from: null,
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+              const secondAddressUndefinedFromDate = {
+                addressNumber: 'Flat 10',
+                buildingName: null,
+                streetName: 'Test Walk',
+                postcode: 'SW16 1AQ',
+                town: 'London',
+                district: 'City of London',
+                county: 'Greater London',
+                to: null,
+                noFixedAbode: false,
+                status: undefined,
+              }
+
+              const serviceUser = new ExpandedDeliusServiceUserDecorator(
+                expandedDeliusServiceUserFactory.build({
+                  contactDetails: {
+                    addresses: [firstAddressNullFromDate, secondAddressUndefinedFromDate],
+                  },
+                })
+              )
+
+              expect(serviceUser.address).toBeNull()
+            })
+          })
+
+          describe('when there is no current address added for the service user', () => {
+            it('should return null', () => {
+              const serviceUser = new ExpandedDeliusServiceUserDecorator(
+                expandedDeliusServiceUserFactory.build({
+                  contactDetails: {
+                    addresses: [
+                      {
+                        from: '2021-04-09',
+                        to: '2021-04-30',
+                        noFixedAbode: true,
+                        postcode: 'xxx',
+                      },
+                      {
+                        from: '2020-06-29',
+                        to: '2021-04-09',
+                        noFixedAbode: false,
+                        status: undefined,
+
+                        addressNumber: 'xxx',
+                        streetName: 'xxx',
+                        district: 'xxx',
+                        postcode: 'xxx',
+                      },
+                    ],
+                  },
+                })
+              )
+
+              expect(serviceUser.address).toBeNull()
+            })
+          })
+        })
+
+        describe('when there is no address returned from nDelius', () => {
+          it('returns null', () => {
+            const serviceUser = new ExpandedDeliusServiceUserDecorator(
+              expandedDeliusServiceUserFactory.build({
+                contactDetails: {
+                  addresses: [],
+                },
+              })
+            )
+
             expect(serviceUser.address).toBeNull()
           })
         })
       })
-
-      describe('when there is no address returned from nDelius', () => {
-        it('returns null', () => {
-          const serviceUser = new ExpandedDeliusServiceUserDecorator(
-            expandedDeliusServiceUserFactory.build({
-              contactDetails: {
-                addresses: [],
-              },
-            })
-          )
-
-          expect(serviceUser.address).toBeNull()
-        })
-      })
     })
+
     describe('formatting', () => {
       describe('when there is an address number but no building name', () => {
         it('returns an array of the address fields with address number prefixed to street name', () => {
@@ -254,6 +315,7 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
                   from: '2019-01-01',
                   to: null,
                   noFixedAbode: false,
+                  status: undefined,
                 },
               ],
             },
@@ -285,6 +347,7 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
                   from: '2019-01-01',
                   to: null,
                   noFixedAbode: false,
+                  status: undefined,
                 },
               ],
             },
@@ -316,6 +379,7 @@ describe(ExpandedDeliusServiceUserDecorator, () => {
                   from: '2019-01-01',
                   to: null,
                   noFixedAbode: false,
+                  status: undefined,
                 },
               ],
             },

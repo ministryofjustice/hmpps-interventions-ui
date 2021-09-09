@@ -20,6 +20,12 @@ export default class ExpandedDeliusServiceUserDecorator {
       return this.deliusAddressToArray(addresses[0])
     }
 
+    const nDeliusMainAddress = addresses.find(address => address.status?.code === 'M')
+
+    if (nDeliusMainAddress) {
+      return this.deliusAddressToArray(nDeliusMainAddress)
+    }
+
     // If we have no "from" date, how do we know which is the most recent?
     if (addresses.every(address => address.from === null || address.from === undefined)) {
       logger.error({ err: `No 'from' value in addresses for user ${this.deliusServiceUser.otherIds.crn}.` })
