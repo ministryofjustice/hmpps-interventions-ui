@@ -40,6 +40,8 @@ import config from '../../config'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
 import ReferenceDataService from '../../services/referenceDataService'
+import SentReferral from '../../models/sentReferral'
+import ActionPlan from '../../models/actionPlan'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -405,11 +407,11 @@ export default class ProbationPractitionerReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewActionPlan(req: Request, res: Response): Promise<void> {
-    await this.renderViewActionPlan(req, res)
+  async viewLatestActionPlan(req: Request, res: Response): Promise<void> {
+    await this.renderLatestActionPlan(req, res)
   }
 
-  private async renderViewActionPlan(
+  private async renderLatestActionPlan(
     req: Request,
     res: Response,
     formValidationError: FormValidationError | null = null
@@ -423,13 +425,47 @@ export default class ProbationPractitionerReferralsController {
       })
     }
 
-    const [serviceCategories, actionPlan, serviceUser, actionPlanVersions] = await Promise.all([
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
+
+    return this.renderActionPlan(res, sentReferral, actionPlan, formValidationError)
+  }
+
+  async viewActionPlanById(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, req.params.actionPlanId)
+
+    if (actionPlan === null) {
+      throw createError(500, `No action plan found with id '${req.params.actionPlanId}'`, {
+        userMessage: 'No action plan was found',
+      })
+    }
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    if (sentReferral === null) {
+      throw createError(500, `No referral found with with id '${actionPlan.referralId}'`, {
+        userMessage: 'No action plan was found',
+      })
+    }
+
+    return this.renderActionPlan(res, sentReferral, actionPlan)
+  }
+
+  private async renderActionPlan(
+    res: Response,
+    sentReferral: SentReferral,
+    actionPlan: ActionPlan,
+    formValidationError: FormValidationError | null = null
+  ) {
+    const { accessToken } = res.locals.user.token
+
+    const [serviceCategories, serviceUser, actionPlanVersions] = await Promise.all([
       Promise.all(
         sentReferral.referral.serviceCategoryIds.map(id =>
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
         )
       ),
-      this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
       config.features.previouslyApprovedActionPlans
         ? this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id)
@@ -456,7 +492,7 @@ export default class ProbationPractitionerReferralsController {
       errorMessages.actionPlanApproval.notConfirmed
     ).validate()
     if (confirmApprovalResult.error) {
-      return this.renderViewActionPlan(req, res, confirmApprovalResult.error)
+      return this.renderLatestActionPlan(req, res, confirmApprovalResult.error)
     }
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)

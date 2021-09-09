@@ -1,5 +1,5 @@
 import ActionPlanPresenter from './actionPlanPresenter'
-import { CheckboxesArgs, InsetTextArgs, TableArgs } from '../../../utils/govukFrontendTypes'
+import { CheckboxesArgs, InsetTextArgs, NotificationBannerArgs, TableArgs } from '../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../utils/viewUtils'
 import ActionPlanSummaryView from './actionPlanSummaryView'
 
@@ -12,7 +12,9 @@ export default class ActionPlanView {
 
   private readonly backLinkArgs = {
     text: 'Back',
-    href: this.presenter.interventionProgressURL,
+    href: this.presenter.showPreviousActionPlanNotificationBanner
+      ? this.presenter.viewProbationPractitionerLatestActionPlanURL
+      : this.presenter.interventionProgressURL,
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
@@ -41,13 +43,22 @@ export default class ActionPlanView {
     }
   }
 
-  get approvedActionPlansTableArgs(): TableArgs | null {
+  get approvedActionPlansTableArgs(): TableArgs {
     return {
-      head: [{ text: 'Version number' }, { text: 'Approval date' }],
-      rows: this.presenter.actionPlanVersions.map(actionPlan => [
-        { text: String(actionPlan.versionNumber) },
-        { text: actionPlan.approvalDate },
-      ]),
+      head: [{ text: 'Version number' }, { text: 'Approval date' }, { text: 'Action' }],
+      rows: this.presenter.actionPlanVersions.map(actionPlan => {
+        const actionRow =
+          actionPlan.href === null
+            ? { text: 'This version' }
+            : { html: `<a href="${ViewUtils.escape(actionPlan.href)}">View</a>` }
+        return [{ text: String(actionPlan.versionNumber) }, { text: actionPlan.approvalDate }, actionRow]
+      }),
+    }
+  }
+
+  get viewingPreviousActionPlanNotificationBannerArgs(): NotificationBannerArgs {
+    return {
+      html: `<p class="govuk-body-m">You are looking at an older version of the action plan.</p><a href="${this.presenter.viewProbationPractitionerLatestActionPlanURL}">Click here to see the current action plan.</a>`,
     }
   }
 
@@ -61,6 +72,7 @@ export default class ActionPlanView {
         actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
         approvedActionPlansTableArgs: this.approvedActionPlansTableArgs,
         insetTextActivityArgs: this.insetTextActivityArgs.bind(this),
+        viewingPreviousActionPlanNotificationBannerArgs: this.viewingPreviousActionPlanNotificationBannerArgs,
         confirmApprovalCheckboxArgs: this.confirmApprovalCheckboxArgs,
       },
     ]

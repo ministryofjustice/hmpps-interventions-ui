@@ -25,6 +25,9 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     probationPractitionerReferralsController.viewSubmittedPostSessionFeedback(req, res)
   )
+  get(router, '/action-plan/:actionPlanId', (req, res) =>
+    probationPractitionerReferralsController.viewActionPlanById(req, res)
+  )
   get(router, '/end-of-service-report/:id', (req, res) =>
     probationPractitionerReferralsController.viewEndOfServiceReport(req, res)
   )
@@ -54,7 +57,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.viewSubmittedPostAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/action-plan', (req, res) =>
-    probationPractitionerReferralsController.viewActionPlan(req, res)
+    probationPractitionerReferralsController.viewLatestActionPlan(req, res)
   )
   post(router, '/referrals/:id/action-plan/approve', (req, res) =>
     probationPractitionerReferralsController.approveActionPlan(req, res)

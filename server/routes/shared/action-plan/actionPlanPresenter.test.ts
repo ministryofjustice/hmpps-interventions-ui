@@ -204,27 +204,47 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('actionPlanVersions', () => {
-    it('returns a list of created dates and version numbers for approved action plans in descending order by date', () => {
-      const submittedActionPlan = actionPlanFactory.submitted().build()
+    it('returns a list of created dates, version numbers, and an href for viewing the action plan (or null for the current version) for approved action plans in descending order by date', () => {
+      const viewedActionPlanId = '490cc3a9-28d6-4316-8b89-92d9ccae0e1d'
+      const otherActionPlanId = '820f2dfc-06ba-4719-b94f-673b3ef86cbe'
+      const latestActionPlanId = 'f12a3dcd-9d8a-4bb9-b65d-b0a99d227f0e'
+
+      const referralWithLatestActionPlan = referralFactory.assigned().build({ actionPlanId: latestActionPlanId })
+      const currentlyViewedActionPlan = actionPlanFactory.submitted().build({ id: viewedActionPlanId })
       const approvedActionPlanSummaries = [
         approvedActionPlanSummaryFactory.build({
+          id: viewedActionPlanId,
           approvedAt: '2021-06-10:00:00.000000Z',
         }),
         approvedActionPlanSummaryFactory.build({
+          id: otherActionPlanId,
           approvedAt: '2021-06-11:00:00.000000Z',
+        }),
+        approvedActionPlanSummaryFactory.build({
+          id: latestActionPlanId,
+          approvedAt: '2021-06-12:00:00.000000Z',
         }),
       ]
       const submittedActionPlanPresenter = new ActionPlanPresenter(
-        referral,
-        submittedActionPlan,
+        referralWithLatestActionPlan,
+        currentlyViewedActionPlan,
         serviceCategories,
         'service-provider',
         null,
         approvedActionPlanSummaries
       )
       expect(submittedActionPlanPresenter.actionPlanVersions).toEqual([
-        { approvalDate: '11 Jun 2021', versionNumber: 2 },
-        { approvalDate: '10 Jun 2021', versionNumber: 1 },
+        {
+          approvalDate: '12 Jun 2021',
+          versionNumber: 3,
+          href: `/probation-practitioner/referrals/${referralWithLatestActionPlan.id}/action-plan`,
+        },
+        {
+          approvalDate: '11 Jun 2021',
+          versionNumber: 2,
+          href: `/probation-practitioner/action-plan/${otherActionPlanId}`,
+        },
+        { approvalDate: '10 Jun 2021', versionNumber: 1, href: null },
       ])
     })
   })
@@ -289,6 +309,64 @@ describe(InterventionProgressPresenter, () => {
       )
 
       expect(actionPlanPresenter.showActionPlanVersions).toEqual(false)
+    })
+  })
+
+  describe('showPreviousActionPlanNotificationBanner', () => {
+    describe('when the user is an SP', () => {
+      it("returns false, as they can't view previous revisions", () => {
+        const actionPlan = actionPlanFactory.build()
+        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+        const actionPlanPresenter = new ActionPlanPresenter(
+          referral,
+          actionPlan,
+          serviceCategories,
+          'service-provider',
+          null,
+          approvedActionPlanSummaries
+        )
+
+        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
+      })
+    })
+
+    describe('when the user is a PP', () => {
+      it("returns false when the viewed action plan's ID matches the latest action plan's ID on the referral", () => {
+        const referralWithLatestActionPlan = referralFactory.assigned().build({ actionPlanId: 'latest-id' })
+        const latestActionPlan = actionPlanFactory.build({ id: 'latest-id' })
+
+        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+        const actionPlanPresenter = new ActionPlanPresenter(
+          referralWithLatestActionPlan,
+          latestActionPlan,
+          serviceCategories,
+          'probation-practitioner',
+          null,
+          approvedActionPlanSummaries
+        )
+
+        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
+      })
+
+      it("returns true when the viewed action plan's ID doesn't match the latest action plan's ID on the referral", () => {
+        const referralWithNewerActionPlan = referralFactory.assigned().build({ actionPlanId: 'latest-id' })
+        const actionPlan = actionPlanFactory.build({ id: 'not-latest-id' })
+
+        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
+
+        const actionPlanPresenter = new ActionPlanPresenter(
+          referralWithNewerActionPlan,
+          actionPlan,
+          serviceCategories,
+          'probation-practitioner',
+          null,
+          approvedActionPlanSummaries
+        )
+
+        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(true)
+      })
     })
   })
 })
