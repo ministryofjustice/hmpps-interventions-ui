@@ -108,7 +108,7 @@ describe(ControllerUtils, () => {
       it('throws an error', async () => {
         draftsService.fetchDraft.mockResolvedValue(null)
 
-        let thrownError: Error | null = null
+        let thrownError: unknown = null
 
         try {
           await ControllerUtils.fetchDraftOrRenderMessage(
@@ -125,6 +125,7 @@ describe(ControllerUtils, () => {
           thrownError = e
         }
 
+        expect(thrownError).toBeInstanceOf(Error)
         expect(thrownError).toMatchObject({
           status: 500,
           message: `UI-only draft booking with ID abc123 not found`,

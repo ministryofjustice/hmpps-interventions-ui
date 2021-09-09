@@ -1,4 +1,4 @@
-import RestClient from '../data/restClient'
+import RestClient, { RestClientError } from '../data/restClient'
 import logger from '../../log'
 import { ApiConfig } from '../config'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
@@ -75,6 +75,8 @@ export interface PaginationParams {
   // Sort by property, defaults to ascending order. If descending is required then add ',DESC' at the end of the property you want sorted i.e. ['$PROPERTY_NAME,DESC']
   sort?: string[]
 }
+
+export type InterventionsServiceError = RestClientError
 
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}

@@ -1,8 +1,10 @@
 import createError from 'http-errors'
-import RestClient from '../data/restClient'
+import RestClient, { RestClientError } from '../data/restClient'
 import logger from '../../log'
 import { SupplementaryRiskInformation } from '../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../models/assessRisksAndNeeds/riskSummary'
+
+export type AssessRisksAndNeedsServiceError = RestClientError
 
 export default class AssessRisksAndNeedsService {
   constructor(private readonly restClient: RestClient, private readonly riskSummaryEnabled: boolean) {}
@@ -28,12 +30,15 @@ export default class AssessRisksAndNeedsService {
         token,
       })) as RiskSummary
     } catch (err) {
-      if (err.status === 404) {
+      const restClientError = err as RestClientError
+      if (restClientError.status === 404) {
         // missing (or out of date) risk information is expected and does not constitute an error
         return null
       }
 
-      throw createError(err.status, err, { userMessage: "Could not get service user's risk scores from OASys." })
+      throw createError(restClientError.status, restClientError, {
+        userMessage: "Could not get service user's risk scores from OASys.",
+      })
     }
   }
 }

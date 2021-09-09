@@ -4,7 +4,7 @@ import createFormValidationErrorOrRethrow from './interventionsFormError'
 describe(createFormValidationErrorOrRethrow, () => {
   describe('with an error with no validationErrors key', () => {
     it('re-throws the error', () => {
-      const error = Error('something went wrong')
+      const error = createError(500, 'something went wrong')
 
       try {
         createFormValidationErrorOrRethrow(error)

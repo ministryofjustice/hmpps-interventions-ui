@@ -1,11 +1,13 @@
 import createError from 'http-errors'
 import type HmppsAuthService from './hmppsAuthService'
-import RestClient from '../data/restClient'
+import RestClient, { RestClientError } from '../data/restClient'
 import logger from '../../log'
 import DeliusUser from '../models/delius/deliusUser'
 import DeliusServiceUser, { ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
 import DeliusConviction from '../models/delius/deliusConviction'
 import { DeliusOffenderManager } from '../models/delius/deliusOffenderManager'
+
+export type CommunityApiServiceError = RestClientError
 
 export default class CommunityApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -34,7 +36,10 @@ export default class CommunityApiService {
         token,
       })) as ExpandedDeliusServiceUser
     } catch (err) {
-      throw createError(err.status, err, { userMessage: 'Could not retrieve service user details from nDelius.' })
+      const restClientError = err as RestClientError
+      throw createError(restClientError.status, restClientError, {
+        userMessage: 'Could not retrieve service user details from nDelius.',
+      })
     }
   }
 
@@ -74,7 +79,10 @@ export default class CommunityApiService {
       // in production and found to be true in 100% of cases we have seen so far.
       return deliusOffenderManagers.find(offenderManager => offenderManager.isResponsibleOfficer) || null
     } catch (err) {
-      throw createError(err.status, err, { userMessage: 'Could retrieve Responsible Officer from nDelius.' })
+      const restClientError = err as RestClientError
+      throw createError(restClientError.status, restClientError, {
+        userMessage: 'Could retrieve Responsible Officer from nDelius.',
+      })
     }
   }
 }

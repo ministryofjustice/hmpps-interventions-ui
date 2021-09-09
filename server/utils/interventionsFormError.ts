@@ -1,12 +1,12 @@
 import createError from 'http-errors'
-import { InterventionsServiceValidationError } from '../services/interventionsService'
+import { InterventionsServiceError, InterventionsServiceValidationError } from '../services/interventionsService'
 import interventionsServiceErrorMessages from './interventionsServiceErrorMessages'
 import { FormValidationError } from './formValidationError'
 
 const dateFormFields = ['completion-deadline']
 
 // This re-throws the error if `err` is not an interventions service validation error.
-export default function createFormValidationErrorOrRethrow(err: Error): FormValidationError {
+export default function createFormValidationErrorOrRethrow(err: InterventionsServiceError): FormValidationError {
   if (createError.isHttpError(err)) {
     if (err.response?.body?.validationErrors) {
       const validationErrors = err.response.body.validationErrors as InterventionsServiceValidationError[]
