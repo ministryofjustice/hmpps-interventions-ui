@@ -86,7 +86,7 @@ import config from '../../config'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import ReferenceDataService from '../../services/referenceDataService'
 import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
-import InitialAssessmentCheckAnswersView from './initialAssessmentCheckAnswersView'
+import ScheduleAppointmentCheckAnswersView from './scheduleAppointmentCheckAnswersView'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
@@ -705,7 +705,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const presenter = new InitialAssessmentCheckAnswersPresenter(fetchResult.draft, referral.id)
-    const view = new InitialAssessmentCheckAnswersView(presenter)
+    const view = new ScheduleAppointmentCheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
