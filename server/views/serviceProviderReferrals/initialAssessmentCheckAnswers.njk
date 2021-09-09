@@ -15,7 +15,7 @@
       <form method="post" action="{{ presenter.formAction }}" novalidate="novalidate">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-        <h1 class="govuk-heading-xl">Confirm appointment details</h1>
+        <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
 
         {{ govukSummaryList(summaryListArgs) }}
 

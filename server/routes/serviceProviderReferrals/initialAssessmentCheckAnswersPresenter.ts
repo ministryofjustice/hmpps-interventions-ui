@@ -9,6 +9,8 @@ export default class InitialAssessmentCheckAnswersPresenter {
 
   readonly formAction = `/service-provider/referrals/${this.referralId}/supplier-assessment/schedule/${this.draft.id}/submit`
 
+  readonly title = 'Confirm appointment details'
+
   readonly summary = (() => {
     if (this.draft.data === null) {
       throw new Error('Draft has null data on check your answers page')

@@ -46,4 +46,12 @@ describe(InitialAssessmentCheckAnswersPresenter, () => {
       )
     })
   })
+
+  describe('title', () => {
+    it('returns the page’s title', () => {
+      const presenter = new InitialAssessmentCheckAnswersPresenter(draftBookingFactory.build(), '1')
+
+      expect(presenter.title).toEqual('Confirm appointment details')
+    })
+  })
 })
