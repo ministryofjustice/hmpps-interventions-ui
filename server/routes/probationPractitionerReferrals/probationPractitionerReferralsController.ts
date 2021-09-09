@@ -467,7 +467,7 @@ export default class ProbationPractitionerReferralsController {
         )
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
-      config.features.previouslyApprovedActionPlans
+      config.features.previouslyApprovedActionPlans.enabled
         ? this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id)
         : [],
     ])
