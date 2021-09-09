@@ -21,7 +21,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.showInterventionProgress(req, res)
   )
   get(router, '/referrals/:id/details', (req, res) => probationPractitionerReferralsController.showReferral(req, res))
-  get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
+  get(router, '/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     probationPractitionerReferralsController.viewSubmittedPostSessionFeedback(req, res)
   )
   get(router, '/end-of-service-report/:id', (req, res) =>

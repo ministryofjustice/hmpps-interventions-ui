@@ -186,14 +186,19 @@ export default class ProbationPractitionerReferralsController {
   async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+    const { referralId, sessionNumber } = req.params
 
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (referral.actionPlanId === null) {
+      throw createError(500, `action plan does not exist on this referral '${req.params.id}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
 
     const currentAppointment = await this.interventionsService.getActionPlanAppointment(
       accessToken,
-      actionPlanId,
+      referral.actionPlanId,
       Number(sessionNumber)
     )
     const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)

@@ -151,7 +151,7 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
   })
 })
 
-describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', () => {
+describe('GET /probation-practitioner/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', () => {
   it('renders a page displaying feedback answers', async () => {
     const actionPlanId = '05f39e99-b5c7-4a9b-a857-bec04a28eb34'
     const referral = sentReferralFactory.assigned().build({ actionPlanId, assignedTo: { username: 'Kay.Swerker' } })
@@ -185,7 +185,7 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
 
     await request(app)
       .get(
-        `/probation-practitioner/action-plan/${actionPlanId}/appointment/${appointmentWithSubmittedFeedback.sessionNumber}/post-session-feedback`
+        `/probation-practitioner/referrals/${referral.id}/appointment/${appointmentWithSubmittedFeedback.sessionNumber}/post-session-feedback`
       )
       .expect(200)
       .expect(res => {

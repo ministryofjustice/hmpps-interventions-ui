@@ -139,7 +139,7 @@ describe(InterventionProgressPresenter, () => {
                 classes: 'govuk-tag--green',
               },
               link: {
-                href: `/probation-practitioner/action-plan/c59809e0-ab78-4723-bbef-bd34bc6df110/appointment/1/post-session-feedback`,
+                href: `/probation-practitioner/referrals/${referral.id}/appointment/1/post-session-feedback`,
                 text: 'View feedback form',
               },
             },
@@ -151,7 +151,7 @@ describe(InterventionProgressPresenter, () => {
                 classes: 'govuk-tag--green',
               },
               link: {
-                href: `/probation-practitioner/action-plan/c59809e0-ab78-4723-bbef-bd34bc6df110/appointment/2/post-session-feedback`,
+                href: `/probation-practitioner/referrals/${referral.id}/appointment/2/post-session-feedback`,
                 text: 'View feedback form',
               },
             },
@@ -181,7 +181,7 @@ describe(InterventionProgressPresenter, () => {
                 classes: 'govuk-tag--purple',
               },
               link: {
-                href: `/probation-practitioner/action-plan/c59809e0-ab78-4723-bbef-bd34bc6df110/appointment/1/post-session-feedback`,
+                href: `/probation-practitioner/referrals/${referral.id}/appointment/1/post-session-feedback`,
                 text: 'View feedback form',
               },
             },
