@@ -47,6 +47,7 @@ class ActionPlanService(
       activities = activities.toMutableList(),
     )
 
+    actionPlanValidator.validateDraftActionPlanUpdate(draftActionPlan)
     return actionPlanRepository.save(draftActionPlan)
   }
 

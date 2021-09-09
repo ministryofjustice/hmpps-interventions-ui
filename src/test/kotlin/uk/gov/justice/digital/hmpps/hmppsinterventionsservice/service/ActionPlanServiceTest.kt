@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.same
 import com.nhaarman.mockitokotlin2.verify
@@ -86,6 +87,17 @@ internal class ActionPlanServiceTest {
     val draftActionPlan = actionPlanService.createDraftActionPlan(referralId, numberOfSessions, activities, authUser)
 
     assertThat(draftActionPlan).isNotNull
+
+    val argumentCaptor = argumentCaptor<ActionPlan>()
+    verify(actionPlanValidator).validateDraftActionPlanUpdate(argumentCaptor.capture())
+    val validatedDraftActionPlan = argumentCaptor.firstValue
+    assertThat(validatedDraftActionPlan.numberOfSessions).isEqualTo(numberOfSessions)
+    assertThat(validatedDraftActionPlan.activities.size).isEqualTo(activities.size)
+    assertThat(validatedDraftActionPlan.createdAt).isNotNull
+    assertThat(validatedDraftActionPlan.createdBy).isEqualTo(authUser)
+    assertThat(validatedDraftActionPlan.submittedAt).isNull()
+    assertThat(validatedDraftActionPlan.submittedBy).isNull()
+    assertThat(validatedDraftActionPlan.referral).isEqualTo(referral)
   }
 
   @Test
