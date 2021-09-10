@@ -12,6 +12,8 @@ import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import DraftsService from '../../services/draftsService'
 import { CaseNote } from '../../models/caseNote'
+import CaseNotePresenter from './view/caseNotePresenter'
+import CaseNoteView from './view/caseNoteView'
 
 export type DraftCaseNote = null | CaseNote
 
@@ -102,6 +104,24 @@ export default class CaseNotesController {
 
     const presenter = new AddCaseNotePresenter(referralId, loggedInUserType, draftCaseNote.data, error, userInputData)
     const view = new AddCaseNoteView(presenter)
+    ControllerUtils.renderWithLayout(res, view, null)
+  }
+
+  async viewCaseNote(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { caseNoteId } = req.params
+    const caseNote = await this.interventionsService.getCaseNote(accessToken, caseNoteId)
+    const sentByUserDetails = await this.hmppsAuthService.getUserDetailsByUsername(
+      accessToken,
+      caseNote.sentBy.username
+    )
+    const sentByUserName = sentByUserDetails.name
+    const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType)
+    const view = new CaseNoteView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
 

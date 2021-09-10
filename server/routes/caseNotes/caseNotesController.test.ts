@@ -219,4 +219,27 @@ describe.each([
       })
     })
   })
+
+  describe(`GET /${user.userType}/case-note/:caseNoteId`, () => {
+    it('should provide a summary of case note', async () => {
+      const caseNote = caseNoteFactory.build({
+        subject: 'case note subject text',
+        body: 'case note body text',
+        sentAt: '2021-01-01T09:45:21.986389Z',
+      })
+      const userDetails = userDetailsFactory.build({ name: 'firstName lastName' })
+      interventionsService.getCaseNote.mockResolvedValue(caseNote)
+      hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetails)
+      await request(app)
+        .get(`/${user.userType}/case-note/${caseNote.id}`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('case note subject text')
+          expect(res.text).toContain('case note body text')
+          expect(res.text).toContain('1 January 2021')
+          expect(res.text).toContain('9:45am')
+          expect(res.text).toContain('firstName lastName')
+        })
+    })
+  })
 })

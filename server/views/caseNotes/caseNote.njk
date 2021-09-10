@@ -1,0 +1,21 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Referral" %}
+{% set pageSubTitle = "View case note" %}
+
+{% block pageContent %}
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {{ govukBackLink(backLinkArgs) }}
+            <h1 class="govuk-heading-l">Subject: {{ caseNoteSubject | escape }}</h1>
+            {{ govukSummaryList(caseNoteSummaryListArgs) }}
+            <p class="govuk-body">
+                {{ caseNoteBody | escape | nl2br }}
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
