@@ -41,14 +41,19 @@ describe(SearchResultsPresenter, () => {
   })
 
   describe('pccRegionFilters', () => {
-    const pccRegions = [pccRegionFactory.build({ name: 'Cheshire' }), pccRegionFactory.build({ name: 'Lancashire' })]
+    const lancashire = pccRegionFactory.build({ name: 'Lancashire' })
+    const norfolk = pccRegionFactory.build({ name: 'Norfolk' })
+    const cheshire = pccRegionFactory.build({ name: 'Cheshire' })
 
-    it('has the correct name and value', () => {
+    const pccRegions = [lancashire, norfolk, cheshire]
+
+    it('has the correct name and value in alphabetical order', () => {
       const presenter = new SearchResultsPresenter([], new InterventionsFilter(), pccRegions)
 
       expect(presenter.pccRegionFilters).toMatchObject([
-        { value: pccRegions[0].id, text: 'Cheshire' },
-        { value: pccRegions[1].id, text: 'Lancashire' },
+        { value: cheshire.id, text: 'Cheshire' },
+        { value: lancashire.id, text: 'Lancashire' },
+        { value: norfolk.id, text: 'Norfolk' },
       ])
     })
 
@@ -57,17 +62,17 @@ describe(SearchResultsPresenter, () => {
         it('is false for all regions', () => {
           const presenter = new SearchResultsPresenter([], new InterventionsFilter(), pccRegions)
 
-          expect(presenter.pccRegionFilters).toMatchObject([{ checked: false }, { checked: false }])
+          expect(presenter.pccRegionFilters).toMatchObject([{ checked: false }, { checked: false }, { checked: false }])
         })
       })
 
       describe('when filter specifies PCC region IDs', () => {
         it('returns true for a region listed in the filter and false for a region not listed in the filter', () => {
           const filter = new InterventionsFilter()
-          filter.pccRegionIds = [pccRegions[0].id]
+          filter.pccRegionIds = [cheshire.id]
           const presenter = new SearchResultsPresenter([], filter, pccRegions)
 
-          expect(presenter.pccRegionFilters).toMatchObject([{ checked: true }, { checked: false }])
+          expect(presenter.pccRegionFilters).toMatchObject([{ checked: true }, { checked: false }, { checked: false }])
         })
       })
     })
