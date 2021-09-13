@@ -210,17 +210,15 @@ export default class ScheduleAppointmentView {
       text: 'Video call',
       checked: this.presenter.fields.meetingMethod.value === 'VIDEO_CALL',
     })
-    if (this.presenter.deliusOfficeLocationSelectionEnabled) {
-      items.push({
-        id: 'meeting-method-meeting-probation-office',
-        value: 'IN_PERSON_MEETING_PROBATION_OFFICE',
-        text: 'In-person meeting - NPS offices',
-        checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_PROBATION_OFFICE',
-        conditional: {
-          html: deliusOfficeLocationHTML,
-        },
-      })
-    }
+    items.push({
+      id: 'meeting-method-meeting-probation-office',
+      value: 'IN_PERSON_MEETING_PROBATION_OFFICE',
+      text: 'In-person meeting - NPS offices',
+      checked: this.presenter.fields.meetingMethod.value === 'IN_PERSON_MEETING_PROBATION_OFFICE',
+      conditional: {
+        html: deliusOfficeLocationHTML,
+      },
+    })
     items.push({
       id: 'meeting-method-meeting-other',
       value: 'IN_PERSON_MEETING_OTHER',

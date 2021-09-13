@@ -10,7 +10,6 @@ import SentReferral from '../../models/sentReferral'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import { SummaryListItem } from '../../utils/summaryList'
-import config from '../../config'
 
 export default class ScheduleAppointmentPresenter {
   constructor(
@@ -70,10 +69,6 @@ export default class ScheduleAppointmentPresenter {
         selected: this.fields.deliusOfficeLocation.value === officeLocation.deliusCRSLocationId,
       }
     })
-  }
-
-  get deliusOfficeLocationSelectionEnabled(): boolean {
-    return config.features.npsOfficeLocationSelection.enabled
   }
 
   get allowSessionTypeSelection(): boolean {
