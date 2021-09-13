@@ -86,8 +86,9 @@ export default class ViewUtils {
     }
   }
 
-  static sortableTable(headers: SortableTableHeaders, rows: SortableTableRow[]): TableArgs {
+  static sortableTable(persistentId: string, headers: SortableTableHeaders, rows: SortableTableRow[]): TableArgs {
     return {
+      attributes: { 'data-persistent-id': persistentId },
       head: headers.map(heading => {
         return {
           text: heading.text,

@@ -7,7 +7,7 @@ export default class MyCasesView {
 
   private get tableArgs(): TableArgs {
     const { tableHeadings, tableRows } = this.presenter
-    return ViewUtils.sortableTable(tableHeadings, tableRows)
+    return ViewUtils.sortableTable('probationPractitionerMyCases', tableHeadings, tableRows)
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
