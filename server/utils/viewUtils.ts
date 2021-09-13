@@ -3,7 +3,7 @@ import { ListStyle, SummaryListItem } from './summaryList'
 import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TagArgs } from './govukFrontendTypes'
 import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
 
-export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none' }[]
+export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none'; persistentId: string }[]
 export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
 export type PrimaryNavItem = { text: string; href: string; active: boolean }
 
@@ -93,6 +93,7 @@ export default class ViewUtils {
           text: heading.text,
           attributes: {
             'aria-sort': heading.sort,
+            'data-persistent-id': heading.persistentId,
           },
         }
       }),

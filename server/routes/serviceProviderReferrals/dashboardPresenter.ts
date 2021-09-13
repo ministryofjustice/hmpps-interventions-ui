@@ -9,12 +9,12 @@ export default class DashboardPresenter {
   constructor(private readonly referralsSummary: ServiceProviderSentReferralSummary[]) {}
 
   readonly tableHeadings: SortableTableHeaders = [
-    { text: 'Date received', sort: 'none' },
-    { text: 'Referral', sort: 'none' },
-    { text: 'Service user', sort: 'none' },
-    { text: 'Intervention type', sort: 'none' },
-    { text: 'Caseworker', sort: 'none' },
-    { text: 'Action', sort: 'none' },
+    { text: 'Date received', sort: 'none', persistentId: 'dateReceived' },
+    { text: 'Referral', sort: 'none', persistentId: 'referenceNumber' },
+    { text: 'Service user', sort: 'none', persistentId: 'serviceUser' },
+    { text: 'Intervention type', sort: 'none', persistentId: 'interventionType' },
+    { text: 'Caseworker', sort: 'none', persistentId: 'caseworker' },
+    { text: 'Action', sort: 'none', persistentId: 'action' },
   ]
 
   readonly navItemsPresenter = new DashboardNavPresenter('All cases')
