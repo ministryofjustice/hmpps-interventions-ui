@@ -140,4 +140,12 @@ export default {
       empty: 'Select a reason for cancelling the referral',
     },
   },
+  caseNote: {
+    subject: {
+      empty: 'Enter a subject for your case note',
+    },
+    body: {
+      empty: 'Enter some details about your case note',
+    },
+  },
 }

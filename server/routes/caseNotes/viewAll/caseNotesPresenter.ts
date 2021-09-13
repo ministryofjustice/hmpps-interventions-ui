@@ -1,9 +1,9 @@
-import { Page } from '../../models/pagination'
-import { CaseNote } from '../../models/caseNote'
-import Pagination from '../../utils/pagination/pagination'
-import DateUtils from '../../utils/dateUtils'
-import utils from '../../utils/utils'
-import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { Page } from '../../../models/pagination'
+import { CaseNote } from '../../../models/caseNote'
+import Pagination from '../../../utils/pagination/pagination'
+import DateUtils from '../../../utils/dateUtils'
+import utils from '../../../utils/utils'
+import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 
 interface CaseNotesTableRow {
   sentAtDay: string

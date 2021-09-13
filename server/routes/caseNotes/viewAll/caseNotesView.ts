@@ -1,6 +1,6 @@
-import { TableArgs } from '../../utils/govukFrontendTypes'
+import { TableArgs } from '../../../utils/govukFrontendTypes'
 import CaseNotesPresenter from './caseNotesPresenter'
-import ViewUtils from '../../utils/viewUtils'
+import ViewUtils from '../../../utils/viewUtils'
 
 export default class CaseNotesView {
   constructor(private presenter: CaseNotesPresenter) {}

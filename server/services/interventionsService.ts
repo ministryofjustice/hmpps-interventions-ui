@@ -78,6 +78,12 @@ export interface PaginationParams {
 
 export type InterventionsServiceError = RestClientError
 
+export interface CreateCaseNoteParams {
+  referralId: string
+  subject: string
+  body: string
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -600,5 +606,22 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
       query: { ...paginationParams },
     })) as Page<CaseNote>
+  }
+
+  async addCaseNotes(token: string, caseNote: Partial<CaseNote>): Promise<CaseNote> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/case-note`,
+      headers: { Accept: 'application/json' },
+      data: caseNote,
+    })) as CaseNote
+  }
+
+  async getCaseNote(token: string, caseNoteId: string): Promise<CaseNote> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/case-note/${caseNoteId}`,
+      headers: { Accept: 'application/json' },
+    })) as CaseNote
   }
 }

@@ -1,0 +1,23 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Referral" %}
+{% set pageSubTitle = "Add case note" %}
+
+{% block pageContent %}
+    {{ govukBackLink(backLinkArgs) }}
+    <h1 class="govuk-heading-l">Add case note</h1>
+    <p class="govuk-body">
+        Add any notes you've made about the case. Case notes will be shared with the relevant probation practitioner and service user.
+    </p>
+    <form method="post" novalidate>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukInput(subjectInputArgs) }}
+        {{ govukTextarea(bodyInputArgs) }}
+        {{ govukButton({ text: "Continue" }) }}
+    </form>
+{% endblock %}
