@@ -39,12 +39,14 @@ export default class CaseNotesController {
     const paginationQuery = {
       page: Number(req.query.page),
       size: 5,
+      sort: ['sentAt,DESC'],
     }
     const referralId = req.params.id
     const [referral, caseNotesPage] = await Promise.all([
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getCaseNotes(accessToken, referralId, paginationQuery),
     ])
+    const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const uniqueUsers = new Set(caseNotesPage.content.map(caseNote => caseNote.sentBy.username))
     const userDetails: Map<string, undefined | string> = new Map(
@@ -63,7 +65,14 @@ export default class CaseNotesController {
         )
       ).map(user => [user.username, user.fullName])
     )
-    const presenter = new CaseNotesPresenter(referralId, caseNotesPage, userDetails, serviceUser, loggedInUserType)
+    const presenter = new CaseNotesPresenter(
+      referralId,
+      intervention,
+      caseNotesPage,
+      userDetails,
+      serviceUser,
+      loggedInUserType
+    )
     const view = new CaseNotesView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }

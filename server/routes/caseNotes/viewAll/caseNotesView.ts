@@ -6,6 +6,11 @@ import PresenterUtils from '../../../utils/presenterUtils'
 export default class CaseNotesView {
   constructor(private presenter: CaseNotesPresenter) {}
 
+  private readonly backLinkArgs = {
+    text: 'Back',
+    href: this.presenter.hrefBackLink,
+  }
+
   private get tableArgs(): TableArgs {
     if (this.presenter.tableRows.length === 0) {
       return { rows: [] }
@@ -40,6 +45,8 @@ export default class CaseNotesView {
       'caseNotes/caseNotes',
       {
         presenter: this.presenter,
+        backLinkArgs: this.backLinkArgs,
+        subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         tableArgs: this.tableArgs,
         serviceUserName: this.presenter.serviceUserName,

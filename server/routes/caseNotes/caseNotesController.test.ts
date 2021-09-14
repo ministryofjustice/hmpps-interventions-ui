@@ -65,6 +65,7 @@ describe.each([
       const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
       await request(app)
@@ -83,6 +84,7 @@ describe.each([
       const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(
         userDetailsFactory.build({ name: 'firstName lastName' })
       )
@@ -104,6 +106,7 @@ describe.each([
         const caseNotePage: Page<CaseNote> = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
         interventionsService.getSentReferral.mockResolvedValue(sentReferral)
         interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
         hmppsAuthService.getUserDetailsByUsername.mockImplementation(() => {
           return Promise.reject()
         })
@@ -127,6 +130,7 @@ describe.each([
       const caseNotePage = pageFactory.pageContent([caseNote1, caseNote2]).build() as Page<CaseNote>
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(
         userDetailsFactory.build({ name: 'firstName surname' })
       )
