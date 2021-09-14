@@ -22,6 +22,11 @@ export interface Address {
   from?: string | null
   to?: string | null
   noFixedAbode?: boolean | null
+  status?: AddressStatus | null
+}
+
+interface AddressStatus {
+  code?: string
 }
 
 interface ContactDetails {

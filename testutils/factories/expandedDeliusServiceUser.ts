@@ -40,6 +40,9 @@ export default Factory.define<ExpandedDeliusServiceUser>(() => ({
         from: '2019-01-01',
         to: null,
         noFixedAbode: false,
+        status: {
+          code: 'M',
+        },
       },
     ],
     emailAddresses: ['alex.river@example.com'],
