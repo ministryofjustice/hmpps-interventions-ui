@@ -1,4 +1,4 @@
-{{- if .Values.env_details.prod_to_preprod_refresh_job -}}
+{{- if .Values.env_details.production_env -}}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -1,4 +1,4 @@
-{{- if .Values.env_details.post_stats_to_team_slack -}}
+{{- if .Values.env_details.production_env -}}
 ---
 apiVersion: v1
 kind: ConfigMap
