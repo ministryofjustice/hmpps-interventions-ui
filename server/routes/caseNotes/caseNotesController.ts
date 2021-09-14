@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import CaseNotesPresenter from './viewAll/caseNotesPresenter'
 import CaseNotesView from './viewAll/caseNotesView'
@@ -11,6 +12,8 @@ import AddNewCaseNoteForm from './add/AddNewCaseNoteForm'
 import { FormValidationError } from '../../utils/formValidationError'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import DraftsService from '../../services/draftsService'
+import CheckAddCaseNoteAnswersPresenter from './add/checkAnswers/addCaseNoteCheckAnswersPresenter'
+import CheckAddCaseNoteAnswersView from './add/checkAnswers/addCaseNoteCheckAnswersView'
 import { CaseNote } from '../../models/caseNote'
 import CaseNotePresenter from './view/caseNotePresenter'
 import CaseNoteView from './view/caseNoteView'
@@ -80,7 +83,6 @@ export default class CaseNotesController {
     res: Response,
     loggedInUserType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
-    const { accessToken } = res.locals.user.token
     const referralId = req.params.id
     const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res)
     if (fetchResult.rendered) {
@@ -93,8 +95,10 @@ export default class CaseNotesController {
       const data = await new AddNewCaseNoteForm(req).data(referralId)
       if (!data.error) {
         try {
-          await this.interventionsService.addCaseNotes(accessToken, data.paramsForUpdate)
-          res.redirect(`/${loggedInUserType}/referrals/${referralId}/case-notes`)
+          await this.draftsService.updateDraft(draftCaseNote.id, data.paramsForUpdate, {
+            userId: res.locals.user.userId,
+          })
+          res.redirect(`/${loggedInUserType}/referrals/${referralId}/add-case-note/${draftCaseNote.id}/check-answers`)
           return
         } catch (e) {
           error = createFormValidationErrorOrRethrow(e as InterventionsServiceError)
@@ -127,6 +131,60 @@ export default class CaseNotesController {
     const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType)
     const view = new CaseNoteView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
+  }
+
+  async checkCaseNoteAnswers(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const { draft } = fetchResult
+    if (draft.data === null) {
+      // This should never happen. If the draft exists then it should have values due to input validation.
+      throw createError(500, `UI-only draft case note with ID ${draft.id} does not contain any data`, {
+        userMessage: 'Too much time has passed since you started creating this case note.',
+      })
+    }
+
+    const loggedInUser = await this.hmppsAuthService.getUserDetails(accessToken)
+    const presenter = new CheckAddCaseNoteAnswersPresenter(
+      referralId,
+      draft.id,
+      loggedInUserType,
+      loggedInUser,
+      draft.data
+    )
+    const view = new CheckAddCaseNoteAnswersView(presenter)
+    ControllerUtils.renderWithLayout(res, view, null)
+  }
+
+  async submitCaseNote(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const { draft } = fetchResult
+    if (draft.data === null) {
+      // This should never happen. If the draft exists then it should have values due to input validation.
+      throw createError(500, `UI-only draft case note with ID ${draft.id} does not contain any data`, {
+        userMessage: 'Too much time has passed since you started creating this case note.',
+      })
+    }
+    await this.interventionsService.addCaseNotes(accessToken, draft.data)
+    await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+    res.redirect(`/${loggedInUserType}/referrals/${referralId}/case-notes`)
   }
 
   private async fetchDraftCaseNoteOrRenderMessage(req: Request, res: Response) {

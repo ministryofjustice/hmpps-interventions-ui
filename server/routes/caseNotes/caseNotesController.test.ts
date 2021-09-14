@@ -109,6 +109,7 @@ describe.each([
         communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
+          .expect(200)
           .expect(res => {
             expect(res.text).toContain('username')
           })
@@ -215,8 +216,41 @@ describe.each([
           .type('form')
           .send({ 'case-note-subject': 'subject', 'case-note-body': 'body' })
           .expect(302)
-          .expect('Location', `/${user.userType}/referrals/${sentReferral.id}/case-notes`)
+          .expect(
+            'Location',
+            `/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/check-answers`
+          )
       })
+    })
+  })
+
+  describe(`GET /${user.userType}/referrals/:id/add-case-note/:draftCaseNoteId/check-answers`, () => {
+    it('should provide a summary of case note draft', async () => {
+      const draftCaseNote = draftCaseNoteFactory.build({
+        data: caseNoteFactory.build({ subject: 'case note subject text', body: 'case note body text' }),
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
+      hmppsAuthService.getUserDetails.mockResolvedValue(userDetailsFactory.build())
+      await request(app)
+        .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/check-answers`)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('case note subject text')
+          expect(res.text).toContain('case note body text')
+        })
+    })
+  })
+
+  describe(`POST /${user.userType}/referrals/:id/add-case-note/:draftCaseNoteId/submit`, () => {
+    it('should submit draft case note to interventions service', async () => {
+      const draftCaseNote = draftCaseNoteFactory.build({
+        data: caseNoteFactory.build({ subject: 'case note subject text', body: 'case note body text' }),
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
+      await request(app)
+        .post(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/submit`)
+        .expect(302)
+        .expect('Location', `/${user.userType}/referrals/${sentReferral.id}/case-notes`)
     })
   })
 
