@@ -6,25 +6,44 @@ import { Page } from '../../../models/pagination'
 import deliusServiceUserFactory from '../../../../testutils/factories/deliusServiceUser'
 
 describe('CaseNotesPresenter', () => {
+  const referralId = 'e2e62d97-97ec-4f90-ae3d-006e42b0fc2d'
   describe('tableRows', () => {
     it('should format sent day correctly', () => {
       const caseNote = caseNoteFactory.build({ sentAt: '2021-01-01T09:45:21.986389Z' })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
+      const presenter = new CaseNotesPresenter(
+        referralId,
+        page,
+        new Map(),
+        deliusServiceUserFactory.build(),
+        'service-provider'
+      )
       expect(presenter.tableRows[0].sentAtDay).toEqual('Friday')
     })
 
     it('should format sent date correctly', () => {
       const caseNote = caseNoteFactory.build({ sentAt: '2021-01-01T09:45:21.986389Z' })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
+      const presenter = new CaseNotesPresenter(
+        referralId,
+        page,
+        new Map(),
+        deliusServiceUserFactory.build(),
+        'service-provider'
+      )
       expect(presenter.tableRows[0].sentAtDate).toEqual('1 January 2021')
     })
 
     it('should format sent time correctly', () => {
       const caseNote = caseNoteFactory.build({ sentAt: '2021-01-01T09:45:21.986389Z' })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
+      const presenter = new CaseNotesPresenter(
+        referralId,
+        page,
+        new Map(),
+        deliusServiceUserFactory.build(),
+        'service-provider'
+      )
       expect(presenter.tableRows[0].sentAtTime).toEqual('9:45am')
     })
 
@@ -34,11 +53,23 @@ describe('CaseNotesPresenter', () => {
         sentAt: '2021-01-01T09:45:21.986389Z',
       })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      let presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
+      let presenter = new CaseNotesPresenter(
+        referralId,
+        page,
+        new Map(),
+        deliusServiceUserFactory.build(),
+        'service-provider'
+      )
       expect(presenter.tableRows[0].caseNoteLink).toEqual(
         '/service-provider/case-note/025a807d-a631-4559-be74-664ba62db279'
       )
-      presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'probation-practitioner')
+      presenter = new CaseNotesPresenter(
+        referralId,
+        page,
+        new Map(),
+        deliusServiceUserFactory.build(),
+        'probation-practitioner'
+      )
       expect(presenter.tableRows[0].caseNoteLink).toEqual(
         '/probation-practitioner/case-note/025a807d-a631-4559-be74-664ba62db279'
       )
@@ -56,6 +87,7 @@ describe('CaseNotesPresenter', () => {
           })
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
           const presenter = new CaseNotesPresenter(
+            referralId,
             page,
             new Map(),
             deliusServiceUserFactory.build(),
@@ -76,6 +108,7 @@ describe('CaseNotesPresenter', () => {
           })
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
           const presenter = new CaseNotesPresenter(
+            referralId,
             page,
             new Map([['USER_1', undefined]]),
             deliusServiceUserFactory.build(),
@@ -96,6 +129,7 @@ describe('CaseNotesPresenter', () => {
           })
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
           const presenter = new CaseNotesPresenter(
+            referralId,
             page,
             new Map([['USER_1', 'firstName lastName']]),
             deliusServiceUserFactory.build(),
@@ -112,6 +146,7 @@ describe('CaseNotesPresenter', () => {
       const caseNote = caseNoteFactory.build()
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
       const presenter = new CaseNotesPresenter(
+        referralId,
         page,
         new Map(),
         deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
