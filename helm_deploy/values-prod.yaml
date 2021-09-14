@@ -13,7 +13,7 @@ ingress:
 
 env_details:
   contains_live_data: true
-  post_stats_to_team_slack: true
+  production_env: true
 
 env:
   JAVA_OPTS: "-Xmx512m"
