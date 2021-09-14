@@ -15,11 +15,13 @@ export default class SearchResultsPresenter {
     value: string
     text: string
     checked: boolean
-  }[] = this.pccRegions.map(region => ({
-    value: region.id,
-    text: region.name,
-    checked: this.filter.pccRegionIds?.includes(region.id) ?? false,
-  }))
+  }[] = this.pccRegions
+    .map(region => ({
+      value: region.id,
+      text: region.name,
+      checked: this.filter.pccRegionIds?.includes(region.id) ?? false,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text))
 
   readonly genderFilters: {
     value: string
