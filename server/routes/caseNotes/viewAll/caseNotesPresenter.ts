@@ -12,6 +12,7 @@ interface CaseNotesTableRow {
   sentBy: string
   subject: string
   body: string
+  caseNoteLink: string
 }
 
 export default class CaseNotesPresenter {
@@ -20,7 +21,8 @@ export default class CaseNotesPresenter {
   constructor(
     private caseNotes: Page<CaseNote>,
     private officerUserNameMapping: Map<string, undefined | string>,
-    private serviceUser: DeliusServiceUser
+    private serviceUser: DeliusServiceUser,
+    public loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {
     this.pagination = new Pagination(caseNotes)
   }
@@ -42,6 +44,7 @@ export default class CaseNotesPresenter {
       sentBy: officerName,
       subject: caseNote.subject,
       body: caseNote.body,
+      caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}`,
     }
   })
 }

@@ -93,6 +93,7 @@ describe('ViewUtils', () => {
           { key: 'Address', lines: ['Flat 2', '27 Test Walk', 'SY16 1AQ'] },
         ])
       ).toEqual({
+        classes: undefined,
         rows: [
           {
             key: {
@@ -147,6 +148,17 @@ describe('ViewUtils', () => {
             actions: null,
           },
         ],
+      })
+    })
+
+    describe('with provided options', () => {
+      describe('when show borders is set to false', () => {
+        it('should add a hide borders class', () => {
+          expect(ViewUtils.summaryListArgs([], { showBorders: false })).toEqual({
+            classes: 'govuk-summary-list--no-border',
+            rows: [],
+          })
+        })
       })
     })
   })

@@ -1,6 +1,7 @@
 import { TableArgs } from '../../../utils/govukFrontendTypes'
 import CaseNotesPresenter from './caseNotesPresenter'
 import ViewUtils from '../../../utils/viewUtils'
+import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class CaseNotesView {
   constructor(private presenter: CaseNotesPresenter) {}
@@ -23,7 +24,11 @@ export default class CaseNotesView {
           {
             html: `<p class="govuk-body">
                     <b>${ViewUtils.escape(row.subject)}</b>
-                    <br><br>${ViewUtils.nl2br(ViewUtils.escape(row.body))}</p>`,
+                    <br><br>${ViewUtils.nl2br(
+                      ViewUtils.escape(PresenterUtils.truncateCharacters(row.body, 250, { addEllipsis: true }))
+                    )}
+                    <p/><a href="${row.caseNoteLink}" class="govuk-link">Read More</a>
+                    </p>`,
           },
         ]
       }),

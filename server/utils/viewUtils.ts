@@ -43,8 +43,12 @@ export default class ViewUtils {
     }
   }
 
-  static summaryListArgs(summaryListItems: SummaryListItem[]): SummaryListArgs {
+  static summaryListArgs(
+    summaryListItems: SummaryListItem[],
+    options: { showBorders: boolean } = { showBorders: true }
+  ): SummaryListArgs {
     return {
+      classes: options.showBorders ? undefined : 'govuk-summary-list--no-border',
       rows: summaryListItems.map(item => {
         return {
           key: {

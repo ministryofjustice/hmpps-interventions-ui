@@ -906,4 +906,32 @@ describe(PresenterUtils, () => {
       })
     })
   })
+
+  describe('truncateCharacters', () => {
+    describe('when the character count is equal to the truncate amount', () => {
+      it('no truncation should occur', () => {
+        expect(PresenterUtils.truncateCharacters('12345', 5)).toEqual('12345')
+      })
+    })
+
+    describe('when the character count is greater than truncate amount', () => {
+      it('no truncation should occur', () => {
+        expect(PresenterUtils.truncateCharacters('123456', 5)).toEqual('12345')
+      })
+    })
+
+    describe('with addEllipsis option', () => {
+      describe('when the character count is less then truncate amount', () => {
+        it('it should not add ellipsis', () => {
+          expect(PresenterUtils.truncateCharacters('12345', 5, { addEllipsis: true })).toEqual('12345')
+        })
+      })
+
+      describe('when the character count is greater than truncate amount', () => {
+        it('it should add ellipsis', () => {
+          expect(PresenterUtils.truncateCharacters('123456', 5, { addEllipsis: true })).toEqual('12345...')
+        })
+      })
+    })
+  })
 })

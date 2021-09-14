@@ -10,22 +10,38 @@ describe('CaseNotesPresenter', () => {
     it('should format sent day correctly', () => {
       const caseNote = caseNoteFactory.build({ sentAt: '2021-01-01T09:45:21.986389Z' })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build())
+      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
       expect(presenter.tableRows[0].sentAtDay).toEqual('Friday')
     })
 
     it('should format sent date correctly', () => {
       const caseNote = caseNoteFactory.build({ sentAt: '2021-01-01T09:45:21.986389Z' })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build())
+      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
       expect(presenter.tableRows[0].sentAtDate).toEqual('1 January 2021')
     })
 
     it('should format sent time correctly', () => {
       const caseNote = caseNoteFactory.build({ sentAt: '2021-01-01T09:45:21.986389Z' })
       const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build())
+      const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
       expect(presenter.tableRows[0].sentAtTime).toEqual('9:45am')
+    })
+
+    it('should format the case note links correctly for the relevant logged in user', () => {
+      const caseNote = caseNoteFactory.build({
+        id: '025a807d-a631-4559-be74-664ba62db279',
+        sentAt: '2021-01-01T09:45:21.986389Z',
+      })
+      const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
+      let presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'service-provider')
+      expect(presenter.tableRows[0].caseNoteLink).toEqual(
+        '/service-provider/case-note/025a807d-a631-4559-be74-664ba62db279'
+      )
+      presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build(), 'probation-practitioner')
+      expect(presenter.tableRows[0].caseNoteLink).toEqual(
+        '/probation-practitioner/case-note/025a807d-a631-4559-be74-664ba62db279'
+      )
     })
 
     describe('when displaying officer names', () => {
@@ -39,7 +55,12 @@ describe('CaseNotesPresenter', () => {
             },
           })
           const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
-          const presenter = new CaseNotesPresenter(page, new Map(), deliusServiceUserFactory.build())
+          const presenter = new CaseNotesPresenter(
+            page,
+            new Map(),
+            deliusServiceUserFactory.build(),
+            'service-provider'
+          )
           expect(presenter.tableRows[0].sentBy).toEqual('USER_1')
         })
       })
@@ -57,7 +78,8 @@ describe('CaseNotesPresenter', () => {
           const presenter = new CaseNotesPresenter(
             page,
             new Map([['USER_1', undefined]]),
-            deliusServiceUserFactory.build()
+            deliusServiceUserFactory.build(),
+            'service-provider'
           )
           expect(presenter.tableRows[0].sentBy).toEqual('USER_1')
         })
@@ -76,7 +98,8 @@ describe('CaseNotesPresenter', () => {
           const presenter = new CaseNotesPresenter(
             page,
             new Map([['USER_1', 'firstName lastName']]),
-            deliusServiceUserFactory.build()
+            deliusServiceUserFactory.build(),
+            'service-provider'
           )
           expect(presenter.tableRows[0].sentBy).toEqual('firstName lastName')
         })
@@ -91,7 +114,8 @@ describe('CaseNotesPresenter', () => {
       const presenter = new CaseNotesPresenter(
         page,
         new Map(),
-        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' })
+        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
+        'service-provider'
       )
       expect(presenter.serviceUserName).toEqual('Firstname Surname')
     })

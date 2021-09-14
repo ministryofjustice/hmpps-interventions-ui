@@ -387,4 +387,16 @@ export default class PresenterUtils {
   static isNonNullAndDefined<T>(arg: T | undefined | null): arg is T {
     return arg !== null && arg !== undefined
   }
+
+  static truncateCharacters(
+    text: string,
+    truncateToLength: number,
+    options: { addEllipsis: boolean } = { addEllipsis: false }
+  ): string {
+    const truncatedCharacters = text.slice(0, truncateToLength)
+    if (options.addEllipsis && text.length > truncateToLength) {
+      return `${truncatedCharacters}...`
+    }
+    return truncatedCharacters
+  }
 }

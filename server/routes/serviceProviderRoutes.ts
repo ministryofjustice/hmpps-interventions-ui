@@ -177,7 +177,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
     services.hmppsAuthService,
     services.draftsService
   )
-  get(router, '/referrals/:id/case-notes', (req, res) => caseNotesController.showCaseNotes(req, res))
+  get(router, '/referrals/:id/case-notes', (req, res) =>
+    caseNotesController.showCaseNotes(req, res, 'service-provider')
+  )
 
   post(router, '/referrals/:id/add-case-note/start', (req, res) =>
     caseNotesController.startAddCaseNote(req, res, 'service-provider')
@@ -190,6 +192,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/referrals/:id/add-case-note/:draftCaseNoteId/details', (req, res) =>
     caseNotesController.addCaseNote(req, res, 'service-provider')
   )
+
+  get(router, '/case-note/:caseNoteId', (req, res) => caseNotesController.viewCaseNote(req, res, 'service-provider'))
 
   if (config.features.serviceProviderReporting.enabled) {
     get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
