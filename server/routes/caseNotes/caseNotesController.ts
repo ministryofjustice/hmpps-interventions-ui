@@ -39,6 +39,7 @@ export default class CaseNotesController {
     const paginationQuery = {
       page: Number(req.query.page),
       size: 5,
+      sort: ['sentAt,DESC'],
     }
     const referralId = req.params.id
     const [referral, caseNotesPage] = await Promise.all([
