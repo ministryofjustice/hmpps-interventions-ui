@@ -81,6 +81,7 @@ export default {
     notNumber: 'The number of sessions must be a number, like 5',
     notWholeNumber: 'The number of sessions must be a whole number, like 5',
     tooSmall: 'The number of sessions must be 1 or more',
+    cannotBeReduced: 'You cannot reduce the number of sessions for a previously-approved action plan.',
   },
   actionPlanApproval: {
     notConfirmed: 'Select the checkbox to confirm before you approve the action plan',

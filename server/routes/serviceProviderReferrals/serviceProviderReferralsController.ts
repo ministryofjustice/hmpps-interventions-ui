@@ -87,6 +87,7 @@ import AppointmentSummary from '../appointments/appointmentSummary'
 import ReferenceDataService from '../../services/referenceDataService'
 import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
 import InitialAssessmentCheckAnswersView from './initialAssessmentCheckAnswersView'
+import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -523,8 +524,13 @@ export default class ServiceProviderReferralsController {
       formError = form.error
 
       if (form.isValid) {
-        await this.interventionsService.updateDraftActionPlan(token, actionPlanId, form.paramsForUpdate)
-        return res.redirect(`/service-provider/action-plan/${actionPlanId}/review`)
+        try {
+          await this.interventionsService.updateDraftActionPlan(token, actionPlanId, form.paramsForUpdate)
+          return res.redirect(`/service-provider/action-plan/${actionPlanId}/review`)
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          formError = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
       }
     }
 
