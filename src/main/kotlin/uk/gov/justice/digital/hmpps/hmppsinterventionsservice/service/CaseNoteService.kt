@@ -24,6 +24,10 @@ class CaseNoteService(
   val caseNoteEventPublisher: CaseNoteEventPublisher,
 ) {
 
+  fun getCaseNoteById(caseNoteId: UUID): CaseNote? {
+    return caseNoteRepository.findByIdOrNull(caseNoteId)
+  }
+
   fun createCaseNote(referralId: UUID, subject: String, body: String, sentByUser: AuthUser): CaseNote {
     val caseNote = CaseNote(
       id = UUID.randomUUID(),
