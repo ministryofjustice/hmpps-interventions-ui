@@ -1,5 +1,7 @@
 import Intervention from '../../models/intervention'
 import SentReferral from '../../models/sentReferral'
+import CalendarDay from '../../utils/calendarDay'
+import DateUtils from '../../utils/dateUtils'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import DashboardNavPresenter from './dashboardNavPresenter'
@@ -10,6 +12,7 @@ export default class MyCasesPresenter {
   readonly navItemsPresenter = new DashboardNavPresenter('My cases')
 
   readonly tableHeadings: SortableTableHeaders = [
+    { text: 'Date sent', sort: 'none' },
     { text: 'Referral', sort: 'none' },
     { text: 'Service user', sort: 'ascending' },
     { text: 'Intervention type', sort: 'none' },
@@ -28,8 +31,14 @@ export default class MyCasesPresenter {
 
     // i really want the actual names here, but that's an API call for each row - how can we improve this?
     const assignee = referral.assignedTo?.username || 'Unassigned'
+    const sentAtDay = CalendarDay.britishDayForDate(new Date(referral.sentAt))
 
     return [
+      {
+        text: DateUtils.formattedDate(sentAtDay, { month: 'short' }),
+        sortValue: sentAtDay.iso8601,
+        href: null,
+      },
       {
         text: referral.referenceNumber,
         sortValue: referral.referenceNumber,
