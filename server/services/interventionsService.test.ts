@@ -107,6 +107,41 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('get case note', () => {
+    it('returns the case note', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing case note with ID of bd048235-c41f-420a-a587-d447abf93889',
+        uponReceiving: 'a request to get the case note',
+        withRequest: {
+          method: 'GET',
+          path: '/case-note/bd048235-c41f-420a-a587-d447abf93889',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: 'bd048235-c41f-420a-a587-d447abf93889',
+            referralId: '7197d9b1-ca8b-475c-9f44-1fed47778c23',
+            subject: 'subject for case note 1 of 20',
+            body: 'body for case note 1 of 20',
+            sentBy: {
+              userId: '608955ae-52ed-44cc-884c-011597a77949',
+              username: 'AUTH_USER',
+              authSource: 'auth',
+            },
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const caseNote = await interventionsService.getCaseNote(
+        probationPractitionerToken,
+        'bd048235-c41f-420a-a587-d447abf93889'
+      )
+      expect(caseNote.id).toBe('bd048235-c41f-420a-a587-d447abf93889')
+    })
+  })
+
   describe('getDraftReferral', () => {
     it('returns a referral for the given ID', async () => {
       await provider.addInteraction({
