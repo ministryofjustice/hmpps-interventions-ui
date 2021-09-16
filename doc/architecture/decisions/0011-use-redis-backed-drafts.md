@@ -52,7 +52,7 @@ It would also be good if the solution could:
 
 ## Decision
 
-We’ll use the UI application’s existing Redis server as our storage. It allows us to store essentially unlimited amounts of data. The data is private to the current browsing session and is not accessible by other users.
+We’ll use the UI application’s existing Redis server as our storage. It allows us to store essentially unlimited amounts of data.
 
 In Redis, we’ll store “draft” objects. These are containers of arbitrary JSON data, along with:
 
