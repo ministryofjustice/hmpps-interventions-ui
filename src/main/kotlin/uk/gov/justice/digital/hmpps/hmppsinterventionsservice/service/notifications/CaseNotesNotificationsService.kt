@@ -22,6 +22,7 @@ class CaseNotesNotificationsService(
   private val hmppsAuthService: HMPPSAuthService,
   private val userTypeChecker: UserTypeChecker,
   private val communityAPIOffenderService: CommunityAPIOffenderService,
+  private val caseNoteService: CaseNoteService,
 ) : ApplicationListener<CaseNoteEvent>, NotifyService {
   companion object : KLogging()
 
@@ -29,8 +30,14 @@ class CaseNotesNotificationsService(
   override fun onApplicationEvent(event: CaseNoteEvent) {
     when (event.type) {
       CaseNoteEventType.SENT -> {
-        emailAssignedCaseWorker(event.caseNote)
-        emailResponsibleProbationPractitioner(event.caseNote)
+        // get case note from repository because the linking objects (referral.currentAssignee) on the caseNote from the event
+        // may sometimes not be lazy loaded because the session may already have been closed by this point
+        caseNoteService.getCaseNoteById(event.caseNote.id)?.let { caseNote ->
+          emailAssignedCaseWorker(caseNote)
+          emailResponsibleProbationPractitioner(caseNote)
+        } ?: run {
+          throw RuntimeException("Unable to retrieve case note for id ${event.caseNote.id}")
+        }
       }
     }
   }
