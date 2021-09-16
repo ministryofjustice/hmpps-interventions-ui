@@ -142,6 +142,47 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('create case note', () => {
+    it('returns the created case note', async () => {
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned',
+        uponReceiving: 'a request to create a case note',
+        withRequest: {
+          method: 'POST',
+          path: '/case-note',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          body: {
+            referralId: '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
+            subject: 'subject text for case note',
+            body: 'body text for case note',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            referralId: '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
+            subject: 'subject text for case note',
+            body: 'body text for case note',
+            sentBy: {
+              userId: '2500128586',
+              username: 'joe.smith',
+              authSource: 'delius',
+            },
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const caseNote = await interventionsService.addCaseNotes(probationPractitionerToken, {
+        referralId: '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
+        subject: 'subject text for case note',
+        body: 'body text for case note',
+      })
+      expect(caseNote.referralId).toBe('2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')
+    })
+  })
+
   describe('getDraftReferral', () => {
     it('returns a referral for the given ID', async () => {
       await provider.addInteraction({
