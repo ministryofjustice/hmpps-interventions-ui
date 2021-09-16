@@ -1,7 +1,7 @@
 import EndOfServiceReport from '../../../models/endOfServiceReport'
 import SentReferral from '../../../models/sentReferral'
 import ServiceCategory from '../../../models/serviceCategory'
-import EndOfServiceReportAnswersPresenter from '../../shared/endOfServiceReportAnswersPresenter'
+import EndOfServiceReportAnswersPresenter from '../endOfServiceReportAnswersPresenter'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class EndOfServiceReportPresenter {
