@@ -558,7 +558,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .type('form')
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
-        .expect('Location', '/referrals/1/enforceable-days')
+        .expect('Location', '/referrals/1/further-information')
 
       expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
         'token',
@@ -702,7 +702,7 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/comp
         .type('form')
         .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
         .expect(302)
-        .expect('Location', '/referrals/1/completion-deadline')
+        .expect('Location', '/referrals/1/enforceable-days')
 
       expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
         serviceCategoryId: 'b33c19d1-7414-4014-b543-e543e59c5b39',
@@ -749,7 +749,7 @@ describe('POST /referrals/:referralId/service-category/:service-category-id/comp
         .type('form')
         .send({ 'complexity-level-id': 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' })
         .expect(302)
-        .expect('Location', '/referrals/1/completion-deadline')
+        .expect('Location', '/referrals/1/enforceable-days')
 
       expect(interventionsService.setComplexityLevelForServiceCategory).toHaveBeenCalledWith('token', '1', {
         serviceCategoryId: 'd69b80d5-0005-4f08-b5d8-404999c9e843',
@@ -1222,7 +1222,7 @@ describe('POST /referrals/:id/enforceable-days', () => {
         'maximum-enforceable-days': '10',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/further-information')
+      .expect('Location', '/referrals/1/completion-deadline')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',

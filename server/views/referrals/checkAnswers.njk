@@ -39,13 +39,13 @@
         {{ govukSummaryList(section.summaryListArgs) }}
       {% endfor %}
 
-      <h2 class="govuk-heading-l">{{ presenter.completionDeadlineSection.title }}</h2>
-
-      {{ govukSummaryList(completionDeadlineSummaryListArgs) }}
-
       <h2 class="govuk-heading-l">Enforceable days</h2>
 
       {{ govukSummaryList(enforceableDaysSummaryListArgs) }}
+
+      <h2 class="govuk-heading-l">{{ presenter.completionDeadlineSection.title }}</h2>
+
+      {{ govukSummaryList(completionDeadlineSummaryListArgs) }}
 
       <h2 class="govuk-heading-l">Further information</h2>
 

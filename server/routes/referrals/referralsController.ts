@@ -264,7 +264,7 @@ export default class ReferralsController {
             }
           }
 
-          return res.redirect(`/referrals/${referralId}/completion-deadline`)
+          return res.redirect(`/referrals/${referralId}/enforceable-days`)
         } catch (e) {
           const interventionsServiceError = e as InterventionsServiceError
           formError = createFormValidationErrorOrRethrow(interventionsServiceError)
@@ -319,7 +319,7 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/enforceable-days`)
+      res.redirect(`/referrals/${req.params.id}/further-information`)
     } else {
       const referral = await this.interventionsService.getDraftReferral(
         res.locals.user.token.accessToken,
@@ -573,7 +573,7 @@ export default class ReferralsController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/further-information`)
+      res.redirect(`/referrals/${req.params.id}/completion-deadline`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
       const presenter = new EnforceableDaysPresenter(referral, error, req.body)

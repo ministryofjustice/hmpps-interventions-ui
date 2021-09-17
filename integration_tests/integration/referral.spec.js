@@ -169,8 +169,8 @@ describe('Referral form', () => {
           relevantSentence: false,
           requiredComplexityLevel: false,
           desiredOutcomes: false,
-          completedDate: false,
           enforceableDays: false,
+          completedDate: false,
           furtherInformation: false,
         })
         .checkYourAnswers({ checkAnswers: false })
@@ -257,8 +257,8 @@ describe('Referral form', () => {
           relevantSentence: true,
           requiredComplexityLevel: false,
           desiredOutcomes: false,
-          completedDate: false,
           enforceableDays: false,
+          completedDate: false,
           furtherInformation: false,
         })
         .checkYourAnswers({ checkAnswers: false })
@@ -295,17 +295,17 @@ describe('Referral form', () => {
 
       cy.contains('Save and continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
+      cy.get('h1').contains('How many days will you use for this service?')
+      cy.contains('How many days will you use for this service?').type('10')
+
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
       cy.get('h1').contains('What date does the Accommodation intervention need to be completed by?')
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
-
-      cy.contains('Save and continue').click()
-
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
-      cy.get('h1').contains('How many days will you use for this service?')
-      cy.contains('How many days will you use for this service?').type('10')
 
       cy.contains('Save and continue').click()
 
@@ -335,8 +335,8 @@ describe('Referral form', () => {
           relevantSentence: true,
           requiredComplexityLevel: true,
           desiredOutcomes: true,
-          completedDate: true,
           enforceableDays: true,
+          completedDate: true,
           furtherInformation: true,
         })
         .checkYourAnswers({ checkAnswers: true })
@@ -441,15 +441,6 @@ describe('Referral form', () => {
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
 
-      cy.contains('Accommodation completion date')
-        .next()
-        .contains('Date')
-        .next()
-        .should('contain', '24 August 2021')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/completion-deadline`)
-
       cy.contains('Enforceable days')
         .next()
         .contains('Maximum number of enforceable days')
@@ -458,6 +449,15 @@ describe('Referral form', () => {
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/enforceable-days`)
+
+      cy.contains('Accommodation completion date')
+        .next()
+        .contains('Date')
+        .next()
+        .should('contain', '24 August 2021')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/completion-deadline`)
 
       cy.contains('Further information')
         .next()
@@ -704,8 +704,8 @@ describe('Referral form', () => {
           desiredOutcomes1: false,
           requiredComplexityLevel2: false,
           desiredOutcomes2: false,
-          completedDate: false,
           enforceableDays: false,
+          completedDate: false,
           furtherInformation: false,
         })
         .checkYourAnswers({ checkAnswers: false })
@@ -763,17 +763,17 @@ describe('Referral form', () => {
 
       cy.contains('Save and continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
+      cy.get('h1').contains('How many days will you use for this service?')
+      cy.contains('How many days will you use for this service?').type('10')
+
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/completion-deadline`)
       cy.get('h1').contains("What date does the Women's services intervention need to be completed by?")
       cy.contains('Day').type('15')
       cy.contains('Month').type('8')
       cy.contains('Year').type('2021')
-
-      cy.contains('Save and continue').click()
-
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/enforceable-days`)
-      cy.get('h1').contains('How many days will you use for this service?')
-      cy.contains('How many days will you use for this service?').type('10')
 
       cy.contains('Save and continue').click()
 
@@ -807,8 +807,8 @@ describe('Referral form', () => {
           desiredOutcomes1: true,
           requiredComplexityLevel2: true,
           desiredOutcomes2: true,
-          completedDate: true,
           enforceableDays: true,
+          completedDate: true,
           furtherInformation: true,
         })
         .checkYourAnswers({ checkAnswers: true })

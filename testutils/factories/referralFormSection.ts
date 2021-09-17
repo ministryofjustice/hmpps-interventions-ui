@@ -49,8 +49,8 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     relevantSentenceUrl: string | null = null,
     desiredOutcomesUrl: string | null = null,
     complexityLevelUrl: string | null = null,
-    completionDateUrl: string | null = null,
     enforceableDaysUrl: string | null = null,
+    completionDateUrl: string | null = null,
     furtherInformationUrl: string | null = null
   ) {
     return this.params({
@@ -65,11 +65,11 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
         },
         { title: 'Select desired outcomes', url: desiredOutcomesUrl },
         { title: 'Select required complexity level', url: complexityLevelUrl },
+        { title: 'Enter enforceable days used', url: enforceableDaysUrl },
         {
           title: `Enter when the ${utils.convertToProperCase(serviceCategoryName)} service needs to be completed`,
           url: completionDateUrl,
         },
-        { title: 'Enter enforceable days used', url: enforceableDaysUrl },
         { title: 'Further information for service provider', url: furtherInformationUrl },
       ],
     })

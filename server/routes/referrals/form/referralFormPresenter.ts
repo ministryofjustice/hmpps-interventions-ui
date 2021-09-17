@@ -135,18 +135,18 @@ class FormSectionBuilder {
           ),
         },
         {
+          title: 'Enter enforceable days used',
+          url: this.calculateTaskUrl('enforceable-days', this.taskValues.allComplexityLevels),
+        },
+        {
           title: `Enter when the ${utils.convertToProperCase(
             this.intervention.serviceCategories[0].name
           )} service needs to be completed`,
-          url: this.calculateTaskUrl('completion-deadline', this.taskValues.allComplexityLevels),
-        },
-        {
-          title: 'Enter enforceable days used',
-          url: this.calculateTaskUrl('enforceable-days', this.taskValues.completionDeadline),
+          url: this.calculateTaskUrl('completion-deadline', this.taskValues.enforceableDays),
         },
         {
           title: 'Further information for service provider',
-          url: this.calculateTaskUrl('further-information', this.taskValues.enforceableDays),
+          url: this.calculateTaskUrl('further-information', this.taskValues.completionDeadline),
         },
       ],
     }
@@ -228,18 +228,18 @@ class FormSectionBuilder {
           {
             tasks: [
               {
+                title: 'Enter enforceable days used',
+                url: this.calculateTaskUrl('enforceable-days', this.taskValues.allComplexityLevels),
+              },
+              {
                 title: `Enter when the ${utils.convertToProperCase(
                   this.intervention.contractType.name
                 )} referral needs to be completed`,
-                url: this.calculateTaskUrl('completion-deadline', this.taskValues.allComplexityLevels),
-              },
-              {
-                title: 'Enter enforceable days used',
-                url: this.calculateTaskUrl('enforceable-days', this.taskValues.completionDeadline),
+                url: this.calculateTaskUrl('completion-deadline', this.taskValues.enforceableDays),
               },
               {
                 title: 'Further information for service provider',
-                url: this.calculateTaskUrl('further-information', this.taskValues.enforceableDays),
+                url: this.calculateTaskUrl('further-information', this.taskValues.completionDeadline),
               },
             ],
           },
@@ -310,8 +310,8 @@ class SectionValues {
       this.taskValues.relevantSentence &&
       this.taskValues.allDesiredOutcomes &&
       this.taskValues.allComplexityLevels &&
-      this.taskValues.completionDeadline &&
       this.taskValues.enforceableDays &&
+      this.taskValues.completionDeadline &&
       this.taskValues.furtherInformation
     )
   }
