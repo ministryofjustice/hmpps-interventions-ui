@@ -154,6 +154,10 @@ export default class InterventionProgressPresenter {
 
   readonly createEndOfServiceReportFormAction = `/service-provider/referrals/${this.referral.id}/end-of-service-report`
 
+  readonly viewEndOfServiceReportURL = this.referral.endOfServiceReport
+    ? `/service-provider/end-of-service-report/${this.referral.endOfServiceReport.id}`
+    : null
+
   readonly endOfServiceReportStatusStyle: 'active' | 'inactive' = this.endOfServiceReportSubmitted
     ? 'active'
     : 'inactive'
