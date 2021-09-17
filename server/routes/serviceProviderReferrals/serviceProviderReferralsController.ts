@@ -1496,6 +1496,13 @@ export default class ServiceProviderReferralsController {
     if (serviceCategories.length !== referral.referral.serviceCategoryIds.length) {
       throw new Error('Expected service categories are missing in intervention')
     }
+
+    if (endOfServiceReport.submittedAt === null) {
+      throw new Error(
+        'You cannot view an end of service report that has not yet been submitted. Please submit the end of service report before trying to view it.'
+      )
+    }
+
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategories)

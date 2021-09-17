@@ -1401,7 +1401,7 @@ describe('GET /service-provider/end-of-service-report/:id', () => {
         ],
       },
     })
-    const endOfServiceReport = endOfServiceReportFactory.build({
+    const endOfServiceReport = endOfServiceReportFactory.submitted().build({
       outcomes: [
         {
           desiredOutcome: serviceCategory.desiredOutcomes[0],
@@ -1450,6 +1450,32 @@ describe('GET /service-provider/end-of-service-report/:id', () => {
       .expect(500)
       .expect(res => {
         expect(res.text).toContain('Expected service categories are missing in intervention')
+      })
+  })
+
+  it('throws an error if trying to view an in-progress end of service report', async () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id],
+      },
+    })
+    const inProgressEndOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+
+    interventionsService.getEndOfServiceReport.mockResolvedValue(inProgressEndOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/service-provider/end-of-service-report/${inProgressEndOfServiceReport.id}`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain(
+          'You cannot view an end of service report that has not yet been submitted. Please submit the end of service report before trying to view it.'
+        )
       })
   })
 })
