@@ -88,6 +88,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .getTable()
       .should('deep.equal', [
         {
+          'Date sent': '26 Jan 2021',
           Referral: 'ABCABCA1',
           'Service user': 'George Michael',
           'Intervention type': 'Accommodation Services - West Midlands',
@@ -96,6 +97,7 @@ describe('Probation practitioner referrals dashboard', () => {
           Action: 'View',
         },
         {
+          'Date sent': '13 Sep 2020',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
           'Intervention type': "Women's Services - West Midlands",
