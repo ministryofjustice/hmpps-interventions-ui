@@ -104,23 +104,23 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
-  filledFormUpToCompletionDate(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+  filledFormUpToEnforceableDays(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
     return this.filledFormUpToRelevantSentence(serviceCategories)
       .addSelectedDesiredOutcomes(serviceCategories)
       .addSelectedComplexityLevel(serviceCategories)
       .params({
-        completionDeadline: '2021-08-24',
+        maximumEnforceableDays: 10,
       })
   }
 
-  filledFormUpToEnforceableDays(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.filledFormUpToCompletionDate(serviceCategories).params({
-      maximumEnforceableDays: 10,
+  filledFormUpToCompletionDate(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+    return this.filledFormUpToEnforceableDays(serviceCategories).params({
+      completionDeadline: '2021-08-24',
     })
   }
 
   filledFormUpToFurtherInformation(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.filledFormUpToEnforceableDays(serviceCategories).params({
+    return this.filledFormUpToCompletionDate(serviceCategories).params({
       furtherInformation: '',
     })
   }

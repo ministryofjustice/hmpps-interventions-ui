@@ -11,8 +11,8 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     relevantSentenceUrl: string | null = null,
     cohortUrls: { title: string; desiredOutcomesUrl: string | null; complexityLevelUrl: string | null }[] | null = [],
-    completionDateUrl: string | null = null,
     enforceableDaysUrl: string | null = null,
+    completionDateUrl: string | null = null,
     furtherInformationUrl: string | null = null
   ) {
     return this.params({
@@ -46,11 +46,11 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
         .concat([
           {
             tasks: [
+              { title: 'Enter enforceable days used', url: enforceableDaysUrl },
               {
                 title: `Enter when the ${utils.convertToProperCase(contractName)} referral needs to be completed`,
                 url: completionDateUrl,
               },
-              { title: 'Enter enforceable days used', url: enforceableDaysUrl },
               { title: 'Further information for service provider', url: furtherInformationUrl },
             ],
           },

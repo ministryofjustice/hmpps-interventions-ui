@@ -141,30 +141,6 @@ describe('ReferralFormPresenter', () => {
                   'relevant-sentence',
                   `service-category/${serviceCategory.id}/desired-outcomes`,
                   `service-category/${serviceCategory.id}/complexity-level`,
-                  'completion-deadline'
-                )
-                .build(),
-              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
-            ]
-            expect(presenter.sections).toEqual(expected)
-          })
-        })
-        describe('when "date completed by" has been set', () => {
-          it('should contain a "Not Started" label and "enforceable-days" url visible', () => {
-            const referral = draftReferralFactory.filledFormUpToCompletionDate([serviceCategory]).build()
-            const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
-            const expected = [
-              referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
-                .build(),
-              referralFormSectionFactory
-                .interventionDetails(
-                  'accommodation',
-                  ReferralFormStatus.NotStarted,
-                  'relevant-sentence',
-                  `service-category/${serviceCategory.id}/desired-outcomes`,
-                  `service-category/${serviceCategory.id}/complexity-level`,
-                  'completion-deadline',
                   'enforceable-days'
                 )
                 .build(),
@@ -174,7 +150,7 @@ describe('ReferralFormPresenter', () => {
           })
         })
         describe('when "enforceable days" has been set', () => {
-          it('should contain a "Not Started" label and "further-information" url visible', () => {
+          it('should contain a "Not Started" label and "completion-deadline" url visible', () => {
             const referral = draftReferralFactory.filledFormUpToEnforceableDays([serviceCategory]).build()
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
@@ -188,8 +164,32 @@ describe('ReferralFormPresenter', () => {
                   'relevant-sentence',
                   `service-category/${serviceCategory.id}/desired-outcomes`,
                   `service-category/${serviceCategory.id}/complexity-level`,
-                  'completion-deadline',
                   'enforceable-days',
+                  'completion-deadline'
+                )
+                .build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
+            ]
+            expect(presenter.sections).toEqual(expected)
+          })
+        })
+        describe('when "date completed by" has been set', () => {
+          it('should contain a "Not Started" label and "further-information" url visible', () => {
+            const referral = draftReferralFactory.filledFormUpToCompletionDate([serviceCategory]).build()
+            const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
+            const expected = [
+              referralFormSectionFactory
+                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .build(),
+              referralFormSectionFactory
+                .interventionDetails(
+                  'accommodation',
+                  ReferralFormStatus.NotStarted,
+                  'relevant-sentence',
+                  `service-category/${serviceCategory.id}/desired-outcomes`,
+                  `service-category/${serviceCategory.id}/complexity-level`,
+                  'enforceable-days',
+                  'completion-deadline',
                   'further-information'
                 )
                 .build(),
@@ -213,8 +213,8 @@ describe('ReferralFormPresenter', () => {
                   'relevant-sentence',
                   `service-category/${serviceCategory.id}/desired-outcomes`,
                   `service-category/${serviceCategory.id}/complexity-level`,
-                  'completion-deadline',
                   'enforceable-days',
+                  'completion-deadline',
                   'further-information'
                 )
                 .build(),
@@ -521,7 +521,7 @@ describe('ReferralFormPresenter', () => {
       })
 
       describe('when "complexity level" has been set for second service', () => {
-        it('should contain a "Not Started" label and "completion-deadline" url visible', () => {
+        it('should contain a "Not Started" label and "enforceable-days" url visible', () => {
           const referral = draftReferralFactory
             .filledFormUpToRelevantSentence(serviceCategories)
             .addSelectedDesiredOutcomes(serviceCategories)
@@ -556,48 +556,6 @@ describe('ReferralFormPresenter', () => {
                     complexityLevelUrl: `service-category/${serviceCategories[1].id}/complexity-level`,
                   },
                 ],
-                'completion-deadline'
-              )
-              .build(),
-            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
-          ]
-          expect(presenter.sections).toEqual(expected)
-        })
-      })
-
-      describe('when "date completed by" has been set', () => {
-        it('should contain a "Not Started" label and "enforceable-days" url visible', () => {
-          const referral = draftReferralFactory.filledFormUpToCompletionDate(serviceCategories).build()
-          const presenter = new ReferralFormPresenter(referral, cohortIntervention)
-          const expected = [
-            referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
-              .build(),
-            referralFormSectionFactory
-              .selectedServiceCategories(
-                cohortIntervention.contractType.name,
-                ReferralFormStatus.Completed,
-                'service-categories'
-              )
-              .build(),
-            cohortReferralFormSectionFactory
-              .cohortInterventionDetails(
-                'Accommodation',
-                ReferralFormStatus.NotStarted,
-                'relevant-sentence',
-                [
-                  {
-                    title: 'accommodation',
-                    desiredOutcomesUrl: `service-category/${serviceCategories[0].id}/desired-outcomes`,
-                    complexityLevelUrl: `service-category/${serviceCategories[0].id}/complexity-level`,
-                  },
-                  {
-                    title: 'social inclusion',
-                    desiredOutcomesUrl: `service-category/${serviceCategories[1].id}/desired-outcomes`,
-                    complexityLevelUrl: `service-category/${serviceCategories[1].id}/complexity-level`,
-                  },
-                ],
-                'completion-deadline',
                 'enforceable-days'
               )
               .build(),
@@ -608,7 +566,7 @@ describe('ReferralFormPresenter', () => {
       })
 
       describe('when "enforceable days" has been set', () => {
-        it('should contain a "Not Started" label and "further-information" url visible', () => {
+        it('should contain a "Not Started" label and "completion-deadline" url visible', () => {
           const referral = draftReferralFactory.filledFormUpToEnforceableDays(serviceCategories).build()
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
@@ -639,8 +597,50 @@ describe('ReferralFormPresenter', () => {
                     complexityLevelUrl: `service-category/${serviceCategories[1].id}/complexity-level`,
                   },
                 ],
-                'completion-deadline',
                 'enforceable-days',
+                'completion-deadline'
+              )
+              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
+          ]
+          expect(presenter.sections).toEqual(expected)
+        })
+      })
+
+      describe('when "date completed by" has been set', () => {
+        it('should contain a "Not Started" label and "further-information" url visible', () => {
+          const referral = draftReferralFactory.filledFormUpToCompletionDate(serviceCategories).build()
+          const presenter = new ReferralFormPresenter(referral, cohortIntervention)
+          const expected = [
+            referralFormSectionFactory
+              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .build(),
+            referralFormSectionFactory
+              .selectedServiceCategories(
+                cohortIntervention.contractType.name,
+                ReferralFormStatus.Completed,
+                'service-categories'
+              )
+              .build(),
+            cohortReferralFormSectionFactory
+              .cohortInterventionDetails(
+                'Accommodation',
+                ReferralFormStatus.NotStarted,
+                'relevant-sentence',
+                [
+                  {
+                    title: 'accommodation',
+                    desiredOutcomesUrl: `service-category/${serviceCategories[0].id}/desired-outcomes`,
+                    complexityLevelUrl: `service-category/${serviceCategories[0].id}/complexity-level`,
+                  },
+                  {
+                    title: 'social inclusion',
+                    desiredOutcomesUrl: `service-category/${serviceCategories[1].id}/desired-outcomes`,
+                    complexityLevelUrl: `service-category/${serviceCategories[1].id}/complexity-level`,
+                  },
+                ],
+                'enforceable-days',
+                'completion-deadline',
                 'further-information'
               )
               .build(),
@@ -682,8 +682,8 @@ describe('ReferralFormPresenter', () => {
                     complexityLevelUrl: `service-category/${serviceCategories[1].id}/complexity-level`,
                   },
                 ],
-                'completion-deadline',
                 'enforceable-days',
+                'completion-deadline',
                 'further-information'
               )
               .build(),
