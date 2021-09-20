@@ -1,4 +1,4 @@
-import EndOfServiceReportAnswersView from '../../shared/endOfServiceReportAnswersView'
+import EndOfServiceReportAnswersView from '../endOfServiceReportAnswersView'
 import EndOfServiceReportPresenter from './endOfServiceReportPresenter'
 
 export default class EndOfServiceReportView {
@@ -7,7 +7,7 @@ export default class EndOfServiceReportView {
   private readonly answersView = new EndOfServiceReportAnswersView(this.presenter.answersPresenter)
 
   readonly renderArgs: [string, Record<string, unknown>] = [
-    'probationPractitionerReferrals/endOfServiceReport',
+    'shared/endOfServiceReport',
     {
       presenter: this.presenter,
       ...this.answersView.locals,

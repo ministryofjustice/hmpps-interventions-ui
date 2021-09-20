@@ -88,6 +88,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     serviceProviderReferralsController.viewSubmittedPostSessionFeedback(req, res)
   )
+  get(router, '/end-of-service-report/:id', (req, res) =>
+    serviceProviderReferralsController.viewEndOfServiceReport(req, res)
+  )
   post(router, '/referrals/:id/end-of-service-report', (req, res) =>
     serviceProviderReferralsController.createDraftEndOfServiceReport(req, res)
   )

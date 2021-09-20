@@ -118,8 +118,18 @@ export default class InterventionProgressView {
                  </form>`,
         },
       })
+    } else if (this.presenter.endOfServiceReportSubmitted && this.presenter.viewEndOfServiceReportURL) {
+      rows.push({
+        key: { text: 'Action' },
+        value: {
+          html: `<a href="${ViewUtils.escape(this.presenter.viewEndOfServiceReportURL)}">
+                   <button data-module="govuk-button" data-prevent-double-click="true">
+                     View submitted report
+                   </button>
+                 </a>`,
+        },
+      })
     }
-
     return { rows }
   }
 
