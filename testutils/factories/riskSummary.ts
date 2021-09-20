@@ -28,4 +28,5 @@ export default Factory.define<RiskSummary>(() => ({
     natureOfRisk: 'physically aggressive',
     riskImminence: 'can happen at the drop of a hat',
   },
+  assessedOn: '2021-09-20T09:31:45.062Z',
 }))
