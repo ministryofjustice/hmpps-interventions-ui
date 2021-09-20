@@ -27,13 +27,14 @@ internal class CaseNoteEventPublisherTest {
 
     publisher.caseNoteSentEvent(caseNote)
 
-    val eventCaptor = argumentCaptor<CaseNoteEvent>()
+    val eventCaptor = argumentCaptor<CreateCaseNoteEvent>()
     verify(eventPublisher).publishEvent(eventCaptor.capture())
     val event = eventCaptor.firstValue
 
     assertThat(event.source).isSameAs(publisher)
-    assertThat(event.type).isSameAs(CaseNoteEventType.SENT)
-    assertThat(event.caseNote).isSameAs(caseNote)
+    assertThat(event.caseNoteId).isSameAs(caseNote.id)
+    assertThat(event.sentBy).isSameAs(caseNote.sentBy)
     assertThat(event.detailUrl).isEqualTo(uri.toString())
+    assertThat(event.referralId).isSameAs(caseNote.referral.id)
   }
 }

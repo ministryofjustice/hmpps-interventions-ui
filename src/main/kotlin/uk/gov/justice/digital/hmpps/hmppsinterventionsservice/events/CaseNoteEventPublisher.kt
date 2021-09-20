@@ -5,17 +5,16 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.CaseNoteController
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CaseNote
+import java.util.UUID
 
-enum class CaseNoteEventType {
-  SENT,
-}
-
-class CaseNoteEvent(
+class CreateCaseNoteEvent(
   source: Any,
-  val type: CaseNoteEventType,
-  val caseNote: CaseNote,
+  val caseNoteId: UUID,
+  val sentBy: AuthUser,
   val detailUrl: String,
+  val referralId: UUID,
 ) : ApplicationEvent(source)
 
 @Component
@@ -25,11 +24,12 @@ class CaseNoteEventPublisher(
 ) {
   fun caseNoteSentEvent(caseNote: CaseNote) {
     applicationEventPublisher.publishEvent(
-      CaseNoteEvent(
+      CreateCaseNoteEvent(
         this,
-        CaseNoteEventType.SENT,
-        caseNote,
-        caseNoteUrl(caseNote)
+        caseNote.id,
+        caseNote.sentBy,
+        caseNoteUrl(caseNote),
+        caseNote.referral.id,
       )
     )
   }

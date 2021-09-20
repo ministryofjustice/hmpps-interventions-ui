@@ -6,12 +6,15 @@ import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CaseNoteEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CaseNoteEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CreateCaseNoteEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CaseNote
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import java.util.UUID
+import javax.transaction.Transactional
 
 @Service
+@Transactional
 class CaseNotesNotificationsService(
   @Value("\${notify.templates.case-note-sent}") private val sentTemplate: String,
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
@@ -22,29 +25,21 @@ class CaseNotesNotificationsService(
   private val hmppsAuthService: HMPPSAuthService,
   private val userTypeChecker: UserTypeChecker,
   private val communityAPIOffenderService: CommunityAPIOffenderService,
-  private val caseNoteService: CaseNoteService,
-) : ApplicationListener<CaseNoteEvent>, NotifyService {
+) : ApplicationListener<CreateCaseNoteEvent>, NotifyService {
   companion object : KLogging()
 
   @AsyncEventExceptionHandling
-  override fun onApplicationEvent(event: CaseNoteEvent) {
-    when (event.type) {
-      CaseNoteEventType.SENT -> {
-        // get case note from repository because the linking objects (referral.currentAssignee) on the caseNote from the event
-        // may sometimes not be lazy loaded because the session may already have been closed by this point
-        caseNoteService.getCaseNoteById(event.caseNote.id)?.let { caseNote ->
-          emailAssignedCaseWorker(caseNote)
-          emailResponsibleProbationPractitioner(caseNote)
-        } ?: run {
-          throw RuntimeException("Unable to retrieve case note for id ${event.caseNote.id}")
-        }
-      }
+  override fun onApplicationEvent(event: CreateCaseNoteEvent) {
+    referralService.getSentReferralForUser(event.referralId, event.sentBy)?.let { referral ->
+      emailAssignedCaseWorker(referral, event.sentBy, event.caseNoteId)
+      emailResponsibleProbationPractitioner(referral, event.sentBy, event.caseNoteId)
+    } ?: run {
+      throw RuntimeException("Unable to retrieve referral for id ${event.referralId}")
     }
   }
 
-  private fun emailResponsibleProbationPractitioner(caseNote: CaseNote) {
-    val sender = caseNote.sentBy
-    val responsibleOfficer = referralService.getResponsibleProbationPractitioner(caseNote.referral)
+  private fun emailResponsibleProbationPractitioner(referral: Referral, sender: AuthUser, caseNoteId: UUID) {
+    val responsibleOfficer = referralService.getResponsibleProbationPractitioner(referral)
     val senderIsResponsibleOfficer =
       userTypeChecker.isProbationPractitionerUser(sender) &&
         (
@@ -57,33 +52,37 @@ class CaseNotesNotificationsService(
 
     // if the case note was sent by someone other than the RO, email the RO
     if (!senderIsResponsibleOfficer) {
+      logger.info("Sending email to ${responsibleOfficer.firstName}")
       emailSender.sendEmail(
         sentTemplate,
         responsibleOfficer.email,
         mapOf(
           "recipientFirstName" to responsibleOfficer.firstName,
-          "referralReference" to caseNote.referral.referenceNumber!!,
-          "caseNoteUrl" to generateResourceUrl(interventionsUIBaseURL, ppCaseNoteLocation, caseNote.id).toString(),
+          "referralReference" to referral.referenceNumber!!,
+          "caseNoteUrl" to generateResourceUrl(interventionsUIBaseURL, ppCaseNoteLocation, caseNoteId).toString(),
         )
       )
     }
   }
 
-  private fun emailAssignedCaseWorker(caseNote: CaseNote) {
-    caseNote.referral.currentAssignee?.let { assignee ->
-      val senderIsAssignee = caseNote.sentBy == assignee
+  private fun emailAssignedCaseWorker(referral: Referral, sender: AuthUser, caseNoteId: UUID) {
+    referral.currentAssignee?.let { assignee ->
+      logger.info("Current assignee is $assignee")
+      val senderIsAssignee = sender == assignee
 
       // if the case note was sent by someone other than the assignee, email the assignee
       if (!senderIsAssignee) {
         val assigneeDetails = hmppsAuthService.getUserDetail(assignee)
+
+        logger.info("Sending email to ${assigneeDetails.firstName}")
 
         emailSender.sendEmail(
           sentTemplate,
           assigneeDetails.email,
           mapOf(
             "recipientFirstName" to assigneeDetails.firstName,
-            "referralReference" to caseNote.referral.referenceNumber!!,
-            "caseNoteUrl" to generateResourceUrl(interventionsUIBaseURL, spCaseNoteLocation, caseNote.id).toString(),
+            "referralReference" to referral.referenceNumber!!,
+            "caseNoteUrl" to generateResourceUrl(interventionsUIBaseURL, spCaseNoteLocation, caseNoteId).toString(),
           )
         )
       }

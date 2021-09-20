@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CaseNoteEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CaseNoteEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CreateCaseNoteEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CaseNoteFactory
@@ -24,7 +23,6 @@ internal class CaseNotesNotificationsServiceTest {
   private val emailSender = mock<EmailSender>()
   private val hmppsAuthService = mock<HMPPSAuthService>()
   private val communityAPIOffenderService = mock<CommunityAPIOffenderService>()
-  private val caseNoteService = mock<CaseNoteService>()
 
   private val caseNotesNotificationsService = CaseNotesNotificationsService(
     "sent-template",
@@ -36,7 +34,6 @@ internal class CaseNotesNotificationsServiceTest {
     hmppsAuthService,
     UserTypeChecker(),
     communityAPIOffenderService,
-    caseNoteService,
   )
 
   private val authUserFactory = AuthUserFactory()
@@ -54,12 +51,13 @@ internal class CaseNotesNotificationsServiceTest {
     val sender = authUserFactory.createSP(id = "sp_sender")
     val referral = referralFactory.createAssigned()
     val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from sp", body = "body")
-    whenever(caseNoteService.getCaseNoteById(caseNote.id)).thenReturn(caseNote)
-    val eventRequiringSPNotification = CaseNoteEvent(
+    whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
+    val eventRequiringSPNotification = CreateCaseNoteEvent(
       "source",
-      CaseNoteEventType.SENT,
-      caseNote,
-      "detailUrl"
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      referral.id
     )
 
     caseNotesNotificationsService.onApplicationEvent(eventRequiringSPNotification)
@@ -96,12 +94,13 @@ internal class CaseNotesNotificationsServiceTest {
     val sender = authUserFactory.createPP(id = "pp_sender")
     val referral = referralFactory.createAssigned()
     val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from pp", body = "body")
-    whenever(caseNoteService.getCaseNoteById(caseNote.id)).thenReturn(caseNote)
-    val eventRequiringSPNotification = CaseNoteEvent(
+    whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
+    val eventRequiringSPNotification = CreateCaseNoteEvent(
       "source",
-      CaseNoteEventType.SENT,
-      caseNote,
-      "detailUrl"
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      referral.id
     )
 
     caseNotesNotificationsService.onApplicationEvent(eventRequiringSPNotification)
@@ -131,12 +130,13 @@ internal class CaseNotesNotificationsServiceTest {
 
     val referral = referralFactory.createAssigned()
     val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from pp", body = "body")
-    whenever(caseNoteService.getCaseNoteById(caseNote.id)).thenReturn(caseNote)
-    val eventRequiringSPNotification = CaseNoteEvent(
+    whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
+    val eventRequiringSPNotification = CreateCaseNoteEvent(
       "source",
-      CaseNoteEventType.SENT,
-      caseNote,
-      "detailUrl"
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      referral.id
     )
 
     caseNotesNotificationsService.onApplicationEvent(eventRequiringSPNotification)
@@ -165,12 +165,13 @@ internal class CaseNotesNotificationsServiceTest {
     val sender = authUserFactory.createSP(id = "sp_sender")
     val referral = referralFactory.createAssigned(assignments = listOf(ReferralAssignment(OffsetDateTime.now(), sender, sender)))
     val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from sp", body = "body")
-    whenever(caseNoteService.getCaseNoteById(caseNote.id)).thenReturn(caseNote)
-    val eventRequiringSPNotification = CaseNoteEvent(
+    whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
+    val eventRequiringSPNotification = CreateCaseNoteEvent(
       "source",
-      CaseNoteEventType.SENT,
-      caseNote,
-      "detailUrl"
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      referral.id
     )
 
     caseNotesNotificationsService.onApplicationEvent(eventRequiringSPNotification)
@@ -198,12 +199,13 @@ internal class CaseNotesNotificationsServiceTest {
 
     val sender = authUserFactory.createPP(id = "sender")
     val caseNote = caseNoteFactory.create(sentBy = sender, subject = "from pp", body = "body")
-    whenever(caseNoteService.getCaseNoteById(caseNote.id)).thenReturn(caseNote)
-    val event = CaseNoteEvent(
+    whenever(referralService.getSentReferralForUser(caseNote.referral.id, sender)).thenReturn(caseNote.referral)
+    val event = CreateCaseNoteEvent(
       "source",
-      CaseNoteEventType.SENT,
-      caseNote,
-      "detailUrl"
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      caseNote.referral.id
     )
 
     caseNotesNotificationsService.onApplicationEvent(event)
@@ -223,17 +225,18 @@ internal class CaseNotesNotificationsServiceTest {
   }
 
   @Test
-  fun `exception thrown if no case note found`() {
+  fun `exception thrown if no referral found`() {
     val sender = authUserFactory.createPP(id = "sender")
-    val caseNote = caseNoteFactory.create(UUID.fromString("e5274827-fcbc-4891-a68b-d9b4d3b59dab"), sentBy = sender, subject = "from pp", body = "body")
-    whenever(caseNoteService.getCaseNoteById(caseNote.id)).thenReturn(null)
-    val event = CaseNoteEvent(
+    val caseNote = caseNoteFactory.create(sentBy = sender, subject = "from pp", body = "body")
+    whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
+    val event = CreateCaseNoteEvent(
       "source",
-      CaseNoteEventType.SENT,
-      caseNote,
-      "detailUrl"
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      UUID.fromString("e5274827-fcbc-4891-a68b-d9b4d3b59dab")
     )
     var e = assertThrows<RuntimeException> { caseNotesNotificationsService.onApplicationEvent(event) }
-    Assertions.assertThat(e.message).contains("Unable to retrieve case note for id e5274827-fcbc-4891-a68b-d9b4d3b59dab")
+    Assertions.assertThat(e.message).contains("Unable to retrieve referral for id e5274827-fcbc-4891-a68b-d9b4d3b59dab")
   }
 }
