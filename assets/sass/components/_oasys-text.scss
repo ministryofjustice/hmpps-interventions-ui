@@ -1,0 +1,15 @@
+.app-oasys-text {
+  font-weight: bold;
+
+  &--red {
+    color: govuk-colour('red');
+  }
+
+  &--green {
+    color: govuk-colour('green');
+  }
+
+  &--dark-grey {
+    color: govuk-colour('dark-grey');
+  }
+}
