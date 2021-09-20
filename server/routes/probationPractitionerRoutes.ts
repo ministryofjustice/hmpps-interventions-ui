@@ -22,7 +22,11 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.showInterventionProgress(req, res)
   )
   get(router, '/referrals/:id/details', (req, res) => probationPractitionerReferralsController.showReferral(req, res))
+  // Legacy route to keep links in old emails still working. We'll monitor and remove once traffic drops off
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
+    probationPractitionerReferralsController.viewLegacySubmittedPostSessionFeedback(req, res)
+  )
+  get(router, '/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     probationPractitionerReferralsController.viewSubmittedPostSessionFeedback(req, res)
   )
   get(router, '/action-plan/:actionPlanId', (req, res) =>

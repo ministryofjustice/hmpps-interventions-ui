@@ -151,6 +151,54 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
   })
 })
 
+describe('GET /probation-practitioner/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', () => {
+  it('renders a page displaying feedback answers', async () => {
+    const actionPlanId = '05f39e99-b5c7-4a9b-a857-bec04a28eb34'
+    const referral = sentReferralFactory.assigned().build({ actionPlanId, assignedTo: { username: 'Kay.Swerker' } })
+    const submittedActionPlan = actionPlanFactory
+      .submitted()
+      .build({ id: actionPlanId, referralId: referral.id, numberOfSessions: 1 })
+    const serviceUser = deliusServiceUserFactory.build()
+
+    const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
+      sessionNumber: 1,
+      sessionFeedback: {
+        attendance: {
+          attended: 'yes',
+          additionalAttendanceInformation: 'They were early to the session',
+        },
+        behaviour: {
+          behaviourDescription: 'Alex was well-behaved',
+          notifyProbationPractitioner: false,
+        },
+        submitted: true,
+      },
+    })
+
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
+
+    await request(app)
+      .get(
+        `/probation-practitioner/referrals/${referral.id}/appointment/${appointmentWithSubmittedFeedback.sessionNumber}/post-session-feedback`
+      )
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('View feedback')
+        expect(res.text).toContain('Kay.Swerker')
+        expect(res.text).toContain('They were early to the session')
+        expect(res.text).toContain('Yes, they were on time')
+        expect(res.text).toContain('Alex was well-behaved')
+        expect(res.text).toContain('No')
+      })
+  })
+})
+
 describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', () => {
   it('renders a page displaying feedback answers', async () => {
     const actionPlanId = '05f39e99-b5c7-4a9b-a857-bec04a28eb34'
