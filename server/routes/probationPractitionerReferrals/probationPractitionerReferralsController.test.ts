@@ -245,70 +245,70 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
         expect(res.text).toContain('No')
       })
   })
+})
 
-  describe('GET /probation-practitioner/end-of-service-report/:id', () => {
-    it('renders a page with the contents of the end of service report', async () => {
-      const serviceCategory = serviceCategoryFactory.build()
-      const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
-      const referral = sentReferralFactory.build({
-        referral: {
-          serviceCategoryIds: [serviceCategory.id],
-          desiredOutcomes: [
-            { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
-          ],
-        },
-      })
-      const endOfServiceReport = endOfServiceReportFactory.build({
-        outcomes: [
-          {
-            desiredOutcome: serviceCategory.desiredOutcomes[0],
-            achievementLevel: 'ACHIEVED',
-            progressionComments: 'Some progression comments',
-            additionalTaskComments: 'Some task comments',
-          },
+describe('GET /probation-practitioner/end-of-service-report/:id', () => {
+  it('renders a page with the contents of the end of service report', async () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id],
+        desiredOutcomes: [
+          { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
         ],
-        furtherInformation: 'Some further information',
-      })
-      const deliusServiceUser = deliusServiceUserFactory.build()
-
-      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getIntervention.mockResolvedValue(intervention)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-
-      await request(app)
-        .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
-        .expect(200)
-        .expect(res => {
-          expect(res.text).toContain('Achieved')
-          expect(res.text).toContain(serviceCategory.desiredOutcomes[0].description)
-          expect(res.text).toContain('Some progression comments')
-          expect(res.text).toContain('Some task comments')
-          expect(res.text).toContain('Some further information')
-        })
+      },
     })
-
-    it('throws error if not all service categories were obtainable', async () => {
-      const serviceCategory = serviceCategoryFactory.build()
-      const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
-      const referral = sentReferralFactory.build({
-        referral: {
-          serviceCategoryIds: [serviceCategory.id, 'someOtherId'],
+    const endOfServiceReport = endOfServiceReportFactory.build({
+      outcomes: [
+        {
+          desiredOutcome: serviceCategory.desiredOutcomes[0],
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some task comments',
         },
-      })
-      const endOfServiceReport = endOfServiceReportFactory.build()
-      const deliusServiceUser = deliusServiceUserFactory.build()
-      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getIntervention.mockResolvedValue(intervention)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-      await request(app)
-        .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
-        .expect(500)
-        .expect(res => {
-          expect(res.text).toContain('Expected service categories are missing in intervention')
-        })
+      ],
+      furtherInformation: 'Some further information',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
+
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Achieved')
+        expect(res.text).toContain(serviceCategory.desiredOutcomes[0].description)
+        expect(res.text).toContain('Some progression comments')
+        expect(res.text).toContain('Some task comments')
+        expect(res.text).toContain('Some further information')
+      })
+  })
+
+  it('throws error if not all service categories were obtainable', async () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id, 'someOtherId'],
+      },
+    })
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    await request(app)
+      .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Expected service categories are missing in intervention')
+      })
   })
 })
 
