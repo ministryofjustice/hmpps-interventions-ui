@@ -52,7 +52,6 @@ class CaseNotesNotificationsService(
 
     // if the case note was sent by someone other than the RO, email the RO
     if (!senderIsResponsibleOfficer) {
-      logger.info("Sending email to ${responsibleOfficer.firstName}")
       emailSender.sendEmail(
         sentTemplate,
         responsibleOfficer.email,
@@ -67,14 +66,11 @@ class CaseNotesNotificationsService(
 
   private fun emailAssignedCaseWorker(referral: Referral, sender: AuthUser, caseNoteId: UUID) {
     referral.currentAssignee?.let { assignee ->
-      logger.info("Current assignee is $assignee")
       val senderIsAssignee = sender == assignee
 
       // if the case note was sent by someone other than the assignee, email the assignee
       if (!senderIsAssignee) {
         val assigneeDetails = hmppsAuthService.getUserDetail(assignee)
-
-        logger.info("Sending email to ${assigneeDetails.firstName}")
 
         emailSender.sendEmail(
           sentTemplate,
