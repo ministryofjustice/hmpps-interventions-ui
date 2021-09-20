@@ -1,0 +1,70 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Service user's risk information" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">OASys risk information</h1>
+
+        <p class="govuk-body">Latest assessment: {{ latestAssessment }} </p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">Who is at risk</h2>
+        {% if riskSummaryResponse.whoIsAtRisk %}
+            <p class="govuk-body {{riskSummaryResponse.whoIsAtRisk.class}}">{{ riskSummaryResponse.whoIsAtRisk.text }}</p>
+        {% endif %}
+        <p class="govuk-body">{{ riskSummary.whoIsAtRisk | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">What is the nature of the risk</h2>
+        {% if riskSummaryResponse.natureOfRisk %}
+            <p class="govuk-body {{riskSummaryResponse.natureOfRisk.class}}">{{ riskSummaryResponse.natureOfRisk.text }}</p>
+        {% endif %}
+        <p class="govuk-body">{{ riskSummary.natureOfRisk | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">When is the risk likely to be greatest</h2>
+        {% if riskSummaryResponse.riskImminence %}
+            <p class="govuk-body {{riskSummaryResponse.riskImminence.class}}">{{ riskSummaryResponse.riskImminence.text }}</p>
+        {% endif %}
+        <p class="govuk-body">{{ riskSummary.riskImminence | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to self-harm</h2>
+        <p class="govuk-body {{ riskToSelfResponse.selfHarm.class }}"> {{ riskToSelfResponse.selfHarm.text }}</p>
+        <p class="govuk-body">{{ riskToSelf.selfHarm.currentConcernsText | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to suicide</h2>
+        <p class="govuk-body {{ riskToSelfResponse.suicide.class }}"> {{ riskToSelfResponse.suicide.text }}</p>
+        <p class="govuk-body">{{ riskToSelf.suicide.currentConcernsText | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to coping in a hostel setting</h2>
+        <p class="govuk-body {{ riskToSelfResponse.hostelSetting.class }}"> {{ riskToSelfResponse.hostelSetting.text }}</p>
+        <p class="govuk-body">{{ riskToSelf.hostelSetting.currentConcernsText | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to vulnerability</h2>
+        <p class="govuk-body {{ riskToSelfResponse.vulnerability.class }}"> {{ riskToSelfResponse.vulnerability.text }}</p>
+        <p class="govuk-body">{{ riskToSelf.vulnerability.currentConcernsText | escape | nl2br }}</p>
+        <hr/>
+
+        <h2 class="govuk-heading-m">Additional information</h2>
+        {% if additionalRiskInformationResponse %}
+            <p class="govuk-body {{additionalRiskInformationResponse.class}}">{{ additionalRiskInformationResponse.text }}</p>
+        {% endif %}
+        <p class="govuk-body">{{ additionalRiskInformation | escape | nl2br }}</p>
+    </div>
+  </div>
+{% endblock %}
