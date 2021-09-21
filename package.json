@@ -92,7 +92,7 @@
   "//": "tar is not a direct dependency of our project; we’ve only added it here to remove a security vulnerability introduced by a transitive dependency. This should be removed; see IC-2177",
   "dependencies": {
     "@ministryofjustice/frontend": "0.2.6",
-    "@sentry/node": "^6.12.0",
+    "@sentry/node": "^6.13.1",
     "@types/connect-flash": "0.0.37",
     "@types/uuid": "^8.3.1",
     "agentkeepalive": "^4.1.3",
