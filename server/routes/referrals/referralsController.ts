@@ -46,6 +46,9 @@ import EnforceableDaysPresenter from './enforceable-days/enforceableDaysPresente
 import EnforceableDaysView from './enforceable-days/enforceableDaysView'
 import RiskInformationForm from './risk-information/riskInformationForm'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
+import OasysRiskInformationPresenter from './risk-information/oasys/view/oasysRiskInformationPresenter'
+import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInformationView'
+import config from '../../config'
 
 export default class ReferralsController {
   constructor(
@@ -494,8 +497,14 @@ export default class ReferralsController {
       this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
     ])
 
-    const presenter = new RiskInformationPresenter(referral, riskSummary)
-    const view = new RiskInformationView(presenter)
+    let view
+    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled && riskSummary) {
+      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      view = new OasysRiskInformationView(presenter)
+    } else {
+      const presenter = new RiskInformationPresenter(referral)
+      view = new RiskInformationView(presenter)
+    }
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -526,12 +535,9 @@ export default class ReferralsController {
         res.locals.user.token.accessToken,
         req.params.id
       )
-      const [serviceUser, riskSummary] = await Promise.all([
-        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-        this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
-      ])
 
-      const presenter = new RiskInformationPresenter(referral, riskSummary, error, req.body)
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+      const presenter = new RiskInformationPresenter(referral, error, req.body)
       const view = new RiskInformationView(presenter)
 
       res.status(400)
