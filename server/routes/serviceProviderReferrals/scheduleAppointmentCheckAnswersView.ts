@@ -1,13 +1,16 @@
 import { BackLinkArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
+import ActionPlanSessionCheckAnswersPresenter from './actionPlanSessionCheckAnswersPresenter'
 import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
 
-export default class InitialAssessmentCheckAnswersView {
-  constructor(private readonly presenter: InitialAssessmentCheckAnswersPresenter) {}
+export default class ScheduleAppointmentCheckAnswersView {
+  constructor(
+    private readonly presenter: InitialAssessmentCheckAnswersPresenter | ActionPlanSessionCheckAnswersPresenter
+  ) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/initialAssessmentCheckAnswers',
+      'serviceProviderReferrals/scheduleAppointmentCheckAnswers',
       {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,

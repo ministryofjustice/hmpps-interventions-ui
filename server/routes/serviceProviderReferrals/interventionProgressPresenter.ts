@@ -104,7 +104,9 @@ export default class InterventionProgressPresenter {
     const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/appointment/${
       appointment.sessionNumber
     }/post-session-feedback`
-    const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${appointment.sessionNumber}/edit`
+    const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${
+      appointment.sessionNumber
+    }/edit/start`
     const giveFeedbackHref = `/service-provider/action-plan/${this.actionPlan?.id}/appointment/${appointment.sessionNumber}/post-session-feedback/attendance`
 
     let links: { text: string; href: string }[] = []

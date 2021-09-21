@@ -1,4 +1,4 @@
-import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
+import ActionPlanSessionCheckAnswersPresenter from './actionPlanSessionCheckAnswersPresenter'
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import { DraftAppointmentBooking } from './serviceProviderReferralsController'
 
@@ -11,11 +11,11 @@ const draftBookingFactory = createDraftFactory<DraftAppointmentBooking>({
   npsOfficeCode: null,
 })
 
-describe(InitialAssessmentCheckAnswersPresenter, () => {
+describe(ActionPlanSessionCheckAnswersPresenter, () => {
   describe('summary', () => {
     it('returns a summary of the draft booking', () => {
       const draft = draftBookingFactory.build()
-      const presenter = new InitialAssessmentCheckAnswersPresenter(draft, '1')
+      const presenter = new ActionPlanSessionCheckAnswersPresenter(draft, '1', 2)
 
       expect(presenter.summary).toEqual([
         { key: 'Date', lines: ['24 March 2021'] },
@@ -28,30 +28,26 @@ describe(InitialAssessmentCheckAnswersPresenter, () => {
   describe('backLinkHref', () => {
     it('returns the relative URL of the details page', () => {
       const draft = draftBookingFactory.build()
-      const presenter = new InitialAssessmentCheckAnswersPresenter(draft, '1')
+      const presenter = new ActionPlanSessionCheckAnswersPresenter(draft, '1', 2)
 
-      expect(presenter.backLinkHref).toEqual(
-        `/service-provider/referrals/1/supplier-assessment/schedule/${draft.id}/details`
-      )
+      expect(presenter.backLinkHref).toEqual(`/service-provider/action-plan/1/sessions/2/edit/${draft.id}/details`)
     })
   })
 
   describe('formAction', () => {
     it('returns the relative URL of the submit page', () => {
       const draft = draftBookingFactory.build()
-      const presenter = new InitialAssessmentCheckAnswersPresenter(draft, '1')
+      const presenter = new ActionPlanSessionCheckAnswersPresenter(draft, '1', 2)
 
-      expect(presenter.formAction).toEqual(
-        `/service-provider/referrals/1/supplier-assessment/schedule/${draft.id}/submit`
-      )
+      expect(presenter.formAction).toEqual(`/service-provider/action-plan/1/sessions/2/edit/${draft.id}/submit`)
     })
   })
 
   describe('title', () => {
     it('returns the page’s title', () => {
-      const presenter = new InitialAssessmentCheckAnswersPresenter(draftBookingFactory.build(), '1')
+      const presenter = new ActionPlanSessionCheckAnswersPresenter(draftBookingFactory.build(), '1', 2)
 
-      expect(presenter.title).toEqual('Confirm appointment details')
+      expect(presenter.title).toEqual('Confirm session 2 details')
     })
   })
 })

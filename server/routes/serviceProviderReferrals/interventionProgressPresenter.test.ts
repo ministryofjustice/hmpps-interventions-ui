@@ -126,7 +126,7 @@ describe(InterventionProgressPresenter, () => {
             statusPresenter: new SessionStatusPresenter(SessionStatus.notScheduled),
             links: [
               {
-                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
                 text: 'Edit session details',
               },
             ],
@@ -160,7 +160,7 @@ describe(InterventionProgressPresenter, () => {
             statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
             links: [
               {
-                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit',
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
                 text: 'Reschedule session',
               },
               {
