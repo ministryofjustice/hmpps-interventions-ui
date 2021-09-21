@@ -62,7 +62,7 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `create unscheduled sessions creates one for each action plan session`() {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 3)
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(eq(actionPlan.id), any())).thenReturn(null)
+    whenever(actionPlanSessionRepository.findByReferralIdAndSessionNumber(eq(actionPlan.referral.id), any())).thenReturn(null)
     whenever(authUserRepository.save(actionPlan.createdBy)).thenReturn(actionPlan.createdBy)
     whenever(actionPlanSessionRepository.save(any())).thenAnswer { it.arguments[0] }
 
@@ -74,7 +74,7 @@ internal class ActionPlanSessionsServiceTest {
   fun `create unscheduled sessions throws exception if session already exists`() {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 1)
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlan.id, 1))
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlan.id, 1))
       .thenReturn(actionPlanSessionFactory.createUnscheduled(sessionNumber = 1))
 
     assertThrows(EntityExistsException::class.java) {
@@ -85,11 +85,11 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `updates a session appointment for an unscheduled session`() {
     val session = actionPlanSessionFactory.createUnscheduled()
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
     val sessionNumber = session.sessionNumber
     val user = createActor("scheduler")
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
     val appointmentTime = OffsetDateTime.now()
@@ -116,11 +116,11 @@ internal class ActionPlanSessionsServiceTest {
     val originalTime = OffsetDateTime.now()
     val originalDuration = 60
     val session = actionPlanSessionFactory.createScheduled(appointmentTime = originalTime, durationInMinutes = originalDuration)
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
     val sessionNumber = session.sessionNumber
     val user = createActor("re-scheduler")
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
     val newTime = OffsetDateTime.now()
@@ -145,9 +145,9 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `makes a booking when a session is updated`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
     val sessionNumber = session.sessionNumber
-    val referral = session.actionPlan.referral
+    val referral = session.referral
     val createdByUser = createActor("scheduler")
     val appointmentTime = OffsetDateTime.now()
     val durationInMinutes = 15
@@ -162,7 +162,7 @@ internal class ActionPlanSessionsServiceTest {
         null
       )
     ).thenReturn(999L)
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
       .thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
@@ -197,9 +197,9 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `does not make a booking when a session is updated because timings aren't present`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
     val sessionNumber = session.sessionNumber
-    val referral = session.actionPlan.referral
+    val referral = session.referral
     val createdByUser = createActor("scheduler")
     val appointmentTime = OffsetDateTime.now()
     val durationInMinutes = 15
@@ -214,7 +214,7 @@ internal class ActionPlanSessionsServiceTest {
         null
       )
     ).thenReturn(null)
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
     actionPlanSessionsService.updateSessionAppointment(
@@ -243,7 +243,7 @@ internal class ActionPlanSessionsServiceTest {
     val appointmentTime = OffsetDateTime.now()
     val durationInMinutes = 15
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(null)
+    whenever(actionPlanSessionRepository.findByReferralIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(null)
 
     val exception = assertThrows(EntityNotFoundException::class.java) {
       actionPlanSessionsService.updateSessionAppointment(
@@ -257,7 +257,7 @@ internal class ActionPlanSessionsServiceTest {
         null
       )
     }
-    assertThat(exception.message).isEqualTo("Action plan session not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+    assertThat(exception.message).isEqualTo("Action plan session not found [actionPlanId=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 
   @Test
@@ -265,11 +265,10 @@ internal class ActionPlanSessionsServiceTest {
     val time = OffsetDateTime.now()
     val duration = 500
     val session = actionPlanSessionFactory.createScheduled(sessionNumber = 1, appointmentTime = time, durationInMinutes = duration)
-    val actionPlanId = session.actionPlan.id
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
+    whenever(actionPlanSessionRepository.findByReferralIdAndSessionNumber(session.referral.id, 1)).thenReturn(session)
 
-    val actualSession = actionPlanSessionsService.getSession(actionPlanId, 1)
+    val actualSession = actionPlanSessionsService.getSession(session.referral.id, 1)
 
     assertThat(actualSession.sessionNumber).isEqualTo(1)
     assertThat(actualSession.currentAppointment?.appointmentTime).isEqualTo(time)
@@ -278,15 +277,15 @@ internal class ActionPlanSessionsServiceTest {
 
   @Test
   fun `gets a session and throws exception if it not exists`() {
-    val actionPlanId = UUID.randomUUID()
+    val referralId = UUID.randomUUID()
     val sessionNumber = 1
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(null)
+    whenever(actionPlanSessionRepository.findByReferralIdAndSessionNumber(referralId, sessionNumber)).thenReturn(null)
 
     val exception = assertThrows(EntityNotFoundException::class.java) {
-      actionPlanSessionsService.getSession(actionPlanId, sessionNumber)
+      actionPlanSessionsService.getSession(referralId, sessionNumber)
     }
-    assertThat(exception.message).isEqualTo("Action plan session not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+    assertThat(exception.message).isEqualTo("Action plan session not found [referralId=$referralId, sessionNumber=$sessionNumber]")
   }
 
   @Test
@@ -294,11 +293,11 @@ internal class ActionPlanSessionsServiceTest {
     val time = OffsetDateTime.now()
     val duration = 500
     val session = actionPlanSessionFactory.createScheduled(sessionNumber = 1, appointmentTime = time, durationInMinutes = duration)
-    val actionPlanId = session.actionPlan.id
+    val referralId = UUID.randomUUID()
 
-    whenever(actionPlanSessionRepository.findAllByActionPlanId(actionPlanId)).thenReturn(listOf(session))
+    whenever(actionPlanSessionRepository.findAllByReferralId(referralId)).thenReturn(listOf(session))
 
-    val sessions = actionPlanSessionsService.getSessions(actionPlanId)
+    val sessions = actionPlanSessionsService.getSessions(referralId)
 
     assertThat(sessions.first().sessionNumber).isEqualTo(1)
     assertThat(sessions.first().currentAppointment?.appointmentTime).isEqualTo(time)
@@ -311,9 +310,9 @@ internal class ActionPlanSessionsServiceTest {
     val additionalInformation = "extra info"
 
     val existingSession = actionPlanSessionFactory.createScheduled(sessionNumber = 1)
-    val actionPlanId = existingSession.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1))
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1))
       .thenReturn(existingSession)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(existingSession)
 
@@ -337,7 +336,7 @@ internal class ActionPlanSessionsServiceTest {
     val attended = Attended.YES
     val additionalInformation = "extra info"
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber))
       .thenReturn(null)
 
     val actor = createActor()
@@ -345,17 +344,18 @@ internal class ActionPlanSessionsServiceTest {
       actionPlanSessionsService.recordAppointmentAttendance(actor, actionPlanId, 1, attended, additionalInformation)
     }
 
-    assertThat(exception.message).isEqualTo("Action plan session not found [id=$actionPlanId, sessionNumber=$sessionNumber]")
+    assertThat(exception.message).isEqualTo("Action plan session not found [actionPlanId=$actionPlanId, sessionNumber=$sessionNumber]")
   }
 
   @Test
   fun `updating session behaviour sets relevant fields`() {
+    val actionPlanId = UUID.randomUUID()
     val session = actionPlanSessionFactory.createScheduled()
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(any(), any())).thenReturn(session)
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(any(), any())).thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
     val actor = createActor("behaviour_submitter")
-    val updatedSession = actionPlanSessionsService.recordBehaviour(actor, session.actionPlan.id, 1, "not good", false)
+    val updatedSession = actionPlanSessionsService.recordBehaviour(actor, actionPlanId, 1, "not good", false)
 
     verify(actionPlanSessionRepository, times(1)).save(session)
     assertThat(updatedSession).isSameAs(session)
@@ -368,7 +368,7 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `updating session behaviour for missing session throws error`() {
     val actor = createActor()
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(any(), any())).thenReturn(null)
+    whenever(actionPlanSessionRepository.findByReferralIdAndSessionNumber(any(), any())).thenReturn(null)
 
     assertThrows(EntityNotFoundException::class.java) {
       actionPlanSessionsService.recordBehaviour(actor, UUID.randomUUID(), 1, "not good", false)
@@ -378,9 +378,9 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `session feedback cant be submitted more than once`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
 
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
     val actor = createActor()
@@ -397,10 +397,10 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `session feedback can't be submitted without attendance`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
 
     val actor = createActor()
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
 
     actionPlanSessionsService.recordBehaviour(actor, actionPlanId, 1, "bad", false)
@@ -414,8 +414,8 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `session feedback can be submitted and stores time and actor`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
       session
     )
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
@@ -444,15 +444,15 @@ internal class ActionPlanSessionsServiceTest {
   fun `session feedback emits application events`() {
     val user = createActor()
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
       session
     )
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
     actionPlanSessionsService.recordAppointmentAttendance(user, actionPlanId, 1, Attended.YES, "")
     actionPlanSessionsService.recordBehaviour(user, actionPlanId, 1, "bad", true)
 
-    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.actionPlan.createdBy)
+    actionPlanSessionsService.submitSessionFeedback(actionPlanId, 1, session.referral.createdBy)
     verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
     verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(session, true)
     verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, true)
@@ -462,8 +462,8 @@ internal class ActionPlanSessionsServiceTest {
   fun `attendance can't be updated once session feedback has been submitted`() {
     val user = createActor()
     val session = actionPlanSessionFactory.createAttended()
-    val actionPlanId = session.actionPlan.id
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
 
     assertThrows(ResponseStatusException::class.java) {
       actionPlanSessionsService.recordAppointmentAttendance(user, actionPlanId, 1, Attended.YES, "")
@@ -474,8 +474,8 @@ internal class ActionPlanSessionsServiceTest {
   fun `behaviour can't be updated once session feedback has been submitted`() {
     val user = createActor()
     val session = actionPlanSessionFactory.createAttended()
-    val actionPlanId = session.actionPlan.id
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(session)
 
     assertThrows(ResponseStatusException::class.java) {
       actionPlanSessionsService.recordBehaviour(user, actionPlanId, 1, "bad", false)
@@ -485,8 +485,8 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `session feedback can be submitted when session not attended`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
       session
     )
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
@@ -503,8 +503,8 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `session feedback can be submitted when session is attended and there is no behaviour feedback`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
+    val actionPlanId = UUID.randomUUID()
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, 1)).thenReturn(
       session
     )
     whenever(actionPlanSessionRepository.save(any())).thenReturn(session)
@@ -521,10 +521,10 @@ internal class ActionPlanSessionsServiceTest {
   @Test
   fun `makes a booking with delius office location`() {
     val session = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = session.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
     val sessionNumber = session.sessionNumber
-    val referral = session.actionPlan.referral
-    val createdByUser = session.actionPlan.createdBy
+    val referral = session.referral
+    val createdByUser = session.referral.createdBy
     val appointmentTime = OffsetDateTime.now()
     val durationInMinutes = 15
     val npsOfficeCode = "CRS0001"
@@ -539,7 +539,7 @@ internal class ActionPlanSessionsServiceTest {
         npsOfficeCode
       )
     ).thenReturn(999L)
-    whenever(actionPlanSessionRepository.findByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(
+    whenever(actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(
       session
     )
     whenever(authUserRepository.save(createdByUser)).thenReturn(createdByUser)

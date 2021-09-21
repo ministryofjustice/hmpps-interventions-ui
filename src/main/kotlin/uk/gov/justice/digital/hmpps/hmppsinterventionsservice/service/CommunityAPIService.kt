@@ -201,20 +201,20 @@ class CommunityAPIActionPlanAppointmentEventService(
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(ppSessionFeedbackLocation)
-          .buildAndExpand(event.actionPlanSession.actionPlan.id, event.actionPlanSession.sessionNumber)
+          .buildAndExpand(event.actionPlanSession.referral.id, event.actionPlanSession.sessionNumber)
           .toString()
 
         val appointment = event.actionPlanSession.currentAppointment!!
         val notifyPP = setNotifyPPIfRequired(appointment)
 
         val request = AppointmentOutcomeRequest(
-          getNotes(event.actionPlanSession.actionPlan.referral, url, "Session Feedback Recorded"),
+          getNotes(event.actionPlanSession.referral, url, "Session Feedback Recorded"),
           appointment.attended!!.name,
           notifyPP
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
-          .buildAndExpand(event.actionPlanSession.actionPlan.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
+          .buildAndExpand(event.actionPlanSession.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)
@@ -227,7 +227,7 @@ class CommunityAPIActionPlanAppointmentEventService(
 @Service
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
-  @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSessionFeedbackLocation: String,
+  @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,

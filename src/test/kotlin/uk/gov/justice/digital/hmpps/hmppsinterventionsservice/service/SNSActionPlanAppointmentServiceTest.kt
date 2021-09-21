@@ -22,16 +22,18 @@ internal class SNSActionPlanAppointmentServiceTest {
   private val publisher = mock<SNSPublisher>()
   private val snsAppointmentService = SNSActionPlanAppointmentService(publisher)
 
+  private val referralFactory = ReferralFactory()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val actionPlan = ActionPlanFactory().create(
-    referral = ReferralFactory().createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"))
+    referral = referralFactory.createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"))
   )
   private val now = OffsetDateTime.now()
   private fun attendanceRecordedEvent(attendance: Attended) = ActionPlanAppointmentEvent(
     "source",
     ActionPlanAppointmentEventType.ATTENDANCE_RECORDED,
     actionPlanSessionFactory.createAttended(
-      actionPlan = actionPlan,
+      referral = referralFactory.createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"),
+        actionPlans = mutableListOf(actionPlan)),
       createdBy = actionPlan.createdBy,
       attended = attendance,
       attendanceSubmittedAt = now,

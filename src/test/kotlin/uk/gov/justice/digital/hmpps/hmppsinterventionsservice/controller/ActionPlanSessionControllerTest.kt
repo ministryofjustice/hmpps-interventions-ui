@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
@@ -21,15 +22,17 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFacto
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.time.OffsetDateTime
+import java.util.*
 
 internal class ActionPlanSessionControllerTest {
   private val sessionsService = mock<ActionPlanSessionsService>()
   private val locationMapper = mock<LocationMapper>()
   private val appointmentValidator = mock<AppointmentValidator>()
   private val authUserRepository = mock<AuthUserRepository>()
+  private val actionPlanService = mock<ActionPlanService>()
   private val userMapper = UserMapper(authUserRepository)
 
-  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper, appointmentValidator)
+  private val sessionsController = ActionPlanSessionController(actionPlanService, sessionsService, locationMapper, userMapper, appointmentValidator)
   private val actionPlanFactory = ActionPlanFactory()
   private val actionPlanSessionFactory = ActionPlanSessionFactory()
   private val jwtTokenFactory = JwtTokenFactory()
@@ -40,7 +43,7 @@ internal class ActionPlanSessionControllerTest {
     val user = authUserFactory.create()
     val userToken = jwtTokenFactory.create(user)
     val actionPlanSession = actionPlanSessionFactory.createScheduled(createdBy = user)
-    val actionPlanId = actionPlanSession.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
     val sessionNumber = actionPlanSession.sessionNumber
 
     val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null)
@@ -70,11 +73,13 @@ internal class ActionPlanSessionControllerTest {
     fun `gets a session`() {
       val actionPlanSession = actionPlanSessionFactory.createScheduled()
       val sessionNumber = actionPlanSession.sessionNumber
-      val actionPlanId = actionPlanSession.actionPlan.id
+      val actionPlanId = UUID.randomUUID()
+      val actionPlan = actionPlanFactory.create(referral = actionPlanSession.referral)
 
-      whenever(sessionsService.getSession(actionPlanId, sessionNumber)).thenReturn(actionPlanSession)
+      whenever(actionPlanService.getActionPlan(actionPlanId)).thenReturn(actionPlan)
+      whenever(sessionsService.getSession(actionPlanSession.referral.id, sessionNumber)).thenReturn(actionPlanSession)
 
-      val sessionResponse = sessionsController.getSession(actionPlanId, sessionNumber)
+      val sessionResponse = sessionsController.getSessionForActionPlanId(actionPlanId, sessionNumber)
 
       assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
     }
@@ -83,11 +88,13 @@ internal class ActionPlanSessionControllerTest {
   @Test
   fun `gets a list of sessions`() {
     val actionPlanSession = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = actionPlanSession.actionPlan.id
+    val actionPlanId = UUID.randomUUID()
+    val actionPlan = actionPlanFactory.create(referral = actionPlanSession.referral)
 
-    whenever(sessionsService.getSessions(actionPlanId)).thenReturn(listOf(actionPlanSession))
+    whenever(actionPlanService.getActionPlan(actionPlanId)).thenReturn(actionPlan)
+    whenever(sessionsService.getSessions(actionPlanSession.referral.id)).thenReturn(listOf(actionPlanSession))
 
-    val sessionsResponse = sessionsController.getSessions(actionPlanId)
+    val sessionsResponse = sessionsController.getSessionsForActionPlan(actionPlanId)
 
     assertThat(sessionsResponse.size).isEqualTo(1)
     assertThat(sessionsResponse.first()).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
@@ -102,7 +109,6 @@ internal class ActionPlanSessionControllerTest {
     val sessionNumber = 1
 
     val updatedSession = actionPlanSessionFactory.createAttended(
-      actionPlan = actionPlan,
       sessionNumber = sessionNumber,
       attended = Attended.YES,
       additionalAttendanceInformation = "more info"

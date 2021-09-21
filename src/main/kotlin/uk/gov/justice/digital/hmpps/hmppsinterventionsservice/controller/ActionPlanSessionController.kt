@@ -13,12 +13,14 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSess
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.util.UUID
 
 @RestController
 class ActionPlanSessionController(
+  val actionPlanService: ActionPlanService,
   val actionPlanSessionsService: ActionPlanSessionsService,
   val locationMapper: LocationMapper,
   val userMapper: UserMapper,
@@ -48,21 +50,33 @@ class ActionPlanSessionController(
   }
 
   @GetMapping("/action-plan/{id}/appointments")
-  fun getSessions(
+  fun getSessionsForActionPlan(
     @PathVariable(name = "id") actionPlanId: UUID
   ): List<ActionPlanSessionDTO> {
 
-    val actionPlanSessions = actionPlanSessionsService.getSessions(actionPlanId)
+    val actionPlan = actionPlanService.getActionPlan(actionPlanId)
+    val actionPlanSessions = actionPlanSessionsService.getSessions(actionPlan.referral.id)
     return ActionPlanSessionDTO.from(actionPlanSessions)
   }
 
   @GetMapping("/action-plan/{id}/appointments/{sessionNumber}")
-  fun getSession(
+  fun getSessionForActionPlanId(
     @PathVariable(name = "id") actionPlanId: UUID,
     @PathVariable sessionNumber: Int,
   ): ActionPlanSessionDTO {
 
-    val actionPlanSession = actionPlanSessionsService.getSession(actionPlanId, sessionNumber)
+    val actionPlan = actionPlanService.getActionPlan(actionPlanId)
+    val actionPlanSession = actionPlanSessionsService.getSession(actionPlan.referral.id, sessionNumber)
+    return ActionPlanSessionDTO.from(actionPlanSession)
+  }
+
+  @GetMapping("/referral/{id}/sessions/{sessionNumber}")
+  fun getSessionForReferralId(
+    @PathVariable(name = "id") referralId: UUID,
+    @PathVariable sessionNumber: Int,
+  ): ActionPlanSessionDTO {
+
+    val actionPlanSession = actionPlanSessionsService.getSession(referralId, sessionNumber)
     return ActionPlanSessionDTO.from(actionPlanSession)
   }
 

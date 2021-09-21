@@ -117,12 +117,12 @@ class NotifyActionPlanAppointmentService(
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     if (event.notifyPP) {
-      val referral = event.actionPlanSession.actionPlan.referral
+      val referral = event.actionPlanSession.referral
       val recipient = referralService.getResponsibleProbationPractitioner(referral)
       val location = generateResourceUrl(
         interventionsUIBaseURL,
         ppSessionFeedbackLocation,
-        event.actionPlanSession.actionPlan.id,
+        event.actionPlanSession.referral.id,
         event.actionPlanSession.sessionNumber,
       )
 

@@ -22,9 +22,8 @@ data class ActionPlanSession(
   @NotNull @OneToMany @Fetch(FetchMode.JOIN) val appointments: MutableSet<Appointment> = mutableSetOf(),
   @NotNull val sessionNumber: Int,
 
-  @NotNull @ManyToOne val actionPlan: ActionPlan,
+  @ManyToOne val referral: Referral,
   @Id val id: UUID,
-  @ManyToOne val referral: Referral?,
 ) {
   // this class is designed to allow multiple appointments per session,
   // however this functionality is not currently used. to make life

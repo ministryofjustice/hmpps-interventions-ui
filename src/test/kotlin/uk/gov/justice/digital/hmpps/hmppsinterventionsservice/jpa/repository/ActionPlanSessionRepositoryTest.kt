@@ -23,7 +23,6 @@ class ActionPlanSessionRepositoryTest @Autowired constructor(
 ) {
   private val authUserFactory = AuthUserFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
-  private val actionPlanFactory = ActionPlanFactory(entityManager)
   private val actionPlanSessionFactory = ActionPlanSessionFactory(entityManager)
 
   @BeforeEach
@@ -43,8 +42,7 @@ class ActionPlanSessionRepositoryTest @Autowired constructor(
   fun `can retrieve an action plan session`() {
     val user = authUserFactory.create(id = "referral_repository_test_user_id")
     val referral = referralFactory.createDraft(createdBy = user)
-    val actionPlan = actionPlanFactory.create(referral = referral)
-    val actionPlanSession = actionPlanSessionFactory.createScheduled(actionPlan = actionPlan)
+    val actionPlanSession = actionPlanSessionFactory.createScheduled(referral = referral)
 
     entityManager.flush()
     entityManager.clear()
