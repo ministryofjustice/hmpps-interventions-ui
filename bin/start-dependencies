@@ -1,0 +1,25 @@
+#!/bin/sh -e
+compose_network="hmpps-interventions-ui_hmpps"
+
+echo
+docker compose up -d community-api
+docker run --rm --network="$compose_network" jwilder/dockerize \
+  -wait tcp://community-api:8080 \
+  -wait-retry-interval 5s \
+  -timeout 360s
+
+echo
+docker compose up -d hmpps-auth
+docker run --rm --network="$compose_network" jwilder/dockerize \
+  -wait tcp://hmpps-auth:8090 \
+  -wait-retry-interval 5s \
+  -timeout 360s
+
+echo
+docker compose up -d
+docker run --rm --network="$compose_network" jwilder/dockerize \
+  -wait tcp://interventions-service:8080 \
+  -wait tcp://assess-risks-and-needs:8080 \
+  -wait tcp://offender-assessments-api:8080 \
+  -wait-retry-interval 5s \
+  -timeout 360s

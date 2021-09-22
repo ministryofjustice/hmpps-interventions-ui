@@ -27,7 +27,7 @@ You'll also need to add the following line to your `/etc/hosts` file:
 ### Running the app
 
 ```
-docker-compose up -d
+bin/start-dependencies
 npm run start:dev
 ```
 
