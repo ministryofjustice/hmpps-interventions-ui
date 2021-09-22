@@ -19,6 +19,7 @@ class DeliverySessionRepositoryTest @Autowired constructor(
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
   val endOfServiceReportRepository: EndOfServiceReportRepository,
+  val supplierAssessmentRepository: SupplierAssessmentRepository
 ) {
   private val authUserFactory = AuthUserFactory(entityManager)
   private val referralFactory = ReferralFactory(entityManager)
@@ -26,15 +27,18 @@ class DeliverySessionRepositoryTest @Autowired constructor(
 
   @BeforeEach
   fun setup() {
+    supplierAssessmentRepository.deleteAll()
     deliverySessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
+    referralRepository.deleteAll()
 
     entityManager.flush()
 
-    referralRepository.deleteAll()
     interventionRepository.deleteAll()
     authUserRepository.deleteAll()
+
+    entityManager.flush()
   }
 
   @Test

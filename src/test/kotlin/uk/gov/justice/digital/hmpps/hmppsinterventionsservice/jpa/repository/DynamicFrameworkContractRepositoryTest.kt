@@ -27,7 +27,6 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
 
   @BeforeEach
   fun setup() {
-
     appointmentRepository.deleteAll()
     deliverySessionRepository.deleteAll()
     actionPlanRepository.deleteAll()

@@ -17,8 +17,8 @@ import javax.validation.constraints.NotNull
 data class DeliverySession(
 
   @JoinTable(
-    name = "action_plan_session_appointment",
-    joinColumns = [JoinColumn(name = "action_plan_session_id")],
+    name = "delivery_session_appointment",
+    joinColumns = [JoinColumn(name = "delivery_session_id")],
     inverseJoinColumns = [JoinColumn(name = "appointment_id")]
   )
   @NotNull @OneToMany @Fetch(FetchMode.JOIN) val appointments: MutableSet<Appointment> = mutableSetOf(),
