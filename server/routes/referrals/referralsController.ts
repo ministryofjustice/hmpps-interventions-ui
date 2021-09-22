@@ -49,6 +49,8 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import OasysRiskInformationPresenter from './risk-information/oasys/view/oasysRiskInformationPresenter'
 import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInformationView'
 import config from '../../config'
+import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
+import { RestClientError } from '../../data/restClient'
 
 export default class ReferralsController {
   constructor(
@@ -497,9 +499,24 @@ export default class ReferralsController {
       this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
     ])
 
+    let supplementaryRiskInformation: SupplementaryRiskInformation | null
+    try {
+      supplementaryRiskInformation = await this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(
+        referral.serviceUser.crn,
+        res.locals.user.token.accessToken
+      )
+    } catch (e) {
+      const restClientError = e as RestClientError
+      if (restClientError.status === 404) {
+        supplementaryRiskInformation = null
+      } else {
+        throw e
+      }
+    }
+
     let view
     if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled && riskSummary) {
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
       view = new OasysRiskInformationView(presenter)
     } else {
       const presenter = new RiskInformationPresenter(referral)
