@@ -108,7 +108,7 @@ export default class ActionPlanPresenter {
   }
 
   get showCreateNewActionPlanVersionButton(): boolean {
-    if (config.features.previouslyApprovedActionPlans.enabled) {
+    if (config.features.previouslyApprovedActionPlans) {
       return this.userType === 'service-provider' && this.actionPlanSummaryPresenter.actionPlanApproved
     }
 

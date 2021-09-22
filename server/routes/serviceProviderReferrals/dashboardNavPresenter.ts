@@ -13,7 +13,7 @@ export default class DashboardNavPresenter {
       },
     ]
 
-    if (config.features.serviceProviderReporting.enabled) {
+    if (config.features.serviceProviderReporting) {
       // TODO: do we need to restrict this to only SP managers?
       items.push({
         text: 'Reporting',

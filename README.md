@@ -105,6 +105,17 @@ git-lfs may conflict with any local git hooks you may have configured, so if you
 
 See https://git-lfs.github.com/ for more information.
 
+### Feature flags
+
+Any features or behaviour that isn't ready to be interacted with by users should be placed behind a config-based feature flag, configured in `server/config.ts`, e.g. as below:
+```
+features: {
+  previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
+}
+```
+
+You can then set whether the feature should be enabled in the config for each environment in the respective `helm_deploy/values-[ENVIRONMENT].yaml` file.
+
 ## Dependencies
 
 - hmpps-auth - for authentication
