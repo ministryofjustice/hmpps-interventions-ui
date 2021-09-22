@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -23,7 +23,7 @@ internal class SNSActionPlanAppointmentServiceTest {
   private val snsAppointmentService = SNSActionPlanAppointmentService(publisher)
 
   private val referralFactory = ReferralFactory()
-  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val deliverySessionFactory = DeliverySessionFactory()
   private val actionPlan = ActionPlanFactory().create(
     referral = referralFactory.createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"))
   )
@@ -31,9 +31,11 @@ internal class SNSActionPlanAppointmentServiceTest {
   private fun attendanceRecordedEvent(attendance: Attended) = ActionPlanAppointmentEvent(
     "source",
     ActionPlanAppointmentEventType.ATTENDANCE_RECORDED,
-    actionPlanSessionFactory.createAttended(
-      referral = referralFactory.createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"),
-        actionPlans = mutableListOf(actionPlan)),
+    deliverySessionFactory.createAttended(
+      referral = referralFactory.createSent(
+        id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"),
+        actionPlans = mutableListOf(actionPlan)
+      ),
       createdBy = actionPlan.createdBy,
       attended = attendance,
       attendanceSubmittedAt = now,

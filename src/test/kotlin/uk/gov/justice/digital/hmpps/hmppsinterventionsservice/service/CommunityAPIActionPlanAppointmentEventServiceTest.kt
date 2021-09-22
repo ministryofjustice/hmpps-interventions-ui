@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attende
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.YES
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -22,7 +22,7 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
 
   private val communityAPIClient = mock<CommunityAPIClient>()
 
-  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val deliverySessionFactory = DeliverySessionFactory()
   private val referralFactory = ReferralFactory()
   private val actionPlanFactory = ActionPlanFactory()
 
@@ -37,9 +37,9 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   @Test
   fun `notifies community-api of late attended appointment outcome`() {
 
-    appointmentEvent.actionPlanSession.referral.referenceNumber = "X123456"
-    appointmentEvent.actionPlanSession.currentAppointment!!.attended = LATE
-    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
+    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
+    appointmentEvent.deliverySession.currentAppointment!!.attended = LATE
+    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
 
     communityAPIService.onApplicationEvent(appointmentEvent)
 
@@ -49,9 +49,9 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   @Test
   fun `notifies community-api of attended appointment outcome`() {
 
-    appointmentEvent.actionPlanSession.referral.referenceNumber = "X123456"
-    appointmentEvent.actionPlanSession.currentAppointment!!.attended = YES
-    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
+    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
+    appointmentEvent.deliverySession.currentAppointment!!.attended = YES
+    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
 
     communityAPIService.onApplicationEvent(appointmentEvent)
 
@@ -61,9 +61,9 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   @Test
   fun `notifies community-api of non attended appointment outcome and notify PP set is always set`() {
 
-    appointmentEvent.actionPlanSession.referral.referenceNumber = "X123456"
-    appointmentEvent.actionPlanSession.currentAppointment!!.attended = NO
-    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
+    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
+    appointmentEvent.deliverySession.currentAppointment!!.attended = NO
+    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
 
     communityAPIService.onApplicationEvent(appointmentEvent)
 
@@ -73,9 +73,9 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   @Test
   fun `notifies community-api of appointment outcome with notify PP set`() {
 
-    appointmentEvent.actionPlanSession.referral.referenceNumber = "X123456"
-    appointmentEvent.actionPlanSession.currentAppointment!!.attended = YES
-    appointmentEvent.actionPlanSession.currentAppointment!!.notifyPPOfAttendanceBehaviour = true
+    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
+    appointmentEvent.deliverySession.currentAppointment!!.attended = YES
+    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = true
 
     communityAPIService.onApplicationEvent(appointmentEvent)
 
@@ -85,7 +85,7 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   private fun verifyNotification(attended: String, notifyPP: Boolean) {
     val urlCaptor = argumentCaptor<String>()
     val payloadCaptor = argumentCaptor<Any>()
-    val referralId = appointmentEvent.actionPlanSession.referral.id
+    val referralId = appointmentEvent.deliverySession.referral.id
     verify(communityAPIClient).makeAsyncPostRequest(urlCaptor.capture(), payloadCaptor.capture())
     assertThat(urlCaptor.firstValue).isEqualTo("/secure/offenders/crn/CRN123/appointments/123456/outcome/context/commissioned-rehabilitation-services")
     assertThat(payloadCaptor.firstValue.toString()).isEqualTo(
@@ -101,7 +101,7 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   private val appointmentEvent = ActionPlanAppointmentEvent(
     "source",
     SESSION_FEEDBACK_RECORDED,
-    actionPlanSessionFactory.createAttended(
+    deliverySessionFactory.createAttended(
       id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
       referral = referralFactory.createSent(serviceUserCRN = "CRN123", actionPlans = mutableListOf(actionPlanFactory.create())),
       sessionNumber = 1,

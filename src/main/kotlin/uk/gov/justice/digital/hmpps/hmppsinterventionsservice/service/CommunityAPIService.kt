@@ -201,20 +201,20 @@ class CommunityAPIActionPlanAppointmentEventService(
       SESSION_FEEDBACK_RECORDED -> {
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(ppSessionFeedbackLocation)
-          .buildAndExpand(event.actionPlanSession.referral.id, event.actionPlanSession.sessionNumber)
+          .buildAndExpand(event.deliverySession.referral.id, event.deliverySession.sessionNumber)
           .toString()
 
-        val appointment = event.actionPlanSession.currentAppointment!!
+        val appointment = event.deliverySession.currentAppointment!!
         val notifyPP = setNotifyPPIfRequired(appointment)
 
         val request = AppointmentOutcomeRequest(
-          getNotes(event.actionPlanSession.referral, url, "Session Feedback Recorded"),
+          getNotes(event.deliverySession.referral, url, "Session Feedback Recorded"),
           appointment.attended!!.name,
           notifyPP
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
-          .buildAndExpand(event.actionPlanSession.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
+          .buildAndExpand(event.deliverySession.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)

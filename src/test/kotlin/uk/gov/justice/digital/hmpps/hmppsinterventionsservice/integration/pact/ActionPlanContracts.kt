@@ -15,7 +15,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   fun `create an empty action plan with 1 appointment that has had attendance recorded`() {
     val referral = setupAssistant.createSentReferral()
     setupAssistant.createActionPlan(id = UUID.fromString("81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d"), numberOfSessions = 1, referral = referral)
-    setupAssistant.createActionPlanSession(
+    setupAssistant.createDeliverySession(
       1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"),
       Attended.LATE, "Alex missed the bus",
       referral = referral
@@ -29,9 +29,9 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
   fun `create a submitted action plan with 3 appointments`() {
     val referral = setupAssistant.createSentReferral()
     setupAssistant.createActionPlan(id = UUID.fromString("e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d"), numberOfSessions = 3, referral = referral)
-    setupAssistant.createActionPlanSession(1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL, referral = referral)
-    setupAssistant.createActionPlanSession(2, 120, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"), appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL, referral = referral)
-    setupAssistant.createActionPlanSession(3, 120, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"), appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL, referral = referral)
+    setupAssistant.createDeliverySession(1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"), appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL, referral = referral)
+    setupAssistant.createDeliverySession(2, 120, OffsetDateTime.parse("2021-05-20T13:30:00+01:00"), appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL, referral = referral)
+    setupAssistant.createDeliverySession(3, 120, OffsetDateTime.parse("2021-05-27T13:30:00+01:00"), appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL, referral = referral)
   }
 
   @State(
@@ -52,7 +52,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       county = "Lancashire",
       postCode = "SY40RE",
     )
-    setupAssistant.createActionPlanSession(
+    setupAssistant.createDeliverySession(
       1,
       120,
       OffsetDateTime.parse("2021-05-13T12:30:00+00:00"),
@@ -61,7 +61,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       appointmentSessionType = AppointmentSessionType.GROUP,
       referral = referral
     )
-    setupAssistant.createActionPlanSession(
+    setupAssistant.createDeliverySession(
       2,
       120,
       OffsetDateTime.parse("2021-05-13T12:30:00+00:00"),
@@ -150,7 +150,7 @@ class ActionPlanContracts(private val setupAssistant: SetupAssistant) {
       referral = referral
     )
 
-    setupAssistant.createActionPlanSession(
+    setupAssistant.createDeliverySession(
       1, 120, OffsetDateTime.parse("2021-05-13T13:30:00+01:00"),
       Attended.LATE, "Alex missed the bus",
       behaviour = "Alex was well behaved",

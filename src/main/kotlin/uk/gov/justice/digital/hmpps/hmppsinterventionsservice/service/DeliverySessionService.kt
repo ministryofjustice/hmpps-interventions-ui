@@ -6,7 +6,7 @@ import org.springframework.web.server.ResponseStatusException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import java.time.OffsetDateTime
@@ -25,8 +25,8 @@ import javax.transaction.Transactional
 
 @Service
 @Transactional
-class ActionPlanSessionsService(
-  val actionPlanSessionRepository: ActionPlanSessionRepository,
+class DeliverySessionService(
+  val deliverySessionRepository: DeliverySessionRepository,
   val actionPlanRepository: ActionPlanRepository,
   val authUserRepository: AuthUserRepository,
   val actionPlanAppointmentEventPublisher: ActionPlanAppointmentEventPublisher,
@@ -44,17 +44,17 @@ class ActionPlanSessionsService(
   private fun createSession(
     actionPlan: ActionPlan,
     sessionNumber: Int,
-  ): ActionPlanSession {
+  ): DeliverySession {
     val actionPlanId = actionPlan.id
     checkSessionIsNotDuplicate(actionPlanId, sessionNumber)
 
-    val session = ActionPlanSession(
+    val session = DeliverySession(
       id = UUID.randomUUID(),
       sessionNumber = sessionNumber,
       referral = actionPlan.referral,
     )
 
-    return actionPlanSessionRepository.save(session)
+    return deliverySessionRepository.save(session)
   }
 
   fun updateSessionAppointment(
@@ -67,9 +67,9 @@ class ActionPlanSessionsService(
     appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
-  ): ActionPlanSession {
+  ): DeliverySession {
 
-    val session = getActionPlanSessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
+    val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
 
     // TODO: Some code duplication here with AppointmentService.kt
@@ -101,7 +101,7 @@ class ActionPlanSessionsService(
       appointmentRepository.saveAndFlush(existingAppointment)
       appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     }
-    return actionPlanSessionRepository.save(session)
+    return deliverySessionRepository.save(session)
   }
 
   fun recordAppointmentAttendance(
@@ -110,8 +110,8 @@ class ActionPlanSessionsService(
     sessionNumber: Int,
     attended: Attended,
     additionalInformation: String?
-  ): ActionPlanSession {
-    val session = getActionPlanSessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
+  ): DeliverySession {
+    val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val appointment = session.currentAppointment
       ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't record appointment attendance; no appointments have been booked for this session")
 
@@ -120,7 +120,7 @@ class ActionPlanSessionsService(
     }
 
     setAttendanceFields(appointment, attended, additionalInformation, actor)
-    return actionPlanSessionRepository.save(session)
+    return deliverySessionRepository.save(session)
   }
 
   fun recordBehaviour(
@@ -129,8 +129,8 @@ class ActionPlanSessionsService(
     sessionNumber: Int,
     behaviourDescription: String,
     notifyProbationPractitioner: Boolean,
-  ): ActionPlanSession {
-    val session = getActionPlanSessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
+  ): DeliverySession {
+    val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val appointment = session.currentAppointment
       ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't record appointment behaviour; no appointments have been booked for this session")
 
@@ -140,11 +140,11 @@ class ActionPlanSessionsService(
 
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, actor)
     appointmentRepository.save(appointment)
-    return actionPlanSessionRepository.save(session)
+    return deliverySessionRepository.save(session)
   }
 
-  fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): ActionPlanSession {
-    val session = getActionPlanSessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
+  fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): DeliverySession {
+    val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val appointment = session.currentAppointment
 
     if (appointment?.appointmentFeedbackSubmittedAt != null) {
@@ -157,7 +157,7 @@ class ActionPlanSessionsService(
 
     appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
-    actionPlanSessionRepository.save(session)
+    deliverySessionRepository.save(session)
 
     actionPlanAppointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)
 
@@ -169,12 +169,12 @@ class ActionPlanSessionsService(
     return session
   }
 
-  fun getSessions(referralId: UUID): List<ActionPlanSession> {
-    return actionPlanSessionRepository.findAllByReferralId(referralId)
+  fun getSessions(referralId: UUID): List<DeliverySession> {
+    return deliverySessionRepository.findAllByReferralId(referralId)
   }
 
-  fun getSession(referralId: UUID, sessionNumber: Int): ActionPlanSession {
-    return getActionPlanSessionOrThrowException(referralId, sessionNumber)
+  fun getSession(referralId: UUID, sessionNumber: Int): DeliverySession {
+    return getDeliverySessionOrThrowException(referralId, sessionNumber)
   }
 
   private fun setAttendanceFields(
@@ -202,22 +202,22 @@ class ActionPlanSessionsService(
   }
 
   private fun checkSessionIsNotDuplicate(actionPlanId: UUID, sessionNumber: Int) {
-    getActionPlanSessionByActionPlanId(actionPlanId, sessionNumber)?.let {
+    getDeliverySessionByActionPlanId(actionPlanId, sessionNumber)?.let {
       throw EntityExistsException("Action plan session already exists for [id=$actionPlanId, sessionNumber=$sessionNumber]")
     }
   }
 
-  private fun getActionPlanSessionOrThrowException(referralId: UUID, sessionNumber: Int): ActionPlanSession =
-    getActionPlanSession(referralId, sessionNumber)
+  private fun getDeliverySessionOrThrowException(referralId: UUID, sessionNumber: Int): DeliverySession =
+    getDeliverySession(referralId, sessionNumber)
       ?: throw EntityNotFoundException("Action plan session not found [referralId=$referralId, sessionNumber=$sessionNumber]")
 
-  private fun getActionPlanSession(referralId: UUID, sessionNumber: Int) =
-    actionPlanSessionRepository.findByReferralIdAndSessionNumber(referralId, sessionNumber)
+  private fun getDeliverySession(referralId: UUID, sessionNumber: Int) =
+    deliverySessionRepository.findByReferralIdAndSessionNumber(referralId, sessionNumber)
 
-  private fun getActionPlanSessionByActionPlanIdOrThrowException(actionPlanId: UUID, sessionNumber: Int): ActionPlanSession =
-    getActionPlanSessionByActionPlanId(actionPlanId, sessionNumber)
+  private fun getDeliverySessionByActionPlanIdOrThrowException(actionPlanId: UUID, sessionNumber: Int): DeliverySession =
+    getDeliverySessionByActionPlanId(actionPlanId, sessionNumber)
       ?: throw EntityNotFoundException("Action plan session not found [actionPlanId=$actionPlanId, sessionNumber=$sessionNumber]")
 
-  private fun getActionPlanSessionByActionPlanId(actionPlanId: UUID, sessionNumber: Int) =
-    actionPlanSessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
+  private fun getDeliverySessionByActionPlanId(actionPlanId: UUID, sessionNumber: Int) =
+    deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
 }

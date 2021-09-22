@@ -10,7 +10,7 @@ interface ActionPlanRepository : JpaRepository<ActionPlan, UUID> {
   fun findAllByReferralIdAndApprovedAtIsNotNull(referralId: UUID): List<ActionPlan>
 
   @Query(
-    "select count(sesh) from ActionPlanSession sesh join sesh.appointments appt " +
+    "select count(sesh) from DeliverySession sesh join sesh.appointments appt " +
       "where sesh.referral.id = :referralId and appt.attended is not null " +
       "and appt.appointmentFeedbackSubmittedAt is not null"
   )

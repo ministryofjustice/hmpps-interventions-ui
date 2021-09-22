@@ -9,9 +9,9 @@ import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 
 class ActionPlanServiceIntegrationTest @Autowired constructor(
   val actionPlanValidator: ActionPlanValidator,
@@ -27,8 +27,8 @@ class ActionPlanServiceIntegrationTest @Autowired constructor(
       actionPlanRepository,
       this.actionPlanValidator,
       mock<ActionPlanEventPublisher>(),
-      mock<ActionPlanSessionsService>(),
-      mock<ActionPlanSessionRepository>(),
+      mock<DeliverySessionService>(),
+      mock<DeliverySessionRepository>(),
     )
   }
 

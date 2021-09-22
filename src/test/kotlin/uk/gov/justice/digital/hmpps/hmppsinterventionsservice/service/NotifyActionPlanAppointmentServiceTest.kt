@@ -16,21 +16,21 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class NotifyActionPlanAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
   private val referralService = mock<ReferralService>()
-  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val deliverySessionFactory = DeliverySessionFactory()
   private val actionPlanFactory = ActionPlanFactory()
 
   private fun appointmentEvent(type: ActionPlanAppointmentEventType, notifyPP: Boolean): ActionPlanAppointmentEvent {
     return ActionPlanAppointmentEvent(
       "source",
       type,
-      actionPlanSessionFactory.createAttended(
+      deliverySessionFactory.createAttended(
         id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
         referral = SampleData.sampleReferral(
           "X123456",

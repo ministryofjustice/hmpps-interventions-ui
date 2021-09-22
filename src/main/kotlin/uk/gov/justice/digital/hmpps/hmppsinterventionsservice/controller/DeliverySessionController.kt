@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.util.UUID
 
 @RestController
-class ActionPlanSessionController(
+class DeliverySessionController(
   val actionPlanService: ActionPlanService,
-  val actionPlanSessionsService: ActionPlanSessionsService,
+  val deliverySessionService: DeliverySessionService,
   val locationMapper: LocationMapper,
   val userMapper: UserMapper,
   val appointmentValidator: AppointmentValidator,
@@ -32,10 +32,10 @@ class ActionPlanSessionController(
     @PathVariable sessionNumber: Int,
     @RequestBody updateAppointmentDTO: UpdateAppointmentDTO,
     authentication: JwtAuthenticationToken,
-  ): ActionPlanSessionDTO {
+  ): DeliverySessionDTO {
     val user = userMapper.fromToken(authentication)
     appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
-    val actionPlanSession = actionPlanSessionsService.updateSessionAppointment(
+    val deliverySession = deliverySessionService.updateSessionAppointment(
       actionPlanId,
       sessionNumber,
       updateAppointmentDTO.appointmentTime,
@@ -46,38 +46,38 @@ class ActionPlanSessionController(
       updateAppointmentDTO.appointmentDeliveryAddress,
       updateAppointmentDTO.npsOfficeCode,
     )
-    return ActionPlanSessionDTO.from(actionPlanSession)
+    return DeliverySessionDTO.from(deliverySession)
   }
 
   @GetMapping("/action-plan/{id}/appointments")
   fun getSessionsForActionPlan(
     @PathVariable(name = "id") actionPlanId: UUID
-  ): List<ActionPlanSessionDTO> {
+  ): List<DeliverySessionDTO> {
 
     val actionPlan = actionPlanService.getActionPlan(actionPlanId)
-    val actionPlanSessions = actionPlanSessionsService.getSessions(actionPlan.referral.id)
-    return ActionPlanSessionDTO.from(actionPlanSessions)
+    val deliverySessions = deliverySessionService.getSessions(actionPlan.referral.id)
+    return DeliverySessionDTO.from(deliverySessions)
   }
 
   @GetMapping("/action-plan/{id}/appointments/{sessionNumber}")
   fun getSessionForActionPlanId(
     @PathVariable(name = "id") actionPlanId: UUID,
     @PathVariable sessionNumber: Int,
-  ): ActionPlanSessionDTO {
+  ): DeliverySessionDTO {
 
     val actionPlan = actionPlanService.getActionPlan(actionPlanId)
-    val actionPlanSession = actionPlanSessionsService.getSession(actionPlan.referral.id, sessionNumber)
-    return ActionPlanSessionDTO.from(actionPlanSession)
+    val deliverySession = deliverySessionService.getSession(actionPlan.referral.id, sessionNumber)
+    return DeliverySessionDTO.from(deliverySession)
   }
 
   @GetMapping("/referral/{id}/sessions/{sessionNumber}")
   fun getSessionForReferralId(
     @PathVariable(name = "id") referralId: UUID,
     @PathVariable sessionNumber: Int,
-  ): ActionPlanSessionDTO {
+  ): DeliverySessionDTO {
 
-    val actionPlanSession = actionPlanSessionsService.getSession(referralId, sessionNumber)
-    return ActionPlanSessionDTO.from(actionPlanSession)
+    val deliverySession = deliverySessionService.getSession(referralId, sessionNumber)
+    return DeliverySessionDTO.from(deliverySession)
   }
 
   @PostMapping("/action-plan/{id}/appointment/{sessionNumber}/record-attendance")
@@ -86,13 +86,13 @@ class ActionPlanSessionController(
     @PathVariable sessionNumber: Int,
     @RequestBody update: UpdateAppointmentAttendanceDTO,
     authentication: JwtAuthenticationToken,
-  ): ActionPlanSessionDTO {
+  ): DeliverySessionDTO {
     val user = userMapper.fromToken(authentication)
-    val updatedSession = actionPlanSessionsService.recordAppointmentAttendance(
+    val updatedSession = deliverySessionService.recordAppointmentAttendance(
       user, actionPlanId, sessionNumber, update.attended, update.additionalAttendanceInformation
     )
 
-    return ActionPlanSessionDTO.from(updatedSession)
+    return DeliverySessionDTO.from(updatedSession)
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/record-behaviour")
@@ -101,12 +101,12 @@ class ActionPlanSessionController(
     @PathVariable sessionNumber: Int,
     @RequestBody recordBehaviourDTO: RecordAppointmentBehaviourDTO,
     authentication: JwtAuthenticationToken
-  ): ActionPlanSessionDTO {
+  ): DeliverySessionDTO {
     val user = userMapper.fromToken(authentication)
-    val updatedSession = actionPlanSessionsService.recordBehaviour(
+    val updatedSession = deliverySessionService.recordBehaviour(
       user, actionPlanId, sessionNumber, recordBehaviourDTO.behaviourDescription, recordBehaviourDTO.notifyProbationPractitioner
     )
-    return ActionPlanSessionDTO.from(updatedSession)
+    return DeliverySessionDTO.from(updatedSession)
   }
 
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/submit")
@@ -114,8 +114,8 @@ class ActionPlanSessionController(
     @PathVariable actionPlanId: UUID,
     @PathVariable sessionNumber: Int,
     authentication: JwtAuthenticationToken,
-  ): ActionPlanSessionDTO {
+  ): DeliverySessionDTO {
     val user = userMapper.fromToken(authentication)
-    return ActionPlanSessionDTO.from(actionPlanSessionsService.submitSessionFeedback(actionPlanId, sessionNumber, user))
+    return DeliverySessionDTO.from(deliverySessionService.submitSessionFeedback(actionPlanId, sessionNumber, user))
   }
 }

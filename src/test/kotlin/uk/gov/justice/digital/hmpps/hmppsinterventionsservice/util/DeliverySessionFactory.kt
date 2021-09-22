@@ -1,15 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
+class DeliverySessionFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val referralFactory = ReferralFactory(em)
   private val appointmentFactory = AppointmentFactory(em)
 
@@ -17,9 +16,9 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     id: UUID = UUID.randomUUID(),
     referral: Referral = referralFactory.createSent(),
     sessionNumber: Int = 1,
-  ): ActionPlanSession {
+  ): DeliverySession {
     return save(
-      ActionPlanSession(
+      DeliverySession(
         id = id,
         referral = referral,
         sessionNumber = sessionNumber,
@@ -37,7 +36,7 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     appointmentTime: OffsetDateTime = OffsetDateTime.now().plusMonths(1),
     durationInMinutes: Int = 120,
     deliusAppointmentId: Long? = null,
-  ): ActionPlanSession {
+  ): DeliverySession {
     val appointment = appointmentFactory.create(
       createdBy = createdBy,
       createdAt = createdAt,
@@ -48,7 +47,7 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     )
 
     return save(
-      ActionPlanSession(
+      DeliverySession(
         id = id,
         referral = referral,
         sessionNumber = sessionNumber,
@@ -72,7 +71,7 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     notifyPPOfAttendanceBehaviour: Boolean? = false,
     appointmentFeedbackSubmittedAt: OffsetDateTime? = attendanceSubmittedAt,
     appointmentFeedbackSubmittedBy: AuthUser? = createdBy,
-  ): ActionPlanSession {
+  ): DeliverySession {
     val appointment = appointmentFactory.create(
       createdBy = createdBy,
       createdAt = createdAt,
@@ -88,7 +87,7 @@ class ActionPlanSessionFactory(em: TestEntityManager? = null) : EntityFactory(em
     )
 
     return save(
-      ActionPlanSession(
+      DeliverySession(
         id = id,
         referral = referral,
         sessionNumber = sessionNumber,

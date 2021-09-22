@@ -9,10 +9,12 @@ import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Entity
-data class ActionPlanSession(
+@Table(name = "delivery_session")
+data class DeliverySession(
 
   @JoinTable(
     name = "action_plan_session_appointment",

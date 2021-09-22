@@ -5,7 +5,7 @@ import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
@@ -70,7 +70,7 @@ class SetupAssistant(
   private val referralRepository: ReferralRepository,
   private val interventionRepository: InterventionRepository,
   private val actionPlanRepository: ActionPlanRepository,
-  private val actionPlanSessionRepository: ActionPlanSessionRepository,
+  private val deliverySessionRepository: DeliverySessionRepository,
   private val serviceCategoryRepository: ServiceCategoryRepository,
   private val serviceProviderRepository: ServiceProviderRepository,
   private val npsRegionRepository: NPSRegionRepository,
@@ -105,7 +105,7 @@ class SetupAssistant(
   fun cleanAll() {
     // order of cleanup is important here to avoid breaking foreign key constraints
     caseNoteRepository.deleteAll()
-    actionPlanSessionRepository.deleteAll()
+    deliverySessionRepository.deleteAll()
     supplierAssessmentRepository.deleteAll()
     actionPlanRepository.deleteAll()
 
@@ -417,7 +417,7 @@ class SetupAssistant(
     )
   }
 
-  fun createActionPlanSession(
+  fun createDeliverySession(
     sessionNumber: Int,
     duration: Int,
     appointmentTime: OffsetDateTime,
@@ -429,7 +429,7 @@ class SetupAssistant(
     appointmentSessionType: AppointmentSessionType = AppointmentSessionType.ONE_TO_ONE,
     appointmentDeliveryAddress: AddressDTO? = null,
     referral: Referral = createSentReferral()
-  ): ActionPlanSession {
+  ): DeliverySession {
     val now = OffsetDateTime.now()
     val user = createSPUser()
     val appointment = appointmentFactory.create(
@@ -465,13 +465,13 @@ class SetupAssistant(
         appointmentDeliveryAddressRepository.save(appointmentDeliveryAddress)
       }
     }
-    val session = ActionPlanSession(
+    val session = DeliverySession(
       id = UUID.randomUUID(),
       sessionNumber = sessionNumber,
       appointments = mutableSetOf(appointment),
       referral = referral
     )
-    return actionPlanSessionRepository.save(session)
+    return deliverySessionRepository.save(session)
   }
 
   fun fillReferralFields(

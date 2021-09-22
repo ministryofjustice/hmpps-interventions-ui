@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProvid
 class DynamicFrameworkContractRepositoryTest @Autowired constructor(
   val entityManager: TestEntityManager,
   val actionPlanRepository: ActionPlanRepository,
-  val actionPlanSessionRepository: ActionPlanSessionRepository,
+  val deliverySessionRepository: DeliverySessionRepository,
   val interventionRepository: InterventionRepository,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
@@ -29,7 +29,7 @@ class DynamicFrameworkContractRepositoryTest @Autowired constructor(
   fun setup() {
 
     appointmentRepository.deleteAll()
-    actionPlanSessionRepository.deleteAll()
+    deliverySessionRepository.deleteAll()
     actionPlanRepository.deleteAll()
     endOfServiceReportRepository.deleteAll()
     supplierAssessmentRepository.deleteAll()

@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProviderSentReferralSummary
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
@@ -53,7 +53,7 @@ class ReferralService(
   val eventPublisher: ReferralEventPublisher,
   val referenceGenerator: ReferralReferenceGenerator,
   val cancellationReasonRepository: CancellationReasonRepository,
-  val actionPlanSessionRepository: ActionPlanSessionRepository,
+  val deliverySessionRepository: DeliverySessionRepository,
   val serviceCategoryRepository: ServiceCategoryRepository,
   val referralAccessChecker: ReferralAccessChecker,
   val userTypeChecker: UserTypeChecker,
