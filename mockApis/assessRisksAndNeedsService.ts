@@ -19,6 +19,22 @@ export default class AssessRisksAndNeedsServiceMocks {
     })
   }
 
+  stubGetSupplementaryRiskInformationForCrn = async (crn: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/risks/supplementary/crn/${crn}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubGetRiskSummary = async (crn: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
