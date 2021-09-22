@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration
 
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
@@ -59,6 +60,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.Random
 import java.util.UUID
+import javax.persistence.EntityManager
 
 // allows random selection of service category, region etc
 val random = Random()
@@ -96,6 +98,7 @@ class SetupAssistant(
   private val supplierAssessmentFactory = SupplierAssessmentFactory()
   private val serviceUserFactory = ServiceUserFactory()
   private val caseNoteFactory = CaseNoteFactory()
+
 
   val serviceCategories = serviceCategoryRepository.findAll().associateBy { it.name }
   val npsRegions = npsRegionRepository.findAll().associateBy { it.id }
