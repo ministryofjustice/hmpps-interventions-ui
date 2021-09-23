@@ -7,7 +7,7 @@ export default class ReportingView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/reporting',
+      'reporting/performanceReport/reportingForm',
       {
         presenter: this.presenter,
         fromDateInputArgs: this.fromDateInputArgs,

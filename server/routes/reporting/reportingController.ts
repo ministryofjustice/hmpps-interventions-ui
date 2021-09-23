@@ -63,7 +63,7 @@ export default class ReportingController {
 
     ControllerUtils.renderWithLayout(
       res,
-      { renderArgs: ['serviceProviderReferrals/performanceReportDownload', { downloadUrl, filename }] },
+      { renderArgs: ['reporting/performanceReport/performanceReportDownload', { downloadUrl, filename }] },
       null
     )
   }
