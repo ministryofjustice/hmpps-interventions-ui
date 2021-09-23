@@ -1,5 +1,5 @@
-import { DateInputArgs } from '../../utils/govukFrontendTypes'
-import ViewUtils from '../../utils/viewUtils'
+import { DateInputArgs } from '../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../utils/viewUtils'
 import ReportingPresenter from './reportingPresenter'
 
 export default class ReportingView {
