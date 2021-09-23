@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
-import S3 from 'aws-sdk/clients/s3'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import ActionPlan from '../../models/actionPlan'
@@ -73,16 +72,11 @@ import InitialAssessmentFeedbackConfirmationPresenter from '../appointments/feed
 import InitialAssessmentFeedbackConfirmationView from '../appointments/feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
 import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
-import ReportingPresenter from '../reporting/performanceReport/reportingPresenter'
-import ReportingView from '../reporting/performanceReport/reportingView'
-import ReportingForm from '../reporting/performanceReport/reportingForm'
-import PerformanceReportConfirmationView from '../reporting/performanceReport/confirmation/performanceReportConfirmationView'
 import DraftsService, { Draft } from '../../services/draftsService'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
-import config from '../../config'
 import AppointmentSummary from '../appointments/appointmentSummary'
 import ReferenceDataService from '../../services/referenceDataService'
 import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
@@ -99,8 +93,6 @@ export interface DraftAssignmentData {
 export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
 
 export default class ServiceProviderReferralsController {
-  s3Service: S3
-
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
 
   constructor(
@@ -111,7 +103,6 @@ export default class ServiceProviderReferralsController {
     private readonly draftsService: DraftsService,
     private readonly referenceDataService: ReferenceDataService
   ) {
-    this.s3Service = new S3(config.s3.service)
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
 
@@ -1552,57 +1543,6 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
     const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  async viewReporting(_req: Request, res: Response): Promise<void> {
-    const presenter = new ReportingPresenter()
-    const view = new ReportingView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
-  }
-
-  async createReport(req: Request, res: Response): Promise<void> {
-    const { accessToken } = res.locals.user.token
-
-    let userInputData: Record<string, unknown> | null = null
-    let formError: FormValidationError | null = null
-
-    const data = await new ReportingForm(req).data()
-
-    if (data.error) {
-      res.status(400)
-      formError = data.error
-      userInputData = req.body
-      const presenter = new ReportingPresenter(formError, userInputData)
-      const view = new ReportingView(presenter)
-      ControllerUtils.renderWithLayout(res, view, null)
-    } else {
-      await this.interventionsService.generateServiceProviderPerformanceReport(accessToken, data.value)
-      res.redirect('/service-provider/performance-report/confirmation')
-    }
-  }
-
-  async showPerformanceReportConfirmation(_req: Request, res: Response): Promise<void> {
-    const view = new PerformanceReportConfirmationView()
-    ControllerUtils.renderWithLayout(res, view, null)
-  }
-
-  async downloadPerformanceReport(req: Request, res: Response): Promise<void> {
-    const { filename } = req.query
-    if (!filename) {
-      throw createError(400, "required query parameter 'filename' missing")
-    }
-
-    const downloadUrl = this.s3Service.getSignedUrl('getObject', {
-      Bucket: config.s3.bucket.name,
-      Key: `reports/service-provider/performance/${filename}`,
-      Expires: 60 * 15, // 15 minutes - the page can load without the download starting
-    })
-
-    ControllerUtils.renderWithLayout(
-      res,
-      { renderArgs: ['serviceProviderReferrals/performanceReportDownload', { downloadUrl, filename }] },
-      null
-    )
   }
 
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
