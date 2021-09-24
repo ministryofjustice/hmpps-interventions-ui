@@ -111,7 +111,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken
     )
 
-    const presenter = new DashboardPresenter(referralsSummary)
+    const presenter = new DashboardPresenter(referralsSummary, 'All open cases')
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
