@@ -10,6 +10,31 @@ export default class DashboardView {
     return ViewUtils.sortableTable('serviceProviderDashboard', tableHeadings, tableRows)
   }
 
+  readonly subNavArgs = {
+    items: [
+      {
+        text: 'My cases',
+        href: `/service-provider/dashboard/my-cases`,
+        active: this.presenter.dashboardType === 'My cases',
+      },
+      {
+        text: 'All open cases',
+        href: `/service-provider/dashboard/all-open-cases`,
+        active: this.presenter.dashboardType === 'All open cases',
+      },
+      {
+        text: 'Unassigned cases',
+        href: `/service-provider/dashboard/unassigned-cases`,
+        active: this.presenter.dashboardType === 'Unassigned cases',
+      },
+      {
+        text: 'Completed cases',
+        href: `/service-provider/dashboard/completed-cases`,
+        active: this.presenter.dashboardType === 'Completed cases',
+      },
+    ],
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/dashboard',
@@ -17,6 +42,7 @@ export default class DashboardView {
         presenter: this.presenter,
         tableArgs: this.tableArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
+        subNavArgs: this.subNavArgs,
       },
     ]
   }

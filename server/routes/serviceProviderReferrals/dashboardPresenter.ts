@@ -9,7 +9,7 @@ export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' |
 export default class DashboardPresenter {
   constructor(
     private readonly referralsSummary: ServiceProviderSentReferralSummary[],
-    private readonly dashboardType: DashboardType
+    readonly dashboardType: DashboardType
   ) {}
 
   private readonly showAssignedCaseworkerColumn =
