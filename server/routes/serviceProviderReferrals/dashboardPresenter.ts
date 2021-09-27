@@ -15,6 +15,8 @@ export default class DashboardPresenter {
   private readonly showAssignedCaseworkerColumn =
     this.dashboardType === 'My cases' || this.dashboardType === 'Unassigned cases'
 
+  readonly title = this.dashboardType
+
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Date received', sort: 'none', persistentId: 'dateReceived' },
     { text: 'Referral', sort: 'none', persistentId: 'referenceNumber' },

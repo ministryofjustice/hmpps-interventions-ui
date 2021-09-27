@@ -195,8 +195,8 @@ describe('Service provider referrals dashboard', () => {
 
     cy.login()
 
-    cy.get('h1').contains('All cases')
-
+    cy.get('h1').contains('My cases')
+    cy.contains('All open cases').click()
     cy.get('table')
       .getTable()
       .should('deep.equal', [
@@ -354,6 +354,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Return to dashboard').click()
 
       cy.location('pathname').should('equal', `/service-provider/dashboard`)
+      cy.contains('All open cases').click()
       cy.contains('john.smith')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)

@@ -7,7 +7,7 @@ import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
 import CheckAssignmentView from './checkAssignmentView'
-import DashboardPresenter from './dashboardPresenter'
+import DashboardPresenter, { DashboardType } from './dashboardPresenter'
 import DashboardView from './dashboardView'
 import ShowReferralPresenter from '../shared/showReferralPresenter'
 import ShowReferralView from '../shared/showReferralView'
@@ -85,6 +85,7 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
 import ActionPlanSessionCheckAnswersPresenter from './actionPlanSessionCheckAnswersPresenter'
+import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -106,12 +107,56 @@ export default class ServiceProviderReferralsController {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
 
-  async showDashboard(req: Request, res: Response): Promise<void> {
+  async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
     const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
       res.locals.user.token.accessToken
     )
+    const filteredSummary = referralsSummary.filter(summary => {
+      return (
+        summary.assignedToUserName === res.locals.user.username &&
+        (summary.hasEndOfServiceReport === false || !summary.hasEndOfServiceReport)
+      )
+    })
 
-    const presenter = new DashboardPresenter(referralsSummary, 'All open cases')
+    this.renderDashboard(res, filteredSummary, 'My cases')
+  }
+
+  async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken
+    )
+    const openReferrals = referralsSummary.filter(summary => {
+      return summary.hasEndOfServiceReport === false || !summary.hasEndOfServiceReport
+    })
+    this.renderDashboard(res, openReferrals, 'All open cases')
+  }
+
+  async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken
+    )
+    const unassignedReferrals = referralsSummary.filter(summary => {
+      return !summary.assignedToUserName && (summary.hasEndOfServiceReport === false || !summary.hasEndOfServiceReport)
+    })
+    this.renderDashboard(res, unassignedReferrals, 'Unassigned cases')
+  }
+
+  async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken
+    )
+    const completedReferrals = referralsSummary.filter(summary => {
+      return summary.hasEndOfServiceReport === true
+    })
+    this.renderDashboard(res, completedReferrals, 'Completed cases')
+  }
+
+  private renderDashboard(
+    res: Response,
+    referralsSummary: ServiceProviderSentReferralSummary[],
+    dashboardType: DashboardType
+  ): void {
+    const presenter = new DashboardPresenter(referralsSummary, dashboardType)
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
