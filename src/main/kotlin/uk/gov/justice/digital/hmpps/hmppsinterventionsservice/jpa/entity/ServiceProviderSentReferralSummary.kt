@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
 import java.time.Instant
+import java.util.UUID
 
 interface ServiceProviderSentReferralSummary {
   val referralId: String
@@ -11,4 +12,5 @@ interface ServiceProviderSentReferralSummary {
   val assignedToUserName: String?
   val serviceUserFirstName: String?
   val serviceUserLastName: String?
+  val endOfServiceReportId: UUID?
 }
