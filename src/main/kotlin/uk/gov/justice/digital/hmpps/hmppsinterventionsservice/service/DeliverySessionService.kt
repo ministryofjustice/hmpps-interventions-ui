@@ -34,9 +34,9 @@ class DeliverySessionService(
   val appointmentService: AppointmentService,
   val appointmentRepository: AppointmentRepository,
 ) {
-  fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan) {
+  fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan, alreadyCreatedSessions: Int = 0) {
     val numberOfSessions = approvedActionPlan.numberOfSessions!!
-    for (i in 1..numberOfSessions) {
+    for (i in alreadyCreatedSessions + 1..numberOfSessions) {
       createSession(approvedActionPlan, i)
     }
   }

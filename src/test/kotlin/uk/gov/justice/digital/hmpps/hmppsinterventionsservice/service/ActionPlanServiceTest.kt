@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.same
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Des
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.Optional.empty
@@ -49,6 +51,7 @@ internal class ActionPlanServiceTest {
   private val referralFactory = ReferralFactory()
   private val actionPlanFactory = ActionPlanFactory()
   private val appointmentFactory = AppointmentFactory()
+  private val deliverySessionFactory = DeliverySessionFactory()
 
   private val actionPlanService = ActionPlanService(
     authUserRepository,
@@ -241,7 +244,29 @@ internal class ActionPlanServiceTest {
     assertThat(approvedActionPlan.approvedAt).isNotNull
     assertThat(approvedActionPlan.approvedBy).isEqualTo(authUser)
     verify(actionPlanEventPublisher).actionPlanApprovedEvent(same(actionPlan))
-    verify(deliverySessionService).createUnscheduledSessionsForActionPlan(same(actionPlan))
+    verify(deliverySessionService).createUnscheduledSessionsForActionPlan(same(actionPlan), same(0))
+  }
+
+  @Test
+  fun `approve when there is a previously approved action plan passess previous sessions`() {
+    val newActionPlanId = UUID.randomUUID()
+    val referral = referralFactory.createSent()
+    val previouslyApprovedActionPlan = actionPlanFactory.createApproved(numberOfSessions = 2, referral = referral)
+    val newActionPlan = actionPlanFactory.createSubmitted(id = newActionPlanId, numberOfSessions = 2, referral = referral)
+    referral.actionPlans = mutableListOf(previouslyApprovedActionPlan, newActionPlan)
+
+    val authUser = AuthUser("CRN123", "auth", "user")
+    whenever(actionPlanRepository.findById(newActionPlanId)).thenReturn(of(newActionPlan))
+    whenever(authUserRepository.save(any())).then(AdditionalAnswers.returnsFirstArg<AuthUser>())
+    whenever(actionPlanRepository.save(any())).then(AdditionalAnswers.returnsFirstArg<ActionPlan>())
+    whenever(deliverySessionRepository.findAllByActionPlanId(any())).thenReturn(listOf(deliverySessionFactory.createAttended(), deliverySessionFactory.createAttended()))
+
+    val approvedActionPlan = actionPlanService.approveActionPlan(newActionPlanId, authUser)
+    assertThat(approvedActionPlan.approvedAt).isNotNull
+    assertThat(approvedActionPlan.approvedBy).isEqualTo(authUser)
+    verify(actionPlanEventPublisher).actionPlanApprovedEvent(same(newActionPlan))
+    verify(deliverySessionService).createUnscheduledSessionsForActionPlan(same(newActionPlan), same(2))
+    verify(deliverySessionRepository, times(1)).findAllByActionPlanId(any())
   }
 
   @Test

@@ -71,6 +71,17 @@ internal class DeliverySessionsServiceTest {
   }
 
   @Test
+  fun `create unscheduled sessions where some sessions are already created`() {
+    val actionPlan = actionPlanFactory.create(numberOfSessions = 3)
+    whenever(deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(eq(actionPlan.id), any())).thenReturn(null)
+    whenever(authUserRepository.save(actionPlan.createdBy)).thenReturn(actionPlan.createdBy)
+    whenever(deliverySessionRepository.save(any())).thenAnswer { it.arguments[0] }
+
+    deliverySessionsService.createUnscheduledSessionsForActionPlan(actionPlan, 1)
+    verify(deliverySessionRepository, times(2)).save(any())
+  }
+
+  @Test
   fun `create unscheduled sessions throws exception if session already exists`() {
     val actionPlan = actionPlanFactory.create(numberOfSessions = 1)
 

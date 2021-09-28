@@ -91,10 +91,17 @@ class ActionPlanService(
 
   fun approveActionPlan(id: UUID, user: AuthUser): ActionPlan {
     val actionPlan = getActionPlan(id)
+
+    actionPlan.referral.approvedActionPlan?. let {
+      val sessions = deliverySessionRepository.findAllByActionPlanId(id)
+      deliverySessionService.createUnscheduledSessionsForActionPlan(actionPlan, sessions.count())
+    } ?: run {
+      deliverySessionService.createUnscheduledSessionsForActionPlan(actionPlan)
+    }
+
     actionPlan.approvedAt = OffsetDateTime.now()
     actionPlan.approvedBy = authUserRepository.save(user)
 
-    deliverySessionService.createUnscheduledSessionsForActionPlan(actionPlan)
     val approvedActionPlan = actionPlanRepository.save(actionPlan)
     actionPlanEventPublisher.actionPlanApprovedEvent(approvedActionPlan)
     return approvedActionPlan
