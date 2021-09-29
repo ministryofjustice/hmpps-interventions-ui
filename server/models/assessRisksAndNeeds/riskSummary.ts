@@ -24,5 +24,5 @@ export default interface RiskSummary {
     riskMitigationFactors?: string | null
     riskInCommunity: Partial<Record<RiskScore, string[]>>
   }
-  assessedOn: string
+  assessedOn?: string | null
 }

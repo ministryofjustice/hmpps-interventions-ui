@@ -9,6 +9,8 @@ export default class OasysRiskInformationPresenter {
   ) {}
 
   get latestAssessment(): string {
-    return DateUtils.formattedDate(this.riskSummary.assessedOn)
+    return this.riskSummary?.assessedOn
+      ? DateUtils.formattedDate(this.riskSummary.assessedOn, { month: 'long' })
+      : 'Assessment date not found'
   }
 }
