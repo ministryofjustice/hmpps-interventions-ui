@@ -1,0 +1,24 @@
+.refer-and-monitor-rosh-analysis-table {
+  border: 2px solid govuk-colour('red');
+  padding: 20px;
+
+
+  .last-updated {
+    color: $govuk-secondary-text-colour;
+    margin-bottom: 5px;
+  }
+}
+
+.rosh-header {
+  color: #942514;
+  margin-bottom: 0;
+}
+
+.rosh-header-low {
+  color: #485b10;
+  margin-bottom: 0;
+}
+
+.rosh-subheader {
+  margin-bottom: 10px;
+}
