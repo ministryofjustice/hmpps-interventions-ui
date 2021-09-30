@@ -1,15 +1,14 @@
 import OasysRiskInformationPresenter from './oasysRiskInformationPresenter'
-import draftReferralFactory from '../../../../../../testutils/factories/draftReferral'
 import riskSummaryFactory from '../../../../../../testutils/factories/riskSummary'
 import OasysRiskInformationView from './oasysRiskInformationView'
 import { Risk } from '../../../../../models/assessRisksAndNeeds/riskSummary'
+import supplementaryRiskInformationFactory from '../../../../../../testutils/factories/supplementaryRiskInformation'
 
 describe('OasysRiskInformationView', () => {
   describe('additionalRiskInformationResponse', () => {
     it('returns special content to display if no additional risk information has been provided', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
       const riskSummary = riskSummaryFactory.build()
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(null, riskSummary)
       const view = new OasysRiskInformationView(presenter)
       expect(view.renderArgs[1].additionalRiskInformationResponse).toHaveProperty('text', 'None')
     })
@@ -17,11 +16,11 @@ describe('OasysRiskInformationView', () => {
 
   describe('riskSummaryResponse', () => {
     it('returns correct response text when no null values provided ', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const riskSummary = riskSummaryFactory.build({
         summary: { whoIsAtRisk: null, natureOfRisk: null, riskImminence: null },
       })
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
       const view = new OasysRiskInformationView(presenter)
       expect(view.renderArgs[1].riskSummaryResponse).toEqual({
         whoIsAtRisk: expect.objectContaining({
@@ -37,11 +36,11 @@ describe('OasysRiskInformationView', () => {
     })
 
     it('returns correct response text when no values provided ', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const riskSummary = riskSummaryFactory.build({
         summary: { whoIsAtRisk: undefined, natureOfRisk: undefined, riskImminence: undefined },
       })
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
       const view = new OasysRiskInformationView(presenter)
       expect(view.renderArgs[1].riskSummaryResponse).toEqual({
         whoIsAtRisk: expect.objectContaining({
@@ -57,11 +56,11 @@ describe('OasysRiskInformationView', () => {
     })
 
     it('returns undefined when values are provided ', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const riskSummary = riskSummaryFactory.build({
         summary: { whoIsAtRisk: 'whoIsAtRisk', natureOfRisk: 'natureOfRisk', riskImminence: 'riskImminence' },
       })
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
       const view = new OasysRiskInformationView(presenter)
       expect(view.renderArgs[1].riskSummaryResponse).toEqual({
         whoIsAtRisk: undefined,
@@ -73,7 +72,7 @@ describe('OasysRiskInformationView', () => {
 
   describe('riskToSelfResponse', () => {
     it('returns correct response text when null values provided ', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const riskSummary = riskSummaryFactory.build({
         riskToSelf: {
           suicide: null,
@@ -82,7 +81,7 @@ describe('OasysRiskInformationView', () => {
           vulnerability: null,
         },
       })
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
       const view = new OasysRiskInformationView(presenter)
       expect(view.renderArgs[1].riskToSelfResponse).toEqual({
         suicide: expect.objectContaining({
@@ -101,7 +100,7 @@ describe('OasysRiskInformationView', () => {
     })
 
     it('returns correct response text when no values provided ', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const riskSummary = riskSummaryFactory.build({
         riskToSelf: {
           suicide: undefined,
@@ -110,7 +109,7 @@ describe('OasysRiskInformationView', () => {
           vulnerability: undefined,
         },
       })
-      const presenter = new OasysRiskInformationPresenter(referral, riskSummary)
+      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
       const view = new OasysRiskInformationView(presenter)
       expect(view.renderArgs[1].riskToSelfResponse).toEqual({
         suicide: expect.objectContaining({
@@ -129,14 +128,14 @@ describe('OasysRiskInformationView', () => {
     })
 
     it("returns correct response when 'YES' values are provided", () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const yesRisk: Risk = {
         risk: null,
         current: 'YES',
         currentConcernsText: null,
       }
       const presenter = new OasysRiskInformationPresenter(
-        referral,
+        supplementaryRiskInformation,
         riskSummaryFactory.build({
           riskToSelf: {
             suicide: yesRisk,
@@ -164,14 +163,14 @@ describe('OasysRiskInformationView', () => {
     })
 
     it("returns correct response when 'NO' values are provided", () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const noRisk: Risk = {
         risk: null,
         current: 'NO',
         currentConcernsText: null,
       }
       const presenter = new OasysRiskInformationPresenter(
-        referral,
+        supplementaryRiskInformation,
         riskSummaryFactory.build({
           riskToSelf: {
             suicide: noRisk,
@@ -199,14 +198,14 @@ describe('OasysRiskInformationView', () => {
     })
 
     it("returns correct response when 'DK' values are provided", () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const dkRisk: Risk = {
         risk: null,
         current: 'DK',
         currentConcernsText: null,
       }
       const presenter = new OasysRiskInformationPresenter(
-        referral,
+        supplementaryRiskInformation,
         riskSummaryFactory.build({
           riskToSelf: {
             suicide: dkRisk,
@@ -234,14 +233,14 @@ describe('OasysRiskInformationView', () => {
     })
 
     it('returns correct response when no values for current are provided', () => {
-      const referral = draftReferralFactory.build({ additionalRiskInformation: null })
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const nullRisk: Risk = {
         risk: null,
         current: null,
         currentConcernsText: null,
       }
       const presenter = new OasysRiskInformationPresenter(
-        referral,
+        supplementaryRiskInformation,
         riskSummaryFactory.build({
           riskToSelf: {
             suicide: nullRisk,

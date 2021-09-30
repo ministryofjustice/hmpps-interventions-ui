@@ -8,6 +8,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build({
@@ -143,6 +144,10 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetSupplementaryRiskInformationForCrn(
+        draftReferral.serviceUser.crn,
+        supplementaryRiskInformationFactory.build()
+      )
 
       cy.login()
 
@@ -575,6 +580,10 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetSupplementaryRiskInformationForCrn(
+        draftReferral.serviceUser.crn,
+        supplementaryRiskInformationFactory.build()
+      )
 
       cy.login()
 

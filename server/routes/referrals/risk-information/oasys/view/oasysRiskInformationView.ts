@@ -5,7 +5,7 @@ export default class OasysRiskInformationView {
   constructor(private readonly presenter: OasysRiskInformationPresenter) {}
 
   private get additionalRiskInformationResponse(): { class: string; text: string } | undefined {
-    if (this.presenter.additionalInformation) {
+    if (this.presenter.supplementaryRiskInformation != null) {
       return undefined
     }
     return {
@@ -80,7 +80,7 @@ export default class OasysRiskInformationView {
         riskSummaryResponse: this.riskSummaryResponse,
         riskToSelf: this.presenter.riskSummary.riskToSelf,
         riskToSelfResponse: this.riskToSelfResponse,
-        additionalRiskInformation: this.presenter.additionalInformation,
+        additionalRiskInformation: this.presenter.supplementaryRiskInformation?.riskSummaryComments,
         additionalRiskInformationResponse: this.additionalRiskInformationResponse,
         latestAssessment: this.presenter.latestAssessment,
       },

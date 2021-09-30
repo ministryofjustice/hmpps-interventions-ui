@@ -17,6 +17,14 @@ export default class AssessRisksAndNeedsService {
     })) as SupplementaryRiskInformation
   }
 
+  async getSupplementaryRiskInformationForCrn(crn: string, token: string): Promise<SupplementaryRiskInformation> {
+    logger.info({ crn }, 'getting supplementary risk information for crn')
+    return (await this.restClient.get({
+      path: `/risks/supplementary/crn/${crn}`,
+      token,
+    })) as SupplementaryRiskInformation
+  }
+
   async getRiskSummary(crn: string, token: string): Promise<RiskSummary | null> {
     if (!this.riskSummaryEnabled) {
       logger.info('not getting risk summary information; disabled')
