@@ -39,7 +39,7 @@ data class FieldError(
 
 class ValidationError(override val message: String, val errors: List<FieldError>) : RuntimeException(message)
 
-class AccessError(val user: AuthUser, override val message: String, val errors: List<String>) : RuntimeException(message)
+class AccessError(val user: AuthUser?, override val message: String, val errors: List<String>) : RuntimeException(message)
 
 class InvalidAssumptionError(assumption: String) : RuntimeException("assumption proved invalid: $assumption")
 
@@ -62,9 +62,9 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
     telemetryClient.trackEvent(
       "InterventionsAuthorizationError",
       mapOf(
-        "userId" to e.user.id,
-        "userName" to e.user.userName,
-        "userAuthSource" to e.user.authSource,
+        "userId" to e.user?.id,
+        "userName" to e.user?.userName,
+        "userAuthSource" to e.user?.authSource,
         "message" to e.message,
         "issues" to e.errors.toString()
       ),

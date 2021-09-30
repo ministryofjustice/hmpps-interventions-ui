@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.domain.Specification.not
 import org.springframework.data.jpa.domain.Specification.where
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ServerWebInputException
@@ -81,6 +82,16 @@ class ReferralService(
 
     referral?.let {
       referralAccessChecker.forUser(it, user)
+    }
+
+    return referral
+  }
+
+  fun getSentReferralForRole(id: UUID, roles: Collection<GrantedAuthority>): Referral? {
+    val referral = referralRepository.findByIdAndSentAtIsNotNull(id)
+
+    referral?.let {
+      referralAccessChecker.forRole(it, roles)
     }
 
     return referral
