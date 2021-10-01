@@ -6,6 +6,7 @@ import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sns.SnsClient
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -45,7 +46,11 @@ class SNSPublisher(
 
   private fun buildRequestAndPublish(event: EventDTO) {
     val message = objectMapper.writeValueAsString(event)
+    val messageAttributes = mapOf(
+      "eventType" to MessageAttributeValue.builder().stringValue(event.eventType).build()
+    )
     val request = PublishRequest.builder()
+      .messageAttributes(messageAttributes)
       .message(message)
       .topicArn(arn)
       .build()
