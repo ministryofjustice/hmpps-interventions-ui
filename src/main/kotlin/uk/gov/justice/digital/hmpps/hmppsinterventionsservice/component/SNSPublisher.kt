@@ -47,7 +47,10 @@ class SNSPublisher(
   private fun buildRequestAndPublish(event: EventDTO) {
     val message = objectMapper.writeValueAsString(event)
     val messageAttributes = mapOf(
-      "eventType" to MessageAttributeValue.builder().stringValue(event.eventType).build()
+      "eventType" to MessageAttributeValue.builder()
+        .dataType("String")
+        .stringValue(event.eventType)
+        .build()
     )
     val request = PublishRequest.builder()
       .messageAttributes(messageAttributes)
