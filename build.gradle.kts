@@ -76,5 +76,5 @@ dependencies {
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.2.12")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.1")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.2")
 }
