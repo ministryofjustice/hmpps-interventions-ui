@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.mockito.AdditionalAnswers
+import org.mockito.ArgumentMatchers.anyList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
@@ -300,7 +302,7 @@ class ReferralServiceTest @Autowired constructor(
     referralService.createDraftReferral(user2, "X123456", sampleIntervention.id)
     entityManager.flush()
 
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+    whenever(referralAccessFilter.probationPractitionerReferrals(anyList(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
     val single = referralService.getDraftReferralsForUser(user2)
     assertThat(single).hasSize(1)
@@ -438,7 +440,7 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `multiple draft referrals can be started by the same user`() {
     val user = AuthUser("multi_user_id", "delius", "user_name")
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+    whenever(referralAccessFilter.probationPractitionerReferrals(anyList(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
     for (i in 1..3) {
       assertDoesNotThrow { referralService.createDraftReferral(user, "X123456", sampleIntervention.id) }
@@ -452,8 +454,9 @@ class ReferralServiceTest @Autowired constructor(
     @BeforeEach
     fun setup() {
       // do not test access restrictions in these tests; only test selection of referrals
-      whenever(referralAccessFilter.probationPractitionerReferrals(any(), any()))
-        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      val anySpec: Specification<Referral> = any()
+      whenever(referralAccessFilter.probationPractitionerReferrals(anySpec, any()))
+        .then(AdditionalAnswers.returnsFirstArg<Specification<Referral>>())
     }
 
     @Test
@@ -492,12 +495,14 @@ class ReferralServiceTest @Autowired constructor(
       val someoneElse = userFactory.create("helper_pp_user", "delius")
       val user = userFactory.create("pp_user_1", "delius")
 
-      val managedReferral = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = someoneElse)
+      val managedReferral1 = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = someoneElse)
+      val managedReferral2 = referralFactory.createSent(serviceUserCRN = "CRN129876235", createdBy = someoneElse)
+      referralFactory.createSent(serviceUserCRN = "CRN129876236", createdBy = someoneElse)
       whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
-        .thenReturn(listOf(Offender("CRN129876234")))
+        .thenReturn(listOf(Offender("CRN129876234"), Offender("CRN129876235")))
 
       val result = referralService.getSentReferralsForUser(user)
-      assertThat(result).containsExactly(managedReferral)
+      assertThat(result).containsExactlyInAnyOrder(managedReferral1, managedReferral2)
     }
 
     @Test
@@ -519,13 +524,6 @@ class ReferralServiceTest @Autowired constructor(
     private lateinit var otherPrime: ServiceProvider
     private lateinit var otherSub: ServiceProvider
 
-    private fun userWithProviders(providers: List<ServiceProvider>): AuthUser {
-      val user = userFactory.create("test_user", "auth")
-      whenever(serviceProviderAccessScopeMapper.fromUser(user))
-        .thenReturn(ServiceProviderAccessScope(providers.toSet(), setOf()))
-      return user
-    }
-
     private fun newReferralWithProviders(prime: ServiceProvider, vararg subs: ServiceProvider): Referral {
       val intervention = interventionFactory.create(
         contract = contractFactory.create(primeProvider = prime, subcontractorProviders = subs.toSet())
@@ -535,16 +533,16 @@ class ReferralServiceTest @Autowired constructor(
 
     @BeforeEach
     fun setup() {
-      // do not test access restrictions in these tests; only test selection of referrals
-      whenever(referralAccessFilter.serviceProviderReferrals(any(), any()))
-        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
-
+      val anySpec: Specification<Referral> = any()
+      whenever(referralAccessFilter.serviceProviderReferrals(anySpec, any()))
+        .then(AdditionalAnswers.returnsFirstArg<Specification<Referral>>())
       otherPrime = serviceProviderFactory.create("other_prime")
       otherSub = serviceProviderFactory.create("other_sub")
     }
 
     @Test
     fun `user with multiple providers can see referrals where the providers are subcontractors`() {
+
       val userProviders = listOf("test_org_1", "test_org_2").map(serviceProviderFactory::create)
 
       val primeRef1 = newReferralWithProviders(userProviders[0])
@@ -554,9 +552,14 @@ class ReferralServiceTest @Autowired constructor(
       val subRef = newReferralWithProviders(otherPrime, userProviders[1])
       val noAccess = newReferralWithProviders(otherPrime, otherSub)
 
-      val multiSubUser = userWithProviders(userProviders)
+      val user = userFactory.create("test_user", "auth")
 
-      val result = referralService.getSentReferralsForUser(multiSubUser)
+      // not testing access restrictions; only test selection of referrals
+      val contacts = setOf(primeRef1, primeRef2, primeAndSubRef, refWithAllProvidersBeingSubs, subRef, noAccess).map { it.intervention.dynamicFrameworkContract }
+      whenever(serviceProviderAccessScopeMapper.fromUser(user))
+        .thenReturn(ServiceProviderAccessScope(userProviders.toSet(), contacts.toSet()))
+
+      val result = referralService.getSentReferralsForUser(user)
       assertThat(result).doesNotContain(noAccess)
       assertThat(result).containsAll(listOf(primeRef1, primeRef2, primeAndSubRef, refWithAllProvidersBeingSubs, subRef))
       assertThat(result.size).isEqualTo(5)
@@ -583,7 +586,12 @@ class ReferralServiceTest @Autowired constructor(
         referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral)
       }
 
-      val user = userWithProviders(listOf(provider))
+      val user = userFactory.create("test_user", "auth")
+      // not testing access restrictions; only test selection of referrals
+      val contacts = setOf(refLive, refEndedEarly, refEndedEarly).map { it.intervention.dynamicFrameworkContract }
+      whenever(serviceProviderAccessScopeMapper.fromUser(user))
+        .thenReturn(ServiceProviderAccessScope(setOf(provider), contacts.toSet()))
+
       val result = referralService.getSentReferralsForUser(user)
       assertThat(result).containsExactlyInAnyOrder(refLive, refEndedEarly)
       assertThat(result).doesNotContain(refCancelled)

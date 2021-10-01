@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
+import org.springframework.data.jpa.domain.Specification.not
+import org.springframework.data.jpa.domain.Specification.where
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -31,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Del
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.specification.ReferralSpecifications
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -129,13 +132,15 @@ class ReferralService(
 
   private fun getSentReferralsForServiceProviderUser(user: AuthUser): List<Referral> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
+    val specification = where(
+      ReferralSpecifications.matchingPrimeProviderReferrals(serviceProviders)
+        .or(ReferralSpecifications.matchingSubContractorReferrals(serviceProviders))
+    ).and(not(ReferralSpecifications.cancelled())).and(ReferralSpecifications.sent())
 
-    val referrals = referralRepository.findAllByInterventionDynamicFrameworkContractPrimeProviderInAndSentAtIsNotNull(serviceProviders)
+    return referralRepository.findAll(
       // todo: query for referrals where the service provider has been granted nominated access only
-      .union(referralRepository.findAllByInterventionDynamicFrameworkContractSubcontractorProvidersInAndSentAtIsNotNull(serviceProviders))
-      .filterNot { it.cancelled() }
-
-    return referralAccessFilter.serviceProviderReferrals(referrals.toList(), user)
+      referralAccessFilter.serviceProviderReferrals(specification, user)
+    )
   }
 
   private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser): List<ServiceProviderSentReferralSummary> {
@@ -146,9 +151,10 @@ class ReferralService(
   }
 
   private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
-    val referralsStartedByPP = referralRepository.findByCreatedByAndSentAtIsNotNull(user)
-    val referralsManagedByPP = try {
-      communityAPIOffenderService.getManagedOffendersForDeliusUser(user)
+    var referralsForPPUser = ReferralSpecifications.createdBy(user)
+    try {
+      val serviceUserCRNs = communityAPIOffenderService.getManagedOffendersForDeliusUser(user).map { it.crnNumber }
+      referralsForPPUser = referralsForPPUser.or(ReferralSpecifications.matchingServiceUserReferrals(serviceUserCRNs))
     } catch (e: WebClientResponseException) {
       // don't stop users seeing their own referrals just because delius is not playing nice
       logger.error(
@@ -156,11 +162,12 @@ class ReferralService(
         e,
         kv("username", user.userName),
       )
-      emptyList()
-    }.flatMap { referralRepository.findByServiceUserCRNAndSentAtIsNotNull(it.crnNumber) }
-
-    val ppReferrals = referralsStartedByPP.union(referralsManagedByPP).sortedBy { it.createdAt }
-    return referralAccessFilter.probationPractitionerReferrals(ppReferrals, user)
+    }
+    // todo: filter out referrals for limited access offenders (LAOs)
+    // We are sorting after fetching from database, but with pagination we can sort as part of SQL query
+    val referralSpecification = where(referralsForPPUser).and(ReferralSpecifications.sent())
+    return referralRepository.findAll(referralAccessFilter.probationPractitionerReferrals(referralSpecification, user))
+      .sortedBy { it.createdAt }
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {
