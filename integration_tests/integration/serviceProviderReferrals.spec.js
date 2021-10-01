@@ -1586,15 +1586,18 @@ describe('Service provider referrals dashboard', () => {
     })
 
     it('User fills in, reviews, changes, and submits an end of service report', () => {
-      const draftEndOfServiceReport = endOfServiceReportFactory.justCreated().build({ referralId: referral.id })
+      const referralNeedingEndOfServiceReport = { ...referral, endOfServiceReportCreationRequired: true }
+      const draftEndOfServiceReport = endOfServiceReportFactory
+        .justCreated()
+        .build({ referralId: referralNeedingEndOfServiceReport.id })
 
       cy.stubCreateDraftEndOfServiceReport(draftEndOfServiceReport)
       cy.stubGetEndOfServiceReport(draftEndOfServiceReport.id, draftEndOfServiceReport)
-      cy.stubGetSentReferral(referral.id, referral)
+      cy.stubGetSentReferral(referralNeedingEndOfServiceReport.id, referralNeedingEndOfServiceReport)
 
       cy.login()
 
-      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+      cy.visit(`/service-provider/referrals/${referralNeedingEndOfServiceReport.id}/progress`)
       cy.contains('Create end of service report').click()
 
       cy.location('pathname').should(
@@ -1707,7 +1710,10 @@ describe('Service provider referrals dashboard', () => {
         submittedAt: new Date().toISOString(),
       }
 
-      cy.stubGetSentReferral(referral.id, { ...referral, endOfServiceReport: submittedEndOfServiceReport })
+      cy.stubGetSentReferral(referral.id, {
+        ...referralNeedingEndOfServiceReport,
+        endOfServiceReport: submittedEndOfServiceReport,
+      })
       cy.stubSubmitEndOfServiceReport(submittedEndOfServiceReport.id, submittedEndOfServiceReport)
 
       cy.contains('Submit the report').click()

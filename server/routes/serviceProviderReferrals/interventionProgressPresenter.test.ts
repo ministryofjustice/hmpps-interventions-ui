@@ -404,61 +404,24 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('canSubmitEndOfServiceReport', () => {
-    describe('when the referral has been assigned', () => {
-      describe('when there is no end of service report', () => {
-        it('returns true', () => {
-          const referral = sentReferralFactory.assigned().build({ endOfServiceReport: null })
-          const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(
-            referral,
-            intervention,
-            null,
-            [],
-            supplierAssessmentFactory.build()
-          )
+    describe('when the end of service report creation is required', () => {
+      it('returns true', () => {
+        const referral = sentReferralFactory.build({ endOfServiceReportCreationRequired: true })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          null,
+          [],
+          supplierAssessmentFactory.build()
+        )
 
-          expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
-        })
-      })
-
-      describe('when there is an end of service report but it has not been submitted', () => {
-        it('returns true', () => {
-          const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
-          const referral = sentReferralFactory.assigned().build({ endOfServiceReport })
-          const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(
-            referral,
-            intervention,
-            null,
-            [],
-            supplierAssessmentFactory.build()
-          )
-
-          expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
-        })
-      })
-
-      describe('when there is an end of service report and it has been submitted', () => {
-        it('returns false', () => {
-          const endOfServiceReport = endOfServiceReportFactory.submitted().build()
-          const referral = sentReferralFactory.assigned().build({ endOfServiceReport })
-          const intervention = interventionFactory.build()
-          const presenter = new InterventionProgressPresenter(
-            referral,
-            intervention,
-            null,
-            [],
-            supplierAssessmentFactory.build()
-          )
-
-          expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
-        })
+        expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
       })
     })
-
-    describe('when the referral has not been assigned', () => {
+    describe('when the end of service report creation is not yet required', () => {
       it('returns false', () => {
-        const referral = sentReferralFactory.build()
+        const referral = sentReferralFactory.build({ endOfServiceReportCreationRequired: false })
         const intervention = interventionFactory.build()
         const presenter = new InterventionProgressPresenter(
           referral,
