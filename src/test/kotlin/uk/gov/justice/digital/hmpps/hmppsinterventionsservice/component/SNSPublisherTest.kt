@@ -45,6 +45,7 @@ class SNSPublisherTest {
 
     val requestCaptor = argumentCaptor<PublishRequest>()
     verify(snsClient).publish(requestCaptor.capture())
+    assertThat(requestCaptor.firstValue.messageAttributes()["eventType"]!!.dataType()).isEqualTo("String")
     assertThat(requestCaptor.firstValue.messageAttributes()["eventType"]!!.stringValue()).isEqualTo(event.eventType)
     assertThat(requestCaptor.firstValue.message()).isEqualTo("{}")
   }
