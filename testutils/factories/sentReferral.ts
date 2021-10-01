@@ -110,5 +110,6 @@ export default SentReferralFactory.define(({ sequence }) => ({
   endRequestedReason: null,
   endRequestedComments: null,
   endOfServiceReport: null,
+  endOfServiceReportCreationRequired: false,
   concludedAt: null,
 }))
