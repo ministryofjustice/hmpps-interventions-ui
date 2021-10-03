@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
@@ -38,6 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralCo
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
 import java.util.UUID
+import javax.annotation.Nullable
 import javax.persistence.EntityNotFoundException
 
 @RestController
@@ -103,9 +105,13 @@ class ReferralController(
   @GetMapping("/sent-referrals")
   fun getSentReferrals(
     authentication: JwtAuthenticationToken,
+    @Nullable @RequestParam(name = "concluded", required = false) concluded: Boolean?,
+    @Nullable @RequestParam(name = "cancelled", required = false) cancelled: Boolean?,
+    @Nullable @RequestParam(name = "unassigned", required = false) unassigned: Boolean?,
+    @Nullable @RequestParam(name = "assignedTo", required = false) assignedToUserId: String?,
   ): List<SentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
-    return referralService.getSentReferralsForUser(user).map { SentReferralSummaryDTO.from(it) }
+    return referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId).map { SentReferralSummaryDTO.from(it) }
   }
 
   @Deprecated(message = "This is a temporary solution to by-pass the extremely long wait times in production that occurs with /sent-referrals")

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import mu.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments.kv
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.domain.Specification.not
 import org.springframework.data.jpa.domain.Specification.where
 import org.springframework.data.repository.findByIdOrNull
@@ -111,13 +112,26 @@ class ReferralService(
     return assignedReferral
   }
 
-  fun getSentReferralsForUser(user: AuthUser): List<Referral> {
+  private fun applyOptionalConjunction(existingSpec: Specification<Referral>, predicate: Boolean?, specToJoin: Specification<Referral>): Specification<Referral> {
+    if (predicate == null) return existingSpec
+    return existingSpec.and(if (predicate) specToJoin else not(specToJoin))
+  }
+
+  fun getSentReferralsForUser(user: AuthUser, concluded: Boolean?, cancelled: Boolean?, unassigned: Boolean?, assignedToUserId: String?): List<Referral> {
+    var findSentReferralsSpec = ReferralSpecifications.sent()
+    findSentReferralsSpec = applyOptionalConjunction(findSentReferralsSpec, concluded, ReferralSpecifications.concluded())
+    findSentReferralsSpec = applyOptionalConjunction(findSentReferralsSpec, cancelled, ReferralSpecifications.cancelled())
+    findSentReferralsSpec = applyOptionalConjunction(findSentReferralsSpec, unassigned, ReferralSpecifications.unassigned())
+    assignedToUserId?.let {
+      findSentReferralsSpec = applyOptionalConjunction(findSentReferralsSpec, true, ReferralSpecifications.currentlyAssignedTo(it))
+    }
+
     if (userTypeChecker.isServiceProviderUser(user)) {
-      return getSentReferralsForServiceProviderUser(user)
+      return getSentReferralsForServiceProviderUser(user, findSentReferralsSpec)
     }
 
     if (userTypeChecker.isProbationPractitionerUser(user)) {
-      return getSentReferralsForProbationPractitionerUser(user)
+      return getSentReferralsForProbationPractitionerUser(user, findSentReferralsSpec)
     }
 
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
@@ -130,12 +144,14 @@ class ReferralService(
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
 
-  private fun getSentReferralsForServiceProviderUser(user: AuthUser): List<Referral> {
+  private fun getSentReferralsForServiceProviderUser(user: AuthUser, sentReferralFilterSpecification: Specification<Referral>): List<Referral> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
+
+    // todo: query for referrals where the service provider has been granted nominated access only
     val specification = where(
       ReferralSpecifications.matchingPrimeProviderReferrals(serviceProviders)
         .or(ReferralSpecifications.matchingSubContractorReferrals(serviceProviders))
-    ).and(not(ReferralSpecifications.cancelled())).and(ReferralSpecifications.sent())
+    ).and(sentReferralFilterSpecification)
 
     return referralRepository.findAll(
       // todo: query for referrals where the service provider has been granted nominated access only
@@ -150,7 +166,7 @@ class ReferralService(
     return referralAccessFilter.serviceProviderReferralSummaries(referralSummaries, user)
   }
 
-  private fun getSentReferralsForProbationPractitionerUser(user: AuthUser): List<Referral> {
+  private fun getSentReferralsForProbationPractitionerUser(user: AuthUser, sentReferralFilterSpecification: Specification<Referral>): List<Referral> {
     var referralsForPPUser = ReferralSpecifications.createdBy(user)
     try {
       val serviceUserCRNs = communityAPIOffenderService.getManagedOffendersForDeliusUser(user).map { it.crnNumber }
@@ -165,7 +181,7 @@ class ReferralService(
     }
     // todo: filter out referrals for limited access offenders (LAOs)
     // We are sorting after fetching from database, but with pagination we can sort as part of SQL query
-    val referralSpecification = where(referralsForPPUser).and(ReferralSpecifications.sent())
+    val referralSpecification = where(referralsForPPUser).and(sentReferralFilterSpecification)
     return referralRepository.findAll(referralAccessFilter.probationPractitionerReferrals(referralSpecification, user))
       .sortedBy { it.createdAt }
   }
