@@ -1,5 +1,5 @@
-import { DateInputArgs } from '../../utils/govukFrontendTypes'
-import ViewUtils from '../../utils/viewUtils'
+import { DateInputArgs } from '../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../utils/viewUtils'
 import ReportingPresenter from './reportingPresenter'
 
 export default class ReportingView {
@@ -7,7 +7,7 @@ export default class ReportingView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/reporting',
+      'reporting/performanceReport/reportingForm',
       {
         presenter: this.presenter,
         fromDateInputArgs: this.fromDateInputArgs,

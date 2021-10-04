@@ -1,5 +1,5 @@
-import TestUtils from '../../../testutils/testUtils'
-import CalendarDay from '../../utils/calendarDay'
+import TestUtils from '../../../../testutils/testUtils'
+import CalendarDay from '../../../utils/calendarDay'
 import ReportingForm from './reportingForm'
 
 describe(ReportingForm, () => {

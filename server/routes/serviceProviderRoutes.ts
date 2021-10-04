@@ -3,6 +3,7 @@ import { Services, get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import config from '../config'
 import CaseNotesController from './caseNotes/caseNotesController'
+import ReportingController from './reporting/reportingController'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 
@@ -230,14 +231,14 @@ export default function serviceProviderRoutes(router: Router, services: Services
   )
 
   if (config.features.serviceProviderReporting) {
-    get(router, '/performance-report', (req, res) => serviceProviderReferralsController.viewReporting(req, res))
-    post(router, '/performance-report', (req, res) => serviceProviderReferralsController.createReport(req, res))
+    const reportingController = new ReportingController(services.interventionsService)
+
+    get(router, '/performance-report', (req, res) => reportingController.viewReporting(req, res))
+    post(router, '/performance-report', (req, res) => reportingController.createReport(req, res))
     get(router, '/performance-report/confirmation', (req, res) =>
-      serviceProviderReferralsController.showPerformanceReportConfirmation(req, res)
+      reportingController.showPerformanceReportConfirmation(req, res)
     )
-    get(router, '/performance-report/download', (req, res) =>
-      serviceProviderReferralsController.downloadPerformanceReport(req, res)
-    )
+    get(router, '/performance-report/download', (req, res) => reportingController.downloadPerformanceReport(req, res))
   }
 
   return router
