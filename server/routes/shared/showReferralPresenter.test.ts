@@ -40,7 +40,6 @@ describe(ShowReferralPresenter, () => {
     email: 'bernard.beaks@justice.gov.uk',
   })
   const deliusServiceUser = expandedDeliusServiceUserFactory.build()
-  const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
@@ -69,50 +68,102 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
-  describe('text', () => {
-    describe('assignedTo', () => {
-      describe('when the referral doesn’t have an assigned caseworker', () => {
-        it('returns null', () => {
-          const referral = sentReferralFactory.unassigned().build()
-          const presenter = new ShowReferralPresenter(
-            referral,
-            intervention,
-            deliusConviction,
-            supplementaryRiskInformation,
-            deliusUser,
-            null,
-            null,
-            'service-provider',
-            true,
-            deliusServiceUser,
-            riskSummary,
-            responsibleOfficer
-          )
+  describe('assignedCaseworkerFullName', () => {
+    describe('when the referral has no assignee', () => {
+      it('returns null', () => {
+        const assignee = null
+        const referral = sentReferralFactory.unassigned().build()
 
-          expect(presenter.text.assignedTo).toBeNull()
-        })
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          assignee,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer
+        )
+
+        expect(presenter.assignedCaseworkerFullName).toEqual(null)
       })
+    })
 
-      describe('when the referral has an assigned caseworker', () => {
-        it('returns the name of the assignee', () => {
-          const referral = sentReferralFactory.unassigned().build()
-          const presenter = new ShowReferralPresenter(
-            referral,
-            intervention,
-            deliusConviction,
-            supplementaryRiskInformation,
-            deliusUser,
-            hmppsAuthUser,
-            null,
-            'service-provider',
-            true,
-            deliusServiceUser,
-            riskSummary,
-            responsibleOfficer
-          )
+    describe('when the referral has an assignee', () => {
+      it('returns the assignee’s name', () => {
+        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+        const referral = sentReferralFactory.assigned().build()
 
-          expect(presenter.text.assignedTo).toEqual('John Smith')
-        })
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          assignee,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer
+        )
+
+        expect(presenter.assignedCaseworkerFullName).toEqual('Liam Johnson')
+      })
+    })
+  })
+
+  describe('assignedCaseworkerEmail', () => {
+    describe('when the referral has no assignee', () => {
+      it('returns null', () => {
+        const assignee = null
+        const referral = sentReferralFactory.unassigned().build()
+
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          assignee,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer
+        )
+
+        expect(presenter.assignedCaseworkerFullName).toEqual(null)
+      })
+    })
+
+    describe('when the referral has an assignee', () => {
+      it('returns the assignee’s name', () => {
+        const assignee = hmppsAuthUserFactory.build({ email: 'liam.johnson@justice.gov.uk' })
+        const referral = sentReferralFactory.assigned().build()
+
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          assignee,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer
+        )
+
+        expect(presenter.assignedCaseworkerEmail).toEqual('liam.johnson@justice.gov.uk')
       })
     })
   })

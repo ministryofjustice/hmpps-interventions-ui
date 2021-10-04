@@ -299,7 +299,12 @@ describe('Service provider referrals dashboard', () => {
       const deliusUser = deliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
-      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+      const hmppsAuthUser = hmppsAuthUserFactory.build({
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john.smith',
+        email: 'john.smith@example.com',
+      })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const responsibleOfficer = deliusOffenderManagerFactory.build()
       let referralSummary = serviceProviderSentReferralSummaryFactory
@@ -325,7 +330,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('h2').contains('Who do you want to assign this referral to?')
 
-      cy.get('#email').type('john@harmonyliving.org.uk')
+      cy.get('#email').type('john.smith@example.com')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should(
@@ -357,7 +362,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('john.smith')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
-      cy.contains('This intervention is assigned to John Smith.')
+      cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
     })
 
     it('User re-assigns a referral to a different caseworker', () => {
@@ -376,6 +381,7 @@ describe('Service provider referrals dashboard', () => {
         firstName: 'John',
         lastName: 'Smith',
         username: 'john.smith',
+        email: 'john.smith@example.com',
       })
       const referral = sentReferralFactory
         .assigned()
@@ -407,7 +413,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
 
-      cy.contains('This intervention is assigned to John Smith.')
+      cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
 
       cy.get('h2').contains('Who do you want to assign this referral to?')
 
@@ -415,11 +421,12 @@ describe('Service provider referrals dashboard', () => {
         firstName: 'Anna',
         lastName: 'Dawkins',
         username: 'anna.dawkins',
+        email: 'anna.dawkins@example.com',
       })
       cy.stubGetAuthUserByEmailAddress([newAssignee])
       cy.stubGetAuthUserByUsername(newAssignee.username, newAssignee)
 
-      cy.get('#email').type('anna@harmonyliving.org.uk')
+      cy.get('#email').type('anna.dawkins@example.com')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should(
@@ -446,7 +453,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('h1').contains('Caseworker assigned')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
-      cy.contains('This intervention is assigned to Anna Dawkins.')
+      cy.contains('This intervention is assigned to Anna Dawkins (anna.dawkins@example.com).')
     })
   })
 
