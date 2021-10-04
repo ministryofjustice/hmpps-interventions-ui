@@ -151,6 +151,54 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
   })
 })
 
+describe('GET /probation-practitioner/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', () => {
+  it('renders a page displaying feedback answers', async () => {
+    const actionPlanId = '05f39e99-b5c7-4a9b-a857-bec04a28eb34'
+    const referral = sentReferralFactory.assigned().build({ actionPlanId, assignedTo: { username: 'Kay.Swerker' } })
+    const submittedActionPlan = actionPlanFactory
+      .submitted()
+      .build({ id: actionPlanId, referralId: referral.id, numberOfSessions: 1 })
+    const serviceUser = deliusServiceUserFactory.build()
+
+    const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      durationInMinutes: 60,
+      appointmentDeliveryType: 'PHONE_CALL',
+      sessionNumber: 1,
+      sessionFeedback: {
+        attendance: {
+          attended: 'yes',
+          additionalAttendanceInformation: 'They were early to the session',
+        },
+        behaviour: {
+          behaviourDescription: 'Alex was well-behaved',
+          notifyProbationPractitioner: false,
+        },
+        submitted: true,
+      },
+    })
+
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
+
+    await request(app)
+      .get(
+        `/probation-practitioner/referrals/${referral.id}/appointment/${appointmentWithSubmittedFeedback.sessionNumber}/post-session-feedback`
+      )
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('View feedback')
+        expect(res.text).toContain('Kay.Swerker')
+        expect(res.text).toContain('They were early to the session')
+        expect(res.text).toContain('Yes, they were on time')
+        expect(res.text).toContain('Alex was well-behaved')
+        expect(res.text).toContain('No')
+      })
+  })
+})
+
 describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', () => {
   it('renders a page displaying feedback answers', async () => {
     const actionPlanId = '05f39e99-b5c7-4a9b-a857-bec04a28eb34'
@@ -197,70 +245,70 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:ses
         expect(res.text).toContain('No')
       })
   })
+})
 
-  describe('GET /probation-practitioner/end-of-service-report/:id', () => {
-    it('renders a page with the contents of the end of service report', async () => {
-      const serviceCategory = serviceCategoryFactory.build()
-      const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
-      const referral = sentReferralFactory.build({
-        referral: {
-          serviceCategoryIds: [serviceCategory.id],
-          desiredOutcomes: [
-            { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
-          ],
-        },
-      })
-      const endOfServiceReport = endOfServiceReportFactory.build({
-        outcomes: [
-          {
-            desiredOutcome: serviceCategory.desiredOutcomes[0],
-            achievementLevel: 'ACHIEVED',
-            progressionComments: 'Some progression comments',
-            additionalTaskComments: 'Some task comments',
-          },
+describe('GET /probation-practitioner/end-of-service-report/:id', () => {
+  it('renders a page with the contents of the end of service report', async () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id],
+        desiredOutcomes: [
+          { serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [serviceCategory.desiredOutcomes[0].id] },
         ],
-        furtherInformation: 'Some further information',
-      })
-      const deliusServiceUser = deliusServiceUserFactory.build()
-
-      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getIntervention.mockResolvedValue(intervention)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-
-      await request(app)
-        .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
-        .expect(200)
-        .expect(res => {
-          expect(res.text).toContain('Achieved')
-          expect(res.text).toContain(serviceCategory.desiredOutcomes[0].description)
-          expect(res.text).toContain('Some progression comments')
-          expect(res.text).toContain('Some task comments')
-          expect(res.text).toContain('Some further information')
-        })
+      },
     })
-
-    it('throws error if not all service categories were obtainable', async () => {
-      const serviceCategory = serviceCategoryFactory.build()
-      const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
-      const referral = sentReferralFactory.build({
-        referral: {
-          serviceCategoryIds: [serviceCategory.id, 'someOtherId'],
+    const endOfServiceReport = endOfServiceReportFactory.build({
+      outcomes: [
+        {
+          desiredOutcome: serviceCategory.desiredOutcomes[0],
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some task comments',
         },
-      })
-      const endOfServiceReport = endOfServiceReportFactory.build()
-      const deliusServiceUser = deliusServiceUserFactory.build()
-      interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-      interventionsService.getSentReferral.mockResolvedValue(referral)
-      interventionsService.getIntervention.mockResolvedValue(intervention)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-      await request(app)
-        .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
-        .expect(500)
-        .expect(res => {
-          expect(res.text).toContain('Expected service categories are missing in intervention')
-        })
+      ],
+      furtherInformation: 'Some further information',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
+
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+
+    await request(app)
+      .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Achieved')
+        expect(res.text).toContain(serviceCategory.desiredOutcomes[0].description)
+        expect(res.text).toContain('Some progression comments')
+        expect(res.text).toContain('Some task comments')
+        expect(res.text).toContain('Some further information')
+      })
+  })
+
+  it('throws error if not all service categories were obtainable', async () => {
+    const serviceCategory = serviceCategoryFactory.build()
+    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const referral = sentReferralFactory.build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id, 'someOtherId'],
+      },
+    })
+    const endOfServiceReport = endOfServiceReportFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    await request(app)
+      .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Expected service categories are missing in intervention')
+      })
   })
 })
 
