@@ -323,10 +323,14 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
 
       cy.login()
 
-      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+      cy.contains('Once a caseworker has been assigned the initial assessment can be booked.')
+
+      cy.contains('Referral details').click()
 
       cy.get('h2').contains('Who do you want to assign this referral to?')
 
@@ -362,6 +366,9 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('john.smith')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
+
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
       cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
     })
 
