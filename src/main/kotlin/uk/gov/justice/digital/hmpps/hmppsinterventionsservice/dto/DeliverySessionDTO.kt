@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanSession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -46,7 +46,7 @@ data class RecordAppointmentBehaviourDTO(
   val notifyProbationPractitioner: Boolean,
 )
 
-data class ActionPlanSessionDTO(
+data class DeliverySessionDTO(
   val id: UUID,
   val sessionNumber: Int,
   val appointmentTime: OffsetDateTime?,
@@ -58,7 +58,7 @@ data class ActionPlanSessionDTO(
   val sessionFeedback: SessionFeedbackDTO,
 ) {
   companion object {
-    fun from(session: ActionPlanSession): ActionPlanSessionDTO {
+    fun from(session: DeliverySession): DeliverySessionDTO {
       val appointmentDelivery = session.currentAppointment?.appointmentDelivery
       val address = when (appointmentDelivery?.appointmentDeliveryType) {
         AppointmentDeliveryType.IN_PERSON_MEETING_OTHER -> {
@@ -72,7 +72,7 @@ data class ActionPlanSessionDTO(
         else -> null
       }
 
-      return ActionPlanSessionDTO(
+      return DeliverySessionDTO(
         id = session.id,
         sessionNumber = session.sessionNumber,
         appointmentTime = session.currentAppointment?.appointmentTime,
@@ -91,7 +91,7 @@ data class ActionPlanSessionDTO(
         ),
       )
     }
-    fun from(sessions: List<ActionPlanSession>): List<ActionPlanSessionDTO> {
+    fun from(sessions: List<DeliverySession>): List<DeliverySessionDTO> {
       return sessions.map { from(it) }
     }
   }

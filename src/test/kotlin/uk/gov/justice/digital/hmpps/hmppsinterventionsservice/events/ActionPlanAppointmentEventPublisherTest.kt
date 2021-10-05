@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import java.net.URI
 import java.time.OffsetDateTime
 
@@ -29,7 +29,7 @@ class ActionPlanAppointmentEventPublisherTest {
 
   @Test
   fun `builds an appointment attendance recorded event and publishes it`() {
-    val session = ActionPlanSessionFactory().createScheduled()
+    val session = DeliverySessionFactory().createScheduled()
 
     publisher.attendanceRecordedEvent(session, false)
 
@@ -39,14 +39,14 @@ class ActionPlanAppointmentEventPublisherTest {
 
     Assertions.assertThat(event.source).isSameAs(publisher)
     Assertions.assertThat(event.type).isSameAs(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED)
-    Assertions.assertThat(event.actionPlanSession).isSameAs(session)
+    Assertions.assertThat(event.deliverySession).isSameAs(session)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isFalse
   }
 
   @Test
   fun `builds an appointment behaviour recorded event and publishes it`() {
-    val appointment = ActionPlanSessionFactory().createScheduled()
+    val appointment = DeliverySessionFactory().createScheduled()
 
     publisher.behaviourRecordedEvent(appointment, true)
 
@@ -56,14 +56,14 @@ class ActionPlanAppointmentEventPublisherTest {
 
     Assertions.assertThat(event.source).isSameAs(publisher)
     Assertions.assertThat(event.type).isSameAs(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED)
-    Assertions.assertThat(event.actionPlanSession).isSameAs(appointment)
+    Assertions.assertThat(event.deliverySession).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isTrue
   }
 
   @Test
   fun `builds an appointment session feedback event and publishes it`() {
-    val appointment = ActionPlanSessionFactory().createAttended(
+    val appointment = DeliverySessionFactory().createAttended(
       attended = LATE,
       additionalAttendanceInformation = "Behaviour was fine",
       attendanceSubmittedAt = OffsetDateTime.now()
@@ -77,7 +77,7 @@ class ActionPlanAppointmentEventPublisherTest {
 
     Assertions.assertThat(event.source).isSameAs(publisher)
     Assertions.assertThat(event.type).isSameAs(ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED)
-    Assertions.assertThat(event.actionPlanSession).isSameAs(appointment)
+    Assertions.assertThat(event.deliverySession).isSameAs(appointment)
     Assertions.assertThat(event.detailUrl).isEqualTo("http://localhost/action-plan/123/appointments/1")
     Assertions.assertThat(event.notifyPP).isTrue
   }

@@ -85,7 +85,7 @@ class ReferralConcluder(
 
   private fun countSessionsAttempted(referral: Referral): Int {
     return referral.currentActionPlan?.let {
-      actionPlanRepository.countNumberOfAttemptedSessions(it.id)
+      actionPlanRepository.countNumberOfAttemptedSessions(referral.id)
     } ?: 0
   }
 }

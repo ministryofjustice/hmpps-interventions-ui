@@ -15,30 +15,30 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class NotifyActionPlanAppointmentServiceTest {
   private val emailSender = mock<EmailSender>()
   private val referralService = mock<ReferralService>()
-  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val deliverySessionFactory = DeliverySessionFactory()
+  private val actionPlanFactory = ActionPlanFactory()
 
   private fun appointmentEvent(type: ActionPlanAppointmentEventType, notifyPP: Boolean): ActionPlanAppointmentEvent {
     return ActionPlanAppointmentEvent(
       "source",
       type,
-      actionPlanSessionFactory.createAttended(
+      deliverySessionFactory.createAttended(
         id = UUID.fromString("42c7d267-0776-4272-a8e8-a673bfe30d0d"),
-        actionPlan = SampleData.sampleActionPlan(
-          id = UUID.fromString("4907ffb5-94cf-4eff-8cf9-dcf09765be42"),
-          referral = SampleData.sampleReferral(
-            "X123456",
-            "Harmony Living",
-            id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
-            referenceNumber = "HAS71263",
-            sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
-          ),
+        referral = SampleData.sampleReferral(
+          "X123456",
+          "Harmony Living",
+          id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
+          referenceNumber = "HAS71263",
+          sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+          actionPlans = mutableListOf(actionPlanFactory.create(id = UUID.fromString("4907ffb5-94cf-4eff-8cf9-dcf09765be42")))
         ),
         createdBy = SampleData.sampleAuthUser(),
         attended = Attended.YES,
@@ -53,7 +53,7 @@ class NotifyActionPlanAppointmentServiceTest {
       "template",
       "template",
       "http://example.com",
-      "/pp/action-plan/{id}/appointment/sessionNumber/{sessionNumber}/feedback",
+      "/pp/referrals/{id}/appointment/sessionNumber/{sessionNumber}/feedback",
       emailSender,
       referralService,
     )
@@ -83,7 +83,7 @@ class NotifyActionPlanAppointmentServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
     Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/pp/action-plan/4907ffb5-94cf-4eff-8cf9-dcf09765be42/appointment/sessionNumber/1/feedback")
+    Assertions.assertThat(personalisationCaptor.firstValue["attendanceUrl"]).isEqualTo("http://example.com/pp/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/appointment/sessionNumber/1/feedback")
   }
 
   @Test
@@ -110,6 +110,6 @@ class NotifyActionPlanAppointmentServiceTest {
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
     Assertions.assertThat(personalisationCaptor.firstValue["referenceNumber"]).isEqualTo("HAS71263")
-    Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/pp/action-plan/4907ffb5-94cf-4eff-8cf9-dcf09765be42/appointment/sessionNumber/1/feedback")
+    Assertions.assertThat(personalisationCaptor.firstValue["sessionUrl"]).isEqualTo("http://example.com/pp/referrals/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080/appointment/sessionNumber/1/feedback")
   }
 }

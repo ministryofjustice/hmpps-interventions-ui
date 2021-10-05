@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryAddressRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
@@ -16,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CaseNoteRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ContractTypeRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DynamicFrameworkContractRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
@@ -37,7 +37,7 @@ abstract class IntegrationTestBase {
 
   @Autowired protected lateinit var referralRepository: ReferralRepository
   @Autowired protected lateinit var actionPlanRepository: ActionPlanRepository
-  @Autowired protected lateinit var actionPlanSessionRepository: ActionPlanSessionRepository
+  @Autowired protected lateinit var deliverySessionRepository: DeliverySessionRepository
   @Autowired protected lateinit var authUserRepository: AuthUserRepository
   @Autowired protected lateinit var interventionRepository: InterventionRepository
   @Autowired protected lateinit var serviceCategoryRepository: ServiceCategoryRepository
@@ -62,7 +62,7 @@ abstract class IntegrationTestBase {
       referralRepository,
       interventionRepository,
       actionPlanRepository,
-      actionPlanSessionRepository,
+      deliverySessionRepository,
       serviceCategoryRepository,
       serviceProviderRepository,
       npsRegionRepository,
@@ -75,7 +75,7 @@ abstract class IntegrationTestBase {
       supplierAssessmentRepository,
       appointmentDeliveryRepository,
       appointmentDeliveryAddressRepository,
-      caseNoteRepository
+      caseNoteRepository,
     )
     setupAssistant.cleanAll()
   }

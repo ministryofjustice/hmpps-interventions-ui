@@ -117,7 +117,7 @@ interventions-ui:
       intervention-progress: "/probation-practitioner/referrals/{id}/progress"
       supplier-assessment: "/probation-practitioner/referrals/{id}/supplier-assessment"
       action-plan: "/probation-practitioner/referrals/{id}/action-plan"
-      session-feedback: "/probation-practitioner/action-plan/{id}/appointment/{sessionNumber}/post-session-feedback"
+      session-feedback: "/probation-practitioner/referrals/{id}/appointment/{sessionNumber}/post-session-feedback"
       supplier-assessment-feedback: "/probation-practitioner/referrals/{id}/supplier-assessment/post-assessment-feedback"
       end-of-service-report: "/probation-practitioner/end-of-service-report/{id}"
       case-note-details: "/probation-practitioner/case-note/{id}"

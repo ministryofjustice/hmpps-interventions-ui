@@ -91,8 +91,8 @@ class SNSActionPlanAppointmentService(
   override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     when (event.type) {
       ActionPlanAppointmentEventType.ATTENDANCE_RECORDED -> {
-        val referral = event.actionPlanSession.actionPlan.referral
-        val appointment = event.actionPlanSession.currentAppointment
+        val referral = event.deliverySession.referral
+        val appointment = event.deliverySession.currentAppointment
           ?: throw RuntimeException("event triggered for session with no appointments")
 
         val eventType = "intervention.session-appointment.${when (appointment.attended) {

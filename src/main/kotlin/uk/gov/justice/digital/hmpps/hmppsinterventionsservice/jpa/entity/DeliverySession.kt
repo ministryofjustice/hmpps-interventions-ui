@@ -9,22 +9,23 @@ import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
+import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Entity
-data class ActionPlanSession(
+@Table(name = "delivery_session")
+data class DeliverySession(
 
   @JoinTable(
-    name = "action_plan_session_appointment",
-    joinColumns = [JoinColumn(name = "action_plan_session_id")],
+    name = "delivery_session_appointment",
+    joinColumns = [JoinColumn(name = "delivery_session_id")],
     inverseJoinColumns = [JoinColumn(name = "appointment_id")]
   )
   @NotNull @OneToMany @Fetch(FetchMode.JOIN) val appointments: MutableSet<Appointment> = mutableSetOf(),
   @NotNull val sessionNumber: Int,
 
-  @NotNull @ManyToOne val actionPlan: ActionPlan,
+  @ManyToOne val referral: Referral,
   @Id val id: UUID,
-  @ManyToOne val referral: Referral?,
 ) {
   // this class is designed to allow multiple appointments per session,
   // however this functionality is not currently used. to make life

@@ -10,8 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanSessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -27,8 +27,8 @@ class ActionPlanService(
   val actionPlanRepository: ActionPlanRepository,
   val actionPlanValidator: ActionPlanValidator,
   val actionPlanEventPublisher: ActionPlanEventPublisher,
-  val actionPlanSessionsService: ActionPlanSessionsService,
-  private val actionPlanSessionRepository: ActionPlanSessionRepository,
+  val deliverySessionService: DeliverySessionService,
+  private val deliverySessionRepository: DeliverySessionRepository,
 ) {
 
   fun createDraftActionPlan(
@@ -94,7 +94,7 @@ class ActionPlanService(
     actionPlan.approvedAt = OffsetDateTime.now()
     actionPlan.approvedBy = authUserRepository.save(user)
 
-    actionPlanSessionsService.createUnscheduledSessionsForActionPlan(actionPlan)
+    deliverySessionService.createUnscheduledSessionsForActionPlan(actionPlan)
     val approvedActionPlan = actionPlanRepository.save(actionPlan)
     actionPlanEventPublisher.actionPlanApprovedEvent(approvedActionPlan)
     return approvedActionPlan
@@ -110,7 +110,7 @@ class ActionPlanService(
   }
 
   fun getAllAttendedAppointments(actionPlan: ActionPlan): List<Appointment> {
-    return actionPlanSessionRepository.findAllByActionPlanId(actionPlan.id)
+    return deliverySessionRepository.findAllByReferralId(actionPlan.referral.id)
       .flatMap { it.appointments }
       .filter {
         it.appointmentFeedbackSubmittedAt != null &&

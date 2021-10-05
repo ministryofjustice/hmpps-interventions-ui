@@ -7,31 +7,34 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSessionDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanSessionsService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanSessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
 import java.time.OffsetDateTime
+import java.util.UUID
 
-internal class ActionPlanSessionControllerTest {
-  private val sessionsService = mock<ActionPlanSessionsService>()
+internal class DeliverySessionControllerTest {
+  private val sessionsService = mock<DeliverySessionService>()
   private val locationMapper = mock<LocationMapper>()
   private val appointmentValidator = mock<AppointmentValidator>()
   private val authUserRepository = mock<AuthUserRepository>()
+  private val actionPlanService = mock<ActionPlanService>()
   private val userMapper = UserMapper(authUserRepository)
 
-  private val sessionsController = ActionPlanSessionController(sessionsService, locationMapper, userMapper, appointmentValidator)
+  private val sessionsController = DeliverySessionController(actionPlanService, sessionsService, locationMapper, userMapper, appointmentValidator)
   private val actionPlanFactory = ActionPlanFactory()
-  private val actionPlanSessionFactory = ActionPlanSessionFactory()
+  private val deliverySessionFactory = DeliverySessionFactory()
   private val jwtTokenFactory = JwtTokenFactory()
   private val authUserFactory = AuthUserFactory()
 
@@ -39,9 +42,9 @@ internal class ActionPlanSessionControllerTest {
   fun `updates a session`() {
     val user = authUserFactory.create()
     val userToken = jwtTokenFactory.create(user)
-    val actionPlanSession = actionPlanSessionFactory.createScheduled(createdBy = user)
-    val actionPlanId = actionPlanSession.actionPlan.id
-    val sessionNumber = actionPlanSession.sessionNumber
+    val deliverySession = deliverySessionFactory.createScheduled(createdBy = user)
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = deliverySession.sessionNumber
 
     val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null)
 
@@ -57,40 +60,44 @@ internal class ActionPlanSessionControllerTest {
         null,
         null
       )
-    ).thenReturn(actionPlanSession)
+    ).thenReturn(deliverySession)
 
     val sessionResponse = sessionsController.updateSessionAppointment(actionPlanId, sessionNumber, updateAppointmentDTO, userToken)
 
-    assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+    assertThat(sessionResponse).isEqualTo(DeliverySessionDTO.from(deliverySession))
   }
 
   @Nested
   inner class GetSession {
     @Test
     fun `gets a session`() {
-      val actionPlanSession = actionPlanSessionFactory.createScheduled()
-      val sessionNumber = actionPlanSession.sessionNumber
-      val actionPlanId = actionPlanSession.actionPlan.id
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val sessionNumber = deliverySession.sessionNumber
+      val actionPlanId = UUID.randomUUID()
+      val actionPlan = actionPlanFactory.create(referral = deliverySession.referral)
 
-      whenever(sessionsService.getSession(actionPlanId, sessionNumber)).thenReturn(actionPlanSession)
+      whenever(actionPlanService.getActionPlan(actionPlanId)).thenReturn(actionPlan)
+      whenever(sessionsService.getSession(deliverySession.referral.id, sessionNumber)).thenReturn(deliverySession)
 
-      val sessionResponse = sessionsController.getSession(actionPlanId, sessionNumber)
+      val sessionResponse = sessionsController.getSessionForActionPlanId(actionPlanId, sessionNumber)
 
-      assertThat(sessionResponse).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+      assertThat(sessionResponse).isEqualTo(DeliverySessionDTO.from(deliverySession))
     }
   }
 
   @Test
   fun `gets a list of sessions`() {
-    val actionPlanSession = actionPlanSessionFactory.createScheduled()
-    val actionPlanId = actionPlanSession.actionPlan.id
+    val deliverySession = deliverySessionFactory.createScheduled()
+    val actionPlanId = UUID.randomUUID()
+    val actionPlan = actionPlanFactory.create(referral = deliverySession.referral)
 
-    whenever(sessionsService.getSessions(actionPlanId)).thenReturn(listOf(actionPlanSession))
+    whenever(actionPlanService.getActionPlan(actionPlanId)).thenReturn(actionPlan)
+    whenever(sessionsService.getSessions(deliverySession.referral.id)).thenReturn(listOf(deliverySession))
 
-    val sessionsResponse = sessionsController.getSessions(actionPlanId)
+    val sessionsResponse = sessionsController.getSessionsForActionPlan(actionPlanId)
 
     assertThat(sessionsResponse.size).isEqualTo(1)
-    assertThat(sessionsResponse.first()).isEqualTo(ActionPlanSessionDTO.from(actionPlanSession))
+    assertThat(sessionsResponse.first()).isEqualTo(DeliverySessionDTO.from(deliverySession))
   }
 
   @Test
@@ -101,8 +108,7 @@ internal class ActionPlanSessionControllerTest {
     val actionPlan = actionPlanFactory.create()
     val sessionNumber = 1
 
-    val updatedSession = actionPlanSessionFactory.createAttended(
-      actionPlan = actionPlan,
+    val updatedSession = deliverySessionFactory.createAttended(
       sessionNumber = sessionNumber,
       attended = Attended.YES,
       additionalAttendanceInformation = "more info"
