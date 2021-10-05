@@ -240,14 +240,21 @@ describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress', async () => {
     const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
     const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({
+      firstName: 'caseWorkerFirstName',
+      lastName: 'caseWorkerLastName',
+    })
+
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
+      assignedTo: hmppsAuthUser,
     })
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)
