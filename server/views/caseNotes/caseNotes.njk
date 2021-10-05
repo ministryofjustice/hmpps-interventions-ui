@@ -1,5 +1,7 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{%- from "moj/components/badge/macro.njk" import mojBadge -%}
+
 {% extends "../partials/referralNavigationTemplate.njk" %}
 {% set pageTitle = "Referral" %}
 {% set pageSubTitle = "Case notes" %}
@@ -11,6 +13,6 @@
     </form>
 
     <p class="govuk-body">See all case notes about {{ serviceUserName }}</p>
-    {{ govukTable(tableArgs) }}
+    {{ govukTable(tableArgs(mojBadge)) }}
     {% include "../partials/pagination.njk" %}
 {% endblock %}

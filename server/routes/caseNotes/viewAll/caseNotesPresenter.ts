@@ -12,6 +12,7 @@ interface CaseNotesTableRow {
   sentAtDate: string
   sentAtTime: string
   sentBy: string
+  sentByUserType: 'probation practitioner' | 'service provider'
   subject: string
   body: string
   caseNoteLink: string
@@ -61,6 +62,7 @@ export default class CaseNotesPresenter {
       sentAtDate: DateUtils.formattedDate(caseNote.sentAt),
       sentAtTime: DateUtils.formattedTime(caseNote.sentAt),
       sentBy: officerName,
+      sentByUserType: caseNote.sentBy.authSource === 'delius' ? 'probation practitioner' : 'service provider',
       subject: caseNote.subject,
       body: caseNote.body,
       caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}`,

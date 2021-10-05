@@ -11,7 +11,7 @@ export default class CaseNotesView {
     href: this.presenter.hrefBackLink,
   }
 
-  private get tableArgs(): TableArgs {
+  private tableArgs(mojBadgeMacro: (args: { text: string; classes: string }) => string): TableArgs {
     if (this.presenter.tableRows.length === 0) {
       return { rows: [] }
     }
@@ -24,7 +24,18 @@ export default class CaseNotesView {
       rows: this.presenter.tableRows.map(row => {
         return [
           {
-            html: `<p class="govuk-body">${row.sentAtDay}<br>${row.sentAtDate}<br>${row.sentAtTime}<br>${row.sentBy}</p>`,
+            html: `<p class="govuk-body">
+          ${row.sentAtDay}
+          <br>${row.sentAtDate}
+          <br>${row.sentAtTime}
+          <br>${row.sentBy}
+          <br><br>${mojBadgeMacro({
+            text: row.sentByUserType,
+            classes: `moj-badge--single-line ${
+              row.sentByUserType === 'probation practitioner' ? 'moj-badge--grey' : 'moj-badge--purple'
+            }`,
+          })}
+        </p>`,
           },
           {
             html: `<p class="govuk-body">
@@ -48,7 +59,7 @@ export default class CaseNotesView {
         backLinkArgs: this.backLinkArgs,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
-        tableArgs: this.tableArgs,
+        tableArgs: this.tableArgs.bind(this),
         serviceUserName: this.presenter.serviceUserName,
       },
     ]
