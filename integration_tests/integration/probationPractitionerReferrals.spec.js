@@ -184,6 +184,7 @@ describe('Probation practitioner referrals dashboard', () => {
           firstName: 'John',
           lastName: 'Smith',
           username: 'john.smith',
+          email: 'john.smith@example.com',
         })
         assignedReferral = sentReferralFactory.build({
           assignedTo: { username: hmppsAuthUser.username },
@@ -210,6 +211,7 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
         cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
       })
+
       describe('when the referral has been assigned and the appointment scheduled', () => {
         describe('and the appointment is in the past', () => {
           it('should show the initial appointment as awaiting feedback and a link to view appointment details', () => {
@@ -225,12 +227,12 @@ describe('Probation practitioner referrals dashboard', () => {
             cy.login()
             cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
+            cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
             cy.contains('Initial assessment appointment')
               .next()
               .contains('The appointment has been scheduled by the supplier')
               .next()
               .within(() => {
-                cy.contains('Caseworker').next().contains('John Smith')
                 cy.contains('Appointment status').next().contains('awaiting feedback')
                 cy.contains('To do').next().contains('View appointment details').click()
                 cy.location('pathname').should(
@@ -255,12 +257,13 @@ describe('Probation practitioner referrals dashboard', () => {
             cy.login()
             cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
+            cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
+
             cy.contains('Initial assessment appointment')
               .next()
               .contains('The appointment has been scheduled by the supplier')
               .next()
               .within(() => {
-                cy.contains('Caseworker').next().contains('John Smith')
                 cy.contains('Appointment status').next().contains('scheduled')
                 cy.contains('To do').next().contains('View appointment details').click()
                 cy.location('pathname').should(
@@ -278,12 +281,13 @@ describe('Probation practitioner referrals dashboard', () => {
           cy.login()
           cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
+          cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
+
           cy.contains('Initial assessment appointment')
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
             .within(() => {
-              cy.contains('Caseworker').next().contains('John Smith')
               cy.contains('Appointment status').next().contains('completed')
               cy.contains('To do').next().contains('View feedback').click()
               cy.location('pathname').should(
@@ -300,12 +304,13 @@ describe('Probation practitioner referrals dashboard', () => {
           cy.login()
           cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
+          cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
+
           cy.contains('Initial assessment appointment')
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
             .within(() => {
-              cy.contains('Caseworker').next().contains('John Smith')
               cy.contains('Appointment status').next().contains('did not attend')
               cy.contains('To do').next().contains('View feedback').click()
               cy.location('pathname').should(

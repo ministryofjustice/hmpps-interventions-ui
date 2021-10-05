@@ -19,10 +19,6 @@ export default class InterventionProgressView {
     return {
       rows: [
         {
-          key: { text: 'Caseworker' },
-          value: { text: this.presenter.supplierAssessmentCaseworker },
-        },
-        {
           key: { text: 'Appointment status' },
           value: {
             html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentSessionStatusPresenter, args =>

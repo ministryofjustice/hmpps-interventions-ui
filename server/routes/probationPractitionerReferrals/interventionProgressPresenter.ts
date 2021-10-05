@@ -54,7 +54,7 @@ export default class InterventionProgressPresenter {
   }
 
   get referralAssigned(): boolean {
-    return this.referral.assignedTo !== null
+    return this.assignee !== null
   }
 
   get referralEndRequested(): boolean {
@@ -71,6 +71,14 @@ export default class InterventionProgressPresenter {
 
   readonly text = {
     title: `${utils.convertToTitleCase(this.intervention.contractType.name)} progress`,
+  }
+
+  get assignedCaseworkerFullName(): string | null {
+    return this.referralAssigned ? `${this.assignee!.firstName} ${this.assignee!.lastName}` : null
+  }
+
+  get assignedCaseworkerEmail(): string | null {
+    return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
   readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/start`
@@ -207,10 +215,6 @@ export default class InterventionProgressPresenter {
       default:
         throw new Error('unexpected status')
     }
-  }
-
-  get supplierAssessmentCaseworker(): string {
-    return this.assignee ? `${this.assignee.firstName} ${this.assignee.lastName}` : ''
   }
 
   get supplierAssessmentLink(): { text: string; href: string } | null {
