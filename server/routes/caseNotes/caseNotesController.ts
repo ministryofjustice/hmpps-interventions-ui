@@ -36,8 +36,9 @@ export default class CaseNotesController {
     loggedInUserType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
+    const pageNumber = req.query.page
     const paginationQuery = {
-      page: Number(req.query.page),
+      page: pageNumber ? Number(pageNumber) : undefined,
       size: 5,
       sort: ['sentAt,DESC'],
     }
