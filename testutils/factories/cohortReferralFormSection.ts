@@ -2,7 +2,7 @@ import { Factory } from 'fishery'
 import {
   ReferralFormMultiListSectionPresenter,
   ReferralFormStatus,
-} from '../../server/routes/referrals/form/referralFormPresenter'
+} from '../../server/routes/makeAReferral/form/referralFormPresenter'
 import utils from '../../server/utils/utils'
 
 class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSectionPresenter> {
