@@ -52,7 +52,7 @@ import config from '../../config'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { RestClientError } from '../../data/restClient'
 
-export default class ReferralsController {
+export default class MakeAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,

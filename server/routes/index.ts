@@ -7,7 +7,7 @@ import HmppsAuthService from '../services/hmppsAuthService'
 import StaticContentController from './staticContent/staticContentController'
 import CommonController from './common/commonController'
 import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
-import ReferralsController from './makeAReferral/referralsController'
+import MakeAReferralController from './makeAReferral/makeAReferralController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
 import DraftsService from '../services/draftsService'
 import ReferenceDataService from '../services/referenceDataService'
@@ -71,62 +71,73 @@ export default function routes(router: Router, services: Services): Router {
 }
 
 function probationPractitionerRoutesWithoutPrefix(router: Router, services: Services): Router {
-  const referralsController = new ReferralsController(
-    services.interventionsService,
-    services.communityApiService,
-    services.assessRisksAndNeedsService
-  )
   const findInterventionsController = new FindInterventionsController(services.interventionsService)
-
-  get(router, '/intervention/:interventionId/refer', (req, res) => referralsController.startReferral(req, res))
-  post(router, '/intervention/:interventionId/refer', (req, res) => referralsController.createReferral(req, res))
-  get(router, '/referrals/:id/form', (req, res) => referralsController.viewReferralForm(req, res))
-  get(router, '/referrals/:id/service-user-details', (req, res) => referralsController.viewServiceUserDetails(req, res))
-  post(router, '/referrals/:id/service-user-details', (req, res) =>
-    referralsController.confirmServiceUserDetails(req, res)
-  )
-  get(router, '/referrals/:id/service-categories', (req, res) => referralsController.updateServiceCategories(req, res))
-  post(router, '/referrals/:id/service-categories', (req, res) => referralsController.updateServiceCategories(req, res))
-  get(router, '/referrals/:referralId/service-category/:serviceCategoryId/complexity-level', (req, res) =>
-    referralsController.viewOrUpdateComplexityLevel(req, res)
-  )
-  post(router, '/referrals/:referralId/service-category/:serviceCategoryId/complexity-level', (req, res) =>
-    referralsController.viewOrUpdateComplexityLevel(req, res)
-  )
-  get(router, '/referrals/:id/completion-deadline', (req, res) => referralsController.viewCompletionDeadline(req, res))
-  post(router, '/referrals/:id/completion-deadline', (req, res) =>
-    referralsController.updateCompletionDeadline(req, res)
-  )
-  get(router, '/referrals/:id/further-information', (req, res) => referralsController.viewFurtherInformation(req, res))
-  post(router, '/referrals/:id/further-information', (req, res) =>
-    referralsController.updateFurtherInformation(req, res)
-  )
-  get(router, '/referrals/:id/relevant-sentence', (req, res) => referralsController.viewRelevantSentence(req, res))
-  post(router, '/referrals/:id/relevant-sentence', (req, res) => referralsController.updateRelevantSentence(req, res))
-  get(router, '/referrals/:referralId/service-category/:serviceCategoryId/desired-outcomes', (req, res) =>
-    referralsController.viewOrUpdateDesiredOutcomes(req, res)
-  )
-  post(router, '/referrals/:referralId/service-category/:serviceCategoryId/desired-outcomes', (req, res) =>
-    referralsController.viewOrUpdateDesiredOutcomes(req, res)
-  )
-  get(router, '/referrals/:id/needs-and-requirements', (req, res) =>
-    referralsController.viewNeedsAndRequirements(req, res)
-  )
-  post(router, '/referrals/:id/needs-and-requirements', (req, res) =>
-    referralsController.updateNeedsAndRequirements(req, res)
-  )
-  get(router, '/referrals/:id/risk-information', (req, res) => referralsController.viewRiskInformation(req, res))
-  post(router, '/referrals/:id/risk-information', (req, res) => referralsController.updateRiskInformation(req, res))
-  get(router, '/referrals/:id/enforceable-days', (req, res) => referralsController.viewEnforceableDays(req, res))
-  post(router, '/referrals/:id/enforceable-days', (req, res) => referralsController.updateEnforceableDays(req, res))
-  get(router, '/referrals/:id/check-answers', (req, res) => referralsController.checkAnswers(req, res))
-  post(router, '/referrals/:id/send', (req, res) => referralsController.sendDraftReferral(req, res))
-  get(router, '/referrals/:id/confirmation', (req, res) => referralsController.viewConfirmation(req, res))
-
   get(router, '/find-interventions', (req, res) => findInterventionsController.search(req, res))
   get(router, '/find-interventions/intervention/:id', (req, res) =>
     findInterventionsController.viewInterventionDetails(req, res)
   )
+
+  const makeAReferralController = new MakeAReferralController(
+    services.interventionsService,
+    services.communityApiService,
+    services.assessRisksAndNeedsService
+  )
+  get(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.startReferral(req, res))
+  post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res))
+  get(router, '/referrals/:id/form', (req, res) => makeAReferralController.viewReferralForm(req, res))
+  get(router, '/referrals/:id/service-user-details', (req, res) =>
+    makeAReferralController.viewServiceUserDetails(req, res)
+  )
+  post(router, '/referrals/:id/service-user-details', (req, res) =>
+    makeAReferralController.confirmServiceUserDetails(req, res)
+  )
+  get(router, '/referrals/:id/service-categories', (req, res) =>
+    makeAReferralController.updateServiceCategories(req, res)
+  )
+  post(router, '/referrals/:id/service-categories', (req, res) =>
+    makeAReferralController.updateServiceCategories(req, res)
+  )
+  get(router, '/referrals/:referralId/service-category/:serviceCategoryId/complexity-level', (req, res) =>
+    makeAReferralController.viewOrUpdateComplexityLevel(req, res)
+  )
+  post(router, '/referrals/:referralId/service-category/:serviceCategoryId/complexity-level', (req, res) =>
+    makeAReferralController.viewOrUpdateComplexityLevel(req, res)
+  )
+  get(router, '/referrals/:id/completion-deadline', (req, res) =>
+    makeAReferralController.viewCompletionDeadline(req, res)
+  )
+  post(router, '/referrals/:id/completion-deadline', (req, res) =>
+    makeAReferralController.updateCompletionDeadline(req, res)
+  )
+  get(router, '/referrals/:id/further-information', (req, res) =>
+    makeAReferralController.viewFurtherInformation(req, res)
+  )
+  post(router, '/referrals/:id/further-information', (req, res) =>
+    makeAReferralController.updateFurtherInformation(req, res)
+  )
+  get(router, '/referrals/:id/relevant-sentence', (req, res) => makeAReferralController.viewRelevantSentence(req, res))
+  post(router, '/referrals/:id/relevant-sentence', (req, res) =>
+    makeAReferralController.updateRelevantSentence(req, res)
+  )
+  get(router, '/referrals/:referralId/service-category/:serviceCategoryId/desired-outcomes', (req, res) =>
+    makeAReferralController.viewOrUpdateDesiredOutcomes(req, res)
+  )
+  post(router, '/referrals/:referralId/service-category/:serviceCategoryId/desired-outcomes', (req, res) =>
+    makeAReferralController.viewOrUpdateDesiredOutcomes(req, res)
+  )
+  get(router, '/referrals/:id/needs-and-requirements', (req, res) =>
+    makeAReferralController.viewNeedsAndRequirements(req, res)
+  )
+  post(router, '/referrals/:id/needs-and-requirements', (req, res) =>
+    makeAReferralController.updateNeedsAndRequirements(req, res)
+  )
+  get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
+  post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))
+  get(router, '/referrals/:id/enforceable-days', (req, res) => makeAReferralController.viewEnforceableDays(req, res))
+  post(router, '/referrals/:id/enforceable-days', (req, res) => makeAReferralController.updateEnforceableDays(req, res))
+  get(router, '/referrals/:id/check-answers', (req, res) => makeAReferralController.checkAnswers(req, res))
+  post(router, '/referrals/:id/send', (req, res) => makeAReferralController.sendDraftReferral(req, res))
+  get(router, '/referrals/:id/confirmation', (req, res) => makeAReferralController.viewConfirmation(req, res))
 
   return router
 }
