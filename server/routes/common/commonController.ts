@@ -9,4 +9,8 @@ export default class CommonController {
   async deliverySchedule(req: Request, res: Response): Promise<void> {
     ControllerUtils.renderWithLayout(res, { renderArgs: ['common/deliverySchedule', {}] }, null)
   }
+
+  async accessibilityStatement(req: Request, res: Response): Promise<void> {
+    ControllerUtils.renderWithLayout(res, { renderArgs: ['common/accessibilityStatement', {}] }, null)
+  }
 }
