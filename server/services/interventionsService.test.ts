@@ -1469,6 +1469,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     endRequestedAt: null,
     endRequestedReason: null,
     endRequestedComments: null,
+    endOfServiceReportCreationRequired: false,
     concludedAt: null,
     endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',

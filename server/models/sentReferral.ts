@@ -15,5 +15,6 @@ export default interface SentReferral {
   endRequestedReason: string | null
   endRequestedComments: string | null
   endOfServiceReport: EndOfServiceReport | null
+  endOfServiceReportCreationRequired: boolean
   concludedAt: string | null
 }
