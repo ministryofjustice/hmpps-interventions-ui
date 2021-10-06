@@ -34,7 +34,7 @@ export default class RelevantSentenceView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/relevantSentence',
+      'makeAReferral/relevantSentence',
       {
         presenter: this.presenter,
         radioButtonArgs: this.radioButtonArgs,

@@ -21,7 +21,7 @@ export default class ReferralStartView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/start',
+      'makeAReferral/start',
       {
         presenter: this.presenter,
         crnInputArgs: this.crnInputArgs(),

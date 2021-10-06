@@ -26,7 +26,7 @@ export default class FurtherInformationView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/furtherInformation',
+      'makeAReferral/furtherInformation',
       {
         presenter: this.presenter,
         textAreaArgs: this.textAreaArgs,

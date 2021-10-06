@@ -32,7 +32,7 @@ export default class EnforceableDaysView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/enforceableDays',
+      'makeAReferral/enforceableDays',
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,

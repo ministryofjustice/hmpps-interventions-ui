@@ -35,7 +35,7 @@ export default class ComplexityLevelView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/complexityLevel',
+      'makeAReferral/complexityLevel',
       {
         presenter: this.presenter,
         radioButtonArgs: this.radioButtonArgs,

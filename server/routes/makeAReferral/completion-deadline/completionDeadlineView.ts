@@ -50,7 +50,7 @@ export default class CompletionDeadlineView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/completionDeadline',
+      'makeAReferral/completionDeadline',
       {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,

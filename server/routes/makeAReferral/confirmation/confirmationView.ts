@@ -14,7 +14,7 @@ export default class ConfirmationView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/confirmation',
+      'makeAReferral/confirmation',
       {
         presenter: this.presenter,
         panelArgs: this.panelArgs,

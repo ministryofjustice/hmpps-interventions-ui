@@ -34,7 +34,7 @@ export default class DesiredOutcomesView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/desiredOutcomes',
+      'makeAReferral/desiredOutcomes',
       {
         presenter: this.presenter,
         checkboxArgs: this.checkboxArgs,

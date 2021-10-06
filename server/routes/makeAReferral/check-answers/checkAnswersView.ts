@@ -39,7 +39,7 @@ export default class CheckAnswersView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/checkAnswers',
+      'makeAReferral/checkAnswers',
       {
         presenter: this.presenter,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,

@@ -31,7 +31,7 @@ export default class UpdateServiceCategoriesView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/updateServiceCategories',
+      'makeAReferral/updateServiceCategories',
       {
         presenter: this.presenter,
         checkboxArgs: this.checkboxArgs,

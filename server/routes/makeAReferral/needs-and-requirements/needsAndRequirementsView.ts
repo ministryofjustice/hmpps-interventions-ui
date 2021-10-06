@@ -121,7 +121,7 @@ export default class NeedsAndRequirementsView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/needsAndRequirements',
+      'makeAReferral/needsAndRequirements',
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,

@@ -20,7 +20,7 @@ export default class ReferralFormView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/form',
+      'makeAReferral/form',
       {
         presenter: this.presenter,
         ...ReferralFormView.helpers,

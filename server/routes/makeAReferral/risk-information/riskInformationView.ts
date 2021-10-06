@@ -25,7 +25,7 @@ export default class RiskInformationView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/riskInformation',
+      'makeAReferral/riskInformation',
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,

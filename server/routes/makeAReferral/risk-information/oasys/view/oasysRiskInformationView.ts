@@ -79,7 +79,7 @@ export default class OasysRiskInformationView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/riskInformationOasys',
+      'makeAReferral/riskInformationOasys',
       {
         riskSummary: this.presenter.riskSummary.summary,
         riskSummaryResponse: this.riskSummaryResponse,

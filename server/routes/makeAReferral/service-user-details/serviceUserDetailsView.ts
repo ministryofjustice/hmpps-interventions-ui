@@ -10,7 +10,7 @@ export default class ServiceUserDetailsView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'referrals/serviceUserDetails',
+      'makeAReferral/serviceUserDetails',
       {
         presenter: this.presenter,
         summaryListArgs: this.summaryListArgs,
