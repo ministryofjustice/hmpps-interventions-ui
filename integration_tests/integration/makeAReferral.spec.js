@@ -10,7 +10,7 @@ import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 
-describe('Referral form', () => {
+describe('When making a referral', () => {
   const deliusServiceUser = deliusServiceUserFactory.build({
     firstName: 'Alex',
     contactDetails: {
