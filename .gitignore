@@ -29,3 +29,4 @@ integration_tests/screenshots/
 !secrets-example.yaml
 !**/templates/secrets.yaml
 pact/
+browser/build/

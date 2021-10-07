@@ -19,6 +19,6 @@
     "strict": true,
     "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist", "script"],
+  "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist", "script", "browser"],
   "include": ["**/*.js", "**/*.ts"]
 }

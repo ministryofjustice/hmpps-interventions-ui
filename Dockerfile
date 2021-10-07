@@ -62,6 +62,9 @@ COPY --from=build --chown=appuser:appgroup \
 COPY --from=build --chown=appuser:appgroup \
        /app/reference-data ./reference-data
 
+COPY --from=build --chown=appuser:appgroup \
+       /app/browser/build ./browser/build
+
 EXPOSE 3000
 ENV NODE_ENV='production'
 USER 2000

@@ -25,7 +25,7 @@
     {
       "plugins": ["@typescript-eslint"],
       "parser": "@typescript-eslint/parser",
-      "parserOptions": { "project": ["./tsconfig.json", "script/tsconfig.json"] },
+      "parserOptions": { "project": ["./tsconfig.json", "script/tsconfig.json", "browser/tsconfig.json"] },
       "files": ["**/*.ts"],
       "excludedFiles": "*.js",
       "extends": [

@@ -5,3 +5,4 @@ cypress.json
 reporter-config.json
 dist/
 script/build/
+browser/build/
