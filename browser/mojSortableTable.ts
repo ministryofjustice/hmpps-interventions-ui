@@ -54,7 +54,8 @@ class PersistentSortOrder {
   private static observeAttributeChanges(tablePersistentId: string) {
     const headers = document.querySelectorAll('thead th')
 
-    headers.forEach(header => {
+    // IE11 doesn't allow us to call `forEach` on NodeListOf<Element>
+    Array.prototype.forEach.call(headers, header => {
       const headerAriaSortAttribute = header.getAttribute('aria-sort')
 
       if (headerAriaSortAttribute === null) {
@@ -69,7 +70,8 @@ class PersistentSortOrder {
   }
 
   private static headingAttributesChanged(tablePersistentId: string, mutationsList: MutationRecord[]) {
-    mutationsList.forEach(mutation => {
+    // IE11 doesn't allow us to call `forEach` on NodeListOf<Element>
+    Array.prototype.forEach.call(mutationsList, mutation => {
       if (mutation.type === 'attributes') {
         // All of the table’s headers receive mutation events, so
         // we need to figure out which of these was actually clicked. We do that
@@ -92,7 +94,8 @@ class PersistentSortOrder {
           return
         }
 
-        if (['descending', 'ascending'].includes(newAriaSort)) {
+        // IE11 doesn't support `.includes`, so we're using `indexOf` here.
+        if (['descending', 'ascending'].indexOf(newAriaSort) > -1) {
           this.persistSortOrder(tablePersistentId, columnPersistentId, newAriaSort)
         }
       }
@@ -159,7 +162,25 @@ class PersistentSortOrder {
   private static forceSortOrder(table: HTMLElement, sortOrder: SortOrderDTO) {
     const headers = table.querySelectorAll('thead th') as NodeListOf<HTMLTableCellElement>
 
-    const header = Array.from(headers).find(aheader => aheader.dataset.persistentId === sortOrder.columnPersistentId)
+    let header: HTMLTableCellElement | undefined
+
+    // polyfill for IE11, which doesn't support `.from`
+    if (!Array.from) {
+      const tempArray: HTMLTableCellElement[] = []
+      const { length } = headers
+      for (let i = 0; i < length; i += 1) {
+        tempArray.push(headers[i])
+      }
+
+      for (let i = 0; i < tempArray.length; i += 1) {
+        if (tempArray[i].dataset.persistentId === sortOrder.columnPersistentId) {
+          header = tempArray[i]
+          break
+        }
+      }
+    } else {
+      header = Array.from(headers).find(aheader => aheader.dataset.persistentId === sortOrder.columnPersistentId)
+    }
 
     if (header === undefined) {
       console.warn("Couldn't find header with persistent ID ", sortOrder.columnPersistentId)
