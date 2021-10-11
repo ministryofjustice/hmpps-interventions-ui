@@ -158,6 +158,7 @@ export default function createApp(
     '/assets',
     '/assets/stylesheets',
     '/assets/js',
+    '/browser/build',
     '/node_modules/govuk-frontend/govuk/assets',
     '/node_modules/govuk-frontend',
     '/node_modules/@ministryofjustice/frontend/moj/assets',

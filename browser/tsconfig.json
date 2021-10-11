@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["es2019", "dom"],
+    "outDir": "./build",
+    "typeRoots": ["../node_modules/@types", "../browser_types"]
+  },
+  "exclude": ["build"],
+  "include": ["**/*.ts"]
+}
