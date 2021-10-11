@@ -154,6 +154,9 @@ describe(RiskPresenter, () => {
             const presenter = new RiskPresenter(riskRosh)
 
             expect(presenter.formattedOverallRoshScore).toEqual(riskInCommunityString.replace('_', ' '))
+            expect(presenter.overallRoshStyle).toEqual(
+              `rosh-analysis-table--${riskInCommunityString.replace('_', '-').toLowerCase()}`
+            )
           })
         }
       )

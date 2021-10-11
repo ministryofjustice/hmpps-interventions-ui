@@ -1,24 +1,59 @@
-.refer-and-monitor-rosh-analysis-table {
-  border: 2px solid govuk-colour('red');
+$refer-and-monitor-rosh-low-colour: #85994b;
+$refer-and-monitor-rosh-medium-colour: #f47738;
+$refer-and-monitor-rosh-high-colour: #d4351c;
+$refer-and-monitor-rosh-very-high-colour: #942514;
+
+.refer-and-monitor__rosh-analysis-table {
+  border: 2px solid;
   padding: 20px;
 
+  .rosh-analysis-table__header {
+    margin-bottom: 0;
+  }
 
-  .last-updated {
+  .rosh-analysis-table__subheader {
+    margin-bottom: 10px;
+  }
+
+  .rosh-analysis-table__last-updated {
     color: $govuk-secondary-text-colour;
     margin-bottom: 5px;
   }
-}
 
-.rosh-header {
-  color: #942514;
-  margin-bottom: 0;
-}
+  &.rosh-analysis-table--low {
+    border-color: $refer-and-monitor-rosh-low-colour;
 
-.rosh-header-low {
-  color: #485b10;
-  margin-bottom: 0;
-}
+    .rosh-analysis-table__header {
+      color: $refer-and-monitor-rosh-low-colour;
+    }
 
-.rosh-subheader {
-  margin-bottom: 10px;
+  }
+
+  &.rosh-analysis-table--medium {
+    border-color: $refer-and-monitor-rosh-medium-colour;
+
+    .rosh-analysis-table__header {
+      color: $refer-and-monitor-rosh-medium-colour;
+    }
+
+  }
+
+  &.rosh-analysis-table--high {
+    border-color: $refer-and-monitor-rosh-high-colour;
+
+    .rosh-analysis-table__header {
+      color: $refer-and-monitor-rosh-high-colour;
+    }
+
+  }
+
+  &.rosh-analysis-table--very-high {
+    border-color: $refer-and-monitor-rosh-very-high-colour;
+
+    .rosh-analysis-table__header {
+      color: $refer-and-monitor-rosh-very-high-colour;
+    }
+
+  }
+
 }

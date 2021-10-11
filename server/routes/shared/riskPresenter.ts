@@ -61,6 +61,21 @@ export default class RiskPresenter {
     return this.overallRoshScore.replace('_', ' ')
   }
 
+  get overallRoshStyle(): string {
+    switch (this.overallRoshScore) {
+      case 'LOW':
+        return 'rosh-analysis-table--low'
+      case 'MEDIUM':
+        return 'rosh-analysis-table--medium'
+      case 'HIGH':
+        return 'rosh-analysis-table--high'
+      case 'VERY_HIGH':
+        return 'rosh-analysis-table--very-high'
+      default:
+        return ''
+    }
+  }
+
   get roshAnalysisRows(): RoshAnalysisTableRow[] {
     if (this.riskSummary === null) return []
 
