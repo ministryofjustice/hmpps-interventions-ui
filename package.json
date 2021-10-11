@@ -153,7 +153,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.31.2",
     "@typescript-eslint/parser": "^4.31.1",
-    "concurrently": "^6.2.1",
+    "concurrently": "^6.3.0",
     "cypress": "^8.4.1",
     "cypress-multi-reporters": "^1.5.0",
     "eslint": "^7.32.0",
