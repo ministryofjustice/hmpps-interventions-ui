@@ -161,5 +161,17 @@ describe(RiskPresenter, () => {
         }
       )
     })
+
+    describe('when the highest risk summary is something unexpected', () => {
+      it(`returns UNDEFINED`, () => {
+        const riskRosh = createRiskSummary({
+          UNEXPECTED: ['prisoners'],
+        })
+
+        const presenter = new RiskPresenter(riskRosh)
+
+        expect(presenter.formattedOverallRoshScore).toEqual('UNDEFINED')
+      })
+    })
   })
 })

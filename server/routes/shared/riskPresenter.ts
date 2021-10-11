@@ -51,6 +51,8 @@ export default class RiskPresenter {
     // next, rinse and repeat.
     while (riskInCommunity[roshRankings[i]] === undefined) {
       i += 1
+      // If we've run out of rankings, short circuit and return 'UNDEFINED'
+      if (i > roshRankings.length) return 'UNDEFINED'
     }
 
     // Return whichever roshRanking was the first defined one we came across
