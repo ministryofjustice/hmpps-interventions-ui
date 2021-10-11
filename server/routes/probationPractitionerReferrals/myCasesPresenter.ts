@@ -12,13 +12,13 @@ export default class MyCasesPresenter {
   readonly navItemsPresenter = new DashboardNavPresenter('My cases')
 
   readonly tableHeadings: SortableTableHeaders = [
-    { text: 'Date sent', sort: 'none' },
-    { text: 'Referral', sort: 'none' },
-    { text: 'Service user', sort: 'ascending' },
-    { text: 'Intervention type', sort: 'none' },
-    { text: 'Provider', sort: 'none' },
-    { text: 'Caseworker', sort: 'none' },
-    { text: 'Action', sort: 'none' },
+    { text: 'Date sent', sort: 'none', persistentId: 'dateSent' },
+    { text: 'Referral', sort: 'none', persistentId: 'referenceNumber' },
+    { text: 'Service user', sort: 'ascending', persistentId: 'serviceUser' },
+    { text: 'Intervention type', sort: 'none', persistentId: 'interventionType' },
+    { text: 'Provider', sort: 'none', persistentId: 'provider' },
+    { text: 'Caseworker', sort: 'none', persistentId: 'caseworker' },
+    { text: 'Action', sort: 'none', persistentId: 'action' },
   ]
 
   readonly tableRows: SortableTableRow[] = this.sentReferrals.map(referral => {

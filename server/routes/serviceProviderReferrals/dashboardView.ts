@@ -7,7 +7,7 @@ export default class DashboardView {
 
   private get tableArgs(): TableArgs {
     const { tableHeadings, tableRows } = this.presenter
-    return ViewUtils.sortableTable(tableHeadings, tableRows)
+    return ViewUtils.sortableTable('serviceProviderDashboard', tableHeadings, tableRows)
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
