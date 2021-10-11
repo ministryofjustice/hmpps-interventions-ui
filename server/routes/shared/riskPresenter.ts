@@ -1,6 +1,7 @@
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import config from '../../config'
 import DateUtils from '../../utils/dateUtils'
+import logger from '../../../log'
 
 export interface RoshAnalysisTableRow {
   riskTo: string
@@ -51,8 +52,14 @@ export default class RiskPresenter {
     // next, rinse and repeat.
     while (riskInCommunity[roshRankings[i]] === undefined) {
       i += 1
-      // If we've run out of rankings, short circuit and return 'UNDEFINED'
-      if (i > roshRankings.length) return 'UNDEFINED'
+      // If we've run out of rankings then log an error, short circuit and
+      // return 'UNDEFINED'
+      if (i > roshRankings.length) {
+        logger.error({
+          err: `Unable to get ROSH score from risk in community response: ${Object.keys(riskInCommunity)}`,
+        })
+        return 'UNDEFINED'
+      }
     }
 
     // Return whichever roshRanking was the first defined one we came across
