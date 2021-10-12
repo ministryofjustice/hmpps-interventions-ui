@@ -1,8 +1,13 @@
 import OasysRiskInformationPresenter from './oasysRiskInformationPresenter'
 import { Risk } from '../../../../../models/assessRisksAndNeeds/riskSummary'
+import RiskView from '../../../../shared/riskView'
 
 export default class OasysRiskInformationView {
-  constructor(private readonly presenter: OasysRiskInformationPresenter) {}
+  riskView: RiskView
+
+  constructor(private readonly presenter: OasysRiskInformationPresenter) {
+    this.riskView = new RiskView(this.presenter.riskPresenter, 'probation-practitioner')
+  }
 
   private get additionalRiskInformationResponse(): { class: string; text: string } | undefined {
     if (this.presenter.supplementaryRiskInformation != null) {
@@ -83,6 +88,8 @@ export default class OasysRiskInformationView {
         additionalRiskInformation: this.presenter.supplementaryRiskInformation?.riskSummaryComments,
         additionalRiskInformationResponse: this.additionalRiskInformationResponse,
         latestAssessment: this.presenter.latestAssessment,
+        roshPanelPresenter: this.presenter.riskPresenter,
+        roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
       },
     ]
   }

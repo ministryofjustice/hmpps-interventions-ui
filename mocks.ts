@@ -159,7 +159,7 @@ export default async function setUpMocks(): Promise<void> {
       supplementaryRiskInformationFactory.build()
     ),
     communityApiMocks.stubGetActiveConvictionsByCRN('CRN24', [deliusConvictionFactory.build()]),
-    communityApiMocks.stubGetServiceUserByCRN('CRN24', deliusServiceUser.build()),
+    communityApiMocks.stubGetServiceUserByCRN('CRN24', deliusServiceUser.build({ otherIds: { crn: 'CRN24' } })),
     communityApiMocks.stubGetConvictionById('CRN24', 'null', deliusConvictionFactory.build()),
     interventionsMocks.stubGetActionPlanAppointment(
       '1',

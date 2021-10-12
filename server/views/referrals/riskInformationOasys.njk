@@ -66,5 +66,13 @@
         {% endif %}
         <p class="govuk-body">{{ additionalRiskInformation | escape | nl2br }}</p>
     </div>
+    <div class="govuk-grid-column-one-third">
+      <div class="refer-and-monitor__rosh-analysis-table {{ roshPanelPresenter.overallRoshStyle }}">
+        <p class="rosh-analysis-table__header"><strong>{{ roshPanelPresenter.formattedOverallRoshScore }}</strong> RoSH</p>
+        <p class="rosh-analysis-table__subheader">Risk of serious harm</p>
+        <p class="rosh-analysis-table__last-updated">{{ roshPanelPresenter.lastUpdated }}</p>
+        {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
+      </div>
+    </div>
   </div>
 {% endblock %}
