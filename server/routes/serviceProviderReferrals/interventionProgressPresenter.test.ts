@@ -514,7 +514,7 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('canSubmitEndOfServiceReport', () => {
-    describe('when the end of service report creation is required', () => {
+    describe('when the end of service report creation flag is true on the referral', () => {
       it('returns true', () => {
         const referral = sentReferralFactory.build({ endOfServiceReportCreationRequired: true })
         const intervention = interventionFactory.build()
@@ -530,20 +530,62 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
       })
     })
-    describe('when the end of service report creation is not yet required', () => {
-      it('returns false', () => {
-        const referral = sentReferralFactory.build({ endOfServiceReportCreationRequired: false })
-        const intervention = interventionFactory.build()
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          null,
-          [],
-          supplierAssessmentFactory.build(),
-          null
-        )
 
-        expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
+    describe('when the end of service report creation flag is false on the referral', () => {
+      describe('when there is an end of service report but it has not been submitted', () => {
+        it('returns true', () => {
+          const endOfServiceReport = endOfServiceReportFactory.notSubmitted().build()
+          const referral = sentReferralFactory.build({ endOfServiceReport, endOfServiceReportCreationRequired: false })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build(),
+            null
+          )
+
+          expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
+        })
+      })
+
+      describe('when there is an end of service report and it has been submitted', () => {
+        it('returns false', () => {
+          const endOfServiceReport = endOfServiceReportFactory.submitted().build()
+          const referral = sentReferralFactory.build({ endOfServiceReport, endOfServiceReportCreationRequired: false })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build(),
+            null
+          )
+
+          expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
+        })
+      })
+
+      describe('when there is no end of service report', () => {
+        it('returns false', () => {
+          const referral = sentReferralFactory.build({
+            endOfServiceReport: null,
+            endOfServiceReportCreationRequired: false,
+          })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            null,
+            [],
+            supplierAssessmentFactory.build(),
+            null
+          )
+
+          expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
+        })
       })
     })
   })
