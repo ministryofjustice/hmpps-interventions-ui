@@ -14,6 +14,10 @@
      {{ govukNotificationBanner(cancelledReferralNotificationBannerArgs) }}
   {% endif %}
 
+  {% if presenter.referralAssigned %}
+    <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.assignedCaseworkerFullName }}</strong> (<a href="mailto:{{ presenter.assignedCaseworkerEmail }}">{{ presenter.assignedCaseworkerEmail }}</a>).</p>
+  {% endif %}
+
   <h2 class="govuk-heading-m">Initial assessment appointment</h2>
 
   {% if presenter.referralAssigned %}

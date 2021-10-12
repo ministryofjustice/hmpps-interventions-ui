@@ -10,6 +10,7 @@ import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
 import { ActionPlanAppointment } from '../../models/appointment'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 interface EndedFields {
   endRequestedAt: string | null
@@ -34,7 +35,8 @@ export default class InterventionProgressPresenter {
     private readonly intervention: Intervention,
     private readonly actionPlan: ActionPlan | null,
     private readonly actionPlanAppointments: ActionPlanAppointment[],
-    private readonly supplierAssessment: SupplierAssessment
+    private readonly supplierAssessment: SupplierAssessment,
+    private readonly assignee: AuthUserDetails | null
   ) {
     const subNavUrlPrefix = 'service-provider'
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -46,7 +48,15 @@ export default class InterventionProgressPresenter {
   }
 
   get referralAssigned(): boolean {
-    return this.referral.assignedTo !== null
+    return this.assignee !== null
+  }
+
+  get assignedCaseworkerFullName(): string | null {
+    return this.referralAssigned ? `${this.assignee!.firstName} ${this.assignee!.lastName}` : null
+  }
+
+  get assignedCaseworkerEmail(): string | null {
+    return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
   readonly text = {

@@ -220,21 +220,36 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('referralAssigned', () => {
-    it('returns false when the referral has no assignee', () => {
-      const referral = sentReferralFactory.unassigned().build()
-      const intervention = interventionFactory.build()
-      const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+    describe('when there is no assignee', () => {
+      it('returns false', () => {
+        const referral = sentReferralFactory.unassigned().build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-      expect(presenter.referralAssigned).toEqual(false)
+        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+
+        expect(presenter.referralAssigned).toEqual(false)
+      })
     })
-    it('returns true when the referral has an assignee', () => {
-      const referral = sentReferralFactory.assigned().build()
-      const intervention = interventionFactory.build()
-      const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
 
-      expect(presenter.referralAssigned).toEqual(true)
+    describe('when there is an assignee', () => {
+      it('returns true', () => {
+        const referral = sentReferralFactory.unassigned().build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          supplierAssessment,
+          assignee
+        )
+
+        expect(presenter.referralAssigned).toEqual(true)
+      })
     })
   })
 
@@ -511,16 +526,16 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
-  describe('supplierAssessmentCaseworker', () => {
+  describe('assignedCaseworkerFullName', () => {
     describe('when the referral has no assignee', () => {
-      it('returns an empty string', () => {
+      it('returns null', () => {
         const referral = sentReferralFactory.unassigned().build()
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
         const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
 
-        expect(presenter.supplierAssessmentCaseworker).toEqual('')
+        expect(presenter.assignedCaseworkerFullName).toEqual(null)
       })
     })
 
@@ -540,7 +555,41 @@ describe(InterventionProgressPresenter, () => {
           assignee
         )
 
-        expect(presenter.supplierAssessmentCaseworker).toEqual('Liam Johnson')
+        expect(presenter.assignedCaseworkerFullName).toEqual('Liam Johnson')
+      })
+    })
+  })
+
+  describe('assignedCaseworkerEmail', () => {
+    describe('when the referral has no assignee', () => {
+      it('returns null', () => {
+        const referral = sentReferralFactory.unassigned().build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+
+        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+
+        expect(presenter.assignedCaseworkerEmail).toEqual(null)
+      })
+    })
+
+    describe('when the referral has an assignee', () => {
+      it('returns the assignee’s email address', () => {
+        const referral = sentReferralFactory.assigned().build()
+        const intervention = interventionFactory.build()
+        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+        const assignee = hmppsAuthUserFactory.build({ email: 'liam.johnson@justice.gov.uk' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          supplierAssessment,
+          assignee
+        )
+
+        expect(presenter.assignedCaseworkerEmail).toEqual('liam.johnson@justice.gov.uk')
       })
     })
   })

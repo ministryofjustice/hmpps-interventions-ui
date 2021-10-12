@@ -53,8 +53,20 @@ export default class ShowReferralPresenter {
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/start`
 
   readonly text = {
-    assignedTo: this.assigneeFullNameOrUnassigned,
     errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
+    noCaseworkerAssigned: 'This intervention is not yet assigned to a caseworker.',
+  }
+
+  get referralAssigned(): boolean {
+    return this.assignee !== null
+  }
+
+  get assignedCaseworkerFullName(): string | null {
+    return this.referralAssigned ? `${this.assignee!.firstName} ${this.assignee!.lastName}` : null
+  }
+
+  get assignedCaseworkerEmail(): string | null {
+    return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
   readonly probationPractitionerDetails: SummaryListItem[] = [
@@ -275,13 +287,5 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
       },
     ]
-  }
-
-  private get assigneeFullNameOrUnassigned(): string | null {
-    if (!this.assignee) {
-      return null
-    }
-
-    return `${this.assignee.firstName} ${this.assignee.lastName}`
   }
 }

@@ -203,12 +203,21 @@ export default class ServiceProviderReferralsController {
       )
     }
 
+    const assignee =
+      sentReferral.assignedTo === null
+        ? null
+        : await this.hmppsAuthService.getSPUserByUsername(
+            res.locals.user.token.accessToken,
+            sentReferral.assignedTo.username
+          )
+
     const presenter = new InterventionProgressPresenter(
       sentReferral,
       intervention,
       actionPlan,
       actionPlanAppointments,
-      supplierAssessment
+      supplierAssessment,
+      assignee
     )
     const view = new InterventionProgressView(presenter)
 

@@ -8,6 +8,7 @@ import supplierAssessmentFactory from '../../../testutils/factories/supplierAsse
 import initialAssessmentAppointmentFactory from '../../../testutils/factories/initialAssessmentAppointment'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import { SessionStatus } from '../../utils/sessionStatus'
+import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 
 describe(InterventionProgressPresenter, () => {
   describe('referralEnded', () => {
@@ -19,7 +20,8 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
-        supplierAssessmentFactory.build()
+        supplierAssessmentFactory.build(),
+        null
       )
 
       expect(presenter.referralEnded).toEqual(true)
@@ -32,7 +34,8 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
-        supplierAssessmentFactory.build()
+        supplierAssessmentFactory.build(),
+        null
       )
 
       expect(presenter.referralEnded).toEqual(false)
@@ -48,7 +51,8 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
-        supplierAssessmentFactory.build()
+        supplierAssessmentFactory.build(),
+        null
       )
 
       expect(presenter.referralEndedFields.endRequestedComments).toEqual(referral.endRequestedComments)
@@ -63,7 +67,8 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
-        supplierAssessmentFactory.build()
+        supplierAssessmentFactory.build(),
+        null
       )
 
       expect(presenter.referralEndedFields.endRequestedComments).toBeNull()
@@ -81,7 +86,8 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
-        supplierAssessmentFactory.build()
+        supplierAssessmentFactory.build(),
+        null
       )
 
       expect(presenter.sessionTableRows).toEqual([])
@@ -101,7 +107,8 @@ describe(InterventionProgressPresenter, () => {
             actionPlanAppointmentFactory.build({ sessionNumber: 3 }),
             actionPlanAppointmentFactory.build({ sessionNumber: 1 }),
           ],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
         expect(presenter.sessionTableRows.map(row => row.sessionNumber)).toEqual([1, 2, 3])
       })
@@ -117,7 +124,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           actionPlan,
           [actionPlanAppointmentFactory.newlyCreated().build()],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
         expect(presenter.sessionTableRows).toEqual([
           {
@@ -151,7 +159,8 @@ describe(InterventionProgressPresenter, () => {
               durationInMinutes: 120,
             }),
           ],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
         expect(presenter.sessionTableRows).toEqual([
           {
@@ -187,7 +196,8 @@ describe(InterventionProgressPresenter, () => {
               actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
               actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
             ],
-            supplierAssessmentFactory.build()
+            supplierAssessmentFactory.build(),
+            null
           )
 
           expect(presenter.sessionTableRows).toEqual([
@@ -227,7 +237,8 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             actionPlan,
             [actionPlanAppointmentFactory.attended('no').build()],
-            supplierAssessmentFactory.build()
+            supplierAssessmentFactory.build(),
+            null
           )
 
           expect(presenter.sessionTableRows).toEqual([
@@ -258,7 +269,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.text).toMatchObject({
@@ -277,7 +289,8 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
-            supplierAssessmentFactory.build()
+            supplierAssessmentFactory.build(),
+            null
           )
 
           expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Not submitted' })
@@ -294,7 +307,8 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
-            supplierAssessmentFactory.build()
+            supplierAssessmentFactory.build(),
+            null
           )
 
           expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Not submitted' })
@@ -311,7 +325,8 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
-            supplierAssessmentFactory.build()
+            supplierAssessmentFactory.build(),
+            null
           )
 
           expect(presenter.text).toMatchObject({ endOfServiceReportStatus: 'Submitted' })
@@ -321,33 +336,125 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('referralAssigned', () => {
-    it('returns false when the referral has no assignee', () => {
-      const referral = sentReferralFactory.unassigned().build()
-      const intervention = interventionFactory.build()
-      const actionPlan = actionPlanFactory.submitted().build()
-      const presenter = new InterventionProgressPresenter(
-        referral,
-        intervention,
-        actionPlan,
-        [],
-        supplierAssessmentFactory.build()
-      )
+    describe('when there is no assignee', () => {
+      it('returns false', () => {
+        const referral = sentReferralFactory.unassigned().build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build()
 
-      expect(presenter.referralAssigned).toEqual(false)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build(),
+          null
+        )
+
+        expect(presenter.referralAssigned).toEqual(false)
+      })
     })
-    it('returns true when the referral has an assignee', () => {
-      const referral = sentReferralFactory.assigned().build()
-      const intervention = interventionFactory.build()
-      const actionPlan = actionPlanFactory.submitted().build()
-      const presenter = new InterventionProgressPresenter(
-        referral,
-        intervention,
-        actionPlan,
-        [],
-        supplierAssessmentFactory.build()
-      )
 
-      expect(presenter.referralAssigned).toEqual(true)
+    describe('when there is an assignee', () => {
+      it('returns true', () => {
+        const referral = sentReferralFactory.assigned().build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build()
+        const assignee = hmppsAuthUserFactory.build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build(),
+          assignee
+        )
+
+        expect(presenter.referralAssigned).toEqual(true)
+      })
+    })
+  })
+
+  describe('assignedCaseworkerFullName', () => {
+    describe('when the referral has no assignee', () => {
+      it('returns null', () => {
+        const referral = sentReferralFactory.unassigned().build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build(),
+          null
+        )
+
+        expect(presenter.assignedCaseworkerFullName).toEqual(null)
+      })
+    })
+
+    describe('when the referral has an assignee', () => {
+      it('returns the assignee’s name', () => {
+        const referral = sentReferralFactory.assigned().build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build()
+        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build(),
+          assignee
+        )
+
+        expect(presenter.assignedCaseworkerFullName).toEqual('Liam Johnson')
+      })
+    })
+  })
+
+  describe('assignedCaseworkerEmail', () => {
+    describe('when the referral has no assignee', () => {
+      it('returns null', () => {
+        const referral = sentReferralFactory.unassigned().build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build(),
+          null
+        )
+
+        expect(presenter.assignedCaseworkerEmail).toEqual(null)
+      })
+    })
+
+    describe('when the referral has an assignee', () => {
+      it('returns the assignee’s email address', () => {
+        const referral = sentReferralFactory.assigned().build()
+        const intervention = interventionFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build()
+        const assignee = hmppsAuthUserFactory.build({ email: 'liam.johnson@justice.gov.uk' })
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          supplierAssessmentFactory.build(),
+          assignee
+        )
+
+        expect(presenter.assignedCaseworkerEmail).toEqual('liam.johnson@justice.gov.uk')
+      })
     })
   })
 
@@ -361,7 +468,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportStatusStyle).toEqual('inactive')
@@ -378,7 +486,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportStatusStyle).toEqual('inactive')
@@ -395,7 +504,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportStatusStyle).toEqual('active')
@@ -413,7 +523,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.canSubmitEndOfServiceReport).toEqual(true)
@@ -428,7 +539,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.canSubmitEndOfServiceReport).toEqual(false)
@@ -446,7 +558,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportSubmitted).toEqual(false)
@@ -463,7 +576,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportSubmitted).toEqual(false)
@@ -480,7 +594,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportSubmitted).toEqual(true)
@@ -498,7 +613,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportButtonActionText).toEqual('Create')
@@ -515,7 +631,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportButtonActionText).toEqual('Continue')
@@ -532,7 +649,8 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.endOfServiceReportButtonActionText).toEqual(null)
@@ -550,7 +668,8 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.supplierAssessmentLink).toEqual([
@@ -573,7 +692,8 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build()
+            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build(),
+            null
           )
 
           expect(presenter.supplierAssessmentLink).toEqual([
@@ -594,7 +714,10 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build()).build()
+            supplierAssessmentFactory
+              .withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build())
+              .build(),
+            null
           )
 
           expect(presenter.supplierAssessmentLink).toEqual([
@@ -616,7 +739,8 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
-          supplierAssessmentFactory.withAttendedAppointment.build()
+          supplierAssessmentFactory.withAttendedAppointment.build(),
+          null
         )
 
         expect(presenter.supplierAssessmentLink).toEqual([
@@ -637,7 +761,8 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
-          supplierAssessmentFactory.withNonAttendedAppointment.build()
+          supplierAssessmentFactory.withNonAttendedAppointment.build(),
+          null
         )
 
         expect(presenter.supplierAssessmentLink).toEqual([
@@ -660,7 +785,8 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
-          supplierAssessmentFactory.build()
+          supplierAssessmentFactory.build(),
+          null
         )
 
         expect(presenter.supplierAssessmentMessage).toEqual(
@@ -679,7 +805,8 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build()
+            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build(),
+            null
           )
 
           expect(presenter.supplierAssessmentMessage).toEqual(
@@ -697,7 +824,10 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
-            supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build()).build()
+            supplierAssessmentFactory
+              .withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build())
+              .build(),
+            null
           )
 
           expect(presenter.supplierAssessmentMessage).toEqual(
@@ -716,7 +846,8 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
-          supplierAssessmentFactory.withAttendedAppointment.build()
+          supplierAssessmentFactory.withAttendedAppointment.build(),
+          null
         )
 
         expect(presenter.supplierAssessmentMessage).toEqual(
@@ -734,7 +865,8 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
-          supplierAssessmentFactory.withNonAttendedAppointment.build()
+          supplierAssessmentFactory.withNonAttendedAppointment.build(),
+          null
         )
 
         expect(presenter.supplierAssessmentMessage).toEqual(
@@ -753,7 +885,8 @@ describe(InterventionProgressPresenter, () => {
         interventionFactory.build(),
         null,
         [],
-        supplierAssessment
+        supplierAssessment,
+        null
       )
 
       expect(presenter.supplierAssessmentStatusPresenter.text).toEqual('not scheduled')

@@ -299,7 +299,12 @@ describe('Service provider referrals dashboard', () => {
       const deliusUser = deliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
-      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+      const hmppsAuthUser = hmppsAuthUserFactory.build({
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john.smith',
+        email: 'john.smith@example.com',
+      })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
       const responsibleOfficer = deliusOffenderManagerFactory.build()
       let referralSummary = serviceProviderSentReferralSummaryFactory
@@ -318,14 +323,18 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+      cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
 
       cy.login()
 
-      cy.visit(`/service-provider/referrals/${referral.id}/details`)
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+      cy.contains('Once a caseworker has been assigned the initial assessment can be booked.')
+
+      cy.contains('Referral details').click()
 
       cy.get('h2').contains('Who do you want to assign this referral to?')
 
-      cy.get('#email').type('john@harmonyliving.org.uk')
+      cy.get('#email').type('john.smith@example.com')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should(
@@ -357,7 +366,10 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('john.smith')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
-      cy.contains('This intervention is assigned to John Smith.')
+      cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
+
+      cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+      cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
     })
 
     it('User re-assigns a referral to a different caseworker', () => {
@@ -376,6 +388,7 @@ describe('Service provider referrals dashboard', () => {
         firstName: 'John',
         lastName: 'Smith',
         username: 'john.smith',
+        email: 'john.smith@example.com',
       })
       const referral = sentReferralFactory
         .assigned()
@@ -407,7 +420,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
 
-      cy.contains('This intervention is assigned to John Smith.')
+      cy.contains('This intervention is assigned to John Smith (john.smith@example.com).')
 
       cy.get('h2').contains('Who do you want to assign this referral to?')
 
@@ -415,11 +428,12 @@ describe('Service provider referrals dashboard', () => {
         firstName: 'Anna',
         lastName: 'Dawkins',
         username: 'anna.dawkins',
+        email: 'anna.dawkins@example.com',
       })
       cy.stubGetAuthUserByEmailAddress([newAssignee])
       cy.stubGetAuthUserByUsername(newAssignee.username, newAssignee)
 
-      cy.get('#email').type('anna@harmonyliving.org.uk')
+      cy.get('#email').type('anna.dawkins@example.com')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should(
@@ -446,7 +460,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('h1').contains('Caseworker assigned')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)
-      cy.contains('This intervention is assigned to Anna Dawkins.')
+      cy.contains('This intervention is assigned to Anna Dawkins (anna.dawkins@example.com).')
     })
   })
 
@@ -1150,6 +1164,12 @@ describe('Service provider referrals dashboard', () => {
         surname: 'Smith',
         username: 'john.smith',
       })
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
+
       const actionPlan = actionPlanFactory.submitted().build({
         referralId: referralParams.id,
         numberOfSessions: 4,
@@ -1172,7 +1192,7 @@ describe('Service provider referrals dashboard', () => {
 
       const assignedReferral = sentReferralFactory.assigned().build({
         ...referralParams,
-        assignedTo: { username: probationPractitioner.username },
+        assignedTo: { username: serviceProvider.username },
         actionPlanId: actionPlan.id,
       })
 
@@ -1185,6 +1205,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -1304,6 +1325,11 @@ describe('Service provider referrals dashboard', () => {
         surname: 'Smith',
         username: 'john.smith',
       })
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
       const actionPlan = actionPlanFactory.submitted().build({
         referralId: referralParams.id,
         numberOfSessions: 4,
@@ -1326,7 +1352,7 @@ describe('Service provider referrals dashboard', () => {
 
       const assignedReferral = sentReferralFactory.assigned().build({
         ...referralParams,
-        assignedTo: { username: probationPractitioner.username },
+        assignedTo: { username: serviceProvider.username },
         actionPlanId: actionPlan.id,
       })
 
@@ -1339,6 +1365,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -1430,6 +1457,11 @@ describe('Service provider referrals dashboard', () => {
       contractType: { code: 'ACC', name: 'accommodation' },
       serviceCategories: [serviceCategory],
     })
+    const serviceProvider = hmppsAuthUserFactory.build({
+      firstName: 'Case',
+      lastName: 'Worker',
+      username: 'case.worker',
+    })
     const referralParams = {
       id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
       referral: {
@@ -1437,6 +1469,7 @@ describe('Service provider referrals dashboard', () => {
         serviceCategoryId: serviceCategory.id,
         serviceUser: { crn },
       },
+      assignedTo: serviceProvider,
     }
     const deliusServiceUser = deliusServiceUserFactory.build()
     const probationPractitioner = deliusUserFactory.build({
@@ -1473,7 +1506,9 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
       cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
       cy.stubGetSupplierAssessment(referralParams.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
     })
+
     it('allows users to know if, when and why an intervention was cancelled', () => {
       const endedReferral = sentReferralFactory
         .endRequested()
@@ -1495,6 +1530,7 @@ describe('Service provider referrals dashboard', () => {
       )
       cy.contains("Additional information: you'll be seeing alex again soon i'm sure!")
     })
+
     it('allows users to know that they should still concluded non concluded but ended referrals', () => {
       const endedReferral = sentReferralFactory.endRequested().build({
         ...referralParams,
@@ -1506,10 +1542,11 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Please note that an end of service report must still be submitted within 10 working days.')
     })
+
     it('allows users to click through to a page to view session feedback', () => {
       const assignedReferral = sentReferralFactory.assigned().build({
         ...referralParams,
-        assignedTo: { username: probationPractitioner.username },
+        assignedTo: { username: serviceProvider.username },
         actionPlanId: actionPlan.id,
       })
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
@@ -1765,7 +1802,13 @@ describe('Service provider referrals dashboard', () => {
     it('User schedules and views a supplier assessment appointment', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const intervention = interventionFactory.build()
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
       const referral = sentReferralFactory.assigned().build({
+        assignedTo: serviceProvider,
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const supplierAssessment = supplierAssessmentFactory.justCreated.build()
@@ -1778,6 +1821,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
       cy.login()
 
@@ -1863,7 +1907,13 @@ describe('Service provider referrals dashboard', () => {
     it('User schedules a supplier assessment appointment, changing their chosen time after it turns out to cause a clash of appointments', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const intervention = interventionFactory.build()
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
       const referral = sentReferralFactory.assigned().build({
+        assignedTo: serviceProvider,
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const supplierAssessment = supplierAssessmentFactory.justCreated.build()
@@ -1876,6 +1926,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
       cy.login()
 
@@ -1948,7 +1999,13 @@ describe('Service provider referrals dashboard', () => {
     it('User reschedules a supplier assessment appointment', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const intervention = interventionFactory.build()
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
       const referral = sentReferralFactory.assigned().build({
+        assignedTo: serviceProvider,
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const scheduledAppointment = initialAssessmentAppointmentFactory.build({
@@ -1968,6 +2025,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
       cy.login()
 
@@ -2038,11 +2096,17 @@ describe('Service provider referrals dashboard', () => {
         surname: 'Smith',
         username: 'john.smith',
       })
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
       const sentReferral = sentReferralFactory.assigned().build({
         id: 'f437a412-078f-4bbf-82d8-569c2eb9ddb9',
-        assignedTo: { username: probationPractitioner.username },
+        assignedTo: { username: serviceProvider.username },
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
+
       beforeEach(() => {
         cy.stubGetSentReferralsForUserToken([sentReferral])
         cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
@@ -2051,6 +2115,7 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
         cy.stubGetSentReferral(sentReferral.id, sentReferral)
         cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser)
+        cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
       })
 
       describe('when user records the attendance as not attended', () => {

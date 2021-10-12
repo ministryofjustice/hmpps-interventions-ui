@@ -7,8 +7,8 @@
 {% set pageSubTitle = "Details" %}
 
 {% block referralPageSection %}
-      {% if presenter.text.assignedTo != null %}
-        <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.text.assignedTo }}</strong>.</p>
+      {% if presenter.referralAssigned %}
+        <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.assignedCaseworkerFullName }}</strong> (<a href="mailto:{{ presenter.assignedCaseworkerEmail }}">{{ presenter.assignedCaseworkerEmail }}</a>).</p>
       {% endif %}
 
       {% if presenter.canAssignReferral %}
@@ -18,8 +18,8 @@
               {{ govukInput(emailInputArgs) }}
               {{ govukButton({ text: "Save and continue" }) }}
         </form>
-      {% elif presenter.text.assignedTo == null %}
-        <p class="govuk-body">This intervention is not yet assigned to a caseworker.</p>
+      {% elif not presenter.referralAssigned %}
+        <p class="govuk-body">{{ presenter.text.noCaseworkerAssigned }}</p>
       {% endif %}
 
       <h2 class="govuk-heading-m">Intervention details</h2>
