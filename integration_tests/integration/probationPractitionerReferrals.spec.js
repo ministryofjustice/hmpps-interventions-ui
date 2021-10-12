@@ -52,7 +52,7 @@ describe('Probation practitioner referrals dashboard', () => {
         },
       }),
       sentReferralFactory.build({
-        sentAt: '2020-09-13T13:00:00.000000Z',
+        sentAt: '2020-12-13T13:00:00.000000Z',
         assignedTo: {
           username: 'A. Caseworker',
           userId: '123',
@@ -97,7 +97,7 @@ describe('Probation practitioner referrals dashboard', () => {
           Action: 'View',
         },
         {
-          'Date sent': '13 Sep 2020',
+          'Date sent': '13 Dec 2020',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
           'Intervention type': "Women's Services - West Midlands",
@@ -345,7 +345,7 @@ describe('Probation practitioner referrals dashboard', () => {
     })
 
     const referral = sentReferralFactory.build({
-      sentAt: '2020-09-13T13:00:00.000000Z',
+      sentAt: '2020-12-13T13:00:00.000000Z',
       referenceNumber: 'ABCABCA2',
       referral: {
         interventionId: personalWellbeingIntervention.id,

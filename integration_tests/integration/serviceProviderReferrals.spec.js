@@ -66,7 +66,7 @@ describe('Service provider referrals dashboard', () => {
         },
       }),
       sentReferralFactory.build({
-        sentAt: '2020-09-13T13:00:00.000000Z',
+        sentAt: '2020-12-13T13:00:00.000000Z',
         referenceNumber: 'ABCABCA2',
         referral: {
           interventionId: personalWellbeingIntervention.id,
@@ -209,7 +209,7 @@ describe('Service provider referrals dashboard', () => {
           Action: 'View',
         },
         {
-          'Date received': '13 Sep 2020',
+          'Date received': '13 Dec 2020',
           'Intervention type': 'Personal Wellbeing - West Midlands',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
