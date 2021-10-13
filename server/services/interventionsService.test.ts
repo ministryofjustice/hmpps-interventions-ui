@@ -1673,6 +1673,54 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('getServiceProviderSentReferralsSummaryForUserToken', () => {
+    it('returns a list of sent referrals', async () => {
+      const spUserWithAccess = oauth2TokenFactory
+        .transient({
+          authSource: 'auth',
+          userID: '608955ae-52ed-44cc-884c-011597a77949',
+          username: 'AUTH_USER',
+          roles: ['ROLE_CRS_PROVIDER', 'INT_SP_HARMONY_LIVING'],
+        })
+        .build()
+      const sentReferralSummary = {
+        referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
+        referenceNumber: 'JS18726AC',
+        interventionTitle: 'Accommodation Services - West Midlands',
+        assignedToUserName: 'AUTH_USER',
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+        hasEndOfServiceReport: false,
+      }
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned',
+        uponReceiving: 'a request for all sent referral summaries',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals/summary/service-provider',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${spUserWithAccess}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([sentReferralSummary]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+      const summaryResult = await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+        spUserWithAccess
+      )
+      expect(summaryResult.length).toEqual(1)
+      expect(summaryResult[0].referralId).toEqual(sentReferralSummary.referralId)
+      expect(summaryResult[0].referenceNumber).toEqual(sentReferralSummary.referenceNumber)
+      expect(summaryResult[0].interventionTitle).toEqual(sentReferralSummary.interventionTitle)
+      expect(summaryResult[0].assignedToUserName).toEqual(sentReferralSummary.assignedToUserName)
+      expect(summaryResult[0].serviceUserFirstName).toEqual(sentReferralSummary.serviceUserFirstName)
+      expect(summaryResult[0].serviceUserLastName).toEqual(sentReferralSummary.serviceUserLastName)
+      expect(summaryResult[0].hasEndOfServiceReport).toEqual(sentReferralSummary.hasEndOfServiceReport)
+    })
+  })
+
   describe('getReferralsForUserToken', () => {
     it('returns a list of sent referrals', async () => {
       await provider.addInteraction({

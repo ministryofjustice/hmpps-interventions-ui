@@ -26,7 +26,7 @@ describe('Dashboards', () => {
         },
       }),
       sentReferralFactory.build({
-        sentAt: '2020-09-13T13:00:00.000000Z',
+        sentAt: '2020-12-13T13:00:00.000000Z',
         assignedTo: {
           username: 'A. Caseworker',
           userId: '123',
@@ -69,7 +69,7 @@ describe('Dashboards', () => {
               Action: 'View',
             },
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -95,7 +95,7 @@ describe('Dashboards', () => {
           Action: 'View',
         },
         {
-          'Date sent': '13 Sep 2020',
+          'Date sent': '13 Dec 2020',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
           'Intervention type': "Women's Services - West Midlands",
@@ -110,7 +110,7 @@ describe('Dashboards', () => {
           header: 'Date sent',
           sortedTable: [
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -142,7 +142,7 @@ describe('Dashboards', () => {
               Action: 'View',
             },
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -165,7 +165,7 @@ describe('Dashboards', () => {
               Action: 'View',
             },
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -188,7 +188,7 @@ describe('Dashboards', () => {
               Action: 'View',
             },
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -202,7 +202,7 @@ describe('Dashboards', () => {
           header: 'Provider',
           sortedTable: [
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -225,7 +225,7 @@ describe('Dashboards', () => {
           header: 'Caseworker',
           sortedTable: [
             {
-              'Date sent': '13 Sep 2020',
+              'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
               'Service user': 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
@@ -289,226 +289,292 @@ describe('Dashboards', () => {
       title: "Women's Services - West Midlands",
     })
 
-    const sentReferralSummaries = [
-      serviceProviderSentReferralSummaryFactory.build({
-        sentAt: '2021-01-26T13:00:00.000000Z',
-        referenceNumber: 'ABCABCA1',
-        interventionTitle: accommodationIntervention.title,
-        serviceUserFirstName: 'George',
-        serviceUserLastName: 'Michael',
-      }),
-      serviceProviderSentReferralSummaryFactory.build({
-        sentAt: '2020-09-13T13:00:00.000000Z',
-        referenceNumber: 'ABCABCA2',
-        interventionTitle: womensServicesIntervention.title,
-        serviceUserFirstName: 'Jenny',
-        serviceUserLastName: 'Jones',
-        assignedToUserName: 'A.Caseworker',
-      }),
-    ]
-
     beforeEach(() => {
       cy.task('stubServiceProviderToken')
       cy.task('stubServiceProviderAuthUser')
 
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
       cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
-      cy.stubGetServiceProviderSentReferralsSummaryForUserToken(sentReferralSummaries)
     })
 
-    it("SP logs in and sees 'My cases' screen with list of sent referrals", () => {
-      cy.login()
-
-      cy.get('h1').contains('All cases')
-
-      cy.get('table')
-        .getTable()
-        .should('deep.equal', [
-          {
-            'Date received': '26 Jan 2021',
-            Referral: 'ABCABCA1',
-            'Service user': 'George Michael',
-            'Intervention type': 'Accommodation Services - West Midlands',
-            Caseworker: '',
-            Action: 'View',
-          },
-          {
-            'Date received': '13 Sep 2020',
-            Referral: 'ABCABCA2',
-            'Service user': 'Jenny Jones',
-            'Intervention type': "Women's Services - West Midlands",
-            Caseworker: 'A.Caseworker',
-            Action: 'View',
-          },
+    describe('SP logs in and accesses "My cases"', () => {
+      beforeEach(() => {
+        const assignedToSelf = serviceProviderSentReferralSummaryFactory
+          .withAssignedUser('USER1')
+          .build({ referenceNumber: 'ASSIGNED_TO_SELF' })
+        const unassigned = serviceProviderSentReferralSummaryFactory
+          .unassigned()
+          .build({ referenceNumber: 'UNASSIGNED' })
+        const assignedToOther = serviceProviderSentReferralSummaryFactory
+          .withAssignedUser('other')
+          .build({ referenceNumber: 'ASSIGNED_TO_OTHER' })
+        const completed = serviceProviderSentReferralSummaryFactory.completed().build({ referenceNumber: 'COMPLETED' })
+        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([
+          assignedToSelf,
+          unassigned,
+          assignedToOther,
+          completed,
         ])
+        cy.login()
+      })
+
+      it('should see "My cases" and cases that are assigned to themselves only', () => {
+        cy.get('h1').contains('My cases')
+        cy.get('table')
+          .getTable()
+          .should('deep.equal', [
+            {
+              'Date received': '26 Jan 2021',
+              Referral: 'ASSIGNED_TO_SELF',
+              'Service user': 'Jenny Jones',
+              'Intervention type': 'Social Inclusion - West Midlands',
+              Action: 'View',
+            },
+          ])
+      })
+
+      describe('Selecting "All open cases"', () => {
+        it('should see "All open cases" and cases that are not concluded', () => {
+          cy.get('h1').contains('My cases')
+          cy.contains('All open cases').click()
+          cy.get('h1').contains('All open cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'ASSIGNED_TO_SELF',
+                'Service user': 'Jenny Jones',
+                'Intervention type': 'Social Inclusion - West Midlands',
+                Caseworker: 'USER1',
+                Action: 'View',
+              },
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'UNASSIGNED',
+                'Service user': 'Jenny Jones',
+                'Intervention type': 'Social Inclusion - West Midlands',
+                Caseworker: '',
+                Action: 'View',
+              },
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'ASSIGNED_TO_OTHER',
+                'Service user': 'Jenny Jones',
+                'Intervention type': 'Social Inclusion - West Midlands',
+                Caseworker: 'other',
+                Action: 'View',
+              },
+            ])
+        })
+      })
+
+      describe('Selecting "Unassigned cases"', () => {
+        it('should see "Unassigned cases" and cases that are not assigned', () => {
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'UNASSIGNED',
+                'Service user': 'Jenny Jones',
+                'Intervention type': 'Social Inclusion - West Midlands',
+                Action: 'View',
+              },
+            ])
+        })
+      })
+
+      describe('Selecting "Completed cases"', () => {
+        it('should see "Completed cases" and cases that are concluded', () => {
+          cy.get('h1').contains('My cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'COMPLETED',
+                'Service user': 'Jenny Jones',
+                'Intervention type': 'Social Inclusion - West Midlands',
+                Caseworker: '',
+                Action: 'View',
+              },
+            ])
+        })
+      })
     })
 
     describe('Sorting the table', () => {
-      const initialTable = [
-        {
-          'Date received': '26 Jan 2021',
-          Referral: 'ABCABCA1',
-          'Service user': 'George Michael',
-          'Intervention type': 'Accommodation Services - West Midlands',
-          Caseworker: '',
-          Action: 'View',
-        },
-        {
-          'Date received': '13 Sep 2020',
-          Referral: 'ABCABCA2',
-          'Service user': 'Jenny Jones',
-          'Intervention type': "Women's Services - West Midlands",
-          Caseworker: 'A.Caseworker',
-          Action: 'View',
-        },
-      ]
+      const assignedToSelfA = serviceProviderSentReferralSummaryFactory.build({
+        sentAt: '2020-12-13T13:00:00.000000Z',
+        referenceNumber: 'A',
+        interventionTitle: accommodationIntervention.title,
+        serviceUserFirstName: 'Jenny',
+        serviceUserLastName: 'Jones',
+        assignedToUserName: 'USER1',
+        hasEndOfServiceReport: false,
+      })
+      const assignedToSelfB = serviceProviderSentReferralSummaryFactory.build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'B',
+        interventionTitle: womensServicesIntervention.title,
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+        assignedToUserName: 'USER1',
+        hasEndOfServiceReport: false,
+      })
+      const unassignedA = serviceProviderSentReferralSummaryFactory.build({
+        sentAt: '2020-12-13T13:00:00.000000Z',
+        referenceNumber: 'A',
+        interventionTitle: accommodationIntervention.title,
+        serviceUserFirstName: 'Jenny',
+        serviceUserLastName: 'Jones',
+        assignedToUserName: '',
+        hasEndOfServiceReport: false,
+      })
+      const unassignedB = serviceProviderSentReferralSummaryFactory.build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'B',
+        interventionTitle: womensServicesIntervention.title,
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+        assignedToUserName: '',
+        hasEndOfServiceReport: false,
+      })
+      const completedA = serviceProviderSentReferralSummaryFactory.build({
+        sentAt: '2020-12-13T13:00:00.000000Z',
+        referenceNumber: 'A',
+        interventionTitle: accommodationIntervention.title,
+        serviceUserFirstName: 'Jenny',
+        serviceUserLastName: 'Jones',
+        assignedToUserName: 'USER1',
+        hasEndOfServiceReport: true,
+      })
+      const completedB = serviceProviderSentReferralSummaryFactory.build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'B',
+        interventionTitle: womensServicesIntervention.title,
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+        assignedToUserName: 'USER1',
+        hasEndOfServiceReport: true,
+      })
 
-      const headersAndTables = [
+      const rowForReferralAWithNoCaseworkerColumn = {
+        'Date received': '13 Dec 2020',
+        Referral: 'A',
+        'Service user': 'Jenny Jones',
+        'Intervention type': 'Accommodation Services - West Midlands',
+        Action: 'View',
+      }
+      const rowForReferralBWithNoCaseworkerColumn = {
+        'Date received': '26 Jan 2021',
+        Referral: 'B',
+        'Service user': 'George Michael',
+        'Intervention type': "Women's Services - West Midlands",
+        Action: 'View',
+      }
+
+      const rowForReferralAWithCaseworker = {
+        'Date received': '13 Dec 2020',
+        Referral: 'A',
+        'Service user': 'Jenny Jones',
+        'Intervention type': 'Accommodation Services - West Midlands',
+        Caseworker: 'USER1',
+        Action: 'View',
+      }
+
+      const rowForReferralBWithCaseworker = {
+        'Date received': '26 Jan 2021',
+        Referral: 'B',
+        'Service user': 'George Michael',
+        'Intervention type': "Women's Services - West Midlands",
+        Caseworker: 'USER1',
+        Action: 'View',
+      }
+
+      const dashBoardTables = [
         {
-          header: 'Date received',
-          sortedTable: [
+          dashboardType: 'My cases',
+          referrals: [assignedToSelfA, assignedToSelfB],
+          initialTable: [rowForReferralAWithNoCaseworkerColumn, rowForReferralBWithNoCaseworkerColumn],
+          sortedTable: [rowForReferralAWithNoCaseworkerColumn, rowForReferralBWithNoCaseworkerColumn],
+          sortedTables: [
             {
-              'Date received': '13 Sep 2020',
-              Referral: 'ABCABCA2',
-              'Service user': 'Jenny Jones',
-              'Intervention type': "Women's Services - West Midlands",
-              Caseworker: 'A.Caseworker',
-              Action: 'View',
-            },
-            {
-              'Date received': '26 Jan 2021',
-              Referral: 'ABCABCA1',
-              'Service user': 'George Michael',
-              'Intervention type': 'Accommodation Services - West Midlands',
-              Caseworker: '',
-              Action: 'View',
+              header: 'Date received',
             },
           ],
         },
         {
-          header: 'Referral',
-          sortedTable: [
-            {
-              'Date received': '26 Jan 2021',
-              Referral: 'ABCABCA1',
-              'Service user': 'George Michael',
-              'Intervention type': 'Accommodation Services - West Midlands',
-              Caseworker: '',
-              Action: 'View',
-            },
-            {
-              'Date received': '13 Sep 2020',
-              Referral: 'ABCABCA2',
-              'Service user': 'Jenny Jones',
-              'Intervention type': "Women's Services - West Midlands",
-              Caseworker: 'A.Caseworker',
-              Action: 'View',
-            },
-          ],
+          dashboardType: 'All open cases',
+          referrals: [assignedToSelfA, assignedToSelfB],
+          initialTable: [rowForReferralAWithCaseworker, rowForReferralBWithCaseworker],
+          sortedTable: [rowForReferralAWithCaseworker, rowForReferralBWithCaseworker],
         },
         {
-          header: 'Service user',
-          sortedTable: [
-            {
-              'Date received': '13 Sep 2020',
-              Referral: 'ABCABCA2',
-              'Service user': 'Jenny Jones',
-              'Intervention type': "Women's Services - West Midlands",
-              Caseworker: 'A.Caseworker',
-              Action: 'View',
-            },
-            {
-              'Date received': '26 Jan 2021',
-              Referral: 'ABCABCA1',
-              'Service user': 'George Michael',
-              'Intervention type': 'Accommodation Services - West Midlands',
-              Caseworker: '',
-              Action: 'View',
-            },
-          ],
+          dashboardType: 'Unassigned cases',
+          referrals: [unassignedA, unassignedB],
+          initialTable: [rowForReferralAWithNoCaseworkerColumn, rowForReferralBWithNoCaseworkerColumn],
+          sortedTable: [rowForReferralAWithNoCaseworkerColumn, rowForReferralBWithNoCaseworkerColumn],
         },
         {
-          header: 'Intervention type',
-          sortedTable: [
-            {
-              'Date received': '26 Jan 2021',
-              Referral: 'ABCABCA1',
-              'Service user': 'George Michael',
-              'Intervention type': 'Accommodation Services - West Midlands',
-              Caseworker: '',
-              Action: 'View',
-            },
-            {
-              'Date received': '13 Sep 2020',
-              Referral: 'ABCABCA2',
-              'Service user': 'Jenny Jones',
-              'Intervention type': "Women's Services - West Midlands",
-              Caseworker: 'A.Caseworker',
-              Action: 'View',
-            },
-          ],
-        },
-        {
-          header: 'Caseworker',
-          sortedTable: [
-            {
-              'Date received': '26 Jan 2021',
-              Referral: 'ABCABCA1',
-              'Service user': 'George Michael',
-              'Intervention type': 'Accommodation Services - West Midlands',
-              Caseworker: '',
-              Action: 'View',
-            },
-            {
-              'Date received': '13 Sep 2020',
-              Referral: 'ABCABCA2',
-              'Service user': 'Jenny Jones',
-              'Intervention type': "Women's Services - West Midlands",
-              Caseworker: 'A.Caseworker',
-              Action: 'View',
-            },
-          ],
+          dashboardType: 'Completed cases',
+          referrals: [completedA, completedB],
+          initialTable: [rowForReferralAWithCaseworker, rowForReferralBWithCaseworker],
+          sortedTable: [rowForReferralAWithCaseworker, rowForReferralBWithCaseworker],
         },
       ]
 
       const referralToSelect = sentReferralFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
-        referenceNumber: 'ABCABCA1',
+        referenceNumber: 'B',
         referral: {
           interventionId: accommodationIntervention.id,
           serviceUser: { firstName: 'George', lastName: 'Michael' },
         },
       })
 
-      headersAndTables.forEach(({ header, sortedTable }) => {
-        describe(`sorting by "${header}"`, () => {
-          it(`allows the user to sort by "${header}"`, () => {
+      dashBoardTables.forEach(({ dashboardType, referrals, initialTable, sortedTable }) => {
+        describe(`sorting by "Date received" for dashboard "${dashboardType}"`, () => {
+          beforeEach(() => {
+            cy.stubGetServiceProviderSentReferralsSummaryForUserToken(referrals)
+          })
+
+          it(`allows the user to sort by "Date received" for dashboard "${dashboardType}"`, () => {
             cy.login()
+            cy.contains(dashboardType).click()
 
             cy.get('table').getTable().should('deep.equal', initialTable)
 
-            cy.get('table').within(() => cy.contains('button', header).click())
+            cy.get('table').within(() => cy.contains('button', 'Date received').click())
             cy.get('table').getTable().should('deep.equal', sortedTable)
 
-            cy.get('table').within(() => cy.contains('button', header).click())
+            cy.get('table').within(() => cy.contains('button', 'Date received').click())
 
             const reversedTable = [...sortedTable].reverse()
             cy.get('table').getTable().should('deep.equal', reversedTable)
           })
 
-          it('persists the sort order when coming back to the page', () => {
+          it(`persists the sort order when coming back to the page for dashboard "${dashboardType}"`, () => {
             cy.login()
+            cy.contains(dashboardType).click()
 
-            cy.get('table').within(() => cy.contains('button', header).click())
+            cy.get('table').within(() => cy.contains('button', 'Date received').click())
             cy.get('table').getTable().should('deep.equal', sortedTable)
 
             cy.stubViewReferralDetails(referralToSelect)
 
             cy.visit(`/service-provider/referrals/${referralToSelect.id}/details`)
             cy.contains('Back').click()
+            cy.contains(dashboardType).click()
 
             // Wait for header sort button to load, as it means JS has run
-            cy.get('table').within(() => cy.contains('button', header))
+            cy.get('table').within(() => cy.contains('button', 'Date received'))
             cy.get('table').getTable().should('deep.equal', sortedTable)
           })
         })

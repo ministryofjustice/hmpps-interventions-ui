@@ -66,7 +66,7 @@ describe('Service provider referrals dashboard', () => {
         },
       }),
       sentReferralFactory.build({
-        sentAt: '2020-09-13T13:00:00.000000Z',
+        sentAt: '2020-12-13T13:00:00.000000Z',
         referenceNumber: 'ABCABCA2',
         referral: {
           interventionId: personalWellbeingIntervention.id,
@@ -195,8 +195,8 @@ describe('Service provider referrals dashboard', () => {
 
     cy.login()
 
-    cy.get('h1').contains('All cases')
-
+    cy.get('h1').contains('My cases')
+    cy.contains('All open cases').click()
     cy.get('table')
       .getTable()
       .should('deep.equal', [
@@ -209,7 +209,7 @@ describe('Service provider referrals dashboard', () => {
           Action: 'View',
         },
         {
-          'Date received': '13 Sep 2020',
+          'Date received': '13 Dec 2020',
           'Intervention type': 'Personal Wellbeing - West Midlands',
           Referral: 'ABCABCA2',
           'Service user': 'Jenny Jones',
@@ -363,6 +363,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Return to dashboard').click()
 
       cy.location('pathname').should('equal', `/service-provider/dashboard`)
+      cy.contains('All open cases').click()
       cy.contains('john.smith')
 
       cy.visit(`/service-provider/referrals/${referral.id}/details`)

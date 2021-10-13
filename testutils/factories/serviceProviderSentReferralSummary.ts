@@ -23,8 +23,26 @@ class ServiceProviderSentReferralSummaryFactory extends Factory<ServiceProviderS
       assignedToUserName: username,
     })
   }
+
+  unassigned() {
+    return this.params({
+      assignedToUserName: null,
+    })
+  }
+
+  completed() {
+    return this.params({
+      hasEndOfServiceReport: true,
+    })
+  }
+
+  open() {
+    return this.params({
+      hasEndOfServiceReport: false,
+    })
+  }
 }
-export default ServiceProviderSentReferralSummaryFactory.define<ServiceProviderSentReferralSummary>(({ sequence }) => ({
+export default ServiceProviderSentReferralSummaryFactory.define(({ sequence }) => ({
   referralId: sequence.toString(),
   sentAt: '2021-01-26T13:00:00.000000Z',
   referenceNumber: 'ABCABCA2',

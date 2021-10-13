@@ -38,6 +38,7 @@ import { DraftAssignmentData, DraftAppointmentBooking } from './serviceProviderR
 import DraftsService from '../../services/draftsService'
 import MockReferenceDataService from '../testutils/mocks/mockReferenceDataService'
 import ReferenceDataService from '../../services/referenceDataService'
+import serviceProviderSentReferralSummaryFactory from '../../../testutils/factories/serviceProviderSentReferralSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -88,14 +89,14 @@ afterEach(() => {
 })
 
 describe('GET /service-provider/dashboard', () => {
-  it('displays a list of all sent referrals', async () => {
+  it('displays a list of my cases', async () => {
     const referralsSummary: ServiceProviderSentReferralSummary[] = [
       {
         referralId: '1',
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
         interventionTitle: 'Accommodation Services - West Midlands',
-        assignedToUserName: null,
+        assignedToUserName: 'user1',
         serviceUserFirstName: 'George',
         serviceUserLastName: 'Michael',
       },
@@ -104,7 +105,7 @@ describe('GET /service-provider/dashboard', () => {
         sentAt: '2020-10-13T13:00:00.000000Z',
         referenceNumber: 'ABCABCA2',
         interventionTitle: "Women's Services - West Midlands",
-        assignedToUserName: null,
+        assignedToUserName: 'user1',
         serviceUserFirstName: 'Jenny',
         serviceUserLastName: 'Jones',
       },
@@ -116,10 +117,135 @@ describe('GET /service-provider/dashboard', () => {
       .get('/service-provider/dashboard')
       .expect(200)
       .expect(res => {
+        expect(res.text).toContain('My cases')
         expect(res.text).toContain('George Michael')
         expect(res.text).toContain('Accommodation')
         expect(res.text).toContain('Jenny Jones')
         expect(res.text).toContain('Women&#39;s Services - West Midlands')
+      })
+  })
+})
+
+describe('GET /service-provider/dashboard/my-cases', () => {
+  it('displays a list of my cases', async () => {
+    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
+      referenceNumber: 'undefinedRef',
+      assignedToUserName: undefined,
+      hasEndOfServiceReport: undefined,
+    })
+    const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
+      referenceNumber: 'assignedToSelfRef',
+    })
+    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
+      referenceNumber: 'unassignedRef',
+    })
+    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
+      referenceNumber: 'completedRef',
+    })
+    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    await request(app)
+      .get('/service-provider/dashboard')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('My cases')
+        expect(res.text).toContain('assignedToSelfRef')
+        expect(res.text).not.toContain('undefinedRef')
+        expect(res.text).not.toContain('unassignedRef')
+        expect(res.text).not.toContain('completedRef')
+      })
+  })
+})
+
+describe('GET /service-provider/dashboard/all-open-cases', () => {
+  it('displays a list of all open cases', async () => {
+    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
+      referenceNumber: 'undefinedRef',
+      assignedToUserName: undefined,
+      hasEndOfServiceReport: undefined,
+    })
+    const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
+      referenceNumber: 'assignedToSelfRef',
+    })
+    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
+      referenceNumber: 'unassignedRef',
+    })
+    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
+      referenceNumber: 'completedRef',
+    })
+    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    await request(app)
+      .get('/service-provider/dashboard/all-open-cases')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).toContain('assignedToSelfRef')
+        expect(res.text).toContain('undefinedRef')
+        expect(res.text).toContain('unassignedRef')
+        expect(res.text).not.toContain('completedRef')
+      })
+  })
+})
+
+describe('GET /service-provider/dashboard/unassigned-cases', () => {
+  it('displays a list of unassigned cases', async () => {
+    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
+      referenceNumber: 'undefinedRef',
+      assignedToUserName: undefined,
+      hasEndOfServiceReport: undefined,
+    })
+    const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
+      referenceNumber: 'assignedToSelfRef',
+    })
+    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
+      referenceNumber: 'unassignedRef',
+    })
+    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
+      referenceNumber: 'completedRef',
+    })
+    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    await request(app)
+      .get('/service-provider/dashboard/unassigned-cases')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Unassigned cases')
+        expect(res.text).not.toContain('assignedToSelfRef')
+        expect(res.text).toContain('undefinedRef')
+        expect(res.text).toContain('unassignedRef')
+        expect(res.text).not.toContain('completedRef')
+      })
+  })
+})
+
+describe('GET /service-provider/dashboard/completed-cases', () => {
+  it('displays a list of my cases', async () => {
+    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
+      referenceNumber: 'undefinedRef',
+      assignedToUserName: undefined,
+      hasEndOfServiceReport: undefined,
+    })
+    const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
+      referenceNumber: 'assignedToSelfRef',
+    })
+    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
+      referenceNumber: 'unassignedRef',
+    })
+    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
+      referenceNumber: 'completedRef',
+    })
+    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    await request(app)
+      .get('/service-provider/dashboard/completed-cases')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Completed cases')
+        expect(res.text).not.toContain('assignedToSelfRef')
+        expect(res.text).not.toContain('undefinedRef')
+        expect(res.text).not.toContain('unassignedRef')
+        expect(res.text).toContain('completedRef')
       })
   })
 })

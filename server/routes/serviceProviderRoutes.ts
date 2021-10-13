@@ -17,7 +17,18 @@ export default function serviceProviderRoutes(router: Router, services: Services
     services.referenceDataService
   )
 
-  get(router, '/dashboard', (req, res) => serviceProviderReferralsController.showDashboard(req, res))
+  get(router, '/dashboard', (req, res) => serviceProviderReferralsController.showMyCasesDashboard(req, res))
+  get(router, '/dashboard/my-cases', (req, res) => serviceProviderReferralsController.showMyCasesDashboard(req, res))
+  get(router, '/dashboard/all-open-cases', (req, res) =>
+    serviceProviderReferralsController.showAllOpenCasesDashboard(req, res)
+  )
+  get(router, '/dashboard/unassigned-cases', (req, res) =>
+    serviceProviderReferralsController.showUnassignedCasesDashboard(req, res)
+  )
+  get(router, '/dashboard/completed-cases', (req, res) =>
+    serviceProviderReferralsController.showCompletedCasesDashboard(req, res)
+  )
+
   get(router, '/referrals/:id/details', (req, res) => serviceProviderReferralsController.showReferral(req, res))
   get(router, '/referrals/:id/progress', (req, res) =>
     serviceProviderReferralsController.showInterventionProgress(req, res)

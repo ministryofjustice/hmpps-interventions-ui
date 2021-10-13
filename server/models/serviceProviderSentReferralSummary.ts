@@ -6,4 +6,5 @@ export default interface ServiceProviderSentReferralSummary {
   assignedToUserName?: string | null
   serviceUserFirstName: string | null
   serviceUserLastName: string | null
+  hasEndOfServiceReport?: boolean
 }
