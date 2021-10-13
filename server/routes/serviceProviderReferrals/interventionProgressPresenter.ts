@@ -179,7 +179,7 @@ export default class InterventionProgressPresenter {
   }
 
   get canSubmitEndOfServiceReport(): boolean {
-    return this.referral.endOfServiceReportCreationRequired
+    return this.referral.endOfServiceReportCreationRequired || this.endOfServiceReportStarted
   }
 
   private get endOfServiceReportStarted(): boolean {
