@@ -698,4 +698,15 @@ class ReferralServiceUnitTest {
     assertThat(pp.firstName).isEqualTo("dan")
     assertThat(pp.email).isEqualTo("dan@tom.tom")
   }
+
+  @Test
+  fun `gets sent referral`() {
+    val sentReferral = referralFactory.createSent()
+    whenever(referralRepository.findByIdAndSentAtIsNotNull(sentReferral.id)).thenReturn(sentReferral)
+
+    val response = referralService.getSentReferral(sentReferral.id)
+
+    assertThat(response).isSameAs(sentReferral)
+    verify(referralRepository).findByIdAndSentAtIsNotNull(sentReferral.id)
+  }
 }

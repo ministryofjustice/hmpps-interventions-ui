@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization
 
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -15,19 +14,12 @@ class ReferralAccessChecker(
 ) {
   private val userTypeError = "unsupported user type"
   private val insufficientPrivilegeError = "user does not have access to referral"
-  private val roleForApiRead = "ROLE_INTERVENTIONS_API_READ"
 
   fun forUser(referral: Referral, user: AuthUser) {
     when {
       userTypeChecker.isProbationPractitionerUser(user) -> forProbationPractitionerUser(referral, user)
       userTypeChecker.isServiceProviderUser(user) -> forServiceProviderUser(referral, user)
       else -> throw AccessError(user, userTypeError, listOf("logins from ${user.authSource} are not supported"))
-    }
-  }
-
-  fun forRole(referral: Referral, roles: Collection<GrantedAuthority>) {
-    if (roles.stream().noneMatch { it.authority.equals(roleForApiRead) }) {
-      throw AccessError(null, insufficientPrivilegeError, listOf("required role does not exist for api read"))
     }
   }
 

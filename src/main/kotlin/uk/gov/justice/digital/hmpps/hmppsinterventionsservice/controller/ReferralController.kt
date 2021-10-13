@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ClientApiAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSummaryDTO
@@ -48,6 +49,7 @@ class ReferralController(
   private val referralConcluder: ReferralConcluder,
   private val serviceCategoryService: ServiceCategoryService,
   private val userMapper: UserMapper,
+  private val clientApiAccessChecker: ClientApiAccessChecker,
   private val cancellationReasonMapper: CancellationReasonMapper,
   private val actionPlanService: ActionPlanService,
 ) {
@@ -97,7 +99,7 @@ class ReferralController(
   @JsonView(Views.SentReferral::class)
   @GetMapping("/sent-referral/{id}")
   fun getSentReferral(@PathVariable id: UUID, authentication: JwtAuthenticationToken): SentReferralDTO {
-    val referral = getSentReferralForAuthenticatedUser(authentication, id)
+    val referral = getSentReferralAuthenticatedRequest(authentication, id)
     return SentReferralDTO.from(referral, referralConcluder.requiresEndOfServiceReportCreation(referral))
   }
 
@@ -241,6 +243,14 @@ class ReferralController(
     )
   }
 
+  private fun getSentReferralAuthenticatedRequest(authentication: JwtAuthenticationToken, id: UUID) =
+    if (clientApiAccessChecker.isClientRequestWithReadAllRole(authentication)) {
+      referralService.getSentReferral(id)
+        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
+    } else {
+      getSentReferralForAuthenticatedUser(authentication, id)
+    }
+
   private fun getDraftReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
     val user = userMapper.fromToken(authentication)
     return referralService.getDraftReferralForUser(id, user)
@@ -248,12 +258,8 @@ class ReferralController(
   }
 
   private fun getSentReferralForAuthenticatedUser(authentication: JwtAuthenticationToken, id: UUID): Referral {
-    return if (userMapper.isUserRequest(authentication)) {
-      val user = userMapper.fromToken(authentication)
-      referralService.getSentReferralForUser(id, user)
-    } else {
-      referralService.getSentReferralForRole(id, authentication.authorities)
-    }
+    val user = userMapper.fromToken(authentication)
+    return referralService.getSentReferralForUser(id, user)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
   }
 }

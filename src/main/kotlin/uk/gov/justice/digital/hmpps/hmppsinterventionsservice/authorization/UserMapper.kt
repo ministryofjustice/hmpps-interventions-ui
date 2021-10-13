@@ -11,9 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 class UserMapper(
   private val authUserRepository: AuthUserRepository,
 ) {
-  fun isUserRequest(authentication: JwtAuthenticationToken): Boolean =
-    authentication.token.getClaimAsString("user_id") != null
-
   fun fromToken(authentication: JwtAuthenticationToken): AuthUser {
     val errors = mutableListOf<String>()
 
