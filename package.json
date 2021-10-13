@@ -124,7 +124,7 @@
     "jwt-decode": "^2.2.0",
     "nocache": "^3.0.1",
     "nunjucks": "^3.2.3",
-    "passport": "^0.4.1",
+    "passport": "^0.5.0",
     "passport-oauth2": "^1.6.1",
     "redis": "^3.1.1",
     "superagent": "^6.1.0",
