@@ -30,6 +30,7 @@ import broadcastMessageConfig from './broadcast-message-config.json'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
 import DraftsService from './services/draftsService'
 import ReferenceDataService from './services/referenceDataService'
+import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
 
 const RedisStore = connectRedis(session)
 
@@ -217,6 +218,7 @@ export default function createApp(
   app.use('/', indexRoutes(standardRouter(), services))
   app.use(serviceProviderUrlPrefix, serviceProviderRoutes(standardRouter(['ROLE_CRS_PROVIDER']), services))
   app.use(probationPractitionerUrlPrefix, probationPractitionerRoutes(standardRouter(['ROLE_PROBATION']), services))
+  app.use(serviceEditorUrlPrefix, serviceEditorRoutes(standardRouter(['ROLE_INTERVENTIONS_SERVICE_EDITOR']), services))
 
   // final regular middleware is for handling 404s
   app.use((req, res, next) => {
