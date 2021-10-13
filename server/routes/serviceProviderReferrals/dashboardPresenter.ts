@@ -15,15 +15,19 @@ export default class DashboardPresenter {
   private readonly showAssignedCaseworkerColumn =
     this.dashboardType === 'My cases' || this.dashboardType === 'Unassigned cases'
 
+  private readonly dashBoardTypePersistentId = this.dashboardType.replace(/\s/g, '')
+
   readonly title = this.dashboardType
 
   readonly tableHeadings: SortableTableHeaders = [
-    { text: 'Date received', sort: 'none', persistentId: 'dateReceived' },
-    { text: 'Referral', sort: 'none', persistentId: 'referenceNumber' },
-    { text: 'Service user', sort: 'none', persistentId: 'serviceUser' },
-    { text: 'Intervention type', sort: 'none', persistentId: 'interventionType' },
-    this.showAssignedCaseworkerColumn ? null : { text: 'Caseworker', sort: 'none', persistentId: 'caseworker' },
-    { text: 'Action', sort: 'none', persistentId: 'action' },
+    { text: 'Date received', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}DateReceived` },
+    { text: 'Referral', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}ReferenceNumber` },
+    { text: 'Service user', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}ServiceUser` },
+    { text: 'Intervention type', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}InterventionType` },
+    this.showAssignedCaseworkerColumn
+      ? null
+      : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Caseworker` },
+    { text: 'Action', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Action` },
   ].filter(row => row !== null) as SortableTableHeaders
 
   readonly navItemsPresenter = new DashboardNavPresenter('All cases')

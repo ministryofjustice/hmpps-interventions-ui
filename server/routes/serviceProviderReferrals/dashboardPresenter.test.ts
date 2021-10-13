@@ -2,6 +2,19 @@ import DashboardPresenter, { DashboardType } from './dashboardPresenter'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 
 describe(DashboardPresenter, () => {
+  describe('tableHeadings', () => {
+    it('incorporates dashboard type name into persistent id', () => {
+      const presenter = new DashboardPresenter([], 'My cases')
+      expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
+        'MycasesDateReceived',
+        'MycasesReferenceNumber',
+        'MycasesServiceUser',
+        'MycasesInterventionType',
+        'MycasesAction',
+      ])
+    })
+  })
+
   describe('tableRows', () => {
     const displayCaseworkerDashboardTypes: DashboardType[] = ['All open cases', 'Completed cases']
     describe.each(displayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
