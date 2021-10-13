@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProvid
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceUserFactory
 import java.time.Instant
 import java.time.OffsetDateTime
+import java.util.UUID
 import javax.transaction.Transactional
 
 @Transactional
@@ -294,7 +295,8 @@ class ReferralRepositoryTest @Autowired constructor(
         it.dynamicFrameWorkContractId == summary.dynamicFrameWorkContractId &&
         it.assignedToUserName == summary.assignedToUserName &&
         it.serviceUserFirstName == summary.serviceUserFirstName &&
-        it.serviceUserLastName == summary.serviceUserLastName
+        it.serviceUserLastName == summary.serviceUserLastName &&
+        it.endOfServiceReportId == summary.endOfServiceReportId
     }
   }
 
@@ -307,7 +309,8 @@ class ReferralRepositoryTest @Autowired constructor(
       referral.intervention.dynamicFrameworkContract.id.toString(),
       referral.currentAssignee?.id,
       referral.serviceUserData!!.firstName,
-      referral.serviceUserData!!.lastName
+      referral.serviceUserData!!.lastName,
+      referral.endOfServiceReport?.id
     )
 
   @Test
@@ -334,5 +337,6 @@ data class Summary(
   override val dynamicFrameWorkContractId: String,
   override val assignedToUserName: String?,
   override val serviceUserFirstName: String?,
-  override val serviceUserLastName: String?
+  override val serviceUserLastName: String?,
+  override val endOfServiceReportId: UUID?,
 ) : ServiceProviderSentReferralSummary
