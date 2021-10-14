@@ -54,6 +54,12 @@ export default class InterventionProgressView {
     return {
       rows: [
         {
+          key: { text: 'Date and time' },
+          value: {
+            text: this.presenter.supplierAssessmentAppointmentDateAndTime,
+          },
+        },
+        {
           key: { text: 'Appointment status' },
           value: {
             html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>

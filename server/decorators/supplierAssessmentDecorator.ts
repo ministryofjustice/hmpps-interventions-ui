@@ -1,5 +1,6 @@
 import { InitialAssessmentAppointment } from '../models/appointment'
 import SupplierAssessment from '../models/supplierAssessment'
+import DateUtils from '../utils/dateUtils'
 
 export default class SupplierAssessmentDecorator {
   constructor(private readonly supplierAssessment: SupplierAssessment) {}
@@ -17,5 +18,13 @@ export default class SupplierAssessmentDecorator {
     }
 
     return currentAppointment
+  }
+
+  appointmentDateAndTime(appointment: InitialAssessmentAppointment | null): string {
+    if (appointment === null || appointment.appointmentTime === null) {
+      return 'N/A'
+    }
+
+    return DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short', timeCasing: 'capitalized' })
   }
 }

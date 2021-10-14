@@ -198,6 +198,12 @@ export default class InterventionProgressPresenter {
     new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
   )
 
+  get supplierAssessmentAppointmentDateAndTime(): string {
+    const supplierAssessmentDecorator = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    return supplierAssessmentDecorator.appointmentDateAndTime(supplierAssessmentDecorator.currentAppointment)
+  }
+
   get supplierAssessmentMessage(): string {
     switch (this.supplierAssessmentStatus) {
       case SessionStatus.notScheduled:

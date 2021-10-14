@@ -1890,6 +1890,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Return to progress').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
+      cy.contains('Date and time').next().contains('24 Mar 3021')
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
 
       cy.contains('View appointment details').click()
