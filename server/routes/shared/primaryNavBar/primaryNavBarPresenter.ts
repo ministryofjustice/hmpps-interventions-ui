@@ -1,7 +1,7 @@
 import config from '../../../config'
 import LoggedInUser from '../../../models/loggedInUser'
 
-export type PrimaryNavBarHeading = 'Referrals' | 'Reporting' | 'My cases' | 'Find interventions'
+export type PrimaryNavBarHeading = 'Referrals' | 'Reporting' | 'My cases' | 'Find interventions' | 'My services'
 export type PrimaryNavBarItem = { text: PrimaryNavBarHeading; href: string; active: boolean }
 
 export default class PrimaryNavBarPresenter {
@@ -38,6 +38,14 @@ export default class PrimaryNavBarPresenter {
         text: 'Find interventions',
         href: '/probation-practitioner/find',
         active: this.active === 'Find interventions',
+      })
+    }
+
+    if (this.loggedInUser.token.roles.includes('ROLE_INTERVENTIONS_SERVICE_EDITOR')) {
+      items.push({
+        text: 'My services',
+        href: '/service-editor/dashboard',
+        active: this.active === 'My services',
       })
     }
 
