@@ -1,5 +1,6 @@
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import FindStartPresenter from './findStartPresenter'
+import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 describe('FindStartPresenter', () => {
   const referrals = [
@@ -22,10 +23,19 @@ describe('FindStartPresenter', () => {
       },
     }),
   ]
+  const loggedInUser = loggedInUserFactory.probationUser().build()
 
   describe('orderedReferrals', () => {
     it('returns an ordered list of draft referrals with formatted dates and names', () => {
-      const presenter = new FindStartPresenter(referrals, { xlsx: 'example.xlsx', pdf: 'example.pdf' }, { bytes: 0 })
+      const presenter = new FindStartPresenter(
+        referrals,
+        {
+          xlsx: 'example.xlsx',
+          pdf: 'example.pdf',
+        },
+        { bytes: 0 },
+        loggedInUser
+      )
 
       expect(presenter.orderedReferrals).toEqual([
         expect.objectContaining({ createdAt: '1 Jan 2021', serviceUserFullName: 'Jenny Catherine' }),
@@ -40,7 +50,8 @@ describe('FindStartPresenter', () => {
       const presenter = new FindStartPresenter(
         referrals,
         { xlsx: 'example.xlsx', pdf: 'example.pdf' },
-        { bytes: 11126 }
+        { bytes: 11126 },
+        loggedInUser
       )
 
       expect(presenter.fileInformation).toEqual('XLSX, 10.9KB')
@@ -49,7 +60,12 @@ describe('FindStartPresenter', () => {
 
   describe('structuredInterventionsDownloadHrefs', () => {
     it('prepends a slash to the passed-in filepaths', () => {
-      const presenter = new FindStartPresenter(referrals, { xlsx: 'example.xlsx', pdf: 'example.pdf' }, { bytes: 0 })
+      const presenter = new FindStartPresenter(
+        referrals,
+        { xlsx: 'example.xlsx', pdf: 'example.pdf' },
+        { bytes: 0 },
+        loggedInUser
+      )
 
       expect(presenter.structuredInterventionsDownloadHrefs).toEqual({
         xlsx: '/example.xlsx',

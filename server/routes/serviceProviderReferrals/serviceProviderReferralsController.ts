@@ -156,7 +156,7 @@ export default class ServiceProviderReferralsController {
     referralsSummary: ServiceProviderSentReferralSummary[],
     dashboardType: DashboardType
   ): void {
-    const presenter = new DashboardPresenter(referralsSummary, dashboardType)
+    const presenter = new DashboardPresenter(referralsSummary, dashboardType, res.locals.user)
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

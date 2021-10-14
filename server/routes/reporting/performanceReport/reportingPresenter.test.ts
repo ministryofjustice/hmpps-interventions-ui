@@ -1,9 +1,12 @@
 import ReportingPresenter from './reportingPresenter'
+import loggedInUserFactory from '../../../../testutils/factories/loggedInUser'
 
 describe(ReportingPresenter, () => {
+  const loggedInUser = loggedInUserFactory.crsServiceProviderUser().build()
+
   describe('text', () => {
     it('has a title and subtitle', () => {
-      const presenter = new ReportingPresenter()
+      const presenter = new ReportingPresenter(loggedInUser)
 
       expect(presenter.text).toMatchObject({
         title: 'Reporting',
@@ -17,7 +20,7 @@ describe(ReportingPresenter, () => {
     describe('fromDate', () => {
       describe('when no user information has been entered', () => {
         it('uses an empty string value as the field value', () => {
-          const presenter = new ReportingPresenter()
+          const presenter = new ReportingPresenter(loggedInUser)
 
           expect(presenter.fields.fromDate.day.value).toEqual('')
           expect(presenter.fields.fromDate.month.value).toEqual('')
@@ -27,7 +30,7 @@ describe(ReportingPresenter, () => {
 
       describe('when there is user input data', () => {
         it('uses that value as the field value', () => {
-          const presenter = new ReportingPresenter(null, {
+          const presenter = new ReportingPresenter(loggedInUser, null, {
             'from-date-day': '01',
             'from-date-month': '06',
             'from-date-year': '2021',
@@ -43,7 +46,7 @@ describe(ReportingPresenter, () => {
     describe('toDate', () => {
       describe('when no user information has been entered', () => {
         it('uses an empty string value as the field value', () => {
-          const presenter = new ReportingPresenter()
+          const presenter = new ReportingPresenter(loggedInUser)
 
           expect(presenter.fields.toDate.day.value).toEqual('')
           expect(presenter.fields.toDate.month.value).toEqual('')
@@ -53,7 +56,7 @@ describe(ReportingPresenter, () => {
 
       describe('when there is user input data', () => {
         it('uses that value as the field value', () => {
-          const presenter = new ReportingPresenter(null, {
+          const presenter = new ReportingPresenter(loggedInUser, null, {
             'to-date-day': '01',
             'to-date-month': '06',
             'to-date-year': '2021',
@@ -70,7 +73,7 @@ describe(ReportingPresenter, () => {
   describe('error information', () => {
     describe('when a null error is passed in', () => {
       it('returns no errors', () => {
-        const presenter = new ReportingPresenter()
+        const presenter = new ReportingPresenter(loggedInUser)
 
         expect(presenter.errorSummary).toBeNull()
         expect(presenter.fields.fromDate.errorMessage).toEqual(null)
@@ -80,7 +83,7 @@ describe(ReportingPresenter, () => {
 
     describe('when a non-null error is passed in', () => {
       it('returns error information', () => {
-        const presenter = new ReportingPresenter({
+        const presenter = new ReportingPresenter(loggedInUser, {
           errors: [
             {
               errorSummaryLinkedField: 'to-date-month',

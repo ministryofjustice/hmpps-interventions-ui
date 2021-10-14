@@ -65,7 +65,7 @@ export default class ProbationPractitionerReferralsController {
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
 
-    const presenter = new MyCasesPresenter(cases, interventions)
+    const presenter = new MyCasesPresenter(cases, interventions, res.locals.user)
     const view = new MyCasesView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
@@ -84,7 +84,8 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new FindStartPresenter(
       existingDraftReferrals,
       structuredInterventionsFileDownloadPaths,
-      downloadFileSize
+      downloadFileSize,
+      res.locals.user
     )
 
     const view = new FindStartView(presenter)

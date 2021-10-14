@@ -18,7 +18,7 @@ export default class ReportingController {
   }
 
   async viewReporting(_req: Request, res: Response): Promise<void> {
-    const presenter = new ReportingPresenter()
+    const presenter = new ReportingPresenter(res.locals.user)
     const view = new ReportingView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
@@ -35,7 +35,7 @@ export default class ReportingController {
       res.status(400)
       formError = data.error
       userInputData = req.body
-      const presenter = new ReportingPresenter(formError, userInputData)
+      const presenter = new ReportingPresenter(res.locals.user, formError, userInputData)
       const view = new ReportingView(presenter)
       ControllerUtils.renderWithLayout(res, view, null)
     } else {

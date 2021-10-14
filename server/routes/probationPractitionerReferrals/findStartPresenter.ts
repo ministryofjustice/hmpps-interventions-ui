@@ -1,16 +1,18 @@
 import DraftReferral from '../../models/draftReferral'
 import PresenterUtils from '../../utils/presenterUtils'
-import DashboardNavPresenter from './dashboardNavPresenter'
 import DateUtils from '../../utils/dateUtils'
+import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
+import LoggedInUser from '../../models/loggedInUser'
 
 export default class FindStartPresenter {
   constructor(
     private readonly draftReferrals: DraftReferral[],
     private readonly downloadPaths: { xlsx: string; pdf: string },
-    private readonly downloadFileSize: { bytes: number }
+    private readonly downloadFileSize: { bytes: number },
+    private readonly loggedInUser: LoggedInUser
   ) {}
 
-  readonly navItemsPresenter = new DashboardNavPresenter('Find interventions')
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
 
   get orderedReferrals(): DraftReferralSummaryPresenter[] {
     return this.draftReferrals
