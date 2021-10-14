@@ -1,1 +1,7 @@
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+
 {% extends "../partials/layout.njk" %}
+
+{% block primaryNav %}
+    {{ mojPrimaryNavigation(primaryNavArgs) }}
+{% endblock %}
