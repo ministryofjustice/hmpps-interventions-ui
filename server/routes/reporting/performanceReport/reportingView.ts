@@ -13,6 +13,7 @@ export default class ReportingView {
         fromDateInputArgs: this.fromDateInputArgs,
         toDateInputArgs: this.toDateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        primaryNavArgs: ViewUtils.primaryNav(this.presenter.primaryNavBarPresenter.items),
       },
     ]
   }
