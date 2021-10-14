@@ -4,12 +4,17 @@ import CalendarDay from '../../utils/calendarDay'
 import DateUtils from '../../utils/dateUtils'
 import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
-import DashboardNavPresenter from './dashboardNavPresenter'
+import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
+import LoggedInUser from '../../models/loggedInUser'
 
 export default class MyCasesPresenter {
-  constructor(private readonly sentReferrals: SentReferral[], private readonly interventions: Intervention[]) {}
+  constructor(
+    private readonly sentReferrals: SentReferral[],
+    private readonly interventions: Intervention[],
+    private readonly loggedInUser: LoggedInUser
+  ) {}
 
-  readonly navItemsPresenter = new DashboardNavPresenter('My cases')
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('My cases', this.loggedInUser)
 
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Date sent', sort: 'none', persistentId: 'dateSent' },

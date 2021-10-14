@@ -1,10 +1,13 @@
 import DashboardPresenter, { DashboardType } from './dashboardPresenter'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
+import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 describe(DashboardPresenter, () => {
+  const loggedInUser = loggedInUserFactory.crsServiceProviderUser().build()
+
   describe('tableHeadings', () => {
     it('incorporates dashboard type name into persistent id', () => {
-      const presenter = new DashboardPresenter([], 'My cases')
+      const presenter = new DashboardPresenter([], 'My cases', loggedInUser)
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
         'MycasesDateReceived',
         'MycasesReferenceNumber',
@@ -40,7 +43,7 @@ describe(DashboardPresenter, () => {
           },
         ]
 
-        const presenter = new DashboardPresenter(referralsSummary, dashboardType)
+        const presenter = new DashboardPresenter(referralsSummary, dashboardType, loggedInUser)
 
         expect(presenter.tableRows).toEqual([
           [
@@ -75,7 +78,7 @@ describe(DashboardPresenter, () => {
               serviceUserLastName: 'Michael',
             },
           ]
-          const presenter = new DashboardPresenter(referralsSummary, dashboardType)
+          const presenter = new DashboardPresenter(referralsSummary, dashboardType, loggedInUser)
 
           expect(presenter.tableRows[0][4]).toMatchObject({ text: 'john.smith' })
         })
@@ -96,7 +99,7 @@ describe(DashboardPresenter, () => {
             serviceUserLastName: 'Michael',
           },
         ]
-        const presenter = new DashboardPresenter(referralsSummary, dashboardType)
+        const presenter = new DashboardPresenter(referralsSummary, dashboardType, loggedInUser)
 
         expect(presenter.tableRows).toEqual([
           [
@@ -125,7 +128,7 @@ describe(DashboardPresenter, () => {
             serviceUserLastName: 'Michael',
           },
         ]
-        const presenter = new DashboardPresenter(referralsSummary, 'All open cases')
+        const presenter = new DashboardPresenter(referralsSummary, 'All open cases', loggedInUser)
 
         expect(presenter.tableRows[0][5]).toMatchObject({
           href: `/service-provider/referrals/1/progress`,

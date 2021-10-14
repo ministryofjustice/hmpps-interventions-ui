@@ -1,6 +1,7 @@
 import interventionFactory from '../../../testutils/factories/intervention'
 import SentReferralFactory from '../../../testutils/factories/sentReferral'
 import MyCasesPresenter from './myCasesPresenter'
+import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 describe('MyCasesPresenter', () => {
   const interventions = [
@@ -46,9 +47,11 @@ describe('MyCasesPresenter', () => {
     }),
   ]
 
+  const loggedInUser = loggedInUserFactory.probationUser().build()
+
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const presenter = new MyCasesPresenter(referrals, interventions)
+      const presenter = new MyCasesPresenter(referrals, interventions, loggedInUser)
 
       expect(presenter.tableRows).toEqual([
         [

@@ -1,15 +1,17 @@
 import CalendarDay from '../../utils/calendarDay'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
-import DashboardNavPresenter from './dashboardNavPresenter'
+import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import utils from '../../utils/utils'
 import DateUtils from '../../utils/dateUtils'
+import LoggedInUser from '../../models/loggedInUser'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 export default class DashboardPresenter {
   constructor(
     private readonly referralsSummary: ServiceProviderSentReferralSummary[],
-    readonly dashboardType: DashboardType
+    readonly dashboardType: DashboardType,
+    private readonly loggedInUser: LoggedInUser
   ) {}
 
   private readonly showAssignedCaseworkerColumn =
@@ -30,7 +32,7 @@ export default class DashboardPresenter {
     { text: 'Action', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Action` },
   ].filter(row => row !== null) as SortableTableHeaders
 
-  readonly navItemsPresenter = new DashboardNavPresenter('All cases')
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
   readonly tableRows: SortableTableRow[] = this.referralsSummary.map(referralSummary => {
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
