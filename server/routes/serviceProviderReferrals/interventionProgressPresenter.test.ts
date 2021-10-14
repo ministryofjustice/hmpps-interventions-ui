@@ -740,7 +740,7 @@ describe(InterventionProgressPresenter, () => {
 
           expect(presenter.supplierAssessmentLink).toEqual([
             {
-              text: 'Add feedback',
+              text: 'Mark attendance and add feedback',
               href: `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
             },
           ])
@@ -764,7 +764,7 @@ describe(InterventionProgressPresenter, () => {
 
           expect(presenter.supplierAssessmentLink).toEqual([
             {
-              text: 'View appointment details',
+              text: 'View details or reschedule',
               href: `/service-provider/referrals/${referral.id}/supplier-assessment`,
             },
           ])

@@ -232,14 +232,14 @@ export default class InterventionProgressPresenter {
       case SessionStatus.scheduled:
         return [
           {
-            text: 'View appointment details',
+            text: 'View details or reschedule',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
           },
         ]
       case SessionStatus.awaitingFeedback:
         return [
           {
-            text: 'Add feedback',
+            text: 'Mark attendance and add feedback',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
           },
         ]

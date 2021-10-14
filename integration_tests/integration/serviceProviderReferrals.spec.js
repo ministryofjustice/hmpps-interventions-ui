@@ -1893,7 +1893,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Date and time').next().contains('24 Mar 3021')
       cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
 
-      cy.contains('View appointment details').click()
+      cy.contains('View details or reschedule').click()
       cy.get('h1').contains('View appointment details')
 
       cy.contains('24 March 3021')
@@ -2033,7 +2033,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.visit(`/service-provider/referrals/${referral.id}/progress`)
 
-      cy.contains('View appointment details').click()
+      cy.contains('View details or reschedule').click()
 
       cy.contains('Change appointment details').click()
 
@@ -2142,7 +2142,7 @@ describe('Service provider referrals dashboard', () => {
             .next()
             .within(() => {
               cy.contains('Appointment status').next().contains('awaiting feedback')
-              cy.contains('To do').next().contains('Add feedback').click()
+              cy.contains('To do').next().contains('Mark attendance and add feedback').click()
               cy.location('pathname').should(
                 'equal',
                 `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
@@ -2253,7 +2253,7 @@ describe('Service provider referrals dashboard', () => {
             .next()
             .within(() => {
               cy.contains('Appointment status').next().contains('awaiting feedback')
-              cy.contains('To do').next().contains('Add feedback').click()
+              cy.contains('To do').next().contains('Mark attendance and add feedback').click()
               cy.location('pathname').should(
                 'equal',
                 `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
