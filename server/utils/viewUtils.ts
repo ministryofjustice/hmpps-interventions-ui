@@ -2,10 +2,10 @@ import * as nunjucks from 'nunjucks'
 import { ListStyle, SummaryListItem } from './summaryList'
 import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TagArgs } from './govukFrontendTypes'
 import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
+import { PrimaryNavBarItem } from '../routes/shared/primaryNavBar/primaryNavBarPresenter'
 
 export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none'; persistentId: string }[]
 export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
-export type PrimaryNavItem = { text: string; href: string; active: boolean }
 
 export default class ViewUtils {
   static escape(val: string): string {
@@ -118,7 +118,7 @@ export default class ViewUtils {
     }
   }
 
-  static primaryNav(items: PrimaryNavItem[]): Record<string, unknown> {
+  static primaryNav(items: PrimaryNavBarItem[]): Record<string, unknown> {
     return {
       label: 'Primary navigation',
       containerClasses: 'refer-and-monitor__primary-navigation',
