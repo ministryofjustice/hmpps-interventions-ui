@@ -14,6 +14,10 @@ class LocationMapper {
     return ServletUriComponentsBuilder.fromCurrentRequestUri().path(path).buildAndExpand(*uriVariableValues).toUri()
   }
 
+  fun expandPathToCurrentContextPathUrl(path: String, vararg uriVariableValues: Any): URI {
+    return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(*uriVariableValues).toUri()
+  }
+
   fun getPathFromControllerMethod(method: KFunction<*>): String {
     val annotation = method.findAnnotation<GetMapping>()
       ?: throw RuntimeException("method '${method.name}' does not have a GetMapping annotation")

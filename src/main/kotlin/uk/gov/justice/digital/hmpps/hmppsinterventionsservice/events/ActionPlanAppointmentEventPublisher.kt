@@ -44,6 +44,6 @@ class ActionPlanAppointmentEventPublisher(
 
   private fun getAppointmentURL(session: DeliverySession): String {
     val path = locationMapper.getPathFromControllerMethod(DeliverySessionController::getSessionForReferralId)
-    return locationMapper.expandPathToCurrentRequestBaseUrl(path, session.referral.id, session.sessionNumber).toString()
+    return locationMapper.expandPathToCurrentContextPathUrl(path, session.referral.id, session.sessionNumber).toString()
   }
 }

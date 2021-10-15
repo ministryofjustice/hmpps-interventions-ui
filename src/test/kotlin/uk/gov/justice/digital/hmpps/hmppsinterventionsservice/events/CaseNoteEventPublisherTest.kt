@@ -21,7 +21,7 @@ internal class CaseNoteEventPublisherTest {
   fun `builds a case note sent event and publishes it`() {
     val caseNote = caseNoteFactory.create(subject = "subject", body = "body")
     val uri = URI.create("http://localhost/case-note/${caseNote.id}")
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/case-note/{id}", caseNote.id)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentContextPathUrl("/case-note/{id}", caseNote.id)).thenReturn(uri)
     whenever(locationMapper.getPathFromControllerMethod(CaseNoteController::getCaseNote)).thenReturn("/case-note/{id}")
     val publisher = CaseNoteEventPublisher(eventPublisher, locationMapper)
 

@@ -36,6 +36,6 @@ class CaseNoteEventPublisher(
 
   private fun caseNoteUrl(caseNote: CaseNote): String {
     val path = locationMapper.getPathFromControllerMethod(CaseNoteController::getCaseNote)
-    return locationMapper.expandPathToCurrentRequestBaseUrl(path, caseNote.id).toString()
+    return locationMapper.expandPathToCurrentContextPathUrl(path, caseNote.id).toString()
   }
 }

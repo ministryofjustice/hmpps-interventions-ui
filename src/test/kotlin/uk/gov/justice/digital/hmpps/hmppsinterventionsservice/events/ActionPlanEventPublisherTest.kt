@@ -22,7 +22,7 @@ class ActionPlanEventPublisherTest {
   fun `builds an action plan submit event and publishes it`() {
     val actionPlan = SampleData.sampleActionPlan()
     val uri = URI.create("http://localhost/action-plan/${actionPlan.id}")
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/action-plan/{id}", actionPlan.id)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentContextPathUrl("/action-plan/{id}", actionPlan.id)).thenReturn(uri)
     whenever(locationMapper.getPathFromControllerMethod(ActionPlanController::getActionPlan)).thenReturn("/action-plan/{id}")
     val publisher = ActionPlanEventPublisher(eventPublisher, locationMapper)
 
