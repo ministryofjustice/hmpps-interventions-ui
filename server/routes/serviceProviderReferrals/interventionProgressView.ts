@@ -57,11 +57,16 @@ export default class InterventionProgressView {
         [
           { text: this.presenter.supplierAssessmentAppointmentDateAndTime },
           {
-            html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
-              tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
+            html: ViewUtils.sessionStatusTagHtml(
+              this.presenter.supplierAssessmentAppointmentStatusPresenter(this.presenter.supplierAssessmentAppointment),
+              args => tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
             ),
           },
-          { html: ViewUtils.linkHtml(this.presenter.supplierAssessmentLink) },
+          {
+            html: ViewUtils.linkHtml(
+              this.presenter.supplierAssessmentAppointmentLink(this.presenter.supplierAssessmentAppointment)
+            ),
+          },
         ],
       ],
       attributes: { 'data-cy': 'supplier-assessment-table' },

@@ -9,7 +9,7 @@ import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
-import { ActionPlanAppointment } from '../../models/appointment'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 interface EndedFields {
@@ -196,9 +196,11 @@ export default class InterventionProgressPresenter {
 
   readonly supplierAssessmentTableHeaders = ['Date and time', 'Status', 'Action']
 
-  private readonly supplierAssessmentStatus = sessionStatus.forAppointment(
-    new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
-  )
+  readonly supplierAssessmentAppointment = new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
+
+  private supplierAssessmentAppointmentStatus(appointment: InitialAssessmentAppointment | null) {
+    return sessionStatus.forAppointment(appointment)
+  }
 
   get supplierAssessmentAppointmentDateAndTime(): string {
     const supplierAssessmentDecorator = new SupplierAssessmentDecorator(this.supplierAssessment)
@@ -207,7 +209,7 @@ export default class InterventionProgressPresenter {
   }
 
   get supplierAssessmentMessage(): string {
-    switch (this.supplierAssessmentStatus) {
+    switch (this.supplierAssessmentAppointmentStatus(this.supplierAssessmentAppointment)) {
       case SessionStatus.notScheduled:
         return 'Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.'
       case SessionStatus.awaitingFeedback:
@@ -221,8 +223,10 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  get supplierAssessmentLink(): { text: string; href: string; hiddenText?: string }[] {
-    switch (this.supplierAssessmentStatus) {
+  supplierAssessmentAppointmentLink(
+    appointment: InitialAssessmentAppointment | null
+  ): { text: string; href: string; hiddenText?: string }[] {
+    switch (this.supplierAssessmentAppointmentStatus(appointment)) {
       case SessionStatus.notScheduled:
         return [
           {
@@ -264,7 +268,9 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  get supplierAssessmentStatusPresenter(): SessionStatusPresenter {
-    return new SessionStatusPresenter(this.supplierAssessmentStatus)
+  supplierAssessmentAppointmentStatusPresenter(
+    appointment: InitialAssessmentAppointment | null
+  ): SessionStatusPresenter {
+    return new SessionStatusPresenter(this.supplierAssessmentAppointmentStatus(appointment))
   }
 }
