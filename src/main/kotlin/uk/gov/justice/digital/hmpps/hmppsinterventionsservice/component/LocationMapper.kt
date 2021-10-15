@@ -10,10 +10,16 @@ import kotlin.reflect.full.findAnnotation
 
 @Component
 class LocationMapper {
+  // This method appends the path onto the end of the current requests URL
+  // e.g. current request URL http://interventions.go.uk/draft-referral + path referral/{id}
+  //      returns http://interventions.go.uk/draft-referral/referral/1123456
   fun expandPathToCurrentRequestBaseUrl(path: String, vararg uriVariableValues: Any): URI {
     return ServletUriComponentsBuilder.fromCurrentRequestUri().path(path).buildAndExpand(*uriVariableValues).toUri()
   }
 
+  // This method appends the path onto the end of the current requests context path
+  // e.g. current request URL http://interventions.go.uk/draft-referral + path referral/{id}
+  //      returns http://interventions.go.uk/referral/1123456
   fun expandPathToCurrentContextPathUrl(path: String, vararg uriVariableValues: Any): URI {
     return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(*uriVariableValues).toUri()
   }
