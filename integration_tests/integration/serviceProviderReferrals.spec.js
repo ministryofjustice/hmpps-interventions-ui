@@ -1292,7 +1292,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Return to service progress').click()
 
-      cy.get('table')
+      cy.get('[data-cy=session-table]')
         .getTable()
         .should('deep.equal', [
           {
@@ -1432,7 +1432,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Return to service progress').click()
 
-      cy.get('table')
+      cy.get('[data-cy=session-table]')
         .getTable()
         .should('deep.equal', [
           {
@@ -1890,8 +1890,15 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Return to progress').click()
 
       cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
-      cy.contains('Date and time').next().contains('24 Mar 3021')
-      cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+      cy.get('[data-cy=supplier-assessment-table]')
+        .getTable()
+        .should('deep.equal', [
+          {
+            'Date and time': '9:02am on 24 Mar 3021',
+            Status: 'scheduled',
+            Action: 'View details or reschedule',
+          },
+        ])
 
       cy.contains('View details or reschedule').click()
       cy.get('h1').contains('View appointment details')
@@ -2139,15 +2146,14 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Initial assessment appointment')
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
-            .next()
-            .within(() => {
-              cy.contains('Appointment status').next().contains('awaiting feedback')
-              cy.contains('To do').next().contains('Mark attendance and add feedback').click()
-              cy.location('pathname').should(
-                'equal',
-                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
-              )
-            })
+
+          cy.get('[data-cy=supplier-assessment-table]').contains('awaiting feedback')
+          cy.get('[data-cy=supplier-assessment-table]').contains('Mark attendance and add feedback').click()
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
+          )
+
           cy.contains('No').click()
           cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
 
@@ -2218,16 +2224,12 @@ describe('Service provider referrals dashboard', () => {
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
-            .within(() => {
-              cy.contains('Appointment status').next().contains('did not attend')
-              cy.contains('To do').next().contains('Reschedule').click()
-              cy.location('pathname').should(
-                'match',
-                new RegExp(
-                  `/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule/[a-z0-9-]+/details`
-                )
-              )
-            })
+          cy.get('[data-cy=supplier-assessment-table]').contains('did not attend')
+          cy.get('[data-cy=supplier-assessment-table]').contains('Reschedule').click()
+          cy.location('pathname').should(
+            'match',
+            new RegExp(`/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule/[a-z0-9-]+/details`)
+          )
         })
       })
 
@@ -2250,15 +2252,14 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Initial assessment appointment')
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
-            .next()
-            .within(() => {
-              cy.contains('Appointment status').next().contains('awaiting feedback')
-              cy.contains('To do').next().contains('Mark attendance and add feedback').click()
-              cy.location('pathname').should(
-                'equal',
-                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
-              )
-            })
+
+          cy.get('[data-cy=supplier-assessment-table]').contains('awaiting feedback')
+          cy.get('[data-cy=supplier-assessment-table]').contains('Mark attendance and add feedback').click()
+
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
+          )
           cy.contains('Yes').click()
           cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
@@ -2362,15 +2363,14 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Initial assessment appointment')
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
-            .next()
-            .within(() => {
-              cy.contains('Appointment status').next().contains('completed')
-              cy.contains('To do').next().contains('View feedback').click()
-              cy.location('pathname').should(
-                'equal',
-                `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback`
-              )
-            })
+
+          cy.get('[data-cy=supplier-assessment-table]').contains('completed')
+          cy.get('[data-cy=supplier-assessment-table]').contains('View feedback').click()
+
+          cy.location('pathname').should(
+            'equal',
+            `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback`
+          )
         })
       })
     })

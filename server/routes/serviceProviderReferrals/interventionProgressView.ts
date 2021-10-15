@@ -50,30 +50,21 @@ export default class InterventionProgressView {
     }
   }
 
-  private initialAssessmentSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs {
+  private supplierAssessmentAppointmentsTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
+      head: this.presenter.supplierAssessmentTableHeaders.map((header: string) => ({ text: header })),
       rows: [
-        {
-          key: { text: 'Date and time' },
-          value: {
-            text: this.presenter.supplierAssessmentAppointmentDateAndTime,
-          },
-        },
-        {
-          key: { text: 'Appointment status' },
-          value: {
+        [
+          { text: this.presenter.supplierAssessmentAppointmentDateAndTime },
+          {
             html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentStatusPresenter, args =>
               tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
             ),
           },
-        },
-        {
-          key: { text: 'To do' },
-          value: {
-            html: ViewUtils.linkHtml(this.presenter.supplierAssessmentLink),
-          },
-        },
+          { html: ViewUtils.linkHtml(this.presenter.supplierAssessmentLink) },
+        ],
       ],
+      attributes: { 'data-cy': 'supplier-assessment-table' },
     }
   }
 
@@ -90,6 +81,7 @@ export default class InterventionProgressView {
           { html: ViewUtils.linkHtml(row.links) },
         ]
       }),
+      attributes: { 'data-cy': 'session-table' },
     }
   }
 
@@ -148,7 +140,7 @@ export default class InterventionProgressView {
       {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
-        initialAssessmentSummaryListArgs: this.initialAssessmentSummaryListArgs.bind(this),
+        supplierAssessmentAppointmentsTableArgs: this.supplierAssessmentAppointmentsTableArgs.bind(this),
         supplierAssessmentMessage: this.presenter.supplierAssessmentMessage,
         actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
         sessionTableArgs: this.sessionTableArgs.bind(this),

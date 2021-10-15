@@ -194,6 +194,8 @@ export default class InterventionProgressPresenter {
     return this.endOfServiceReportStarted ? 'Continue' : 'Create'
   }
 
+  readonly supplierAssessmentTableHeaders = ['Date and time', 'Status', 'Action']
+
   private readonly supplierAssessmentStatus = sessionStatus.forAppointment(
     new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
   )
