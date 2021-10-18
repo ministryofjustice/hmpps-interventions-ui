@@ -51,7 +51,7 @@ describe('DashboardPresenter', () => {
 
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const presenter = new DashboardPresenter(referrals, interventions, loggedInUser)
+      const presenter = new DashboardPresenter(referrals, interventions, loggedInUser, 'Open cases')
 
       expect(presenter.tableRows).toEqual([
         [

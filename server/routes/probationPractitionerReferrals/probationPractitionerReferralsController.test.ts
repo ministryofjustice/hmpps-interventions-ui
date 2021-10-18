@@ -37,6 +37,7 @@ import DraftsService from '../../services/draftsService'
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import draftCancellationDataFactory from '../../../testutils/factories/draftCancellationData'
 import approvedActionPlanSummaryFactory from '../../../testutils/factories/approvedActionPlanSummary'
+import { PPDashboardType } from './dashboardPresenter'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -100,30 +101,55 @@ describe('GET /probation-practitioner/find', () => {
 })
 
 describe('GET /probation-practitioner/dashboard', () => {
-  it('displays a dashboard page', async () => {
-    const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
-    const referrals = [
-      sentReferralFactory.assigned().build({
-        referral: {
-          interventionId: '1',
-          serviceUser: {
-            firstName: 'Alex',
-            lastName: 'River',
+  const dashboardRequests: { type: PPDashboardType; url: string }[] = [
+    {
+      type: 'Open cases',
+      url: '/probation-practitioner/dashboard',
+    },
+    {
+      type: 'Open cases',
+      url: '/probation-practitioner/dashboard/open-cases',
+    },
+    {
+      type: 'Unassigned cases',
+      url: '/probation-practitioner/dashboard/unassigned-cases',
+    },
+    {
+      type: 'Completed cases',
+      url: '/probation-practitioner/dashboard/completed-cases',
+    },
+    {
+      type: 'Cancelled cases',
+      url: '/probation-practitioner/dashboard/cancelled-cases',
+    },
+  ]
+  describe.each(dashboardRequests)('for dashboard %s', dashboard => {
+    it('displays a dashboard page', async () => {
+      const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
+      const referrals = [
+        sentReferralFactory.assigned().build({
+          referral: {
+            interventionId: '1',
+            serviceUser: {
+              firstName: 'Alex',
+              lastName: 'River',
+            },
           },
-        },
-      }),
-    ]
+        }),
+      ]
 
-    interventionsService.getIntervention.mockResolvedValue(intervention)
-    interventionsService.getSentReferralsForUserToken.mockResolvedValue(referrals)
+      interventionsService.getIntervention.mockResolvedValue(intervention)
+      interventionsService.getSentReferralsForUserToken.mockResolvedValue(referrals)
 
-    await request(app)
-      .get('/probation-practitioner/dashboard')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Alex River')
-        expect(res.text).toContain('Accommodation Services - West Midlands')
-      })
+      await request(app)
+        .get(dashboard.url)
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain(dashboard.type)
+          expect(res.text).toContain('Alex River')
+          expect(res.text).toContain('Accommodation Services - West Midlands')
+        })
+    })
   })
 })
 

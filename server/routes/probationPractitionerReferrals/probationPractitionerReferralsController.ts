@@ -1,13 +1,13 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { GetSentReferralsFilterParams } from '../../services/interventionsService'
 import { ActionPlanAppointment } from '../../models/appointment'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import InterventionProgressView from './interventionProgressView'
 import FindStartPresenter from './findStartPresenter'
 import DashboardView from './dashboardView'
-import DashboardPresenter from './dashboardPresenter'
+import DashboardPresenter, { PPDashboardType } from './dashboardPresenter'
 import FindStartView from './findStartView'
 import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
 import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
@@ -58,14 +58,37 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showOpenCases(req: Request, res: Response): Promise<void> {
-    const cases = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken, {})
+    await this.showDashboard(res, { concluded: false }, 'Open cases')
+  }
+
+  async showUnassignedCases(req: Request, res: Response): Promise<void> {
+    await this.showDashboard(res, { concluded: false, unassigned: true }, 'Unassigned cases')
+  }
+
+  async showCompletedCases(req: Request, res: Response): Promise<void> {
+    await this.showDashboard(res, { concluded: true, cancelled: false }, 'Completed cases')
+  }
+
+  async showCancelledCases(req: Request, res: Response): Promise<void> {
+    await this.showDashboard(res, { cancelled: true }, 'Cancelled cases')
+  }
+
+  private async showDashboard(
+    res: Response,
+    getSentReferralsFilterParams: GetSentReferralsFilterParams,
+    dashboardType: PPDashboardType
+  ) {
+    const cases = await this.interventionsService.getSentReferralsForUserToken(
+      res.locals.user.token.accessToken,
+      getSentReferralsFilterParams
+    )
 
     const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
     const interventions = await Promise.all(
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
 
-    const presenter = new DashboardPresenter(cases, interventions, res.locals.user)
+    const presenter = new DashboardPresenter(cases, interventions, res.locals.user, dashboardType)
     const view = new DashboardView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
