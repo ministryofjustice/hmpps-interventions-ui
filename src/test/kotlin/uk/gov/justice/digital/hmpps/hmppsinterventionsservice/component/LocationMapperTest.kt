@@ -29,13 +29,13 @@ internal class LocationMapperTest {
 
     val id = UUID.fromString("a98d6ea3-357d-4910-9a43-fd383bf996c5")
 
-    assertThat(locationMapper.expandPathToCurrentRequestBaseUrl("/referral/{id}", id).toString())
+    assertThat(locationMapper.expandPathToCurrentRequestUrl("/referral/{id}", id).toString())
       .isEqualTo("http://localhost:8070/intervention/referral/a98d6ea3-357d-4910-9a43-fd383bf996c5")
 
-    assertThat(locationMapper.expandPathToCurrentRequestBaseUrl("/referral/{id}/appointment/{appointment}", id, 123).toString())
+    assertThat(locationMapper.expandPathToCurrentRequestUrl("/referral/{id}/appointment/{appointment}", id, 123).toString())
       .isEqualTo("http://localhost:8070/intervention/referral/a98d6ea3-357d-4910-9a43-fd383bf996c5/appointment/123")
 
-    assertThat(locationMapper.expandPathToCurrentRequestBaseUrl("/referral/{id}/{resource}/{number}", id, "session", 4).toString())
+    assertThat(locationMapper.expandPathToCurrentRequestUrl("/referral/{id}/{resource}/{number}", id, "session", 4).toString())
       .isEqualTo("http://localhost:8070/intervention/referral/a98d6ea3-357d-4910-9a43-fd383bf996c5/session/4")
   }
 
