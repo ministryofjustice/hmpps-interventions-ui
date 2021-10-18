@@ -1738,7 +1738,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      expect(await interventionsService.getSentReferralsForUserToken(probationPractitionerToken)).toEqual([
+      expect(await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {})).toEqual([
         sentReferral,
         sentReferral,
       ])

@@ -58,7 +58,7 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showOpenCases(req: Request, res: Response): Promise<void> {
-    const cases = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken)
+    const cases = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken, {})
 
     const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
     const interventions = await Promise.all(
