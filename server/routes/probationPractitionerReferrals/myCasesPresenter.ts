@@ -14,7 +14,7 @@ export default class MyCasesPresenter {
     private readonly loggedInUser: LoggedInUser
   ) {}
 
-  readonly navItemsPresenter = new PrimaryNavBarPresenter('My cases', this.loggedInUser)
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
   readonly tableHeadings: SortableTableHeaders = [
     { text: 'Date sent', sort: 'none', persistentId: 'dateSent' },
