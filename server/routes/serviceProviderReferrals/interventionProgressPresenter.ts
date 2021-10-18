@@ -211,7 +211,7 @@ export default class InterventionProgressPresenter {
   get supplierAssessmentTableRows(): SupplierAssessmentTableRow[] {
     const decorator = new SupplierAssessmentDecorator(this.supplierAssessment)
 
-    const appointments = this.supplierAssessment.appointments.map(appointment => {
+    const appointments = decorator.sortedAppointments.map(appointment => {
       return {
         dateAndTime: decorator.appointmentDateAndTime(appointment),
         statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(appointment),

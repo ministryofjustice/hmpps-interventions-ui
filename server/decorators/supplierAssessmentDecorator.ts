@@ -20,6 +20,27 @@ export default class SupplierAssessmentDecorator {
     return currentAppointment
   }
 
+  get sortedAppointments(): InitialAssessmentAppointment[] {
+    return this.supplierAssessment.appointments.sort((appointmentA, appointmentB) => {
+      if (appointmentA.appointmentTime === null) {
+        return -1
+      }
+
+      if (appointmentB.appointmentTime === null) {
+        return 1
+      }
+
+      if (new Date(appointmentA.appointmentTime).getTime() < new Date(appointmentB.appointmentTime).getTime()) {
+        return 1
+      }
+      if (new Date(appointmentA.appointmentTime).getTime() > new Date(appointmentB.appointmentTime).getTime()) {
+        return -1
+      }
+
+      return 0
+    })
+  }
+
   appointmentDateAndTime(appointment: InitialAssessmentAppointment | null): string {
     if (appointment === null || appointment.appointmentTime === null) {
       return 'N/A'

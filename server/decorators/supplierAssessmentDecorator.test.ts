@@ -44,6 +44,29 @@ describe(SupplierAssessmentDecorator, () => {
     })
   })
 
+  describe('sortedAppointments', () => {
+    it('sets the current appointment as the first item in the array, and the remaining appointments in reverse-chronological order', () => {
+      const firstOlderAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: '2021-10-01T10:00:00+01:00',
+      })
+      const secondOlderAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: '2021-10-03T10:00:00+01:00',
+      })
+      const currentAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: null,
+      })
+
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [firstOlderAppointment, secondOlderAppointment, currentAppointment],
+        currentAppointmentId: currentAppointment.id,
+      })
+
+      const decorator = new SupplierAssessmentDecorator(supplierAssessment)
+
+      expect(decorator.sortedAppointments).toEqual([currentAppointment, secondOlderAppointment, firstOlderAppointment])
+    })
+  })
+
   describe('appointmentDateAndTime', () => {
     describe('when the appointment has been scheduled', () => {
       it('returns a formatted date and time', () => {
