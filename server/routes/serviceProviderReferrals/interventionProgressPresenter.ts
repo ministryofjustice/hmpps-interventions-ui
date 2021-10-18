@@ -254,6 +254,11 @@ export default class InterventionProgressPresenter {
   private supplierAssessmentAppointmentLink(
     appointment: InitialAssessmentAppointment | null
   ): SupplierAssessmentAppointmentLink[] {
+    const { currentAppointment } = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    const isCurrentAppointment =
+      currentAppointment && appointment && currentAppointment.id && currentAppointment.id === appointment.id
+
     switch (this.supplierAssessmentAppointmentStatus(appointment)) {
       case SessionStatus.notScheduled:
         return [
@@ -278,12 +283,25 @@ export default class InterventionProgressPresenter {
           },
         ]
       case SessionStatus.didNotAttend:
-        return [
-          {
-            text: 'Reschedule',
-            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
-          },
-        ]
+        return isCurrentAppointment
+          ? [
+              {
+                text: 'Reschedule',
+                href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
+              },
+              {
+                text: 'View feedback',
+                href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,
+              },
+            ]
+          : [
+              {
+                text: 'View feedback',
+                href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/${
+                  appointment!.id
+                }`,
+              },
+            ]
       case SessionStatus.completed:
         return [
           {
