@@ -1,19 +1,8 @@
-/*
-    Same as v1_80, but used to target specific referrals that were not correctly migrated.
-*/
-with action_plans_ranked_by_approved_at_desc as (
-    select id,
-           referral_id,
-           approved_at,
-           row_number() over (partition by referral_id order by approved_at desc) rank
-    from action_plan ap
-    where approved_at is not null
-    and referral_id in ('d7c7d7c1-df71-4501-9a0c-6649bcf31674', '4a95bf60-f5ab-4470-8988-addd705f0d5c')
-)
-update action_plan_session aps
-set latest_approved = case when apr.rank = 1 then true else false end
-from action_plans_ranked_by_approved_at_desc apr
-where aps.deprecated_action_plan_id = apr.id
-and aps.referral_id = apr.referral_id;
+-- To fix referral: d7c7d7c1-df71-4501-9a0c-6649bcf31674.
+-- Set action plan sessions to false for the old action plan: 98cdc3db-0493-45f5-9a4b-c19988c2cb9e
+update action_plan_session set latest_approved = false where deprecated_action_plan_id = '98cdc3db-0493-45f5-9a4b-c19988c2cb9e';
 
 
+-- To fix referral: 4a95bf60-f5ab-4470-8988-addd705f0d5c.
+-- Set action plan sessions to false for the old action plan: 2732a0f8-0ba1-4de4-83e1-f1624a4164d1
+update action_plan_session set latest_approved = false where deprecated_action_plan_id = '2732a0f8-0ba1-4de4-83e1-f1624a4164d1';
