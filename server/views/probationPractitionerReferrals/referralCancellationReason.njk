@@ -17,14 +17,15 @@
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.information }}</p>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {{ govukRadios(referralCancellationRadiosArgs) }}
+        {{ govukTextarea(additionalCommentsTextareaArgs) }}
+
+        {{ govukButton({ text: "Continue" }) }}
+      </form>
     </div>
-    <form method="post">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-
-      {{ govukRadios(referralCancellationRadiosArgs) }}
-      {{ govukTextarea(additionalCommentsTextareaArgs) }}
-
-      {{ govukButton({ text: "Continue" }) }}
-    </form>
   </div>
 {% endblock %}
