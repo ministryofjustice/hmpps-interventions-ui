@@ -71,6 +71,21 @@ class ReferralContracts(private val setupAssistant: SetupAssistant) {
     setupAssistant.fillReferralFields(referral)
   }
 
+  @State("There are some sent referrals in various states of completion for probation practitioner user")
+  fun `create several sent referrals of varing states of completion`() {
+    // assigned
+    setupAssistant.createAssignedReferral(id = UUID.fromString("4b56a623-2f85-4670-87a7-68d458378646"))
+
+    // unassigned
+    setupAssistant.createSentReferral(id = UUID.fromString("995b30f5-182d-4409-aed9-0f3f4ae56802"))
+
+    // concluded
+    setupAssistant.createCompletedReferral(id = UUID.fromString("eb25cf36-4956-4924-a887-989fe3d6638d"))
+
+    // cancelled
+    setupAssistant.createCancelledReferral(id = UUID.fromString("bfabb659-1200-4479-bae7-8927e1e87a0d"))
+  }
+
   @State("There is an existing draft referral with ID of ac386c25-52c8-41fa-9213-fcf42e24b0b5")
   fun `create referral with the required id`() {
     setupAssistant.createDraftReferral(id = UUID.fromString("ac386c25-52c8-41fa-9213-fcf42e24b0b5"))
