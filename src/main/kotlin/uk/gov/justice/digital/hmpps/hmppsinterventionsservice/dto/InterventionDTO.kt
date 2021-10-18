@@ -14,6 +14,7 @@ data class InterventionDTO(
   val serviceProvider: ServiceProviderDTO,
   val eligibility: ContractEligibilityDTO,
   val contractType: ContractTypeDTO,
+  val incomingReferralDistributionEmail: String,
 ) {
   companion object {
     fun from(intervention: Intervention, pccRegions: List<PCCRegion>): InterventionDTO {
@@ -33,6 +34,7 @@ data class InterventionDTO(
           contract.allowsMale,
         ),
         contractType = ContractTypeDTO(intervention.dynamicFrameworkContract.contractType.code, intervention.dynamicFrameworkContract.contractType.name),
+        incomingReferralDistributionEmail = intervention.incomingReferralDistributionEmail,
       )
     }
   }
