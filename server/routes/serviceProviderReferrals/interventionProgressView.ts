@@ -53,22 +53,19 @@ export default class InterventionProgressView {
   private supplierAssessmentAppointmentsTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
       head: this.presenter.supplierAssessmentTableHeaders.map((header: string) => ({ text: header })),
-      rows: [
-        [
-          { text: this.presenter.supplierAssessmentAppointmentDateAndTime },
+      rows: this.presenter.supplierAssessmentTableRows.map(row => {
+        return [
+          { text: row.dateAndTime },
           {
-            html: ViewUtils.sessionStatusTagHtml(
-              this.presenter.supplierAssessmentAppointmentStatusPresenter(this.presenter.supplierAssessmentAppointment),
-              args => tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
+            html: ViewUtils.sessionStatusTagHtml(row.statusPresenter, args =>
+              tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
             ),
           },
           {
-            html: ViewUtils.linkHtml(
-              this.presenter.supplierAssessmentAppointmentLink(this.presenter.supplierAssessmentAppointment)
-            ),
+            html: ViewUtils.linkHtml(row.action),
           },
-        ],
-      ],
+        ]
+      }),
       attributes: { 'data-cy': 'supplier-assessment-table' },
     }
   }

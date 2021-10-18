@@ -25,6 +25,18 @@ interface ProgressSessionTableRow {
   links: { text: string; href: string }[]
 }
 
+interface SupplierAssessmentAppointmentLink {
+  text: string
+  href: string
+  hiddenText?: string
+}
+
+interface SupplierAssessmentTableRow {
+  dateAndTime: string
+  statusPresenter: SessionStatusPresenter
+  action: SupplierAssessmentAppointmentLink[]
+}
+
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
@@ -196,16 +208,32 @@ export default class InterventionProgressPresenter {
 
   readonly supplierAssessmentTableHeaders = ['Date and time', 'Status', 'Action']
 
+  get supplierAssessmentTableRows(): SupplierAssessmentTableRow[] {
+    const decorator = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    const appointments = this.supplierAssessment.appointments.map(appointment => {
+      return {
+        dateAndTime: decorator.appointmentDateAndTime(appointment),
+        statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(appointment),
+        action: this.supplierAssessmentAppointmentLink(appointment),
+      }
+    })
+
+    if (this.supplierAssessmentAppointment === null) {
+      appointments.push({
+        dateAndTime: decorator.appointmentDateAndTime(null),
+        statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(null),
+        action: this.supplierAssessmentAppointmentLink(null),
+      })
+    }
+
+    return appointments
+  }
+
   readonly supplierAssessmentAppointment = new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
 
   private supplierAssessmentAppointmentStatus(appointment: InitialAssessmentAppointment | null) {
     return sessionStatus.forAppointment(appointment)
-  }
-
-  get supplierAssessmentAppointmentDateAndTime(): string {
-    const supplierAssessmentDecorator = new SupplierAssessmentDecorator(this.supplierAssessment)
-
-    return supplierAssessmentDecorator.appointmentDateAndTime(supplierAssessmentDecorator.currentAppointment)
   }
 
   get supplierAssessmentMessage(): string {
@@ -223,9 +251,9 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  supplierAssessmentAppointmentLink(
+  private supplierAssessmentAppointmentLink(
     appointment: InitialAssessmentAppointment | null
-  ): { text: string; href: string; hiddenText?: string }[] {
+  ): SupplierAssessmentAppointmentLink[] {
     switch (this.supplierAssessmentAppointmentStatus(appointment)) {
       case SessionStatus.notScheduled:
         return [
@@ -268,7 +296,7 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  supplierAssessmentAppointmentStatusPresenter(
+  private supplierAssessmentAppointmentStatusPresenter(
     appointment: InitialAssessmentAppointment | null
   ): SessionStatusPresenter {
     return new SessionStatusPresenter(this.supplierAssessmentAppointmentStatus(appointment))
