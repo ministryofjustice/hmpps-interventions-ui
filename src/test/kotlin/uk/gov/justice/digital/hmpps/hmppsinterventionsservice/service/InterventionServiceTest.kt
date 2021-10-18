@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.persistIntervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Int
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.PCCRegionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.NPSRegionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.PCCRegionFactory
@@ -41,6 +43,7 @@ class InterventionServiceTest @Autowired constructor(
   private val pccRegionFactory = PCCRegionFactory(entityManager)
   private val serviceProviderFactory = ServiceProviderFactory(entityManager)
   private val interventionFactory = InterventionFactory(entityManager)
+  private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory(entityManager)
 
   @BeforeEach
   fun setup() {
@@ -153,6 +156,25 @@ class InterventionServiceTest @Autowired constructor(
   fun `get all interventions when none exist`() {
     val interventions = interventionService.getAllInterventions()
     assertThat(interventions.size).isEqualTo(0)
+  }
+
+  @Test
+  fun `getInterventionsForServiceProviderScope returns interventions for contracts derived from the supplied access scope`() {
+    val contracts = (1..2).map { entityManager.persist(dynamicFrameworkContractFactory.create()) }
+    // the first two interventions have known contracts, the rest are random
+    (1..5).forEach { entityManager.persist(interventionFactory.create(contract = contracts.getOrNull(it - 1))) }
+    entityManager.flush()
+
+    val interventions = interventionService.getInterventionsForServiceProviderScope(
+      ServiceProviderAccessScope(
+        emptySet(),
+        contracts.toSet()
+      )
+    )
+
+    assertThat(interventions.size).isEqualTo(2)
+    assertThat(interventions.any { it.id == contracts[0].id })
+    assertThat(interventions.any { it.id == contracts[1].id })
   }
 
   private fun saveMultipleInterventions() {

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.PCCRegion
@@ -17,6 +18,10 @@ class InterventionService(
   val pccRegionRepository: PCCRegionRepository,
   val interventionRepository: InterventionRepository
 ) {
+
+  fun getInterventionsForServiceProviderScope(scope: ServiceProviderAccessScope): List<Intervention> {
+    return interventionRepository.findByDynamicFrameworkContractIdIn(scope.contracts.map { it.id })
+  }
 
   fun getIntervention(id: UUID): Intervention? {
     return interventionRepository.findByIdOrNull(id)
