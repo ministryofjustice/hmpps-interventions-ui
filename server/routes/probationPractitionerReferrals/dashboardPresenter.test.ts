@@ -1,9 +1,9 @@
 import interventionFactory from '../../../testutils/factories/intervention'
 import SentReferralFactory from '../../../testutils/factories/sentReferral'
-import MyCasesPresenter from './myCasesPresenter'
+import DashboardPresenter from './dashboardPresenter'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
-describe('MyCasesPresenter', () => {
+describe('DashboardPresenter', () => {
   const interventions = [
     interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' }),
     interventionFactory.build({ id: '2', title: "Women's Services - West Midlands" }),
@@ -51,7 +51,7 @@ describe('MyCasesPresenter', () => {
 
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const presenter = new MyCasesPresenter(referrals, interventions, loggedInUser)
+      const presenter = new DashboardPresenter(referrals, interventions, loggedInUser)
 
       expect(presenter.tableRows).toEqual([
         [

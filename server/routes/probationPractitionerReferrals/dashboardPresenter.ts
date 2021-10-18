@@ -7,12 +7,14 @@ import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 import LoggedInUser from '../../models/loggedInUser'
 
-export default class MyCasesPresenter {
+export default class DashboardPresenter {
   constructor(
     private readonly sentReferrals: SentReferral[],
     private readonly interventions: Intervention[],
     private readonly loggedInUser: LoggedInUser
   ) {}
+
+  readonly title = 'Open cases'
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 

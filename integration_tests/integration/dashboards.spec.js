@@ -54,7 +54,7 @@ describe('Dashboards', () => {
       it('shows a list of sent referrals', () => {
         cy.login()
 
-        cy.get('h1').contains('My cases')
+        cy.get('h1').contains('Open cases')
 
         cy.get('table')
           .getTable()

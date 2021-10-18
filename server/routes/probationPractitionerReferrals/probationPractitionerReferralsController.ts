@@ -6,8 +6,8 @@ import { ActionPlanAppointment } from '../../models/appointment'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import InterventionProgressView from './interventionProgressView'
 import FindStartPresenter from './findStartPresenter'
-import MyCasesView from './myCasesView'
-import MyCasesPresenter from './myCasesPresenter'
+import DashboardView from './dashboardView'
+import DashboardPresenter from './dashboardPresenter'
 import FindStartView from './findStartView'
 import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
 import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
@@ -57,7 +57,7 @@ export default class ProbationPractitionerReferralsController {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
 
-  async showMyCases(req: Request, res: Response): Promise<void> {
+  async showOpenCases(req: Request, res: Response): Promise<void> {
     const cases = await this.interventionsService.getSentReferralsForUserToken(res.locals.user.token.accessToken)
 
     const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
@@ -65,8 +65,8 @@ export default class ProbationPractitionerReferralsController {
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
 
-    const presenter = new MyCasesPresenter(cases, interventions, res.locals.user)
-    const view = new MyCasesView(presenter)
+    const presenter = new DashboardPresenter(cases, interventions, res.locals.user)
+    const view = new DashboardView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
 
