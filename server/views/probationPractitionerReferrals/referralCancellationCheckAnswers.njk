@@ -10,11 +10,11 @@
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.confirmationQuestion }}</p>
-    </div>
-    <form method="post" action="{{ presenter.confirmCancellationHref }}">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <form method="post" action="{{ presenter.confirmCancellationHref }}">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-      {{ govukButton({ text: "Cancel referral", preventDoubleClick: true }) }}
-    </form>
+        {{ govukButton({ text: "Cancel referral", preventDoubleClick: true }) }}
+      </form>
+    </div>
   </div>
 {% endblock %}
