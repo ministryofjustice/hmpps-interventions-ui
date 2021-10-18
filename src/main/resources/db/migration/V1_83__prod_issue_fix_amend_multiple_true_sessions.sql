@@ -13,6 +13,7 @@ with action_plans_ranked_by_approved_at_desc as (
 update action_plan_session aps
 set latest_approved = case when apr.rank = 1 then true else false end
 from action_plans_ranked_by_approved_at_desc apr
-where aps.deprecated_action_plan_id = apr.id;
+where aps.deprecated_action_plan_id = apr.id
+and aps.referral_id = apr.referral_id;
 
 
