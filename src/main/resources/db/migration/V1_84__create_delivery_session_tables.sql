@@ -18,7 +18,7 @@ BEGIN;
     inner join delivery_session ds on ds.id = apsa.action_plan_session_id;
 
     alter table delivery_session_appointment
-        add constraint uk_delivery_session_appointments_appointments_id unique (appointments_id),
+        add constraint uk_delivery_session_appointments_appointment_id unique (appointment_id);
     alter table delivery_session_appointment
         add constraint pk_delivery_session_appointment primary key (delivery_session_id, appointment_id);
     alter table delivery_session_appointment
