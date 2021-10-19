@@ -11,7 +11,7 @@ BEGIN;
     alter table delivery_session add constraint fk_delivery_session_referral foreign key (referral_id) references referral;
     alter table delivery_session add constraint bk_delivery_session unique (referral_id, session_number);
 
-    create index idx_referral__id on delivery_session (referral_id);
+    create index idx_delivery_session_referral__id on delivery_session (referral_id);
 
     create table delivery_session_appointment as
     select action_plan_session_id delivery_session_id, appointment_id from action_plan_session_appointment apsa
@@ -26,4 +26,6 @@ BEGIN;
     alter table delivery_session_appointment
         add constraint fk_delivery_session_appointment_appointment foreign key (appointment_id) references appointment;
 
+    create index idx_delivery_session_appointment_delivery_session__id on delivery_session_appointment (delivery_session_id);
+    create index idx_delivery_session_appointment_appointment__id on delivery_session_appointment (appointment_id);
 COMMIT;
