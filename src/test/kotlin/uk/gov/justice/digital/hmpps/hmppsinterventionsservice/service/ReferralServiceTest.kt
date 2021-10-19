@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.mockito.AdditionalAnswers
+import org.mockito.ArgumentMatchers.anyList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ReferralAccessChecker
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
@@ -300,7 +303,7 @@ class ReferralServiceTest @Autowired constructor(
     referralService.createDraftReferral(user2, "X123456", sampleIntervention.id)
     entityManager.flush()
 
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+    whenever(referralAccessFilter.probationPractitionerReferrals(anyList(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
     val single = referralService.getDraftReferralsForUser(user2)
     assertThat(single).hasSize(1)
@@ -438,7 +441,7 @@ class ReferralServiceTest @Autowired constructor(
   @Test
   fun `multiple draft referrals can be started by the same user`() {
     val user = AuthUser("multi_user_id", "delius", "user_name")
-    whenever(referralAccessFilter.probationPractitionerReferrals(any(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+    whenever(referralAccessFilter.probationPractitionerReferrals(anyList(), any())).then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
 
     for (i in 1..3) {
       assertDoesNotThrow { referralService.createDraftReferral(user, "X123456", sampleIntervention.id) }
@@ -452,8 +455,9 @@ class ReferralServiceTest @Autowired constructor(
     @BeforeEach
     fun setup() {
       // do not test access restrictions in these tests; only test selection of referrals
-      whenever(referralAccessFilter.probationPractitionerReferrals(any(), any()))
-        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
+      val anySpec: Specification<Referral> = any()
+      whenever(referralAccessFilter.probationPractitionerReferrals(anySpec, any()))
+        .then(AdditionalAnswers.returnsFirstArg<Specification<Referral>>())
     }
 
     @Test
@@ -461,7 +465,7 @@ class ReferralServiceTest @Autowired constructor(
       val user = userFactory.create("pp_user_1", "delius")
       val startedReferrals = (1..3).map { referralFactory.createSent(createdBy = user) }
 
-      val result = referralService.getSentReferralsForUser(user)
+      val result = referralService.getSentReferralsForUser(user, null, null, null, null)
       assertThat(result).containsExactlyElementsOf(startedReferrals)
     }
 
@@ -470,7 +474,7 @@ class ReferralServiceTest @Autowired constructor(
       val user = userFactory.create("pp_user_1", "delius")
       val sentReferral = referralFactory.createSent(sentBy = user)
 
-      val result = referralService.getSentReferralsForUser(user)
+      val result = referralService.getSentReferralsForUser(user, null, null, null, null)
       assertThat(result).doesNotContain(sentReferral)
       assertThat(result).isEmpty()
     }
@@ -483,7 +487,7 @@ class ReferralServiceTest @Autowired constructor(
       whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
         .thenThrow(WebClientResponseException::class.java)
 
-      val result = assertDoesNotThrow { referralService.getSentReferralsForUser(user) }
+      val result = assertDoesNotThrow { referralService.getSentReferralsForUser(user, null, null, null, null) }
       assertThat(result).containsExactly(createdReferral)
     }
 
@@ -492,12 +496,14 @@ class ReferralServiceTest @Autowired constructor(
       val someoneElse = userFactory.create("helper_pp_user", "delius")
       val user = userFactory.create("pp_user_1", "delius")
 
-      val managedReferral = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = someoneElse)
+      val managedReferral1 = referralFactory.createSent(serviceUserCRN = "CRN129876234", createdBy = someoneElse)
+      val managedReferral2 = referralFactory.createSent(serviceUserCRN = "CRN129876235", createdBy = someoneElse)
+      referralFactory.createSent(serviceUserCRN = "CRN129876236", createdBy = someoneElse)
       whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
-        .thenReturn(listOf(Offender("CRN129876234")))
+        .thenReturn(listOf(Offender("CRN129876234"), Offender("CRN129876235")))
 
-      val result = referralService.getSentReferralsForUser(user)
-      assertThat(result).containsExactly(managedReferral)
+      val result = referralService.getSentReferralsForUser(user, null, null, null, null)
+      assertThat(result).containsExactlyInAnyOrder(managedReferral1, managedReferral2)
     }
 
     @Test
@@ -508,8 +514,150 @@ class ReferralServiceTest @Autowired constructor(
       whenever(communityAPIOffenderService.getManagedOffendersForDeliusUser(user))
         .thenReturn(listOf(Offender("CRN129876234")))
 
-      val result = referralService.getSentReferralsForUser(user)
+      val result = referralService.getSentReferralsForUser(user, null, null, null, null)
       assertThat(result).containsExactly(managedAndStartedReferral)
+    }
+  }
+
+  @Nested
+  @DisplayName("get sent referrals with filter options")
+  inner class GetSentReferralsFilterOptionsTest {
+    lateinit var user: AuthUser
+    lateinit var otherUser: AuthUser
+    lateinit var provider: ServiceProvider
+    lateinit var completedReferral: Referral
+    lateinit var liveReferral: Referral
+    lateinit var cancelledReferral: Referral
+    lateinit var draftReferral: Referral
+    lateinit var selfAssignedReferral: Referral
+    lateinit var otherAssignedReferral: Referral
+
+    @BeforeEach
+    fun `setup referrals`() {
+
+      user = userFactory.create("test_user", "auth")
+      otherUser = userFactory.create(id = "randomId1236798", userName = "otherUserName")
+      provider = serviceProviderFactory.create("test")
+      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
+
+      completedReferral = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        concludedAt = OffsetDateTime.now(),
+      ).also { referral ->
+        referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral)
+      }
+
+      liveReferral = referralFactory.createSent(
+        intervention = intervention
+      )
+
+      cancelledReferral = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        concludedAt = OffsetDateTime.now(),
+        endOfServiceReport = null,
+      )
+
+      draftReferral = referralFactory.createDraft(intervention = intervention)
+
+      selfAssignedReferral = referralFactory.createAssigned(
+        intervention = intervention,
+        assignments = listOf(
+          ReferralAssignment(OffsetDateTime.now(), user, user)
+        )
+      )
+
+      otherAssignedReferral = referralFactory.createAssigned(
+        intervention = intervention,
+        assignments = listOf(
+          ReferralAssignment(OffsetDateTime.now(), otherUser, otherUser)
+        )
+      )
+
+      // not testing access restrictions; only test selection of referrals
+      val anySpec: Specification<Referral> = any()
+      whenever(referralAccessFilter.serviceProviderReferrals(anySpec, any()))
+        .then(AdditionalAnswers.returnsFirstArg<Specification<Referral>>())
+      whenever(serviceProviderAccessScopeMapper.fromUser(user))
+        .thenReturn(ServiceProviderAccessScope(setOf(provider), setOf(intervention.dynamicFrameworkContract)))
+    }
+
+    @Test
+    fun `by default only non sent referrals are filtered`() {
+      val result = referralService.getSentReferralsForUser(user, null, null, null, null)
+      assertThat(result).containsExactlyInAnyOrder(completedReferral, liveReferral, cancelledReferral, selfAssignedReferral, otherAssignedReferral)
+      assertThat(result).doesNotContain(draftReferral)
+    }
+
+    @Test
+    fun `setting concluded returns only concluded referrals`() {
+      val result = referralService.getSentReferralsForUser(user, true, null, null, null)
+      assertThat(result).containsExactlyInAnyOrder(completedReferral, cancelledReferral)
+      assertThat(result).doesNotContain(draftReferral, liveReferral, selfAssignedReferral, otherAssignedReferral)
+    }
+
+    @Test
+    fun `setting not concluded returns only non concluded referrals`() {
+      val result = referralService.getSentReferralsForUser(user, false, null, null, null)
+      assertThat(result).containsExactlyInAnyOrder(liveReferral, selfAssignedReferral, otherAssignedReferral)
+      assertThat(result).doesNotContain(draftReferral, completedReferral, cancelledReferral)
+    }
+
+    @Test
+    fun `setting cancelled returns only cancelled referrals`() {
+      val result = referralService.getSentReferralsForUser(user, null, true, null, null)
+      assertThat(result).containsExactlyInAnyOrder(cancelledReferral)
+      assertThat(result).doesNotContain(draftReferral, completedReferral, liveReferral, selfAssignedReferral, otherAssignedReferral)
+    }
+
+    @Test
+    fun `setting not cancelled returns only non cancelled referrals`() {
+      val result = referralService.getSentReferralsForUser(user, null, false, null, null)
+      assertThat(result).containsExactlyInAnyOrder(completedReferral, liveReferral, selfAssignedReferral, otherAssignedReferral)
+      assertThat(result).doesNotContain(draftReferral, cancelledReferral)
+    }
+
+    @Test
+    fun `setting unassigned returns only unassigned referrals`() {
+      val result = referralService.getSentReferralsForUser(user, null, null, true, null)
+      assertThat(result).containsExactlyInAnyOrder(completedReferral, liveReferral, cancelledReferral)
+      assertThat(result).doesNotContain(draftReferral, selfAssignedReferral, otherAssignedReferral)
+    }
+
+    @Test
+    fun `setting not unassigned returns only referrals with assignments`() {
+      val result = referralService.getSentReferralsForUser(user, null, null, false, null)
+      assertThat(result).containsExactlyInAnyOrder(selfAssignedReferral, otherAssignedReferral)
+      assertThat(result).doesNotContain(draftReferral, completedReferral, liveReferral, cancelledReferral)
+    }
+
+    @Test
+    fun `setting assigned to returns referrals with correct assignments`() {
+      val result = referralService.getSentReferralsForUser(user, null, null, false, otherUser.id)
+      assertThat(result).containsExactlyInAnyOrder(otherAssignedReferral)
+      assertThat(result).doesNotContain(draftReferral, completedReferral, liveReferral, cancelledReferral, selfAssignedReferral)
+    }
+
+    @Test
+    fun `setting assigned to with unknown user returns no referrals`() {
+      val result = referralService.getSentReferralsForUser(user, null, null, false, "unknown")
+      assertThat(result).isEmpty()
+      assertThat(result).doesNotContain(draftReferral, completedReferral, liveReferral, cancelledReferral, otherAssignedReferral, selfAssignedReferral)
+    }
+
+    @Test
+    fun `setting all filter options to true will return cancelled and unassigned referral`() {
+      val result = referralService.getSentReferralsForUser(user, true, true, true, null)
+      assertThat(result).containsExactlyInAnyOrder(cancelledReferral)
+      assertThat(result).doesNotContain(draftReferral, completedReferral, liveReferral, selfAssignedReferral, otherAssignedReferral)
+    }
+
+    @Test
+    fun `setting all filter options to false will return an assigned referral`() {
+      val result = referralService.getSentReferralsForUser(user, false, false, false, user.id)
+      assertThat(result).containsExactlyInAnyOrder(selfAssignedReferral)
+      assertThat(result).doesNotContain(draftReferral, completedReferral, liveReferral, cancelledReferral, otherAssignedReferral)
     }
   }
 
@@ -518,13 +666,6 @@ class ReferralServiceTest @Autowired constructor(
   inner class GetSentReferralsSPUser {
     private lateinit var otherPrime: ServiceProvider
     private lateinit var otherSub: ServiceProvider
-
-    private fun userWithProviders(providers: List<ServiceProvider>): AuthUser {
-      val user = userFactory.create("test_user", "auth")
-      whenever(serviceProviderAccessScopeMapper.fromUser(user))
-        .thenReturn(ServiceProviderAccessScope(providers.toSet(), setOf()))
-      return user
-    }
 
     private fun newReferralWithProviders(prime: ServiceProvider, vararg subs: ServiceProvider): Referral {
       val intervention = interventionFactory.create(
@@ -535,16 +676,16 @@ class ReferralServiceTest @Autowired constructor(
 
     @BeforeEach
     fun setup() {
-      // do not test access restrictions in these tests; only test selection of referrals
-      whenever(referralAccessFilter.serviceProviderReferrals(any(), any()))
-        .then(AdditionalAnswers.returnsFirstArg<List<Referral>>())
-
+      val anySpec: Specification<Referral> = any()
+      whenever(referralAccessFilter.serviceProviderReferrals(anySpec, any()))
+        .then(AdditionalAnswers.returnsFirstArg<Specification<Referral>>())
       otherPrime = serviceProviderFactory.create("other_prime")
       otherSub = serviceProviderFactory.create("other_sub")
     }
 
     @Test
     fun `user with multiple providers can see referrals where the providers are subcontractors`() {
+
       val userProviders = listOf("test_org_1", "test_org_2").map(serviceProviderFactory::create)
 
       val primeRef1 = newReferralWithProviders(userProviders[0])
@@ -554,39 +695,17 @@ class ReferralServiceTest @Autowired constructor(
       val subRef = newReferralWithProviders(otherPrime, userProviders[1])
       val noAccess = newReferralWithProviders(otherPrime, otherSub)
 
-      val multiSubUser = userWithProviders(userProviders)
+      val user = userFactory.create("test_user", "auth")
 
-      val result = referralService.getSentReferralsForUser(multiSubUser)
+      // not testing access restrictions; only test selection of referrals
+      val contacts = setOf(primeRef1, primeRef2, primeAndSubRef, refWithAllProvidersBeingSubs, subRef, noAccess).map { it.intervention.dynamicFrameworkContract }
+      whenever(serviceProviderAccessScopeMapper.fromUser(user))
+        .thenReturn(ServiceProviderAccessScope(userProviders.toSet(), contacts.toSet()))
+
+      val result = referralService.getSentReferralsForUser(user, null, null, null, null)
       assertThat(result).doesNotContain(noAccess)
       assertThat(result).containsAll(listOf(primeRef1, primeRef2, primeAndSubRef, refWithAllProvidersBeingSubs, subRef))
       assertThat(result.size).isEqualTo(5)
-    }
-
-    @Test
-    fun `referrals that are cancelled are not displayed`() {
-      val provider = serviceProviderFactory.create("test")
-      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
-
-      val refLive = referralFactory.createSent(intervention = intervention)
-      val refCancelled = referralFactory.createEnded(
-        intervention = intervention,
-        endRequestedReason = cancellationReasonFactory.create("ANY"),
-        concludedAt = OffsetDateTime.now(),
-        endOfServiceReport = null,
-      )
-
-      val refEndedEarly = referralFactory.createEnded(
-        intervention = intervention,
-        endRequestedReason = cancellationReasonFactory.create("ANY"),
-        concludedAt = OffsetDateTime.now(),
-      ).also { referral ->
-        referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral)
-      }
-
-      val user = userWithProviders(listOf(provider))
-      val result = referralService.getSentReferralsForUser(user)
-      assertThat(result).containsExactlyInAnyOrder(refLive, refEndedEarly)
-      assertThat(result).doesNotContain(refCancelled)
     }
   }
 
