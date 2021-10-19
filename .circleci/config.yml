@@ -81,6 +81,10 @@ jobs:
           name: Validate report SQLs
           command: |
             PGPASSWORD="$POSTGRES_PASSWORD" script/validate-report-sql.sh
+      - run:
+          name: Validate metadata
+          command: |
+            PGPASSWORD="$POSTGRES_PASSWORD" script/validate-metadata.sh
 
   publish_data:
     executor: hmpps/java
