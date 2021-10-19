@@ -54,7 +54,7 @@ describe('Dashboards', () => {
       it('shows a list of sent referrals', () => {
         cy.login()
 
-        cy.get('h1').contains('My cases')
+        cy.get('h1').contains('Open cases')
 
         cy.get('table')
           .getTable()
@@ -78,6 +78,97 @@ describe('Dashboards', () => {
               Action: 'View',
             },
           ])
+      })
+
+      describe('Selecting "Unassigned cases"', () => {
+        it('should see "Unassigned cases"', () => {
+          cy.login()
+          cy.get('h1').contains('Open cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'ABCABCA1',
+                'Service user': 'George Michael',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Provider: 'Harmony Living',
+                Action: 'View',
+              },
+              {
+                'Date sent': '13 Dec 2020',
+                Referral: 'ABCABCA2',
+                'Service user': 'Jenny Jones',
+                'Intervention type': "Women's Services - West Midlands",
+                Provider: 'Forward Solutions',
+                Action: 'View',
+              },
+            ])
+        })
+      })
+
+      describe('Selecting "Completed cases"', () => {
+        it('should see "Completed cases"', () => {
+          cy.login()
+          cy.get('h1').contains('Open cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'ABCABCA1',
+                'Service user': 'George Michael',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Provider: 'Harmony Living',
+                Caseworker: 'Unassigned',
+                Action: 'View',
+              },
+              {
+                'Date sent': '13 Dec 2020',
+                Referral: 'ABCABCA2',
+                'Service user': 'Jenny Jones',
+                'Intervention type': "Women's Services - West Midlands",
+                Provider: 'Forward Solutions',
+                Caseworker: 'A. Caseworker',
+                Action: 'View',
+              },
+            ])
+        })
+      })
+
+      describe('Selecting "Cancelled cases"', () => {
+        it('should see "Cancelled cases"', () => {
+          cy.login()
+          cy.get('h1').contains('Open cases')
+          cy.contains('Cancelled cases').click()
+          cy.get('h1').contains('Cancelled cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'ABCABCA1',
+                'Service user': 'George Michael',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Provider: 'Harmony Living',
+                Caseworker: 'Unassigned',
+                Action: 'View',
+              },
+              {
+                'Date sent': '13 Dec 2020',
+                Referral: 'ABCABCA2',
+                'Service user': 'Jenny Jones',
+                'Intervention type': "Women's Services - West Midlands",
+                Provider: 'Forward Solutions',
+                Caseworker: 'A. Caseworker',
+                Action: 'View',
+              },
+            ])
+        })
       })
     })
 

@@ -7,24 +7,34 @@ import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 import LoggedInUser from '../../models/loggedInUser'
 
-export default class MyCasesPresenter {
+export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
+export default class DashboardPresenter {
   constructor(
     private readonly sentReferrals: SentReferral[],
     private readonly interventions: Intervention[],
-    private readonly loggedInUser: LoggedInUser
+    private readonly loggedInUser: LoggedInUser,
+    readonly dashboardType: PPDashboardType
   ) {}
 
-  readonly navItemsPresenter = new PrimaryNavBarPresenter('My cases', this.loggedInUser)
+  private readonly showAssignedCaseworkerColumn = this.dashboardType === 'Unassigned cases'
+
+  private readonly dashboardTypePersistentId = `pp${this.dashboardType.replace(/\s/g, '')}`
+
+  readonly title = this.dashboardType
+
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
   readonly tableHeadings: SortableTableHeaders = [
-    { text: 'Date sent', sort: 'none', persistentId: 'dateSent' },
-    { text: 'Referral', sort: 'none', persistentId: 'referenceNumber' },
-    { text: 'Service user', sort: 'ascending', persistentId: 'serviceUser' },
-    { text: 'Intervention type', sort: 'none', persistentId: 'interventionType' },
-    { text: 'Provider', sort: 'none', persistentId: 'provider' },
-    { text: 'Caseworker', sort: 'none', persistentId: 'caseworker' },
-    { text: 'Action', sort: 'none', persistentId: 'action' },
-  ]
+    { text: 'Date sent', sort: 'none', persistentId: `${this.dashboardTypePersistentId}DateSent` },
+    { text: 'Referral', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ReferenceNumber` },
+    { text: 'Service user', sort: 'ascending', persistentId: `${this.dashboardTypePersistentId}ServiceUser` },
+    { text: 'Intervention type', sort: 'none', persistentId: `${this.dashboardTypePersistentId}InterventionType` },
+    { text: 'Provider', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Provider` },
+    this.showAssignedCaseworkerColumn
+      ? null
+      : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Caseworker` },
+    { text: 'Action', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Action` },
+  ].filter(row => row !== null) as SortableTableHeaders
 
   readonly tableRows: SortableTableRow[] = this.sentReferrals.map(referral => {
     const interventionForReferral = this.interventions.find(
@@ -64,17 +74,19 @@ export default class MyCasesPresenter {
         sortValue: referral.referral.serviceProvider.name,
         href: null,
       },
-      {
-        text: assignee,
-        // prefix all assigned referrals to force unassigned referrals to the back of the sorted list
-        sortValue: assignee !== 'Unassigned' ? `A${assignee}` : assignee,
-        href: null,
-      },
+      this.showAssignedCaseworkerColumn
+        ? null
+        : {
+            text: assignee,
+            // prefix all assigned referrals to force unassigned referrals to the back of the sorted list
+            sortValue: assignee !== 'Unassigned' ? `A${assignee}` : assignee,
+            href: null,
+          },
       {
         text: 'View',
         sortValue: null,
         href: `/probation-practitioner/referrals/${referral.id}/progress`,
       },
-    ]
+    ].filter(row => row !== null) as SortableTableRow
   })
 }

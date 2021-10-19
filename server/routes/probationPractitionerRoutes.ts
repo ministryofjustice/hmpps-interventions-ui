@@ -15,7 +15,18 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.referenceDataService
   )
 
-  get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showMyCases(req, res))
+  get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
+  get(router, '/dashboard/open-cases', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
+  get(router, '/dashboard/unassigned-cases', (req, res) =>
+    probationPractitionerReferralsController.showUnassignedCases(req, res)
+  )
+  get(router, '/dashboard/completed-cases', (req, res) =>
+    probationPractitionerReferralsController.showCompletedCases(req, res)
+  )
+  get(router, '/dashboard/cancelled-cases', (req, res) =>
+    probationPractitionerReferralsController.showCancelledCases(req, res)
+  )
+
   get(router, '/find', (req, res) => probationPractitionerReferralsController.showFindStartPage(req, res))
 
   get(router, '/referrals/:id/progress', (req, res) =>

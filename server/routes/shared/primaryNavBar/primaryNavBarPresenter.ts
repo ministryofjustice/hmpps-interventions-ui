@@ -1,7 +1,7 @@
 import config from '../../../config'
 import LoggedInUser from '../../../models/loggedInUser'
 
-export type PrimaryNavBarHeading = 'Referrals' | 'Reporting' | 'My cases' | 'Find interventions' | 'My services'
+export type PrimaryNavBarHeading = 'Referrals' | 'Reporting' | 'Find interventions' | 'My services'
 export type PrimaryNavBarItem = { text: PrimaryNavBarHeading; href: string; active: boolean }
 
 export default class PrimaryNavBarPresenter {
@@ -30,9 +30,9 @@ export default class PrimaryNavBarPresenter {
 
     if (this.loggedInUser.token.roles.includes('ROLE_PROBATION')) {
       items.push({
-        text: 'My cases',
+        text: 'Referrals',
         href: '/probation-practitioner/dashboard',
-        active: this.active === 'My cases',
+        active: this.active === 'Referrals',
       })
       items.push({
         text: 'Find interventions',

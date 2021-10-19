@@ -20,7 +20,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.task('stubProbationPractitionerAuthUser')
   })
 
-  it("user logs in and sees 'My cases' screen with list of sent referrals", () => {
+  it("user logs in and sees 'Open cases' screen with list of sent referrals", () => {
     const serviceCategory = serviceCategoryFactory.build()
     const accommodationIntervention = interventionFactory.build({
       contractType: { name: 'accommodation' },
@@ -82,7 +82,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.login()
 
-    cy.get('h1').contains('My cases')
+    cy.get('h1').contains('Open cases')
 
     cy.get('table')
       .getTable()

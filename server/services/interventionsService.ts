@@ -76,6 +76,13 @@ export interface PaginationParams {
   sort?: string[]
 }
 
+export interface GetSentReferralsFilterParams {
+  concluded?: boolean
+  cancelled?: boolean
+  unassigned?: boolean
+  assignedTo?: string
+}
+
 export type InterventionsServiceError = RestClientError
 
 export interface CreateCaseNoteParams {
@@ -217,12 +224,16 @@ export default class InterventionsService {
     })) as SentReferral
   }
 
-  async getSentReferralsForUserToken(token: string): Promise<SentReferral[]> {
+  async getSentReferralsForUserToken(
+    token: string,
+    filterParams: GetSentReferralsFilterParams
+  ): Promise<SentReferral[]> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: `/sent-referrals`,
       headers: { Accept: 'application/json' },
+      query: { ...filterParams },
     })) as SentReferral[]
   }
 
