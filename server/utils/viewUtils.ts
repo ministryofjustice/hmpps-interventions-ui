@@ -86,9 +86,18 @@ export default class ViewUtils {
     }
   }
 
-  static sortableTable(persistentId: string, headers: SortableTableHeaders, rows: SortableTableRow[]): TableArgs {
+  static sortableTable(
+    persistentId: string,
+    headers: SortableTableHeaders,
+    rows: SortableTableRow[],
+    options?: { secondOrderColumnNumber?: number }
+  ): TableArgs {
+    const tableAttributes = { 'data-persistent-id': persistentId }
+    if (options && options.secondOrderColumnNumber !== undefined) {
+      tableAttributes['second-order-column'] = options.secondOrderColumnNumber
+    }
     return {
-      attributes: { 'data-persistent-id': persistentId },
+      attributes: tableAttributes,
       head: headers.map(heading => {
         return {
           text: heading.text,
