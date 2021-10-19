@@ -1743,6 +1743,118 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         sentReferral,
       ])
     })
+
+    describe('with "concluded" option', () => {
+      it('returns concluded sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are concluded',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals',
+            query: { concluded: 'true' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([
+              { id: 'eb25cf36-4956-4924-a887-989fe3d6638d' },
+              { id: 'bfabb659-1200-4479-bae7-8927e1e87a0d' },
+            ]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
+          concluded: true,
+        })
+        expect(sentReferrals.length).toEqual(2)
+        const sentReferralIds = sentReferrals.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
+      })
+    })
+
+    describe('with "cancelled" option', () => {
+      it('returns cancelled sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are cancelled',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals',
+            query: { cancelled: 'true' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([{ id: 'bfabb659-1200-4479-bae7-8927e1e87a0d' }]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
+          cancelled: true,
+        })
+        expect(sentReferrals.length).toEqual(1)
+        const sentReferralIds = sentReferrals.map(referral => referral.id)
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
+      })
+    })
+
+    describe('with "unassigned" option', () => {
+      it('returns unassigned sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are unassigned',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals',
+            query: { unassigned: 'true' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([{ id: '995b30f5-182d-4409-aed9-0f3f4ae56802' }]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
+          unassigned: true,
+        })
+        expect(sentReferrals.length).toEqual(1)
+        const sentReferralIds = sentReferrals.map(referral => referral.id)
+        expect(sentReferralIds).toContain('995b30f5-182d-4409-aed9-0f3f4ae56802')
+      })
+    })
+
+    describe('with "assigned" option', () => {
+      it('returns assigned sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are assigned',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals',
+            query: { assignedTo: 'AUTH_USER' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([{ id: '4b56a623-2f85-4670-87a7-68d458378646' }]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
+          assignedTo: 'AUTH_USER',
+        })
+        expect(sentReferrals.length).toEqual(1)
+        const sentReferralIds = sentReferrals.map(referral => referral.id)
+        expect(sentReferralIds).toContain('4b56a623-2f85-4670-87a7-68d458378646')
+      })
+    })
   })
 
   describe('assignSentReferral', () => {
