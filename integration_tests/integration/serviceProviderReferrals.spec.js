@@ -882,7 +882,7 @@ describe('Service provider referrals dashboard', () => {
     describe('with valid inputs', () => {
       describe('when booking for an In-Person Meeting - Other Location', () => {
         it('should present no errors and display scheduled appointment', () => {
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
           cy.get('#date-year').type('2021')
@@ -932,7 +932,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
 
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
           cy.get('#date-day').should('have.value', '24')
           cy.get('#date-month').should('have.value', '3')
@@ -953,7 +953,7 @@ describe('Service provider referrals dashboard', () => {
 
         describe('and their chosen date causes a clash of appointments', () => {
           it('the user is able to amend their chosen date and re-submit', () => {
-            cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+            cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
             cy.get('#date-day').type('24')
             cy.get('#date-month').type('3')
             cy.get('#date-year').type('2021')
@@ -1035,7 +1035,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe('when booking for an In-Person Meeting - NPS Location', () => {
         it('should present no errors and display scheduled appointment', () => {
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
           cy.get('#date-year').type('2021')
@@ -1072,7 +1072,7 @@ describe('Service provider referrals dashboard', () => {
           cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
           // TODO: Add checks for NPS Office address on this page
 
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
           cy.get('#date-day').should('have.value', '24')
           cy.get('#date-month').should('have.value', '3')
@@ -1095,7 +1095,7 @@ describe('Service provider referrals dashboard', () => {
     describe('with invalid inputs', () => {
       describe("when the user doesn't select a session type", () => {
         it('should show an error', () => {
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
           cy.get('#date-year').type('2021')
@@ -1112,7 +1112,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe("when the user doesn't select meeting method", () => {
         it('should show an error', () => {
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
           cy.get('#date-year').type('2021')
@@ -1129,7 +1129,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe("when the user doesn't enter an address", () => {
         it('should show an error', () => {
-          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
           cy.get('#date-year').type('2021')
