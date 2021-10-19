@@ -94,7 +94,7 @@
   "//": "tar is not a direct dependency of our project; we’ve only added it here to remove a security vulnerability introduced by a transitive dependency. This should be removed; see IC-2177",
   "dependencies": {
     "@ministryofjustice/frontend": "0.2.6",
-    "@sentry/node": "^6.13.2",
+    "@sentry/node": "^6.13.3",
     "@types/connect-flash": "0.0.37",
     "@types/uuid": "^8.3.1",
     "agentkeepalive": "^4.1.3",
@@ -183,7 +183,7 @@
     "stylelint": "^13.10.0",
     "stylelint-config-sass-guidelines": "^8.0.0",
     "supertest": "^6.1.6",
-    "ts-jest": "^27.0.5",
+    "ts-jest": "^27.0.7",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.4"
   }
