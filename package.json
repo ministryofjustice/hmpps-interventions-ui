@@ -155,7 +155,7 @@
     "@types/superagent": "^4.1.13",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.31.1",
+    "@typescript-eslint/parser": "^4.33.0",
     "concurrently": "^6.3.0",
     "cypress": "^8.6.0",
     "cypress-multi-reporters": "^1.5.0",
