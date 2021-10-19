@@ -94,7 +94,7 @@ class AppointmentEventPublisher(
       }
       AppointmentType.SUPPLIER_ASSESSMENT -> run {
         val path = locationMapper.getPathFromControllerMethod(ReferralController::getSupplierAssessmentAppointment)
-        return locationMapper.expandPathToCurrentRequestBaseUrl(path, appointment.referral.id).toString()
+        return locationMapper.expandPathToCurrentContextPathUrl(path, appointment.referral.id).toString()
       }
     }
   }

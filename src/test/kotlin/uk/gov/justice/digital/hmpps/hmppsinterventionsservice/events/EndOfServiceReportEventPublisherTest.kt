@@ -23,7 +23,7 @@ class EndOfServiceReportEventPublisherTest {
     val endOfServiceReport = endOfServiceReportFactory.create()
 
     val uri = URI.create("http://localhost/end-of-service-report/${endOfServiceReport.id}")
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReport.id))
+    whenever(locationMapper.expandPathToCurrentContextPathUrl("/end-of-service-report/{id}", endOfServiceReport.id))
       .thenReturn(uri)
     whenever(locationMapper.getPathFromControllerMethod(EndOfServiceReportController::getEndOfServiceReportById))
       .thenReturn("/end-of-service-report/{id}")

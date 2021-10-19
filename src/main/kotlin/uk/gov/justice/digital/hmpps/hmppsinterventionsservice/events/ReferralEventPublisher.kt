@@ -37,6 +37,6 @@ class ReferralEventPublisher(
 
   private fun getSentReferralURL(referral: Referral): String {
     val path = locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)
-    return locationMapper.expandPathToCurrentRequestBaseUrl(path, referral.id).toString()
+    return locationMapper.expandPathToCurrentContextPathUrl(path, referral.id).toString()
   }
 }

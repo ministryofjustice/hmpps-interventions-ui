@@ -23,7 +23,7 @@ class ActionPlanAppointmentEventPublisherTest {
   @BeforeEach
   fun setup() {
     whenever(locationMapper.getPathFromControllerMethod(any())).thenReturn("")
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl(any(), any(), any()))
+    whenever(locationMapper.expandPathToCurrentContextPathUrl(any(), any(), any()))
       .thenReturn(URI.create("http://localhost/action-plan/123/appointments/1"))
   }
 

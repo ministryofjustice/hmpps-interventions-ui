@@ -23,7 +23,7 @@ class AppointmentEventPublisherTest {
   @BeforeEach
   fun setup() {
     whenever(locationMapper.getPathFromControllerMethod(any())).thenReturn("")
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl(any(), any()))
+    whenever(locationMapper.expandPathToCurrentContextPathUrl(any(), any()))
       .thenReturn(URI.create("http://localhost/sent-referral/123/supplier-assessment"))
   }
 

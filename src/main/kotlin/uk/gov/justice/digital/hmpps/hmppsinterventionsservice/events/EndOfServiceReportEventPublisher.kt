@@ -39,6 +39,6 @@ class EndOfServiceReportEventPublisher(
 
   private fun getEndOfServiceReportUrl(endOfServiceReport: EndOfServiceReport): String {
     val path = locationMapper.getPathFromControllerMethod(EndOfServiceReportController::getEndOfServiceReportById)
-    return locationMapper.expandPathToCurrentRequestBaseUrl(path, endOfServiceReport.id).toString()
+    return locationMapper.expandPathToCurrentContextPathUrl(path, endOfServiceReport.id).toString()
   }
 }

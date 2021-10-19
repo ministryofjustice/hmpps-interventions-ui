@@ -24,7 +24,7 @@ class ReferralEventPublisherTest {
   fun `builds an referral sent event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val uri = URI.create("http://localhost/sent-referral/" + referral.id)
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentContextPathUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
     whenever(locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)).thenReturn("/sent-referral/{id}")
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
@@ -44,7 +44,7 @@ class ReferralEventPublisherTest {
   fun `builds an referral assign event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val uri = URI.create("http://localhost/sent-referral/" + referral.id)
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentContextPathUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
     whenever(locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)).thenReturn("/sent-referral/{id}")
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 
@@ -64,7 +64,7 @@ class ReferralEventPublisherTest {
   fun `builds an referral conclude event and publishes it`() {
     val referral = SampleData.sampleReferral("CRN1234", "Service Provider Name")
     val uri = URI.create("http://localhost/sent-referral/" + referral.id)
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentContextPathUrl("/sent-referral/{id}", referral.id)).thenReturn(uri)
     whenever(locationMapper.getPathFromControllerMethod(ReferralController::getSentReferral)).thenReturn("/sent-referral/{id}")
     val publisher = ReferralEventPublisher(eventPublisher, locationMapper)
 

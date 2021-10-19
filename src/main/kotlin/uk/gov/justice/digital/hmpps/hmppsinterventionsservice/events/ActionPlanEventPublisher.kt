@@ -34,6 +34,6 @@ class ActionPlanEventPublisher(
 
   private fun createDetailUrl(actionPlan: ActionPlan): String {
     val path = locationMapper.getPathFromControllerMethod(ActionPlanController::getActionPlan)
-    return locationMapper.expandPathToCurrentRequestBaseUrl(path, actionPlan.id).toString()
+    return locationMapper.expandPathToCurrentContextPathUrl(path, actionPlan.id).toString()
   }
 }

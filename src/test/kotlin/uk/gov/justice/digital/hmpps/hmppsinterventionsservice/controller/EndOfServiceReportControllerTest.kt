@@ -43,7 +43,7 @@ class EndOfServiceReportControllerTest {
 
     whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
     whenever(endOfServiceReportService.createEndOfServiceReport(referral.id, authUser)).thenReturn(endOfServiceReport)
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/{id}", endOfServiceReportDTO.id)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentRequestUrl("/{id}", endOfServiceReportDTO.id)).thenReturn(uri)
 
     val endOfServiceReportResponse = endOfServiceReportController.createEndOfServiceReport(createEndOfServiceReportDTO, jwtAuthenticationToken)
     assertThat(endOfServiceReportResponse.let { it.body }).isEqualTo(endOfServiceReportDTO)
@@ -122,7 +122,7 @@ class EndOfServiceReportControllerTest {
     val uri = URI.create("http://localhost/end-of-service-report/1234")
 
     whenever(userMapper.fromToken(jwtAuthenticationToken)).thenReturn(authUser)
-    whenever(locationMapper.expandPathToCurrentRequestBaseUrl("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uri)
+    whenever(locationMapper.expandPathToCurrentRequestUrl("/end-of-service-report/{id}", endOfServiceReportId)).thenReturn(uri)
     whenever(endOfServiceReportService.submitEndOfServiceReport(endOfServiceReportId, authUser)).thenReturn(endOfServiceReport)
 
     val response = endOfServiceReportController.submitEndOfServiceReport(endOfServiceReportId, jwtAuthenticationToken)
