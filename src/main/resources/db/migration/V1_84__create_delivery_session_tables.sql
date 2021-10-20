@@ -1,11 +1,9 @@
 BEGIN;
-
-    drop view delivery_session;
-    drop view delivery_session_appointment;
+    alter view delivery_session rename to delivery_session_deprecated;
+    alter view delivery_session_appointment rename to delivery_session_appointment_deprecated;
 
     create table delivery_session as
-    select id, referral_id, session_number from action_plan_session
-    where latest_approved = true;
+    select * from delivery_session_deprecated;
 
     alter table delivery_session add constraint pk_delivery_session primary key (id);
     alter table delivery_session add constraint fk_delivery_session_referral foreign key (referral_id) references referral;
@@ -14,8 +12,7 @@ BEGIN;
     create index idx_delivery_session_referral__id on delivery_session (referral_id);
 
     create table delivery_session_appointment as
-    select action_plan_session_id delivery_session_id, appointment_id from action_plan_session_appointment apsa
-    inner join delivery_session ds on ds.id = apsa.action_plan_session_id;
+    select * from delivery_session_appointment_deprecated;
 
     alter table delivery_session_appointment
         add constraint uk_delivery_session_appointments_appointment_id unique (appointment_id);
