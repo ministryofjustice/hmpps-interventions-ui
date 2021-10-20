@@ -12,7 +12,8 @@ BEGIN;
     create index idx_delivery_session_referral__id on delivery_session (referral_id);
 
     create table delivery_session_appointment as
-    select * from delivery_session_appointment_deprecated;
+    select * from delivery_session_appointment_deprecated dsap
+    inner join delivery_session ds on ds.id = dsap.delivery_session_id;
 
     alter table delivery_session_appointment
         add constraint uk_delivery_session_appointments_appointment_id unique (appointment_id);
