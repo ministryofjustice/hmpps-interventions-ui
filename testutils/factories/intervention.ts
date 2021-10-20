@@ -34,5 +34,6 @@ The service will use the following methods:
       code: 'ACC',
       name: 'Accommodation',
     },
+    incomingReferralDistributionEmail: 'referrals@better.org',
   }
 })

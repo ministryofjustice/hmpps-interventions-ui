@@ -25,4 +25,5 @@ export default interface Intervention {
   serviceProvider: ServiceProvider
   eligibility: Eligibility
   contractType: ContractType
+  incomingReferralDistributionEmail: string
 }
