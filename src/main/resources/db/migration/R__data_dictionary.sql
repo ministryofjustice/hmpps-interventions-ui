@@ -121,3 +121,8 @@ COMMENT ON COLUMN case_note.subject IS 'subject of the case note';
 COMMENT ON COLUMN case_note.body IS 'main body text of the case note';
 COMMENT ON COLUMN case_note.sent_at IS 'date time for when the case note was created';
 COMMENT ON COLUMN case_note.sent_by_id IS 'the officer who created the case note';
+
+COMMENT ON TABLE metadata IS 'defines metadata about the schema';
+COMMENT ON COLUMN metadata.table_name IS 'which table this record is describing';
+COMMENT ON COLUMN metadata.column_name IS 'which column this record is describing';
+COMMENT ON COLUMN metadata.sensitive IS '`true` means the contents should be obfuscated/anonymised in unsafe environments; `false` means it’s safe to see/copy';
