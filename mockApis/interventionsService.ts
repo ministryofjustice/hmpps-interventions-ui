@@ -739,6 +739,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetMyInterventions = async (responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/my-interventions`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubAddCaseNote = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {

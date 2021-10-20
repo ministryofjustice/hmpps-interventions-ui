@@ -258,5 +258,9 @@ module.exports = on => {
     stubGetCaseNote: arg => {
       return interventionsService.stubGetCaseNote(arg.caseNoteId, arg.responseJson)
     },
+
+    stubGetMyInterventions: arg => {
+      return interventionsService.stubGetMyInterventions(arg.responseJson)
+    },
   })
 }
