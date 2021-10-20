@@ -10,4 +10,5 @@ wget https://jdbc.postgresql.org/download/postgresql-42.2.19.jar -O "$jardir/pos
 
 java -jar "$jardir/schemaspy.jar" -t pgsql -dp "$jardir/postgresql.jar" \
   -db "${POSTGRES_DB:-interventions}" -host "localhost" -port "5432" -u "postgres" -p "password" \
+  -nopages \
   -o "$schemadir"

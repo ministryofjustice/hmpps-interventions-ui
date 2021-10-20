@@ -24,10 +24,11 @@ _snyk_options: &snyk_options
 _db_docker_config: &db_docker_config
   - image: cimg/openjdk:11.0
     environment:
-      POSTGRES_DB: circle_test
+      POSTGRES_DB: interventions_ci
   - image: circleci/postgres:10-alpine-ram
     environment:
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: interventions_ci
 
 jobs:
   validate:
@@ -117,13 +118,7 @@ jobs:
       PACTBROKER_AUTH_USERNAME: "interventions"
       _JAVA_OPTIONS: -Xmx512m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
     executor: hmpps/java
-    docker:
-      - image: cimg/openjdk:11.0
-        environment:
-          POSTGRES_DB: circle_test
-      - image: circleci/postgres:10-alpine-ram
-        environment:
-          POSTGRES_PASSWORD: password
+    docker: *db_docker_config
     steps:
       - checkout
       - gradle/with_cache:
