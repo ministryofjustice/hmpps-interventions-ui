@@ -1,4 +1,3 @@
-BEGIN;
     alter view delivery_session rename to delivery_session_deprecated;
     alter view delivery_session_appointment rename to delivery_session_appointment_deprecated;
 
@@ -12,7 +11,8 @@ BEGIN;
     create index idx_delivery_session_referral__id on delivery_session (referral_id);
 
     create table delivery_session_appointment as
-    select * from delivery_session_appointment_deprecated;
+    select * from delivery_session_appointment_deprecated dsap
+    inner join delivery_session ds on ds.id = dsap.delivery_session_id;
 
     alter table delivery_session_appointment
         add constraint uk_delivery_session_appointments_appointment_id unique (appointment_id);
@@ -25,4 +25,3 @@ BEGIN;
 
     create index idx_delivery_session_appointment_delivery_session__id on delivery_session_appointment (delivery_session_id);
     create index idx_delivery_session_appointment_appointment__id on delivery_session_appointment (appointment_id);
-COMMIT;
