@@ -60,6 +60,14 @@ jobs:
             sudo apt update
             sudo apt install postgresql-client
       - run:
+          name: Run main migrations then branch migrations to detect clashes
+          command: |
+            flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
+            git reset --hard origin/main
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration"
+            git reset --hard "$CIRCLE_SHA1"
+            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration"
+      - run:
           name: Run migrations and local seeds
           command: |
             flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
