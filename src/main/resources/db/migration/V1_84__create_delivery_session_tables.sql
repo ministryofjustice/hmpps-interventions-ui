@@ -1,4 +1,3 @@
-BEGIN;
     alter view delivery_session rename to delivery_session_deprecated;
     alter view delivery_session_appointment rename to delivery_session_appointment_deprecated;
 
@@ -26,4 +25,3 @@ BEGIN;
 
     create index idx_delivery_session_appointment_delivery_session__id on delivery_session_appointment (delivery_session_id);
     create index idx_delivery_session_appointment_appointment__id on delivery_session_appointment (appointment_id);
-COMMIT;
