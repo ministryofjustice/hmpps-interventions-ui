@@ -295,6 +295,59 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
+  describe('canCancelReferral', () => {
+    describe('when the referral is still in progress', () => {
+      it('returns true', () => {
+        const inProgressReferral = sentReferralFactory.build({ endRequestedAt: null, concludedAt: null })
+
+        const presenter = new InterventionProgressPresenter(
+          inProgressReferral,
+          interventionFactory.build(),
+          [],
+          null,
+          supplierAssessmentFactory.build(),
+          null
+        )
+
+        expect(presenter.canCancelReferral).toEqual(true)
+      })
+    })
+
+    describe('when the PP has requested an end to the referral', () => {
+      it('returns false', () => {
+        const endRequestedReferral = sentReferralFactory.build({ endRequestedAt: '2020-12-07T12:00:00.000000Z' })
+
+        const presenter = new InterventionProgressPresenter(
+          endRequestedReferral,
+          interventionFactory.build(),
+          [],
+          null,
+          supplierAssessmentFactory.build(),
+          null
+        )
+
+        expect(presenter.canCancelReferral).toEqual(false)
+      })
+    })
+
+    describe('when the referral has already been concluded', () => {
+      it('returns false', () => {
+        const concludedReferral = sentReferralFactory.build({ concludedAt: '2020-12-07T12:00:00.000000Z' })
+
+        const presenter = new InterventionProgressPresenter(
+          concludedReferral,
+          interventionFactory.build(),
+          [],
+          null,
+          supplierAssessmentFactory.build(),
+          null
+        )
+
+        expect(presenter.canCancelReferral).toEqual(false)
+      })
+    })
+  })
+
   describe('hasEndOfServiceReport', () => {
     describe('when the referral has no end of service report', () => {
       it('returns false', () => {
