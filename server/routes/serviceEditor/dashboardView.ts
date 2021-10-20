@@ -1,17 +1,19 @@
 import ViewUtils from '../../utils/viewUtils'
-import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
-import LoggedInUser from '../../models/loggedInUser'
+import DashboardPresenter from './dashboardPresenter'
 
 export default class DashboardView {
-  constructor(private readonly loggedInUser: LoggedInUser) {}
-
-  private primaryNavBarPresenter = new PrimaryNavBarPresenter('My services', this.loggedInUser)
+  constructor(private readonly presenter: DashboardPresenter) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceEditor/dashboard',
       {
-        primaryNavArgs: ViewUtils.primaryNav(this.primaryNavBarPresenter.items),
+        presenter: this.presenter,
+        primaryNavArgs: ViewUtils.primaryNav(this.presenter.primaryNavBarPresenter.items),
+        services: this.presenter.serviceTitlesAndSummaries.reduce((acc, titleAndSummary) => {
+          acc[titleAndSummary[0]] = ViewUtils.summaryListArgs(titleAndSummary[1])
+          return acc
+        }, {}),
       },
     ]
   }
