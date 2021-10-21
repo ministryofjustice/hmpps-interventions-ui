@@ -1,5 +1,5 @@
 import AddCaseNotePresenter from './addCaseNotePresenter'
-import { InputArgs } from '../../../utils/govukFrontendTypes'
+import { DetailsArgs, InputArgs } from '../../../utils/govukFrontendTypes'
 import AddNewCaseNoteForm from './AddNewCaseNoteForm'
 import ViewUtils from '../../../utils/viewUtils'
 
@@ -37,6 +37,15 @@ export default class AddCaseNoteView {
     }
   }
 
+  private get detailsArgs(): DetailsArgs {
+    return {
+      summaryText: 'What should go in a case note',
+      html: `<p class="govuk-body">Case notes are for anything outside of scheduled sessions, such as phone calls or unplanned appointments.</p>
+        <p class="govuk-body">If the person is moving between prisons or being released, add which prison, where they’ll be released to and when.</p>
+        <p class="govuk-body">Anything urgent or important needs to be followed up between the service provider and probation practitioner.</p>`,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'caseNotes/addNewCaseNote',
@@ -45,6 +54,7 @@ export default class AddCaseNoteView {
         backLinkArgs: this.backLinkArgs,
         subjectInputArgs: this.subjectInputArgs,
         bodyInputArgs: this.bodyInputArgs,
+        detailsArgs: this.detailsArgs,
       },
     ]
   }

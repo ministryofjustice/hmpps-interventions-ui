@@ -2,6 +2,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -14,8 +15,13 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">Add case note</h1>
       <p class="govuk-body">
-        Add any notes you've made about the case. Case notes will be shared with the relevant probation practitioner and service provider.
+        Case notes are for the probation practitioner and service provider to record and share information about the intervention.
       </p>
+      <p class="govuk-body">
+        What you add cannot be viewed on any other service.
+      </p>
+
+      {{ govukDetails(detailsArgs) }}
       <form method="post" novalidate="novalidate">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukInput(subjectInputArgs) }}
