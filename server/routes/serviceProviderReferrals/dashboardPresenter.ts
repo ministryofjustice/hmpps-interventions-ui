@@ -21,8 +21,10 @@ export default class DashboardPresenter {
 
   readonly title = this.dashboardType
 
+  private readonly secondOrderColumn = 'Date received'
+
   readonly tableHeadings: SortableTableHeaders = [
-    { text: 'Date received', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}DateReceived` },
+    { text: this.secondOrderColumn, sort: 'none', persistentId: `${this.dashBoardTypePersistentId}DateReceived` },
     { text: 'Referral', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}ReferenceNumber` },
     { text: 'Service user', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}ServiceUser` },
     { text: 'Intervention type', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}InterventionType` },
@@ -31,6 +33,10 @@ export default class DashboardPresenter {
       : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Caseworker` },
     { text: 'Action', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Action` },
   ].filter(row => row !== null) as SortableTableHeaders
+
+  readonly secondOrderColumnNumber: number = this.tableHeadings
+    .map(heading => heading.text)
+    .indexOf(this.secondOrderColumn)
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 

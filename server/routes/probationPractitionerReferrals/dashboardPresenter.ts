@@ -24,8 +24,10 @@ export default class DashboardPresenter {
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
+  private readonly secondOrderColumn = 'Date sent'
+
   readonly tableHeadings: SortableTableHeaders = [
-    { text: 'Date sent', sort: 'none', persistentId: `${this.dashboardTypePersistentId}DateSent` },
+    { text: this.secondOrderColumn, sort: 'none', persistentId: `${this.dashboardTypePersistentId}DateSent` },
     { text: 'Referral', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ReferenceNumber` },
     { text: 'Service user', sort: 'ascending', persistentId: `${this.dashboardTypePersistentId}ServiceUser` },
     { text: 'Intervention type', sort: 'none', persistentId: `${this.dashboardTypePersistentId}InterventionType` },
@@ -35,6 +37,10 @@ export default class DashboardPresenter {
       : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Caseworker` },
     { text: 'Action', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Action` },
   ].filter(row => row !== null) as SortableTableHeaders
+
+  readonly secondOrderColumnNumber: number = this.tableHeadings
+    .map(heading => heading.text)
+    .indexOf(this.secondOrderColumn)
 
   readonly tableRows: SortableTableRow[] = this.sentReferrals.map(referral => {
     const interventionForReferral = this.interventions.find(

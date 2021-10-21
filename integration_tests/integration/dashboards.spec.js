@@ -173,6 +173,109 @@ describe('Dashboards', () => {
     })
 
     describe('Sorting the table', () => {
+      describe('with "Date sent" as second order sort', () => {
+        it('should order by "Date sent" when first order values are identical', () => {
+          const sentReferralsWithIdenticalReferenceNumber = [
+            sentReferralFactory.build({
+              sentAt: '2021-01-27T13:00:00.000000Z',
+              referenceNumber: 'A',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
+            }),
+            sentReferralFactory.build({
+              sentAt: '2021-01-26T13:00:00.000000Z',
+              referenceNumber: 'A',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
+            }),
+            sentReferralFactory.build({
+              sentAt: '2021-01-28T13:00:00.000000Z',
+              referenceNumber: 'A',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
+            }),
+            sentReferralFactory.build({
+              sentAt: '2021-01-26T13:00:00.000000Z',
+              referenceNumber: 'B',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
+            }),
+          ]
+
+          cy.stubGetSentReferralsForUserToken(sentReferralsWithIdenticalReferenceNumber)
+          cy.login()
+
+          cy.get('table')
+            .getTable({ onlyColumns: ['Date sent', 'Referral'] })
+            .should('deep.equal', [
+              {
+                'Date sent': '27 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '28 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'B',
+              },
+            ])
+
+          cy.get('table').within(() => cy.contains('button', 'Referral').click())
+          cy.get('table')
+            .getTable({ onlyColumns: ['Date sent', 'Referral'] })
+            .should('deep.equal', [
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '27 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '28 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'B',
+              },
+            ])
+
+          // Even when descending the first order column it should keep the Date sent column ordered as ascending
+          cy.get('table').within(() => cy.contains('button', 'Referral').click())
+          cy.get('table')
+            .getTable({ onlyColumns: ['Date sent', 'Referral'] })
+            .should('deep.equal', [
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'B',
+              },
+              {
+                'Date sent': '26 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '27 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date sent': '28 Jan 2021',
+                Referral: 'A',
+              },
+            ])
+        })
+      })
       const referralToSelect = sentReferrals[0]
 
       const initialTable = [
@@ -501,6 +604,98 @@ describe('Dashboards', () => {
     })
 
     describe('Sorting the table', () => {
+      describe('with "Date received" as second order sort', () => {
+        it('should order by "Date received" when first order values are identical', () => {
+          const sentReferralsWithIdenticalReferenceNumber = [
+            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+              sentAt: '2021-01-27T13:00:00.000000Z',
+              referenceNumber: 'A',
+            }),
+            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+              sentAt: '2021-01-26T13:00:00.000000Z',
+              referenceNumber: 'A',
+            }),
+            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+              sentAt: '2021-01-28T13:00:00.000000Z',
+              referenceNumber: 'A',
+            }),
+            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+              sentAt: '2021-01-26T13:00:00.000000Z',
+              referenceNumber: 'B',
+            }),
+          ]
+
+          cy.stubGetServiceProviderSentReferralsSummaryForUserToken(sentReferralsWithIdenticalReferenceNumber)
+          cy.login()
+
+          cy.get('table')
+            .getTable({ onlyColumns: ['Date received', 'Referral'] })
+            .should('deep.equal', [
+              {
+                'Date received': '27 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '28 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'B',
+              },
+            ])
+
+          cy.get('table').within(() => cy.contains('button', 'Referral').click())
+          cy.get('table')
+            .getTable({ onlyColumns: ['Date received', 'Referral'] })
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '27 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '28 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'B',
+              },
+            ])
+
+          // Even when descending the first order column it should keep the Date received column ordered as ascending
+          cy.get('table').within(() => cy.contains('button', 'Referral').click())
+          cy.get('table')
+            .getTable({ onlyColumns: ['Date received', 'Referral'] })
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'B',
+              },
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '27 Jan 2021',
+                Referral: 'A',
+              },
+              {
+                'Date received': '28 Jan 2021',
+                Referral: 'A',
+              },
+            ])
+        })
+      })
+
       const assignedToSelfA = serviceProviderSentReferralSummaryFactory.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         referenceNumber: 'A',

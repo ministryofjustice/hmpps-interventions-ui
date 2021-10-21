@@ -17,7 +17,7 @@
  *
  * 4. The table can only be sorted by one column at a time.
  */
-
+// eslint-disable-next-line max-classes-per-file
 type ARIASort = 'none' | 'ascending' | 'descending'
 
 interface SortOrderDTO {
@@ -239,6 +239,53 @@ class PersistentSortOrder {
   }
 }
 
+class MOJFrontendTableSecondOrderSorter {
+  private secondOrderColumnNumber: number | undefined
+
+  constructor(private table: HTMLTableElement) {
+    // 'second-order-column' attribute set in server/utils/viewUtils.ts
+    const tableSecondOrderColumnAttr = this.table.getAttribute('second-order-column')
+    if (tableSecondOrderColumnAttr !== null) {
+      const parsedColumnNumber = parseInt(tableSecondOrderColumnAttr, 10)
+      if (!Number.isNaN(parsedColumnNumber)) {
+        this.secondOrderColumnNumber = parsedColumnNumber
+      }
+    }
+  }
+
+  secondOrderSort(rows: HTMLTableRowElement[], firstOrderColumnNumber: number): HTMLTableRowElement[] {
+    return rows.sort((rowA: HTMLTableRowElement, rowB: HTMLTableRowElement) => {
+      if (this.secondOrderColumnNumber === undefined) {
+        return 0
+      }
+      const foCellValueA = this.getCellValue(rowA, firstOrderColumnNumber)
+      const foCellValueB = this.getCellValue(rowB, firstOrderColumnNumber)
+      if (foCellValueA === foCellValueB) {
+        const soCellValueA = this.getCellValue(rowA, this.secondOrderColumnNumber)
+        const soCellValueB = this.getCellValue(rowB, this.secondOrderColumnNumber)
+        if (soCellValueA && soCellValueB) {
+          if (soCellValueA < soCellValueB) {
+            return -1
+          }
+          if (soCellValueA > soCellValueB) {
+            return 1
+          }
+        }
+      }
+      return 0
+    })
+  }
+
+  private getCellValue(row: HTMLTableRowElement, columnIndex: number): string | undefined {
+    if (row.cells.length <= columnIndex || columnIndex < 0) {
+      return undefined
+    }
+    const cell = row.cells[columnIndex]
+    // 'data-sort-value' attribute set by MOJFrontend
+    return cell.getAttribute('data-sort-value') || cell.innerHTML
+  }
+}
+
 $(() => {
   const tables = document.getElementsByTagName('table')
   if (tables.length === 0) {
@@ -252,8 +299,22 @@ $(() => {
 
   const table = tables[0]
 
+  class SecondOrderSortableTable extends MOJFrontend.SortableTable {
+    private secondOrderTableSorter: MOJFrontendTableSecondOrderSorter
+
+    constructor(tableElement: HTMLTableElement) {
+      super({ table: tableElement })
+      this.secondOrderTableSorter = new MOJFrontendTableSecondOrderSorter(tableElement)
+    }
+
+    // overrides MOJFrontend.SortableTable.sort function
+    sort(rows: HTMLTableRowElement[], columnNumber: number, sortDirection: string): HTMLTableRowElement[] {
+      const sortedRows = super.sort(rows, columnNumber, sortDirection)
+      return this.secondOrderTableSorter.secondOrderSort(sortedRows, columnNumber)
+    }
+  }
   // eslint-disable-next-line no-new
-  new MOJFrontend.SortableTable({ table })
+  new SecondOrderSortableTable(table)
 
   PersistentSortOrder.activate(table)
 })
