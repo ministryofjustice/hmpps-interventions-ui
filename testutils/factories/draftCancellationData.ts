@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import DraftCancellationData from '../../server/routes/probationPractitionerReferrals/draftCancellationData'
+import DraftCancellationData from '../../server/routes/referral/cancellation/draftCancellationData'
 
 class DraftCancellationDataFactory extends Factory<DraftCancellationData> {}
 

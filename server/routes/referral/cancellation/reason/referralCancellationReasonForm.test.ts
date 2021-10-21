@@ -1,4 +1,4 @@
-import TestUtils from '../../../testutils/testUtils'
+import TestUtils from '../../../../../testutils/testUtils'
 import ReferralCancellationReasonForm from './referralCancellationReasonForm'
 
 describe(ReferralCancellationReasonForm, () => {

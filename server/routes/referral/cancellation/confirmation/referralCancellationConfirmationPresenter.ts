@@ -1,8 +1,8 @@
-import SentReferral from '../../models/sentReferral'
-import PresenterUtils from '../../utils/presenterUtils'
-import { SummaryListItem } from '../../utils/summaryList'
-import utils from '../../utils/utils'
-import Intervention from '../../models/intervention'
+import SentReferral from '../../../../models/sentReferral'
+import PresenterUtils from '../../../../utils/presenterUtils'
+import { SummaryListItem } from '../../../../utils/summaryList'
+import utils from '../../../../utils/utils'
+import Intervention from '../../../../models/intervention'
 
 export default class ReferralCancellationConfirmationPresenter {
   constructor(private readonly referral: SentReferral, private readonly intervention: Intervention) {}
