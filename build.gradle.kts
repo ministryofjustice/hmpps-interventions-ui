@@ -59,7 +59,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("com.nimbusds:oauth2-oidc-sdk:9.18")
+  implementation("com.nimbusds:oauth2-oidc-sdk:9.19")
   // Issue with 4.1.67.Final from spring-boot-starter-webflux
   implementation("io.netty:netty-codec:4.1.69.Final")
 
