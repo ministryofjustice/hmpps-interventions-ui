@@ -15,7 +15,7 @@ export default class AddCaseNoteView {
     return {
       label: {
         text: 'Subject',
-        classes: 'govuk-label--m',
+        classes: 'govuk-label--s',
       },
       id: AddNewCaseNoteForm.caseNoteSubjectFormId,
       name: AddNewCaseNoteForm.caseNoteSubjectFormId,
@@ -28,7 +28,7 @@ export default class AddCaseNoteView {
     return {
       label: {
         text: 'Add notes about this intervention or service user',
-        classes: 'govuk-label--m',
+        classes: 'govuk-label--s',
       },
       id: AddNewCaseNoteForm.caseNoteBodyFormId,
       name: AddNewCaseNoteForm.caseNoteBodyFormId,
