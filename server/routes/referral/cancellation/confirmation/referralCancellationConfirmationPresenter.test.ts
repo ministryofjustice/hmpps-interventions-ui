@@ -1,5 +1,5 @@
-import interventionFactory from '../../../testutils/factories/intervention'
-import sentReferralFactory from '../../../testutils/factories/sentReferral'
+import interventionFactory from '../../../../../testutils/factories/intervention'
+import sentReferralFactory from '../../../../../testutils/factories/sentReferral'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
 
 describe(ReferralCancellationConfirmationPresenter, () => {

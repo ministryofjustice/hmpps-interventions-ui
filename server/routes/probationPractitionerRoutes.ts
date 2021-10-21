@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { Services, get, post } from './index'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CaseNotesController from './caseNotes/caseNotesController'
+import ReferralCancellationController from './referral/cancellation/referralCancellationController'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
@@ -47,24 +48,33 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.viewEndOfServiceReport(req, res)
   )
 
+  const referralCancellationController = new ReferralCancellationController(
+    services.interventionsService,
+    services.communityApiService,
+    services.hmppsAuthService,
+    services.assessRisksAndNeedsService,
+    services.draftsService
+  )
+
   get(router, '/referrals/:id/cancellation/start', (req, res) =>
-    probationPractitionerReferralsController.startCancellation(req, res)
+    referralCancellationController.startCancellation(req, res)
   )
   get(router, '/referrals/:id/cancellation/:draftCancellationId/reason', (req, res) =>
-    probationPractitionerReferralsController.editCancellationReason(req, res)
+    referralCancellationController.editCancellationReason(req, res)
   )
   post(router, '/referrals/:id/cancellation/:draftCancellationId/reason', (req, res) =>
-    probationPractitionerReferralsController.editCancellationReason(req, res)
+    referralCancellationController.editCancellationReason(req, res)
   )
   get(router, '/referrals/:id/cancellation/:draftCancellationId/check-your-answers', (req, res) =>
-    probationPractitionerReferralsController.cancellationCheckAnswers(req, res)
+    referralCancellationController.cancellationCheckAnswers(req, res)
   )
   post(router, '/referrals/:id/cancellation/:draftCancellationId/submit', (req, res) =>
-    probationPractitionerReferralsController.submitCancellation(req, res)
+    referralCancellationController.submitCancellation(req, res)
   )
   get(router, '/referrals/:id/cancellation/confirmation', (req, res) =>
-    probationPractitionerReferralsController.showCancellationConfirmationPage(req, res)
+    referralCancellationController.showCancellationConfirmationPage(req, res)
   )
+
   get(router, '/referrals/:id/supplier-assessment', (req, res) =>
     probationPractitionerReferralsController.showSupplierAssessmentAppointment(req, res)
   )

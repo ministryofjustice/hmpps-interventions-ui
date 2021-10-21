@@ -1,5 +1,5 @@
-import { RadiosArgs, TextareaArgs } from '../../utils/govukFrontendTypes'
-import ViewUtils from '../../utils/viewUtils'
+import { RadiosArgs, TextareaArgs } from '../../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../../utils/viewUtils'
 import ReferralCancellationReasonPresenter from './referralCancellationReasonPresenter'
 
 export default class ReferralCancellationReasonView {

@@ -1,9 +1,9 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import errorMessages from '../../utils/errorMessages'
-import { FormData } from '../../utils/forms/formData'
-import FormUtils from '../../utils/formUtils'
-import { FormValidationError } from '../../utils/formValidationError'
+import errorMessages from '../../../../utils/errorMessages'
+import { FormData } from '../../../../utils/forms/formData'
+import FormUtils from '../../../../utils/formUtils'
+import { FormValidationError } from '../../../../utils/formValidationError'
 
 export default class ReferralCancellationReasonForm {
   constructor(private readonly request: Request) {}

@@ -1,4 +1,4 @@
-import ViewUtils from '../../utils/viewUtils'
+import ViewUtils from '../../../../utils/viewUtils'
 import ReferralCancellationConfirmationPresenter from './referralCancellationConfirmationPresenter'
 
 export default class ReferralCancellationConfirmationView {
