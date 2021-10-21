@@ -612,14 +612,6 @@ export default class ServiceProviderReferralsController {
     )
   }
 
-  async backwardsCompatibilityEditActionPlanSession(req: Request, res: Response): Promise<void> {
-    const draft = await this.draftsService.createDraft('actionPlanSessionUpdate', null, {
-      userId: res.locals.user.userId,
-    })
-
-    await this.editActionPlanSessionUsingDraft(draft, req, res)
-  }
-
   async editActionPlanSession(req: Request, res: Response): Promise<void> {
     const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {

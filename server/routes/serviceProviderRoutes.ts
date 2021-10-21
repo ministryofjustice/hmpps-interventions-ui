@@ -68,18 +68,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/number-of-sessions', (req, res) =>
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
-  // This keeps the Edit button on pre-drafts versions of the intervention
-  // progress page working
-  get(router, '/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
-    serviceProviderReferralsController.startEditingActionPlanSession(req, res)
-  )
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
     serviceProviderReferralsController.startEditingActionPlanSession(req, res)
-  )
-  // This keeps the submit button on pre-drafts versions of the action plan
-  // appointment scheduling page working
-  post(router, '/action-plan/:id/sessions/:sessionNumber/edit', (req, res) =>
-    serviceProviderReferralsController.backwardsCompatibilityEditActionPlanSession(req, res)
   )
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
     serviceProviderReferralsController.editActionPlanSession(req, res)

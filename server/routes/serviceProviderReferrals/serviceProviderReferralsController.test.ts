@@ -1021,20 +1021,6 @@ describe('GET /service-provider/action-plan/:actionPlanId/confirmation', () => {
   })
 })
 
-describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit', () => {
-  it('creates a draft session update and redirects to the details page', async () => {
-    const booking = draftAppointmentBookingFactory.build()
-    draftsService.createDraft.mockResolvedValue(booking)
-
-    await request(app)
-      .get(`/service-provider/action-plan/1/sessions/1/edit`)
-      .expect(302)
-      .expect('Location', `/service-provider/action-plan/1/sessions/1/edit/${booking.id}/details`)
-
-    expect(draftsService.createDraft).toHaveBeenCalledWith('actionPlanSessionUpdate', null, { userId: '123' })
-  })
-})
-
 describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit/start', () => {
   it('creates a draft session update and redirects to the details page', async () => {
     const booking = draftAppointmentBookingFactory.build()
@@ -1067,97 +1053,6 @@ describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit/:dr
       .expect(res => {
         expect(res.text).toContain('Add session 1 details')
       })
-  })
-})
-
-describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit', () => {
-  describe('with valid data', () => {
-    it('creates a draft session update, updates it with the submitted data, and redirects to the check-answers page', async () => {
-      const actionPlan = actionPlanFactory.build()
-
-      const draftBooking = draftAppointmentBookingFactory.build()
-      draftsService.createDraft.mockResolvedValue(draftBooking)
-      draftsService.updateDraft.mockResolvedValue()
-
-      interventionsService.getActionPlan.mockResolvedValue(actionPlan)
-      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
-      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-      await request(app)
-        .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit`)
-        .type('form')
-        .send({
-          'date-day': '24',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-          'session-type': 'ONE_TO_ONE',
-          'meeting-method': 'PHONE_CALL',
-        })
-        .expect(302)
-        .expect(
-          'Location',
-          `/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/${draftBooking.id}/check-answers`
-        )
-
-      expect(draftsService.createDraft).toHaveBeenCalledWith('actionPlanSessionUpdate', null, { userId: '123' })
-
-      expect(draftsService.updateDraft).toHaveBeenCalledWith(
-        draftBooking.id,
-        {
-          appointmentDeliveryAddress: null,
-          appointmentTime: '2021-03-24T09:02:00.000Z',
-          durationInMinutes: 75,
-          npsOfficeCode: null,
-          appointmentDeliveryType: 'PHONE_CALL',
-          sessionType: 'ONE_TO_ONE',
-        },
-        { userId: '123' }
-      )
-    })
-  })
-
-  describe('with invalid data', () => {
-    it('creates a draft booking but does not update it, and renders an error message', async () => {
-      const draftBooking = draftAppointmentBookingFactory.build()
-      draftsService.createDraft.mockResolvedValue(draftBooking)
-
-      const actionPlan = actionPlanFactory.build()
-      const appointment = actionPlanAppointmentFactory.build()
-
-      interventionsService.getActionPlan.mockResolvedValue(actionPlan)
-      interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
-      interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
-      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-
-      await request(app)
-        .post(`/service-provider/action-plan/1/sessions/1/edit`)
-        .type('form')
-        .send({
-          'date-day': '32',
-          'date-month': '3',
-          'date-year': '2021',
-          'time-hour': '9',
-          'time-minute': '02',
-          'time-part-of-day': 'am',
-          'duration-hours': '1',
-          'duration-minutes': '15',
-          'session-type': 'ONE_TO_ONE',
-          'meeting-method': 'PHONE_CALL',
-        })
-        .expect(400)
-        .expect(res => {
-          expect(res.text).toContain('The session date must be a real date')
-        })
-
-      expect(draftsService.createDraft).toHaveBeenCalledWith('actionPlanSessionUpdate', null, { userId: '123' })
-
-      expect(draftsService.updateDraft).not.toHaveBeenCalled()
-    })
   })
 })
 
