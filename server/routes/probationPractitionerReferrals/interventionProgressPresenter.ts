@@ -61,6 +61,12 @@ export default class InterventionProgressPresenter {
     return this.referral.endRequestedAt !== null
   }
 
+  get canCancelReferral(): boolean {
+    return !this.referralEndRequested && !this.referralConcluded
+  }
+
+  private readonly referralConcluded = this.referral.concludedAt !== null
+
   get referralEndRequestedText(): string {
     if (!this.referral.endRequestedAt) {
       return ''

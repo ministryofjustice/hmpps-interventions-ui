@@ -54,9 +54,9 @@
     <p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
   {% endif %}
 
-  {% if presenter.referralEndRequested %}
-    <p class="govuk-body">{{ presenter.referralEndRequestedText }}</p>
-  {% else %}
+  {% if presenter.canCancelReferral %}
     <a href='{{ presenter.referralCancellationHref }}'>Cancel this referral</a>
+  {% elseif presenter.referralEndRequested %}
+    <p class="govuk-body">{{ presenter.referralEndRequestedText }}</p>
   {% endif %}
 {% endblock %}
