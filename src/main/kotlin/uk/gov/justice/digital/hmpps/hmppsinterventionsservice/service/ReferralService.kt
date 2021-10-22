@@ -86,6 +86,11 @@ class ReferralService(
     return referral
   }
 
+  // This is required for Client API access where the authority to access ALL referrals is pre-checked in the controller
+  fun getSentReferral(id: UUID): Referral? {
+    return referralRepository.findByIdAndSentAtIsNotNull(id)
+  }
+
   fun getDraftReferralForUser(id: UUID, user: AuthUser): Referral? {
     if (!userTypeChecker.isProbationPractitionerUser(user)) {
       throw AccessError(user, "unsupported user type", listOf("only probation practitioners can access draft referrals"))

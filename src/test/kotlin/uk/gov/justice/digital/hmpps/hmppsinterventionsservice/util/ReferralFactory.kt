@@ -148,6 +148,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     sentAt: OffsetDateTime = OffsetDateTime.now(),
     sentBy: AuthUser = authUserFactory.create(),
     referenceNumber: String? = "JS18726AC",
+    relevantSentenceId: Long? = 123456L,
     supplementaryRiskId: UUID = UUID.randomUUID(),
     actionPlans: MutableList<ActionPlan>? = null,
 
@@ -175,6 +176,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       sentBy = sentBy,
       referenceNumber = referenceNumber,
       supplementaryRiskId = supplementaryRiskId,
+      relevantSentenceId = relevantSentenceId,
 
       assignments = assignments,
 

@@ -25,9 +25,27 @@ class JwtTokenFactory {
   ): JwtAuthenticationToken {
     val jwt: Jwt = Jwt.withTokenValue("token")
       .header("alg", "none")
+      .claim("sub", userName)
       .claim("user_id", userID)
       .claim("auth_source", authSource)
       .claim("user_name", userName)
+      .claim("client_id", "interventions")
+      .build()
+
+    val authorities: Collection<GrantedAuthority> = AuthorityUtils.createAuthorityList(*authorities)
+    return JwtAuthenticationToken(jwt, authorities)
+  }
+
+  fun create(
+    clientId: String,
+    subject: String,
+    authorities: Array<String>,
+  ): JwtAuthenticationToken {
+    val jwt: Jwt = Jwt.withTokenValue("token")
+      .header("alg", "none")
+      .claim("auth_source", "none")
+      .claim("sub", subject)
+      .claim("client_id", clientId)
       .build()
 
     val authorities: Collection<GrantedAuthority> = AuthorityUtils.createAuthorityList(*authorities)

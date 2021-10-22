@@ -13,10 +13,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ClientApiAccessChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
@@ -44,10 +46,11 @@ internal class ReferralControllerTest {
   private val serviceCategoryService = mock<ServiceCategoryService>()
   private val authUserRepository = mock<AuthUserRepository>()
   private val userMapper = UserMapper(authUserRepository)
+  private val clientApiAccessChecker = ClientApiAccessChecker()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val actionPlanService = mock<ActionPlanService>()
   private val referralController = ReferralController(
-    referralService, referralConcluder, serviceCategoryService, userMapper, cancellationReasonMapper, actionPlanService
+    referralService, referralConcluder, serviceCategoryService, userMapper, clientApiAccessChecker, cancellationReasonMapper, actionPlanService
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
@@ -65,10 +68,11 @@ internal class ReferralControllerTest {
   }
 
   @Nested
-  inner class GetSentReferral {
+  inner class GetSentReferralForUser {
     private val referral = referralFactory.createSent()
     private val user = authUserFactory.create()
     private val token = tokenFactory.create(userID = user.id, userName = user.userName, authSource = user.authSource)
+    private val clientApiToken = tokenFactory.create("interventions-event-client", "ROLE_INTERVENTIONS_API_READ_ALL")
 
     @Test
     fun `getSentReferral returns not found if sent referral does not exist`() {
@@ -91,6 +95,57 @@ internal class ReferralControllerTest {
         token,
       )
       assertThat(sentReferral.id).isEqualTo(referral.id)
+    }
+  }
+
+  @Nested
+  inner class GetSentReferralForClient {
+    private val referral = referralFactory.createSent()
+
+    @Test
+    fun `getSentReferral returns a sent referral to a client api request`() {
+      whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
+      val sentReferral = referralController.getSentReferral(
+        referral.id,
+        tokenFactory.create(
+          clientId = "interventions-event-client",
+          subject = "interventions-event-client",
+          authorities = arrayOf("ROLE_INTERVENTIONS_API_READ_ALL")
+        ),
+      )
+      assertThat(sentReferral.id).isEqualTo(referral.id)
+    }
+
+    @Test
+    fun `getSentReferral does not return a sent referral to a client api request when client id and subject do not match`() {
+      whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
+      val e = assertThrows<AccessDeniedException> {
+        referralController.getSentReferral(
+          referral.id,
+          tokenFactory.create(
+            clientId = "interventions-event-client",
+            subject = "BERNARD.BERKS",
+            authorities = arrayOf("ROLE_INTERVENTIONS_API_READ_ALL")
+          ),
+        )
+      }
+      assertThat(e.message).isEqualTo("could not map auth token to user: [no 'user_id' claim in token, no 'user_name' claim in token]")
+    }
+
+    @Test
+    fun `getSentReferral does not return a sent referral to a client api request without the required authority`() {
+      whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
+      val e = assertThrows<AccessDeniedException> {
+        referralController.getSentReferral(
+          referral.id,
+          tokenFactory.create(
+            clientId = "interventions-event-client",
+            subject = "interventions-event-client",
+            authorities = arrayOf("ROLE_INTEXXXXTIONS_API_READ_ALL")
+          ),
+        )
+      }
+      assertThat(e.message).isEqualTo("could not map auth token to user: [no 'user_id' claim in token, no 'user_name' claim in token]")
     }
   }
 
