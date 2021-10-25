@@ -18,7 +18,7 @@ export default class DashboardPresenter {
 
   private readonly showAssignedCaseworkerColumn = this.dashboardType === 'Unassigned cases'
 
-  private readonly dashboardTypePersistentId = `pp${this.dashboardType.replace(/\s/g, '')}`
+  readonly dashboardTypePersistentId = `pp${this.dashboardType.replace(/\s/g, '')}`
 
   readonly title = this.dashboardType
 

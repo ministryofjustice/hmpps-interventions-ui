@@ -17,21 +17,21 @@ export default class DashboardPresenter {
   private readonly showAssignedCaseworkerColumn =
     this.dashboardType === 'My cases' || this.dashboardType === 'Unassigned cases'
 
-  private readonly dashBoardTypePersistentId = this.dashboardType.replace(/\s/g, '')
+  readonly dashboardTypePersistentId = this.dashboardType.replace(/\s/g, '')
 
   readonly title = this.dashboardType
 
   private readonly secondOrderColumn = 'Date received'
 
   readonly tableHeadings: SortableTableHeaders = [
-    { text: this.secondOrderColumn, sort: 'none', persistentId: `${this.dashBoardTypePersistentId}DateReceived` },
-    { text: 'Referral', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}ReferenceNumber` },
-    { text: 'Service user', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}ServiceUser` },
-    { text: 'Intervention type', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}InterventionType` },
+    { text: this.secondOrderColumn, sort: 'none', persistentId: `${this.dashboardTypePersistentId}DateReceived` },
+    { text: 'Referral', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ReferenceNumber` },
+    { text: 'Service user', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ServiceUser` },
+    { text: 'Intervention type', sort: 'none', persistentId: `${this.dashboardTypePersistentId}InterventionType` },
     this.showAssignedCaseworkerColumn
       ? null
-      : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Caseworker` },
-    { text: 'Action', sort: 'none', persistentId: `${this.dashBoardTypePersistentId}Action` },
+      : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Caseworker` },
+    { text: 'Action', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Action` },
   ].filter(row => row !== null) as SortableTableHeaders
 
   readonly secondOrderColumnNumber: number = this.tableHeadings
