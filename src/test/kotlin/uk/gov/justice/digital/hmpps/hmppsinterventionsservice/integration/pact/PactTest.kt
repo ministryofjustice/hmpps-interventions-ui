@@ -52,19 +52,23 @@ class PactTest : IntegrationTestBase() {
 
     whenever(communityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
       .thenReturn(ServiceUserAccessResult(true, emptyList()))
-
     // required for SP users
     whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("tom", "tom@tom.tom"))
     whenever(serviceProviderAccessScopeMapper.fromUser(any())).thenReturn(
       ServiceProviderAccessScope(
         setOf(serviceProviderFactory.create()),
-        setOf(dynamicFrameworkContractFactory.create()),
+        setOf(
+          setupAssistant.createDynamicFrameworkContract(
+            contractType = setupAssistant.contractTypes["WOS"]!!,
+            primeProviderId = "HARMONY_LIVING"
+          )
+        ),
       )
     )
 
     context.addStateChangeHandlers(
       ActionPlanContracts(setupAssistant),
-      InterventionContracts(setupAssistant),
+      InterventionContracts(setupAssistant, serviceProviderAccessScopeMapper),
       ReferralContracts(setupAssistant),
       ServiceCategoryContracts(setupAssistant),
       EndOfServiceReportContracts(setupAssistant),

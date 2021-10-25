@@ -5,12 +5,17 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.InterventionService
 
 internal class InterventionControllerTest {
   private val interventionService = mock<InterventionService>()
-  private val interventionController = InterventionController(interventionService)
+  private val userMapper = mock<UserMapper>()
+  private val serviceProviderAccessScopeMapper = mock<ServiceProviderAccessScopeMapper>()
+  private val interventionController =
+    InterventionController(interventionService, userMapper, serviceProviderAccessScopeMapper)
 
   @Test
   fun `getInterventions returns interventions based on filtering`() {

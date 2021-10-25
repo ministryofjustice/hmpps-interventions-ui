@@ -6,4 +6,5 @@ import java.util.UUID
 
 interface InterventionRepository : JpaRepository<Intervention, UUID>, InterventionFilterRepository {
   fun findByDynamicFrameworkContractPrimeProviderId(id: String): List<Intervention>
+  fun findByDynamicFrameworkContractIdIn(ids: Iterable<UUID>): List<Intervention>
 }
