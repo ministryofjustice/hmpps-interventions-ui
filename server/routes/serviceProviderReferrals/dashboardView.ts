@@ -8,7 +8,7 @@ export default class DashboardView {
   private get tableArgs(): TableArgs {
     const { tableHeadings, tableRows, secondOrderColumnNumber } = this.presenter
     return ViewUtils.sortableTable(
-      `serviceProvider${this.presenter.dashBoardTypePersistentId}`,
+      `serviceProvider${this.presenter.dashboardTypePersistentId}`,
       tableHeadings,
       tableRows,
       { secondOrderColumnNumber }
