@@ -247,7 +247,8 @@ class MOJFrontendTableSecondOrderSorter {
     const tableSecondOrderColumnAttr = this.table.getAttribute('second-order-column')
     if (tableSecondOrderColumnAttr !== null) {
       const parsedColumnNumber = parseInt(tableSecondOrderColumnAttr, 10)
-      if (!Number.isNaN(parsedColumnNumber)) {
+      // eslint-disable-next-line no-restricted-globals
+      if (!isNaN(parsedColumnNumber)) {
         this.secondOrderColumnNumber = parsedColumnNumber
       }
     }
