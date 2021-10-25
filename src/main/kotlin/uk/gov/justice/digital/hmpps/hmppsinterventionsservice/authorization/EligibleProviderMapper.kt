@@ -16,7 +16,7 @@ class EligibleProviderMapper {
   }
 
   private fun getSubcontractorProviders(referral: Referral): List<ServiceProvider> {
-    // todo: this is where we handle granting access to only providers with nominated access
+    // this is where we handle granting access to only providers with nominated access
     return referral.intervention.dynamicFrameworkContract.subcontractorProviders.toList()
   }
 }
