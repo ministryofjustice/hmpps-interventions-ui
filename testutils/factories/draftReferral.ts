@@ -144,7 +144,6 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   completionDeadline: null,
   serviceProvider: null,
   interventionId: interventionFactory.build().id,
-  serviceCategoryId: null,
   serviceCategoryIds: [],
   complexityLevelId: null,
   complexityLevels: null,
