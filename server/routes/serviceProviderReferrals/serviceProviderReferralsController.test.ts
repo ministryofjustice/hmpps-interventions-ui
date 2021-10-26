@@ -2937,7 +2937,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
 })
 
 describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback', () => {
-  it('renders a page showing the supplier assessment feedback', async () => {
+  it('renders a page showing the supplier assessment feedback for the current appointment', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const referral = sentReferralFactory.assigned().build()
     const appointment = initialAssessmentAppointmentFactory.build({
@@ -2987,6 +2987,57 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/post-assessmen
       .expect(500)
       .expect(res => {
         expect(res.text).toContain('Attempting to view supplier assessment feedback without a current appointment')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:referralId/supplier-assessment/post-assessment-feedback/:appointmentId', () => {
+  it('renders a page showing the supplier assessment feedback for the given appointment', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const appointment = initialAssessmentAppointmentFactory.build({
+      appointmentTime: '2021-02-01T13:00:00Z',
+      sessionFeedback: {
+        attendance: {
+          attended: 'no',
+          additionalAttendanceInformation: 'They missed the bus',
+        },
+        submitted: true,
+      },
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointment],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/${appointment.id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('View feedback')
+        expect(res.text).toContain('Did Alex attend the initial assessment appointment?')
+        expect(res.text).toContain('No')
+        expect(res.text).toContain('They missed the bus')
+      })
+  })
+
+  it('renders an error if an appointment is not found with that ID', async () => {
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const referral = sentReferralFactory.assigned().build()
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [],
+    })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+
+    await request(app)
+      .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/not-a-real-id`)
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Could not find the requested appointment')
       })
   })
 })

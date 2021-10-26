@@ -160,8 +160,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:id/supplier-assessment/rescheduled-confirmation', (req, res) =>
     serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
-  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback', (req, res) =>
-    serviceProviderReferralsController.viewSubmittedPostAssessmentFeedback(req, res)
+  get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
+    serviceProviderReferralsController.viewPostAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     serviceProviderReferralsController.addInitialAssessmentAttendanceFeedback(req, res)
@@ -183,6 +183,13 @@ export default function serviceProviderRoutes(router: Router, services: Services
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
     serviceProviderReferralsController.showPostAssessmentFeedbackConfirmation(req, res)
+  )
+  get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
+    serviceProviderReferralsController.viewPostAssessmentFeedback(req, res)
+  )
+  // This needs to go last in the `/post-assessment-feedback` urls to prevent clashes between the :appointmentId and other suffixes.
+  get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback/:appointmentId', (req, res) =>
+    serviceProviderReferralsController.viewPostAssessmentFeedback(req, res)
   )
 
   get(router, '/referrals/:id/action-plan', (req, res) => serviceProviderReferralsController.viewActionPlan(req, res))

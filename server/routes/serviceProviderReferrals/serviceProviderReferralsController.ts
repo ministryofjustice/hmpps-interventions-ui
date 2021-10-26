@@ -74,7 +74,11 @@ import ActionPlanSessionBehaviourFeedbackPresenter from '../appointments/feedbac
 import InitialAssessmentBehaviourFeedbackPresenter from '../appointments/feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
 import DraftsService, { Draft } from '../../services/draftsService'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
-import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../models/appointment'
+import {
+  ActionPlanAppointment,
+  AppointmentSchedulingDetails,
+  InitialAssessmentAppointment,
+} from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
 import AppointmentSummary from '../appointments/appointmentSummary'
@@ -1185,26 +1189,42 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewSubmittedPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+  async viewPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const referralId = req.params.id
+    const { referralId, appointmentId } = req.params
 
     const [referral, supplierAssessment] = await Promise.all([
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
-    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
-    if (currentAppointment === null) {
-      throw new Error('Attempting to view supplier assessment feedback without a current appointment')
+
+    let supplierAssessmentAppointment: InitialAssessmentAppointment | null
+
+    if (appointmentId) {
+      supplierAssessmentAppointment =
+        supplierAssessment.appointments.find(appointment => appointment.id === appointmentId) || null
+
+      if (!supplierAssessmentAppointment) {
+        throw new Error('Could not find the requested appointment')
+      }
+    } else {
+      supplierAssessmentAppointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+
+      if (supplierAssessmentAppointment === null) {
+        throw new Error('Attempting to view supplier assessment feedback without a current appointment')
+      }
     }
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
+
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(
+      supplierAssessmentAppointment
+    )
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new SubmittedFeedbackPresenter(
-      currentAppointment,
-      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation),
+      supplierAssessmentAppointment,
+      new AppointmentSummary(supplierAssessmentAppointment, null, deliusOfficeLocation),
       serviceUser,
       'service-provider',
       referralId

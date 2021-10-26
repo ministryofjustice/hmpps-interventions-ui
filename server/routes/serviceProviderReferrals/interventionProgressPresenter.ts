@@ -9,7 +9,7 @@ import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
-import { ActionPlanAppointment } from '../../models/appointment'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
 interface EndedFields {
@@ -23,6 +23,18 @@ interface ProgressSessionTableRow {
   appointmentTime: string
   statusPresenter: SessionStatusPresenter
   links: { text: string; href: string }[]
+}
+
+interface SupplierAssessmentAppointmentLink {
+  text: string
+  href: string
+  hiddenText?: string
+}
+
+interface SupplierAssessmentTableRow {
+  dateAndTime: string
+  statusPresenter: SessionStatusPresenter
+  action: SupplierAssessmentAppointmentLink[]
 }
 
 export default class InterventionProgressPresenter {
@@ -194,12 +206,38 @@ export default class InterventionProgressPresenter {
     return this.endOfServiceReportStarted ? 'Continue' : 'Create'
   }
 
-  private readonly supplierAssessmentStatus = sessionStatus.forAppointment(
-    new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
-  )
+  readonly supplierAssessmentTableHeaders = ['Date and time', 'Status', 'Action']
+
+  get supplierAssessmentTableRows(): SupplierAssessmentTableRow[] {
+    const decorator = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    const appointments = decorator.sortedAppointments.map(appointment => {
+      return {
+        dateAndTime: decorator.appointmentDateAndTime(appointment),
+        statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(appointment),
+        action: this.supplierAssessmentAppointmentLink(appointment),
+      }
+    })
+
+    if (this.supplierAssessmentAppointment === null) {
+      appointments.push({
+        dateAndTime: decorator.appointmentDateAndTime(null),
+        statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(null),
+        action: this.supplierAssessmentAppointmentLink(null),
+      })
+    }
+
+    return appointments
+  }
+
+  readonly supplierAssessmentAppointment = new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
+
+  private supplierAssessmentAppointmentStatus(appointment: InitialAssessmentAppointment | null) {
+    return sessionStatus.forAppointment(appointment)
+  }
 
   get supplierAssessmentMessage(): string {
-    switch (this.supplierAssessmentStatus) {
+    switch (this.supplierAssessmentAppointmentStatus(this.supplierAssessmentAppointment)) {
       case SessionStatus.notScheduled:
         return 'Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.'
       case SessionStatus.awaitingFeedback:
@@ -213,8 +251,15 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  get supplierAssessmentLink(): { text: string; href: string; hiddenText?: string }[] {
-    switch (this.supplierAssessmentStatus) {
+  private supplierAssessmentAppointmentLink(
+    appointment: InitialAssessmentAppointment | null
+  ): SupplierAssessmentAppointmentLink[] {
+    const { currentAppointment } = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    const isCurrentAppointment =
+      currentAppointment && appointment && currentAppointment.id && currentAppointment.id === appointment.id
+
+    switch (this.supplierAssessmentAppointmentStatus(appointment)) {
       case SessionStatus.notScheduled:
         return [
           {
@@ -226,24 +271,37 @@ export default class InterventionProgressPresenter {
       case SessionStatus.scheduled:
         return [
           {
-            text: 'View appointment details',
+            text: 'View details or reschedule',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
           },
         ]
       case SessionStatus.awaitingFeedback:
         return [
           {
-            text: 'Add feedback',
+            text: 'Mark attendance and add feedback',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/attendance`,
           },
         ]
       case SessionStatus.didNotAttend:
-        return [
-          {
-            text: 'Reschedule',
-            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
-          },
-        ]
+        return isCurrentAppointment
+          ? [
+              {
+                text: 'Reschedule',
+                href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/schedule/start`,
+              },
+              {
+                text: 'View feedback',
+                href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,
+              },
+            ]
+          : [
+              {
+                text: 'View feedback',
+                href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback/${
+                  appointment!.id
+                }`,
+              },
+            ]
       case SessionStatus.completed:
         return [
           {
@@ -256,7 +314,9 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  get supplierAssessmentStatusPresenter(): SessionStatusPresenter {
-    return new SessionStatusPresenter(this.supplierAssessmentStatus)
+  private supplierAssessmentAppointmentStatusPresenter(
+    appointment: InitialAssessmentAppointment | null
+  ): SessionStatusPresenter {
+    return new SessionStatusPresenter(this.supplierAssessmentAppointmentStatus(appointment))
   }
 }

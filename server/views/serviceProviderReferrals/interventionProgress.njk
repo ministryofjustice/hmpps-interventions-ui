@@ -25,7 +25,7 @@
      {{ supplierAssessmentMessage }}
     </p>
 
-    {{ govukSummaryList(initialAssessmentSummaryListArgs(govukTag)) }}
+    {{ govukTable(supplierAssessmentAppointmentsTableArgs(govukTag)) }}
   {% else %}
     <p class="govuk-body">
       Once a caseworker has been assigned the initial assessment can be booked.

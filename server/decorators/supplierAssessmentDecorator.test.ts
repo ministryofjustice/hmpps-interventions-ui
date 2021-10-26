@@ -43,4 +43,79 @@ describe(SupplierAssessmentDecorator, () => {
       })
     })
   })
+
+  describe('sortedAppointments', () => {
+    it('sets the current appointment as the first item in the array, and the remaining appointments in reverse-chronological order', () => {
+      const firstOlderAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: '2021-10-01T10:00:00+01:00',
+      })
+      const secondOlderAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: '2021-10-03T10:00:00+01:00',
+      })
+      const currentAppointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: null,
+      })
+
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [firstOlderAppointment, secondOlderAppointment, currentAppointment],
+        currentAppointmentId: currentAppointment.id,
+      })
+
+      const decorator = new SupplierAssessmentDecorator(supplierAssessment)
+
+      expect(decorator.sortedAppointments).toEqual([currentAppointment, secondOlderAppointment, firstOlderAppointment])
+    })
+  })
+
+  describe('appointmentDateAndTime', () => {
+    describe('when the appointment has been scheduled', () => {
+      it('returns a formatted date and time', () => {
+        const currentAppointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: '2021-10-10T01:00:00+01:00',
+        })
+        const olderAppointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: '2021-10-09T12:00:00+01:00',
+        })
+        const appointments = [currentAppointment, olderAppointment]
+
+        const supplierAssessment = supplierAssessmentFactory.build({
+          appointments,
+        })
+
+        const decorator = new SupplierAssessmentDecorator(supplierAssessment)
+
+        expect(decorator.appointmentDateAndTime(currentAppointment)).toEqual('1:00am on 10 Oct 2021')
+        expect(decorator.appointmentDateAndTime(olderAppointment)).toEqual('Midday on 9 Oct 2021')
+      })
+    })
+
+    describe('when the appointment has not been scheduled', () => {
+      it('returns N/A', () => {
+        const currentAppointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: null,
+        })
+        const appointments = [currentAppointment, ...initialAssessmentAppointmentFactory.buildList(2)]
+
+        const supplierAssessment = supplierAssessmentFactory.build({
+          appointments,
+        })
+
+        const decorator = new SupplierAssessmentDecorator(supplierAssessment)
+
+        expect(decorator.appointmentDateAndTime(currentAppointment)).toEqual('N/A')
+      })
+    })
+
+    describe('when the appointment is null', () => {
+      it('returns null', () => {
+        const supplierAssessment = supplierAssessmentFactory.build({
+          appointments: initialAssessmentAppointmentFactory.buildList(2),
+        })
+
+        const decorator = new SupplierAssessmentDecorator(supplierAssessment)
+
+        expect(decorator.appointmentDateAndTime(null)).toEqual('N/A')
+      })
+    })
+  })
 })
