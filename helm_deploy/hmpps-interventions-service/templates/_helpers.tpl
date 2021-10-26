@@ -59,6 +59,10 @@ Selector labels
 app: {{ include "app.name" . }}
 release: {{ .Release.Name }}
 {{- end }}
+{{- define "suspectApp.selectorLabels" -}}
+app: api-suspect
+release: {{ .Release.Name }}
+{{- end }}
 {{- define "dataDictionary.selectorLabels" -}}
 app: data-dictionary
 release: {{ .Release.Name }}

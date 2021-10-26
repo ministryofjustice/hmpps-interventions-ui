@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-suspect
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 50%
+  selector:
+    matchLabels:
+      {{- include "suspectApp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "suspectApp.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ template "app.name" . }}
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: hmpps-interventions-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.image.ports.app }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: {{ .Values.image.ports.app }}
+            initialDelaySeconds: 45
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: {{ .Values.image.ports.app }}
+            initialDelaySeconds: 45
+            timeoutSeconds: 5
+            failureThreshold: 5
+  {{ include "deployment.envs" . | nindent 10 }}
