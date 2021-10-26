@@ -150,7 +150,6 @@ jobs:
     environment:
       PACT_BROKER_BASE_URL: "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
       PACT_BROKER_USERNAME: "interventions"
-      PACT_BROKER_DISABLE_SSL_VERIFICATION: "true"
     executor: hmpps/node
     parameters:
       tag:
