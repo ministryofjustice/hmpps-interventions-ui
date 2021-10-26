@@ -30,6 +30,10 @@ spec:
     - host: {{ .host }}
       http:
         paths:
+          - path: /sent-referrals/summary/service-provider
+            backend:
+              serviceName: api-suspect
+              servicePort: http
           - path: /
             backend:
               serviceName: {{ $fullName }}
