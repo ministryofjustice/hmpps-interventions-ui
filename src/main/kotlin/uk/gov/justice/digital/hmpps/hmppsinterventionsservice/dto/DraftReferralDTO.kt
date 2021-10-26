@@ -21,7 +21,6 @@ data class DraftReferralDTO(
   val id: UUID? = null,
   val createdAt: OffsetDateTime? = null,
   val completionDeadline: LocalDate? = null,
-  val serviceCategoryId: UUID? = null,
   val serviceCategoryIds: List<UUID>? = null,
   val complexityLevels: List<ReferralComplexityLevel>? = null,
   val furtherInformation: String? = null,
@@ -78,8 +77,6 @@ data class DraftReferralDTO(
         serviceUser = ServiceUserDTO.from(referral.serviceUserCRN, referral.serviceUserData),
         serviceProvider = ServiceProviderDTO.from(contract.primeProvider),
         relevantSentenceId = referral.relevantSentenceId,
-        // TODO: remove this once cohort referrals changes are complete
-        serviceCategoryId = referral.selectedServiceCategories?.firstOrNull()?.id,
         serviceCategoryIds = referral.selectedServiceCategories?.ifEmpty { null }
           ?.map { it.id }
           ?.sorted(),
