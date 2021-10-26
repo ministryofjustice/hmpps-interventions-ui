@@ -19,7 +19,7 @@ env:
   DEPLOYMENT_ENV: preprod
   HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
   COMMUNITY_API_URL: https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io
-  INTERVENTIONS_SERVICE_URL: http://hmpps-interventions-service
+  INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
   ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk
   TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
   TOKEN_VERIFICATION_ENABLED: true
