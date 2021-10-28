@@ -46,7 +46,7 @@ internal class CommunityApiCallErrorTest {
         "{}",
         RuntimeException()
       ).userMessage
-    ).isEqualTo("There has been an error during creating the Delius NSI. We are aware of this issue. For follow-up, please contact support")
+    ).isEqualTo("This update has not been possible. This is because there's been a change to the referral in non-structured interventions in nDelius. Ask the probation practitioner if anything has changed with the referral or the person on probation")
 
     assertThat(
       CommunityApiCallError(
