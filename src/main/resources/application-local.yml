@@ -17,12 +17,20 @@ assess-risks-and-needs:
 
 aws:
   s3:
-    enabled: false
-    provider: localstack
-    access-key-id: test
-    secret-access-key: test
-    endpoint.uri: http://localhost:4566
-    bucket.name: interventions-bucket-local
+    storage:
+      enabled: false
+      provider: localstack
+      access-key-id: test
+      secret-access-key: test
+      endpoint.uri: http://localhost:4566
+      bucket.name: interventions-bucket-local
+    ndmis:
+      enabled: false
+      provider: localstack
+      access-key-id: test
+      secret-access-key: test
+      endpoint.uri: http://localhost:4566
+      bucket.name: ndmis-bucket-local
   sns:
     enabled: false
     provider: localstack

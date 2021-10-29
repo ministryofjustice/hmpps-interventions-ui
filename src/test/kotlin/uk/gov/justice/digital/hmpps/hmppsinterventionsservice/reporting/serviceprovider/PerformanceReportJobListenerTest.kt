@@ -9,14 +9,17 @@ import org.springframework.batch.core.JobInstance
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.item.ExecutionContext
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.S3Bucket
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider.performance.PerformanceReportJobListener
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.S3Service
 
 internal class PerformanceReportJobListenerTest {
   private val s3Service = mock<S3Service>()
+  private val s3Bucket = mock<S3Bucket>()
   private val emailSender = mock<EmailSender>()
   private val listener = PerformanceReportJobListener(
     s3Service,
+    s3Bucket,
     emailSender,
     "success-email-template",
     "failure-email-template",
