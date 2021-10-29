@@ -12,6 +12,7 @@ class ServiceProviderSentReferralSummaryDTO(
   val serviceUserFirstName: String?,
   val serviceUserLastName: String?,
   val hasEndOfServiceReport: Boolean,
+  val endOfServiceReportSubmitted: Boolean,
 ) {
   companion object {
     fun from(sentReferralSummary: ServiceProviderSentReferralSummary): ServiceProviderSentReferralSummaryDTO {
@@ -23,7 +24,8 @@ class ServiceProviderSentReferralSummaryDTO(
         assignedToUserName = sentReferralSummary.assignedToUserName,
         serviceUserFirstName = sentReferralSummary.serviceUserFirstName,
         serviceUserLastName = sentReferralSummary.serviceUserLastName,
-        hasEndOfServiceReport = sentReferralSummary.endOfServiceReportId != null
+        hasEndOfServiceReport = sentReferralSummary.endOfServiceReportId != null,
+        endOfServiceReportSubmitted = sentReferralSummary.endOfServiceReportSubmittedAt != null
       )
     }
   }
