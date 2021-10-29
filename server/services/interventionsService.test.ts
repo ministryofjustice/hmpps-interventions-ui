@@ -1690,7 +1690,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         assignedToUserName: 'AUTH_USER',
         serviceUserFirstName: 'George',
         serviceUserLastName: 'Michael',
-        hasEndOfServiceReport: false,
+        endOfServiceReportSubmitted: false,
       }
       await provider.addInteraction({
         state:
@@ -1717,7 +1717,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(summaryResult[0].assignedToUserName).toEqual(sentReferralSummary.assignedToUserName)
       expect(summaryResult[0].serviceUserFirstName).toEqual(sentReferralSummary.serviceUserFirstName)
       expect(summaryResult[0].serviceUserLastName).toEqual(sentReferralSummary.serviceUserLastName)
-      expect(summaryResult[0].hasEndOfServiceReport).toEqual(sentReferralSummary.hasEndOfServiceReport)
+      expect(summaryResult[0].endOfServiceReportSubmitted).toEqual(sentReferralSummary.endOfServiceReportSubmitted)
     })
   })
 

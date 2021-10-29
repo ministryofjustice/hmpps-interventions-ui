@@ -703,7 +703,7 @@ describe('Dashboards', () => {
         serviceUserFirstName: 'Jenny',
         serviceUserLastName: 'Jones',
         assignedToUserName: 'USER1',
-        hasEndOfServiceReport: false,
+        endOfServiceReportSubmitted: false,
       })
       const assignedToSelfB = serviceProviderSentReferralSummaryFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
@@ -712,7 +712,7 @@ describe('Dashboards', () => {
         serviceUserFirstName: 'George',
         serviceUserLastName: 'Michael',
         assignedToUserName: 'USER1',
-        hasEndOfServiceReport: false,
+        endOfServiceReportSubmitted: false,
       })
       const unassignedA = serviceProviderSentReferralSummaryFactory.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
@@ -721,7 +721,7 @@ describe('Dashboards', () => {
         serviceUserFirstName: 'Jenny',
         serviceUserLastName: 'Jones',
         assignedToUserName: '',
-        hasEndOfServiceReport: false,
+        endOfServiceReportSubmitted: false,
       })
       const unassignedB = serviceProviderSentReferralSummaryFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
@@ -730,7 +730,7 @@ describe('Dashboards', () => {
         serviceUserFirstName: 'George',
         serviceUserLastName: 'Michael',
         assignedToUserName: '',
-        hasEndOfServiceReport: false,
+        endOfServiceReportSubmitted: false,
       })
       const completedA = serviceProviderSentReferralSummaryFactory.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
@@ -739,7 +739,7 @@ describe('Dashboards', () => {
         serviceUserFirstName: 'Jenny',
         serviceUserLastName: 'Jones',
         assignedToUserName: 'USER1',
-        hasEndOfServiceReport: true,
+        endOfServiceReportSubmitted: true,
       })
       const completedB = serviceProviderSentReferralSummaryFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
@@ -748,7 +748,7 @@ describe('Dashboards', () => {
         serviceUserFirstName: 'George',
         serviceUserLastName: 'Michael',
         assignedToUserName: 'USER1',
-        hasEndOfServiceReport: true,
+        endOfServiceReportSubmitted: true,
       })
 
       const rowForReferralAWithNoCaseworkerColumn = {

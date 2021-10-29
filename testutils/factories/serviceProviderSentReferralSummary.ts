@@ -32,13 +32,13 @@ class ServiceProviderSentReferralSummaryFactory extends Factory<ServiceProviderS
 
   completed() {
     return this.params({
-      hasEndOfServiceReport: true,
+      endOfServiceReportSubmitted: true,
     })
   }
 
   open() {
     return this.params({
-      hasEndOfServiceReport: false,
+      endOfServiceReportSubmitted: false,
     })
   }
 }
