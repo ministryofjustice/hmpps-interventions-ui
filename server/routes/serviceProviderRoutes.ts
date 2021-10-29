@@ -145,28 +145,28 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.showEndOfServiceReportConfirmation(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/schedule/start', (req, res) =>
-    serviceProviderReferralsController.startSupplierAssessmentAppointmentScheduling(req, res)
+    appointmentsController.startSupplierAssessmentAppointmentScheduling(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', (req, res) =>
-    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+    appointmentsController.scheduleSupplierAssessmentAppointment(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', (req, res) =>
-    serviceProviderReferralsController.scheduleSupplierAssessmentAppointment(req, res)
+    appointmentsController.scheduleSupplierAssessmentAppointment(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/check-answers', (req, res) =>
-    serviceProviderReferralsController.checkSupplierAssessmentAnswers(req, res)
+    appointmentsController.checkSupplierAssessmentAnswers(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/schedule/:draftBookingId/submit', (req, res) =>
-    serviceProviderReferralsController.submitSupplierAssessment(req, res)
+    appointmentsController.submitSupplierAssessmentAppointment(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment', (req, res) =>
-    serviceProviderReferralsController.showSupplierAssessmentAppointment(req, res)
+    appointmentsController.showSupplierAssessmentAppointment(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/scheduled-confirmation', (req, res) =>
-    serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: false })
+    appointmentsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: false })
   )
   get(router, '/referrals/:id/supplier-assessment/rescheduled-confirmation', (req, res) =>
-    serviceProviderReferralsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
+    appointmentsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
     serviceProviderReferralsController.viewPostAssessmentFeedback(req, res)
