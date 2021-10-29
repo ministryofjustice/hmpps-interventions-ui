@@ -4,6 +4,7 @@ import ServiceProviderReferralsController from './serviceProviderReferrals/servi
 import config from '../config'
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReportingController from './reporting/reportingController'
+import AppointmentsController from './appointments/appointmentsController'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 
@@ -13,6 +14,13 @@ export default function serviceProviderRoutes(router: Router, services: Services
     services.communityApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
+    services.draftsService,
+    services.referenceDataService
+  )
+  const appointmentsController = new AppointmentsController(
+    services.interventionsService,
+    services.communityApiService,
+    services.hmppsAuthService,
     services.draftsService,
     services.referenceDataService
   )
@@ -69,19 +77,19 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
-    serviceProviderReferralsController.startEditingActionPlanSession(req, res)
+    appointmentsController.startEditingActionPlanSessionAppointment(req, res)
   )
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
-    serviceProviderReferralsController.editActionPlanSession(req, res)
+    appointmentsController.editActionPlanSessionAppointment(req, res)
   )
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
-    serviceProviderReferralsController.editActionPlanSession(req, res)
+    appointmentsController.editActionPlanSessionAppointment(req, res)
   )
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/check-answers', (req, res) =>
-    serviceProviderReferralsController.checkActionPlanSessionAnswers(req, res)
+    appointmentsController.checkActionPlanSessionAppointmentAnswers(req, res)
   )
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/submit', (req, res) =>
-    serviceProviderReferralsController.submitActionPlanSession(req, res)
+    appointmentsController.submitActionPlanSessionAppointment(req, res)
   )
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', (req, res) =>
     serviceProviderReferralsController.addPostSessionAttendanceFeedback(req, res)
