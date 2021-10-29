@@ -131,7 +131,7 @@ describe('GET /service-provider/dashboard/my-cases', () => {
     const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
       referenceNumber: 'undefinedRef',
       assignedToUserName: undefined,
-      hasEndOfServiceReport: undefined,
+      endOfServiceReportSubmitted: undefined,
     })
     const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
       referenceNumber: 'assignedToSelfRef',
@@ -162,7 +162,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
       referenceNumber: 'undefinedRef',
       assignedToUserName: undefined,
-      hasEndOfServiceReport: undefined,
+      endOfServiceReportSubmitted: undefined,
     })
     const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
       referenceNumber: 'assignedToSelfRef',
@@ -193,7 +193,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
       referenceNumber: 'undefinedRef',
       assignedToUserName: undefined,
-      hasEndOfServiceReport: undefined,
+      endOfServiceReportSubmitted: undefined,
     })
     const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
       referenceNumber: 'assignedToSelfRef',
@@ -224,7 +224,7 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
       referenceNumber: 'undefinedRef',
       assignedToUserName: undefined,
-      hasEndOfServiceReport: undefined,
+      endOfServiceReportSubmitted: undefined,
     })
     const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
       referenceNumber: 'assignedToSelfRef',
