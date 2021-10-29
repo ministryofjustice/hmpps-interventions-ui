@@ -296,7 +296,8 @@ class ReferralRepositoryTest @Autowired constructor(
         it.assignedToUserName == summary.assignedToUserName &&
         it.serviceUserFirstName == summary.serviceUserFirstName &&
         it.serviceUserLastName == summary.serviceUserLastName &&
-        it.endOfServiceReportId == summary.endOfServiceReportId
+        it.endOfServiceReportId == summary.endOfServiceReportId &&
+        it.endOfServiceReportSubmittedAt == summary.endOfServiceReportSubmittedAt
     }
   }
 
@@ -310,7 +311,8 @@ class ReferralRepositoryTest @Autowired constructor(
       referral.currentAssignee?.id,
       referral.serviceUserData!!.firstName,
       referral.serviceUserData!!.lastName,
-      referral.endOfServiceReport?.id
+      referral.endOfServiceReport?.id,
+      referral.endOfServiceReport?.submittedAt?.toInstant()
     )
 
   @Test
@@ -339,4 +341,5 @@ data class Summary(
   override val serviceUserFirstName: String?,
   override val serviceUserLastName: String?,
   override val endOfServiceReportId: UUID?,
+  override val endOfServiceReportSubmittedAt: Instant?,
 ) : ServiceProviderSentReferralSummary

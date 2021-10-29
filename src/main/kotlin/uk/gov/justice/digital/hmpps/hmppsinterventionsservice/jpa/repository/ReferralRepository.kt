@@ -22,7 +22,8 @@ interface ReferralRepository : JpaRepository<Referral, UUID>, JpaSpecificationEx
 			assignedToUserName,
 			serviceUserFirstName,
 			serviceUserLastName,
-      endOfServiceReportId from (	
+      endOfServiceReportId,
+      endOfServiceReportSubmittedAt from (	
 	select
 			cast(r.id as varchar) AS referralId,
 			cast(r.sent_at as TIMESTAMP WITH TIME ZONE) as sentAt,
@@ -33,6 +34,7 @@ interface ReferralRepository : JpaRepository<Referral, UUID>, JpaSpecificationEx
 			rsud.first_name as serviceUserFirstName,
 			rsud.last_name as serviceUserLastName,
       cast(eosr.id as varchar) as endOfServiceReportId,
+      cast(eosr.submitted_at as TIMESTAMP WITH TIME ZONE) as endOfServiceReportSubmittedAt,
 			row_number() over(partition by r.id order by ra.assigned_at desc) as assigned_at_desc_seq		
 	from referral r
 			 inner join intervention i on i.id = r.intervention_id

@@ -786,6 +786,39 @@ class ReferralServiceTest @Autowired constructor(
       assertThat(referralIds).containsExactlyInAnyOrder(refLive.id, refEndedEarly.id)
       assertThat(referralIds).doesNotContain(refCancelled.id)
     }
+
+    @Test
+    fun `sent referral summary provides correct details for end of service report`() {
+      val provider = serviceProviderFactory.create(id = "test")
+      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
+
+      val refLive = referralFactory.createSent(intervention = intervention)
+      val endOfServiceReportCreated = referralFactory.createSent(
+        intervention = intervention
+      ).also { referral ->
+        referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral)
+      }
+      val endOfServiceReportSubmitted = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        concludedAt = OffsetDateTime.now(),
+      ).also { referral ->
+        referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral, submittedAt = OffsetDateTime.now())
+      }
+
+      val user = userWithProviders(listOf(provider))
+      val result = referralService.getServiceProviderSummaries(user)
+
+      val refLiveSummary = result.find { it.referralId == refLive.id.toString() }
+      assertThat(refLiveSummary!!.endOfServiceReportId).isNull()
+      assertThat(refLiveSummary!!.endOfServiceReportSubmittedAt).isNull()
+      val endOfServiceReportCreatedSummary = result.find { it.referralId == endOfServiceReportCreated.id.toString() }
+      assertThat(endOfServiceReportCreatedSummary!!.endOfServiceReportId).isNotNull()
+      assertThat(endOfServiceReportCreatedSummary!!.endOfServiceReportSubmittedAt).isNull()
+      val endOfServiceReportSubmittedSummary = result.find { it.referralId == endOfServiceReportSubmitted.id.toString() }
+      assertThat(endOfServiceReportSubmittedSummary!!.endOfServiceReportId).isNotNull()
+      assertThat(endOfServiceReportSubmittedSummary!!.endOfServiceReportSubmittedAt).isNotNull()
+    }
   }
 
   @Test
