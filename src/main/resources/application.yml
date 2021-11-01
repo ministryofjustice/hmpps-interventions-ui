@@ -169,10 +169,6 @@ aws:
       enabled: false
       provider: aws
       region: eu-west-2
-    ndmis:
-      enabled: false
-      provider: aws
-      region: eu-west-2
   sns:
     enabled: true
     provider: aws

@@ -102,22 +102,4 @@ env:
         name: storage-s3-bucket
         key: bucket_name
 
-  - name: AWS_S3_NDMIS_ACCESSKEYID
-    valueFrom:
-      secretKeyRef:
-        name: reporting-s3-bucket
-        key: access_key_id
-
-  - name: AWS_S3_NDMIS_SECRETACCESSKEY
-    valueFrom:
-      secretKeyRef:
-        name: reporting-s3-bucket
-        key: secret_access_key
-
-  - name: AWS_S3_NDMIS_BUCKET_NAME
-    valueFrom:
-      secretKeyRef:
-        name: reporting-s3-bucket
-        key: bucket_name
-
 {{- end -}}
