@@ -9,8 +9,6 @@ import FindStartPresenter from './findStartPresenter'
 import DashboardView from './dashboardView'
 import DashboardPresenter, { PPDashboardType } from './dashboardPresenter'
 import FindStartView from './findStartView'
-import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
-import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -199,40 +197,6 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
-  }
-
-  async viewSubmittedPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const referralId = req.params.id
-
-    const [referral, supplierAssessment] = await Promise.all([
-      this.interventionsService.getSentReferral(accessToken, referralId),
-      this.interventionsService.getSupplierAssessment(accessToken, referralId),
-    ])
-
-    if (!referral.assignedTo) {
-      throw new Error('Referral has not yet been assigned to a caseworker')
-    }
-
-    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
-    if (currentAppointment === null) {
-      throw new Error('Attempting to view initial assessment feedback without a current appointment')
-    }
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new SubmittedFeedbackPresenter(
-      currentAppointment,
-      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation),
-      serviceUser,
-      'probation-practitioner',
-      referralId
-    )
-    const view = new SubmittedFeedbackView(presenter)
-
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {

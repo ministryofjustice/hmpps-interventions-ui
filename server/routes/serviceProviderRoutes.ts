@@ -169,7 +169,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
     appointmentsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewSupplierAssessmentFeedback(req, res)
+    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'service-provider')
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
@@ -193,11 +193,11 @@ export default function serviceProviderRoutes(router: Router, services: Services
     appointmentsController.showSupplierAssessmentFeedbackConfirmation(req, res)
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewSupplierAssessmentFeedback(req, res)
+    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'service-provider')
   )
   // This needs to go last in the `/post-assessment-feedback` urls to prevent clashes between the :appointmentId and other suffixes.
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback/:appointmentId', (req, res) =>
-    appointmentsController.viewSupplierAssessmentFeedback(req, res)
+    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'service-provider')
   )
 
   get(router, '/referrals/:id/action-plan', (req, res) => serviceProviderReferralsController.viewActionPlan(req, res))
