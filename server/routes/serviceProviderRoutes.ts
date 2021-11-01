@@ -169,7 +169,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
     appointmentsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewPostAssessmentFeedback(req, res)
+    appointmentsController.viewInitialAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addInitialAssessmentAttendanceFeedback(req, res)
@@ -187,17 +187,17 @@ export default function serviceProviderRoutes(router: Router, services: Services
     appointmentsController.checkInitialAssessmentFeedbackAnswers(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/submit', (req, res) =>
-    appointmentsController.submitPostAssessmentFeedback(req, res)
+    appointmentsController.submitInitialAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
-    appointmentsController.showPostAssessmentFeedbackConfirmation(req, res)
+    appointmentsController.showInitialAssessmentFeedbackConfirmation(req, res)
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewPostAssessmentFeedback(req, res)
+    appointmentsController.viewInitialAssessmentFeedback(req, res)
   )
   // This needs to go last in the `/post-assessment-feedback` urls to prevent clashes between the :appointmentId and other suffixes.
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback/:appointmentId', (req, res) =>
-    appointmentsController.viewPostAssessmentFeedback(req, res)
+    appointmentsController.viewInitialAssessmentFeedback(req, res)
   )
 
   get(router, '/referrals/:id/action-plan', (req, res) => serviceProviderReferralsController.viewActionPlan(req, res))
