@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import { AppointmentSchedulingDetails } from '../../models/appointment'
+import { AppointmentSchedulingDetails, InitialAssessmentAppointment } from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import CommunityApiService from '../../services/communityApiService'
@@ -20,9 +20,26 @@ import ScheduleAppointmentPresenter from '../serviceProviderReferrals/scheduleAp
 import ScheduleAppointmentView from '../serviceProviderReferrals/scheduleAppointmentView'
 import SupplierAssessmentAppointmentConfirmationPresenter from '../serviceProviderReferrals/supplierAssessmentAppointmentConfirmationPresenter'
 import SupplierAssessmentAppointmentConfirmationView from '../serviceProviderReferrals/supplierAssessmentAppointmentConfirmationView'
+import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
+import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
 import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import AppointmentSummary from './appointmentSummary'
+import ActionPlanPostSessionAttendanceFeedbackPresenter from './feedback/actionPlanSessions/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
+import ActionPlanSessionBehaviourFeedbackPresenter from './feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import ActionPlanPostSessionFeedbackCheckAnswersPresenter from './feedback/actionPlanSessions/checkYourAnswers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
+import PostSessionFeedbackConfirmationPresenter from './feedback/actionPlanSessions/confirmation/postSessionFeedbackConfirmationPresenter'
+import PostSessionFeedbackConfirmationView from './feedback/actionPlanSessions/confirmation/postSessionFeedbackConfirmationView'
+import InitialAssessmentAttendanceFeedbackPresenter from './feedback/initialAssessment/attendance/initialAssessmentAttendanceFeedbackPresenter'
+import InitialAssessmentBehaviourFeedbackPresenter from './feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
+import InitialAssessmentFeedbackCheckAnswersPresenter from './feedback/initialAssessment/checkYourAnswers/initialAssessmentFeedbackCheckAnswersPresenter'
+import InitialAssessmentFeedbackConfirmationPresenter from './feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationPresenter'
+import InitialAssessmentFeedbackConfirmationView from './feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
+import AttendanceFeedbackForm from './feedback/shared/attendance/attendanceFeedbackForm'
+import AttendanceFeedbackView from './feedback/shared/attendance/attendanceFeedbackView'
+import BehaviourFeedbackForm from './feedback/shared/behaviour/behaviourFeedbackForm'
+import BehaviourFeedbackView from './feedback/shared/behaviour/behaviourFeedbackView'
+import CheckFeedbackAnswersView from './feedback/shared/checkYourAnswers/checkFeedbackAnswersView'
 
 export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
 
@@ -378,5 +395,413 @@ export default class AppointmentsController {
         'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
       typeName: 'booking',
     })
+  }
+
+  async addInitialAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
+    }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    const data = await new AttendanceFeedbackForm(req).data()
+
+    if (req.method === 'POST') {
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        const updatedAppointment = await this.interventionsService.recordSupplierAssessmentAppointmentAttendance(
+          accessToken,
+          referralId,
+          data.paramsForUpdate
+        )
+        const redirectPath =
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/${redirectPath}`
+        )
+      }
+    }
+
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
+      appointment,
+      serviceUser,
+      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      formError,
+      userInputData,
+      referralId
+    )
+    const view = new AttendanceFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addInitialAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
+    }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+    if (req.method === 'POST') {
+      const data = await new BehaviourFeedbackForm(req).data()
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+          accessToken,
+          referralId,
+          data.paramsForUpdate
+        )
+        return res.redirect(
+          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        )
+      }
+    }
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
+      appointment,
+      serviceUser,
+      referralId,
+      formError,
+      userInputData
+    )
+    const view = new BehaviourFeedbackView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async checkInitialAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to check supplier assessment feedback answers without a current appointment')
+    }
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
+      appointment,
+      serviceUser,
+      referralId,
+      new AppointmentSummary(appointment, null, deliusOfficeLocation)
+    )
+    const view = new CheckFeedbackAnswersView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+    const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
+    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    if (appointment === null) {
+      throw new Error('Attempting to submit supplier assessment feedback without a current appointment')
+    }
+
+    await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
+
+    return res.redirect(
+      `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`
+    )
+  }
+
+  async showPostAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new InitialAssessmentFeedbackConfirmationPresenter(referralId)
+    const view = new InitialAssessmentFeedbackConfirmationView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { referralId, appointmentId } = req.params
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+
+    let supplierAssessmentAppointment: InitialAssessmentAppointment | null
+
+    if (appointmentId) {
+      supplierAssessmentAppointment =
+        supplierAssessment.appointments.find(appointment => appointment.id === appointmentId) || null
+
+      if (!supplierAssessmentAppointment) {
+        throw new Error('Could not find the requested appointment')
+      }
+    } else {
+      supplierAssessmentAppointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+
+      if (supplierAssessmentAppointment === null) {
+        throw new Error('Attempting to view supplier assessment feedback without a current appointment')
+      }
+    }
+
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(
+      supplierAssessmentAppointment
+    )
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SubmittedFeedbackPresenter(
+      supplierAssessmentAppointment,
+      new AppointmentSummary(supplierAssessmentAppointment, null, deliusOfficeLocation),
+      serviceUser,
+      'service-provider',
+      referralId
+    )
+    const view = new SubmittedFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    const data = await new AttendanceFeedbackForm(req).data()
+
+    if (req.method === 'POST') {
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
+          accessToken,
+          actionPlanId,
+          Number(sessionNumber),
+          data.paramsForUpdate
+        )
+
+        const redirectPath =
+          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+
+        return res.redirect(
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
+        )
+      }
+    }
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
+      appointment,
+      serviceUser,
+      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      formError,
+      userInputData,
+      referral.id
+    )
+    const view = new AttendanceFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    if (req.method === 'POST') {
+      const data = await new BehaviourFeedbackForm(req).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.interventionsService.recordActionPlanAppointmentBehavior(
+          accessToken,
+          actionPlanId,
+          Number(sessionNumber),
+          data.paramsForUpdate
+        )
+
+        return res.redirect(
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
+        )
+      }
+    }
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+      appointment,
+      serviceUser,
+      actionPlanId,
+      formError,
+      userInputData
+    )
+    const view = new BehaviourFeedbackView(presenter)
+
+    res.status(formError === null ? 200 : 400)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async checkPostSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+      currentAppointment,
+      serviceUser,
+      actionPlanId,
+      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation)
+    )
+    const view = new CheckFeedbackAnswersView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitPostSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+
+    return res.redirect(
+      `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+    )
+  }
+
+  async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new SubmittedFeedbackPresenter(
+      currentAppointment,
+      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation),
+      serviceUser,
+      'service-provider',
+      referral.id
+    )
+    const view = new SubmittedFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+
+    const nextAppointmentOrNull = await this.interventionsService.getSubsequentActionPlanAppointment(
+      accessToken,
+      actionPlan,
+      currentAppointment
+    )
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const presenter = new PostSessionFeedbackConfirmationPresenter(
+      actionPlan,
+      currentAppointment,
+      nextAppointmentOrNull
+    )
+    const view = new PostSessionFeedbackConfirmationView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }
