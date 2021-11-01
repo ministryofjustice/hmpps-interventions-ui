@@ -28,4 +28,11 @@ class ReportingController(
     reportingService.generateServiceProviderPerformanceReport(dateInterval.fromDate, dateInterval.toDate, userMapper.fromToken(authentication))
     return ResponseEntity.accepted().build()
   }
+
+  @PostMapping("/reports/ndmis/performance")
+  fun createNdmisPerformanceReport(
+  ): ResponseEntity<Any> {
+    reportingService.generateNdmisPerformanceReport()
+    return ResponseEntity.accepted().build()
+  }
 }

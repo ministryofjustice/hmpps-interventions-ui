@@ -14,6 +14,7 @@ import java.time.LocalDate
 class ReportingService(
   private val asyncJobLauncher: JobLauncher,
   private val performanceReportJob: Job,
+  private val ndmisPerformanceReportJob: Job,
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
   private val batchUtils: BatchUtils,
   private val hmppsAuthService: HMPPSAuthService,
@@ -35,4 +36,14 @@ class ReportingService(
         .toJobParameters()
     )
   }
+
+  fun generateNdmisPerformanceReport() {
+    asyncJobLauncher.run(
+      ndmisPerformanceReportJob,
+      JobParametersBuilder()
+        .addString("timestamp", Instant.now().toEpochMilli().toString())
+        .toJobParameters()
+    )
+  }
+
 }
