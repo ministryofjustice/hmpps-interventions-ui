@@ -553,7 +553,11 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewSupplierAssessmentFeedback(req: Request, res: Response): Promise<void> {
+  async viewSupplierAssessmentFeedback(
+    req: Request,
+    res: Response,
+    userType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { referralId, appointmentId } = req.params
@@ -562,6 +566,10 @@ export default class AppointmentsController {
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
+
+    if (!referral.assignedTo) {
+      throw new Error('Referral has not yet been assigned to a caseworker')
+    }
 
     let supplierAssessmentAppointment: InitialAssessmentAppointment | null
 
@@ -590,7 +598,7 @@ export default class AppointmentsController {
       supplierAssessmentAppointment,
       new AppointmentSummary(supplierAssessmentAppointment, null, deliusOfficeLocation),
       serviceUser,
-      'service-provider',
+      userType,
       referralId
     )
     const view = new SubmittedFeedbackView(presenter)
