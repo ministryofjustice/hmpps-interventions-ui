@@ -397,7 +397,7 @@ export default class AppointmentsController {
     })
   }
 
-  async addInitialAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
+  async addSupplierAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
@@ -450,7 +450,7 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addInitialAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
+  async addSupplierAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
@@ -494,7 +494,7 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async checkInitialAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
+  async checkSupplierAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
@@ -521,7 +521,7 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async submitInitialAssessmentFeedback(req: Request, res: Response): Promise<void> {
+  async submitSupplierAssessmentFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
@@ -538,7 +538,7 @@ export default class AppointmentsController {
     )
   }
 
-  async showInitialAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+  async showSupplierAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
@@ -552,7 +552,7 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewInitialAssessmentFeedback(req: Request, res: Response): Promise<void> {
+  async viewSupplierAssessmentFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { referralId, appointmentId } = req.params

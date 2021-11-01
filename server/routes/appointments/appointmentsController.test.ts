@@ -84,7 +84,7 @@ describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/start
 })
 
 describe('GET /service-provider/referrals/:id/supplier-assessment/schedule/:draftBookingId/details', () => {
-  describe('when this is the first time to schedule an initial assessment', () => {
+  describe('when this is the first time to schedule an supplier assessment', () => {
     it('renders an empty form', async () => {
       const draftBooking = draftAppointmentBookingFactory.build()
       draftsService.fetchDraft.mockResolvedValue(draftBooking)
@@ -810,7 +810,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit/:d
   })
 
   describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', () => {
-    describe('when the Service Provider marks the Service user as having attended the initial assessment', () => {
+    describe('when the Service Provider marks the Service user as having attended the supplier assessment', () => {
       it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
         const referral = sentReferralFactory.assigned().build()
         const appointment = initialAssessmentAppointmentFactory.build()
@@ -846,7 +846,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit/:d
       })
     })
 
-    describe('when the Service Provider marks the Service user as not having attended the initial assessment', () => {
+    describe('when the Service Provider marks the Service user as not having attended the supplier assessment', () => {
       it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
         const referral = sentReferralFactory.assigned().build()
         const appointment = initialAssessmentAppointmentFactory.build()
@@ -950,7 +950,7 @@ describe('POST /service-provider/action-plan/:id/sessions/:sessionNumber/edit/:d
   })
 
   describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', () => {
-    describe('when the Service Provider records behaviour for the initial assessment', () => {
+    describe('when the Service Provider records behaviour for the supplier assessment', () => {
       it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check-your-answers page', async () => {
         const referral = sentReferralFactory.assigned().build()
         const appointment = initialAssessmentAppointmentFactory.build()

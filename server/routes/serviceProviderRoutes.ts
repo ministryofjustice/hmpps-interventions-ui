@@ -169,35 +169,35 @@ export default function serviceProviderRoutes(router: Router, services: Services
     appointmentsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewInitialAssessmentFeedback(req, res)
+    appointmentsController.viewSupplierAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
-    appointmentsController.addInitialAssessmentAttendanceFeedback(req, res)
+    appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
-    appointmentsController.addInitialAssessmentAttendanceFeedback(req, res)
+    appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
-    appointmentsController.addInitialAssessmentBehaviourFeedback(req, res)
+    appointmentsController.addSupplierAssessmentBehaviourFeedback(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
-    appointmentsController.addInitialAssessmentBehaviourFeedback(req, res)
+    appointmentsController.addSupplierAssessmentBehaviourFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
-    appointmentsController.checkInitialAssessmentFeedbackAnswers(req, res)
+    appointmentsController.checkSupplierAssessmentFeedbackAnswers(req, res)
   )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/submit', (req, res) =>
-    appointmentsController.submitInitialAssessmentFeedback(req, res)
+    appointmentsController.submitSupplierAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
-    appointmentsController.showInitialAssessmentFeedbackConfirmation(req, res)
+    appointmentsController.showSupplierAssessmentFeedbackConfirmation(req, res)
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewInitialAssessmentFeedback(req, res)
+    appointmentsController.viewSupplierAssessmentFeedback(req, res)
   )
   // This needs to go last in the `/post-assessment-feedback` urls to prevent clashes between the :appointmentId and other suffixes.
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback/:appointmentId', (req, res) =>
-    appointmentsController.viewInitialAssessmentFeedback(req, res)
+    appointmentsController.viewSupplierAssessmentFeedback(req, res)
   )
 
   get(router, '/referrals/:id/action-plan', (req, res) => serviceProviderReferralsController.viewActionPlan(req, res))
