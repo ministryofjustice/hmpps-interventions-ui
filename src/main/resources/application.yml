@@ -165,9 +165,14 @@ assess-risks-and-needs:
 
 aws:
   s3:
-    enabled: false
-    provider: aws
-    region: eu-west-2
+    storage:
+      enabled: false
+      provider: aws
+      region: eu-west-2
+    ndmis:
+      enabled: false
+      provider: aws
+      region: eu-west-2
   sns:
     enabled: true
     provider: aws

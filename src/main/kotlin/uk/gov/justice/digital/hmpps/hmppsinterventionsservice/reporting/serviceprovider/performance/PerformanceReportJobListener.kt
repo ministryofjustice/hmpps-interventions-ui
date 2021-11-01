@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.S3Bucket
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.S3Service
 import java.io.File
 import kotlin.io.path.Path
@@ -17,6 +18,7 @@ import kotlin.io.path.createTempDirectory
 @Component
 class PerformanceReportJobListener(
   private val s3Service: S3Service,
+  private val storageS3Bucket: S3Bucket,
   private val emailSender: EmailSender,
   @Value("\${notify.templates.service-provider-performance-report-ready}") private val successNotifyTemplateId: String,
   @Value("\${notify.templates.service-provider-performance-report-failed}") private val failureNotifyTemplateId: String,
@@ -40,7 +42,7 @@ class PerformanceReportJobListener(
 
     when (jobExecution.status) {
       BatchStatus.COMPLETED -> {
-        s3Service.publishFileToS3(path, "reports/service-provider/performance/")
+        s3Service.publishFileToS3(storageS3Bucket, path, "reports/service-provider/performance/")
 
         emailSender.sendEmail(
           successNotifyTemplateId,

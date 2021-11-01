@@ -22,4 +22,4 @@ env:
   COMMUNITYAPI_BASEURL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
   ASSESSRISKSANDNEEDS_BASEURL: "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk"
   SENTRY_ENVIRONMENT: "research"
-  AWS_S3_ENABLED: "true"
+  AWS_S3_STORAGE_ENABLED: "true"
