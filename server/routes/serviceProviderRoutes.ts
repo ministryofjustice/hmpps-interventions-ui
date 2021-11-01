@@ -168,9 +168,6 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:id/supplier-assessment/rescheduled-confirmation', (req, res) =>
     appointmentsController.showSupplierAssessmentAppointmentConfirmation(req, res, { isReschedule: true })
   )
-  get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'service-provider')
-  )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )
