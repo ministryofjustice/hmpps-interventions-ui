@@ -3,6 +3,7 @@ import { Services, get, post } from './index'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReferralCancellationController from './referral/cancellation/referralCancellationController'
+import AppointmentsController from './appointments/appointmentsController'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
@@ -12,6 +13,13 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.communityApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
+    services.draftsService,
+    services.referenceDataService
+  )
+  const appointmentsController = new AppointmentsController(
+    services.interventionsService,
+    services.communityApiService,
+    services.hmppsAuthService,
     services.draftsService,
     services.referenceDataService
   )
@@ -36,10 +44,10 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/referrals/:id/details', (req, res) => probationPractitionerReferralsController.showReferral(req, res))
   // Legacy route to keep links in old emails still working. We'll monitor and remove once traffic drops off
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
-    probationPractitionerReferralsController.viewLegacySubmittedPostSessionFeedback(req, res)
+    appointmentsController.viewLegacySubmittedPostSessionFeedbackAsProbationPractitioner(req, res)
   )
   get(router, '/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
-    probationPractitionerReferralsController.viewSubmittedPostSessionFeedback(req, res)
+    appointmentsController.viewSubmittedPostSessionFeedback(req, res, 'probation-practitioner')
   )
   get(router, '/action-plan/:actionPlanId', (req, res) =>
     probationPractitionerReferralsController.viewActionPlanById(req, res)
