@@ -102,7 +102,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken
     )
     const filteredSummary = referralsSummary.filter(summary => {
-      return summary.assignedToUserName === res.locals.user.username && !summary.endOfServiceReportSubmitted
+      return summary.assignedToUserName === res.locals.user.username && !summary.concluded
     })
 
     this.renderDashboard(res, filteredSummary, 'My cases')
@@ -113,7 +113,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken
     )
     const openReferrals = referralsSummary.filter(summary => {
-      return !summary.endOfServiceReportSubmitted
+      return !summary.concluded
     })
     this.renderDashboard(res, openReferrals, 'All open cases')
   }
@@ -123,7 +123,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken
     )
     const unassignedReferrals = referralsSummary.filter(summary => {
-      return !summary.assignedToUserName && !summary.endOfServiceReportSubmitted
+      return !summary.assignedToUserName && !summary.concluded
     })
     this.renderDashboard(res, unassignedReferrals, 'Unassigned cases')
   }
@@ -133,7 +133,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken
     )
     const completedReferrals = referralsSummary.filter(summary => {
-      return summary.endOfServiceReportSubmitted === true
+      return summary.concluded === true
     })
     this.renderDashboard(res, completedReferrals, 'Completed cases')
   }

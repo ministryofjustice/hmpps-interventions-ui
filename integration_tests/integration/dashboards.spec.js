@@ -502,12 +502,12 @@ describe('Dashboards', () => {
         const assignedToOther = serviceProviderSentReferralSummaryFactory
           .withAssignedUser('other')
           .build({ referenceNumber: 'ASSIGNED_TO_OTHER' })
-        const completed = serviceProviderSentReferralSummaryFactory.completed().build({ referenceNumber: 'COMPLETED' })
+        const concluded = serviceProviderSentReferralSummaryFactory.concluded().build({ referenceNumber: 'COMPLETED' })
         cy.stubGetServiceProviderSentReferralsSummaryForUserToken([
           assignedToSelf,
           unassigned,
           assignedToOther,
-          completed,
+          concluded,
         ])
         cy.login()
       })

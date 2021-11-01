@@ -31,6 +31,7 @@ describe(DashboardPresenter, () => {
             assignedToUserName: null,
             serviceUserFirstName: 'George',
             serviceUserLastName: 'Michael',
+            concluded: false,
           },
           {
             referralId: '2',
@@ -40,6 +41,7 @@ describe(DashboardPresenter, () => {
             assignedToUserName: null,
             serviceUserFirstName: 'Jenny',
             serviceUserLastName: 'Jones',
+            concluded: false,
           },
         ]
 
@@ -76,6 +78,7 @@ describe(DashboardPresenter, () => {
               assignedToUserName: 'john.smith',
               serviceUserFirstName: 'George',
               serviceUserLastName: 'Michael',
+              concluded: false,
             },
           ]
           const presenter = new DashboardPresenter(referralsSummary, dashboardType, loggedInUser)
@@ -97,6 +100,7 @@ describe(DashboardPresenter, () => {
             assignedToUserName: 'john.smith',
             serviceUserFirstName: 'George',
             serviceUserLastName: 'Michael',
+            concluded: false,
           },
         ]
         const presenter = new DashboardPresenter(referralsSummary, dashboardType, loggedInUser)
@@ -126,6 +130,7 @@ describe(DashboardPresenter, () => {
             assignedToUserName: 'john.smith',
             serviceUserFirstName: 'George',
             serviceUserLastName: 'Michael',
+            concluded: false,
           },
         ]
         const presenter = new DashboardPresenter(referralsSummary, 'All open cases', loggedInUser)

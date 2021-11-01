@@ -30,15 +30,15 @@ class ServiceProviderSentReferralSummaryFactory extends Factory<ServiceProviderS
     })
   }
 
-  completed() {
+  concluded() {
     return this.params({
-      endOfServiceReportSubmitted: true,
+      concluded: true,
     })
   }
 
   open() {
     return this.params({
-      endOfServiceReportSubmitted: false,
+      concluded: false,
     })
   }
 }
@@ -49,4 +49,5 @@ export default ServiceProviderSentReferralSummaryFactory.define(({ sequence }) =
   interventionTitle: 'Social Inclusion - West Midlands',
   serviceUserFirstName: 'Jenny',
   serviceUserLastName: 'Jones',
+  concluded: false,
 }))
