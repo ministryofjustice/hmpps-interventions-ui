@@ -2026,6 +2026,29 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('getMyInterventions', () => {
+    it('returns a list of interventions', async () => {
+      const interventions = interventionFactory.buildList(2)
+
+      await provider.addInteraction({
+        state: "There are some interventions associated with the default service provider user's access scope",
+        uponReceiving: "a request for 'my' interventions",
+        withRequest: {
+          method: 'GET',
+          path: '/my-interventions',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(interventions),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getMyInterventions(serviceProviderToken)).toEqual(interventions)
+    })
+  })
+
   describe('getIntervention', () => {
     it('returns a single intervention', async () => {
       const interventionId = '15237ae5-a017-4de6-a033-abf350f14d99'

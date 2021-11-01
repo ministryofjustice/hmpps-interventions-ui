@@ -258,6 +258,14 @@ export default class InterventionsService {
     })) as SentReferral
   }
 
+  async getMyInterventions(token: string): Promise<Intervention[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: '/my-interventions',
+      headers: { Accept: 'application/json' },
+    })) as Intervention[]
+  }
+
   async getInterventions(token: string, filter: InterventionsFilterParams): Promise<Intervention[]> {
     const restClient = this.createRestClient(token)
 

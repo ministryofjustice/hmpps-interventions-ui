@@ -1,7 +1,26 @@
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% extends "../partials/layout.njk" %}
 
+{% block title %}{{ presenter.text.pageTitle }}{% endblock %}
+{% block subtitle %}{{ presenter.text.pageSubtitle }}{% endblock %}
+
 {% block primaryNav %}
     {{ mojPrimaryNavigation(primaryNavArgs) }}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="govuk-heading-xl">{{ presenter.text.pageHeading }}</h1>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        {% for title, summary in services %}
+            <h2 class="govuk-heading-l">{{ title }}</h2>
+            {{ govukSummaryList(summary) }}
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}
