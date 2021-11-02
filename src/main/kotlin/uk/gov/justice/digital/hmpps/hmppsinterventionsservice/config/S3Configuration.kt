@@ -14,11 +14,10 @@ data class S3Bucket(val enabled: Boolean, val bucketName: String, val client: S3
 
 data class S3BucketConfiguration(
   val enabled: Boolean,
-  val provider: String,
   val region: String,
   val accessKeyId: String,
   val secretAccessKey: String,
-  val endpoint: Endpoint,
+  val endpoint: Endpoint?,
   val bucket: Bucket,
 ) {
   data class Endpoint(
@@ -51,14 +50,11 @@ class S3Configuration(
       .region(Region.of(config.region))
       .credentialsProvider { AwsBasicCredentials.create(config.accessKeyId, config.secretAccessKey) }
 
-    val client = when (config.provider) {
-      "aws" -> builder.build()
-      "localstack" ->
-        builder
-          .endpointOverride(URI.create(config.endpoint.uri))
-          .build()
-      else -> throw RuntimeException("invalid S3 configuration")
-    }
+    val client = config.endpoint?.let {
+      builder
+        .endpointOverride(URI.create(it.uri))
+        .build()
+    } ?: builder.build()
 
     return S3Bucket(config.enabled, config.bucket.name, client)
   }

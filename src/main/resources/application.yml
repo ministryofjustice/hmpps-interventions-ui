@@ -167,7 +167,6 @@ aws:
   s3:
     storage:
       enabled: false
-      provider: aws
       region: eu-west-2
   sns:
     enabled: true
