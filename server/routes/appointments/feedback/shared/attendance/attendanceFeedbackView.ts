@@ -12,6 +12,7 @@ export default class AttendanceFeedbackView {
       classes: 'govuk-radios',
       idPrefix: 'attended',
       name: 'attended',
+      attributes: { 'data-cy': 'supplier-assessment-attendance-radios' },
       fieldset: {
         legend: {
           text: this.presenter.text.attendanceQuestion,
