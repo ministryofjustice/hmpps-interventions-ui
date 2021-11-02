@@ -21,6 +21,11 @@ spring:
         provider:
           hmppsauth:
             token-uri: ${hmppsauth.baseurl}/oauth/token
+            token-request:
+              connect-timeout-ms: 500
+              read-timeout-ms: 500
+              retries: 3
+              retry-delay-ms: 500
         registration:
           interventions-client:
             provider: hmppsauth
