@@ -2154,7 +2154,7 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
           )
 
-          cy.contains('No').click()
+          cy.get('[data-cy=supplier-assessment-attendance-radios]').contains('No').click()
           cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
 
           const appointmentWithAttendanceFeedback = initialAssessmentAppointmentFactory.build({
