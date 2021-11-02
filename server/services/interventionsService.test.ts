@@ -2727,6 +2727,53 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('getDeliverySessionAppointment', () => {
+    const deliverySessionAppointment = actionPlanAppointmentFactory.build({
+      id: '915fd66f-9d74-4e22-8b85-38972b36f6cf',
+      sessionNumber: 1,
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 120,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+    })
+
+    const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: `a referral with ID ${referralId} exists and it has an appointment with ID ${deliverySessionAppointment.id}`,
+        uponReceiving: `a GET request for the appointment the appointment with ID ${deliverySessionAppointment.id}`,
+        withRequest: {
+          method: 'GET',
+          path: `/referral/${referralId}/delivery-session-appointment/${deliverySessionAppointment.id}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(deliverySessionAppointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns the requested action plan appointment', async () => {
+      const appointment = await interventionsService.getDeliverySessionAppointment(
+        probationPractitionerToken,
+        referralId,
+        deliverySessionAppointment.id
+      )
+      expect(appointment.id).toEqual('915fd66f-9d74-4e22-8b85-38972b36f6cf')
+      expect(appointment.sessionNumber).toEqual(1)
+      expect(appointment.appointmentTime).toEqual('2021-05-13T12:30:00Z')
+      expect(appointment.durationInMinutes).toEqual(120)
+      expect(appointment.sessionType).toEqual('ONE_TO_ONE')
+      expect(appointment.appointmentDeliveryType).toEqual('PHONE_CALL')
+    })
+  })
+
+  // Deprecated
   describe('getActionPlanAppointment', () => {
     const actionPlanAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
