@@ -21,7 +21,8 @@ class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
   }
 }
 
-export default ActionPlanAppointmentFactory.define(() => ({
+export default ActionPlanAppointmentFactory.define(({ sequence }) => ({
+  id: sequence.toString(),
   sessionNumber: 1,
   appointmentTime: null,
   durationInMinutes: null,

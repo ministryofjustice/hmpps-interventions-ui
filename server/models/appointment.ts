@@ -8,6 +8,7 @@ export interface InitialAssessmentAppointment extends Appointment {
 }
 
 export interface ActionPlanAppointment extends Appointment {
+  id: string
   sessionNumber: number
 }
 
