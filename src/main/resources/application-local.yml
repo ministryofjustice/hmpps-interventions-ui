@@ -19,7 +19,6 @@ aws:
   s3:
     storage:
       enabled: false
-      provider: localstack
       access-key-id: test
       secret-access-key: test
       endpoint.uri: http://localhost:4566
