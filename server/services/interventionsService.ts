@@ -391,6 +391,18 @@ export default class InterventionsService {
     })) as ActionPlanAppointment[]
   }
 
+  async getDeliverySessionAppointment(
+    token: string,
+    referralId: string,
+    appointmentId: string
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlanAppointment
+  }
+
   // Deprecated in favour of `getDeliverySessionAppointments`
   async getActionPlanAppointments(token: string, actionPlanId: string): Promise<ActionPlanAppointment[]> {
     const restClient = this.createRestClient(token)
@@ -400,6 +412,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment[]
   }
 
+  // Deprecated in favour of `getDeliverySessionAppointment`
   async getActionPlanAppointment(token: string, actionPlanId: string, session: number): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
