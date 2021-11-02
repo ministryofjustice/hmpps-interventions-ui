@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSummaryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DashboardType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftOasysRiskInformationDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
@@ -37,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DraftOasysRiskInformationService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
@@ -53,6 +55,7 @@ class ReferralController(
   private val clientApiAccessChecker: ClientApiAccessChecker,
   private val cancellationReasonMapper: CancellationReasonMapper,
   private val actionPlanService: ActionPlanService,
+  private val draftOasysRiskInformationService: DraftOasysRiskInformationService,
 ) {
   companion object : KLogging()
 
@@ -197,6 +200,30 @@ class ReferralController(
     val referral = getDraftReferralForAuthenticatedUser(authentication, id)
     val updatedReferral = referralService.updateDraftReferralDesiredOutcomes(referral, request.serviceCategoryId, request.desiredOutcomesIds)
     return DraftReferralDTO.from(updatedReferral)
+  }
+
+  @PatchMapping("/draft-referral/{id}/oasys-risk-information")
+  fun setDraftReferralOasysRiskInformation(
+    authentication: JwtAuthenticationToken,
+    @PathVariable id: UUID,
+    @RequestBody request: DraftOasysRiskInformationDTO
+  ): DraftOasysRiskInformationDTO {
+    val referral = getDraftReferralForAuthenticatedUser(authentication, id)
+    val user = userMapper.fromToken(authentication)
+    val draftOasysRiskInformation = draftOasysRiskInformationService.updateDraftOasysRiskInformation(referral, request, user)
+    return DraftOasysRiskInformationDTO.from(draftOasysRiskInformation)
+  }
+
+  @GetMapping("/draft-referral/{id}/oasys-risk-information")
+  fun getDraftReferralOasysRiskInformation(
+    authentication: JwtAuthenticationToken,
+    @PathVariable id: UUID
+  ): DraftOasysRiskInformationDTO {
+    // check that user has access to referral
+    val referral = getDraftReferralForAuthenticatedUser(authentication, id)
+    return draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)
+      ?.let { DraftOasysRiskInformationDTO.from(it) }
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "draft oasys risk information not found [id=$id]")
   }
 
   @GetMapping("/draft-referrals")
