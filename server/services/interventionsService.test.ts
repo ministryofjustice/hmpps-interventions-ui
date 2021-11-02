@@ -2616,6 +2616,63 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('getDeliverySessionAppointments', () => {
+    const deliverySessionAppointments = [
+      actionPlanAppointmentFactory.build({
+        id: '915fd66f-9d74-4e22-8b85-38972b36f6cf',
+        sessionNumber: 1,
+        appointmentTime: '2021-05-13T12:30:00Z',
+        durationInMinutes: 120,
+        sessionType: 'GROUP',
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+      actionPlanAppointmentFactory.build({
+        id: 'e3b59b74-fe85-4dac-bd1b-42de02c26267',
+        sessionNumber: 2,
+        appointmentTime: '2021-05-20T12:30:00Z',
+        durationInMinutes: 120,
+        sessionType: 'ONE_TO_ONE',
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+      actionPlanAppointmentFactory.build({
+        id: '840488d1-0619-412e-a32c-89a84c4ca4f8',
+        sessionNumber: 3,
+        appointmentTime: '2021-05-27T12:30:00Z',
+        durationInMinutes: 120,
+        sessionType: 'GROUP',
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+    ]
+
+    const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: `a referral with ID ${referralId} exists and it has 3 scheduled appointments`,
+        uponReceiving: 'a GET request for the delivery session appointments on the referral',
+        withRequest: {
+          method: 'GET',
+          path: `/referral/${referralId}/delivery-session-appointments`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(deliverySessionAppointments),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns delivery session appointments', async () => {
+      expect(
+        await interventionsService.getDeliverySessionAppointments(probationPractitionerToken, referralId)
+      ).toMatchObject(deliverySessionAppointments)
+    })
+  })
+
+  // Deprecated
   describe('getActionPlanAppointments', () => {
     const actionPlanAppointments = [
       actionPlanAppointmentFactory.build({

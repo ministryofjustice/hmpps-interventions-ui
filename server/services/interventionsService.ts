@@ -383,6 +383,15 @@ export default class InterventionsService {
     })) as ApprovedActionPlanSummary[]
   }
 
+  async getDeliverySessionAppointments(token: string, referralId: string): Promise<ActionPlanAppointment[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/referral/${referralId}/delivery-session-appointments`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlanAppointment[]
+  }
+
+  // Deprecated in favour of `getDeliverySessionAppointments`
   async getActionPlanAppointments(token: string, actionPlanId: string): Promise<ActionPlanAppointment[]> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
