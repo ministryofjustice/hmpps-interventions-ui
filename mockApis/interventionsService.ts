@@ -786,4 +786,20 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubGetDraftOasysRiskInformation = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/draft-referral/${referralId}/oasys-risk-information`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
