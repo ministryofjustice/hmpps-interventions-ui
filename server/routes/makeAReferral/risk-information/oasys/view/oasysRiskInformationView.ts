@@ -42,7 +42,7 @@ export default class OasysRiskInformationView {
   private get confirmUnderstoodWarningCheckboxArgs(): CheckboxesArgs {
     return {
       idPrefix: 'confirm-understood',
-      name: 'confirm-understood[]',
+      name: 'confirm-understood',
       items: [
         {
           value: 'understood',
@@ -58,7 +58,7 @@ export default class OasysRiskInformationView {
     return {
       classes: 'govuk-radios',
       idPrefix: 'edit-risk-confirmation',
-      name: 'relevant-sentence-id',
+      name: 'edit-risk-confirmation',
       fieldset: {
         legend: {
           text: 'Do you want to edit this OASys risk information for the service provider?',
