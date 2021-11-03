@@ -451,6 +451,21 @@ export default class InterventionsService {
     )) as ActionPlanAppointment
   }
 
+  async updateDeliverySessionAppointment(
+    token: string,
+    referralId: string,
+    appointmentId: string,
+    appointmentUpdate: AppointmentSchedulingDetails
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.patch({
+      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointmentUpdate },
+    })) as ActionPlanAppointment
+  }
+
+  // Deprecated in favour of updateDeliverySessionAppointment
   async updateActionPlanAppointment(
     token: string,
     actionPlanId: string,
