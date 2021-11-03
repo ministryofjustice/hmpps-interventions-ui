@@ -87,6 +87,7 @@ export default class OasysRiskInformationView {
       'makeAReferral/riskInformationOasys',
       {
         errorSummaryArgs: this.errorSummaryArgs,
+        confirmEditActionHref: this.presenter.confirmEditOasysAction,
         riskInformation: this.riskSummaryView.riskInformation,
         latestAssessment: this.presenter.latestAssessment,
         roshPanelPresenter: this.presenter.riskPresenter,
