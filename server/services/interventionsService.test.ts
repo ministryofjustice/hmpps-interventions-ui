@@ -3045,6 +3045,73 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('recordDeliverySessionAppointmentAttendance', () => {
+    const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+    const deliverySessionAppointment = actionPlanAppointmentFactory.build({
+      sessionNumber: 2,
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 60,
+      sessionType: 'GROUP',
+      appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+      appointmentDeliveryAddress: {
+        firstAddressLine: 'Harmony Living Office, Room 4',
+        secondAddressLine: '44 Bouverie Road',
+        townOrCity: 'Blackpool',
+        county: 'Lancashire',
+        postCode: 'SY40RE',
+      },
+      sessionFeedback: {
+        attendance: {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        },
+        behaviour: {
+          behaviourDescription: null,
+          notifyProbationPractitioner: null,
+        },
+        submitted: false,
+        submittedBy: null,
+      },
+    })
+
+    it('returns an updated delivery session appointment with the service user‘s attendance', async () => {
+      await provider.addInteraction({
+        state: `a referral with ID ${referralId} exists with appointment with ID ${deliverySessionAppointment.id} for which no session feedback has been recorded`,
+        uponReceiving: 'a POST request to record attendance for for that appointment',
+        withRequest: {
+          method: 'POST',
+          path: `/referral/${referralId}/delivery-session-appointment/${deliverySessionAppointment.id}/record-attendance`,
+          body: {
+            attended: 'late',
+            additionalAttendanceInformation: 'Alex missed the bus',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(deliverySessionAppointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.recordDeliverySessionAppointmentAttendance(
+        probationPractitionerToken,
+        referralId,
+        deliverySessionAppointment.id,
+        {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        }
+      )
+      expect(appointment.sessionFeedback!.attendance!.attended).toEqual('late')
+      expect(appointment.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+    })
+  })
+
+  // Deprecated
   describe('recordActionPlanAppointmentAttendance', () => {
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
