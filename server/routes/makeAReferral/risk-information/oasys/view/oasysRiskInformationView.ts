@@ -42,7 +42,7 @@ export default class OasysRiskInformationView {
   private get confirmUnderstoodWarningCheckboxArgs(): CheckboxesArgs {
     return {
       idPrefix: 'confirm-understood',
-      name: 'confirm-understood[]',
+      name: 'confirm-understood',
       items: [
         {
           value: 'understood',

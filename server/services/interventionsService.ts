@@ -27,6 +27,7 @@ import {
 import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
 import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
+import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -651,5 +652,18 @@ export default class InterventionsService {
       path: `/case-note/${caseNoteId}`,
       headers: { Accept: 'application/json' },
     })) as CaseNote
+  }
+
+  async updateDraftOasysRiskInformation(
+    token: string,
+    referralId: string,
+    draftOasysRiskInformation: DraftOasysRiskInformation
+  ): Promise<DraftOasysRiskInformation> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.patch({
+      path: `/draft-referral/${referralId}/oasys-risk-information`,
+      headers: { Accept: 'application/json' },
+      data: { ...draftOasysRiskInformation },
+    })) as DraftOasysRiskInformation
   }
 }
