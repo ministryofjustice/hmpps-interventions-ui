@@ -10,7 +10,7 @@ data class ReferralsData(
   val contractType: String,
   val primeProvider: String,
   // val referringOfficerEmail: String,
-//  val relevantSentanceId: Long,
+  val relevantSentanceId: Long,
   val serviceUserCRN: String,
   val dateReferralReceived: OffsetDateTime,
   val firstActionPlanSubmittedAt: OffsetDateTime?,

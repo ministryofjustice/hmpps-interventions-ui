@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
@@ -16,13 +17,14 @@ class DeliverySessionFactory(em: TestEntityManager? = null) : EntityFactory(em) 
     id: UUID = UUID.randomUUID(),
     referral: Referral = referralFactory.createSent(),
     sessionNumber: Int = 1,
+    appointments: MutableSet<Appointment> = mutableSetOf()
   ): DeliverySession {
     return save(
       DeliverySession(
         id = id,
         referral = referral,
         sessionNumber = sessionNumber,
-        appointments = mutableSetOf(),
+        appointments = appointments,
       )
     )
   }
