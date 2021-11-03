@@ -11,7 +11,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.boot.web.client.RestTemplateCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.retry.RetryCallback
@@ -29,7 +28,6 @@ import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorH
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter
-import org.springframework.web.client.RestClientException
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
@@ -107,6 +105,7 @@ class WebClientConfiguration(
 
   private fun createRetryingTokenResponseClient(): DefaultClientCredentialsTokenResponseClient {
     val clientCredentialsTokenResponseClient = DefaultClientCredentialsTokenResponseClient()
+    val errorHandler = OAuth2ErrorResponseErrorHandler()
 
     val retryCustomizer = RestTemplateCustomizer { restTemplate ->
       restTemplate.interceptors.add { request, body, execution ->
@@ -119,8 +118,14 @@ class WebClientConfiguration(
         retryTemplate.setListeners(arrayOf(RetryLogger("token request failed; retrying")))
 
         retryTemplate.execute(
-          RetryCallback<ClientHttpResponse, RestClientException> {
-            execution.execute(request, body)
+          RetryCallback {
+            execution.execute(request, body).also {
+              // i hate that this basically duplicates `RestTemplate.handleResponse`,
+              // but it's the only way i could figure out to get this to work.
+              if (errorHandler.hasError(it)) {
+                errorHandler.handleError(it)
+              }
+            }
           }
         )
       }
@@ -134,7 +139,7 @@ class WebClientConfiguration(
         FormHttpMessageConverter(),
         OAuth2AccessTokenResponseHttpMessageConverter(),
       )
-      .errorHandler(OAuth2ErrorResponseErrorHandler())
+      .errorHandler(errorHandler)
       .build()
 
     clientCredentialsTokenResponseClient.setRestOperations(restTemplate)
