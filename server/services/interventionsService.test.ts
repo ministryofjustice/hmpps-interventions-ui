@@ -3298,6 +3298,68 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('submitDeliverySessionFeedback', () => {
+    const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+    const deliverySessionAppointment = actionPlanAppointmentFactory.build({
+      sessionNumber: 1,
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 60,
+      sessionType: 'GROUP',
+      appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+      appointmentDeliveryAddress: {
+        firstAddressLine: 'Harmony Living Office, Room 4',
+        secondAddressLine: '44 Bouverie Road',
+        townOrCity: 'Blackpool',
+        county: 'Lancashire',
+        postCode: 'SY40RE',
+      },
+      sessionFeedback: {
+        attendance: {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        },
+        behaviour: {
+          behaviourDescription: 'Alex was well behaved',
+          notifyProbationPractitioner: false,
+        },
+        submitted: true,
+        submittedBy: {
+          authSource: 'delius',
+          userId: '2500128586',
+          username: 'joe.smith',
+        },
+      },
+    })
+
+    it('submits attendance and behaviour feedback to the PP', async () => {
+      await provider.addInteraction({
+        state: `a referral exists with ID ${referralId} exists with 1 appointment with ID ${deliverySessionAppointment.id} with recorded attendance and behaviour`,
+        uponReceiving: `a POST request to submit the feedback for appointment 1 on the referral with ID ${referralId}`,
+        withRequest: {
+          method: 'POST',
+          path: `/referral/${referralId}/delivery-session-appointment/${deliverySessionAppointment.id}/submit`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(deliverySessionAppointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.submitDeliverySessionAppointmentFeedback(
+        probationPractitionerToken,
+        referralId,
+        deliverySessionAppointment.id
+      )
+      expect(appointment.sessionFeedback!.submitted).toEqual(true)
+    })
+  })
+
+  // Deprecated
   describe('submitActionPlanSessionFeedback', () => {
     it('submits attendance and behaviour feedback to the PP', async () => {
       await provider.addInteraction({

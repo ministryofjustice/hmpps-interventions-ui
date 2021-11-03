@@ -541,6 +541,20 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
+  async submitDeliverySessionAppointmentFeedback(
+    token: string,
+    referralId: string,
+    appointmentId: string
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}/submit`,
+      headers: { Accept: 'application/json' },
+    })) as ActionPlanAppointment
+  }
+
+  // Deprecated in favour of submitDeliverySessionAppointmentFeedback
   async submitActionPlanSessionFeedback(
     token: string,
     actionPlanId: string,
