@@ -2862,6 +2862,84 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('updateDeliverySessionAppointment', () => {
+    const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+    describe('with non-null values', () => {
+      it('returns an updated delivery session appointment', async () => {
+        const deliverySessionAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: '2021-05-13T12:30:00Z',
+          durationInMinutes: 60,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY40RE',
+          },
+        })
+
+        await provider.addInteraction({
+          state: `a referral exists with ID ${referralId} exists and has 2 2-hour appointments already`,
+          uponReceiving: `a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID ${referralId}`,
+          withRequest: {
+            method: 'PATCH',
+            path: `/referral/${referralId}/delivery-session-appointment/${deliverySessionAppointment.id}`,
+            body: {
+              appointmentTime: '2021-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+            },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          // note - this is an exact match
+          willRespondWith: {
+            status: 200,
+            body: deliverySessionAppointment,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.updateDeliverySessionAppointment(
+            probationPractitionerToken,
+            referralId,
+            deliverySessionAppointment.id,
+            {
+              appointmentTime: '2021-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+            }
+          )
+        ).toMatchObject(deliverySessionAppointment)
+      })
+    })
+  })
+
+  // Deprecated
   describe('updateActionPlanAppointment', () => {
     describe('with non-null values', () => {
       it('returns an updated action plan appointment', async () => {
