@@ -485,6 +485,22 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
+  async recordDeliverySessionAppointmentBehaviour(
+    token: string,
+    referralId: string,
+    appointmentId: string,
+    appointmentBehaviourUpdate: Partial<AppointmentBehaviour>
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}/record-behaviour`,
+      headers: { Accept: 'application/json' },
+      data: appointmentBehaviourUpdate,
+    })) as ActionPlanAppointment
+  }
+
+  // Deprecated in favour of recordDeliverySessionAppointmentBehaviour
   async recordActionPlanAppointmentBehavior(
     token: string,
     actionPlanId: string,

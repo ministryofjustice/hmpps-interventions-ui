@@ -3070,6 +3070,73 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
+  describe('recordDeliverySessionAppointmentBehaviour', () => {
+    const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+
+    const deliverySessionAppointment = actionPlanAppointmentFactory.build({
+      sessionNumber: 2,
+      appointmentTime: '2021-05-13T12:30:00Z',
+      durationInMinutes: 60,
+      sessionType: 'GROUP',
+      appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+      appointmentDeliveryAddress: {
+        firstAddressLine: 'Harmony Living Office, Room 4',
+        secondAddressLine: '44 Bouverie Road',
+        townOrCity: 'Blackpool',
+        county: 'Lancashire',
+        postCode: 'SY40RE',
+      },
+      sessionFeedback: {
+        attendance: {
+          attended: 'late',
+          additionalAttendanceInformation: 'Alex missed the bus',
+        },
+        behaviour: {
+          behaviourDescription: 'Alex was well behaved',
+          notifyProbationPractitioner: false,
+        },
+        submitted: false,
+        submittedBy: null,
+      },
+    })
+
+    it('returns an updated delivery session appointment with the service user‘s behaviour', async () => {
+      await provider.addInteraction({
+        state: `a referral with ID ${referralId} exists with appointment with ID ${deliverySessionAppointment.id} for which no session feedback has been recorded`,
+        uponReceiving: 'a POST request to record behaviour for for that appointment',
+        withRequest: {
+          method: 'POST',
+          path: `/referral/${referralId}/delivery-session-appointment/${deliverySessionAppointment.id}/record-behaviour`,
+          body: {
+            behaviourDescription: 'Alex was well behaved',
+            notifyProbationPractitioner: false,
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(deliverySessionAppointment),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const appointment = await interventionsService.recordDeliverySessionAppointmentBehaviour(
+        probationPractitionerToken,
+        referralId,
+        deliverySessionAppointment.id,
+        {
+          behaviourDescription: 'Alex was well behaved',
+          notifyProbationPractitioner: false,
+        }
+      )
+      expect(appointment.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
+      expect(appointment.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+    })
+  })
+
+  // Deprecated
   describe('recordActionPlanAppointmentBehavior', () => {
     it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
       await provider.addInteraction({
