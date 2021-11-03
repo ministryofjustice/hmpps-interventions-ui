@@ -5,6 +5,7 @@ import { SupplementaryRiskInformation } from '../../../../../models/assessRisksA
 import RoshPanelPresenter from '../../../../shared/roshPanelPresenter'
 import PresenterUtils from '../../../../../utils/presenterUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
+import { DraftOasysRiskInformation } from '../../../../../models/draftOasysRiskInformation'
 
 export default class EditOasysRiskInformationPresenter {
   riskPresenter: RoshPanelPresenter
@@ -12,6 +13,7 @@ export default class EditOasysRiskInformationPresenter {
   constructor(
     readonly supplementaryRiskInformation: SupplementaryRiskInformation | null,
     readonly riskSummary: RiskSummary | null,
+    readonly draftOasysRiskInformation: DraftOasysRiskInformation | null,
     private readonly error: FormValidationError | null = null
   ) {
     this.riskPresenter = new RoshPanelPresenter(riskSummary)
