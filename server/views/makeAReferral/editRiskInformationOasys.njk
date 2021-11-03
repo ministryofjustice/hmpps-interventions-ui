@@ -1,5 +1,6 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
 
 {% extends "../partials/layout.njk" %}
@@ -11,6 +12,9 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">OASys risk information</h1>
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
 
       <p class="govuk-body">Latest assessment: {{ latestAssessment }} </p>
       <hr/>
@@ -52,6 +56,7 @@
         <p class="govuk-body {{ riskInformation.additionalRiskInformation.label.class }}">{{ riskInformation.additionalRiskInformation.label.text }}</p>
         {{ govukTextarea(additionalInformationTextareaArgs) }}
 
+        {{ govukCheckboxes(confirmUnderstoodWarningCheckboxArgs) }}
         {{ govukButton({ text: "Save and continue" }) }}
       </form>
     </div>

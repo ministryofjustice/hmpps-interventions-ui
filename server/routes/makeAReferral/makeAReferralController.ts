@@ -55,6 +55,7 @@ import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasy
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
 import DraftReferral from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
+import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -573,6 +574,20 @@ export default class MakeAReferralController {
     }
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
+    let error: FormValidationError | null = null
+    if (req.method === 'POST') {
+      const form = await EditOasysRiskInformationForm.createForm(req)
+      if (form.isValid) {
+        await this.interventionsService.updateDraftOasysRiskInformation(
+          accessToken,
+          referralId,
+          form.editedDraftRiskInformation
+        )
+        res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
+        return
+      }
+      error = form.error
+    }
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
     const [serviceUser, riskSummary, supplementaryRiskInformation] = await Promise.all([
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
@@ -580,7 +595,7 @@ export default class MakeAReferralController {
       this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(referral.serviceUser.crn, accessToken),
     ])
 
-    const presenter = new EditOasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
+    const presenter = new EditOasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary, error)
     const view = new EditOasysRiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

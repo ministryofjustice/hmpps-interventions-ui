@@ -46,7 +46,7 @@ export default class OasysRiskInformationView {
       items: [
         {
           value: 'understood',
-          text: 'I understand this information will be shared with the service provider',
+          text: 'I understand this information will be shared with the Service Provider',
         },
       ],
       classes: 'govuk-checkboxes__inset--grey',
@@ -58,10 +58,10 @@ export default class OasysRiskInformationView {
     return {
       classes: 'govuk-radios',
       idPrefix: 'edit-risk-confirmation',
-      name: 'relevant-sentence-id',
+      name: 'edit-risk-confirmation',
       fieldset: {
         legend: {
-          text: 'Do you want to edit this OASys risk information for the service provider?',
+          text: 'Do you want to edit this OASys risk information for the Service Provider?',
           classes: 'govuk-fieldset__legend--m',
         },
       },
