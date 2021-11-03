@@ -666,4 +666,12 @@ export default class InterventionsService {
       data: { ...draftOasysRiskInformation },
     })) as DraftOasysRiskInformation
   }
+
+  async getDraftOasysRiskInformation(token: string, referralId: string): Promise<DraftOasysRiskInformation> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/draft-referral/${referralId}/oasys-risk-information`,
+      headers: { Accept: 'application/json' },
+    })) as DraftOasysRiskInformation
+  }
 }
