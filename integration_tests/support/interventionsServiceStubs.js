@@ -185,3 +185,7 @@ Cypress.Commands.add('stubGetCaseNote', (caseNoteId, responseJson) => {
 Cypress.Commands.add('stubGetMyInterventions', responseJson => {
   cy.task('stubGetMyInterventions', { responseJson })
 })
+
+Cypress.Commands.add('stubUpdateDraftOasysRiskInformation', responseJson => {
+  cy.task('stubUpdateDraftOasysRiskInformation', { responseJson })
+})
