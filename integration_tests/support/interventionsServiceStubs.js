@@ -90,6 +90,34 @@ Cypress.Commands.add('stubSubmitActionPlan', (id, responseJson) => {
   cy.task('stubSubmitActionPlan', { id, responseJson })
 })
 
+Cypress.Commands.add('stubRecordDeliverySessionAppointmentAttendance', (referralId, appointmentId, responseJson) => {
+  cy.task('stubRecordDeliverySessionAppointmentAttendance', { referralId, appointmentId, responseJson })
+})
+
+Cypress.Commands.add('stubRecordDeliverySessionAppointmentBehaviour', (referralId, appointmentId, responseJson) => {
+  cy.task('stubRecordDeliverySessionAppointmentBehaviour', { referralId, appointmentId, responseJson })
+})
+
+Cypress.Commands.add('stubGetDeliverySessionAppointments', (id, responseJson) => {
+  cy.task('stubGetDeliverySessionAppointments', { id, responseJson })
+})
+
+Cypress.Commands.add('stubGetDeliverySessionAppointment', (referralId, appointmentId, responseJson) => {
+  cy.task('stubGetDeliverySessionAppointment', { referralId, appointmentId, responseJson })
+})
+
+Cypress.Commands.add('stubUpdateDeliverySessionAppointment', (referralId, appointmentId, responseJson) => {
+  cy.task('stubUpdateDeliverySessionAppointment', { referralId, appointmentId, responseJson })
+})
+
+Cypress.Commands.add('stubUpdateDeliverySessionAppointmentClash', (referralId, appointmentId) => {
+  cy.task('stubUpdateDeliverySessionAppointmentClash', { referralId, appointmentId })
+})
+
+Cypress.Commands.add('stubSubmitDeliverySessionFeedback', (referralId, appointmentId, responseJson) => {
+  cy.task('stubSubmitDeliverySessionFeedback', { referralId, appointmentId, responseJson })
+})
+
 Cypress.Commands.add('stubRecordActionPlanAppointmentAttendance', (actionPlanId, sessionNumber, responseJson) => {
   cy.task('stubRecordActionPlanAppointmentAttendance', { actionPlanId, sessionNumber, responseJson })
 })

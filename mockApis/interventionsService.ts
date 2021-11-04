@@ -367,6 +367,27 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubRecordDeliverySessionAppointmentAttendance = async (
+    referralId: string,
+    appointmentId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/delivery-session-appointment/${appointmentId}/record-attendance`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  // Deprecated
   stubRecordActionPlanAppointmentAttendance = async (
     actionPlanId: string,
     sessionNumber: string,
@@ -387,6 +408,27 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubRecordDeliverySessionAppointmentBehaviour = async (
+    referralId: string,
+    appointmentId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/delivery-session-appointment/${appointmentId}/record-behaviour`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  // Deprecated
   stubRecordActionPlanAppointmentBehavior = async (
     actionPlanId: string,
     sessionNumber: string,
@@ -407,6 +449,23 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetDeliverySessionAppointments = async (id: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/referral/${id}/appointments`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  // Deprecated
   stubGetActionPlanAppointments = async (id: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
@@ -423,6 +482,27 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetDeliverySessionAppointment = async (
+    referralId: string,
+    appointmentId: number,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  // Deprecated
   stubGetActionPlanAppointment = async (id: string, session: number, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
@@ -439,6 +519,27 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubUpdateDeliverySessionAppointment = async (
+    referralId: string,
+    appointmentId: number,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'PATCH',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  // Deprecated
   stubUpdateActionPlanAppointment = async (id: string, session: number, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
@@ -455,6 +556,23 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubUpdateDeliverySessionAppointmentClash = async (referralId: string, appointmentId: number): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'PATCH',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      },
+      response: {
+        status: 409,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: {},
+      },
+    })
+  }
+
+  // Deprecated
   stubUpdateActionPlanAppointmentClash = async (actionPlanId: string, sessionNumber: number): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
@@ -471,6 +589,27 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubSubmitDeliverySessionFeedback = async (
+    referralId: string,
+    appointmentId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/delivery-session-appointment/${appointmentId}/submit`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
+  // Deprecated
   stubSubmitActionPlanSessionFeedback = async (
     actionPlanId: string,
     session: number,
