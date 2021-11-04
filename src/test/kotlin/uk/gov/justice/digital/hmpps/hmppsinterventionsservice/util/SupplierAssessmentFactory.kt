@@ -28,8 +28,9 @@ class SupplierAssessmentFactory(em: TestEntityManager? = null) : EntityFactory(e
     id: UUID = UUID.randomUUID(),
     referral: Referral = referralFactory.createSent(),
     appointments: MutableSet<Appointment> =
-      mutableSetOf(appointmentFactory.create(referral = referral),
-      appointmentFactory.create(referral = referral)
+      mutableSetOf(
+        appointmentFactory.create(referral = referral),
+        appointmentFactory.create(referral = referral)
       )
   ): SupplierAssessment {
     return save(

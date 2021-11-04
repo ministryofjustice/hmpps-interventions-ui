@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis
 
-import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -25,10 +24,10 @@ internal class NdmisComplexityPerformanceReportProcessorTest {
 
   @Test
   fun `referral with single selected service category correctly returns a complexityData object`() {
-    val complexityLevel = ComplexityLevel(UUID.randomUUID(), "high","description1")
+    val complexityLevel = ComplexityLevel(UUID.randomUUID(), "high", "description1")
     val serviceCategory1 = serviceCategoryFactory.create(complexityLevels = listOf(complexityLevel))
     val referral = referralFactory.createSent(selectedServiceCategories = mutableSetOf(serviceCategory1))
-    referral.complexityLevelIds =  mutableMapOf(serviceCategory1.id to complexityLevel.id)
+    referral.complexityLevelIds = mutableMapOf(serviceCategory1.id to complexityLevel.id)
 
     val result = processor.process(referral)
 
@@ -43,12 +42,12 @@ internal class NdmisComplexityPerformanceReportProcessorTest {
 
   @Test
   fun `referral with multiple selected service category correctly returns a complexityData object`() {
-    val complexityLevel1 = ComplexityLevel(UUID.randomUUID(), "high","description1")
-    val complexityLevel2 = ComplexityLevel(UUID.randomUUID(), "medium","description1")
+    val complexityLevel1 = ComplexityLevel(UUID.randomUUID(), "high", "description1")
+    val complexityLevel2 = ComplexityLevel(UUID.randomUUID(), "medium", "description1")
     val serviceCategory1 = serviceCategoryFactory.create(complexityLevels = listOf(complexityLevel1))
     val serviceCategory2 = serviceCategoryFactory.create(name = "Lifestyle and Associates", complexityLevels = listOf(complexityLevel2))
     val referral = referralFactory.createSent(selectedServiceCategories = mutableSetOf(serviceCategory1, serviceCategory2))
-    referral.complexityLevelIds =  mutableMapOf(serviceCategory1.id to complexityLevel1.id, serviceCategory2.id to complexityLevel2.id)
+    referral.complexityLevelIds = mutableMapOf(serviceCategory1.id to complexityLevel1.id, serviceCategory2.id to complexityLevel2.id)
 
     val result = processor.process(referral)
 

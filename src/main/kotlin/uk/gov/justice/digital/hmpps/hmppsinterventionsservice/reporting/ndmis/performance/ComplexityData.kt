@@ -24,7 +24,7 @@ data class ComplexityData(
       "referral_id",
       "intervention_title",
       "service_category_id",
-       "service_category_name",
+      "service_category_name",
       "complexity_level_title",
     )
   }

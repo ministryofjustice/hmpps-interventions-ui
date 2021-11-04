@@ -5,16 +5,12 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisAppointmentPerformanceReportProcessor
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisComplexityPerformanceReportProcessor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.SupplierAssessmentFactory
-import java.util.*
 
 internal class NdmisAppointmentPerformanceReportProcessorTest {
   private val deliverySessionService = mock<DeliverySessionService>()
@@ -33,7 +29,7 @@ internal class NdmisAppointmentPerformanceReportProcessorTest {
   }
 
   @Test
-  fun `referrals with multiple delivery session and saa appointments can be processed`(){
+  fun `referrals with multiple delivery session and saa appointments can be processed`() {
     val referral = referralFactory.createSent()
 
     val appointment1 = appointmentFactory.create(referral = referral)
@@ -47,7 +43,8 @@ internal class NdmisAppointmentPerformanceReportProcessorTest {
     val appointment5 = appointmentFactory.create(referral = referral)
     val supplierAssessment = supplierAssessmentFactory.createWithMultipleAppointments(
       referral = referral,
-      appointments = mutableSetOf(appointment4, appointment5
+      appointments = mutableSetOf(
+        appointment4, appointment5
       )
     )
 
@@ -63,10 +60,10 @@ internal class NdmisAppointmentPerformanceReportProcessorTest {
     assertThat(result[2].reasonForAppointment).isEqualTo("delivery")
     assertThat(result[3].reasonForAppointment).isEqualTo("saa")
     assertThat(result[4].reasonForAppointment).isEqualTo("saa")
-    }
+  }
 
   @Test
-  fun `referrals with no saa appointments and no delivery sessions can be processed`(){
+  fun `referrals with no saa appointments and no delivery sessions can be processed`() {
     val referral = referralFactory.createSent()
 
     val supplierAssessment = supplierAssessmentFactory.createWithNoAppointment(
@@ -82,7 +79,7 @@ internal class NdmisAppointmentPerformanceReportProcessorTest {
   }
 
   @Test
-  fun `referrals with saa appointments and no delivery sessions can be processed`(){
+  fun `referrals with saa appointments and no delivery sessions can be processed`() {
     val referral = referralFactory.createSent()
 
     val appointment1 = appointmentFactory.create(referral = referral)

@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 
 @Component
-class NdmisComplexityPerformanceReportProcessor(
-) : ItemProcessor<Referral, List<ComplexityData>> {
+class NdmisComplexityPerformanceReportProcessor() : ItemProcessor<Referral, List<ComplexityData>> {
   companion object : KLogging()
 
   override fun process(referral: Referral): List<ComplexityData> {
@@ -24,7 +23,8 @@ class NdmisComplexityPerformanceReportProcessor(
         serviceCategoryId = it.id,
         serviceCategoryName = it.name,
         complexityLevelTitle = it.complexityLevels.find {
-            complexityLevel -> complexityLevel.id == referral.complexityLevelIds!![it.id]
+          complexityLevel ->
+          complexityLevel.id == referral.complexityLevelIds!![it.id]
         }!!.title
       )
     }

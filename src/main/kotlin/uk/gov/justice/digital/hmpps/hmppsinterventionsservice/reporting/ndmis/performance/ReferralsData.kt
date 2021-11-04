@@ -55,7 +55,7 @@ data class ReferralsData(
       "referral_id",
       "crs_contract_reference",
       "crs_contract_type",
-       "crs_provider_id",
+      "crs_provider_id",
 //      "referring_officer_id",
       "relevant_sentence_id",
       "service_user_crn",

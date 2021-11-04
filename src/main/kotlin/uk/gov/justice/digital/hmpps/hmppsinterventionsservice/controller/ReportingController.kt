@@ -29,10 +29,9 @@ class ReportingController(
     return ResponseEntity.accepted().build()
   }
 
-  @PostMapping("/reports/ndmis/performance")
-  fun createNdmisPerformanceReport(
-  ): ResponseEntity<Any> {
-    reportingService.generateNdmisPerformanceReport()
-    return ResponseEntity.accepted().build()
-  }
+//  @PostMapping("/reports/ndmis/performance")
+//  fun createNdmisPerformanceReport(): ResponseEntity<Any> {
+//    reportingService.generateNdmisPerformanceReport()
+//    return ResponseEntity.accepted().build()
+//  }
 }

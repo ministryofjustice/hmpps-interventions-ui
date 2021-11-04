@@ -14,7 +14,7 @@ data class AppointmentData(
   val attendanceSubmittedAt: OffsetDateTime?,
   val notifyPPOfAttendanceBehaviour: Boolean?,
   val deliusAppointmentId: String,
-  val reasonForAppointment: String //saa or delivery
+  val reasonForAppointment: String // saa or delivery
 
 ) {
   companion object {

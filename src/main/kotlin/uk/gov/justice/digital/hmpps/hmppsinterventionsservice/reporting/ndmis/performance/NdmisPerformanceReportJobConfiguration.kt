@@ -9,18 +9,14 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.job.DefaultJobParametersValidator
-import org.springframework.batch.item.ItemStreamWriter
 import org.springframework.batch.item.ItemWriter
 import org.springframework.batch.item.database.HibernateCursorItemReader
 import org.springframework.batch.item.database.builder.HibernateCursorItemReaderBuilder
-import org.springframework.batch.item.file.FlatFileItemWriter
-import org.springframework.batch.item.file.transform.LineAggregator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
-
 
 @Configuration
 @EnableBatchProcessing
@@ -143,9 +139,8 @@ class NdmisPerformanceReportJobConfiguration(
   }
 }
 
-
-class LoggingWriter<T>: ItemWriter<T> {
-  companion object: KLogging()
+class LoggingWriter<T> : ItemWriter<T> {
+  companion object : KLogging()
 
   override fun write(items: MutableList<out T>) {
     logger.info(items.toString())

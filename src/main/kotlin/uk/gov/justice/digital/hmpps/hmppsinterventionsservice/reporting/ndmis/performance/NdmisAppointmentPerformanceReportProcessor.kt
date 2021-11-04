@@ -5,7 +5,6 @@ import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 
 @Component
@@ -19,46 +18,25 @@ class NdmisAppointmentPerformanceReportProcessor(
 
     if (referral.sentAt == null) throw RuntimeException("invalid referral passed to report processor; referral has not been sent")
 
-    val deliverySessions = deliverySessionService.getSessions(referral.id)
-    if(deliverySessions.isEmpty() && referral.supplierAssessment?.appointments?.size == 0){
+    val deliveryAppointments = deliverySessionService.getSessions(referral.id).flatMap { it.appointments }
+    val saaAppointments = referral.supplierAssessment?.appointments ?: emptySet()
+    if (deliveryAppointments.isEmpty() && referral.supplierAssessment?.appointments?.size == 0) {
       return null
     }
-    val deliverySessionAppointments = mutableListOf<AppointmentData>()
 
-    deliverySessions.forEach {
-      deliverySessionAppointments.addAll(it.appointments.map { appointment ->
-        AppointmentData(
-          referralReference = referral.referenceNumber!!,
-          referralId = referral.id,
-          appointmentTime = appointment.appointmentTime,
-          durationInMinutes = appointment.durationInMinutes,
-          bookedAt = appointment.createdAt,
-          attended = appointment.attended,
-          attendanceSubmittedAt = appointment.attendanceSubmittedAt,
-          notifyPPOfAttendanceBehaviour = appointment.notifyPPOfAttendanceBehaviour,
-          deliusAppointmentId = appointment.deliusAppointmentId.toString(),
-          reasonForAppointment = "delivery"
-        )
-      }
-      )
-    }
-
-    val saaSessionAppointments = referral.supplierAssessment?.appointments?.map { appointment ->
+    return (deliveryAppointments + saaAppointments).map {
       AppointmentData(
         referralReference = referral.referenceNumber!!,
         referralId = referral.id,
-        appointmentTime = appointment.appointmentTime,
-        durationInMinutes = appointment.durationInMinutes,
-        bookedAt = appointment.createdAt,
-        attended = appointment.attended,
-        attendanceSubmittedAt = appointment.attendanceSubmittedAt,
-        notifyPPOfAttendanceBehaviour = appointment.notifyPPOfAttendanceBehaviour,
-        deliusAppointmentId = appointment.deliusAppointmentId.toString(),
-        reasonForAppointment = "saa"
+        appointmentTime = it.appointmentTime,
+        durationInMinutes = it.durationInMinutes,
+        bookedAt = it.createdAt,
+        attended = it.attended,
+        attendanceSubmittedAt = it.attendanceSubmittedAt,
+        notifyPPOfAttendanceBehaviour = it.notifyPPOfAttendanceBehaviour,
+        deliusAppointmentId = it.deliusAppointmentId.toString(),
+        reasonForAppointment = if (saaAppointments.contains(it)) "saa" else "delivery"
       )
-    }!!.toMutableList() //nullable??
-
-    return deliverySessionAppointments + saaSessionAppointments
-
+    }
   }
 }
