@@ -4,13 +4,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisComplexityPerformanceReportProcessor
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.ComplexityProcessor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
 import java.util.UUID
 
-internal class NdmisComplexityPerformanceReportProcessorTest {
-  private val processor = NdmisComplexityPerformanceReportProcessor()
+internal class ComplexityProcessorTest {
+  private val processor = ComplexityProcessor()
 
   private val referralFactory = ReferralFactory()
   private val serviceCategoryFactory = ServiceCategoryFactory()

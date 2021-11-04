@@ -6,16 +6,16 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisReferralsPerformanceReportProcessor
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.ReferralsProcessor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 
-internal class NdmisReferralsPerformanceReportProcessorTest {
+internal class ReferralsProcessorTest {
   private val actionPlanService = mock<ActionPlanService>()
-  private val processor = NdmisReferralsPerformanceReportProcessor(actionPlanService)
+  private val processor = ReferralsProcessor(actionPlanService)
 
   private val referralFactory = ReferralFactory()
   private val appointmentFactory = AppointmentFactory()

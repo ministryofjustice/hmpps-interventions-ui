@@ -1,30 +1,27 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance
 
 import mu.KLogging
-import net.logstash.logback.argument.StructuredArguments
-import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.SentReferralProcessor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
 
 @Component
-class NdmisReferralsPerformanceReportProcessor(
+class ReferralsProcessor(
   private val actionPlanService: ActionPlanService,
-) : ItemProcessor<Referral, ReferralsData> {
+  private val hmppsAuthService: HMPPSAuthService,
+) : SentReferralProcessor<ReferralsData> {
   companion object : KLogging()
 
-  override fun process(referral: Referral): ReferralsData {
-    logger.debug("processing referral {}", StructuredArguments.kv("referralId", referral.id))
-
-    if (referral.sentAt == null) throw RuntimeException("invalid referral passed to report processor; referral has not been sent")
-
+  override fun processSentReferral(referral: Referral): ReferralsData {
     return ReferralsData(
       referralReference = referral.referenceNumber!!,
       referralId = referral.id,
       contractReference = referral.intervention.dynamicFrameworkContract.contractReference,
       contractType = referral.intervention.dynamicFrameworkContract.contractType.name,
       primeProvider = referral.intervention.dynamicFrameworkContract.primeProvider.name,
-//      referringOfficerEmail = referral.re
+      referringOfficerId = referral.createdBy.userName,
       relevantSentanceId = referral.relevantSentenceId!!,
       serviceUserCRN = referral.serviceUserCRN,
       dateReferralReceived = referral.sentAt!!,
