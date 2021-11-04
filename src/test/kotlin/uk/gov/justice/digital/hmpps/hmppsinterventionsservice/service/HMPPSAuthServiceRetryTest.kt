@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import ch.qos.logback.classic.Level.DEBUG
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.Level
 import io.netty.channel.ConnectTimeoutException
 import io.netty.handler.timeout.ReadTimeoutException
 import io.netty.handler.timeout.ReadTimeoutHandler
@@ -13,13 +11,9 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -31,12 +25,12 @@ import reactor.util.context.ContextView
 import reactor.util.retry.Retry.RetrySignal
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingSpyTest
 import java.net.URI
 import java.time.Duration
 import java.util.concurrent.TimeUnit.SECONDS
 
-class HMPPSAuthServiceRetryTest {
+class HMPPSAuthServiceRetryTest : LoggingSpyTest(HMPPSAuthService::class, Level.DEBUG) {
 
   private val userDetailBody = """
         { "email": "tom@tom.tom", "verified": true, "firstName": "tom", "lastName": "tom" }
@@ -66,26 +60,6 @@ class HMPPSAuthServiceRetryTest {
     .build()
   private lateinit var hmppsAuthService: HMPPSAuthService
 
-  companion object {
-    private val logger = LoggerFactory.getLogger(HMPPSAuthService::class.java) as Logger
-    private var memoryAppender = LoggingMemoryAppender()
-
-    @BeforeAll
-    @JvmStatic
-    fun setupAll() {
-      memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
-      logger.level = DEBUG
-      logger.addAppender(memoryAppender)
-      memoryAppender.start()
-    }
-
-    @AfterAll
-    @JvmStatic
-    fun teardownAll() {
-      logger.detachAppender(memoryAppender)
-    }
-  }
-
   @BeforeEach
   fun setUp() {
     hmppsAuthService = HMPPSAuthService(
@@ -96,11 +70,6 @@ class HMPPSAuthServiceRetryTest {
       2L,
       RestClient(webClient, "client-registration-id")
     )
-  }
-
-  @AfterEach
-  fun teardown() {
-    memoryAppender.reset()
   }
 
   @Test
@@ -224,12 +193,12 @@ class HMPPSAuthServiceRetryTest {
 
     hmppsAuthService.logRetrySignal(retrySignal)
 
-    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
-    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("DEBUG")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Retrying due to [io.netty.handler.timeout.ReadTimeoutException]")
-    assertThat(memoryAppender.logEvents[0].argumentArray[0].toString()).isEqualTo("io.netty.handler.timeout.ReadTimeoutException")
-    assertThat(memoryAppender.logEvents[0].argumentArray[1].toString()).isEqualTo("res.causeMessage=io.netty.handler.timeout.ReadTimeoutException")
-    assertThat(memoryAppender.logEvents[0].argumentArray[2].toString()).isEqualTo("totalRetries=1")
+    assertThat(logEvents.size).isEqualTo(1)
+    assertThat(logEvents[0].level.levelStr).isEqualTo("DEBUG")
+    assertThat(logEvents[0].message).isEqualTo("Retrying due to [io.netty.handler.timeout.ReadTimeoutException]")
+    assertThat(logEvents[0].argumentArray[0].toString()).isEqualTo("io.netty.handler.timeout.ReadTimeoutException")
+    assertThat(logEvents[0].argumentArray[1].toString()).isEqualTo("res.causeMessage=io.netty.handler.timeout.ReadTimeoutException")
+    assertThat(logEvents[0].argumentArray[2].toString()).isEqualTo("totalRetries=1")
   }
 
   @Test
@@ -238,12 +207,12 @@ class HMPPSAuthServiceRetryTest {
 
     hmppsAuthService.logRetrySignal(retrySignal)
 
-    assertThat(memoryAppender.logEvents.size).isEqualTo(1)
-    assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("DEBUG")
-    assertThat(memoryAppender.logEvents[0].message).isEqualTo("Retrying due to [io.netty.handler.timeout.ReadTimeoutException]")
-    assertThat(memoryAppender.logEvents[0].argumentArray[0].toString()).isEqualTo("io.netty.handler.timeout.ReadTimeoutException")
-    assertThat(memoryAppender.logEvents[0].argumentArray[1].toString()).isEqualTo("res.causeMessage=io.netty.handler.timeout.ReadTimeoutException")
-    assertThat(memoryAppender.logEvents[0].argumentArray[2].toString()).isEqualTo("totalRetries=1")
+    assertThat(logEvents.size).isEqualTo(1)
+    assertThat(logEvents[0].level.levelStr).isEqualTo("DEBUG")
+    assertThat(logEvents[0].message).isEqualTo("Retrying due to [io.netty.handler.timeout.ReadTimeoutException]")
+    assertThat(logEvents[0].argumentArray[0].toString()).isEqualTo("io.netty.handler.timeout.ReadTimeoutException")
+    assertThat(logEvents[0].argumentArray[1].toString()).isEqualTo("res.causeMessage=io.netty.handler.timeout.ReadTimeoutException")
+    assertThat(logEvents[0].argumentArray[2].toString()).isEqualTo("totalRetries=1")
   }
 }
 
