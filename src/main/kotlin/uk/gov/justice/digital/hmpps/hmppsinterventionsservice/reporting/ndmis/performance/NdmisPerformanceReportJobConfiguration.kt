@@ -7,12 +7,15 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.DefaultJobParametersValidator
 import org.springframework.batch.item.database.HibernateCursorItemReader
 import org.springframework.batch.item.database.builder.HibernateCursorItemReaderBuilder
+import org.springframework.batch.item.file.FlatFileItemWriter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.FileSystemResource
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.LoggingWriter
@@ -40,6 +43,39 @@ class NdmisPerformanceReportJobConfiguration(
   }
 
   @Bean
+  @StepScope
+  fun ndmisReferralsWriter(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<ReferralsData> {
+    return batchUtils.csvFileWriter(
+      "ndmisReferralsPerformanceReportWriter",
+      FileSystemResource(path),
+      ReferralsData.headers,
+      ReferralsData.fields
+    )
+  }
+
+  @Bean
+  @StepScope
+  fun ndmisComplexityWriter(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<List<ComplexityData>> {
+    return batchUtils.csvFileWriter(
+      "ndmisComplexityPerformanceReportWriter",
+      FileSystemResource(path),
+      ComplexityData.headers,
+      ComplexityData.fields
+    )
+  }
+
+  @Bean
+  @StepScope
+  fun ndmisAppointmentWriter(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<List<AppointmentData>> {
+    return batchUtils.csvFileWriter(
+      "ndmisAppointmentPerformanceReportWriter",
+      FileSystemResource(path),
+      AppointmentData.headers,
+      AppointmentData.fields
+    )
+  }
+
+  @Bean
   fun ndmisPerformanceReportJob(
     ndmisWriteReferralToCsvStep: Step,
     ndmisWriteComplexityToCsvStep: Step,
@@ -54,6 +90,7 @@ class NdmisPerformanceReportJobConfiguration(
 
     return jobBuilderFactory["ndmisPerformanceReportJob"]
       .validator(validator)
+      .listener(listener)
       .start(ndmisWriteReferralToCsvStep)
       .next(ndmisWriteComplexityToCsvStep)
       .next(ndmisWriteAppointmentToCsvStep)
@@ -64,12 +101,14 @@ class NdmisPerformanceReportJobConfiguration(
   fun ndmisWriteReferralToCsvStep(
     ndmisReader: HibernateCursorItemReader<Referral>,
     processor: ReferralsProcessor,
+    writer: FlatFileItemWriter<ReferralsData>,
   ): Step {
     return stepBuilderFactory.get("ndmisWriteReferralToCsvStep")
       .chunk<Referral, ReferralsData>(chunkSize)
       .reader(ndmisReader)
       .processor(processor)
-      .writer(LoggingWriter<ReferralsData>())
+      .writer(writer)
+//      .writer(LoggingWriter<ReferralsData>())
       .build()
   }
 
@@ -77,12 +116,14 @@ class NdmisPerformanceReportJobConfiguration(
   fun ndmisWriteComplexityToCsvStep(
     ndmisReader: HibernateCursorItemReader<Referral>,
     processor: ComplexityProcessor,
+    writer: FlatFileItemWriter<List<ComplexityData>>,
   ): Step {
     return stepBuilderFactory.get("ndmisWriteComplexityToCsvStep")
       .chunk<Referral, List<ComplexityData>>(chunkSize)
       .reader(ndmisReader)
       .processor(processor)
-      .writer(LoggingWriter<List<ComplexityData>>())
+      .writer(writer)
+//      .writer(LoggingWriter<List<ComplexityData>>())
       .build()
   }
 
@@ -90,12 +131,14 @@ class NdmisPerformanceReportJobConfiguration(
   fun ndmisWriteAppointmentToCsvStep(
     ndmisReader: HibernateCursorItemReader<Referral>,
     processor: AppointmentProcessor,
+    writer: FlatFileItemWriter<List<AppointmentData>>,
   ): Step {
     return stepBuilderFactory.get("ndmisWriteAppointmentToCsvStep")
       .chunk<Referral, List<AppointmentData>>(chunkSize)
       .reader(ndmisReader)
       .processor(processor)
-      .writer(LoggingWriter<List<AppointmentData>>())
+      .writer(writer)
+//      .writer(LoggingWriter<List<AppointmentData>>())
       .build()
   }
 }
