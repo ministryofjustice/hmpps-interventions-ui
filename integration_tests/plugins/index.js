@@ -147,6 +147,15 @@ export default on => {
       return interventionsService.stubSubmitActionPlan(arg.id, arg.responseJson)
     },
 
+    stubRecordDeliverySessionAppointmentAttendance: arg => {
+      return interventionsService.stubRecordDeliverySessionAppointmentAttendance(
+        arg.referralId,
+        arg.appointmentId,
+        arg.responseJson
+      )
+    },
+
+    // Deprecated
     stubRecordActionPlanAppointmentAttendance: arg => {
       return interventionsService.stubRecordActionPlanAppointmentAttendance(
         arg.actionPlanId,
@@ -155,6 +164,15 @@ export default on => {
       )
     },
 
+    stubRecordDeliverySessionAppointmentBehaviour: arg => {
+      return interventionsService.stubRecordDeliverySessionAppointmentBehaviour(
+        arg.referralId,
+        arg.appointmentId,
+        arg.responseJson
+      )
+    },
+
+    // Deprecated
     stubRecordActionPlanAppointmentBehavior: arg => {
       return interventionsService.stubRecordActionPlanAppointmentBehavior(
         arg.actionPlanId,
@@ -163,22 +181,51 @@ export default on => {
       )
     },
 
+    stubGetDeliverySessionAppointments: arg => {
+      return interventionsService.stubGetDeliverySessionAppointments(arg.id, arg.responseJson)
+    },
+
+    // Deprecated
     stubGetActionPlanAppointments: arg => {
       return interventionsService.stubGetActionPlanAppointments(arg.id, arg.responseJson)
     },
 
+    stubGetDeliverySessionAppointment: arg => {
+      return interventionsService.stubGetDeliverySessionAppointment(arg.referralId, arg.appointmentId, arg.responseJson)
+    },
+
+    // Deprecated
     stubGetActionPlanAppointment: arg => {
       return interventionsService.stubGetActionPlanAppointment(arg.id, arg.session, arg.responseJson)
     },
 
+    stubUpdateDeliverySessionAppointment: arg => {
+      return interventionsService.stubUpdateDeliverySessionAppointment(
+        arg.referralId,
+        arg.appointmentId,
+        arg.responseJson
+      )
+    },
+
+    // Deprecated
     stubUpdateActionPlanAppointment: arg => {
       return interventionsService.stubUpdateActionPlanAppointment(arg.id, arg.session, arg.responseJson)
     },
 
+    stubUpdateDeliverySessionAppointmentClash: arg => {
+      return interventionsService.stubUpdateDeliverySessionAppointmentClash(arg.referralId, arg.appointmentId)
+    },
+
+    // Deprecated
     stubUpdateActionPlanAppointmentClash: arg => {
       return interventionsService.stubUpdateActionPlanAppointmentClash(arg.actionPlanId, arg.sessionNumber)
     },
 
+    stubSubmitDeliverySessionFeedback: arg => {
+      return interventionsService.stubSubmitDeliverySessionFeedback(arg.referralId, arg.appointmentId, arg.responseJson)
+    },
+
+    // Deprecated
     stubSubmitActionPlanSessionFeedback: arg => {
       return interventionsService.stubSubmitActionPlanSessionFeedback(arg.actionPlanId, arg.session, arg.responseJson)
     },
