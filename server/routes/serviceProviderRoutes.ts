@@ -88,6 +88,16 @@ export default function serviceProviderRoutes(router: Router, services: Services
     '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details',
     (req, res) => appointmentsController.editDeliverySessionAppointment(req, res)
   )
+  get(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/check-answers',
+    (req, res) => appointmentsController.checkDeliverySessionAppointmentAnswers(req, res)
+  )
+  post(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/submit',
+    (req, res) => appointmentsController.submitDeliverySessionAppointment(req, res)
+  )
 
   // Deprecated
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
@@ -101,14 +111,14 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
     appointmentsController.editActionPlanSessionAppointment(req, res)
   )
+  // Deprecated
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/check-answers', (req, res) =>
     appointmentsController.checkActionPlanSessionAppointmentAnswers(req, res)
   )
+  // Deprecated
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/submit', (req, res) =>
     appointmentsController.submitActionPlanSessionAppointment(req, res)
   )
-
-  // START delivery session appointment feedback
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', (req, res) =>
     appointmentsController.addPostSessionAttendanceFeedback(req, res)
   )

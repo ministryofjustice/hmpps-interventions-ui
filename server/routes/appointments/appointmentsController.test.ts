@@ -691,6 +691,178 @@ describe('Scheduling a delivery session', () => {
     })
   })
 
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/check-answers', () => {
+    it('renders a page that replays the user’s answers from the draft booking', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build({
+        data: {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+          npsOfficeCode: null,
+        },
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      const appointment = actionPlanAppointmentFactory.build()
+      const referral = sentReferralFactory.build()
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+
+      await request(app)
+        .get(
+          `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/check-answers`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Confirm session 1 details')
+          expect(res.text).toContain('24 March 2021')
+          expect(res.text).toContain('9:02am to 10:17am')
+          expect(res.text).toContain('Phone call')
+        })
+    })
+
+    describe('when the draft booking has been soft deleted', () => {
+      it('responds with a 410 Gone status and renders an error message', async () => {
+        const draftBooking = draftAppointmentBookingFactory.build({
+          softDeleted: true,
+        })
+        draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+        const appointment = actionPlanAppointmentFactory.build()
+
+        const referral = sentReferralFactory.build()
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+
+        await request(app)
+          .get(
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/check-answers`
+          )
+          .expect(410)
+          .expect(res => {
+            expect(res.text).toContain('This page is no longer available')
+          })
+      })
+    })
+  })
+
+  describe('POST /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/submit', () => {
+    it('updates the draft booking, schedules the appointment on the interventions service, deletes the draft booking, and redirects to the intervention progress page', async () => {
+      const draftBooking = draftAppointmentBookingFactory.build({
+        data: {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+          npsOfficeCode: null,
+        },
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+      draftsService.updateDraft.mockResolvedValue()
+      draftsService.deleteDraft.mockResolvedValue()
+
+      const referral = sentReferralFactory.build()
+
+      const updatedAppointment = actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+        sessionType: 'ONE_TO_ONE',
+      })
+      interventionsService.updateActionPlanAppointment.mockResolvedValue(updatedAppointment)
+
+      await request(app)
+        .post(
+          `/service-provider/referral/${referral.id}/session/1/appointment/${updatedAppointment.id}/edit/${draftBooking.id}/submit`
+        )
+        .expect(302)
+        .expect('Location', `/service-provider/referrals/${referral.id}/progress`)
+
+      expect(interventionsService.updateDeliverySessionAppointment).toHaveBeenCalledWith(
+        'token',
+        referral.id,
+        updatedAppointment.id,
+        {
+          appointmentTime: '2021-03-24T09:02:00.000Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+          npsOfficeCode: null,
+        }
+      )
+
+      expect(draftsService.deleteDraft).toHaveBeenCalledWith(draftBooking.id, { userId: '123' })
+    })
+
+    describe('when the interventions service responds with a 409 status code', () => {
+      it('redirects to the booking form, passing a clash=true parameter, and does not delete the draft booking', async () => {
+        const draftBooking = draftAppointmentBookingFactory.build({
+          data: {
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
+          },
+        })
+        draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+        const appointment = actionPlanAppointmentFactory.build()
+
+        const referral = sentReferralFactory.build()
+
+        const error = { status: 409 }
+        interventionsService.updateDeliverySessionAppointment.mockRejectedValue(error)
+
+        await request(app)
+          .post(
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/submit`
+          )
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/details?clash=true`
+          )
+
+        expect(draftsService.deleteDraft).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('when the interventions service responds with an error that isn’t a 409 status code', () => {
+      it('renders an error message, and does not delete the draft booking', async () => {
+        const draftBooking = draftAppointmentBookingFactory.build({
+          data: {
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
+          },
+        })
+        draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+        const appointment = actionPlanAppointmentFactory.build()
+
+        const referral = sentReferralFactory.build()
+
+        const error = new Error('Failed to update appointment')
+        interventionsService.updateDeliverySessionAppointment.mockRejectedValue(error)
+
+        await request(app)
+          .post(
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/submit`
+          )
+          .expect(500)
+          .expect(res => {
+            expect(res.text).toContain('Failed to update appointment')
+          })
+
+        expect(draftsService.deleteDraft).not.toHaveBeenCalled()
+      })
+    })
+  })
+
   // Deprecated journey
   describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit/start', () => {
     it('creates a draft session update and redirects to the details page', async () => {

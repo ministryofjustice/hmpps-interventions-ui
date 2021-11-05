@@ -33,6 +33,7 @@ import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedb
 import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import AppointmentSummary from './appointmentSummary'
+import DeliverySessionSchedulingCheckAnswersPresenter from './deliverySessions/deliverySessionSchedulingCheckAnswersPresenter'
 import ScheduleDeliverySessionPresenter from './deliverySessions/scheduleDeliverySessionPresenter'
 import ActionPlanPostSessionAttendanceFeedbackPresenter from './feedback/actionPlanSessions/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
 import ActionPlanSessionBehaviourFeedbackPresenter from './feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
@@ -417,6 +418,30 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async checkDeliverySessionAppointmentAnswers(req: Request, res: Response): Promise<void> {
+    const { referralId, sessionNumber, appointmentId } = req.params
+    const { accessToken } = res.locals.user.token
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+
+    const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(
+      fetchResult.draft,
+      referralId,
+      appointmentId,
+      Number(sessionNumber)
+    )
+    const view = new ScheduleAppointmentCheckAnswersView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  // Deprecated
   async checkActionPlanSessionAppointmentAnswers(req: Request, res: Response): Promise<void> {
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(
@@ -443,6 +468,45 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async submitDeliverySessionAppointment(req: Request, res: Response): Promise<void> {
+    const { draftBookingId } = req.params
+    const { accessToken } = res.locals.user.token
+    const { referralId, sessionNumber, appointmentId } = req.params
+
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const { draft } = fetchResult
+
+    if (draft.data === null) {
+      throw new Error('Draft data was unexpectedly null when submitting appointment')
+    }
+
+    try {
+      await this.interventionsService.updateDeliverySessionAppointment(
+        accessToken,
+        referralId,
+        appointmentId,
+        draft.data
+      )
+    } catch (e) {
+      const interventionsServiceError = e as InterventionsServiceError
+      if (interventionsServiceError.status === 409) {
+        res.redirect(
+          `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draftBookingId}/details?clash=true`
+        )
+        return
+      }
+
+      throw e
+    }
+
+    await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+    res.redirect(`/service-provider/referrals/${referralId}/progress`)
+  }
+
+  // Deprecated
   async submitActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
     const sessionNumber = Number(req.params.sessionNumber)
 
