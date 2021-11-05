@@ -564,6 +564,134 @@ describe('viewing supplier assessment feedback', () => {
 })
 
 describe('Scheduling a delivery session', () => {
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/start', () => {
+    it('creates a draft session update and redirects to the details page', async () => {
+      const booking = draftAppointmentBookingFactory.build()
+      draftsService.createDraft.mockResolvedValue(booking)
+
+      await request(app)
+        .get(`/service-provider/referral/1/session/1/appointment/1/edit/start`)
+        .expect(302)
+        .expect('Location', `/service-provider/referral/1/session/1/appointment/1/edit/${booking.id}/details`)
+
+      expect(draftsService.createDraft).toHaveBeenCalledWith('deliverySessionUpdate', null, { userId: '123' })
+    })
+  })
+
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details', () => {
+    it('renders a form', async () => {
+      const booking = draftAppointmentBookingFactory.build()
+      draftsService.fetchDraft.mockResolvedValue(booking)
+
+      const appointment = actionPlanAppointmentFactory.build()
+      const referral = sentReferralFactory.build()
+
+      interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointment)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+      await request(app)
+        .get(
+          `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${booking.id}/details`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Add session 1 details')
+        })
+    })
+  })
+
+  describe('POST /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details', () => {
+    describe('with valid data', () => {
+      it('updates the draft booking and redirects to the check-answers page', async () => {
+        const draftBooking = draftAppointmentBookingFactory.build()
+        draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+        const appointment = actionPlanAppointmentFactory.build()
+        const referral = sentReferralFactory.build()
+
+        interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointment)
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+        await request(app)
+          .post(
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/details`
+          )
+          .type('form')
+          .send({
+            'date-day': '24',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/check-answers`
+          )
+
+        expect(draftsService.updateDraft).toHaveBeenCalledWith(
+          draftBooking.id,
+          {
+            appointmentDeliveryAddress: null,
+            appointmentTime: '2021-03-24T09:02:00.000Z',
+            durationInMinutes: 75,
+            appointmentDeliveryType: 'PHONE_CALL',
+            npsOfficeCode: null,
+            sessionType: 'ONE_TO_ONE',
+          },
+          { userId: '123' }
+        )
+      })
+    })
+
+    describe('with invalid data', () => {
+      it('does not update the draft booking, and renders an error message', async () => {
+        const draftBooking = draftAppointmentBookingFactory.build()
+        draftsService.fetchDraft.mockResolvedValue(draftBooking)
+
+        const appointment = actionPlanAppointmentFactory.build()
+        const referral = sentReferralFactory.build()
+
+        interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointment)
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+
+        await request(app)
+          .post(
+            `/service-provider/referral/${referral.id}/session/1/appointment/${appointment.id}/edit/${draftBooking.id}/details`
+          )
+          .type('form')
+          .send({
+            'date-day': '32',
+            'date-month': '3',
+            'date-year': '2021',
+            'time-hour': '9',
+            'time-minute': '02',
+            'time-part-of-day': 'am',
+            'duration-hours': '1',
+            'duration-minutes': '15',
+            'session-type': 'ONE_TO_ONE',
+            'meeting-method': 'PHONE_CALL',
+          })
+          .expect(400)
+          .expect(res => {
+            expect(res.text).toContain('The session date must be a real date')
+          })
+
+        expect(draftsService.updateDraft).not.toHaveBeenCalled()
+      })
+    })
+  })
+
+  // Deprecated journey
   describe('GET /service-provider/action-plan/:id/sessions/:sessionNumber/edit/start', () => {
     it('creates a draft session update and redirects to the details page', async () => {
       const booking = draftAppointmentBookingFactory.build()

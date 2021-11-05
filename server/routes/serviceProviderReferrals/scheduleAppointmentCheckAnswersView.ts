@@ -1,11 +1,15 @@
 import { BackLinkArgs, NotificationBannerArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
+import DeliverySessionCheckAnswersPresenter from '../appointments/deliverySessions/deliverySessionCheckAnswersPresenter'
 import ActionPlanSessionCheckAnswersPresenter from './actionPlanSessionCheckAnswersPresenter'
 import InitialAssessmentCheckAnswersPresenter from './initialAssessmentCheckAnswersPresenter'
 
 export default class ScheduleAppointmentCheckAnswersView {
   constructor(
-    private readonly presenter: InitialAssessmentCheckAnswersPresenter | ActionPlanSessionCheckAnswersPresenter
+    private readonly presenter:
+      | InitialAssessmentCheckAnswersPresenter
+      | ActionPlanSessionCheckAnswersPresenter // deprecated
+      | DeliverySessionCheckAnswersPresenter
   ) {}
 
   get renderArgs(): [string, Record<string, unknown>] {

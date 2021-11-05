@@ -75,14 +75,29 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/number-of-sessions', (req, res) =>
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
+  get(router, '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/start', (req, res) =>
+    appointmentsController.startEditingDeliverySessionAppointment(req, res)
+  )
+  get(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details',
+    (req, res) => appointmentsController.editDeliverySessionAppointment(req, res)
+  )
+  post(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details',
+    (req, res) => appointmentsController.editDeliverySessionAppointment(req, res)
+  )
 
-  // START delivery session appointment scheduling
+  // Deprecated
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
     appointmentsController.startEditingActionPlanSessionAppointment(req, res)
   )
+  // Deprecated
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
     appointmentsController.editActionPlanSessionAppointment(req, res)
   )
+  // Deprecated
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
     appointmentsController.editActionPlanSessionAppointment(req, res)
   )

@@ -33,6 +33,7 @@ import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedb
 import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import AppointmentSummary from './appointmentSummary'
+import ScheduleDeliverySessionPresenter from './deliverySessions/scheduleDeliverySessionPresenter'
 import ActionPlanPostSessionAttendanceFeedbackPresenter from './feedback/actionPlanSessions/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
 import ActionPlanSessionBehaviourFeedbackPresenter from './feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
 import ActionPlanPostSessionFeedbackCheckAnswersPresenter from './feedback/actionPlanSessions/checkYourAnswers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
@@ -256,6 +257,19 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async startEditingDeliverySessionAppointment(req: Request, res: Response): Promise<void> {
+    const draft = await this.draftsService.createDraft('deliverySessionUpdate', null, {
+      userId: res.locals.user.userId,
+    })
+
+    const { referralId, sessionNumber, appointmentId } = req.params
+
+    res.redirect(
+      `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draft.id}/details`
+    )
+  }
+
+  // Deprecated
   async startEditingActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
     const draft = await this.draftsService.createDraft('actionPlanSessionUpdate', null, {
       userId: res.locals.user.userId,
@@ -266,6 +280,74 @@ export default class AppointmentsController {
     )
   }
 
+  async editDeliverySessionAppointment(req: Request, res: Response): Promise<void> {
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    if (fetchResult.rendered) {
+      return
+    }
+    const { draft } = fetchResult
+    const { referralId, sessionNumber, appointmentId } = req.params
+    const { accessToken, userId } = res.locals.user
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
+    const deliusOfficeLocations: DeliusOfficeLocation[] =
+      await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
+
+    let userInputData: Record<string, unknown> | null = null
+    let formError: FormValidationError | null = null
+    let serverError: FormValidationError | null = null
+
+    if (req.method === 'POST') {
+      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        await this.draftsService.updateDraft(draft.id, data.paramsForUpdate, { userId })
+        res.redirect(
+          `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draft.id}/check-answers`
+        )
+        return
+      }
+    } else if (req.query.clash === 'true') {
+      serverError = {
+        errors: [
+          {
+            formFields: ['session-input'],
+            errorSummaryLinkedField: 'session-input',
+            message:
+              'The proposed date and time you selected clashes with another appointment. Please select a different date and time.',
+          },
+        ],
+      }
+    }
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const appointment = await this.interventionsService.getDeliverySessionAppointment(
+      accessToken,
+      referralId,
+      appointmentId
+    )
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
+    const presenter = new ScheduleDeliverySessionPresenter(
+      referral,
+      appointment,
+      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      deliusOfficeLocations,
+      formError,
+      draft.data,
+      userInputData,
+      serverError
+    )
+    const view = new ScheduleAppointmentView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  // Deprecated
   async editActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
     const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
     if (fetchResult.rendered) {
