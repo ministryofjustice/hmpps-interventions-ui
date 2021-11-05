@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.p
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 data class AppointmentData(
   val referralReference: String,
@@ -15,7 +15,7 @@ data class AppointmentData(
   val attendanceSubmittedAt: OffsetDateTime?,
   val notifyPPOfAttendanceBehaviour: Boolean?,
   val deliusAppointmentId: String,
-  val reasonForAppointment: AppointmentReason // saa or delivery
+  val reasonForAppointment: AppointmentReason
 ) {
   companion object {
     val fields = listOf(
@@ -47,11 +47,13 @@ data class AppointmentData(
   }
 }
 
-enum class AppointmentReason {
-  SAA,
-  DELIVERY;
+enum class AppointmentReason(
+  val value: String,
+) {
+  SAA("saa"),
+  DELIVERY("delivery");
 
-//  override fun toString(): String {
-//    return name.lowercase()
-//  }
+  override fun toString(): String {
+    return value
+  }
 }

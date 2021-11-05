@@ -30,7 +30,7 @@ class ReportingController(
     return ResponseEntity.accepted().build()
   }
 
-  @PreAuthorize("hasRole('NDMIS_REPORTING')")
+  @PreAuthorize("hasRole('ROLE_NDMIS_REPORTING')")
   @PostMapping("/reports/ndmis/performance")
   fun createNdmisPerformanceReport(): ResponseEntity<Any> {
     reportingService.generateNdmisPerformanceReport()
