@@ -2,6 +2,7 @@ COMMENT ON TABLE auth_user IS 'details about the user from hmpps-auth';
 COMMENT ON COLUMN auth_user.id IS 'the user ID';
 COMMENT ON COLUMN auth_user.auth_source IS 'where the user has come from';
 COMMENT ON COLUMN auth_user.user_name IS 'the username';
+COMMENT ON COLUMN auth_user.deleted IS 'soft deleted flag';
 
 COMMENT ON TABLE service_category IS '**reference data** intervention service categories, which relate to service user needs';
 COMMENT ON COLUMN service_category.id IS 'service-owned unique identifier';
