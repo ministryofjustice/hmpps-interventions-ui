@@ -7,6 +7,7 @@ import java.util.*
 data class AppointmentData(
   val referralReference: String,
   val referralId: UUID,
+  val appointmentId: UUID,
   val appointmentTime: OffsetDateTime,
   val durationInMinutes: Int,
   val bookedAt: OffsetDateTime,
@@ -20,6 +21,7 @@ data class AppointmentData(
     val fields = listOf(
       "referralReference",
       "referralId",
+      "appointmentId",
       "appointmentTime",
       "durationInMinutes",
       "bookedAt",
@@ -32,6 +34,7 @@ data class AppointmentData(
     val headers = listOf(
       "referral_ref",
       "referral_id",
+      "appointmentId",
       "appointment_time",
       "duration_in_minutes",
       "booked_at",

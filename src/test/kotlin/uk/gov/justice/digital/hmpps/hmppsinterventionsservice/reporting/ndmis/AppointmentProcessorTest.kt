@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.AppointmentProcessor
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.AppointmentReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
@@ -55,11 +56,11 @@ internal class AppointmentProcessorTest {
     val result = processor.process(referral)
 
     assertThat(result!!.size).isEqualTo(5)
-    assertThat(result[0].reasonForAppointment).isEqualTo("delivery")
-    assertThat(result[1].reasonForAppointment).isEqualTo("delivery")
-    assertThat(result[2].reasonForAppointment).isEqualTo("delivery")
-    assertThat(result[3].reasonForAppointment).isEqualTo("saa")
-    assertThat(result[4].reasonForAppointment).isEqualTo("saa")
+    assertThat(result[0].reasonForAppointment).isEqualTo(AppointmentReason.DELIVERY)
+    assertThat(result[1].reasonForAppointment).isEqualTo(AppointmentReason.DELIVERY)
+    assertThat(result[2].reasonForAppointment).isEqualTo(AppointmentReason.DELIVERY)
+    assertThat(result[3].reasonForAppointment).isEqualTo(AppointmentReason.SAA)
+    assertThat(result[4].reasonForAppointment).isEqualTo(AppointmentReason.SAA)
   }
 
   @Test
@@ -96,7 +97,7 @@ internal class AppointmentProcessorTest {
     val result = processor.process(referral)
 
     assertThat(result!!.size).isEqualTo(2)
-    assertThat(result[0].reasonForAppointment).isEqualTo("saa")
-    assertThat(result[1].reasonForAppointment).isEqualTo("saa")
+    assertThat(result[0].reasonForAppointment).isEqualTo(AppointmentReason.SAA)
+    assertThat(result[1].reasonForAppointment).isEqualTo(AppointmentReason.SAA)
   }
 }

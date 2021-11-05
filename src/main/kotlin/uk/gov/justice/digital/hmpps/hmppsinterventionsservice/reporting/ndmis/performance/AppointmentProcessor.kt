@@ -20,6 +20,7 @@ class AppointmentProcessor(
       AppointmentData(
         referralReference = referral.referenceNumber!!,
         referralId = referral.id,
+        appointmentId = it.id,
         appointmentTime = it.appointmentTime,
         durationInMinutes = it.durationInMinutes,
         bookedAt = it.createdAt,

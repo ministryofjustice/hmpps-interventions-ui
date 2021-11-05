@@ -29,7 +29,7 @@ internal class ComplexityProcessorTest {
     val referral = referralFactory.createSent(selectedServiceCategories = mutableSetOf(serviceCategory1))
     referral.complexityLevelIds = mutableMapOf(serviceCategory1.id to complexityLevel.id)
 
-    val result = processor.process(referral)
+    val result = processor.process(referral)!!
 
     assertThat(result.size).isEqualTo(1)
     assertThat(result[0].referralReference).isEqualTo("JS18726AC")
@@ -49,7 +49,7 @@ internal class ComplexityProcessorTest {
     val referral = referralFactory.createSent(selectedServiceCategories = mutableSetOf(serviceCategory1, serviceCategory2))
     referral.complexityLevelIds = mutableMapOf(serviceCategory1.id to complexityLevel1.id, serviceCategory2.id to complexityLevel2.id)
 
-    val result = processor.process(referral)
+    val result = processor.process(referral)!!
 
     assertThat(result.size).isEqualTo(2)
     assertThat(result[0].referralReference).isEqualTo("JS18726AC")

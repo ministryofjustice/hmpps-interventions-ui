@@ -36,7 +36,7 @@ internal class ReferralsProcessorTest {
 
     whenever(actionPlanService.getAllAttendedAppointments(anyOrNull())).thenReturn(listOf(appointmentFactory.create()))
 
-    val result = processor.process(referral)
+    val result = processor.process(referral)!!
 
     assertThat(result.referralReference).isEqualTo(referral.referenceNumber)
     assertThat(result.referralId).isEqualTo(referral.id)

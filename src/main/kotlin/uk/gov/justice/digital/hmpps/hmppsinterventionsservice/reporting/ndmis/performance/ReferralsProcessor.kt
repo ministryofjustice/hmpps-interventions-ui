@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthS
 @Component
 class ReferralsProcessor(
   private val actionPlanService: ActionPlanService,
-  private val hmppsAuthService: HMPPSAuthService,
 ) : SentReferralProcessor<ReferralsData> {
   companion object : KLogging()
 
