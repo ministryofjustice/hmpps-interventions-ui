@@ -59,3 +59,10 @@ values ('847E253C-DC48-4914-9E5E-771694BB9C01', '1b79fba2-42ae-4acb-89ce-571e8ff
 
 insert into end_of_service_report(id, referral_id, created_at, created_by_id, submitted_at, submitted_by_id, further_information)
 values ('2cfcfa79-bb3c-484a-9428-85072e600812', 'a2a551aa-3d11-44b1-907b-42a028852bc1', '2021-04-22 09:00:00.000000+00', '608955ae-52ed-44cc-884c-011597a77949', null, null, null);
+
+INSERT INTO referral_complexity_level_ids (referral_id, complexity_level_ids, complexity_level_ids_key)
+VALUES ('f89bd739-b9a2-482e-9947-12a793abcfb1','64eb3c83-c562-4a63-9182-68a3a7725463', 'c036826e-f077-49a5-8b33-601dca7ad479'),
+       ('a2a551aa-3d11-44b1-907b-42a028852bc1','cb6f1c1c-29d4-4d34-902e-3c89ee8428a0', '8221a81c-08b2-4262-9c1a-0ab3c82cec8c');
+
+update referral
+set relevant_sentence_id = '1';

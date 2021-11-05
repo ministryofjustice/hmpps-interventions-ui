@@ -24,6 +24,24 @@ class SupplierAssessmentFactory(em: TestEntityManager? = null) : EntityFactory(e
     )
   }
 
+  fun createWithMultipleAppointments(
+    id: UUID = UUID.randomUUID(),
+    referral: Referral = referralFactory.createSent(),
+    appointments: MutableSet<Appointment> =
+      mutableSetOf(
+        appointmentFactory.create(referral = referral),
+        appointmentFactory.create(referral = referral)
+      )
+  ): SupplierAssessment {
+    return save(
+      SupplierAssessment(
+        id = id,
+        referral = referral,
+        appointments = appointments,
+      )
+    )
+  }
+
   fun createWithNoAppointment(
     id: UUID = UUID.randomUUID(),
     referral: Referral = referralFactory.createSent(),

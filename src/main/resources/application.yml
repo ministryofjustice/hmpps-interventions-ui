@@ -57,6 +57,10 @@ spring:
         performance-report:
           page-size: 100
           chunk-size: 20
+      ndmis:
+        performance-report:
+          page-size: 100
+          chunk-size: 20
   data:
     web:
       pageable:
