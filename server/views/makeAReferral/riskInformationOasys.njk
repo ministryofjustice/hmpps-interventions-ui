@@ -1,3 +1,4 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
@@ -5,6 +6,9 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
 
 {% extends "../partials/layout.njk" %}
 
@@ -65,6 +69,25 @@
             <p class="govuk-body {{additionalRiskInformationResponse.class}}">{{ additionalRiskInformationResponse.text }}</p>
         {% endif %}
         <p class="govuk-body">{{ additionalRiskInformation | escape | nl2br }}</p>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          {% set noEditRiskSelectionHTML %}
+          <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Warning</span>
+                You have not edited any of the OASys information.
+                Selecting save and continue will share it with the service provider in its current form.
+                Make sure there are no sensitive details included.
+                You will be responsible for the information that is shared.
+                {{ govukDetails(sensitiveInformationDetailsArgs) }}
+                {{ govukCheckboxes(confirmUnderstoodWarningCheckboxArgs) }}
+            </strong>
+          </div>
+          {% endset -%}
+        {{ govukRadios(editRiskConfirmationRadioButtonArgs(noEditRiskSelectionHTML)) }}
+      </form>
     </div>
     <div class="govuk-grid-column-one-third">
       <div class="refer-and-monitor__rosh-analysis-table {{ roshPanelPresenter.overallRoshStyle }}">
