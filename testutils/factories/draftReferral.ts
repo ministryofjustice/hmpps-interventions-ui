@@ -65,8 +65,17 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
-  filledFormUpToNeedsAndRequirements(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.filledFormUpToRiskInformation(serviceCategories).params({
+  filledFormUpToNeedsAndRequirements(
+    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
+    skipAdditionalRiskInformation = false
+  ) {
+    let filledForm: this
+    if (skipAdditionalRiskInformation) {
+      filledForm = this.selectedServiceCategories(serviceCategories)
+    } else {
+      filledForm = this.filledFormUpToRiskInformation(serviceCategories)
+    }
+    return filledForm.params({
       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
       accessibilityNeeds: 'She uses a wheelchair',
       needsInterpreter: true,
