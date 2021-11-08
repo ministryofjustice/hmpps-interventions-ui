@@ -912,7 +912,10 @@ export default class AppointmentsController {
     const { referralId, appointmentId } = req.params
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, referral.id)
+    if (referral.actionPlanId === null) {
+      throw new Error('Attempting to add feedback to a referral without an action plan')
+    }
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, referral.actionPlanId)
 
     const currentAppointment = await this.interventionsService.getDeliverySessionAppointment(
       accessToken,

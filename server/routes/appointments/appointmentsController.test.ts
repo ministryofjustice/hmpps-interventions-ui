@@ -1835,11 +1835,12 @@ describe('Adding post delivery session feedback', () => {
   describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/confirmation', () => {
     describe('when final appointment attendance has been recorded', () => {
       it('renders a page confirming that the action plan has been submitted', async () => {
-        const referral = sentReferralFactory.assigned().build()
+        const actionPlanId = 'action-plan-id'
+        const referral = sentReferralFactory.assigned().build({ actionPlanId })
         const finalSessionNumber = 2
         const submittedActionPlan = actionPlanFactory
           .submitted()
-          .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+          .build({ id: actionPlanId, referralId: referral.id, numberOfSessions: finalSessionNumber })
 
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
 
@@ -1848,7 +1849,7 @@ describe('Adding post delivery session feedback', () => {
         interventionsService.getDeliverySessionAppointment.mockResolvedValue(finalAppointment)
         interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
 
-        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(referral)
 
         await request(app)
           .get(
@@ -1863,11 +1864,12 @@ describe('Adding post delivery session feedback', () => {
 
     describe('when any non-final session has been recorded and more sessions are scheduled', () => {
       it('renders a page confirming that the action plan has been submitted', async () => {
-        const referral = sentReferralFactory.assigned().build()
+        const actionPlanId = 'action-plan-id'
+        const referral = sentReferralFactory.assigned().build({ actionPlanId })
         const finalSessionNumber = 3
         const submittedActionPlan = actionPlanFactory
           .submitted()
-          .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+          .build({ id: actionPlanId, referralId: referral.id, numberOfSessions: finalSessionNumber })
 
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
 
@@ -1881,7 +1883,7 @@ describe('Adding post delivery session feedback', () => {
         interventionsService.getDeliverySessionAppointment.mockResolvedValue(penultimateAppointment)
         interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(nextAppointment)
 
-        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(referral)
 
         await request(app)
           .get(
@@ -1896,11 +1898,12 @@ describe('Adding post delivery session feedback', () => {
 
     describe('when any non-final session has been recorded but no more sessions are scheduled', () => {
       it('renders a page confirming that the action plan has been submitted', async () => {
-        const referral = sentReferralFactory.assigned().build()
+        const actionPlanId = 'action-plan-id'
+        const referral = sentReferralFactory.assigned().build({ actionPlanId })
         const finalSessionNumber = 3
         const submittedActionPlan = actionPlanFactory
           .submitted()
-          .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+          .build({ id: actionPlanId, referralId: referral.id, numberOfSessions: finalSessionNumber })
 
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
 
@@ -1909,7 +1912,7 @@ describe('Adding post delivery session feedback', () => {
         interventionsService.getDeliverySessionAppointment.mockResolvedValue(penultimateAppointment)
         interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
 
-        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+        interventionsService.getSentReferral.mockResolvedValue(referral)
 
         await request(app)
           .get(
