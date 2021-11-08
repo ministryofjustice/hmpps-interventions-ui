@@ -3,6 +3,7 @@ import InterventionDecorator from '../../../decorators/interventionDecorator'
 import DraftReferral from '../../../models/draftReferral'
 import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
+import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 
 export default class ReferralFormPresenter {
   private readonly taskValues: TaskValues
@@ -11,8 +12,12 @@ export default class ReferralFormPresenter {
 
   private readonly formSectionBuilder: FormSectionBuilder
 
-  constructor(private readonly referral: DraftReferral, private readonly intervention: Intervention) {
-    this.taskValues = new TaskValues(referral)
+  constructor(
+    private readonly referral: DraftReferral,
+    private readonly intervention: Intervention,
+    private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null | undefined
+  ) {
+    this.taskValues = new TaskValues(referral, draftOasysRiskInformation)
     this.sectionValues = new SectionValues(this.taskValues)
     this.formSectionBuilder = new FormSectionBuilder(referral, intervention, this.taskValues, this.sectionValues)
   }
@@ -321,7 +326,10 @@ class SectionValues {
   }
 }
 class TaskValues {
-  constructor(private referral: DraftReferral) {}
+  constructor(
+    private referral: DraftReferral,
+    private draftOasysRiskInfo: DraftOasysRiskInformation | null | undefined
+  ) {}
 
   // TODO: IC-1676. We need a field to confirm that the user has "checked" service user details.
   get serviceUserDetails(): DraftReferralValues {
@@ -329,7 +337,10 @@ class TaskValues {
   }
 
   get riskInformation(): DraftReferralValues {
-    return [this.referral.additionalRiskInformation]
+    if (this.draftOasysRiskInfo === undefined) {
+      return [this.referral.additionalRiskInformation]
+    }
+    return [this.draftOasysRiskInfo ? true : null]
   }
 
   get needsAndRequirements(): DraftReferralValues {

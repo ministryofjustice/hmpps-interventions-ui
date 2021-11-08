@@ -153,11 +153,31 @@ export default class MakeAReferralController {
     res.redirect(`/referrals/${req.params.id}/risk-information`)
   }
 
+  private async getDraftOasysRiskInformation(
+    accessToken: string,
+    referralId: string
+  ): Promise<DraftOasysRiskInformation | null | undefined> {
+    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      try {
+        return await this.interventionsService.getDraftOasysRiskInformation(accessToken, referralId)
+      } catch (e) {
+        const restClientError = e as RestClientError
+        if (restClientError.status === 404) {
+          return null
+        }
+        throw e
+      }
+    }
+    return undefined
+  }
+
   async viewReferralForm(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
     const [intervention, serviceUser] = await Promise.all([
-      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
+      this.interventionsService.getIntervention(accessToken, referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
     ])
     if (
@@ -167,7 +187,8 @@ export default class MakeAReferralController {
       throw new Error('No service category selected')
     }
 
-    const presenter = new ReferralFormPresenter(referral, intervention)
+    const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
+    const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
     const view = new ReferralFormView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
