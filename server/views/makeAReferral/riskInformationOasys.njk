@@ -24,51 +24,51 @@
         <hr/>
 
         <h2 class="govuk-heading-m">Who is at risk</h2>
-        {% if riskSummaryResponse.whoIsAtRisk %}
-            <p class="govuk-body {{riskSummaryResponse.whoIsAtRisk.class}}">{{ riskSummaryResponse.whoIsAtRisk.text }}</p>
+        {% if riskInformation.summary.whoIsAtRisk.label %}
+            <p class="govuk-body {{ riskInformation.summary.whoIsAtRisk.label.class}}">{{ riskInformation.summary.whoIsAtRisk.label.text }}</p>
         {% endif %}
-        <p class="govuk-body">{{ riskSummary.whoIsAtRisk | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.summary.whoIsAtRisk.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">What is the nature of the risk</h2>
-        {% if riskSummaryResponse.natureOfRisk %}
-            <p class="govuk-body {{riskSummaryResponse.natureOfRisk.class}}">{{ riskSummaryResponse.natureOfRisk.text }}</p>
+        {% if riskInformation.summary.natureOfRisk.label %}
+            <p class="govuk-body {{riskInformation.summary.natureOfRisk.label.class}}">{{ riskInformation.summary.natureOfRisk.label.text }}</p>
         {% endif %}
-        <p class="govuk-body">{{ riskSummary.natureOfRisk | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.summary.natureOfRisk.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">When is the risk likely to be greatest</h2>
-        {% if riskSummaryResponse.riskImminence %}
-            <p class="govuk-body {{riskSummaryResponse.riskImminence.class}}">{{ riskSummaryResponse.riskImminence.text }}</p>
+        {% if riskInformation.summary.riskImminence.label %}
+            <p class="govuk-body {{riskInformation.summary.riskImminence.label.class}}">{{ riskInformation.summary.riskImminence.label.text }}</p>
         {% endif %}
-        <p class="govuk-body">{{ riskSummary.riskImminence | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.summary.riskImminence.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to self-harm</h2>
-        <p class="govuk-body {{ riskToSelfResponse.selfHarm.class }}"> {{ riskToSelfResponse.selfHarm.text }}</p>
-        <p class="govuk-body">{{ riskToSelf.selfHarm.currentConcernsText | escape | nl2br }}</p>
+        <p class="govuk-body {{ riskInformation.riskToSelf.selfHarm.label.class }}"> {{ riskInformation.riskToSelf.selfHarm.label.text }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.selfHarm.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to suicide</h2>
-        <p class="govuk-body {{ riskToSelfResponse.suicide.class }}"> {{ riskToSelfResponse.suicide.text }}</p>
-        <p class="govuk-body">{{ riskToSelf.suicide.currentConcernsText | escape | nl2br }}</p>
+        <p class="govuk-body {{ riskInformation.riskToSelf.suicide.label.class }}"> {{ riskInformation.riskToSelf.suicide.label.text }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.suicide.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to coping in a hostel setting</h2>
-        <p class="govuk-body {{ riskToSelfResponse.hostelSetting.class }}"> {{ riskToSelfResponse.hostelSetting.text }}</p>
-        <p class="govuk-body">{{ riskToSelf.hostelSetting.currentConcernsText | escape | nl2br }}</p>
+        <p class="govuk-body {{ riskInformation.riskToSelf.hostelSetting.label.class }}"> {{ riskInformation.riskToSelf.hostelSetting.label.text }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.hostelSetting.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to vulnerability</h2>
-        <p class="govuk-body {{ riskToSelfResponse.vulnerability.class }}"> {{ riskToSelfResponse.vulnerability.text }}</p>
-        <p class="govuk-body">{{ riskToSelf.vulnerability.currentConcernsText | escape | nl2br }}</p>
+        <p class="govuk-body {{ riskInformation.riskToSelf.vulnerability.label.class }}"> {{ riskInformation.riskToSelf.vulnerability.label.text }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.vulnerability.text | escape | nl2br }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Additional information</h2>
-        {% if additionalRiskInformationResponse %}
-            <p class="govuk-body {{additionalRiskInformationResponse.class}}">{{ additionalRiskInformationResponse.text }}</p>
+        {% if riskInformation.additionalRiskInformation.label %}
+            <p class="govuk-body {{ riskInformation.additionalRiskInformation.label.class }}">{{ riskInformation.additionalRiskInformation.label.text }}</p>
         {% endif %}
-        <p class="govuk-body">{{ additionalRiskInformation | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.additionalRiskInformation.text | escape | nl2br }}</p>
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -87,6 +87,7 @@
           </div>
           {% endset -%}
         {{ govukRadios(editRiskConfirmationRadioButtonArgs(noEditRiskSelectionHTML)) }}
+        {{ govukButton({ text: "Save and continue" }) }}
       </form>
     </div>
     <div class="govuk-grid-column-one-third">
