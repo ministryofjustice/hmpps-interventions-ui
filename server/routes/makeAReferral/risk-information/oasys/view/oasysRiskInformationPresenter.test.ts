@@ -10,7 +10,8 @@ describe('OasysRiskInformationPresenter', () => {
         const presenter = new OasysRiskInformationPresenter(
           'referralId',
           supplementaryRiskInformationFactory.build(),
-          riskSummary
+          riskSummary,
+          null
         )
 
         expect(presenter.latestAssessment).toEqual('20 September 2021')
@@ -24,7 +25,8 @@ describe('OasysRiskInformationPresenter', () => {
         const presenter = new OasysRiskInformationPresenter(
           'referralId',
           supplementaryRiskInformationFactory.build(),
-          riskSummary
+          riskSummary,
+          null
         )
 
         expect(presenter.latestAssessment).toEqual('Assessment date not found')
@@ -37,7 +39,8 @@ describe('OasysRiskInformationPresenter', () => {
         const presenter = new OasysRiskInformationPresenter(
           'referralId',
           supplementaryRiskInformationFactory.build(),
-          riskSummary
+          riskSummary,
+          null
         )
 
         expect(presenter.latestAssessment).toEqual('Assessment date not found')
