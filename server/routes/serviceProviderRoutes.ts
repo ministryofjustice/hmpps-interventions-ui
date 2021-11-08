@@ -119,6 +119,46 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/submit', (req, res) =>
     appointmentsController.submitActionPlanSessionAppointment(req, res)
   )
+
+  get(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/attendance',
+    (req, res) => appointmentsController.addDeliverySessionAttendanceFeedback(req, res)
+  )
+  post(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/attendance',
+    (req, res) => appointmentsController.addDeliverySessionAttendanceFeedback(req, res)
+  )
+  get(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/behaviour',
+    (req, res) => appointmentsController.addDeliverySessionBehaviourFeedback(req, res)
+  )
+  post(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/behaviour',
+    (req, res) => appointmentsController.addDeliverySessionBehaviourFeedback(req, res)
+  )
+
+  get(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/check-your-answers',
+    (req, res) => appointmentsController.checkDeliverySessionFeedbackAnswers(req, res)
+  )
+  post(router, '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/submit', (req, res) =>
+    appointmentsController.submitDeliverySessionFeedback(req, res)
+  )
+  get(
+    router,
+    '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/confirmation',
+    (req, res) => appointmentsController.showDeliverySessionFeedbackConfirmation(req, res)
+  )
+  get(router, '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback', (req, res) =>
+    appointmentsController.viewSubmittedDeliverySessionAppointmentFeedback(req, res)
+  )
+
+  // Deprecated
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', (req, res) =>
     appointmentsController.addPostSessionAttendanceFeedback(req, res)
   )
@@ -140,6 +180,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', (req, res) =>
     appointmentsController.addPostSessionBehaviourFeedback(req, res)
   )
+  // Deprecated
   post(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', (req, res) =>
     appointmentsController.addPostSessionBehaviourFeedback(req, res)
   )
@@ -175,6 +216,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', (req, res) =>
     appointmentsController.showPostSessionFeedbackConfirmation(req, res)
   )
+  // Deprecated
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     appointmentsController.viewSubmittedPostSessionFeedback(req, res, 'service-provider')
   )

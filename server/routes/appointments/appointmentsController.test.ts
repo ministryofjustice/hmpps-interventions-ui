@@ -1618,6 +1618,355 @@ describe('Adding supplier assessment feedback', () => {
 })
 
 describe('Adding post delivery session feedback', () => {
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/attendance', () => {
+    it('renders a page with which the Service Provider can record the Service user‘s attendance', async () => {
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = actionPlanAppointmentFactory.build({
+        appointmentTime: '2021-02-01T13:00:00Z',
+        durationInMinutes: 60,
+        appointmentDeliveryType: 'PHONE_CALL',
+      })
+
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointment)
+
+      await request(app)
+        .get(
+          `/service-provider/referral/${referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/feedback/attendance`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Add attendance feedback')
+          expect(res.text).toContain('Session details')
+          expect(res.text).toContain('1 February 2021')
+          expect(res.text).toContain('1:00pm to 2:00pm')
+        })
+    })
+  })
+
+  describe('POST /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/attendance', () => {
+    describe('when the Service Provider marks the Service user as having attended the session', () => {
+      it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
+        const updatedAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 1,
+          sessionFeedback: {
+            attendance: {
+              attended: 'yes',
+              additionalAttendanceInformation: 'Alex made the session on time',
+            },
+          },
+        })
+
+        const referral = sentReferralFactory.assigned().build()
+
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.recordDeliverySessionAppointmentAttendance.mockResolvedValue(updatedAppointment)
+
+        await request(app)
+          .post(
+            `/service-provider/referral/${referral.id}/session/${updatedAppointment.sessionNumber}/appointment/${updatedAppointment.id}/feedback/attendance`
+          )
+          .type('form')
+          .send({
+            attended: 'yes',
+            'additional-attendance-information': 'Alex made the session on time',
+          })
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referral/${referral.id}/session/${updatedAppointment.sessionNumber}/appointment/${updatedAppointment.id}/feedback/behaviour`
+          )
+      })
+    })
+
+    describe('when the Service Provider marks the Service user as not having attended the session', () => {
+      it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
+        const updatedAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 1,
+          sessionFeedback: {
+            attendance: {
+              attended: 'no',
+              additionalAttendanceInformation: "I haven't heard from Alex",
+            },
+          },
+        })
+
+        const referral = sentReferralFactory.assigned().build()
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.recordDeliverySessionAppointmentAttendance.mockResolvedValue(updatedAppointment)
+
+        await request(app)
+          .post(
+            `/service-provider/referral/${referral.id}/session/${updatedAppointment.sessionNumber}/appointment/${updatedAppointment.id}/feedback/attendance`
+          )
+          .type('form')
+          .send({
+            attended: 'no',
+            'additional-attendance-information': "I haven't heard from Alex",
+          })
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referral/${referral.id}/session/${updatedAppointment.sessionNumber}/appointment/${updatedAppointment.id}/feedback/check-your-answers`
+          )
+      })
+    })
+  })
+
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/behaviour', () => {
+    it('renders a page with which the Service Provider can record the Service user‘s behaviour', async () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = actionPlanAppointmentFactory.build({
+        appointmentTime: '2021-02-01T13:00:00Z',
+      })
+
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointment)
+
+      await request(app)
+        .get(
+          `/service-provider/referral/${referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/feedback/behaviour`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Add behaviour feedback')
+        })
+    })
+  })
+
+  describe('POST /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/behaviour', () => {
+    it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check your answers page', async () => {
+      const updatedAppointment = actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        sessionFeedback: {
+          behaviour: {
+            behaviourDescription: 'Alex was well-behaved',
+            notifyProbationPractitioner: false,
+          },
+        },
+      })
+
+      const referral = sentReferralFactory.assigned().build()
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.recordDeliverySessionAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+
+      await request(app)
+        .post(
+          `/service-provider/referral/${referral.id}/session/${updatedAppointment.sessionNumber}/appointment/${updatedAppointment.id}/feedback/behaviour`
+        )
+        .type('form')
+        .send({
+          'behaviour-description': 'Alex was well-behaved',
+          'notify-probation-practitioner': 'no',
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referral/${referral.id}/session/${updatedAppointment.sessionNumber}/appointment/${updatedAppointment.id}/feedback/check-your-answers`
+        )
+    })
+  })
+
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/check-your-answers', () => {
+    it('renders a page with answers the user has so far selected', async () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = actionPlanAppointmentFactory.build({
+        appointmentTime: '2021-02-01T13:00:00Z',
+        durationInMinutes: 60,
+        appointmentDeliveryType: 'PHONE_CALL',
+      })
+
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointment)
+
+      await request(app)
+        .get(
+          `/service-provider/referral/${referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/feedback/check-your-answers`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('Confirm feedback')
+        })
+    })
+  })
+
+  describe('POST /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/submit', () => {
+    it('marks the appointment as submitted and redirects to the confirmation page', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const appointment = actionPlanAppointmentFactory.build({
+        appointmentTime: '2021-02-01T13:00:00Z',
+        durationInMinutes: 60,
+        appointmentDeliveryType: 'PHONE_CALL',
+      })
+
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+
+      const sessionNumber = 2
+
+      await request(app)
+        .post(
+          `/service-provider/referral/${referral.id}/session/${sessionNumber}/appointment/${appointment.id}/feedback/submit`
+        )
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/referral/${referral.id}/session/${sessionNumber}/appointment/${appointment.id}/feedback/confirmation`
+        )
+
+      expect(interventionsService.submitDeliverySessionAppointmentFeedback).toHaveBeenCalledWith(
+        'token',
+        referral.id,
+        appointment.id
+      )
+    })
+  })
+
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback/confirmation', () => {
+    describe('when final appointment attendance has been recorded', () => {
+      it('renders a page confirming that the action plan has been submitted', async () => {
+        const referral = sentReferralFactory.assigned().build()
+        const finalSessionNumber = 2
+        const submittedActionPlan = actionPlanFactory
+          .submitted()
+          .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+
+        interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+
+        const finalAppointment = actionPlanAppointmentFactory.build({ sessionNumber: finalSessionNumber })
+
+        interventionsService.getDeliverySessionAppointment.mockResolvedValue(finalAppointment)
+        interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
+
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+        await request(app)
+          .get(
+            `/service-provider/referral/${referral.id}/session/2/appointment/${finalAppointment.id}/feedback/confirmation`
+          )
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('Please submit the end of service report within 5 working days.')
+          })
+      })
+    })
+
+    describe('when any non-final session has been recorded and more sessions are scheduled', () => {
+      it('renders a page confirming that the action plan has been submitted', async () => {
+        const referral = sentReferralFactory.assigned().build()
+        const finalSessionNumber = 3
+        const submittedActionPlan = actionPlanFactory
+          .submitted()
+          .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+
+        interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+
+        const penultimateAppointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+
+        const nextAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: finalSessionNumber,
+          appointmentTime: '2021-03-31T10:50:10.790Z',
+        })
+
+        interventionsService.getDeliverySessionAppointment.mockResolvedValue(penultimateAppointment)
+        interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(nextAppointment)
+
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+        await request(app)
+          .get(
+            `/service-provider/referral/${referral.id}/session/${penultimateAppointment.sessionNumber}/appointment/${penultimateAppointment.id}/feedback/confirmation`
+          )
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('You can now deliver the next session scheduled for 31 March 2021.')
+          })
+      })
+    })
+
+    describe('when any non-final session has been recorded but no more sessions are scheduled', () => {
+      it('renders a page confirming that the action plan has been submitted', async () => {
+        const referral = sentReferralFactory.assigned().build()
+        const finalSessionNumber = 3
+        const submittedActionPlan = actionPlanFactory
+          .submitted()
+          .build({ referralId: referral.id, numberOfSessions: finalSessionNumber })
+
+        interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+
+        const penultimateAppointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+
+        interventionsService.getDeliverySessionAppointment.mockResolvedValue(penultimateAppointment)
+        interventionsService.getSubsequentActionPlanAppointment.mockResolvedValue(null)
+
+        interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+        await request(app)
+          .get(
+            `/service-provider/referral/${referral.id}/session/${penultimateAppointment.sessionNumber}/appointment/${penultimateAppointment.id}/feedback/confirmation`
+          )
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('The probation practitioner has been sent a copy of the session feedback form.')
+          })
+      })
+    })
+  })
+
+  describe('GET /service-provider/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/feedback', () => {
+    it('renders a page displaying feedback answers', async () => {
+      const referral = sentReferralFactory.assigned().build()
+      const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id, numberOfSessions: 1 })
+      const deliusServiceUser = deliusServiceUserFactory.build()
+
+      const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+        appointmentTime: '2021-02-01T13:00:00Z',
+        durationInMinutes: 60,
+        appointmentDeliveryType: 'PHONE_CALL',
+        sessionNumber: 1,
+        sessionFeedback: {
+          attendance: {
+            attended: 'yes',
+            additionalAttendanceInformation: 'They were early to the session',
+          },
+          behaviour: {
+            behaviourDescription: 'Alex was well-behaved',
+            notifyProbationPractitioner: false,
+          },
+          submitted: true,
+        },
+      })
+
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
+      interventionsService.getSentReferral.mockResolvedValue(referral)
+      interventionsService.getDeliverySessionAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
+
+      await request(app)
+        .get(
+          `/service-provider/referral/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.id}/feedback`
+        )
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('View feedback')
+          expect(res.text).toContain('They were early to the session')
+          expect(res.text).toContain('Yes, they were on time')
+          expect(res.text).toContain('Alex was well-behaved')
+          expect(res.text).toContain('No')
+        })
+    })
+  })
+
   describe('Deprecated action plan routes', () => {
     describe('GET /service-provider/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', () => {
       it('renders a page with which the Service Provider can record the Service user‘s attendance', async () => {
