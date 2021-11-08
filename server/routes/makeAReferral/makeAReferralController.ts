@@ -705,7 +705,8 @@ export default class MakeAReferralController {
   }
 
   async checkAnswers(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const { accessToken } = res.locals.user.token
+    const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.id)
     if (referral.serviceCategoryIds === null) {
       throw new Error('Attempting to check answers without service categories selected')
     }
@@ -714,12 +715,24 @@ export default class MakeAReferralController {
     }
 
     const [intervention, expandedDeliusServiceUser, conviction] = await Promise.all([
-      this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
+      this.interventionsService.getIntervention(accessToken, referral.interventionId),
       this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn),
       this.communityApiService.getConvictionById(referral.serviceUser.crn, referral.relevantSentenceId),
     ])
-
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, expandedDeliusServiceUser)
+    let editedOasysRiskInformation: DraftOasysRiskInformation | null = null
+    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      editedOasysRiskInformation = await this.interventionsService.getDraftOasysRiskInformation(
+        accessToken,
+        referral.id
+      )
+    }
+    const presenter = new CheckAnswersPresenter(
+      referral,
+      intervention,
+      conviction,
+      expandedDeliusServiceUser,
+      editedOasysRiskInformation
+    )
     const view = new CheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, expandedDeliusServiceUser)
