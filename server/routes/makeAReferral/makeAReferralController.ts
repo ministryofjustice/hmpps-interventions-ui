@@ -51,6 +51,8 @@ import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInf
 import config from '../../config'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { RestClientError } from '../../data/restClient'
+import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
+import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
 
 export default class MakeAReferralController {
   constructor(
@@ -522,6 +524,33 @@ export default class MakeAReferralController {
       const presenter = new RiskInformationPresenter(referral)
       view = new RiskInformationView(presenter)
     }
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async editOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      throw createError(403, `access restricted when risk feature flag disabled`, {
+        userMessage: 'You are not authorized to access this page',
+      })
+    }
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+    const [serviceUser, riskSummary, supplementaryRiskInformation] = await Promise.all([
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(referral.serviceUser.crn, accessToken),
+    ])
+
+    if (riskSummary === null) {
+      throw createError(500, `could not obtain risk summary`, {
+        userMessage: 'No risk summary exists on OASYS for service user.',
+      })
+    }
+
+    const presenter = new EditOasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
+    const view = new EditOasysRiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

@@ -433,6 +433,50 @@ describe('POST /referrals/:id/risk-information', () => {
   })
 })
 
+describe('GET /referrals/:id/edit-oasys-risk-information', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  describe('when risk information exists in OASys', () => {
+    beforeEach(() => {
+      const riskSummary = riskSummaryFactory.build()
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+        riskSummaryComments: 'supplementary comments',
+      })
+      assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockResolvedValue(supplementaryRiskInformation)
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    })
+
+    it('renders an edit OASys risk information page', async () => {
+      await request(app)
+        .get('/referrals/1/edit-oasys-risk-information')
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('OASys risk information')
+          expect(res.text).toContain('supplementary comments')
+        })
+    })
+
+    describe('when no supplementary risk information exists in OASys', () => {
+      beforeEach(() => {
+        assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue({ status: 404 })
+      })
+
+      it('renders an OASys risk information page', async () => {
+        await request(app)
+          .get('/referrals/1/risk-information')
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('OASys risk information')
+          })
+      })
+    })
+  })
+})
+
 describe('GET /referrals/:id/needs-and-requirements', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })

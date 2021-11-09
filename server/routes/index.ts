@@ -133,6 +133,11 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))
+
+  get(router, '/referrals/:id/edit-oasys-risk-information', (req, res) =>
+    makeAReferralController.editOasysRiskInformation(req, res)
+  )
+
   get(router, '/referrals/:id/enforceable-days', (req, res) => makeAReferralController.viewEnforceableDays(req, res))
   post(router, '/referrals/:id/enforceable-days', (req, res) => makeAReferralController.updateEnforceableDays(req, res))
   get(router, '/referrals/:id/check-answers', (req, res) => makeAReferralController.checkAnswers(req, res))

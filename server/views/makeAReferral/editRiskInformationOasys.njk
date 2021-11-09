@@ -1,0 +1,59 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Edit Service user's risk information" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">OASys risk information</h1>
+
+      <p class="govuk-body">Latest assessment: {{ latestAssessment }} </p>
+      <hr/>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <h2 class="govuk-heading-m">Who is at risk</h2>
+        {{ govukTextarea(whoIsAtRiskTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">What is the nature of the risk</h2>
+        {{ govukTextarea(natureOfRiskTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">When is the risk likely to be greatest</h2>
+        {{ govukTextarea(riskImminenceTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to self-harm</h2>
+        <p class="govuk-body {{ riskInformation.riskToSelf.selfHarm.label.class }}"> {{ riskInformation.riskToSelf.selfHarm.label.text }}</p>
+        {{ govukTextarea(riskToSelfSelfHarmTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to suicide</h2>
+        <p class="govuk-body {{ riskInformation.riskToSelf.suicide.label.class }}"> {{ riskInformation.riskToSelf.suicide.label.text }}</p>
+        {{ govukTextarea(riskToSelfSuicideTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to coping in a hostel setting</h2>
+        <p class="govuk-body {{ riskInformation.riskToSelf.hostelSetting.label.class }}"> {{ riskInformation.riskToSelf.hostelSetting.label.text }}</p>
+        {{ govukTextarea(riskToSelfHostelSettingTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">Concerns in relation to vulnerability</h2>
+        <p class="govuk-body {{ riskInformation.riskToSelf.vulnerability.label.class }}"> {{ riskInformation.riskToSelf.vulnerability.label.text }}</p>
+        {{ govukTextarea(riskToSelfVulnerabilityTextareaArgs) }}
+        <hr/>
+
+        <h2 class="govuk-heading-m">Additional information</h2>
+        <p class="govuk-body {{ riskInformation.additionalRiskInformation.label.class }}">{{ riskInformation.additionalRiskInformation.label.text }}</p>
+        {{ govukTextarea(additionalInformationTextareaArgs) }}
+
+        {{ govukButton({ text: "Save and continue" }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
