@@ -2,6 +2,7 @@ import OasysRiskInformationPresenter from './oasysRiskInformationPresenter'
 import RiskView from '../../../../shared/riskView'
 import { CheckboxesArgs, DetailsArgs, RadiosArgs } from '../../../../../utils/govukFrontendTypes'
 import OasysRiskSummaryView from '../oasysRiskSummaryView'
+import ViewUtils from '../../../../../utils/viewUtils'
 
 export default class OasysRiskInformationView {
   riskView: RiskView
@@ -12,6 +13,8 @@ export default class OasysRiskInformationView {
     this.riskView = new RiskView(this.presenter.riskPresenter, 'probation-practitioner')
     this.riskSummaryView = new OasysRiskSummaryView(presenter.supplementaryRiskInformation, presenter.riskSummary)
   }
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errors.summary)
 
   private get sensitiveInformationDetailsArgs(): DetailsArgs {
     return {
@@ -47,6 +50,7 @@ export default class OasysRiskInformationView {
         },
       ],
       classes: 'govuk-checkboxes__inset--grey',
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.confirmUnderstood),
     }
   }
 
@@ -74,6 +78,7 @@ export default class OasysRiskInformationView {
           },
         },
       ],
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.editRiskInformation),
     }
   }
 
@@ -81,6 +86,7 @@ export default class OasysRiskInformationView {
     return [
       'makeAReferral/riskInformationOasys',
       {
+        errorSummaryArgs: this.errorSummaryArgs,
         riskInformation: this.riskSummaryView.riskInformation,
         latestAssessment: this.presenter.latestAssessment,
         roshPanelPresenter: this.presenter.riskPresenter,

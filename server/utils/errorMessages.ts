@@ -149,4 +149,13 @@ export default {
       empty: 'Enter some details about your case note',
     },
   },
+  oasysRiskInformation: {
+    edit: {
+      empty: 'Select Yes if you want to edit this OASys risk information',
+    },
+    confirmUnderstood: {
+      notSelected:
+        'You must confirm that you understand that this information will be shared with the Service Provider',
+    },
+  },
 }
