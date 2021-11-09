@@ -134,6 +134,10 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))
 
+  post(router, '/referrals/:id/confirm-edit-oasys-risk-information', (req, res) =>
+    makeAReferralController.confirmEditOasysRiskInformation(req, res)
+  )
+
   get(router, '/referrals/:id/edit-oasys-risk-information', (req, res) =>
     makeAReferralController.editOasysRiskInformation(req, res)
   )

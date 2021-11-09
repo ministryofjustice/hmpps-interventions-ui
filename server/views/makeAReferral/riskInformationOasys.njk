@@ -19,6 +19,9 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">OASys risk information</h1>
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
 
         <p class="govuk-body">Latest assessment: {{ latestAssessment }} </p>
         <hr/>
@@ -70,7 +73,7 @@
         {% endif %}
         <p class="govuk-body">{{ riskInformation.additionalRiskInformation.text | escape | nl2br }}</p>
 
-      <form method="post">
+      <form method="post" action={{ confirmEditActionHref }}>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
           {% set noEditRiskSelectionHTML %}
           <div class="govuk-warning-text">
