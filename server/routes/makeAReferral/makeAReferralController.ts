@@ -53,6 +53,7 @@ import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/s
 import { RestClientError } from '../../data/restClient'
 import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
+import DraftReferral from '../../models/draftReferral'
 
 export default class MakeAReferralController {
   constructor(
@@ -496,16 +497,37 @@ export default class MakeAReferralController {
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const [serviceUser, riskSummary] = await Promise.all([
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
-    ])
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      await this.displayOasysRiskInformationPage(res, referral, serviceUser)
+    } else {
+      await this.displayAdditionalRiskInformationPage(res, referral, serviceUser)
+    }
+  }
 
+  // TODO: this will be removed once risk goes live
+  private async displayAdditionalRiskInformationPage(
+    res: Response,
+    referral: DraftReferral,
+    serviceUser: DeliusServiceUser
+  ) {
+    const presenter = new RiskInformationPresenter(referral)
+    const view = new RiskInformationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async displayOasysRiskInformationPage(
+    res: Response,
+    referral: DraftReferral,
+    serviceUser: DeliusServiceUser
+  ) {
+    const { accessToken } = res.locals.user.token
+    const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
     let supplementaryRiskInformation: SupplementaryRiskInformation | null
     try {
       supplementaryRiskInformation = await this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(
         referral.serviceUser.crn,
-        res.locals.user.token.accessToken
+        accessToken
       )
     } catch (e) {
       const restClientError = e as RestClientError
@@ -515,16 +537,8 @@ export default class MakeAReferralController {
         throw e
       }
     }
-
-    let view
-    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled && riskSummary) {
-      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
-      view = new OasysRiskInformationView(presenter)
-    } else {
-      const presenter = new RiskInformationPresenter(referral)
-      view = new RiskInformationView(presenter)
-    }
-
+    const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
+    const view = new OasysRiskInformationView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
@@ -542,12 +556,6 @@ export default class MakeAReferralController {
       this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(referral.serviceUser.crn, accessToken),
     ])
-
-    if (riskSummary === null) {
-      throw createError(500, `could not obtain risk summary`, {
-        userMessage: 'No risk summary exists on OASYS for service user.',
-      })
-    }
 
     const presenter = new EditOasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
     const view = new EditOasysRiskInformationView(presenter)

@@ -305,6 +305,7 @@ describe('GET /referrals/:id/risk-information', () => {
   })
 
   it('renders an error when the get risk supplementary call for crn fails', async () => {
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
     assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue(
       new Error('failed to get risk supplementary info')
     )
