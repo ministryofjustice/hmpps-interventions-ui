@@ -1,19 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance
 
 import org.hibernate.SessionFactory
-import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.Job
-import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.Step
-import org.springframework.batch.core.StepExecution
-import org.springframework.batch.core.StepExecutionListener
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.DefaultJobParametersValidator
-import org.springframework.batch.core.step.job.DefaultJobParametersExtractor
 import org.springframework.batch.item.database.HibernateCursorItemReader
 import org.springframework.batch.item.database.builder.HibernateCursorItemReaderBuilder
 import org.springframework.batch.item.file.FlatFileItemWriter
@@ -24,7 +19,6 @@ import org.springframework.core.io.FileSystemResource
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
 
-
 @Configuration
 @EnableBatchProcessing
 class NdmisPerformanceReportJobConfiguration(
@@ -32,6 +26,7 @@ class NdmisPerformanceReportJobConfiguration(
   private val stepBuilderFactory: StepBuilderFactory,
   private val batchUtils: BatchUtils,
   private val listener: NdmisPerformanceReportJobListener,
+  private val listenerFactory: ListenerFactory,
   @Value("\${spring.batch.jobs.ndmis.performance-report.page-size}") private val pageSize: Int,
   @Value("\${spring.batch.jobs.ndmis.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
@@ -109,25 +104,13 @@ class NdmisPerformanceReportJobConfiguration(
     processor: ReferralsProcessor,
     writer: FlatFileItemWriter<ReferralsData>,
   ): Step {
-    val builder = stepBuilderFactory.get("ndmisWriteReferralToCsvStep")
+    return stepBuilderFactory.get("ndmisWriteReferralToCsvStep")
       .chunk<Referral, ReferralsData>(chunkSize)
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
-      .listener(listener)
-
-
-//    builder.listener(object : StepExecutionListener {
-//      override fun beforeStep(stepExecution: StepExecution) {
-//          stepExecution.jobExecution.executionContext.put("fileName", "crs_performance_report-v2-referral")
-//      }
-//      override fun afterStep(stepExecution: StepExecution): ExitStatus? {
-//        return stepExecution.exitStatus
-//      }
-//    }
-//    )
-//    builder.listener(listener)
-    return builder.build()
+      .listener(listenerFactory.createListener("crs_performance_report-v2-referrals"))
+      .build()
   }
 
   @Bean
@@ -136,13 +119,13 @@ class NdmisPerformanceReportJobConfiguration(
     processor: ComplexityProcessor,
     writer: FlatFileItemWriter<Collection<ComplexityData>>,
   ): Step {
-    val builder = stepBuilderFactory.get("ndmisWriteComplexityToCsvStep")
+    return stepBuilderFactory.get("ndmisWriteComplexityToCsvStep")
       .chunk<Referral, List<ComplexityData>>(chunkSize)
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
-    builder.listener(listener)
-    return builder.build()
+      .listener(listenerFactory.createListener("crs_performance_report-v2-complexity"))
+      .build()
   }
 
   @Bean
@@ -151,12 +134,12 @@ class NdmisPerformanceReportJobConfiguration(
     processor: AppointmentProcessor,
     writer: FlatFileItemWriter<Collection<AppointmentData>>,
   ): Step {
-    val builder = stepBuilderFactory.get("ndmisWriteAppointmentToCsvStep")
+    return stepBuilderFactory.get("ndmisWriteAppointmentToCsvStep")
       .chunk<Referral, List<AppointmentData>>(chunkSize)
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
-    builder.listener(listener)
-    return builder.build()
+      .listener(listenerFactory.createListener("crs_performance_report-v2-appointments"))
+      .build()
   }
 }
