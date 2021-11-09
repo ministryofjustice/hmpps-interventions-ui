@@ -40,6 +40,7 @@ jobs:
       - checkout
       - gradle/with_cache:
           cache_checksum_file: "build.gradle.kts"
+          cache_key: v2
           steps:
             - run: ./gradlew check
       - store_test_results:
@@ -133,6 +134,7 @@ jobs:
       - checkout
       - gradle/with_cache:
           cache_checksum_file: "build.gradle.kts"
+          cache_key: v2
           steps:
             - run:
                 command: |
@@ -192,6 +194,7 @@ jobs:
       - checkout
       - gradle/with_cache:
           cache_checksum_file: "build.gradle.kts"
+          cache_key: v2
           steps:
             - run: ./gradlew assemble
       - persist_to_workspace:
