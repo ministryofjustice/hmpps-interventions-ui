@@ -60,7 +60,7 @@
      val fileName = stepExecution.jobExecution.executionContext.getString("fileName")
      when (stepExecution.status) {
       BatchStatus.COMPLETED -> {
-         s3Service.publishFileToS3(storageS3Bucket, path, "reports/crs/${fileName}")
+         s3Service.publishFileToS3(storageS3Bucket, path, "export/csv/reports/${fileName}")
       }
       BatchStatus.FAILED -> {
         logger.error("failed reporting")

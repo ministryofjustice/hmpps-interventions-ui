@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.p
 import org.hibernate.SessionFactory
 import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.Job
+import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.StepExecution
 import org.springframework.batch.core.StepExecutionListener
@@ -113,6 +114,9 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
+      .listener(listener)
+
+
 //    builder.listener(object : StepExecutionListener {
 //      override fun beforeStep(stepExecution: StepExecution) {
 //          stepExecution.jobExecution.executionContext.put("fileName", "crs_performance_report-v2-referral")
@@ -122,7 +126,7 @@ class NdmisPerformanceReportJobConfiguration(
 //      }
 //    }
 //    )
-    builder.listener(listener)
+//    builder.listener(listener)
     return builder.build()
   }
 
