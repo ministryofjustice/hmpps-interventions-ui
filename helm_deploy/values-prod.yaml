@@ -16,7 +16,6 @@ env_details:
   production_env: true
 
 env:
-  JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
   INTERVENTIONSUI_BASEURL: "https://refer-monitor-intervention.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.probation.service.justice.gov.uk"

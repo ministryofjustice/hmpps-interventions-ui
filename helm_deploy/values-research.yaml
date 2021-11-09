@@ -16,7 +16,6 @@ env_details:
 
 env:
   SPRING_PROFILES_ACTIVE: research
-  JAVA_OPTS: "-Xmx512m"
   HMPPSAUTH_BASEURL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
   INTERVENTIONSUI_BASEURL: "https://hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk"
   COMMUNITYAPI_BASEURL: "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
