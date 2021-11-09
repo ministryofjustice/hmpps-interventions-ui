@@ -48,7 +48,7 @@ internal class CaseNotesNotificationsServiceTest {
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, null)
     )
 
-    val sender = authUserFactory.createSP(id = "sp_sender")
+    val sender = authUserFactory.createSP(id = "sp_sender", userName = "sp_user_name")
     val referral = referralFactory.createAssigned()
     val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from sp", body = "body")
     whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
@@ -164,6 +164,47 @@ internal class CaseNotesNotificationsServiceTest {
 
     val sender = authUserFactory.createSP(id = "sp_sender")
     val referral = referralFactory.createAssigned(assignments = listOf(ReferralAssignment(OffsetDateTime.now(), sender, sender)))
+    val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from sp", body = "body")
+    whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
+    val eventRequiringSPNotification = CreateCaseNoteEvent(
+      "source",
+      caseNote.id,
+      caseNote.sentBy,
+      "detailUrl",
+      referral.id
+    )
+
+    caseNotesNotificationsService.onApplicationEvent(eventRequiringSPNotification)
+
+    // only called once
+    verify(emailSender, times(1)).sendEmail(any(), any(), any())
+    // with pp details
+    verify(emailSender).sendEmail(
+      "sent-template",
+      "pp@justice.gov.uk",
+      mapOf(
+        "recipientFirstName" to "pp",
+        "referralReference" to caseNote.referral.referenceNumber!!,
+        "caseNoteUrl" to "https://interventions.gov.uk/probation-practitioner/case-note/${caseNote.id}"
+      )
+    )
+  }
+
+  // This is not a normal scenario. Has only arisen as hmpps-auth has returned the same user with
+  // two different ids and now username is used in checking if two authUser records represent the same
+  // user
+  @Test
+  fun `SP (assignee) does not get notified as the assignee has the same user name as the sender`() {
+    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    val responsiblePp = authUserFactory.createSP(id = "responsiblePp", userName = "sameUserName")
+    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
+      ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, responsiblePp)
+    )
+
+    val assignedToId = authUserFactory.createSP(id = "sp_assignedToId", userName = "sameUserName")
+    val referral = referralFactory.createAssigned(assignments = listOf(ReferralAssignment(OffsetDateTime.now(), assignedToId, assignedToId)))
+
+    val sender = authUserFactory.createSP(id = "sp_sender", userName = "sameUserName")
     val caseNote = caseNoteFactory.create(referral = referral, sentBy = sender, subject = "from sp", body = "body")
     whenever(referralService.getSentReferralForUser(referral.id, sender)).thenReturn(referral)
     val eventRequiringSPNotification = CreateCaseNoteEvent(

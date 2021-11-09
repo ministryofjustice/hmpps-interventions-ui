@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity
 
+import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.validation.constraints.NotNull
@@ -11,15 +12,16 @@ data class AuthUser(
   @NotNull val userName: String,
   var deleted: Boolean? = null,
 ) {
-  override fun hashCode(): Int {
-    return id.hashCode()
-  }
+  // Normally a user with a hmpps-auth Id represents a unique user. However, hmpps-auth has returned the same
+  // user with two different ids. To deal with this temporary issue, username is now being used for equality
+  // checking, e.g. don't email user if they are both the sender and assignee of a referral, as determined by user name.
+  override fun hashCode() = Objects.hash(userName, authSource)
 
   override fun equals(other: Any?): Boolean {
     if (other == null || other !is AuthUser) {
       return false
     }
 
-    return id == other.id
+    return userName == other.userName && authSource == other.authSource
   }
 }
