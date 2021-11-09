@@ -13,7 +13,7 @@ env:
   {{ end }}
 
   - name: JAVA_OPTS
-    value: "-Xmx750m"
+    value: "-Xmx750m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps"
 
   - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     valueFrom:
@@ -104,5 +104,4 @@ env:
       secretKeyRef:
         name: storage-s3-bucket
         key: bucket_name
-
 {{- end -}}

@@ -39,6 +39,9 @@ spec:
           ports:
             - containerPort: {{ .Values.image.ports.app }}
               protocol: TCP
+          volumeMounts:
+          - name: heap-dumps
+            mountPath: /dumps
           livenessProbe:
             httpGet:
               path: /health/liveness
@@ -53,4 +56,7 @@ spec:
             initialDelaySeconds: 60
             timeoutSeconds: 5
             failureThreshold: 10
-  {{ include "deployment.envs" . | nindent 10 }}
+  {{- include "deployment.envs" . | nindent 10 }}
+      volumes:
+        - name: heap-dumps
+          emptyDir: {}
