@@ -3,21 +3,28 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.p
 import org.hibernate.SessionFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
+import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.DefaultJobParametersValidator
+import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.item.database.HibernateCursorItemReader
 import org.springframework.batch.item.database.builder.HibernateCursorItemReaderBuilder
 import org.springframework.batch.item.file.FlatFileItemWriter
+import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.FileSystemResource
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.S3Bucket
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.S3Service
+import java.io.File
+import kotlin.io.path.createTempDirectory
 
 @Configuration
 @EnableBatchProcessing
@@ -25,11 +32,16 @@ class NdmisPerformanceReportJobConfiguration(
   private val jobBuilderFactory: JobBuilderFactory,
   private val stepBuilderFactory: StepBuilderFactory,
   private val batchUtils: BatchUtils,
-  private val listener: NdmisPerformanceReportJobListener,
-  private val listenerFactory: ListenerFactory,
+  private val s3Service: S3Service,
+  private val ndmisS3Bucket: S3Bucket,
   @Value("\${spring.batch.jobs.ndmis.performance-report.page-size}") private val pageSize: Int,
   @Value("\${spring.batch.jobs.ndmis.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
+  private val tmpDir = createTempDirectory()
+  private val referralReportPath = tmpDir.resolve("crs_performance_report-v2-referrals.csv")
+  private val complexityReportPath = tmpDir.resolve("crs_performance_report-v2-complexity.csv")
+  private val appointmentsReportPath = tmpDir.resolve("crs_performance_report-v2-appointments.csv")
+
   @Bean
   @JobScope
   fun ndmisReader(
@@ -45,10 +57,10 @@ class NdmisPerformanceReportJobConfiguration(
 
   @Bean
   @StepScope
-  fun ndmisReferralsWriter(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<ReferralsData> {
+  fun ndmisReferralsWriter(): FlatFileItemWriter<ReferralsData> {
     return batchUtils.csvFileWriter(
       "ndmisReferralsPerformanceReportWriter",
-      FileSystemResource(path),
+      FileSystemResource(referralReportPath),
       ReferralsData.headers,
       ReferralsData.fields
     )
@@ -56,10 +68,10 @@ class NdmisPerformanceReportJobConfiguration(
 
   @Bean
   @StepScope
-  fun ndmisComplexityWriter(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<Collection<ComplexityData>> {
+  fun ndmisComplexityWriter(): FlatFileItemWriter<Collection<ComplexityData>> {
     return batchUtils.recursiveCollectionCsvFileWriter(
       "ndmisComplexityPerformanceReportWriter",
-      FileSystemResource(path),
+      FileSystemResource(complexityReportPath),
       ComplexityData.headers,
       ComplexityData.fields
     )
@@ -67,10 +79,10 @@ class NdmisPerformanceReportJobConfiguration(
 
   @Bean
   @StepScope
-  fun ndmisAppointmentWriter(@Value("#{jobExecutionContext['output.file.path']}") path: String): FlatFileItemWriter<Collection<AppointmentData>> {
+  fun ndmisAppointmentWriter(): FlatFileItemWriter<Collection<AppointmentData>> {
     return batchUtils.recursiveCollectionCsvFileWriter(
       "ndmisAppointmentPerformanceReportWriter",
-      FileSystemResource(path),
+      FileSystemResource(appointmentsReportPath),
       AppointmentData.headers,
       AppointmentData.fields
     )
@@ -91,10 +103,10 @@ class NdmisPerformanceReportJobConfiguration(
 
     return jobBuilderFactory["ndmisPerformanceReportJob"]
       .validator(validator)
-      .listener(listener)
       .start(ndmisWriteReferralToCsvStep)
       .next(ndmisWriteComplexityToCsvStep)
       .next(ndmisWriteAppointmentToCsvStep)
+      .next(pushToS3Step)
       .build()
   }
 
@@ -109,7 +121,6 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
-      .listener(listenerFactory.createListener("crs_performance_report-v2-referrals"))
       .build()
   }
 
@@ -124,7 +135,6 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
-      .listener(listenerFactory.createListener("crs_performance_report-v2-complexity"))
       .build()
   }
 
@@ -139,7 +149,16 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
-      .listener(listenerFactory.createListener("crs_performance_report-v2-appointments"))
       .build()
   }
+
+  private val pushToS3Step = stepBuilderFactory["pushToS3Step"]
+    .tasklet { _: StepContribution, _: ChunkContext ->
+      listOf(referralReportPath, complexityReportPath, appointmentsReportPath).forEach { path ->
+        s3Service.publishFileToS3(ndmisS3Bucket, path, "export/csv/reports/")
+        File(path.toString()).delete()
+      }
+      RepeatStatus.FINISHED
+    }
+    .build()
 }

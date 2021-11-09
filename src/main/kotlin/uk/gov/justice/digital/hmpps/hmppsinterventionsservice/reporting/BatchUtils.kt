@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments
 import org.springframework.batch.item.ItemProcessor
+import org.springframework.batch.item.ItemWriter
 import org.springframework.batch.item.file.FlatFileHeaderCallback
 import org.springframework.batch.item.file.FlatFileItemWriter
 import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder
@@ -97,5 +98,13 @@ interface SentReferralProcessor<T> : ItemProcessor<Referral, T> {
     logger.debug("processing referral {}", StructuredArguments.kv("referralId", referral.id))
     if (referral.sentAt == null) throw RuntimeException("invalid referral passed to sent referral processor; referral has not been sent")
     return processSentReferral(referral)
+  }
+}
+
+class LoggingWriter<T> : ItemWriter<T> {
+  companion object : KLogging()
+
+  override fun write(items: MutableList<out T>) {
+    logger.info(items.toString())
   }
 }
