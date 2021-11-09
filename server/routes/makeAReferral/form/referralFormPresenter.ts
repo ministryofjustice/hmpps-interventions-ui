@@ -15,7 +15,7 @@ export default class ReferralFormPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
-    private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null | undefined
+    private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null | undefined = null
   ) {
     this.taskValues = new TaskValues(referral, draftOasysRiskInformation)
     this.sectionValues = new SectionValues(this.taskValues)
