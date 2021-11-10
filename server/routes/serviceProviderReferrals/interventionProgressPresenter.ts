@@ -242,9 +242,9 @@ export default class InterventionProgressPresenter {
         return 'Complete the initial assessment within 10 working days from receiving a new referral. Once you enter the appointment details, you will be able to change them.'
       case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
+      case SessionStatus.didNotAttend:
         return 'Feedback needs to be added on the same day the assessment is delivered.'
       case SessionStatus.completed:
-      case SessionStatus.didNotAttend:
         return 'The initial assessment has been delivered and feedback added.'
       default:
         throw new Error('unexpected status')

@@ -986,7 +986,7 @@ describe(InterventionProgressPresenter, () => {
         )
 
         expect(presenter.supplierAssessmentMessage).toEqual(
-          'The initial assessment has been delivered and feedback added.'
+          'Feedback needs to be added on the same day the assessment is delivered.'
         )
       })
     })
