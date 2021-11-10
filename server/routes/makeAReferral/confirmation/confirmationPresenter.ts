@@ -1,7 +1,11 @@
 import SentReferral from '../../../models/sentReferral'
+import LoggedInUser from '../../../models/loggedInUser'
+import PrimaryNavBarPresenter from '../../shared/primaryNavBar/primaryNavBarPresenter'
 
 export default class ConfirmationPresenter {
-  constructor(private readonly referral: SentReferral) {}
+  constructor(private readonly referral: SentReferral, private readonly loggedInUser: LoggedInUser) {}
+
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
 
   readonly text = {
     title: `We’ve sent your referral to ${this.referral.referral.serviceProvider.name}`,

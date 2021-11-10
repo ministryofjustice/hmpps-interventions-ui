@@ -1,10 +1,16 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "Make a referral" %}
 {% set pageSubTitle = "Submit confirmation" %}
+
+{% block primaryNav %}
+  {{ mojPrimaryNavigation(primaryNavArgs) }}
+{% endblock %}
+
 
 {% block pageContent %}
   <div class="govuk-grid-row">
