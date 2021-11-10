@@ -23,6 +23,12 @@ aws:
       secret-access-key: test
       endpoint.uri: http://localhost:4566
       bucket.name: interventions-bucket-local
+    ndmis:
+      enabled: false
+      access-key-id: test
+      secret-access-key: test
+      endpoint.uri: http://localhost:4566
+      bucket.name: interventions-bucket-ndmis
   sns:
     enabled: false
     provider: localstack

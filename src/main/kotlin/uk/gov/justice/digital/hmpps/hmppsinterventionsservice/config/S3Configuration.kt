@@ -33,6 +33,7 @@ data class S3BucketConfiguration(
 @ConfigurationProperties(prefix = "aws.s3")
 class S3Buckets(
   val storage: S3BucketConfiguration,
+  val ndmis: S3BucketConfiguration,
 )
 
 @Configuration
@@ -43,6 +44,11 @@ class S3Configuration(
   @Bean
   fun storageS3Bucket(): S3Bucket {
     return bucketFactory(buckets.storage)
+  }
+
+  @Bean
+  fun ndmisS3Bucket(): S3Bucket {
+    return bucketFactory(buckets.ndmis)
   }
 
   private fun bucketFactory(config: S3BucketConfiguration): S3Bucket {
