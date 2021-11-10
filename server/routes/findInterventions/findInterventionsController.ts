@@ -30,7 +30,7 @@ export default class FindInterventionsController {
       req.params.id
     )
 
-    const presenter = new InterventionDetailsPresenter(intervention)
+    const presenter = new InterventionDetailsPresenter(intervention, res.locals.user)
     const view = new InterventionDetailsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

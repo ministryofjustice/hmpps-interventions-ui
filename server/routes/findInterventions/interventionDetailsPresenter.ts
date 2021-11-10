@@ -1,9 +1,13 @@
 import Intervention, { Eligibility } from '../../models/intervention'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
+import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
+import LoggedInUser from '../../models/loggedInUser'
 
 export default class InterventionDetailsPresenter {
-  constructor(private readonly intervention: Intervention) {}
+  constructor(private readonly intervention: Intervention, private readonly loggedInUser: LoggedInUser) {}
+
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
 
   get title(): string {
     return this.intervention.title
