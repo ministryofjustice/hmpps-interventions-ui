@@ -177,9 +177,6 @@ aws:
     storage:
       enabled: false
       region: eu-west-2
-    ndmis:
-      enabled: false
-      region: eu-west-2
   sns:
     enabled: true
     provider: aws
