@@ -18,7 +18,7 @@ export default class FindInterventionsController {
       this.interventionsService.getPccRegions(res.locals.user.token.accessToken),
     ])
 
-    const presenter = new SearchResultsPresenter(interventions, filter, pccRegions)
+    const presenter = new SearchResultsPresenter(interventions, filter, pccRegions, res.locals.user)
     const view = new SearchResultsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

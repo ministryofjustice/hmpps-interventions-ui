@@ -68,6 +68,7 @@ export default class SearchResultsView {
         ageCheckboxArgs: this.ageCheckboxArgs,
         summaryListArgs: SearchResultsView.summaryListArgs,
         searchSummarySummaryListArgs: this.searchSummarySummaryListArgs,
+        primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
       },
     ]
   }

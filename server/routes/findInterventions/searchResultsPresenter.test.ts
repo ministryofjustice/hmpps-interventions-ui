@@ -2,11 +2,18 @@ import SearchResultsPresenter from './searchResultsPresenter'
 import interventionFactory from '../../../testutils/factories/intervention'
 import InterventionsFilter from './interventionsFilter'
 import pccRegionFactory from '../../../testutils/factories/pccRegion'
+import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 describe(SearchResultsPresenter, () => {
+  const loggedInUser = loggedInUserFactory.probationUser().build()
   describe('results', () => {
     it('contains as many items as there are interventions', () => {
-      const presenter = new SearchResultsPresenter(interventionFactory.buildList(3), new InterventionsFilter(), [])
+      const presenter = new SearchResultsPresenter(
+        interventionFactory.buildList(3),
+        new InterventionsFilter(),
+        [],
+        loggedInUser
+      )
 
       expect(presenter.results.length).toBe(3)
     })
@@ -16,7 +23,7 @@ describe(SearchResultsPresenter, () => {
     describe('results', () => {
       describe('with no results', () => {
         it('is correctly pluralised', () => {
-          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [])
+          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [], loggedInUser)
 
           expect(presenter.text.results).toEqual({ count: '0', countSuffix: 'results found.' })
         })
@@ -24,7 +31,12 @@ describe(SearchResultsPresenter, () => {
 
       describe('with 1 result', () => {
         it('is correctly pluralised', () => {
-          const presenter = new SearchResultsPresenter(interventionFactory.buildList(1), new InterventionsFilter(), [])
+          const presenter = new SearchResultsPresenter(
+            interventionFactory.buildList(1),
+            new InterventionsFilter(),
+            [],
+            loggedInUser
+          )
 
           expect(presenter.text.results).toEqual({ count: '1', countSuffix: 'result found.' })
         })
@@ -32,7 +44,12 @@ describe(SearchResultsPresenter, () => {
 
       describe('with > 1 result', () => {
         it('is correctly pluralised', () => {
-          const presenter = new SearchResultsPresenter(interventionFactory.buildList(2), new InterventionsFilter(), [])
+          const presenter = new SearchResultsPresenter(
+            interventionFactory.buildList(2),
+            new InterventionsFilter(),
+            [],
+            loggedInUser
+          )
 
           expect(presenter.text.results).toEqual({ count: '2', countSuffix: 'results found.' })
         })
@@ -48,7 +65,7 @@ describe(SearchResultsPresenter, () => {
     const pccRegions = [lancashire, norfolk, cheshire]
 
     it('has the correct name and value in alphabetical order', () => {
-      const presenter = new SearchResultsPresenter([], new InterventionsFilter(), pccRegions)
+      const presenter = new SearchResultsPresenter([], new InterventionsFilter(), pccRegions, loggedInUser)
 
       expect(presenter.pccRegionFilters).toMatchObject([
         { value: cheshire.id, text: 'Cheshire' },
@@ -60,7 +77,7 @@ describe(SearchResultsPresenter, () => {
     describe('checked', () => {
       describe('when filter doesn’t specify PCC region IDs', () => {
         it('is false for all regions', () => {
-          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), pccRegions)
+          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), pccRegions, loggedInUser)
 
           expect(presenter.pccRegionFilters).toMatchObject([{ checked: false }, { checked: false }, { checked: false }])
         })
@@ -70,7 +87,7 @@ describe(SearchResultsPresenter, () => {
         it('returns true for a region listed in the filter and false for a region not listed in the filter', () => {
           const filter = new InterventionsFilter()
           filter.pccRegionIds = [cheshire.id]
-          const presenter = new SearchResultsPresenter([], filter, pccRegions)
+          const presenter = new SearchResultsPresenter([], filter, pccRegions, loggedInUser)
 
           expect(presenter.pccRegionFilters).toMatchObject([{ checked: true }, { checked: false }, { checked: false }])
         })
@@ -80,7 +97,7 @@ describe(SearchResultsPresenter, () => {
 
   describe('genderFilters', () => {
     it('has the correct name and value', () => {
-      const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [])
+      const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [], loggedInUser)
 
       expect(presenter.genderFilters).toMatchObject([
         { value: 'male', text: 'Male' },
@@ -91,7 +108,7 @@ describe(SearchResultsPresenter, () => {
     describe('checked', () => {
       describe('when filter doesn’t specify gender', () => {
         it('is false for all values', () => {
-          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [])
+          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [], loggedInUser)
 
           expect(presenter.genderFilters).toMatchObject([{ checked: false }, { checked: false }])
         })
@@ -101,7 +118,7 @@ describe(SearchResultsPresenter, () => {
         it('is true for male', () => {
           const filter = new InterventionsFilter()
           filter.gender = ['male']
-          const presenter = new SearchResultsPresenter([], filter, [])
+          const presenter = new SearchResultsPresenter([], filter, [], loggedInUser)
 
           expect(presenter.genderFilters[0]).toMatchObject({ checked: true })
         })
@@ -111,7 +128,7 @@ describe(SearchResultsPresenter, () => {
         it('is true for female', () => {
           const filter = new InterventionsFilter()
           filter.gender = ['female']
-          const presenter = new SearchResultsPresenter([], filter, [])
+          const presenter = new SearchResultsPresenter([], filter, [], loggedInUser)
 
           expect(presenter.genderFilters[1]).toMatchObject({ checked: true })
         })
@@ -121,7 +138,7 @@ describe(SearchResultsPresenter, () => {
 
   describe('ageFilters', () => {
     it('has the correct name and value', () => {
-      const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [])
+      const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [], loggedInUser)
 
       expect(presenter.ageFilters).toMatchObject([{ value: '18-to-25-only', text: 'Only for ages 18 to 25' }])
     })
@@ -129,7 +146,7 @@ describe(SearchResultsPresenter, () => {
     describe('checked', () => {
       describe('when filter doesn’t specify age', () => {
         it('is false for all values', () => {
-          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [])
+          const presenter = new SearchResultsPresenter([], new InterventionsFilter(), [], loggedInUser)
 
           expect(presenter.ageFilters).toMatchObject([{ checked: false }])
         })
@@ -139,7 +156,7 @@ describe(SearchResultsPresenter, () => {
         it('is true for 18 to 25 only', () => {
           const filter = new InterventionsFilter()
           filter.age = ['18-to-25-only']
-          const presenter = new SearchResultsPresenter([], filter, [])
+          const presenter = new SearchResultsPresenter([], filter, [], loggedInUser)
 
           expect(presenter.ageFilters).toMatchObject([{ checked: true }])
         })
