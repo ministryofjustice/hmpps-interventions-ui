@@ -83,6 +83,13 @@ export interface GetSentReferralsFilterParams {
   assignedTo?: string
 }
 
+export enum SPDashboardType {
+  MyCases = 'myCases',
+  OpenCases = 'openCases',
+  UnassignedCases = 'unassignedCases',
+  CompletedCases = 'completedCases',
+}
+
 export type InterventionsServiceError = RestClientError
 
 export interface CreateCaseNoteParams {
@@ -238,12 +245,15 @@ export default class InterventionsService {
   }
 
   async getServiceProviderSentReferralsSummaryForUserToken(
-    token: string
+    token: string,
+    dashboardType?: SPDashboardType
   ): Promise<ServiceProviderSentReferralSummary[]> {
     const restClient = this.createRestClient(token)
+    const query = dashboardType ? { dashboardType: SPDashboardType[dashboardType] } : undefined
 
     return (await restClient.get({
       path: `/sent-referrals/summary/service-provider`,
+      query,
       headers: { Accept: 'application/json' },
     })) as ServiceProviderSentReferralSummary[]
   }
