@@ -60,7 +60,7 @@ export default class SearchResultsPresenter {
   readonly summary: SearchSummaryPresenter = new SearchSummaryPresenter(this.filter, this.pccRegions)
 
   readonly results: InterventionDetailsPresenter[] = this.interventions.map(
-    intervention => new InterventionDetailsPresenter(intervention)
+    intervention => new InterventionDetailsPresenter(intervention, this.loggedInUser)
   )
 
   readonly text = {
