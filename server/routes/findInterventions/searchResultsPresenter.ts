@@ -3,13 +3,18 @@ import PCCRegion from '../../models/pccRegion'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import InterventionsFilter from './interventionsFilter'
 import SearchSummaryPresenter from './searchSummaryPresenter'
+import LoggedInUser from '../../models/loggedInUser'
+import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 
 export default class SearchResultsPresenter {
   constructor(
     private readonly interventions: Intervention[],
     private readonly filter: InterventionsFilter,
-    private readonly pccRegions: PCCRegion[]
+    private readonly pccRegions: PCCRegion[],
+    private readonly loggedInUser: LoggedInUser
   ) {}
+
+  readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
 
   readonly pccRegionFilters: {
     value: string
