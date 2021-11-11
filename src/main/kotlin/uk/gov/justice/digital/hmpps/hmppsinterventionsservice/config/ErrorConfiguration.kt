@@ -122,6 +122,12 @@ class ErrorConfiguration(private val telemetryClient: TelemetryClient) {
     return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Call to dependency request exception", e.message, userMessageForWebClientException(HttpStatus.INTERNAL_SERVER_ERROR))
   }
 
+  @ExceptionHandler(IllegalArgumentException::class)
+  fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+    logger.info("Illegal argument provided", e)
+    return errorResponse(HttpStatus.BAD_REQUEST, "Illegal argument provided", e.message, userMessageForWebClientException(HttpStatus.BAD_REQUEST))
+  }
+
   @ExceptionHandler(WebClientResponseException::class)
   fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse> {
     logger.info("Call to dependency response exception", e)

@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.AccessError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DashboardType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
@@ -142,9 +143,9 @@ class ReferralService(
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
 
-  fun getServiceProviderSummaries(user: AuthUser): List<ServiceProviderSentReferralSummary> {
+  fun getServiceProviderSummaries(user: AuthUser, dashboardType: DashboardType? = null): List<ServiceProviderSentReferralSummary> {
     if (userTypeChecker.isServiceProviderUser(user)) {
-      return getSentReferralSummariesForServiceProviderUser(user)
+      return getSentReferralSummariesForServiceProviderUser(user, dashboardType)
     }
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
@@ -164,10 +165,9 @@ class ReferralService(
     )
   }
 
-  private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser): List<ServiceProviderSentReferralSummary> {
+  private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser, dashboardType: DashboardType?): List<ServiceProviderSentReferralSummary> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
-
-    val referralSummaries = referralRepository.referralSummaryForServiceProviders(serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.id })
+    val referralSummaries = referralRepository.getSentReferralSummaries(user, serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.id }, dashboardType)
     return referralAccessFilter.serviceProviderReferralSummaries(referralSummaries, user)
   }
 

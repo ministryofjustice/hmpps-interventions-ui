@@ -149,6 +149,59 @@ internal class ReferralControllerTest {
     }
   }
 
+  @Nested
+  inner class GetServiceProviderSentReferralsSummary {
+    private val token = tokenFactory.create()
+
+    @Test
+    fun `can accept all defined dashboard types`() {
+      whenever(referralService.getServiceProviderSummaries(any(), any())).thenReturn(emptyList())
+      assertThat(
+        referralController.getServiceProviderSentReferralsSummary(
+          token, "myCases"
+        )
+      ).isNotNull
+
+      assertThat(
+        referralController.getServiceProviderSentReferralsSummary(
+          token, "openCases"
+        )
+      ).isNotNull
+
+      assertThat(
+        referralController.getServiceProviderSentReferralsSummary(
+          token, "unassignedCases"
+        )
+      ).isNotNull
+
+      assertThat(
+        referralController.getServiceProviderSentReferralsSummary(
+          token, "completedCases"
+        )
+      ).isNotNull
+    }
+
+    @Test
+    fun `returns default list when no dashboardType provided`() {
+      whenever(referralService.getServiceProviderSummaries(any(), any())).thenReturn(emptyList())
+      val result = referralController.getServiceProviderSentReferralsSummary(
+        token, null
+      )
+      assertThat(result).isNotNull
+    }
+
+    @Test
+    fun `thros error when invalid dashboardType provided`() {
+      whenever(referralService.getServiceProviderSummaries(any(), any())).thenReturn(emptyList())
+      assertThrows<IllegalArgumentException> {
+        referralController.getServiceProviderSentReferralsSummary(
+          token,
+          "invalidDashBoardType"
+        )
+      }
+    }
+  }
+
   @Test
   fun `assignSentReferral returns 404 if referral does not exist`() {
     whenever(referralService.getSentReferralForUser(any(), any())).thenReturn(null)
