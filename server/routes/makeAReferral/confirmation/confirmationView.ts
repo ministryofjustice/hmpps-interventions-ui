@@ -18,6 +18,7 @@ export default class ConfirmationView {
       {
         presenter: this.presenter,
         panelArgs: this.panelArgs,
+        primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
       },
     ]
   }

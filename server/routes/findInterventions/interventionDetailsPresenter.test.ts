@@ -8,13 +8,16 @@ import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import TestUtils from '../../../testutils/testUtils'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import pccRegion from '../../../testutils/factories/pccRegion'
+import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
 describe(InterventionDetailsPresenter, () => {
+  const loggedInUser = loggedInUserFactory.probationUser().build()
   describe('title', () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         title: 'Accommodation',
-      })
+      }),
+      loggedInUser
     )
     it('returns the intervention title', () => {
       expect(presenter.title).toEqual('Accommodation')
@@ -25,7 +28,8 @@ describe(InterventionDetailsPresenter, () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         id: '65b5cc27-0b87-4f44-8a35-bb08fc64e90e',
-      })
+      }),
+      loggedInUser
     )
     it('returns the link to make a referral', () => {
       expect(presenter.hrefReferralStart).toEqual('/intervention/65b5cc27-0b87-4f44-8a35-bb08fc64e90e/refer')
@@ -36,7 +40,8 @@ describe(InterventionDetailsPresenter, () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         id: '65b5cc27-0b87-4f44-8a35-bb08fc64e90e',
-      })
+      }),
+      loggedInUser
     )
     it('returns the link to the intervention', () => {
       expect(presenter.hrefInterventionDetails).toEqual(
@@ -49,7 +54,8 @@ describe(InterventionDetailsPresenter, () => {
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         description: 'Some information about the intervention',
-      })
+      }),
+      loggedInUser
     )
     it('returns the intervention description', () => {
       expect(presenter.description).toEqual('Some information about the intervention')
@@ -61,7 +67,8 @@ describe(InterventionDetailsPresenter, () => {
       const presenter = new InterventionDetailsPresenter(
         interventionFactory.build({
           description: 'Some information about the intervention',
-        })
+        }),
+        loggedInUser
       )
       expect(presenter.truncatedDescription).toEqual('Some information about the intervention')
     })
@@ -73,7 +80,8 @@ describe(InterventionDetailsPresenter, () => {
 that is longer than one line
 and even longer than
 three lines.`,
-        })
+        }),
+        loggedInUser
       )
       expect(presenter.truncatedDescription).toEqual('Some information about the intervention')
     })
@@ -82,7 +90,8 @@ three lines.`,
       const presenter = new InterventionDetailsPresenter(
         interventionFactory.build({
           description: new Array(1000).join('x'),
-        })
+        }),
+        loggedInUser
       )
       expect(presenter.truncatedDescription).toEqual(`${new Array(501).join('x')}...`)
     })
@@ -91,7 +100,8 @@ three lines.`,
       const presenter = new InterventionDetailsPresenter(
         interventionFactory.build({
           description: `${new Array(1000).join('x')}\n${new Array(1000).join('z')}`,
-        })
+        }),
+        loggedInUser
       )
       expect(presenter.truncatedDescription).toEqual(`${new Array(501).join('x')}...`)
     })
@@ -101,7 +111,8 @@ three lines.`,
     const presenter = new InterventionDetailsPresenter(
       interventionFactory.build({
         serviceProvider: serviceProviderFactory.build({ name: 'Harmony Living' }),
-      })
+      }),
+      loggedInUser
     )
 
     it('returns an array of summary lists, each with an id and title', () => {
@@ -122,7 +133,7 @@ three lines.`,
 
   describe('summary', () => {
     function summaryForParams(params: DeepPartial<Intervention>): SummaryListItem[] {
-      return new InterventionDetailsPresenter(interventionFactory.build(params)).summary
+      return new InterventionDetailsPresenter(interventionFactory.build(params), loggedInUser).summary
     }
 
     function linesForKey(key: string, params: DeepPartial<Intervention>): string[] | null {

@@ -666,7 +666,7 @@ export default class MakeAReferralController {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new ConfirmationPresenter(referral)
+    const presenter = new ConfirmationPresenter(referral, res.locals.user)
     const view = new ConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

@@ -1,11 +1,16 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "Find interventions" %}
 {% set pageSubTitle = "Find results" %}
+
+{% block primaryNav %}
+  {{ mojPrimaryNavigation(primaryNavArgs) }}
+{% endblock %}
 
 {% block pageContent %}
   <div class="govuk-grid-row govuk-!-margin-bottom-7">
