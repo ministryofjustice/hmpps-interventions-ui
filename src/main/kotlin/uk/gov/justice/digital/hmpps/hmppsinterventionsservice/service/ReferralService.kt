@@ -145,7 +145,7 @@ class ReferralService(
 
   fun getServiceProviderSummaries(user: AuthUser, dashboardType: DashboardType? = null): List<ServiceProviderSentReferralSummary> {
     if (userTypeChecker.isServiceProviderUser(user)) {
-      return getSentReferralSummariesForServiceProviderUser(user)
+      return getSentReferralSummariesForServiceProviderUser(user, dashboardType)
     }
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
@@ -165,9 +165,9 @@ class ReferralService(
     )
   }
 
-  private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser): List<ServiceProviderSentReferralSummary> {
+  private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser, dashboardType: DashboardType?): List<ServiceProviderSentReferralSummary> {
     val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
-    val referralSummaries = referralRepository.getSentReferralSummaries(serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.id })
+    val referralSummaries = referralRepository.getSentReferralSummaries(user, serviceProviders = serviceProviders.map { serviceProvider -> serviceProvider.id }, dashboardType)
     return referralAccessFilter.serviceProviderReferralSummaries(referralSummaries, user)
   }
 

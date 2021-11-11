@@ -1,8 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository
 
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DashboardType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProviderSentReferralSummary
 import java.sql.Timestamp
-import java.time.Instant
 import java.util.UUID
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -53,9 +54,12 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 ) a where assigned_at_desc_seq = 1"""
   }
 
-  override fun getSentReferralSummaries(serviceProviders: List<String>): List<ServiceProviderSentReferralSummary> {
-    val query = entityManager.createNativeQuery(summariesQuery(null))
+  override fun getSentReferralSummaries(authUser: AuthUser, serviceProviders: List<String>, dashboardType: DashboardType?): List<ServiceProviderSentReferralSummary> {
+    val query = entityManager.createNativeQuery(summariesQuery(constructCustomCriteria(dashboardType)))
     query.setParameter("serviceProviders", serviceProviders)
+    if (dashboardType == DashboardType.myCases) {
+      query.setParameter("username", authUser.userName)
+    }
     val result = query.resultList as List<Array<Any>>
     val summaries: MutableList<ServiceProviderSentReferralSummary> = mutableListOf()
     result.forEach { row ->
@@ -74,5 +78,13 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
     return summaries
   }
 
-
+  private fun constructCustomCriteria(dashboardType: DashboardType?): String? {
+    return when (dashboardType) {
+      DashboardType.myCases -> "and au.user_name = :username and eosr.submitted_at is null "
+      DashboardType.openCases -> "and eosr.submitted_at is null "
+      DashboardType.unassignedCases -> "and au.user_name is null and eosr.submitted_at is null "
+      DashboardType.completedCases -> "and eosr.submitted_at is not null "
+      null -> null
+    }
+  }
 }
