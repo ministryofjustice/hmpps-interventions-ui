@@ -2222,7 +2222,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('Initial assessment appointment')
             .next()
-            .contains('The initial assessment has been delivered and feedback added.')
+            .contains('Feedback needs to be added on the same day the assessment is delivered.')
             .next()
           cy.get('[data-cy=supplier-assessment-table]').contains('did not attend')
           cy.get('[data-cy=supplier-assessment-table]').contains('Reschedule').click()
@@ -2266,7 +2266,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('Initial assessment appointment')
             .next()
-            .contains('The initial assessment has been delivered and feedback added.')
+            .contains('Feedback needs to be added on the same day the assessment is delivered.')
 
           cy.get('[data-cy=supplier-assessment-table]')
             .getTable()
