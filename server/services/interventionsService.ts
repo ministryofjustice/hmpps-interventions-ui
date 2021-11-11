@@ -249,8 +249,7 @@ export default class InterventionsService {
     dashboardType?: SPDashboardType
   ): Promise<ServiceProviderSentReferralSummary[]> {
     const restClient = this.createRestClient(token)
-    const query = dashboardType ? { dashboardType: SPDashboardType[dashboardType] } : undefined
-
+    const query = dashboardType ? { dashboardType } : undefined
     return (await restClient.get({
       path: `/sent-referrals/summary/service-provider`,
       query,
