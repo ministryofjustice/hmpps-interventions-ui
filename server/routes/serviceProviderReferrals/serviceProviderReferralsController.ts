@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
 import CommunityApiService from '../../services/communityApiService'
-import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
+import InterventionsService, { InterventionsServiceError, SPDashboardType } from '../../services/interventionsService'
 import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import CheckAssignmentPresenter from './checkAssignmentPresenter'
@@ -76,7 +76,8 @@ export default class ServiceProviderReferralsController {
 
   async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
     const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken
+      res.locals.user.token.accessToken,
+      SPDashboardType.MyCases
     )
     const filteredSummary = referralsSummary.filter(summary => {
       return summary.assignedToUserName === res.locals.user.username && !summary.endOfServiceReportSubmitted
@@ -87,7 +88,8 @@ export default class ServiceProviderReferralsController {
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
     const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken
+      res.locals.user.token.accessToken,
+      SPDashboardType.OpenCases
     )
     const openReferrals = referralsSummary.filter(summary => {
       return !summary.endOfServiceReportSubmitted
@@ -97,7 +99,8 @@ export default class ServiceProviderReferralsController {
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
     const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken
+      res.locals.user.token.accessToken,
+      SPDashboardType.UnassignedCases
     )
     const unassignedReferrals = referralsSummary.filter(summary => {
       return !summary.assignedToUserName && !summary.endOfServiceReportSubmitted
@@ -107,7 +110,8 @@ export default class ServiceProviderReferralsController {
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
     const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken
+      res.locals.user.token.accessToken,
+      SPDashboardType.CompletedCases
     )
     const completedReferrals = referralsSummary.filter(summary => {
       return summary.endOfServiceReportSubmitted === true
