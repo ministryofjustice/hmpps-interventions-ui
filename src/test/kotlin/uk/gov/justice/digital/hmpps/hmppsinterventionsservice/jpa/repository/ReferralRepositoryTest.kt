@@ -51,7 +51,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val referralWithAnotherPrimeSp = createReferral(true)
 
       val serviceProviderSearchId = referralWithPrimeSp.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(contains(summaries, expectedSummary(referralWithPrimeSp)))
@@ -63,7 +63,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val referralWithAnotherSubConSp = createReferral(false)
 
       val serviceProviderSearchId = referralWithSubConSp.intervention.dynamicFrameworkContract.subcontractorProviders.firstOrNull()!!.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(contains(summaries, expectedSummary(referralWithSubConSp)))
@@ -81,7 +81,7 @@ class ReferralRepositoryTest @Autowired constructor(
         referralWithPrimeSp.intervention.dynamicFrameworkContract.primeProvider.id,
         referralWithSubConSp.intervention.dynamicFrameworkContract.subcontractorProviders.firstOrNull()!!.id
       )
-      val summaries = referralRepository.referralSummaryForServiceProviders(serviceProviderSearchIds)
+      val summaries = referralRepository.getSentReferralSummaries(serviceProviderSearchIds)
 
       assertThat(summaries.size).isEqualTo(2)
       assertThat(contains(summaries, expectedSummary(referralWithPrimeSp)))
@@ -94,7 +94,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val referralWithPrimeSp = createReferral(true)
       val referralWithSubConSp = createReferral(false)
 
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf("NON_EXISTENT_SP"))
+      val summaries = referralRepository.getSentReferralSummaries(listOf("NON_EXISTENT_SP"))
 
       assertThat(summaries.size).isEqualTo(0)
     }
@@ -102,13 +102,12 @@ class ReferralRepositoryTest @Autowired constructor(
 
   @Nested
   inner class AssignedToReferralSelection {
-
     @Test
     fun `can determine assigned user when only one`() {
       val referralWithSingleAssignee = createReferral(true, 1)
 
       val serviceProviderSearchId = referralWithSingleAssignee.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(contains(summaries, expectedSummary(referralWithSingleAssignee)))
@@ -119,7 +118,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val referralWithChangedAssignee = createReferral(true, 2)
 
       val serviceProviderSearchId = referralWithChangedAssignee.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(contains(summaries, expectedSummary(referralWithChangedAssignee)))
@@ -134,7 +133,7 @@ class ReferralRepositoryTest @Autowired constructor(
         referralWithChangedAssignee.intervention.dynamicFrameworkContract.primeProvider.id,
         referralWithMultipleChangedAssignee.intervention.dynamicFrameworkContract.primeProvider.id
       )
-      val summaries = referralRepository.referralSummaryForServiceProviders(serviceProviderSearchIds)
+      val summaries = referralRepository.getSentReferralSummaries(serviceProviderSearchIds)
 
       assertThat(summaries.size).isEqualTo(2)
       assertThat(contains(summaries, expectedSummary(referralWithChangedAssignee)))
@@ -147,7 +146,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val referralWithNoAssignee = createReferral(true, 0)
 
       val serviceProviderSearchId = referralWithNoAssignee.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(summaries[0].assignedToUserName).isNull()
@@ -168,7 +167,7 @@ class ReferralRepositoryTest @Autowired constructor(
       )
 
       val serviceProviderSearchId = referral.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(0)
     }
@@ -183,7 +182,7 @@ class ReferralRepositoryTest @Autowired constructor(
       )
 
       val serviceProviderSearchId = referral.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(contains(summaries, expectedSummary(referral)))
@@ -199,7 +198,7 @@ class ReferralRepositoryTest @Autowired constructor(
       )
 
       val serviceProviderSearchId = referral.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(1)
       assertThat(contains(summaries, expectedSummary(referral)))
@@ -210,7 +209,7 @@ class ReferralRepositoryTest @Autowired constructor(
       val referralWithNoAssignee = createDraftReferral(true)
 
       val serviceProviderSearchId = referralWithNoAssignee.intervention.dynamicFrameworkContract.primeProvider.id
-      val summaries = referralRepository.referralSummaryForServiceProviders(listOf(serviceProviderSearchId))
+      val summaries = referralRepository.getSentReferralSummaries(listOf(serviceProviderSearchId))
 
       assertThat(summaries.size).isEqualTo(0)
     }
@@ -286,7 +285,7 @@ class ReferralRepositoryTest @Autowired constructor(
     return RandomStringUtils.randomAlphabetic(length)
   }
 
-  private fun contains(summaries: List<ServiceProviderSentReferralSummary>, summary: Summary): Boolean {
+  private fun contains(summaries: List<ServiceProviderSentReferralSummary>, summary: ServiceProviderSentReferralSummary): Boolean {
     return summaries.any {
       it.referralId == summary.referralId.toString() &&
         it.sentAt == summary.sentAt &&
@@ -302,7 +301,7 @@ class ReferralRepositoryTest @Autowired constructor(
   }
 
   private fun expectedSummary(referral: Referral) =
-    Summary(
+    ServiceProviderSentReferralSummary(
       referral.id.toString(),
       referral.sentAt!!.toInstant(),
       referral.referenceNumber!!,
@@ -330,16 +329,3 @@ class ReferralRepositoryTest @Autowired constructor(
     assertThat(referrals.numberOfElements).isEqualTo(1)
   }
 }
-
-data class Summary(
-  override val referralId: String,
-  override val sentAt: Instant,
-  override val referenceNumber: String,
-  override val interventionTitle: String,
-  override val dynamicFrameWorkContractId: String,
-  override val assignedToUserName: String?,
-  override val serviceUserFirstName: String?,
-  override val serviceUserLastName: String?,
-  override val endOfServiceReportId: UUID?,
-  override val endOfServiceReportSubmittedAt: Instant?,
-) : ServiceProviderSentReferralSummary
