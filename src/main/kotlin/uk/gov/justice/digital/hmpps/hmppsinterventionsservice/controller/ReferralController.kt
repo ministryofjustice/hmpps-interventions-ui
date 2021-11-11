@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.User
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller.mappers.CancellationReasonMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ActionPlanSummaryDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.CreateReferralRequestDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DashboardType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DraftReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
@@ -121,9 +122,11 @@ class ReferralController(
   @GetMapping("/sent-referrals/summary/service-provider")
   fun getServiceProviderSentReferralsSummary(
     authentication: JwtAuthenticationToken,
+    @Nullable @RequestParam(name = "dashboardType", required = false) dashboardTypeSelection: String?,
   ): List<ServiceProviderSentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
-    return referralService.getServiceProviderSummaries(user).map { ServiceProviderSentReferralSummaryDTO.from(it) }
+    var dashboardType = dashboardTypeSelection?.let { DashboardType.valueOf(it) }
+    return referralService.getServiceProviderSummaries(user, dashboardType).map { ServiceProviderSentReferralSummaryDTO.from(it) }
   }
 
   @JsonView(Views.SentReferral::class)
