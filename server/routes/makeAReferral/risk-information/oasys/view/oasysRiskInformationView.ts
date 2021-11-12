@@ -1,16 +1,16 @@
 import OasysRiskInformationPresenter from './oasysRiskInformationPresenter'
-import RiskView from '../../../../shared/riskView'
+import RoshPanelView from '../../../../shared/roshPanelView'
 import { CheckboxesArgs, DetailsArgs, RadiosArgs } from '../../../../../utils/govukFrontendTypes'
 import OasysRiskSummaryView from '../oasysRiskSummaryView'
 import ViewUtils from '../../../../../utils/viewUtils'
 
 export default class OasysRiskInformationView {
-  riskView: RiskView
+  roshPanelView: RoshPanelView
 
   riskSummaryView: OasysRiskSummaryView
 
   constructor(readonly presenter: OasysRiskInformationPresenter) {
-    this.riskView = new RiskView(this.presenter.riskPresenter, 'probation-practitioner')
+    this.roshPanelView = new RoshPanelView(this.presenter.riskPresenter, 'probation-practitioner')
     this.riskSummaryView = new OasysRiskSummaryView(presenter.supplementaryRiskInformation, presenter.riskSummary)
   }
 
@@ -90,7 +90,7 @@ export default class OasysRiskInformationView {
         riskInformation: this.riskSummaryView.riskInformation,
         latestAssessment: this.presenter.latestAssessment,
         roshPanelPresenter: this.presenter.riskPresenter,
-        roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
+        roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
         editRiskConfirmationRadioButtonArgs: this.editRiskConfirmationRadioButtonArgs.bind(this),
         confirmUnderstoodWarningCheckboxArgs: this.confirmUnderstoodWarningCheckboxArgs,
         sensitiveInformationDetailsArgs: this.sensitiveInformationDetailsArgs,

@@ -8,7 +8,7 @@ export interface RoshAnalysisTableRow {
   riskScore: string
 }
 
-export default class RiskPresenter {
+export default class RoshPanelPresenter {
   constructor(private readonly riskSummary: RiskSummary | null) {}
 
   readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
