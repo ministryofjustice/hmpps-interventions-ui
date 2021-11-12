@@ -32,11 +32,15 @@ class OnStartupJobLauncherFactory(
 
   fun makeBatchLauncher(job: Job): ApplicationRunner {
     val entryPoint = fun(args: ApplicationArguments): Int {
-      val params = jobParametersConverter.getJobParameters(
+      val rawParams = jobParametersConverter.getJobParameters(
         StringUtils.splitArrayElementsIntoProperties(args.nonOptionArgs.toTypedArray(), "=")
       )
 
-      val execution = jobLauncher.run(job, params)
+      val nextParams = job.jobParametersIncrementer?.let {
+        it.getNext(rawParams)
+      } ?: rawParams
+
+      val execution = jobLauncher.run(job, nextParams)
       return exitCodeMapper.intValue(execution.exitStatus.exitCode)
     }
 

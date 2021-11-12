@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting
 
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments
+import org.springframework.batch.core.JobParameters
+import org.springframework.batch.core.JobParametersBuilder
+import org.springframework.batch.core.JobParametersIncrementer
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
 import org.springframework.batch.item.file.FlatFileHeaderCallback
@@ -14,6 +17,7 @@ import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.io.Writer
+import java.time.Instant
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -106,5 +110,19 @@ class LoggingWriter<T> : ItemWriter<T> {
 
   override fun write(items: MutableList<out T>) {
     logger.info(items.toString())
+  }
+}
+
+class TimestampIncrementer : JobParametersIncrementer {
+  override fun getNext(inputParams: JobParameters?): JobParameters {
+    val params = inputParams ?: JobParameters()
+
+    if (params.parameters["timestamp"] != null) {
+      return params
+    }
+
+    return JobParametersBuilder(params)
+      .addLong("timestamp", Instant.now().epochSecond)
+      .toJobParameters()
   }
 }
