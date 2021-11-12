@@ -2,12 +2,12 @@ import RiskSummary from '../../../../../models/assessRisksAndNeeds/riskSummary'
 import DateUtils from '../../../../../utils/dateUtils'
 import { SupplementaryRiskInformation } from '../../../../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 
-import RiskPresenter from '../../../../shared/riskPresenter'
+import RoshPanelPresenter from '../../../../shared/roshPanelPresenter'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import PresenterUtils from '../../../../../utils/presenterUtils'
 
 export default class OasysRiskInformationPresenter {
-  riskPresenter: RiskPresenter
+  riskPresenter: RoshPanelPresenter
 
   constructor(
     readonly referralId: string,
@@ -15,7 +15,7 @@ export default class OasysRiskInformationPresenter {
     readonly riskSummary: RiskSummary | null,
     private readonly error: FormValidationError | null = null
   ) {
-    this.riskPresenter = new RiskPresenter(riskSummary)
+    this.riskPresenter = new RoshPanelPresenter(riskSummary)
   }
 
   readonly errors = {

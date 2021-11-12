@@ -1,4 +1,4 @@
-import RiskPresenter from './riskPresenter'
+import RoshPanelPresenter from './roshPanelPresenter'
 import riskSummary from '../../../testutils/factories/riskSummary'
 import config from '../../config'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
@@ -7,15 +7,15 @@ interface RiskInCommunity {
   [riskLevel: string]: string[]
 }
 
-describe(RiskPresenter, () => {
+describe(RoshPanelPresenter, () => {
   describe('riskSummaryNotFound', () => {
     it('is true if riskSummary is null', () => {
-      const presenter = new RiskPresenter(null)
+      const presenter = new RoshPanelPresenter(null)
       expect(presenter.riskSummaryNotFound).toEqual(true)
     })
 
     it('is false if riskSummary is not null', () => {
-      const presenter = new RiskPresenter(riskSummary.build())
+      const presenter = new RoshPanelPresenter(riskSummary.build())
       expect(presenter.riskSummaryNotFound).toEqual(false)
     })
   })
@@ -24,7 +24,7 @@ describe(RiskPresenter, () => {
     it('is true if riskSummary is enabled in config and riskSummary is not null', () => {
       try {
         config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
-        const presenter = new RiskPresenter(riskSummary.build())
+        const presenter = new RoshPanelPresenter(riskSummary.build())
         expect(presenter.riskInformationAvailable).toEqual(true)
       } finally {
         config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
@@ -32,14 +32,14 @@ describe(RiskPresenter, () => {
     })
 
     it('is false if riskSummary is disabled in config', () => {
-      const presenter = new RiskPresenter(riskSummary.build())
+      const presenter = new RoshPanelPresenter(riskSummary.build())
       expect(presenter.riskInformationAvailable).toEqual(false)
     })
 
     it('is false if riskSummary is null', () => {
       try {
         config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
-        const presenter = new RiskPresenter(null)
+        const presenter = new RoshPanelPresenter(null)
         expect(presenter.riskInformationAvailable).toEqual(false)
       } finally {
         config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
@@ -49,12 +49,12 @@ describe(RiskPresenter, () => {
 
   describe('roshAnalysisRows', () => {
     it('returns empty list if there is no risk summary', () => {
-      const presenter = new RiskPresenter(null)
+      const presenter = new RoshPanelPresenter(null)
       expect(presenter.roshAnalysisRows).toEqual([])
     })
 
     it('returns rows for each risk group', () => {
-      const presenter = new RiskPresenter(riskSummary.build())
+      const presenter = new RoshPanelPresenter(riskSummary.build())
       expect(presenter.roshAnalysisRows).toEqual([
         { riskTo: 'prisoners', riskScore: 'LOW' },
         { riskTo: 'children', riskScore: 'HIGH' },
@@ -67,7 +67,7 @@ describe(RiskPresenter, () => {
   describe('lastUpdated', () => {
     describe('when the risk summary has an "assessed on" date', () => {
       it('shortens the "assessed on date"', () => {
-        const presenter = new RiskPresenter(riskSummary.build({ assessedOn: '2021-09-21T16:03:16.943Z' }))
+        const presenter = new RoshPanelPresenter(riskSummary.build({ assessedOn: '2021-09-21T16:03:16.943Z' }))
 
         expect(presenter.lastUpdated).toEqual('Last updated: 21 Sep 2021')
       })
@@ -77,7 +77,7 @@ describe(RiskPresenter, () => {
       it('displays a "not found" message', () => {
         const summary = riskSummary.build()
         summary.assessedOn = undefined
-        const presenter = new RiskPresenter(summary)
+        const presenter = new RoshPanelPresenter(summary)
 
         expect(presenter.lastUpdated).toEqual('Last updated: assessment date not found')
       })
@@ -151,7 +151,7 @@ describe(RiskPresenter, () => {
           it(`returns ${riskInCommunityString}`, () => {
             const riskRosh = createRiskSummary(riskInCommunity)
 
-            const presenter = new RiskPresenter(riskRosh)
+            const presenter = new RoshPanelPresenter(riskRosh)
 
             expect(presenter.formattedOverallRoshScore).toEqual(riskInCommunityString.replace('_', ' '))
             expect(presenter.overallRoshStyle).toEqual(
@@ -168,7 +168,7 @@ describe(RiskPresenter, () => {
           UNEXPECTED: ['prisoners'],
         })
 
-        const presenter = new RiskPresenter(riskRosh)
+        const presenter = new RoshPanelPresenter(riskRosh)
 
         expect(presenter.formattedOverallRoshScore).toEqual('UNDEFINED')
       })

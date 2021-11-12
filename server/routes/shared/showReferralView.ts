@@ -1,7 +1,7 @@
 import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { InputArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
-import RiskView from './riskView'
+import RoshPanelView from './roshPanelView'
 
 interface ServiceCategorySection {
   name: string
@@ -11,7 +11,7 @@ interface ServiceCategorySection {
 export default class ShowReferralView {
   constructor(private readonly presenter: ShowReferralPresenter) {}
 
-  private readonly riskView = new RiskView(this.presenter.riskPresenter, this.presenter.userType)
+  private readonly roshPanelView = new RoshPanelView(this.presenter.roshPanelPresenter, this.presenter.userType)
 
   private readonly probationPractitionerSummaryListArgs = ViewUtils.summaryListArgs(
     this.presenter.probationPractitionerDetails
@@ -71,8 +71,8 @@ export default class ShowReferralView {
         serviceCategorySections: this.serviceCategorySections,
         emailInputArgs: this.emailInputArgs,
         backLinkArgs: this.backLinkArgs,
-        roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
-        riskLevelDetailsArgs: this.riskView.riskLevelDetailsArgs,
+        roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
+        riskLevelDetailsArgs: this.roshPanelView.riskLevelDetailsArgs,
       },
     ]
   }

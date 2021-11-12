@@ -18,14 +18,14 @@ import SentencePresenter from '../makeAReferral/relevant-sentence/sentencePresen
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
-import RiskPresenter from './riskPresenter'
+import RoshPanelPresenter from './roshPanelPresenter'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
-  riskPresenter: RiskPresenter
+  roshPanelPresenter: RoshPanelPresenter
 
   constructor(
     private readonly sentReferral: SentReferral,
@@ -47,7 +47,7 @@ export default class ShowReferralPresenter {
       userType
     )
 
-    this.riskPresenter = new RiskPresenter(riskSummary)
+    this.roshPanelPresenter = new RoshPanelPresenter(riskSummary)
   }
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/start`

@@ -1,10 +1,10 @@
 import { DetailsArgs, TableArgs, TagArgs } from '../../utils/govukFrontendTypes'
 import utils from '../../utils/utils'
-import RiskPresenter from './riskPresenter'
+import RoshPanelPresenter from './roshPanelPresenter'
 
-export default class RiskView {
+export default class RoshPanelView {
   constructor(
-    private readonly presenter: RiskPresenter,
+    private readonly presenter: RoshPanelPresenter,
     private readonly userType: 'probation-practitioner' | 'service-provider'
   ) {}
 

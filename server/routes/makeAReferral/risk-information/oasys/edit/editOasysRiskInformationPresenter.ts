@@ -2,16 +2,16 @@ import RiskSummary from '../../../../../models/assessRisksAndNeeds/riskSummary'
 import DateUtils from '../../../../../utils/dateUtils'
 import { SupplementaryRiskInformation } from '../../../../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 
-import RiskPresenter from '../../../../shared/riskPresenter'
+import RoshPanelPresenter from '../../../../shared/roshPanelPresenter'
 
 export default class EditOasysRiskInformationPresenter {
-  riskPresenter: RiskPresenter
+  riskPresenter: RoshPanelPresenter
 
   constructor(
     readonly supplementaryRiskInformation: SupplementaryRiskInformation | null,
     readonly riskSummary: RiskSummary | null
   ) {
-    this.riskPresenter = new RiskPresenter(riskSummary)
+    this.riskPresenter = new RoshPanelPresenter(riskSummary)
   }
 
   get latestAssessment(): string {
