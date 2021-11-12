@@ -13,6 +13,25 @@ describe('OasysRiskSummaryView', () => {
       })
     })
 
+    describe('when riskSummary is empty', () => {
+      it('should display empty values', () => {
+        const view = new OasysRiskSummaryView(null, null)
+        expect(view.riskInformation.summary.whoIsAtRisk.text).toBeNull()
+        expect(view.riskInformation.summary.whoIsAtRisk.label?.text).toEqual('No information provided')
+        expect(view.riskInformation.summary.natureOfRisk.text).toBeNull()
+        expect(view.riskInformation.summary.natureOfRisk.label?.text).toEqual('No information provided')
+        expect(view.riskInformation.summary.riskImminence.text).toBeNull()
+        expect(view.riskInformation.summary.riskImminence.label?.text).toEqual('No information provided')
+        expect(view.riskInformation.riskToSelf.suicide.label.text).toEqual("Don't know")
+        expect(view.riskInformation.riskToSelf.suicide.text).toBeNull()
+        expect(view.riskInformation.riskToSelf.selfHarm.label.text).toEqual("Don't know")
+        expect(view.riskInformation.riskToSelf.selfHarm.text).toBeNull()
+        expect(view.riskInformation.riskToSelf.hostelSetting.label.text).toEqual("Don't know")
+        expect(view.riskInformation.riskToSelf.hostelSetting.text).toBeNull()
+        expect(view.riskInformation.riskToSelf.vulnerability.label.text).toEqual("Don't know")
+        expect(view.riskInformation.riskToSelf.vulnerability.text).toBeNull()
+      })
+    })
     describe('summary', () => {
       it('returns null text and label when null summary values provided ', () => {
         const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()

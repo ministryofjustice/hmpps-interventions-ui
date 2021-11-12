@@ -9,7 +9,7 @@ export default class OasysRiskInformationPresenter {
 
   constructor(
     readonly supplementaryRiskInformation: SupplementaryRiskInformation | null,
-    readonly riskSummary: RiskSummary
+    readonly riskSummary: RiskSummary | null
   ) {
     this.riskPresenter = new RiskPresenter(riskSummary)
   }
