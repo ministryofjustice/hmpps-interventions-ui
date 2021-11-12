@@ -9,8 +9,6 @@ import FindStartPresenter from './findStartPresenter'
 import DashboardView from './dashboardView'
 import DashboardPresenter, { PPDashboardType } from './dashboardPresenter'
 import FindStartView from './findStartView'
-import SubmittedFeedbackPresenter from '../shared/appointment/feedback/submittedFeedbackPresenter'
-import SubmittedFeedbackView from '../shared/appointment/feedback/submittedFeedbackView'
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -199,113 +197,6 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
-  }
-
-  async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const { referralId, sessionNumber } = req.params
-
-    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-
-    if (referral.actionPlanId === null) {
-      throw createError(500, `action plan does not exist on this referral '${req.params.id}'`, {
-        userMessage: 'No action plan exists for this referral',
-      })
-    }
-
-    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      referral.actionPlanId,
-      Number(sessionNumber)
-    )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    if (!referral.assignedTo) {
-      throw new Error('Referral has not yet been assigned to a caseworker')
-    }
-
-    const presenter = new SubmittedFeedbackPresenter(
-      currentAppointment,
-      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
-      serviceUser,
-      'probation-practitioner',
-      referral.id,
-      null
-    )
-    const view = new SubmittedFeedbackView(presenter)
-
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  // This is left to keep links in old emails still working - we'll monitor the endpoint and remove it when usage drops off.
-  async viewLegacySubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
-
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
-    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      actionPlanId,
-      Number(sessionNumber)
-    )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    if (!referral.assignedTo) {
-      throw new Error('Referral has not yet been assigned to a caseworker')
-    }
-
-    const presenter = new SubmittedFeedbackPresenter(
-      currentAppointment,
-      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
-      serviceUser,
-      'probation-practitioner',
-      referral.id,
-      null
-    )
-    const view = new SubmittedFeedbackView(presenter)
-
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  async viewSubmittedPostAssessmentFeedback(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const referralId = req.params.id
-
-    const [referral, supplierAssessment] = await Promise.all([
-      this.interventionsService.getSentReferral(accessToken, referralId),
-      this.interventionsService.getSupplierAssessment(accessToken, referralId),
-    ])
-
-    if (!referral.assignedTo) {
-      throw new Error('Referral has not yet been assigned to a caseworker')
-    }
-
-    const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
-    if (currentAppointment === null) {
-      throw new Error('Attempting to view initial assessment feedback without a current appointment')
-    }
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new SubmittedFeedbackPresenter(
-      currentAppointment,
-      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation),
-      serviceUser,
-      'probation-practitioner',
-      referralId
-    )
-    const view = new SubmittedFeedbackView(presenter)
-
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {

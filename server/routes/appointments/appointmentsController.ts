@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import createError from 'http-errors'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import { AppointmentSchedulingDetails, InitialAssessmentAppointment } from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
@@ -552,7 +553,11 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async viewSupplierAssessmentFeedback(req: Request, res: Response): Promise<void> {
+  async viewSupplierAssessmentFeedback(
+    req: Request,
+    res: Response,
+    userType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { referralId, appointmentId } = req.params
@@ -561,6 +566,10 @@ export default class AppointmentsController {
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
+
+    if (!referral.assignedTo) {
+      throw new Error('Referral has not yet been assigned to a caseworker')
+    }
 
     let supplierAssessmentAppointment: InitialAssessmentAppointment | null
 
@@ -589,7 +598,7 @@ export default class AppointmentsController {
       supplierAssessmentAppointment,
       new AppointmentSummary(supplierAssessmentAppointment, null, deliusOfficeLocation),
       serviceUser,
-      'service-provider',
+      userType,
       referralId
     )
     const view = new SubmittedFeedbackView(presenter)
@@ -746,17 +755,33 @@ export default class AppointmentsController {
     )
   }
 
-  async viewSubmittedPostSessionFeedback(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+  async viewSubmittedPostSessionFeedback(
+    req: Request,
+    res: Response,
+    userType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { sessionNumber, actionPlanId } = req.params
+    let { referralId } = req.params
 
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    // SP journey doesn't pass a referralId
+    if (!referralId) {
+      const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+
+      referralId = actionPlan.referralId
+    }
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (referral.actionPlanId === null) {
+      throw createError(500, `action plan does not exist on this referral '${referralId}'`, {
+        userMessage: 'No action plan exists for this referral',
+      })
+    }
 
     const currentAppointment = await this.interventionsService.getActionPlanAppointment(
       accessToken,
-      actionPlanId,
+      referral.actionPlanId,
       Number(sessionNumber)
     )
     const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
@@ -764,10 +789,44 @@ export default class AppointmentsController {
 
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
-      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation),
+      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
       serviceUser,
-      'service-provider',
+      userType,
       referral.id
+    )
+    const view = new SubmittedFeedbackView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  // This is left to keep links in old emails still working - we'll monitor the endpoint and remove it when usage drops off.
+  async viewLegacySubmittedPostSessionFeedbackAsProbationPractitioner(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { actionPlanId, sessionNumber } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
+      accessToken,
+      actionPlanId,
+      Number(sessionNumber)
+    )
+    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    if (!referral.assignedTo) {
+      throw new Error('Referral has not yet been assigned to a caseworker')
+    }
+
+    const presenter = new SubmittedFeedbackPresenter(
+      currentAppointment,
+      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
+      serviceUser,
+      'probation-practitioner',
+      referral.id,
+      null
     )
     const view = new SubmittedFeedbackView(presenter)
 
