@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DraftOasysRiskInformationService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ServiceCategoryService
@@ -49,8 +50,9 @@ internal class ReferralControllerTest {
   private val clientApiAccessChecker = ClientApiAccessChecker()
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val actionPlanService = mock<ActionPlanService>()
+  private val draftOasysRiskInformationService = mock<DraftOasysRiskInformationService>()
   private val referralController = ReferralController(
-    referralService, referralConcluder, serviceCategoryService, userMapper, clientApiAccessChecker, cancellationReasonMapper, actionPlanService
+    referralService, referralConcluder, serviceCategoryService, userMapper, clientApiAccessChecker, cancellationReasonMapper, actionPlanService, draftOasysRiskInformationService
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()

@@ -127,3 +127,16 @@ COMMENT ON TABLE metadata IS 'defines metadata about the schema';
 COMMENT ON COLUMN metadata.table_name IS 'which table this record is describing';
 COMMENT ON COLUMN metadata.column_name IS 'which column this record is describing';
 COMMENT ON COLUMN metadata.sensitive IS '`true` means the contents should be obfuscated/anonymised in unsafe environments; `false` means it’s safe to see/copy';
+
+COMMENT ON TABLE draft_oasys_risk_information IS 'holds draft OASYS risk information only for a DraftReferral. Discarded after referral is sent.';
+COMMENT ON COLUMN draft_oasys_risk_information.referral_id IS 'the id of the draft referral connected to risk information';
+COMMENT ON COLUMN draft_oasys_risk_information.updated_at IS 'when the draft oasys risk information was last updated';
+COMMENT ON COLUMN draft_oasys_risk_information.updated_by_id IS 'who updated the draft oasys risk information';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_summary_who_is_at_risk IS 'OASYS Risk Summary - who is at risk?';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_summary_nature_of_risk IS 'OASYS Risk Summary - nature of risk';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_summary_risk_imminence IS 'OASYS Risk Summary - risk imminence';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_suicide IS 'OASYS Risk to Self - suicide';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_self_harm IS 'OASYS Risk to Self - self harm';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_hostel_setting IS 'OASYS Risk to Self - hostel setting';
+COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_vulnerability IS 'OASYS Risk to Self - vulnerability';
+COMMENT ON COLUMN draft_oasys_risk_information.additional_information IS 'OASYS Additional risk information';
