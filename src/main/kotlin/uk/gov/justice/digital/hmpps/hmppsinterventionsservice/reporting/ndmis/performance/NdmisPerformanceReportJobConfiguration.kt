@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.S3Bucket
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jobs.oneoff.OnStartupJobLauncherFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.TimestampIncrementer
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.S3Service
 import java.io.File
 import kotlin.io.path.createTempDirectory
@@ -110,6 +111,9 @@ class NdmisPerformanceReportJobConfiguration(
     )
 
     return jobBuilderFactory["ndmisPerformanceReportJob"]
+      // this incrementer adds a timestamp parameter meaning we can
+      // re-run the job with the same commandline params multiple times
+      .incrementer(TimestampIncrementer())
       .validator(validator)
       .start(ndmisWriteReferralToCsvStep)
       .next(ndmisWriteComplexityToCsvStep)
