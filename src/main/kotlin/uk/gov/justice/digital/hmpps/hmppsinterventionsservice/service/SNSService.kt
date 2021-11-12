@@ -10,6 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEventType.SUBMITTED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
@@ -78,6 +80,36 @@ class SNSReferralService(
         )
         snsPublisher.publish(event.referral.id, assignment.assignedBy, snsEvent)
       }
+      ReferralEventType.CANCELLED -> {
+        val snsEvent = EventDTO(
+          "intervention.referral.cancelled",
+          "A referral has been cancelled",
+          event.detailUrl,
+          event.referral.concludedAt!!,
+          mapOf("referralId" to event.referral.id)
+        )
+        snsPublisher.publish(event.referral.id, event.referral.endRequestedBy!!, snsEvent)
+      }
+      ReferralEventType.PREMATURELY_ENDED -> {
+        val snsEvent = EventDTO(
+          "intervention.referral.prematurely-ended",
+          "A referral has been ended prematurely",
+          event.detailUrl,
+          event.referral.concludedAt!!,
+          mapOf("referralId" to event.referral.id)
+        )
+        snsPublisher.publish(event.referral.id, event.referral.endRequestedBy!!, snsEvent)
+      }
+      ReferralEventType.COMPLETED -> {
+        val snsEvent = EventDTO(
+          "intervention.referral.completed",
+          "A referral has been completed",
+          event.detailUrl,
+          event.referral.concludedAt!!,
+          mapOf("referralId" to event.referral.id)
+        )
+        snsPublisher.publish(event.referral.id, event.referral.currentAssignee!!, snsEvent)
+      }
     }
   }
 }
@@ -142,6 +174,28 @@ class SNSAppointmentService(
         )
 
         snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
+      }
+    }
+  }
+}
+
+@Service
+class SNSEndOfServiceReportService(
+  private val snsPublisher: SNSPublisher,
+) : ApplicationListener<EndOfServiceReportEvent>, SNSService {
+
+  @AsyncEventExceptionHandling
+  override fun onApplicationEvent(event: EndOfServiceReportEvent) {
+    when (event.type) {
+      SUBMITTED -> {
+        val snsEvent = EventDTO(
+          "intervention.end-of-service-report.submitted",
+          "An end of service report has been submitted",
+          event.detailUrl,
+          event.endOfServiceReport.submittedAt!!,
+          mapOf("endOfServiceReportId" to event.endOfServiceReport.id, "submittedBy" to (event.endOfServiceReport.submittedBy?.userName!!))
+        )
+        snsPublisher.publish(event.endOfServiceReport.referral.id, event.endOfServiceReport.submittedBy!!, snsEvent)
       }
     }
   }
