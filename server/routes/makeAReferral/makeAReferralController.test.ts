@@ -327,23 +327,6 @@ describe('GET /referrals/:id/risk-information', () => {
       })
   })
 
-  describe('when no risk information exists in OASys', () => {
-    beforeEach(() => {
-      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(null)
-    })
-
-    it('renders a form page for additional information only', async () => {
-      await request(app)
-        .get('/referrals/1/risk-information')
-        .expect(200)
-        .expect(res => {
-          expect(res.text).toContain('Geoffrey’s risk information')
-        })
-
-      expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
-    })
-  })
-
   describe('when risk information exists in OASys', () => {
     beforeEach(() => {
       const riskSummary = riskSummaryFactory.build()

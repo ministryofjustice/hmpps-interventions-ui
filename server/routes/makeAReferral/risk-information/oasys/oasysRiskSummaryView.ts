@@ -51,54 +51,55 @@ export interface RiskInformationArgs {
 export default class OasysRiskSummaryView {
   constructor(
     readonly supplementaryRiskInformation: SupplementaryRiskInformation | null,
-    readonly riskSummary: RiskSummary
+    readonly riskSummary: RiskSummary | null
   ) {}
 
   get riskInformation(): RiskInformationArgs {
-    const { summary, riskToSelf } = this.riskSummary
+    const summary = this.riskSummary?.summary
+    const riskToSelf = this.riskSummary?.riskToSelf
     return {
       summary: {
         whoIsAtRisk: {
-          label: summary.whoIsAtRisk ? undefined : this.noInformationProvidedLabel,
-          text: summary.whoIsAtRisk ? summary.whoIsAtRisk : null,
+          label: summary?.whoIsAtRisk ? undefined : this.noInformationProvidedLabel,
+          text: summary?.whoIsAtRisk ? summary.whoIsAtRisk : null,
         },
         natureOfRisk: {
-          label: summary.natureOfRisk ? undefined : this.noInformationProvidedLabel,
-          text: summary.natureOfRisk ? summary.natureOfRisk : null,
+          label: summary?.natureOfRisk ? undefined : this.noInformationProvidedLabel,
+          text: summary?.natureOfRisk ? summary.natureOfRisk : null,
         },
         riskImminence: {
-          label: summary.riskImminence ? undefined : this.noInformationProvidedLabel,
-          text: summary.riskImminence ? summary.riskImminence : null,
+          label: summary?.riskImminence ? undefined : this.noInformationProvidedLabel,
+          text: summary?.riskImminence ? summary.riskImminence : null,
         },
       },
       riskToSelf: {
         suicide: {
           label: {
-            class: this.riskToSelfLabelClass(riskToSelf.suicide),
-            text: this.riskToSelfLabelText(riskToSelf.suicide),
+            class: this.riskToSelfLabelClass(riskToSelf?.suicide),
+            text: this.riskToSelfLabelText(riskToSelf?.suicide),
           },
-          text: riskToSelf.suicide ? riskToSelf.suicide.currentConcernsText : null,
+          text: riskToSelf?.suicide ? riskToSelf.suicide.currentConcernsText : null,
         },
         selfHarm: {
           label: {
-            class: this.riskToSelfLabelClass(riskToSelf.selfHarm),
-            text: this.riskToSelfLabelText(riskToSelf.selfHarm),
+            class: this.riskToSelfLabelClass(riskToSelf?.selfHarm),
+            text: this.riskToSelfLabelText(riskToSelf?.selfHarm),
           },
-          text: riskToSelf.selfHarm ? riskToSelf.selfHarm.currentConcernsText : null,
+          text: riskToSelf?.selfHarm ? riskToSelf?.selfHarm.currentConcernsText : null,
         },
         hostelSetting: {
           label: {
-            class: this.riskToSelfLabelClass(riskToSelf.hostelSetting),
-            text: this.riskToSelfLabelText(riskToSelf.hostelSetting),
+            class: this.riskToSelfLabelClass(riskToSelf?.hostelSetting),
+            text: this.riskToSelfLabelText(riskToSelf?.hostelSetting),
           },
-          text: riskToSelf.hostelSetting ? riskToSelf.hostelSetting.currentConcernsText : null,
+          text: riskToSelf?.hostelSetting ? riskToSelf?.hostelSetting.currentConcernsText : null,
         },
         vulnerability: {
           label: {
-            class: this.riskToSelfLabelClass(riskToSelf.vulnerability),
-            text: this.riskToSelfLabelText(riskToSelf.vulnerability),
+            class: this.riskToSelfLabelClass(riskToSelf?.vulnerability),
+            text: this.riskToSelfLabelText(riskToSelf?.vulnerability),
           },
-          text: riskToSelf.vulnerability ? riskToSelf.vulnerability.currentConcernsText : null,
+          text: riskToSelf?.vulnerability ? riskToSelf.vulnerability.currentConcernsText : null,
         },
       },
       additionalRiskInformation: {
