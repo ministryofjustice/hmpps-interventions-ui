@@ -6,6 +6,8 @@ metadata:
   labels:
     {{- include "app.labels" . | nindent 4 }}
   annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-{{ .Release.Namespace }}-blue
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
     nginx.ingress.kubernetes.io/custom-http-errors: "418"
     {{- if .Values.env_details.contains_live_data }}
     kubernetes.io/ingress.class: "modsec01"
