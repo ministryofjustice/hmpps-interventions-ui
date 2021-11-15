@@ -74,7 +74,9 @@ class HMPPSAuthServiceRetryTest : LoggingSpyTest(HMPPSAuthService::class, Level.
 
   @Test
   fun `getUserDetail for auth user when no response`() {
-    mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
+    (1..3).forEach {
+      mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
+    }
 
     val exception = assertThrows<IllegalStateException> {
       hmppsAuthService.getUserDetail(AuthUser("id", "auth", "username"))
@@ -86,9 +88,9 @@ class HMPPSAuthServiceRetryTest : LoggingSpyTest(HMPPSAuthService::class, Level.
 
   @Test
   fun `getUserDetail auth user when response delayed on all attempts`() {
-    mockWebServer.enqueue(MockResponse().setBody(userDetailBody).setHeadersDelay(3, SECONDS))
-    mockWebServer.enqueue(MockResponse().setBody(userDetailBody).setHeadersDelay(3, SECONDS))
-    mockWebServer.enqueue(MockResponse().setBody(userDetailBody).setHeadersDelay(3, SECONDS))
+    (1..3).forEach {
+      mockWebServer.enqueue(MockResponse().setBody(userDetailBody).setHeadersDelay(3, SECONDS))
+    }
 
     val exception = assertThrows<IllegalStateException> {
       hmppsAuthService.getUserDetail(AuthUser("id", "auth", "username"))
@@ -124,7 +126,7 @@ class HMPPSAuthServiceRetryTest : LoggingSpyTest(HMPPSAuthService::class, Level.
 
   @Test
   fun `getUserDetail fails for unverified auth user when no response`() {
-    mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
+    (1..3).forEach { mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE)) }
 
     val exception = assertThrows<IllegalStateException> {
       hmppsAuthService.getUserDetail(AuthUser("id", "delius", "username"))
@@ -136,6 +138,8 @@ class HMPPSAuthServiceRetryTest : LoggingSpyTest(HMPPSAuthService::class, Level.
 
   @Test
   fun `getUserDetail for delius user when no response`() {
+    val dispatcher = mockWebServer.dispatcher
+
     mockWebServer.dispatcher = object : Dispatcher() {
       override fun dispatch(request: RecordedRequest): MockResponse {
         return when (request.path) {
@@ -152,18 +156,23 @@ class HMPPSAuthServiceRetryTest : LoggingSpyTest(HMPPSAuthService::class, Level.
         }
       }
     }
+    try {
+      val exception = assertThrows<IllegalStateException> {
+        hmppsAuthService.getUserDetail(AuthUser("id", "delius", "username"))
+      }
 
-    val exception = assertThrows<IllegalStateException> {
-      hmppsAuthService.getUserDetail(AuthUser("id", "delius", "username"))
+      assertThat(exception.javaClass.canonicalName).isEqualTo("reactor.core.Exceptions.RetryExhaustedException")
+      assertThat(exception.message).isEqualTo("Retries exhausted: 2/2")
+    } finally {
+      mockWebServer.dispatcher = dispatcher
     }
-
-    assertThat(exception.javaClass.canonicalName).isEqualTo("reactor.core.Exceptions.RetryExhaustedException")
-    assertThat(exception.message).isEqualTo("Retries exhausted: 2/2")
   }
 
   @Test
   fun `getUserGroups when no response`() {
-    mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
+    (1..3).forEach {
+      mockWebServer.enqueue(MockResponse().setSocketPolicy(NO_RESPONSE))
+    }
 
     val exception = assertThrows<IllegalStateException> {
       hmppsAuthService.getUserGroups(AuthUser("id", "delius", "username"))
