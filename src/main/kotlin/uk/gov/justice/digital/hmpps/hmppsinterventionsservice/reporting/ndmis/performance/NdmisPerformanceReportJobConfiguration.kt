@@ -44,11 +44,16 @@ class NdmisPerformanceReportJobConfiguration(
   @Value("\${spring.batch.jobs.ndmis.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
   companion object : KLogging()
+  private val pathPrefix = "dfinterventions/dfi/csv/reports/"
+  private val referralReportFilename = "crs_performance_report-v2-referrals.csv"
+  private val complexityReportFilename = "crs_performance_report-v2-complexity.csv"
+  private val appointmentReportFilename = "crs_performance_report-v2-appointments.csv"
+
   private val skipPolicy = NPESkipPolicy()
   private val tmpDir = createTempDirectory()
-  private val referralReportPath = tmpDir.resolve("crs_performance_report-v2-referrals.csv")
-  private val complexityReportPath = tmpDir.resolve("crs_performance_report-v2-complexity.csv")
-  private val appointmentsReportPath = tmpDir.resolve("crs_performance_report-v2-appointments.csv")
+  private val referralReportPath = tmpDir.resolve(referralReportFilename)
+  private val complexityReportPath = tmpDir.resolve(complexityReportFilename)
+  private val appointmentsReportPath = tmpDir.resolve(appointmentReportFilename)
 
   @Bean
   fun ndmisPerformanceReportJobLauncher(ndmisPerformanceReportJob: Job): ApplicationRunner {
@@ -177,7 +182,7 @@ class NdmisPerformanceReportJobConfiguration(
   private val pushToS3Step = stepBuilderFactory["pushToS3Step"]
     .tasklet { _: StepContribution, _: ChunkContext ->
       listOf(referralReportPath, complexityReportPath, appointmentsReportPath).forEach { path ->
-        s3Service.publishFileToS3(ndmisS3Bucket, path, "export/csv/reports/")
+        s3Service.publishFileToS3(ndmisS3Bucket, path, pathPrefix)
         File(path.toString()).delete()
       }
       RepeatStatus.FINISHED
