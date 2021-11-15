@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance
 
+import mu.KLogging
 import org.hibernate.SessionFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.S3Bucket
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jobs.oneoff.OnStartupJobLauncherFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.BatchUtils
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.NPESkipPolicy
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.TimestampIncrementer
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.S3Service
 import java.io.File
@@ -41,6 +43,8 @@ class NdmisPerformanceReportJobConfiguration(
   @Value("\${spring.batch.jobs.ndmis.performance-report.page-size}") private val pageSize: Int,
   @Value("\${spring.batch.jobs.ndmis.performance-report.chunk-size}") private val chunkSize: Int,
 ) {
+  companion object : KLogging()
+  private val skipPolicy = NPESkipPolicy()
   private val tmpDir = createTempDirectory()
   private val referralReportPath = tmpDir.resolve("crs_performance_report-v2-referrals.csv")
   private val complexityReportPath = tmpDir.resolve("crs_performance_report-v2-complexity.csv")
@@ -133,6 +137,8 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
+      .faultTolerant()
+      .skipPolicy(skipPolicy)
       .build()
   }
 
@@ -147,6 +153,8 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
+      .faultTolerant()
+      .skipPolicy(skipPolicy)
       .build()
   }
 
@@ -161,6 +169,8 @@ class NdmisPerformanceReportJobConfiguration(
       .reader(ndmisReader)
       .processor(processor)
       .writer(writer)
+      .faultTolerant()
+      .skipPolicy(skipPolicy)
       .build()
   }
 

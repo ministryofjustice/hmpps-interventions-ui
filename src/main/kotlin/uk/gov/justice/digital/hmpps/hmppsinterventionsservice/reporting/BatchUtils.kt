@@ -5,6 +5,7 @@ import net.logstash.logback.argument.StructuredArguments
 import org.springframework.batch.core.JobParameters
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.JobParametersIncrementer
+import org.springframework.batch.core.step.skip.SkipPolicy
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
 import org.springframework.batch.item.file.FlatFileHeaderCallback
@@ -16,6 +17,7 @@ import org.springframework.batch.item.file.transform.RecursiveCollectionLineAggr
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisPerformanceReportJobConfiguration
 import java.io.Writer
 import java.time.Instant
 import java.time.LocalDate
@@ -124,5 +126,17 @@ class TimestampIncrementer : JobParametersIncrementer {
     return JobParametersBuilder(params)
       .addLong("timestamp", Instant.now().epochSecond)
       .toJobParameters()
+  }
+}
+
+class NPESkipPolicy : SkipPolicy {
+  override fun shouldSkip(t: Throwable, skipCount: Int): Boolean {
+    return when (t) {
+      is NullPointerException -> {
+        NdmisPerformanceReportJobConfiguration.logger.warn("skipping row with unexpected state", t)
+        true
+      }
+      else -> false
+    }
   }
 }
