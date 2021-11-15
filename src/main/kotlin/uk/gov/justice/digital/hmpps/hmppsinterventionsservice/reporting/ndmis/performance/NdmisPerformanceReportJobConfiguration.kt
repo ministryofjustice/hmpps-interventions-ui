@@ -21,6 +21,7 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.FileSystemResource
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.S3Bucket
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jobs.oneoff.OnStartupJobLauncherFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -182,7 +183,7 @@ class NdmisPerformanceReportJobConfiguration(
   private val pushToS3Step = stepBuilderFactory["pushToS3Step"]
     .tasklet { _: StepContribution, _: ChunkContext ->
       listOf(referralReportPath, complexityReportPath, appointmentsReportPath).forEach { path ->
-        s3Service.publishFileToS3(ndmisS3Bucket, path, pathPrefix)
+        s3Service.publishFileToS3(ndmisS3Bucket, path, pathPrefix, acl = ObjectCannedACL.BUCKET_OWNER_FULL_CONTROL)
         File(path.toString()).delete()
       }
       RepeatStatus.FINISHED
