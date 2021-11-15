@@ -1,103 +1,20 @@
 import OasysRiskInformationPresenter from './oasysRiskInformationPresenter'
-import { Risk } from '../../../../../models/assessRisksAndNeeds/riskSummary'
-import RiskView from '../../../../shared/riskView'
+import RoshPanelView from '../../../../shared/roshPanelView'
 import { CheckboxesArgs, DetailsArgs, RadiosArgs } from '../../../../../utils/govukFrontendTypes'
+import OasysRiskSummaryView from '../oasysRiskSummaryView'
+import ViewUtils from '../../../../../utils/viewUtils'
 
-interface RiskInformationLabelArgs {
-  class: string
-  text: string
-}
-type RiskToSelfLabelText = 'Yes' | 'No' | "Don't know"
-interface RiskToSelfLabelArgs {
-  class: string
-  text: RiskToSelfLabelText
-}
-export interface RiskInformationArgs {
-  summary: {
-    whoIsAtRisk: {
-      label?: RiskInformationLabelArgs
-      text: string | null
-    }
-    natureOfRisk: {
-      label?: RiskInformationLabelArgs
-      text: string | null
-    }
-    riskImminence: {
-      label?: RiskInformationLabelArgs
-      text: string | null
-    }
-  }
-  riskToSelf: {
-    suicide: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-    selfHarm: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-    hostelSetting: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-    vulnerability: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-  }
-  additionalRiskInformation: {
-    label?: RiskInformationLabelArgs
-    text: string | null
-  }
-}
 export default class OasysRiskInformationView {
-  riskView: RiskView
+  roshPanelView: RoshPanelView
 
-  constructor(private readonly presenter: OasysRiskInformationPresenter) {
-    this.riskView = new RiskView(this.presenter.riskPresenter, 'probation-practitioner')
+  riskSummaryView: OasysRiskSummaryView
+
+  constructor(readonly presenter: OasysRiskInformationPresenter) {
+    this.roshPanelView = new RoshPanelView(this.presenter.riskPresenter, 'probation-practitioner')
+    this.riskSummaryView = new OasysRiskSummaryView(presenter.supplementaryRiskInformation, presenter.riskSummary)
   }
 
-  private get noAdditionalRiskInformationLabel(): RiskInformationLabelArgs {
-    return {
-      class: 'app-oasys-text app-oasys-text--dark-grey',
-      text: 'None',
-    }
-  }
-
-  private get noInformationProvidedLabel(): RiskInformationLabelArgs {
-    return {
-      class: 'app-oasys-text app-oasys-text--dark-grey',
-      text: 'No information provided',
-    }
-  }
-
-  private riskToSelfLabelText(risk: Risk | undefined | null): RiskToSelfLabelText {
-    if (!risk) {
-      return "Don't know"
-    }
-    switch (risk.current) {
-      case 'YES':
-        return 'Yes'
-      case 'NO':
-        return 'No'
-      default:
-        return "Don't know"
-    }
-  }
-
-  private riskToSelfLabelClass(risk: Risk | undefined | null): string {
-    if (!risk) {
-      return 'app-oasys-text app-oasys-text--dark-grey'
-    }
-    switch (risk.current) {
-      case 'YES':
-        return 'app-oasys-text app-oasys-text--green'
-      case 'NO':
-        return 'app-oasys-text app-oasys-text--red'
-      default:
-        return 'app-oasys-text app-oasys-text--dark-grey'
-    }
-  }
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errors.summary)
 
   private get sensitiveInformationDetailsArgs(): DetailsArgs {
     return {
@@ -133,6 +50,7 @@ export default class OasysRiskInformationView {
         },
       ],
       classes: 'govuk-checkboxes__inset--grey',
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.confirmUnderstood),
     }
   }
 
@@ -160,61 +78,7 @@ export default class OasysRiskInformationView {
           },
         },
       ],
-    }
-  }
-
-  get riskInformation(): RiskInformationArgs {
-    const { supplementaryRiskInformation } = this.presenter
-    const { summary, riskToSelf } = this.presenter.riskSummary
-    return {
-      summary: {
-        whoIsAtRisk: {
-          label: summary.whoIsAtRisk ? undefined : this.noInformationProvidedLabel,
-          text: summary.whoIsAtRisk ? summary.whoIsAtRisk : null,
-        },
-        natureOfRisk: {
-          label: summary.natureOfRisk ? undefined : this.noInformationProvidedLabel,
-          text: summary.natureOfRisk ? summary.natureOfRisk : null,
-        },
-        riskImminence: {
-          label: summary.riskImminence ? undefined : this.noInformationProvidedLabel,
-          text: summary.riskImminence ? summary.riskImminence : null,
-        },
-      },
-      riskToSelf: {
-        suicide: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf.suicide),
-            text: this.riskToSelfLabelText(riskToSelf.suicide),
-          },
-          text: riskToSelf.suicide ? riskToSelf.suicide.currentConcernsText : null,
-        },
-        selfHarm: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf.selfHarm),
-            text: this.riskToSelfLabelText(riskToSelf.selfHarm),
-          },
-          text: riskToSelf.selfHarm ? riskToSelf.selfHarm.currentConcernsText : null,
-        },
-        hostelSetting: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf.hostelSetting),
-            text: this.riskToSelfLabelText(riskToSelf.hostelSetting),
-          },
-          text: riskToSelf.hostelSetting ? riskToSelf.hostelSetting.currentConcernsText : null,
-        },
-        vulnerability: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf.vulnerability),
-            text: this.riskToSelfLabelText(riskToSelf.vulnerability),
-          },
-          text: riskToSelf.vulnerability ? riskToSelf.vulnerability.currentConcernsText : null,
-        },
-      },
-      additionalRiskInformation: {
-        label: supplementaryRiskInformation ? undefined : this.noAdditionalRiskInformationLabel,
-        text: supplementaryRiskInformation ? supplementaryRiskInformation.riskSummaryComments : null,
-      },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.editRiskInformation),
     }
   }
 
@@ -222,14 +86,14 @@ export default class OasysRiskInformationView {
     return [
       'makeAReferral/riskInformationOasys',
       {
-        riskInformation: this.riskInformation,
+        errorSummaryArgs: this.errorSummaryArgs,
+        riskInformation: this.riskSummaryView.riskInformation,
         latestAssessment: this.presenter.latestAssessment,
         roshPanelPresenter: this.presenter.riskPresenter,
-        roshAnalysisTableArgs: this.riskView.roshAnalysisTableArgs.bind(this.riskView),
+        roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
         editRiskConfirmationRadioButtonArgs: this.editRiskConfirmationRadioButtonArgs.bind(this),
         confirmUnderstoodWarningCheckboxArgs: this.confirmUnderstoodWarningCheckboxArgs,
         sensitiveInformationDetailsArgs: this.sensitiveInformationDetailsArgs,
-        noInformationProvided: this.noInformationProvidedLabel,
       },
     ]
   }

@@ -305,6 +305,7 @@ describe('GET /referrals/:id/risk-information', () => {
   })
 
   it('renders an error when the get risk supplementary call for crn fails', async () => {
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
     assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue(
       new Error('failed to get risk supplementary info')
     )
@@ -325,23 +326,6 @@ describe('GET /referrals/:id/risk-information', () => {
       .expect(res => {
         expect(res.text).toContain('Failed to get draft referral')
       })
-  })
-
-  describe('when no risk information exists in OASys', () => {
-    beforeEach(() => {
-      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(null)
-    })
-
-    it('renders a form page for additional information only', async () => {
-      await request(app)
-        .get('/referrals/1/risk-information')
-        .expect(200)
-        .expect(res => {
-          expect(res.text).toContain('Geoffrey’s risk information')
-        })
-
-      expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
-    })
   })
 
   describe('when risk information exists in OASys', () => {
@@ -447,6 +431,50 @@ describe('POST /referrals/:id/risk-information', () => {
       .expect(res => {
         expect(res.text).toContain('Some backend error message')
       })
+  })
+})
+
+describe('GET /referrals/:id/edit-oasys-risk-information', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  describe('when risk information exists in OASys', () => {
+    beforeEach(() => {
+      const riskSummary = riskSummaryFactory.build()
+      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+        riskSummaryComments: 'supplementary comments',
+      })
+      assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockResolvedValue(supplementaryRiskInformation)
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    })
+
+    it('renders an edit OASys risk information page', async () => {
+      await request(app)
+        .get('/referrals/1/edit-oasys-risk-information')
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('OASys risk information')
+          expect(res.text).toContain('supplementary comments')
+        })
+    })
+
+    describe('when no supplementary risk information exists in OASys', () => {
+      beforeEach(() => {
+        assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue({ status: 404 })
+      })
+
+      it('renders an OASys risk information page', async () => {
+        await request(app)
+          .get('/referrals/1/risk-information')
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('OASys risk information')
+          })
+      })
+    })
   })
 })
 

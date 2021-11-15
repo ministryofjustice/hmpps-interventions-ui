@@ -51,6 +51,10 @@ import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInf
 import config from '../../config'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { RestClientError } from '../../data/restClient'
+import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
+import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
+import DraftReferral from '../../models/draftReferral'
+import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -494,16 +498,38 @@ export default class MakeAReferralController {
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const [serviceUser, riskSummary] = await Promise.all([
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
-      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, res.locals.user.token.accessToken),
-    ])
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      await this.displayOasysRiskInformationPage(res, referral, serviceUser)
+    } else {
+      await this.displayAdditionalRiskInformationPage(res, referral, serviceUser)
+    }
+  }
 
+  // TODO: this will be removed once risk goes live
+  private async displayAdditionalRiskInformationPage(
+    res: Response,
+    referral: DraftReferral,
+    serviceUser: DeliusServiceUser
+  ) {
+    const presenter = new RiskInformationPresenter(referral)
+    const view = new RiskInformationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  private async displayOasysRiskInformationPage(
+    res: Response,
+    referral: DraftReferral,
+    serviceUser: DeliusServiceUser,
+    error: FormValidationError | null = null
+  ) {
+    const { accessToken } = res.locals.user.token
+    const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
     let supplementaryRiskInformation: SupplementaryRiskInformation | null
     try {
       supplementaryRiskInformation = await this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(
         referral.serviceUser.crn,
-        res.locals.user.token.accessToken
+        accessToken
       )
     } catch (e) {
       const restClientError = e as RestClientError
@@ -513,15 +539,49 @@ export default class MakeAReferralController {
         throw e
       }
     }
+    const presenter = new OasysRiskInformationPresenter(referral.id, supplementaryRiskInformation, riskSummary, error)
+    const view = new OasysRiskInformationView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
 
-    let view
-    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled && riskSummary) {
-      const presenter = new OasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
-      view = new OasysRiskInformationView(presenter)
-    } else {
-      const presenter = new RiskInformationPresenter(referral)
-      view = new RiskInformationView(presenter)
+  async confirmEditOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      throw createError(403, `access restricted when risk feature flag disabled`, {
+        userMessage: 'You are not authorized to access this page',
+      })
     }
+    const referralId = req.params.id
+    const confirmEditRiskForm = await ConfirmOasysRiskInformationForm.createForm(req)
+    if (confirmEditRiskForm.isValid) {
+      if (confirmEditRiskForm.userWantsToEdit) {
+        res.redirect(`/referrals/${referralId}/edit-oasys-risk-information`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
+      }
+    } else {
+      const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, referralId)
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+      await this.displayOasysRiskInformationPage(res, referral, serviceUser, confirmEditRiskForm.error)
+    }
+  }
+
+  async editOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
+      throw createError(403, `access restricted when risk feature flag disabled`, {
+        userMessage: 'You are not authorized to access this page',
+      })
+    }
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+    const [serviceUser, riskSummary, supplementaryRiskInformation] = await Promise.all([
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(referral.serviceUser.crn, accessToken),
+    ])
+
+    const presenter = new EditOasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary)
+    const view = new EditOasysRiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
