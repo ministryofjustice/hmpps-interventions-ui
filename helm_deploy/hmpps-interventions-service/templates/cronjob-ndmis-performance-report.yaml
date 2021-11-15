@@ -1,0 +1,19 @@
+{{- if not .Values.env_details.production_env -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: generate-ndmis-performance-report
+spec:
+  schedule: "30 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: "Never"
+          containers:
+            - name: hmpps-interventions-service
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: Always
+              args: ["--jobName=ndmisPerformanceReportJob"]
+  {{- include "deployment.envs" . | nindent 14 }}
+{{- end -}}
