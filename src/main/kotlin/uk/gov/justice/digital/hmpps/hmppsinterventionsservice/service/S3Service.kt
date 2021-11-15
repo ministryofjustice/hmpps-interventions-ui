@@ -28,7 +28,6 @@ class S3Service {
       .apply { acl?.let { acl(it) } }
       .build()
 
-
     bucket.client.putObject(objectRequest, RequestBody.fromFile(path))
   }
 }
