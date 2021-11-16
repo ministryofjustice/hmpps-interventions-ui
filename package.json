@@ -180,7 +180,7 @@
     "nodemon": "^2.0.14",
     "prettier": "^2.4.1",
     "sass": "^1.43.4",
-    "stylelint": "^14.0.1",
+    "stylelint": "^14.1.0",
     "stylelint-config-sass-guidelines": "^9.0.1",
     "supertest": "^6.1.6",
     "ts-jest": "^27.0.7",
