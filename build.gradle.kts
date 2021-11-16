@@ -70,8 +70,9 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql")
 
-  // json
+  // json and csv
   implementation("com.github.java-json-tools:json-patch:1.13")
+  implementation("org.apache.commons:commons-csv:1.4")
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.3.0")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.2")

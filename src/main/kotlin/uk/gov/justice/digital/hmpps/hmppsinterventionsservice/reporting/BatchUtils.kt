@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting
 
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments
+import org.apache.commons.csv.CSVFormat
 import org.springframework.batch.core.JobParameters
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.JobParametersIncrementer
@@ -12,7 +13,7 @@ import org.springframework.batch.item.file.FlatFileHeaderCallback
 import org.springframework.batch.item.file.FlatFileItemWriter
 import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator
+import org.springframework.batch.item.file.transform.ExtractorLineAggregator
 import org.springframework.batch.item.file.transform.RecursiveCollectionLineAggregator
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
@@ -51,18 +52,6 @@ class BatchUtils {
       .headerCallback(HeaderWriter(headers.joinToString(",")))
   }
 
-  private fun <T> csvLineAggregator(fields: List<String>): DelimitedLineAggregator<T> {
-    return DelimitedLineAggregator<T>().apply {
-      setDelimiter(",")
-      setFieldExtractor(
-        BeanWrapperFieldExtractor<T>().apply {
-          setNames(fields.toTypedArray())
-          afterPropertiesSet()
-        }
-      )
-    }
-  }
-
   fun <T> csvFileWriter(
     name: String,
     resource: Resource,
@@ -70,7 +59,7 @@ class BatchUtils {
     fields: List<String>,
   ): FlatFileItemWriter<T> {
     return csvFileWriterBase<T>(name, resource, headers)
-      .lineAggregator(csvLineAggregator(fields))
+      .lineAggregator(CsvLineAggregator(fields))
       .build()
   }
 
@@ -83,7 +72,7 @@ class BatchUtils {
     return csvFileWriterBase<Collection<T>>(name, resource, headers)
       .lineAggregator(
         RecursiveCollectionLineAggregator<T>().apply {
-          setDelegate(csvLineAggregator(fields))
+          setDelegate(CsvLineAggregator(fields))
         }
       ).build()
   }
@@ -138,5 +127,25 @@ class NPESkipPolicy : SkipPolicy {
       }
       else -> false
     }
+  }
+}
+
+class CsvLineAggregator<T>(fieldsToExtract: List<String>) : ExtractorLineAggregator<T>() {
+  init {
+    setFieldExtractor(
+      BeanWrapperFieldExtractor<T>().apply {
+        setNames(fieldsToExtract.toTypedArray())
+        afterPropertiesSet()
+      }
+    )
+  }
+
+  private val csvPrinter = CSVFormat.DEFAULT
+    .withRecordSeparator("") // the underlying aggregator adds line separators for us
+
+  override fun doAggregate(fields: Array<out Any>): String {
+    val out = StringBuilder()
+    csvPrinter.printRecord(out, *fields)
+    return out.toString()
   }
 }

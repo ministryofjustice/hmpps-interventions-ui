@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting
 
 import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.batch.item.ExecutionContext
 import org.springframework.core.io.FileSystemResource
@@ -72,6 +73,45 @@ internal class BatchUtilsTest {
       )
     } finally {
       tmpFile.delete()
+    }
+  }
+
+  @Nested
+  inner class CsvLineAggregatorTest {
+    private inner class Item(
+      val intVal: Int,
+      val stringVal: String,
+      val nullableListVal: List<String>?,
+    )
+
+    private val aggregator = CsvLineAggregator<Item>(listOf("intVal", "stringVal", "nullableListVal"))
+
+    @Test
+    fun `aggregates all fields correctly, even lists or strings with commas in`() {
+      val item = Item(10, "tom, tom, tom", listOf("a", "b", "c"))
+      val result = aggregator.aggregate(item)
+      assertThat(result).isEqualTo("10,\"tom, tom, tom\",\"[a, b, c]\"")
+    }
+
+    @Test
+    fun `aggregates null fields`() {
+      val item = Item(10, "tom", null)
+      val result = aggregator.aggregate(item)
+      assertThat(result).isEqualTo("10,tom,")
+    }
+
+    @Test
+    fun `aggregates fields containing quotes`() {
+      val item = Item(10, "something \"quoted\"", null)
+      val result = aggregator.aggregate(item)
+      assertThat(result).isEqualTo("10,\"something \"\"quoted\"\"\",")
+    }
+
+    @Test
+    fun `aggregates fields containing newlines and tabs`() {
+      val item = Item(10, "all types\nof\r\nnewline\tand tab", null)
+      val result = aggregator.aggregate(item)
+      assertThat(result).isEqualTo("10,\"all types\nof\r\nnewline\tand tab\",")
     }
   }
 }
