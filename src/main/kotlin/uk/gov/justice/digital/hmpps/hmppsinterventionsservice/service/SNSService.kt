@@ -143,6 +143,27 @@ class SNSActionPlanAppointmentService(
 
         snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
       }
+      ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED -> {
+        val referral = event.deliverySession.referral
+        val appointment = event.deliverySession.currentAppointment
+          ?: throw RuntimeException("event triggered for session with no appointments")
+
+        val eventType = "intervention.session-appointment.session-feedback-submitted"
+
+        val snsEvent = EventDTO(
+          eventType,
+          "Session feedback submitted for a session appointment",
+          event.detailUrl,
+          appointment.appointmentFeedbackSubmittedAt!!,
+          mapOf(
+            "serviceUserCRN" to referral.serviceUserCRN,
+            "referralId" to referral.id,
+            "deliusAppointmentId" to appointment.deliusAppointmentId.toString()
+          )
+        )
+
+        snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
+      }
     }
   }
 }
@@ -171,6 +192,26 @@ class SNSAppointmentService(
           event.detailUrl,
           appointment.attendanceSubmittedAt!!,
           mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
+        )
+
+        snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
+      }
+      AppointmentEventType.SESSION_FEEDBACK_RECORDED -> {
+        val referral = event.appointment.referral
+        val appointment = event.appointment
+
+        val eventType = "intervention.initial-assessment-appointment.session-feedback-submitted"
+
+        val snsEvent = EventDTO(
+          eventType,
+          "Session feedback submitted for an initial assessment appointment",
+          event.detailUrl,
+          appointment.appointmentFeedbackSubmittedAt!!,
+          mapOf(
+            "serviceUserCRN" to referral.serviceUserCRN,
+            "referralId" to referral.id,
+            "deliusAppointmentId" to appointment.deliusAppointmentId.toString()
+          )
         )
 
         snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)

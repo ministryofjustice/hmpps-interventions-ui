@@ -45,6 +45,25 @@ internal class SNSActionPlanAppointmentServiceTest {
     false,
   )
 
+  private fun sessionFeedbackEvent(attendance: Attended) = ActionPlanAppointmentEvent(
+    "source",
+    ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED,
+    deliverySessionFactory.createAttended(
+      referral = referralFactory.createSent(
+        id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"),
+        actionPlans = mutableListOf(actionPlan)
+      ),
+      createdBy = actionPlan.createdBy,
+      attended = attendance,
+      attendanceSubmittedAt = now.minusSeconds(1),
+      appointmentFeedbackSubmittedBy = actionPlan.createdBy,
+      appointmentFeedbackSubmittedAt = now,
+      deliusAppointmentId = 123L
+    ),
+    "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1",
+    false,
+  )
+
   @Test
   fun `appointment attendance recorded event publishes message with valid DTO`() {
     snsAppointmentService.onApplicationEvent(attendanceRecordedEvent(Attended.NO))
@@ -58,6 +77,26 @@ internal class SNSActionPlanAppointmentServiceTest {
       additionalInformation = mapOf(
         "serviceUserCRN" to "X123456",
         "referralId" to referralId
+      ),
+    )
+
+    verify(publisher).publish(referralId, actionPlan.createdBy, eventDTO)
+  }
+
+  @Test
+  fun `appointment feedback submitted event publishes message with valid DTO`() {
+    snsAppointmentService.onApplicationEvent(sessionFeedbackEvent(Attended.YES))
+
+    val referralId = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd")
+    val eventDTO = EventDTO(
+      eventType = "intervention.session-appointment.session-feedback-submitted",
+      description = "Session feedback submitted for a session appointment",
+      detailUrl = "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1",
+      occurredAt = now,
+      additionalInformation = mapOf(
+        "serviceUserCRN" to "X123456",
+        "referralId" to referralId,
+        "deliusAppointmentId" to "123"
       ),
     )
 
