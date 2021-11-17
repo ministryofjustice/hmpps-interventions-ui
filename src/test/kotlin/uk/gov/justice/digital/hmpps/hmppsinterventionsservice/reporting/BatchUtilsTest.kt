@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.batch.item.ExecutionContext
 import org.springframework.core.io.FileSystemResource
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisDateTime
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Month
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.Date
 import java.util.UUID
 import kotlin.io.path.createTempFile
@@ -82,36 +84,47 @@ internal class BatchUtilsTest {
       val intVal: Int,
       val stringVal: String,
       val nullableListVal: List<String>?,
+      val dateTimeVal: NdmisDateTime?,
     )
 
-    private val aggregator = CsvLineAggregator<Item>(listOf("intVal", "stringVal", "nullableListVal"))
-
-    @Test
-    fun `aggregates all fields correctly, even lists or strings with commas in`() {
-      val item = Item(10, "tom, tom, tom", listOf("a", "b", "c"))
-      val result = aggregator.aggregate(item)
-      assertThat(result).isEqualTo("10,\"tom, tom, tom\",\"[a, b, c]\"")
-    }
+    private val aggregator = CsvLineAggregator<Item>(
+      listOf("intVal", "stringVal", "nullableListVal", "dateTimeVal"),
+    )
 
     @Test
     fun `aggregates null fields`() {
-      val item = Item(10, "tom", null)
+      val item = Item(10, "tom", null, null)
       val result = aggregator.aggregate(item)
-      assertThat(result).isEqualTo("10,tom,")
+      assertThat(result).isEqualTo("10,tom,,")
+    }
+
+    @Test
+    fun `aggregates NdmisDateTime fields using custom format`() {
+      val datetime = OffsetDateTime.of(2020, 11, 17, 13, 30, 0, 0, ZoneOffset.ofHours(8))
+      val item = Item(10, "tom", null, NdmisDateTime(datetime))
+      val result = aggregator.aggregate(item)
+      assertThat(result).isEqualTo("10,tom,,2020-11-17 05:30:00.000000+00")
+    }
+
+    @Test
+    fun `aggregates all fields correctly, even lists or strings with commas in`() {
+      val item = Item(10, "tom, tom, tom", listOf("a", "b", "c"), null)
+      val result = aggregator.aggregate(item)
+      assertThat(result).isEqualTo("10,\"tom, tom, tom\",\"[a, b, c]\",")
     }
 
     @Test
     fun `aggregates fields containing quotes`() {
-      val item = Item(10, "something \"quoted\"", null)
+      val item = Item(10, "something \"quoted\"", null, null)
       val result = aggregator.aggregate(item)
-      assertThat(result).isEqualTo("10,\"something \"\"quoted\"\"\",")
+      assertThat(result).isEqualTo("10,\"something \"\"quoted\"\"\",,")
     }
 
     @Test
     fun `aggregates fields containing newlines and tabs`() {
-      val item = Item(10, "all types\nof\r\nnewline\tand tab", null)
+      val item = Item(10, "all types\nof\r\nnewline\tand tab", null, null)
       val result = aggregator.aggregate(item)
-      assertThat(result).isEqualTo("10,\"all types\nof\r\nnewline\tand tab\",")
+      assertThat(result).isEqualTo("10,\"all types\nof\r\nnewline\tand tab\",,")
     }
   }
 }
