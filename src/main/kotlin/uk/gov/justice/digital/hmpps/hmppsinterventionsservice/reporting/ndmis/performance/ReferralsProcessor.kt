@@ -35,7 +35,7 @@ class ReferralsProcessor(
       endRequestedReason = referral.endRequestedReason?.description,
       eosrSubmittedAt = referral.endOfServiceReport?.submittedAt?.let { t -> NdmisDateTime(t) },
       endReasonCode = referral.endRequestedReason?.code,
-      endReasonDescription = referral.endRequestedComments,
+      endReasonDescription = referral.endRequestedReason?.description,
       concludedAt = referral.concludedAt?.let { t -> NdmisDateTime(t) },
     )
   }
