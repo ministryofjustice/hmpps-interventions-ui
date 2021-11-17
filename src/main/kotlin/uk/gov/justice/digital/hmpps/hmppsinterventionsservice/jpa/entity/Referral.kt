@@ -105,7 +105,7 @@ class Referral(
   val currentAssignee: AuthUser?
     get() = currentAssignment?.assignedTo
 
-  val endState: String? get()  {
+  val endState: String? get() {
     if (concludedAt == null) {
       return null
     }
