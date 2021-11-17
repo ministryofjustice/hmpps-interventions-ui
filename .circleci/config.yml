@@ -100,16 +100,16 @@ jobs:
             wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.7.0/flyway-commandline-7.7.0-linux-x64.tar.gz | \
               tar xvz && sudo ln -s `pwd`/flyway-7.7.0/flyway /usr/local/bin
             flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration"
+      - setup_remote_docker
       - run:
           name: Build data dictionary
           command: |
             sudo apt update && sudo apt install graphviz
             script/build-data-dictionary.sh
-      - setup_remote_docker
       - run:
-          name: Build docker image
+          name: Tag docker image
           command: |
-            docker build --pull --file=script/Dockerfile.data-dictionary script/ --tag="quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}:data-dictionary-${APP_VERSION}"
+            docker tag data-dictionary "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}:data-dictionary-${APP_VERSION}"
       - when:
           condition:
             equal: [ main, << pipeline.git.branch >> ]

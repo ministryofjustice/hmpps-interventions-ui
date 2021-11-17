@@ -12,3 +12,5 @@ java -jar "$jardir/schemaspy.jar" -t pgsql -dp "$jardir/postgresql.jar" \
   -db "${POSTGRES_DB:-interventions}" -host "localhost" -port "5432" -u "postgres" -p "password" \
   -nopages \
   -o "$schemadir"
+
+docker build --pull --file="$basedir/Dockerfile.data-dictionary" --tag=data-dictionary "$basedir"
