@@ -43,6 +43,22 @@ internal class SNSAppointmentServiceTest {
     appointmentType = AppointmentType.SUPPLIER_ASSESSMENT
   )
 
+  private fun feedbackSubmittedEvent(attendance: Attended) = AppointmentEvent(
+    "source",
+    AppointmentEventType.SESSION_FEEDBACK_RECORDED,
+    appointmentFactory.create(
+      referral = referral,
+      attended = attendance,
+      attendanceSubmittedAt = now.minusSeconds(1),
+      appointmentFeedbackSubmittedBy = user,
+      appointmentFeedbackSubmittedAt = now,
+      deliusAppointmentId = 123L,
+    ),
+    "http://localhost/sent-referral/123/supplier-assessment",
+    false,
+    appointmentType = AppointmentType.SUPPLIER_ASSESSMENT
+  )
+
   @Test
   fun `appointment attendance recorded event publishes message with valid DTO`() {
     snsAppointmentService.onApplicationEvent(attendanceRecordedEvent(Attended.NO))
@@ -56,6 +72,26 @@ internal class SNSAppointmentServiceTest {
       additionalInformation = mapOf(
         "serviceUserCRN" to "X123456",
         "referralId" to referralId
+      ),
+    )
+
+    verify(publisher).publish(referralId, user, eventDTO)
+  }
+
+  @Test
+  fun `appointment feedback submitted event publishes message with valid DTO`() {
+    snsAppointmentService.onApplicationEvent(feedbackSubmittedEvent(Attended.YES))
+
+    val referralId = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd")
+    val eventDTO = EventDTO(
+      eventType = "intervention.initial-assessment-appointment.session-feedback-submitted",
+      description = "Session feedback submitted for an initial assessment appointment",
+      detailUrl = "http://localhost/sent-referral/123/supplier-assessment",
+      occurredAt = now,
+      additionalInformation = mapOf(
+        "serviceUserCRN" to "X123456",
+        "referralId" to referralId,
+        "deliusAppointmentId" to "123"
       ),
     )
 
