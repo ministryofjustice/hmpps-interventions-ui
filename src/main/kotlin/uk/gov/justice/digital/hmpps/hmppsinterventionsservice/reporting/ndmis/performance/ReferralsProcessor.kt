@@ -2,9 +2,14 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.p
 
 import mu.KLogging
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.SentReferralProcessor
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralConcluder
+import java.util.Objects.nonNull
+import java.util.*
 
 @Component
 class ReferralsProcessor(
@@ -30,9 +35,8 @@ class ReferralsProcessor(
       numberOfOutcomes = referral.selectedDesiredOutcomes?.size,
       achievementScore = referral.endOfServiceReport?.achievementScore,
       numberOfSessions = referral.approvedActionPlan?.numberOfSessions,
-      numberOfSessionsAttended = referral.approvedActionPlan?.let { actionPlanService.getAllAttendedAppointments(it).size },
       endRequestedAt = referral.endRequestedAt?.let { t -> NdmisDateTime(t) },
-      endRequestedReason = referral.endRequestedReason?.description,
+      interventionEndReason = referral.endState,
       eosrSubmittedAt = referral.endOfServiceReport?.submittedAt?.let { t -> NdmisDateTime(t) },
       endReasonCode = referral.endRequestedReason?.code,
       endReasonDescription = referral.endRequestedReason?.description,
@@ -40,3 +44,4 @@ class ReferralsProcessor(
     )
   }
 }
+
