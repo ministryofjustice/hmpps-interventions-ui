@@ -22,19 +22,21 @@ class ReferralsProcessor(
       referringOfficerId = referral.createdBy.userName,
       relevantSentanceId = referral.relevantSentenceId!!,
       serviceUserCRN = referral.serviceUserCRN,
-      dateReferralReceived = referral.sentAt!!,
-      firstActionPlanSubmittedAt = referral.actionPlans?.mapNotNull { it.submittedAt }?.minOrNull(),
-      firstActionPlanApprovedAt = referral.actionPlans?.mapNotNull { it.approvedAt }?.minOrNull(),
+      dateReferralReceived = NdmisDateTime(referral.sentAt!!),
+      firstActionPlanSubmittedAt = referral.actionPlans?.mapNotNull { it.submittedAt }?.minOrNull()
+        ?.let { t -> NdmisDateTime(t) },
+      firstActionPlanApprovedAt = referral.actionPlans?.mapNotNull { it.approvedAt }?.minOrNull()
+        ?.let { t -> NdmisDateTime(t) },
       numberOfOutcomes = referral.selectedDesiredOutcomes?.size,
       achievementScore = referral.endOfServiceReport?.achievementScore,
       numberOfSessions = referral.approvedActionPlan?.numberOfSessions,
       numberOfSessionsAttended = referral.approvedActionPlan?.let { actionPlanService.getAllAttendedAppointments(it).size },
-      endRequestedAt = referral.endRequestedAt,
+      endRequestedAt = referral.endRequestedAt?.let { t -> NdmisDateTime(t) },
       endRequestedReason = referral.endRequestedReason?.description,
-      eosrSubmittedAt = referral.endOfServiceReport?.submittedAt,
+      eosrSubmittedAt = referral.endOfServiceReport?.submittedAt?.let { t -> NdmisDateTime(t) },
       endReasonCode = referral.endRequestedReason?.code,
       endReasonDescription = referral.endRequestedComments,
-      concludedAt = referral.concludedAt
+      concludedAt = referral.concludedAt?.let { t -> NdmisDateTime(t) },
     )
   }
 }

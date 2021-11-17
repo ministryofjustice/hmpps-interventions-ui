@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance
 
-import java.time.OffsetDateTime
 import java.util.UUID
 
 data class ReferralsData(
@@ -12,19 +11,19 @@ data class ReferralsData(
   val referringOfficerId: String,
   val relevantSentanceId: Long,
   val serviceUserCRN: String,
-  val dateReferralReceived: OffsetDateTime,
-  val firstActionPlanSubmittedAt: OffsetDateTime?,
-  val firstActionPlanApprovedAt: OffsetDateTime?,
+  val dateReferralReceived: NdmisDateTime,
+  val firstActionPlanSubmittedAt: NdmisDateTime?,
+  val firstActionPlanApprovedAt: NdmisDateTime?,
   val numberOfOutcomes: Int?,
   val achievementScore: Float?,
   val numberOfSessions: Int?,
   val numberOfSessionsAttended: Int?,
-  val endRequestedAt: OffsetDateTime?,
+  val endRequestedAt: NdmisDateTime?,
   val endRequestedReason: String?,
-  val eosrSubmittedAt: OffsetDateTime?,
+  val eosrSubmittedAt: NdmisDateTime?,
   val endReasonCode: String?,
   val endReasonDescription: String?,
-  val concludedAt: OffsetDateTime?,
+  val concludedAt: NdmisDateTime?,
 ) {
   companion object {
     val fields = listOf(

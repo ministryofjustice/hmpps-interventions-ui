@@ -1,18 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance
 
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import java.time.OffsetDateTime
 import java.util.UUID
 
 data class AppointmentData(
   val referralReference: String,
   val referralId: UUID,
   val appointmentId: UUID,
-  val appointmentTime: OffsetDateTime,
+  val appointmentTime: NdmisDateTime,
   val durationInMinutes: Int,
-  val bookedAt: OffsetDateTime,
+  val bookedAt: NdmisDateTime,
   val attended: Attended?,
-  val attendanceSubmittedAt: OffsetDateTime?,
+  val attendanceSubmittedAt: NdmisDateTime?,
   val notifyPPOfAttendanceBehaviour: Boolean?,
   val deliusAppointmentId: String,
   val reasonForAppointment: AppointmentReason
