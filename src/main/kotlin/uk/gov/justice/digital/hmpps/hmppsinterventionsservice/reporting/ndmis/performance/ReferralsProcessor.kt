@@ -32,10 +32,10 @@ class ReferralsProcessor(
       numberOfSessions = referral.approvedActionPlan?.numberOfSessions,
       numberOfSessionsAttended = referral.approvedActionPlan?.let { actionPlanService.getAllAttendedAppointments(it).size },
       endRequestedAt = referral.endRequestedAt?.let { t -> NdmisDateTime(t) },
-      endRequestedReason = referral.endRequestedReason?.description,
+      interventionEndReason = referral.endState,
       eosrSubmittedAt = referral.endOfServiceReport?.submittedAt?.let { t -> NdmisDateTime(t) },
       endReasonCode = referral.endRequestedReason?.code,
-      endReasonDescription = referral.endRequestedComments,
+      endReasonDescription = referral.endRequestedReason?.description,
       concludedAt = referral.concludedAt?.let { t -> NdmisDateTime(t) },
     )
   }

@@ -69,10 +69,10 @@ internal class ReferralsProcessorTest {
     assertThat(result.numberOfSessions).isEqualTo(referral.approvedActionPlan?.numberOfSessions)
     assertThat(result.numberOfSessionsAttended).isEqualTo(1)
     assertThat(result.endRequestedAt).isEqualTo(NdmisDateTime(endRequestedAt))
-    assertThat(result.endRequestedReason).isEqualTo(referral.endRequestedReason?.description)
+    assertThat(result.interventionEndReason).isEqualTo(referral.endState)
     assertThat(result.eosrSubmittedAt).isEqualTo(NdmisDateTime(eosrSubmittedAt))
     assertThat(result.endReasonCode).isEqualTo(referral.endRequestedReason?.code)
-    assertThat(result.endReasonDescription).isEqualTo(referral.endRequestedComments)
+    assertThat(result.endReasonDescription).isEqualTo(referral.endRequestedReason?.description)
     assertThat(result.concludedAt).isEqualTo(NdmisDateTime(concludedAt))
   }
 }
