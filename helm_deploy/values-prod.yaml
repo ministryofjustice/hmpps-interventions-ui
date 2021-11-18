@@ -1,26 +1,15 @@
-replicaCount: 3
-
-image:
-  repository: quay.io/hmpps/hmpps-interventions-ui
-  tag: latest
-  pullPolicy: IfNotPresent
-  port: 3000
-
-ingress:
-  host: refer-monitor-intervention.service.justice.gov.uk
-  cert_secret: tls-certificate
-
-env_details:
-  contains_live_data: true
-
-env:
-  DEPLOYMENT_ENV: prod
-  HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
-  COMMUNITY_API_URL: https://community-api-secure.probation.service.justice.gov.uk
-  INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
-  ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs.hmpps.service.justice.gov.uk
-  TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
-  TOKEN_VERIFICATION_ENABLED: true
-  REDIS_TLS_ENABLED: true
-  GA_ID: G-THWB3S7TLX
-  FEATURE_SP_REPORTING_ENABLED: true
+generic-service:
+  ingress:
+    host: refer-monitor-intervention.service.justice.gov.uk
+    tlsSecretName: tls-certificate
+    modsecurity_enabled: true
+  env:
+    INGRESS_URL: "https://refer-monitor-intervention.service.justice.gov.uk"
+    DEPLOYMENT_ENV: prod
+    HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
+    COMMUNITY_API_URL: https://community-api-secure.probation.service.justice.gov.uk
+    INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
+    ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs.hmpps.service.justice.gov.uk
+    TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
+    GA_ID: G-THWB3S7TLX
+    FEATURE_SP_REPORTING_ENABLED: true

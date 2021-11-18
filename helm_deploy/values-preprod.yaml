@@ -1,28 +1,14 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount: 2
-
-image:
-  repository: quay.io/hmpps/hmpps-interventions-ui
-  tag: latest
-  pullPolicy: IfNotPresent
-  port: 3000
-
-ingress:
-  host: hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
-
-env_details:
-  contains_live_data: true
-
-env:
-  DEPLOYMENT_ENV: preprod
-  HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
-  COMMUNITY_API_URL: https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io
-  INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
-  ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk
-  TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
-  TOKEN_VERIFICATION_ENABLED: true
-  REDIS_TLS_ENABLED: true
-  GA_ID: G-08D8T0RZZR
-  FEATURE_SP_REPORTING_ENABLED: true
+generic-service:
+  ingress:
+    host: hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
+    modsecurity_enabled: true
+  env:
+    INGRESS_URL: "https://hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk"
+    DEPLOYMENT_ENV: preprod
+    HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
+    COMMUNITY_API_URL: https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io
+    INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
+    ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk
+    TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
+    GA_ID: G-08D8T0RZZR
+    FEATURE_SP_REPORTING_ENABLED: true
