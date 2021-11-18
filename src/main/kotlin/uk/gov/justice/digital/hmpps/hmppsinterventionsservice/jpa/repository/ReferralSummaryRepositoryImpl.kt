@@ -50,8 +50,7 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 		  r.sent_at is not null
 		  and ( dfc.prime_provider_id in :serviceProviders or dfcsc.subcontractor_provider_id in :serviceProviders )
       and not (r.concluded_At is not null and r.end_Requested_At is not null and eosr.id is null)
-      $dashboardRestrictionCriteria
-) a where assigned_at_desc_seq = 1"""
+) a where assigned_at_desc_seq = 1 $dashboardRestrictionCriteria"""
   }
 
   override fun getSentReferralSummaries(authUser: AuthUser, serviceProviders: List<String>, dashboardType: DashboardType?): List<ServiceProviderSentReferralSummary> {
@@ -80,10 +79,10 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 
   private fun constructCustomCriteria(dashboardType: DashboardType?): String? {
     return when (dashboardType) {
-      DashboardType.myCases -> "and au.user_name = :username and eosr.submitted_at is null "
-      DashboardType.openCases -> "and eosr.submitted_at is null "
-      DashboardType.unassignedCases -> "and au.user_name is null and eosr.submitted_at is null "
-      DashboardType.completedCases -> "and eosr.submitted_at is not null "
+      DashboardType.myCases -> "and assignedToUserName = :username and endOfServiceReportSubmittedAt is null "
+      DashboardType.openCases -> "and endOfServiceReportSubmittedAt is null "
+      DashboardType.unassignedCases -> "and assignedToUserName is null and endOfServiceReportSubmittedAt is null "
+      DashboardType.completedCases -> "and endOfServiceReportSubmittedAt is not null "
       null -> null
     }
   }

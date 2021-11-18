@@ -224,6 +224,18 @@ class ReferralRepositoryTest @Autowired constructor(
 
   @Nested
   inner class DashboardTypeSelection {
+
+    @Test
+    fun `myCases dashboard will not return self assigned if they're not latest`() {
+
+      val assignedReferral = createReferral(true, 2)
+      val oldAssignee = assignedReferral.assignments.get(0).assignedTo
+      val serviceProviderSearchId = assignedReferral.intervention.dynamicFrameworkContract.primeProvider.id
+      val summaries = referralRepository.getSentReferralSummaries(oldAssignee, listOf(serviceProviderSearchId), DashboardType.myCases)
+
+      assertThat(summaries.size).isEqualTo(0)
+    }
+
     @Test
     fun `myCases dashboard type should only return logged in user referrals`() {
       val assignedReferral = createReferral(true, 1)
