@@ -56,7 +56,7 @@ describe(RoshPanelPresenter, () => {
     it('returns rows for each risk group', () => {
       const presenter = new RoshPanelPresenter(riskSummary.build())
       expect(presenter.roshAnalysisRows).toEqual([
-        { riskTo: 'prisoners', riskScore: 'LOW' },
+        { riskTo: 'public', riskScore: 'LOW' },
         { riskTo: 'children', riskScore: 'HIGH' },
         { riskTo: 'known adult', riskScore: 'HIGH' },
         { riskTo: 'staff', riskScore: 'VERY_HIGH' },
@@ -118,7 +118,7 @@ describe(RoshPanelPresenter, () => {
         [
           'VERY_HIGH',
           {
-            LOW: ['prisoners'],
+            LOW: ['public'],
             HIGH: ['children', 'known adult'],
             VERY_HIGH: ['staff'],
           },
@@ -126,21 +126,21 @@ describe(RoshPanelPresenter, () => {
         [
           'HIGH',
           {
-            LOW: ['prisoners'],
+            LOW: ['public'],
             HIGH: ['children', 'known adult'],
           },
         ],
         [
           'MEDIUM',
           {
-            LOW: ['prisoners'],
+            LOW: ['public'],
             MEDIUM: ['children', 'known adult'],
           },
         ],
         [
           'LOW',
           {
-            LOW: ['prisoners'],
+            LOW: ['public'],
           },
         ],
       ]
@@ -165,7 +165,7 @@ describe(RoshPanelPresenter, () => {
     describe('when the highest risk summary is something unexpected', () => {
       it(`returns UNDEFINED`, () => {
         const riskRosh = createRiskSummary({
-          UNEXPECTED: ['prisoners'],
+          UNEXPECTED: ['public'],
         })
 
         const presenter = new RoshPanelPresenter(riskRosh)
