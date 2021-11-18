@@ -72,7 +72,7 @@ dependencies {
 
   // json and csv
   implementation("com.github.java-json-tools:json-patch:1.13")
-  implementation("org.apache.commons:commons-csv:1.4")
+  implementation("org.apache.commons:commons-csv:1.9.0")
 
   testImplementation("au.com.dius.pact.provider:junit5spring:4.3.1")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.2")
