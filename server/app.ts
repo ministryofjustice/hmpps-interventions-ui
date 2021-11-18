@@ -184,6 +184,15 @@ export default function createApp(
       res.json(result)
     })
   })
+  app.get(['/health/liveness', '/health/readiness'], (_req, res, _next) => {
+    const noExternalApiChecks: [] = []
+    healthcheck(result => {
+      if (!result.healthy) {
+        res.status(503)
+      }
+      res.json(result)
+    }, noExternalApiChecks)
+  })
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
