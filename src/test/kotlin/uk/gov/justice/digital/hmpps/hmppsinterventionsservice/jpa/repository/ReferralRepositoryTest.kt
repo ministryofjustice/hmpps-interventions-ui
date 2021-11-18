@@ -226,7 +226,7 @@ class ReferralRepositoryTest @Autowired constructor(
   inner class DashboardTypeSelection {
 
     @Test
-    fun `myCases dashboard will not return self assigned if they're not latest`() {
+    fun `does not show referrals where the user has been historically assigned but no longer the active assignee`() {
 
       val assignedReferral = createReferral(true, 2)
       val oldAssignee = assignedReferral.assignments.get(0).assignedTo
