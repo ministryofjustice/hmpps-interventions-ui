@@ -1266,7 +1266,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Add behaviour feedback')
 
       cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
-      cy.contains('No').click()
+      cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
 
       cy.stubRecordActionPlanAppointmentBehavior(actionPlan.id, 1, appointmentWithBehaviourRecorded)
 
@@ -1407,7 +1407,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Give feedback').click()
 
-      cy.contains('No').click()
+      cy.get('input[name="attended"][value="no"]').click()
       cy.contains("Add additional information about Alex's attendance").type("Alex didn't attend")
 
       cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
