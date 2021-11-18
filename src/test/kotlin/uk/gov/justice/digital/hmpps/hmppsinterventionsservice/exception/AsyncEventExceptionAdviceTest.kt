@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
 import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
@@ -51,7 +52,9 @@ internal class AsyncEventExceptionAdviceTest {
     whenever(methodInvocationProceedingJoinPoint.proceed()).thenThrow(RuntimeException())
     whenever(methodInvocationProceedingJoinPoint.args).thenReturn(arrayOf(SampleData.sampleNPSRegion()))
 
-    asyncEventExceptionAdvice.handleException(methodInvocationProceedingJoinPoint)
+    assertThrows<RuntimeException> {
+      asyncEventExceptionAdvice.handleException(methodInvocationProceedingJoinPoint)
+    }
 
     Assertions.assertThat(memoryAppender.logEvents.size).isEqualTo(1)
     Assertions.assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")

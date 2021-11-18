@@ -20,6 +20,7 @@ class AsyncEventExceptionAdvice {
     } catch (exception: Throwable) {
       val event = (pjp as MethodInvocationProceedingJoinPoint).args.getOrNull(0)
       logger.error("Exception thrown for method annotated with @AsyncEventExceptionHandling {}", exception, kv("event", event))
+      throw exception
     }
   }
 }
