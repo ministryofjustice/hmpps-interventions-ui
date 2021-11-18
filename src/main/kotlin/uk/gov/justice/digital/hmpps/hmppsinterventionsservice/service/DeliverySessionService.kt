@@ -34,9 +34,13 @@ class DeliverySessionService(
   val appointmentService: AppointmentService,
   val appointmentRepository: AppointmentRepository,
 ) {
-  fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan, alreadyCreatedSessions: Int = 0) {
+  fun createUnscheduledSessionsForActionPlan(approvedActionPlan: ActionPlan) {
+    val previouslyApprovedSessions = approvedActionPlan.referral.approvedActionPlan?. let {
+      deliverySessionRepository.findAllByActionPlanId(it.id).count()
+    } ?: 0
+
     val numberOfSessions = approvedActionPlan.numberOfSessions!!
-    for (i in alreadyCreatedSessions + 1..numberOfSessions) {
+    for (i in previouslyApprovedSessions + 1..numberOfSessions) {
       createSession(approvedActionPlan, i)
     }
   }
