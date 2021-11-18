@@ -262,5 +262,9 @@ module.exports = on => {
     stubGetMyInterventions: arg => {
       return interventionsService.stubGetMyInterventions(arg.responseJson)
     },
+
+    stubUpdateDraftOasysRiskInformation: arg => {
+      return interventionsService.stubUpdateDraftOasysRiskInformation(arg.responseJson)
+    },
   })
 }

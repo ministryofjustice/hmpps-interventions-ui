@@ -1,4 +1,4 @@
-import { TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import { CheckboxesArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
 import EditOasysRiskInformationPresenter from './editOasysRiskInformationPresenter'
 import OasysRiskSummaryView from '../oasysRiskSummaryView'
@@ -9,6 +9,8 @@ export default class EditOasysRiskInformationView {
   constructor(private readonly presenter: EditOasysRiskInformationPresenter) {
     this.riskSummaryView = new OasysRiskSummaryView(presenter.supplementaryRiskInformation, presenter.riskSummary)
   }
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errors.summary)
 
   private get whoIsAtRiskTextareaArgs(): TextareaArgs {
     const whoIsAtRisk = this.riskSummaryView.riskInformation.summary.whoIsAtRisk.text || ''
@@ -44,7 +46,7 @@ export default class EditOasysRiskInformationView {
     const selfHarm = this.riskSummaryView.riskInformation.riskToSelf.selfHarm.text || ''
     return {
       name: 'risk-to-self-self-harm',
-      id: 'risk-to-self',
+      id: 'risk-to-self-self-harm',
       label: {},
       value: ViewUtils.escape(selfHarm),
     }
@@ -73,8 +75,8 @@ export default class EditOasysRiskInformationView {
   private get riskToSelfVulnerabilityTextareaArgs(): TextareaArgs {
     const vulnerability = this.riskSummaryView.riskInformation.riskToSelf.vulnerability.text || ''
     return {
-      name: 'who-is-at-risk-vulnerability',
-      id: 'who-is-at-risk-vulnerability',
+      name: 'risk-to-self-vulnerability',
+      id: 'risk-to-self-vulnerability',
       label: {},
       value: ViewUtils.escape(vulnerability),
     }
@@ -90,10 +92,26 @@ export default class EditOasysRiskInformationView {
     }
   }
 
+  private get confirmUnderstoodWarningCheckboxArgs(): CheckboxesArgs {
+    return {
+      idPrefix: 'confirm-understood',
+      name: 'confirm-understood',
+      items: [
+        {
+          value: 'understood',
+          text: 'I understand this information will be shared with the Service Provider',
+        },
+      ],
+      classes: 'govuk-checkboxes__inset--grey',
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.confirmUnderstood),
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'makeAReferral/editRiskInformationOasys',
       {
+        errorSummaryArgs: this.errorSummaryArgs,
         riskInformation: this.riskSummaryView.riskInformation,
         latestAssessment: this.presenter.latestAssessment,
         whoIsAtRiskTextareaArgs: this.whoIsAtRiskTextareaArgs,
@@ -104,6 +122,7 @@ export default class EditOasysRiskInformationView {
         riskToSelfHostelSettingTextareaArgs: this.riskToSelfHostelSettingTextareaArgs,
         riskToSelfVulnerabilityTextareaArgs: this.riskToSelfVulnerabilityTextareaArgs,
         additionalInformationTextareaArgs: this.additionalInformationTextareaArgs,
+        confirmUnderstoodWarningCheckboxArgs: this.confirmUnderstoodWarningCheckboxArgs,
       },
     ]
   }

@@ -18,6 +18,7 @@ import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAn
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
+import draftOasysRiskInformation from '../../../testutils/factories/draftOasysRiskInformation'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -475,6 +476,44 @@ describe('GET /referrals/:id/edit-oasys-risk-information', () => {
           })
       })
     })
+  })
+})
+
+describe('POST /referrals/:id/edit-oasys-risk-information', () => {
+  it('updates the draft oasys risk information on the backend and redirects to the next question', async () => {
+    interventionsService.updateDraftOasysRiskInformation.mockResolvedValue(draftOasysRiskInformation.build())
+
+    await request(app)
+      .post('/referrals/1/edit-oasys-risk-information')
+      .type('form')
+      .send({
+        'who-is-at-risk': 'Risk to staff.',
+        'nature-of-risk': 'Physically aggressive',
+        'risk-imminence': 'Can happen at the drop of a hat',
+        'risk-to-self-suicide': 'Manic episodes are common',
+        'risk-to-self-self-harm': 'No self harm',
+        'risk-to-self-hostel-setting': 'No hostel',
+        'risk-to-self-vulnerability': 'Not vulnerable',
+        'additional-information': 'No more comments.',
+        'confirm-understood': 'understood',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/needs-and-requirements')
+
+    expect(interventionsService.updateDraftOasysRiskInformation.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        riskSummaryWhoIsAtRisk: 'Risk to staff.',
+        riskSummaryNatureOfRisk: 'Physically aggressive',
+        riskSummaryRiskImminence: 'Can happen at the drop of a hat',
+        riskToSelfSuicide: 'Manic episodes are common',
+        riskToSelfSelfHarm: 'No self harm',
+        riskToSelfHostelSetting: 'No hostel',
+        riskToSelfVulnerability: 'Not vulnerable',
+        additionalInformation: 'No more comments.',
+      },
+    ])
   })
 })
 
