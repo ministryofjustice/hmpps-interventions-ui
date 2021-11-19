@@ -18,6 +18,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
+import javax.validation.ValidationException
 
 @Service
 @Transactional
@@ -91,6 +92,7 @@ class ActionPlanService(
 
   fun approveActionPlan(id: UUID, user: AuthUser): ActionPlan {
     val actionPlan = getActionPlan(id)
+    verifySafeForApproval(actionPlan)
 
     deliverySessionService.createUnscheduledSessionsForActionPlan(actionPlan)
 
@@ -100,6 +102,19 @@ class ActionPlanService(
     val approvedActionPlan = actionPlanRepository.save(actionPlan)
     actionPlanEventPublisher.actionPlanApprovedEvent(approvedActionPlan)
     return approvedActionPlan
+  }
+
+  private fun verifySafeForApproval(actionPlan: ActionPlan) {
+    if (actionPlan.approvedAt != null) {
+      throw ValidationException("Action plan has already been approved. [id=${actionPlan.id}]")
+    } else if (actionPlan.referral.actionPlans?.filter { it.approvedAt == null }?.maxByOrNull { it.createdAt }?.id != actionPlan.id) {
+      throw ValidationException("Action plan is not the latest created, so cannot be approved. [id=${actionPlan.id}]")
+    }
+    actionPlan.referral.approvedActionPlan?. let {
+      if (it.numberOfSessions!! > actionPlan.numberOfSessions!!) {
+        throw ValidationException("Action plan cannot be approved as it has less sessions than the currently approved action plan. [id=${actionPlan.id}]")
+      }
+    }
   }
 
   fun getActionPlan(id: UUID): ActionPlan {
