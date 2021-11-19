@@ -249,10 +249,7 @@ class ReferralController(
     @PathVariable id: UUID,
     authentication: JwtAuthenticationToken,
   ): SupplierAssessmentDTO {
-    val user = userMapper.fromToken(authentication)
-
-    val sentReferral = referralService.getSentReferralForUser(id, user)
-      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "sent referral not found [id=$id]")
+    val sentReferral = getSentReferralAuthenticatedRequest(authentication, id)
 
     val supplierAssessment = getSupplierAssessment(sentReferral)
     return SupplierAssessmentDTO.from(supplierAssessment)
