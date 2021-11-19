@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -139,6 +140,63 @@ internal class ReferralControllerTest {
       whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
       val e = assertThrows<AccessDeniedException> {
         referralController.getSentReferral(
+          referral.id,
+          tokenFactory.create(
+            clientId = "interventions-event-client",
+            subject = "interventions-event-client",
+            authorities = arrayOf("ROLE_INTEXXXXTIONS_API_READ_ALL")
+          ),
+        )
+      }
+      assertThat(e.message).isEqualTo("could not map auth token to user: [no 'user_id' claim in token, no 'user_name' claim in token]")
+    }
+  }
+
+  @Nested
+  inner class GetSentReferralSupplierAssessmentForClient {
+    private val supplierAssessment = supplierAssessmentFactory.create()
+    private val referral = supplierAssessment.referral
+
+    @BeforeEach
+    fun `associate supplier assessment to referral`() {
+      referral.supplierAssessment = supplierAssessment
+    }
+
+    @Test
+    fun `getSupplierAssessmentAppointment returns a supplier assessment to a client api request`() {
+      whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
+      val supplierAssessmentDto = referralController.getSupplierAssessmentAppointment(
+        referral.id,
+        tokenFactory.create(
+          clientId = "interventions-event-client",
+          subject = "interventions-event-client",
+          authorities = arrayOf("ROLE_INTERVENTIONS_API_READ_ALL")
+        ),
+      )
+      assertThat(supplierAssessmentDto.id).isEqualTo(supplierAssessment.id)
+    }
+
+    @Test
+    fun `getSupplierAssessmentAppointment does not return a supplier assessment to a client api request when client id and subject do not match`() {
+      whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
+      val e = assertThrows<AccessDeniedException> {
+        referralController.getSupplierAssessmentAppointment(
+          referral.id,
+          tokenFactory.create(
+            clientId = "interventions-event-client",
+            subject = "BERNARD.BERKS",
+            authorities = arrayOf("ROLE_INTERVENTIONS_API_READ_ALL")
+          ),
+        )
+      }
+      assertThat(e.message).isEqualTo("could not map auth token to user: [no 'user_id' claim in token, no 'user_name' claim in token]")
+    }
+
+    @Test
+    fun `getSupplierAssessmentAppointment does not return a supplier assessment to a client api request without the required authority`() {
+      whenever(referralService.getSentReferral(eq(referral.id))).thenReturn(referral)
+      val e = assertThrows<AccessDeniedException> {
+        referralController.getSupplierAssessmentAppointment(
           referral.id,
           tokenFactory.create(
             clientId = "interventions-event-client",
