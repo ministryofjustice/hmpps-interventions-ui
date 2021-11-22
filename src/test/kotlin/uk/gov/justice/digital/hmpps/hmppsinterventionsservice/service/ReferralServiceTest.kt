@@ -43,6 +43,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.End
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
@@ -54,6 +56,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTes
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceProviderFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.SupplierAssessmentFactory
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -84,6 +87,9 @@ class ReferralServiceTest @Autowired constructor(
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory(entityManager)
   private val cancellationReasonFactory = CancellationReasonFactory(entityManager)
   private val endOfServiceReportFactory = EndOfServiceReportFactory(entityManager)
+  private val actionPlanFactory = ActionPlanFactory(entityManager)
+  private val appointmentFactory = AppointmentFactory(entityManager)
+  private val supplierAssessmentFactory = SupplierAssessmentFactory(entityManager)
 
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referenceGenerator: ReferralReferenceGenerator = spy(ReferralReferenceGenerator())
@@ -760,11 +766,38 @@ class ReferralServiceTest @Autowired constructor(
     }
 
     @Test
-    fun `referrals that are cancelled are not displayed`() {
+    fun `referrals that are sent, premature end requested or prematurely ended are returned`() {
       val provider = serviceProviderFactory.create(id = "test")
       val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
 
       val refLive = referralFactory.createSent(intervention = intervention)
+      val refPrematureEnded = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        endRequestedAt = OffsetDateTime.now(),
+        concludedAt = OffsetDateTime.now(),
+      ).also { referral ->
+        referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral)
+      }
+
+      val refPrematureEndRequested = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        endRequestedAt = OffsetDateTime.now(),
+        concludedAt = null
+      )
+
+      val user = userWithProviders(listOf(provider))
+      val result = referralService.getServiceProviderSummaries(user)
+      val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
+      assertThat(referralIds).containsExactlyInAnyOrder(refLive.id, refPrematureEnded.id, refPrematureEndRequested.id)
+    }
+
+    @Test
+    fun `referrals that are cancelled with no SAA feedback are not returned`() {
+      val provider = serviceProviderFactory.create(id = "test")
+      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
+
       val refCancelled = referralFactory.createEnded(
         intervention = intervention,
         endRequestedReason = cancellationReasonFactory.create("ANY"),
@@ -772,19 +805,78 @@ class ReferralServiceTest @Autowired constructor(
         endOfServiceReport = null,
       )
 
-      val refEndedEarly = referralFactory.createEnded(
-        intervention = intervention,
-        endRequestedReason = cancellationReasonFactory.create("ANY"),
-        concludedAt = OffsetDateTime.now(),
-      ).also { referral ->
-        referral.endOfServiceReport = endOfServiceReportFactory.create(referral = referral)
-      }
+      val appointment = appointmentFactory.create(referral = refCancelled)
+      val supplierAssessmentAppointment = supplierAssessmentFactory.create(appointment = appointment, referral = refCancelled)
+      refCancelled.supplierAssessment = supplierAssessmentAppointment
+      entityManager.refresh(refCancelled)
 
       val user = userWithProviders(listOf(provider))
       val result = referralService.getServiceProviderSummaries(user)
       val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
-      assertThat(referralIds).containsExactlyInAnyOrder(refLive.id, refEndedEarly.id)
-      assertThat(referralIds).doesNotContain(refCancelled.id)
+      assertThat(referralIds).isEmpty()
+    }
+
+    @Test
+    fun `referrals that are cancelled with SAA feedback are returned`() {
+      val provider = serviceProviderFactory.create(id = "test")
+      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
+
+      val refCancelled = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        concludedAt = OffsetDateTime.now(),
+        endOfServiceReport = null,
+      )
+
+      val appointment = appointmentFactory.create(referral = refCancelled, attendanceSubmittedAt = OffsetDateTime.now())
+      val supplierAssessmentAppointment = supplierAssessmentFactory.create(appointment = appointment, referral = refCancelled)
+      refCancelled.supplierAssessment = supplierAssessmentAppointment
+      entityManager.refresh(refCancelled)
+
+      val user = userWithProviders(listOf(provider))
+      val result = referralService.getServiceProviderSummaries(user)
+      val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
+      assertThat(referralIds).containsExactly(refCancelled.id)
+    }
+
+    @Test
+    fun `referrals that are cancelled with Action Plan created but not submitted are not returned`() {
+      val provider = serviceProviderFactory.create(id = "test")
+      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
+
+      val refCancelled = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        concludedAt = OffsetDateTime.now(),
+        endOfServiceReport = null,
+      )
+
+      actionPlanFactory.create(referral = refCancelled)
+
+      val user = userWithProviders(listOf(provider))
+      val result = referralService.getServiceProviderSummaries(user)
+      val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
+      assertThat(referralIds).isEmpty()
+    }
+
+    @Test
+    fun `referrals that are cancelled with Action Plan submitted are returned`() {
+      val provider = serviceProviderFactory.create(id = "test")
+      val intervention = interventionFactory.create(contract = contractFactory.create(primeProvider = provider))
+
+      val refCancelled = referralFactory.createEnded(
+        intervention = intervention,
+        endRequestedReason = cancellationReasonFactory.create("ANY"),
+        concludedAt = OffsetDateTime.now(),
+        endOfServiceReport = null,
+      )
+
+      actionPlanFactory.createSubmitted(referral = refCancelled)
+
+      val user = userWithProviders(listOf(provider))
+      val result = referralService.getServiceProviderSummaries(user)
+      val referralIds = result.map { summary -> UUID.fromString(summary.referralId) }
+      assertThat(referralIds).containsExactly(refCancelled.id)
     }
 
     @Test

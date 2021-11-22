@@ -25,7 +25,8 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 			serviceUserFirstName,
 			serviceUserLastName,
       endOfServiceReportId,
-      endOfServiceReportSubmittedAt from (	
+      endOfServiceReportSubmittedAt,
+      concludedAt from (	
 	select
 			cast(r.id as varchar) AS referralId,
 			cast(r.sent_at as TIMESTAMP WITH TIME ZONE) as sentAt,
@@ -37,7 +38,8 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 			rsud.last_name as serviceUserLastName,
       cast(eosr.id as varchar) as endOfServiceReportId,
       cast(eosr.submitted_at as TIMESTAMP WITH TIME ZONE) as endOfServiceReportSubmittedAt,
-			row_number() over(partition by r.id order by ra.assigned_at desc) as assigned_at_desc_seq		
+			row_number() over(partition by r.id order by ra.assigned_at desc) as assigned_at_desc_seq,
+      cast(r.concluded_at as TIMESTAMP WITH TIME ZONE) as concludedAt
 	from referral r
 			 inner join intervention i on i.id = r.intervention_id
 			 left join referral_service_user_data rsud on rsud.referral_id = r.id
@@ -46,10 +48,18 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 			 left join referral_assignments ra on ra.referral_id = r.id
 			 left join auth_user au on au.id = ra.assigned_to_id
 			 left join end_of_service_report eosr on eosr.referral_id = r.id
+			 left outer join action_plan ap on ap.referral_id = r.id
+	 	 	 left outer join appointment app
+       	 left outer join supplier_assessment_appointment saa on saa.appointment_id = app.id
+       	 on app.referral_id = r.id
 	where
 		  r.sent_at is not null
 		  and ( dfc.prime_provider_id in :serviceProviders or dfcsc.subcontractor_provider_id in :serviceProviders )
-      and not (r.concluded_At is not null and r.end_Requested_At is not null and eosr.id is null)
+      and not (
+		  	    (r.concluded_At is not null and r.end_Requested_At is not null and eosr.id is null) -- cancelled
+	 	        and app.attendance_submitted_at is null -- supplier assessment feedback not submitted
+            and ap.submitted_at is null -- action plan has not been submitted
+        ) -- filter out referrals that are cancelled with SAA feedback not completed yet or cancelled with no action plan submitted
 ) a where assigned_at_desc_seq = 1 $dashboardRestrictionCriteria"""
   }
 
@@ -79,10 +89,10 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 
   private fun constructCustomCriteria(dashboardType: DashboardType?): String? {
     return when (dashboardType) {
-      DashboardType.myCases -> "and assignedToUserName = :username and endOfServiceReportSubmittedAt is null "
-      DashboardType.openCases -> "and endOfServiceReportSubmittedAt is null "
-      DashboardType.unassignedCases -> "and assignedToUserName is null and endOfServiceReportSubmittedAt is null "
-      DashboardType.completedCases -> "and endOfServiceReportSubmittedAt is not null "
+      DashboardType.myCases -> "and assignedToUserName = :username and concludedAt is null "
+      DashboardType.openCases -> "and concludedAt is null "
+      DashboardType.unassignedCases -> "and assignedToUserName is null and concludedAt is null "
+      DashboardType.completedCases -> "and concludedAt is not null "
       null -> null
     }
   }
