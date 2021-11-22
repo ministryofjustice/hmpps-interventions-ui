@@ -57,6 +57,7 @@ class DeliverySessionController(
     return DeliverySessionDTO.from(deliverySession)
   }
 
+  @Deprecated("superseded by getDeliverySessionAppointments")
   @GetMapping("/action-plan/{id}/appointments")
   fun getSessionsForActionPlan(
     @PathVariable(name = "id") actionPlanId: UUID
@@ -67,6 +68,7 @@ class DeliverySessionController(
     return DeliverySessionDTO.from(deliverySessions)
   }
 
+  @Deprecated("superseded by getDeliverySessionAppointments")
   @GetMapping("/action-plan/{id}/appointments/{sessionNumber}")
   fun getSessionForActionPlanId(
     @PathVariable(name = "id") actionPlanId: UUID,
@@ -78,6 +80,7 @@ class DeliverySessionController(
     return DeliverySessionDTO.from(deliverySession)
   }
 
+  @Deprecated("superseded by getDeliverySessionAppointments")
   @GetMapping("/referral/{id}/sessions/{sessionNumber}")
   fun getSessionForReferralId(
     @PathVariable(name = "id") referralId: UUID,
@@ -143,5 +146,19 @@ class DeliverySessionController(
       .firstOrNull { appointment -> appointment.second.id == appointmentId }
       ?: throw EntityNotFoundException("Delivery session appointment not found [referralId=$referralId, appointmentId=$appointmentId]")
     return DeliverySessionAppointmentDTO.from(matchingAppointment.first, matchingAppointment.second)
+  }
+
+  @GetMapping("/referral/{referralId}/delivery-session-appointments")
+  fun getDeliverySessionAppointments(
+    @PathVariable(name = "referralId") referralId: UUID,
+    authentication: JwtAuthenticationToken,
+  ): List<DeliverySessionAppointmentDTO> {
+    val user = userMapper.fromToken(authentication)
+    val referral = referralService.getSentReferral(referralId) ?: throw ResponseStatusException(
+      HttpStatus.BAD_REQUEST, "sent referral not found [referralId=$referralId]"
+    )
+    referralAccessChecker.forUser(referral, user)
+    return deliverySessionService.getSessions(referralId)
+      .flatMap { session -> session.appointments.map { appointment -> DeliverySessionAppointmentDTO.from(session.sessionNumber, appointment) } }
   }
 }

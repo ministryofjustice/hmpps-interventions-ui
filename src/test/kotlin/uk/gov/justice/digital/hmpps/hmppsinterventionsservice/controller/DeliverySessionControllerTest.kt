@@ -139,6 +139,35 @@ internal class DeliverySessionControllerTest {
     }
   }
 
+  @Nested
+  inner class GetSessionsForReferral {
+    val user = authUserFactory.create()
+    val userToken = jwtTokenFactory.create(user)
+    @Test
+    fun `can get sessions by referralId`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referralId = deliverySession.referral.id
+
+      whenever(referralService.getSentReferral(referralId)).thenReturn(deliverySession.referral)
+      whenever(sessionsService.getSessions(referralId)).thenReturn(listOf(deliverySession))
+
+      val sessionsResponse = sessionsController.getDeliverySessionAppointments(referralId, userToken)
+
+      assertThat(sessionsResponse.size).isEqualTo(1)
+      assertThat(sessionsResponse.first()).isEqualTo(DeliverySessionAppointmentDTO.from(deliverySession.sessionNumber, deliverySession.appointments.first()))
+    }
+
+    @Test
+    fun `expect bad request when referral does not exist`() {
+      val referralId = UUID.randomUUID()
+
+      whenever(referralService.getSentReferral(referralId)).thenReturn(null)
+
+      val e = assertThrows<ResponseStatusException> { sessionsController.getDeliverySessionAppointments(referralId, userToken) }
+      assertThat(e.reason).contains("sent referral not found")
+    }
+  }
+
   @Test
   fun `gets a list of sessions`() {
     val deliverySession = deliverySessionFactory.createScheduled()
