@@ -169,6 +169,7 @@ hmppsauth:
       user-detail: "/api/user/{username}"
 
 assess-risks-and-needs:
+  enable-posting-full-risk: false
   locations:
     create-supplementary-risk: "/risks/supplementary"
 
