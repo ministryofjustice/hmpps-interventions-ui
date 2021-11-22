@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -179,6 +180,10 @@ class DeliverySessionService(
 
   fun getSession(referralId: UUID, sessionNumber: Int): DeliverySession {
     return getDeliverySessionOrThrowException(referralId, sessionNumber)
+  }
+
+  fun getSession(deliverySessionId: UUID): DeliverySession {
+    return deliverySessionRepository.findByIdOrNull(deliverySessionId) ?: throw EntityNotFoundException("Delivery session not found [deliverySessionId=$deliverySessionId]")
   }
 
   private fun setAttendanceFields(
