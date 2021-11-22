@@ -60,6 +60,10 @@ class RisksAndNeedsService(
 ) {
   companion object : KLogging()
 
+  fun canPostFullRiskInformation(): Boolean {
+    return canPostFullRiskInformation
+  }
+
   fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime, riskInformation: String, redactedRisk: RedactedRisk? = null): UUID {
 
     val request = if (canPostFullRiskInformation && redactedRisk != null) {

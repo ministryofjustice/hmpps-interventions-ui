@@ -41,7 +41,7 @@ class SingleReferralEndpoints : IntegrationTestBase() {
   @BeforeEach
   fun setupMocks() {
     // required for 'sendDraftReferral' to return a valid DTO
-    whenever(mockRisksAndNeedsService.createSupplementaryRisk(any(), any(), any(), anyOrNull(), any())).thenReturn(UUID.randomUUID())
+    whenever(mockRisksAndNeedsService.createSupplementaryRisk(any(), any(), any(), anyOrNull(), any(), anyOrNull())).thenReturn(UUID.randomUUID())
   }
 
   companion object {

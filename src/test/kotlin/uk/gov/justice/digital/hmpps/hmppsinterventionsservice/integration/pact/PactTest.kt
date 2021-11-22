@@ -48,7 +48,7 @@ class PactTest : IntegrationTestBase() {
   @BeforeEach
   fun `before each`(context: PactVerificationContext) {
     // required for 'sendDraftReferral' to return a valid DTO
-    whenever(risksAndNeedsService.createSupplementaryRisk(any(), any(), any(), anyOrNull(), any())).thenReturn(UUID.randomUUID())
+    whenever(risksAndNeedsService.createSupplementaryRisk(any(), any(), any(), anyOrNull(), any(), anyOrNull())).thenReturn(UUID.randomUUID())
 
     whenever(communityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
       .thenReturn(ServiceUserAccessResult(true, emptyList()))
