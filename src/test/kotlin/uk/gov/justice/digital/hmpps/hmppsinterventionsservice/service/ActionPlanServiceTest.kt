@@ -250,7 +250,7 @@ internal class ActionPlanServiceTest {
   @Test
   fun `action plan approval fails if not the latest unapproved action plan`() {
     val referral = referralFactory.createSent()
-    val actionPlan = actionPlanFactory.createSubmitted(numberOfSessions = 2, referral = referral, createdAt = OffsetDateTime.now().minusDays(1))
+    val actionPlan = actionPlanFactory.createSubmitted(numberOfSessions = 2, referral = referral, submittedAt = OffsetDateTime.now().minusDays(1))
     val actionPlanOld = actionPlanFactory.createSubmitted(numberOfSessions = 2, referral = referral)
     referral.actionPlans = mutableListOf(actionPlan, actionPlanOld)
     val authUser = AuthUser("CRN123", "auth", "user")
@@ -260,7 +260,7 @@ internal class ActionPlanServiceTest {
     val exception = Assertions.assertThrows(ValidationException::class.java) {
       actionPlanService.approveActionPlan(actionPlan.id, authUser)
     }
-    assertThat(exception.message).isEqualTo("Action plan is not the latest created, so cannot be approved. [id=${actionPlan.id}]")
+    assertThat(exception.message).isEqualTo("Action plan is not the latest submitted, so cannot be approved. [id=${actionPlan.id}]")
   }
 
   @Test

@@ -107,8 +107,8 @@ class ActionPlanService(
   private fun verifySafeForApproval(actionPlan: ActionPlan) {
     if (actionPlan.approvedAt != null) {
       throw ValidationException("Action plan has already been approved. [id=${actionPlan.id}]")
-    } else if (actionPlan.referral.actionPlans?.filter { it.approvedAt == null }?.maxByOrNull { it.createdAt }?.id != actionPlan.id) {
-      throw ValidationException("Action plan is not the latest created, so cannot be approved. [id=${actionPlan.id}]")
+    } else if (actionPlan.referral.actionPlans?.filter { it.approvedAt == null && it.submittedAt != null }?.maxByOrNull { it.submittedAt!! }?.id != actionPlan.id) {
+      throw ValidationException("Action plan is not the latest submitted, so cannot be approved. [id=${actionPlan.id}]")
     }
     actionPlan.referral.approvedActionPlan?. let {
       if (it.numberOfSessions!! > actionPlan.numberOfSessions!!) {
