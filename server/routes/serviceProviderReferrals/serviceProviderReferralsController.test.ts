@@ -125,123 +125,63 @@ describe('GET /service-provider/dashboard', () => {
 
 describe('GET /service-provider/dashboard/my-cases', () => {
   it('displays a list of my cases', async () => {
-    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
-      referenceNumber: 'undefinedRef',
-      assignedToUserName: undefined,
-      endOfServiceReportSubmitted: undefined,
-    })
     const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
       referenceNumber: 'assignedToSelfRef',
     })
-    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
-      referenceNumber: 'unassignedRef',
-    })
-    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
-      referenceNumber: 'completedRef',
-    })
-    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
-    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue([assignedToSelf])
     await request(app)
       .get('/service-provider/dashboard')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('My cases')
         expect(res.text).toContain('assignedToSelfRef')
-        expect(res.text).not.toContain('undefinedRef')
-        expect(res.text).not.toContain('unassignedRef')
-        expect(res.text).not.toContain('completedRef')
       })
   })
 })
 
 describe('GET /service-provider/dashboard/all-open-cases', () => {
   it('displays a list of all open cases', async () => {
-    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
-      referenceNumber: 'undefinedRef',
-      assignedToUserName: undefined,
-      endOfServiceReportSubmitted: undefined,
-    })
     const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
       referenceNumber: 'assignedToSelfRef',
     })
-    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
-      referenceNumber: 'unassignedRef',
-    })
-    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
-      referenceNumber: 'completedRef',
-    })
-    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
-    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue([assignedToSelf])
     await request(app)
       .get('/service-provider/dashboard/all-open-cases')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('All open cases')
         expect(res.text).toContain('assignedToSelfRef')
-        expect(res.text).toContain('undefinedRef')
-        expect(res.text).toContain('unassignedRef')
-        expect(res.text).not.toContain('completedRef')
       })
   })
 })
 
 describe('GET /service-provider/dashboard/unassigned-cases', () => {
   it('displays a list of unassigned cases', async () => {
-    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
-      referenceNumber: 'undefinedRef',
-      assignedToUserName: undefined,
-      endOfServiceReportSubmitted: undefined,
-    })
-    const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
-      referenceNumber: 'assignedToSelfRef',
-    })
     const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
       referenceNumber: 'unassignedRef',
     })
-    const completed = serviceProviderSentReferralSummaryFactory.completed().build({
-      referenceNumber: 'completedRef',
-    })
-    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
-    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue([unassigned])
     await request(app)
       .get('/service-provider/dashboard/unassigned-cases')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Unassigned cases')
-        expect(res.text).not.toContain('assignedToSelfRef')
-        expect(res.text).toContain('undefinedRef')
         expect(res.text).toContain('unassignedRef')
-        expect(res.text).not.toContain('completedRef')
       })
   })
 })
 
 describe('GET /service-provider/dashboard/completed-cases', () => {
-  it('displays a list of my cases', async () => {
-    const undefinedRef = serviceProviderSentReferralSummaryFactory.build({
-      referenceNumber: 'undefinedRef',
-      assignedToUserName: undefined,
-      endOfServiceReportSubmitted: undefined,
-    })
-    const assignedToSelf = serviceProviderSentReferralSummaryFactory.withAssignedUser('user1').open().build({
-      referenceNumber: 'assignedToSelfRef',
-    })
-    const unassigned = serviceProviderSentReferralSummaryFactory.unassigned().open().build({
-      referenceNumber: 'unassignedRef',
-    })
+  it('displays a list of completed cases', async () => {
     const completed = serviceProviderSentReferralSummaryFactory.completed().build({
       referenceNumber: 'completedRef',
     })
-    const referralsSummary: ServiceProviderSentReferralSummary[] = [undefinedRef, assignedToSelf, unassigned, completed]
-    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue(referralsSummary)
+    interventionsService.getServiceProviderSentReferralsSummaryForUserToken.mockResolvedValue([completed])
     await request(app)
       .get('/service-provider/dashboard/completed-cases')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Completed cases')
-        expect(res.text).not.toContain('assignedToSelfRef')
-        expect(res.text).not.toContain('undefinedRef')
-        expect(res.text).not.toContain('unassignedRef')
         expect(res.text).toContain('completedRef')
       })
   })
