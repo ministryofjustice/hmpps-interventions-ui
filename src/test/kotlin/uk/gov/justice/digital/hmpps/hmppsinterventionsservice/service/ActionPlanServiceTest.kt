@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.same
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
@@ -24,7 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleD
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DesiredOutcomeRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
@@ -34,6 +34,7 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
+import javax.validation.ValidationException
 
 internal class ActionPlanServiceTest {
 
@@ -43,7 +44,6 @@ internal class ActionPlanServiceTest {
   private val actionPlanValidator: ActionPlanValidator = mock()
   private val actionPlanEventPublisher: ActionPlanEventPublisher = mock()
   private val deliverySessionService: DeliverySessionService = mock()
-  private val desiredOutcomeRepository: DesiredOutcomeRepository = mock()
   private val deliverySessionRepository: DeliverySessionRepository = mock()
 
   private val referralFactory = ReferralFactory()
@@ -231,8 +231,11 @@ internal class ActionPlanServiceTest {
   @Test
   fun `action plan approval sets approved and creates unscheduled sessions`() {
     val actionPlanId = UUID.randomUUID()
-    val actionPlan = SampleData.sampleActionPlan(id = actionPlanId, numberOfSessions = 2)
+    val referral = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.createSubmitted(id = actionPlanId, numberOfSessions = 2, referral = referral)
+    referral.actionPlans = mutableListOf(actionPlan)
     val authUser = AuthUser("CRN123", "auth", "user")
+
     whenever(actionPlanRepository.findById(actionPlanId)).thenReturn(of(actionPlan))
     whenever(authUserRepository.save(any())).then(AdditionalAnswers.returnsFirstArg<AuthUser>())
     whenever(actionPlanRepository.save(any())).then(AdditionalAnswers.returnsFirstArg<ActionPlan>())
@@ -242,6 +245,53 @@ internal class ActionPlanServiceTest {
     assertThat(approvedActionPlan.approvedBy).isEqualTo(authUser)
     verify(actionPlanEventPublisher).actionPlanApprovedEvent(same(actionPlan))
     verify(deliverySessionService).createUnscheduledSessionsForActionPlan(same(actionPlan))
+  }
+
+  @Test
+  fun `action plan approval fails if not the latest unapproved action plan`() {
+    val referral = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.createSubmitted(numberOfSessions = 2, referral = referral, submittedAt = OffsetDateTime.now().minusDays(1))
+    val actionPlanOld = actionPlanFactory.createSubmitted(numberOfSessions = 2, referral = referral)
+    referral.actionPlans = mutableListOf(actionPlan, actionPlanOld)
+    val authUser = AuthUser("CRN123", "auth", "user")
+
+    whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
+
+    val exception = Assertions.assertThrows(ValidationException::class.java) {
+      actionPlanService.approveActionPlan(actionPlan.id, authUser)
+    }
+    assertThat(exception.message).isEqualTo("Action plan is not the latest submitted, so cannot be approved. [id=${actionPlan.id}]")
+  }
+
+  @Test
+  fun `action plan approval fails if it has already been approved`() {
+    val referral = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.createApproved(numberOfSessions = 2, referral = referral)
+    referral.actionPlans = mutableListOf(actionPlan)
+    val authUser = AuthUser("CRN123", "auth", "user")
+
+    whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
+
+    val exception = Assertions.assertThrows(ValidationException::class.java) {
+      actionPlanService.approveActionPlan(actionPlan.id, authUser)
+    }
+    assertThat(exception.message).isEqualTo("Action plan has already been approved. [id=${actionPlan.id}]")
+  }
+
+  @Test
+  fun `action plan approval fails if it has less sessions than a previously approved action plan`() {
+    val referral = referralFactory.createSent()
+    val actionPlan = actionPlanFactory.createSubmitted(numberOfSessions = 1, referral = referral)
+    val actionPlanOld = actionPlanFactory.createApproved(numberOfSessions = 2, referral = referral, createdAt = OffsetDateTime.now().minusDays(1))
+    referral.actionPlans = mutableListOf(actionPlan, actionPlanOld)
+    val authUser = AuthUser("CRN123", "auth", "user")
+
+    whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
+
+    val exception = Assertions.assertThrows(ValidationException::class.java) {
+      actionPlanService.approveActionPlan(actionPlan.id, authUser)
+    }
+    assertThat(exception.message).isEqualTo("Action plan cannot be approved as it has less sessions than the currently approved action plan. [id=${actionPlan.id}]")
   }
 
   @Test

@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Del
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.EntityExistsException
@@ -48,6 +49,7 @@ internal class DeliverySessionsServiceTest {
   private val actionPlanFactory = ActionPlanFactory()
   private val deliverySessionFactory = DeliverySessionFactory()
   private val authUserFactory = AuthUserFactory()
+  private val referralFactory = ReferralFactory()
 
   private val deliverySessionsService = DeliverySessionService(
     deliverySessionRepository, actionPlanRepository,
@@ -68,6 +70,23 @@ internal class DeliverySessionsServiceTest {
 
     deliverySessionsService.createUnscheduledSessionsForActionPlan(actionPlan)
     verify(deliverySessionRepository, times(3)).save(any())
+  }
+
+  @Test
+  fun `create unscheduled sessions where there is a previously approved action plan`() {
+    val newActionPlanId = UUID.randomUUID()
+    val referral = referralFactory.createSent()
+    val previouslyApprovedActionPlan = actionPlanFactory.createApproved(numberOfSessions = 2, referral = referral)
+    val newActionPlan = actionPlanFactory.createSubmitted(id = newActionPlanId, numberOfSessions = 3, referral = referral)
+    referral.actionPlans = mutableListOf(previouslyApprovedActionPlan, newActionPlan)
+
+    whenever(deliverySessionRepository.findAllByActionPlanId(any())).thenReturn(listOf(deliverySessionFactory.createAttended(), deliverySessionFactory.createAttended()))
+    whenever(deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(eq(newActionPlan.id), any())).thenReturn(null)
+    whenever(authUserRepository.save(newActionPlan.createdBy)).thenReturn(newActionPlan.createdBy)
+    whenever(deliverySessionRepository.save(any())).thenAnswer { it.arguments[0] }
+
+    deliverySessionsService.createUnscheduledSessionsForActionPlan(newActionPlan)
+    verify(deliverySessionRepository, times(1)).save(any())
   }
 
   @Test
