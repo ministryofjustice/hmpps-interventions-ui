@@ -1,4 +1,3 @@
-{{- if not .Values.env_details.production_env -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -16,4 +15,3 @@ spec:
               imagePullPolicy: Always
               args: ["--jobName=ndmisPerformanceReportJob"]
   {{- include "deployment.envs" . | nindent 14 }}
-{{- end -}}
