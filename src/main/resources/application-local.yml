@@ -11,6 +11,8 @@ community-api:
   appointments:
     bookings:
       enabled: false
+    outcome:
+      enabled: false
 
 assess-risks-and-needs:
   baseurl: http://localhost:8094

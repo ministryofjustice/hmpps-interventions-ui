@@ -147,6 +147,8 @@ community-api:
   appointments:
     bookings:
       enabled: true
+    outcome:
+      enabled: true
     office-location: CRSEXTL
     notes-field-qualifier: "{
       SERVICE_DELIVERY:'Service Delivery',
