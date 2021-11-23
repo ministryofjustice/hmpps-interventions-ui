@@ -91,8 +91,6 @@ class Referral(
   @OneToOne(mappedBy = "referral") @Fetch(JOIN) var endOfServiceReport: EndOfServiceReport? = null,
   @OneToOne(mappedBy = "referral") @Fetch(JOIN) var supplierAssessment: SupplierAssessment? = null,
 ) {
-  fun cancelled(): Boolean = concludedAt != null && endRequestedAt != null && endOfServiceReport == null
-
   val approvedActionPlan: ActionPlan?
     get() = actionPlans?.filter { it.approvedAt != null }?.maxByOrNull { it.approvedAt!! }
 
