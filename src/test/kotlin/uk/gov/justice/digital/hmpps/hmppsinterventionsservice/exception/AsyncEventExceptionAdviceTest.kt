@@ -1,73 +1,46 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import org.slf4j.LoggerFactory
 import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CreateCaseNoteEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingMemoryAppender
+import java.util.UUID
 
 internal class AsyncEventExceptionAdviceTest {
 
   private val methodInvocationProceedingJoinPoint = mock<MethodInvocationProceedingJoinPoint>()
-
-  private lateinit var asyncEventExceptionAdvice: AsyncEventExceptionAdvice
-
-  companion object {
-    private val logger = LoggerFactory.getLogger(AsyncEventExceptionAdvice::class.java) as Logger
-    private var memoryAppender = LoggingMemoryAppender()
-
-    @BeforeAll
-    @JvmStatic
-    fun setupAll() {
-      memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
-      logger.addAppender(memoryAppender)
-      memoryAppender.start()
-    }
-
-    @AfterAll
-    @JvmStatic
-    fun teardownAll() {
-      logger.detachAppender(memoryAppender)
-    }
-  }
-
-  @AfterEach
-  fun teardown() {
-    memoryAppender.reset()
-  }
+  private val event = CreateCaseNoteEvent(
+    source = this,
+    caseNoteId = UUID.randomUUID(),
+    sentBy = SampleData.sampleAuthUser(),
+    detailUrl = "fakeUrl",
+    referralId = UUID.randomUUID(),
+  )
+  private val originalException = RuntimeException("Stuff is bad")
+  private val asyncEventExceptionAdvice = AsyncEventExceptionAdvice()
 
   @Test
-  fun `exception is logged when thrown`() {
-    asyncEventExceptionAdvice = AsyncEventExceptionAdvice()
+  fun `rethrows exception when exception occurs with event context`() {
+    whenever(methodInvocationProceedingJoinPoint.proceed()).thenThrow(originalException)
+    whenever(methodInvocationProceedingJoinPoint.args).thenReturn(arrayOf(event))
 
-    whenever(methodInvocationProceedingJoinPoint.proceed()).thenThrow(RuntimeException())
-    whenever(methodInvocationProceedingJoinPoint.args).thenReturn(arrayOf(SampleData.sampleNPSRegion()))
-
-    assertThrows<RuntimeException> {
+    val raisedException = assertThrows<RuntimeException> {
       asyncEventExceptionAdvice.handleException(methodInvocationProceedingJoinPoint)
     }
-
-    Assertions.assertThat(memoryAppender.logEvents.size).isEqualTo(1)
-    Assertions.assertThat(memoryAppender.logEvents[0].level.levelStr).isEqualTo("ERROR")
-    Assertions.assertThat(memoryAppender.logEvents[0].message).isEqualTo("Exception thrown for method annotated with @AsyncEventExceptionHandling {}")
-    Assertions.assertThat(memoryAppender.logEvents[0].argumentArray[1].toString()).isEqualTo("event=NPSRegion(id=G, name=South West)")
+    assertThat(raisedException.message).isEqualTo("Stuff is bad")
   }
 
   @Test
-  fun `not logged when exception is not thrown`() {
-    asyncEventExceptionAdvice = AsyncEventExceptionAdvice()
+  fun `does not throw exception on normal execution`() {
+    whenever(methodInvocationProceedingJoinPoint.args).thenReturn(arrayOf(event))
 
-    asyncEventExceptionAdvice.handleException(methodInvocationProceedingJoinPoint)
-
-    Assertions.assertThat(memoryAppender.logEvents.size).isEqualTo(0)
+    assertDoesNotThrow {
+      asyncEventExceptionAdvice.handleException(methodInvocationProceedingJoinPoint)
+    }
   }
 }
