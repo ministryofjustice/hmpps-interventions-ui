@@ -7,20 +7,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CreateCaseNoteEvent
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
-import java.util.UUID
+import org.springframework.context.ApplicationEvent
 
 internal class AsyncEventExceptionAdviceTest {
+  private class TestEvent(source: Any) : ApplicationEvent(source)
 
   private val methodInvocationProceedingJoinPoint = mock<MethodInvocationProceedingJoinPoint>()
-  private val event = CreateCaseNoteEvent(
-    source = this,
-    caseNoteId = UUID.randomUUID(),
-    sentBy = SampleData.sampleAuthUser(),
-    detailUrl = "fakeUrl",
-    referralId = UUID.randomUUID(),
-  )
+  private val event = TestEvent(this)
   private val originalException = RuntimeException("Stuff is bad")
   private val asyncEventExceptionAdvice = AsyncEventExceptionAdvice()
 
@@ -29,10 +22,11 @@ internal class AsyncEventExceptionAdviceTest {
     whenever(methodInvocationProceedingJoinPoint.proceed()).thenThrow(originalException)
     whenever(methodInvocationProceedingJoinPoint.args).thenReturn(arrayOf(event))
 
-    val raisedException = assertThrows<RuntimeException> {
+    val raisedException = assertThrows<EventException> {
       asyncEventExceptionAdvice.handleException(methodInvocationProceedingJoinPoint)
     }
-    assertThat(raisedException.message).isEqualTo("Stuff is bad")
+    assertThat(raisedException.message).isEqualTo("RuntimeException: Stuff is bad; while processing TestEvent")
+    assertThat(raisedException.event).isEqualTo(event)
   }
 
   @Test
