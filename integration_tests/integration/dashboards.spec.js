@@ -493,33 +493,21 @@ describe('Dashboards', () => {
 
     describe('SP logs in and accesses "My cases"', () => {
       beforeEach(() => {
-        const assignedToSelf = serviceProviderSentReferralSummaryFactory
+        const referralSummary = serviceProviderSentReferralSummaryFactory
           .withAssignedUser('USER1')
-          .build({ referenceNumber: 'ASSIGNED_TO_SELF' })
-        const unassigned = serviceProviderSentReferralSummaryFactory
-          .unassigned()
-          .build({ referenceNumber: 'UNASSIGNED' })
-        const assignedToOther = serviceProviderSentReferralSummaryFactory
-          .withAssignedUser('other')
-          .build({ referenceNumber: 'ASSIGNED_TO_OTHER' })
-        const completed = serviceProviderSentReferralSummaryFactory.completed().build({ referenceNumber: 'COMPLETED' })
-        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([
-          assignedToSelf,
-          unassigned,
-          assignedToOther,
-          completed,
-        ])
+          .build({ referenceNumber: 'REFERRAL_REF' })
+        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
         cy.login()
       })
 
-      it('should see "My cases" and cases that are assigned to themselves only', () => {
+      it('should see "My cases" with no Caseworker details', () => {
         cy.get('h1').contains('My cases')
         cy.get('table')
           .getTable()
           .should('deep.equal', [
             {
               'Date received': '26 Jan 2021',
-              Referral: 'ASSIGNED_TO_SELF',
+              Referral: 'REFERRAL_REF',
               'Service user': 'Jenny Jones',
               'Intervention type': 'Social Inclusion - West Midlands',
               Action: 'View',
@@ -528,7 +516,7 @@ describe('Dashboards', () => {
       })
 
       describe('Selecting "All open cases"', () => {
-        it('should see "All open cases" and cases that are not concluded', () => {
+        it('should see "All open cases" and Caseworker details', () => {
           cy.get('h1').contains('My cases')
           cy.contains('All open cases').click()
           cy.get('h1').contains('All open cases')
@@ -537,26 +525,10 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Date received': '26 Jan 2021',
-                Referral: 'ASSIGNED_TO_SELF',
+                Referral: 'REFERRAL_REF',
                 'Service user': 'Jenny Jones',
                 'Intervention type': 'Social Inclusion - West Midlands',
                 Caseworker: 'USER1',
-                Action: 'View',
-              },
-              {
-                'Date received': '26 Jan 2021',
-                Referral: 'UNASSIGNED',
-                'Service user': 'Jenny Jones',
-                'Intervention type': 'Social Inclusion - West Midlands',
-                Caseworker: '',
-                Action: 'View',
-              },
-              {
-                'Date received': '26 Jan 2021',
-                Referral: 'ASSIGNED_TO_OTHER',
-                'Service user': 'Jenny Jones',
-                'Intervention type': 'Social Inclusion - West Midlands',
-                Caseworker: 'other',
                 Action: 'View',
               },
             ])
@@ -564,7 +536,7 @@ describe('Dashboards', () => {
       })
 
       describe('Selecting "Unassigned cases"', () => {
-        it('should see "Unassigned cases" and cases that are not assigned', () => {
+        it('should see "Unassigned cases" and no Caseworker details', () => {
           cy.get('h1').contains('My cases')
           cy.contains('Unassigned cases').click()
           cy.get('h1').contains('Unassigned cases')
@@ -573,7 +545,7 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Date received': '26 Jan 2021',
-                Referral: 'UNASSIGNED',
+                Referral: 'REFERRAL_REF',
                 'Service user': 'Jenny Jones',
                 'Intervention type': 'Social Inclusion - West Midlands',
                 Action: 'View',
@@ -583,7 +555,7 @@ describe('Dashboards', () => {
       })
 
       describe('Selecting "Completed cases"', () => {
-        it('should see "Completed cases" and cases that are concluded', () => {
+        it('should see "Completed cases" and Caseworker details', () => {
           cy.get('h1').contains('My cases')
           cy.contains('Completed cases').click()
           cy.get('h1').contains('Completed cases')
@@ -592,10 +564,10 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Date received': '26 Jan 2021',
-                Referral: 'COMPLETED',
+                Referral: 'REFERRAL_REF',
                 'Service user': 'Jenny Jones',
                 'Intervention type': 'Social Inclusion - West Midlands',
-                Caseworker: '',
+                Caseworker: 'USER1',
                 Action: 'View',
               },
             ])

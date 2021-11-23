@@ -79,11 +79,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.MyCases
     )
-    const filteredSummary = referralsSummary.filter(summary => {
-      return summary.assignedToUserName === res.locals.user.username && !summary.endOfServiceReportSubmitted
-    })
-
-    this.renderDashboard(res, filteredSummary, 'My cases')
+    this.renderDashboard(res, referralsSummary, 'My cases')
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -91,10 +87,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.OpenCases
     )
-    const openReferrals = referralsSummary.filter(summary => {
-      return !summary.endOfServiceReportSubmitted
-    })
-    this.renderDashboard(res, openReferrals, 'All open cases')
+    this.renderDashboard(res, referralsSummary, 'All open cases')
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -102,10 +95,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.UnassignedCases
     )
-    const unassignedReferrals = referralsSummary.filter(summary => {
-      return !summary.assignedToUserName && !summary.endOfServiceReportSubmitted
-    })
-    this.renderDashboard(res, unassignedReferrals, 'Unassigned cases')
+    this.renderDashboard(res, referralsSummary, 'Unassigned cases')
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -113,10 +103,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.CompletedCases
     )
-    const completedReferrals = referralsSummary.filter(summary => {
-      return summary.endOfServiceReportSubmitted === true
-    })
-    this.renderDashboard(res, completedReferrals, 'Completed cases')
+    this.renderDashboard(res, referralsSummary, 'Completed cases')
   }
 
   private renderDashboard(
