@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events
 
+import mu.KLogging
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
@@ -22,6 +23,7 @@ class ReferralEventPublisher(
   private val applicationEventPublisher: ApplicationEventPublisher,
   private val locationMapper: LocationMapper
 ) {
+  companion object : KLogging()
 
   fun referralSentEvent(referral: Referral) {
     applicationEventPublisher.publishEvent(ReferralEvent(this, ReferralEventType.SENT, referral, getSentReferralURL(referral)))
@@ -32,6 +34,7 @@ class ReferralEventPublisher(
   }
 
   fun referralConcludedEvent(referral: Referral, eventType: ReferralEventType) {
+    referral.currentAssignee ?: logger.warn("Concluding referral has no current assignment ${referral.id} for event type $eventType")
     applicationEventPublisher.publishEvent(ReferralEvent(this, eventType, referral, getSentReferralURL(referral)))
   }
 
