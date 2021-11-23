@@ -50,7 +50,7 @@ class ReferralSummaryRepositoryImpl : ReferralSummaryRepository {
 			 left join end_of_service_report eosr on eosr.referral_id = r.id
 			 left outer join action_plan ap on ap.referral_id = r.id
 	 	 	 left outer join appointment app
-       	 left outer join supplier_assessment_appointment saa on saa.appointment_id = app.id
+       	 left join supplier_assessment_appointment saa on saa.appointment_id = app.id
        	 on app.referral_id = r.id
 	where
 		  r.sent_at is not null
