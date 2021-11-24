@@ -1,25 +1,15 @@
-replicaCount: 2
-
-image:
-  repository: quay.io/hmpps/hmpps-interventions-ui
-  tag: latest
-  pullPolicy: IfNotPresent
-  port: 3000
-
-ingress:
-  host: hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk
-
-env_details:
-  contains_live_data: false
-
-env:
-  DEPLOYMENT_ENV: research
-  HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-  COMMUNITY_API_URL: https://community-api-secure.test.delius.probation.hmpps.dsd.io
-  INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-research.apps.live-1.cloud-platform.service.justice.gov.uk
-  ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk
-  ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED: true
-  TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
-  TOKEN_VERIFICATION_ENABLED: true
-  REDIS_TLS_ENABLED: true
-  GA_ID: G-9HV8CM653Q
+generic-service:
+  ingress:
+    host: hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk
+  env:
+    INGRESS_URL: "https://hmpps-interventions-ui-research.apps.live-1.cloud-platform.service.justice.gov.uk"
+    DEPLOYMENT_ENV: research
+    HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+    COMMUNITY_API_URL: https://community-api-secure.test.delius.probation.hmpps.dsd.io
+    INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-research.apps.live-1.cloud-platform.service.justice.gov.uk
+    ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk
+    TOKEN_VERIFICATION_API_URL: https://token-verification-api-dev.prison.service.justice.gov.uk
+    GA_ID: G-9HV8CM653Q
+    FEATURE_SP_REPORTING_ENABLED: true
+    FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS: true
+    ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED: true
