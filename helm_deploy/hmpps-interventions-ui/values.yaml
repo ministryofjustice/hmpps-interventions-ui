@@ -35,6 +35,9 @@ generic-service:
       AWS_S3_ACCESSKEYID: "access_key_id"
       AWS_S3_SECRETACCESSKEY: "secret_access_key"
 
+  poddisruptionbudget:
+    enabled: false
+
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 5
