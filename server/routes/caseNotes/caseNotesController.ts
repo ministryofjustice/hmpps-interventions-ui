@@ -75,7 +75,7 @@ export default class CaseNotesController {
       loggedInUserType
     )
     const view = new CaseNotesView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async startAddCaseNote(
