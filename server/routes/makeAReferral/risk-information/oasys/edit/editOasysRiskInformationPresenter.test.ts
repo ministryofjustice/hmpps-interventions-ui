@@ -9,7 +9,8 @@ describe('EditOasysRiskInformationPresenter', () => {
         const riskSummary = riskSummaryFactory.build({ assessedOn: '2021-09-20T09:31:45.062Z' })
         const presenter = new EditOasysRiskInformationPresenter(
           supplementaryRiskInformationFactory.build(),
-          riskSummary
+          riskSummary,
+          null
         )
 
         expect(presenter.latestAssessment).toEqual('20 September 2021')
@@ -20,7 +21,8 @@ describe('EditOasysRiskInformationPresenter', () => {
         const riskSummary = riskSummaryFactory.build({ assessedOn: null })
         const presenter = new EditOasysRiskInformationPresenter(
           supplementaryRiskInformationFactory.build(),
-          riskSummary
+          riskSummary,
+          null
         )
 
         expect(presenter.latestAssessment).toEqual('Assessment date not found')
@@ -29,7 +31,8 @@ describe('EditOasysRiskInformationPresenter', () => {
         const riskSummary = riskSummaryFactory.build({ assessedOn: undefined })
         const presenter = new EditOasysRiskInformationPresenter(
           supplementaryRiskInformationFactory.build(),
-          riskSummary
+          riskSummary,
+          null
         )
 
         expect(presenter.latestAssessment).toEqual('Assessment date not found')

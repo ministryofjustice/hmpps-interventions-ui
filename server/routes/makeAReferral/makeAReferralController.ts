@@ -56,6 +56,7 @@ import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/edi
 import DraftReferral from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
+import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
 
 export default class MakeAReferralController {
   constructor(
@@ -575,6 +576,7 @@ export default class MakeAReferralController {
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
     let error: FormValidationError | null = null
+    let draftOasysRiskInformation: DraftOasysRiskInformation | null = null
     if (req.method === 'POST') {
       const form = await EditOasysRiskInformationForm.createForm(req)
       if (form.isValid) {
@@ -587,6 +589,21 @@ export default class MakeAReferralController {
         return
       }
       error = form.error
+      draftOasysRiskInformation = form.editedDraftRiskInformation
+    } else {
+      try {
+        draftOasysRiskInformation = await this.interventionsService.getDraftOasysRiskInformation(
+          accessToken,
+          referralId
+        )
+      } catch (e) {
+        const restClientError = e as RestClientError
+        if (restClientError.status === 404) {
+          draftOasysRiskInformation = null
+        } else {
+          throw e
+        }
+      }
     }
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
     const [serviceUser, riskSummary, supplementaryRiskInformation] = await Promise.all([
@@ -595,7 +612,12 @@ export default class MakeAReferralController {
       this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(referral.serviceUser.crn, accessToken),
     ])
 
-    const presenter = new EditOasysRiskInformationPresenter(supplementaryRiskInformation, riskSummary, error)
+    const presenter = new EditOasysRiskInformationPresenter(
+      supplementaryRiskInformation,
+      riskSummary,
+      draftOasysRiskInformation,
+      error
+    )
     const view = new EditOasysRiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
