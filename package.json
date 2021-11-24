@@ -144,7 +144,7 @@
     "@types/express-session": "^1.17.4",
     "@types/http-errors": "^1.8.1",
     "@types/indefinite": "^2.3.1",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/jquery": "^3.5.8",
     "@types/jsonwebtoken": "^8.5.6",
     "@types/jwt-decode": "^2.2.1",
