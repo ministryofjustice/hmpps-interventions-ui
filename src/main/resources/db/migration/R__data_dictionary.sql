@@ -127,6 +127,7 @@ COMMENT ON TABLE metadata IS 'defines metadata about the schema';
 COMMENT ON COLUMN metadata.table_name IS 'which table this record is describing';
 COMMENT ON COLUMN metadata.column_name IS 'which column this record is describing';
 COMMENT ON COLUMN metadata.sensitive IS '`true` means the contents should be obfuscated/anonymised in unsafe environments; `false` means it’s safe to see/copy';
+COMMENT ON COLUMN metadata.domain_data IS '`true` means the field hold operational/domain data; `false` means it is an internal structure that holds no operational data';
 
 COMMENT ON TABLE draft_oasys_risk_information IS 'holds draft OASYS risk information only for a DraftReferral. Discarded after referral is sent.';
 COMMENT ON COLUMN draft_oasys_risk_information.referral_id IS 'the id of the draft referral connected to risk information';
