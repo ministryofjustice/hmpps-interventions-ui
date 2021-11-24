@@ -12,7 +12,7 @@ const communityApi = new CommunityApiMocks(wiremock, '/community-api')
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
 const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock, '/assess-risks-and-needs')
 
-module.exports = on => {
+export default on => {
   on('task', {
     reset: () => {
       return wiremock.resetStubs()
