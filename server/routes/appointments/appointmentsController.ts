@@ -442,9 +442,9 @@ export default class AppointmentsController {
       appointment,
       serviceUser,
       new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      referralId,
       formError,
-      userInputData,
-      referralId
+      userInputData
     )
     const view = new AttendanceFeedbackView(presenter)
 

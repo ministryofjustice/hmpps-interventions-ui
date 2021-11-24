@@ -10,9 +10,9 @@ export default class InitialAssessmentAttendanceFeedbackPresenter extends Attend
     private readonly initialAssessmentAppointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
     readonly appointmentSummary: AppointmentSummary,
+    private readonly referralId: string | null = null,
     error: FormValidationError | null = null,
-    userInputData: Record<string, unknown> | null = null,
-    private readonly referralId: string | null = null
+    userInputData: Record<string, unknown> | null = null
   ) {
     super(
       initialAssessmentAppointment,
