@@ -87,9 +87,9 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
           appointment,
           serviceUser,
           new AppointmentSummary(appointment),
+          'test-referral-id',
           null,
-          null,
-          'test-referral-id'
+          null
         )
         expect(presenter.backLinkHref).toEqual('/service-provider/referrals/test-referral-id/progress')
       })
