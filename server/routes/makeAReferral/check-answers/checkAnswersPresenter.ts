@@ -12,13 +12,15 @@ import DeliusConviction from '../../../models/delius/deliusConviction'
 import SentencePresenter from '../relevant-sentence/sentencePresenter'
 import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
 import DateUtils from '../../../utils/dateUtils'
+import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 
 export default class CheckAnswersPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
-    private readonly deliusServiceUser: ExpandedDeliusServiceUser
+    private readonly deliusServiceUser: ExpandedDeliusServiceUser,
+    private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
   ) {}
 
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
@@ -29,6 +31,53 @@ export default class CheckAnswersPresenter {
   }
 
   get riskSection(): { title: string; summary: SummaryListItem[] } {
+    if (this.editedOasysRiskInformation) {
+      return {
+        title: `OAsys risk information`,
+        summary: [
+          {
+            key: 'Who is at risk',
+            lines: [this.editedOasysRiskInformation.riskSummaryWhoIsAtRisk || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'What is the nature of the risk',
+            lines: [this.editedOasysRiskInformation.riskSummaryNatureOfRisk || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'When is the risk likely to be greatest',
+            lines: [this.editedOasysRiskInformation.riskSummaryRiskImminence || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'Concerns in relation to self-harm',
+            lines: [this.editedOasysRiskInformation.riskToSelfSelfHarm || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'Concerns in relation to suicide',
+            lines: [this.editedOasysRiskInformation.riskToSelfSuicide || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'Concerns in relation to coping in a hostel setting',
+            lines: [this.editedOasysRiskInformation.riskToSelfHostelSetting || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'Concerns in relation to vulnerability',
+            lines: [this.editedOasysRiskInformation.riskToSelfVulnerability || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+          {
+            key: 'Additional information',
+            lines: [this.editedOasysRiskInformation.additionalInformation || ''],
+            changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+          },
+        ],
+      }
+    }
     return {
       title: `${this.serviceUserName}’s risk information`,
       summary: [

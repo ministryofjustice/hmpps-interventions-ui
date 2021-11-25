@@ -5,6 +5,7 @@ import cohortReferralFormSectionFactory from '../../../../testutils/factories/co
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
 import ServiceCategory from '../../../models/serviceCategory'
 import interventionFactory from '../../../../testutils/factories/intervention'
+import draftOasysRiskInformationFactory from '../../../../testutils/factories/draftOasysRiskInformation'
 
 describe('ReferralFormPresenter', () => {
   describe('for a single referral', () => {
@@ -41,37 +42,91 @@ describe('ReferralFormPresenter', () => {
             ]
             expect(presenter.sections).toEqual(expected)
           })
+          describe('with full risk information enabled', () => {
+            it('should contain a "Not started" label and "risk-information" url visible', () => {
+              const referral = draftReferralFactory
+                .serviceUserSelected()
+                .build({ serviceCategoryIds: [serviceCategory.id] })
+              const presenter = new ReferralFormPresenter(referral, nonCohortIntervention, null)
+              const expected = [
+                referralFormSectionFactory.reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information').build(),
+                referralFormSectionFactory
+                  .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
+                  .build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
+              ]
+              expect(presenter.sections).toEqual(expected)
+            })
+          })
         })
         describe('when "risk information" has been set', () => {
-          it('should contain a "Not started" label and "needs-and-requirements" url visible', () => {
-            const referral = draftReferralFactory.filledFormUpToRiskInformation([serviceCategory]).build()
-            const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
-            const expected = [
-              referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information', 'needs-and-requirements')
-                .build(),
-              referralFormSectionFactory
-                .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
-                .build(),
-              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
-            ]
-            expect(presenter.sections).toEqual(expected)
+          describe('with additional risk information', () => {
+            it('should contain a "Not started" label and "needs-and-requirements" url visible', () => {
+              const referral = draftReferralFactory.filledFormUpToRiskInformation([serviceCategory]).build()
+              const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
+              const expected = [
+                referralFormSectionFactory
+                  .reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information', 'needs-and-requirements')
+                  .build(),
+                referralFormSectionFactory
+                  .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
+                  .build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
+              ]
+              expect(presenter.sections).toEqual(expected)
+            })
+          })
+          describe('with full risk information', () => {
+            it('should contain a "Not started" label and "needs-and-requirements" url visible', () => {
+              const referral = draftReferralFactory.serviceUserSelected().build()
+              const draftOasysRiskInformation = draftOasysRiskInformationFactory.build()
+              const presenter = new ReferralFormPresenter(referral, nonCohortIntervention, draftOasysRiskInformation)
+              const expected = [
+                referralFormSectionFactory
+                  .reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information', 'needs-and-requirements')
+                  .build(),
+                referralFormSectionFactory
+                  .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
+                  .build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
+              ]
+              expect(presenter.sections).toEqual(expected)
+            })
           })
         })
         describe('when all required values have been set', () => {
-          it('should contain a "Completed" label and service category details section can be started', () => {
-            const referral = draftReferralFactory.filledFormUpToNeedsAndRequirements([serviceCategory]).build()
-            const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
-            const expected = [
-              referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
-                .build(),
-              referralFormSectionFactory
-                .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
-                .build(),
-              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
-            ]
-            expect(presenter.sections).toEqual(expected)
+          describe('with additional risk information', () => {
+            it('should contain a "Completed" label and service category details section can be started', () => {
+              const referral = draftReferralFactory.filledFormUpToNeedsAndRequirements([serviceCategory]).build()
+              const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
+              const expected = [
+                referralFormSectionFactory
+                  .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                  .build(),
+                referralFormSectionFactory
+                  .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
+                  .build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
+              ]
+              expect(presenter.sections).toEqual(expected)
+            })
+          })
+          describe('with full risk information', () => {
+            it('should contain a "Completed" label and service category details section can be started', () => {
+              const referral = draftReferralFactory.filledFormUpToNeedsAndRequirements([serviceCategory], true).build()
+              const draftOasysRiskInformation = draftOasysRiskInformationFactory.build()
+              const presenter = new ReferralFormPresenter(referral, nonCohortIntervention, draftOasysRiskInformation)
+              const expected = [
+                referralFormSectionFactory
+                  .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                  .build(),
+                referralFormSectionFactory
+                  .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
+                  .build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
+              ]
+              expect(presenter.sections).toEqual(expected)
+            })
           })
         })
       })
