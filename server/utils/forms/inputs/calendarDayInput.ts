@@ -92,7 +92,7 @@ export default class CalendarDayInput {
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.yearEmpty)
         .bail()
-        .isInt()
+        .isInt({ max: 9999 }) // sure, dates bigger than this are real dates, but they're not valid here
         .withMessage(this.errorMessages.invalidDate),
     ]
   }

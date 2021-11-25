@@ -144,6 +144,26 @@ describe(CalendarDayInput, () => {
         ],
       })
     })
+
+    it('returns an error when a year has an extra digit', async () => {
+      const request = TestUtils.createRequest({
+        'deadline-year': '20211',
+        'deadline-month': '09',
+        'deadline-day': '12',
+      })
+
+      const result = await new CalendarDayInput(request, 'deadline', messages).validate()
+
+      expect(result.error).toEqual({
+        errors: [
+          {
+            errorSummaryLinkedField: 'deadline-year',
+            formFields: ['deadline-year'],
+            message: 'The deadline must be a real date',
+          },
+        ],
+      })
+    })
   })
 
   describe('.createErrors', () => {
