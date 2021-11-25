@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 
 interface SNSService
 
@@ -108,7 +109,8 @@ class SNSReferralService(
           event.referral.concludedAt!!,
           mapOf("referralId" to event.referral.id)
         )
-        snsPublisher.publish(event.referral.id, event.referral.currentAssignee!!, snsEvent)
+        // This is a system generated event at present and as such the actor will represent this
+        snsPublisher.publish(event.referral.id, AuthUser.interventionsServiceUser, snsEvent)
       }
     }
   }
