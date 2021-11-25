@@ -129,7 +129,7 @@ internal class SNSReferralServiceTest {
   }
 
   @Test
-  fun `publishes referral completed event message`() {
+  fun `publishes referral completed event message with actor as Interventions service user`() {
     val referralConcludedEvent = referralConcludedEvent(COMPLETED)
     snsReferralService().onApplicationEvent(referralConcludedEvent)
     val snsEvent = EventDTO(
@@ -139,7 +139,11 @@ internal class SNSReferralServiceTest {
       referralConcludedEvent.referral.concludedAt!!,
       mapOf("referralId" to UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"))
     )
-    verify(snsPublisher).publish(referralConcludedEvent.referral.id, referralConcludedEvent.referral.currentAssignee!!, snsEvent)
+    verify(snsPublisher).publish(
+      referralConcludedEvent.referral.id,
+      AuthUser("00000000-0000-0000-0000-000000000000", "fake", "hmpps-interventions-service"),
+      snsEvent
+    )
   }
 
   private fun snsReferralService(): SNSReferralService {
