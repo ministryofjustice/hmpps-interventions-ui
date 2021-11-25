@@ -26,6 +26,27 @@ data class CreateSupplementaryRiskRequest(
   val riskSummaryComments: String,
 )
 
+data class CreateFullSupplementaryRiskRequest(
+  val source: String,
+  val sourceId: UUID,
+  val crn: String,
+  val createdByUser: String,
+  val createdByUserType: String,
+  val createdDate: LocalDateTime,
+  val riskSummaryComments: String,
+  val redactedRisk: RedactedRisk,
+)
+
+data class RedactedRisk(
+  val riskWho: String,
+  val riskWhen: String,
+  val riskNature: String,
+  val concernsSelfHarm: String,
+  val concernsSuicide: String,
+  val concernsHostel: String,
+  val concernsVulnerability: String,
+)
+
 data class SupplementaryRiskResponse(
   val supplementaryRiskId: UUID,
 )
@@ -34,20 +55,39 @@ data class SupplementaryRiskResponse(
 @Transactional
 class RisksAndNeedsService(
   @Value("\${assess-risks-and-needs.locations.create-supplementary-risk}") private val createSupplementaryRiskLocation: String,
+  @Value("\${assess-risks-and-needs.enable-posting-full-risk}") private val canPostFullRiskInformation: Boolean,
   private val assessRisksAndNeedsClient: RestClient,
 ) {
   companion object : KLogging()
 
-  fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime, riskInformation: String): UUID {
-    val request = CreateSupplementaryRiskRequest(
-      "INTERVENTION_REFERRAL",
-      referralId,
-      crn,
-      user.id,
-      user.authSource,
-      riskCreatedAt.toLocalDateTime(),
-      riskInformation,
-    )
+  fun canPostFullRiskInformation(): Boolean {
+    return canPostFullRiskInformation
+  }
+
+  fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime, riskInformation: String, redactedRisk: RedactedRisk? = null): UUID {
+
+    val request = if (canPostFullRiskInformation && redactedRisk != null) {
+      CreateFullSupplementaryRiskRequest(
+        "INTERVENTION_REFERRAL",
+        referralId,
+        crn,
+        user.id,
+        user.authSource,
+        riskCreatedAt.toLocalDateTime(),
+        riskInformation,
+        redactedRisk
+      )
+    } else {
+      CreateSupplementaryRiskRequest(
+        "INTERVENTION_REFERRAL",
+        referralId,
+        crn,
+        user.id,
+        user.authSource,
+        riskCreatedAt.toLocalDateTime(),
+        riskInformation,
+      )
+    }
 
     // this endpoint requires user auth tokens for security reasons
     val authentication = SecurityContextHolder.getContext().authentication as JwtAuthenticationToken

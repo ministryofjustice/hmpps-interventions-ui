@@ -132,4 +132,36 @@ class DraftOasysRiskInformationServiceTest @Autowired constructor(
       Assertions.assertThat(entity).isNull()
     }
   }
+
+  @Nested
+  inner class DeleteDraftOasysRiskInformation {
+    @Test
+    fun `can delete oasys risk information`() {
+      val referral = referralFactory.createDraft()
+      val user = authUserFactory.createSP()
+      val oasysRiskInformation = DraftOasysRiskInformation(
+        referralId = referral.id,
+        updatedAt = OffsetDateTime.now(),
+        updatedBy = user,
+        riskSummaryWhoIsAtRisk = "riskSummaryWhoIsAtRisk",
+        riskSummaryNatureOfRisk = "riskSummaryNatureOfRisk",
+        riskSummaryRiskImminence = "riskSummaryRiskImminence",
+        riskToSelfSuicide = "riskToSelfSuicide",
+        riskToSelfSelfHarm = "riskToSelfSelfHarm",
+        riskToSelfHostelSetting = "riskToSelfHostelSetting",
+        riskToSelfVulnerability = "riskToSelfVulnerability",
+        additionalInformation = "additionalInformationModified",
+      )
+      draftOasysRiskInformationRepository.save(oasysRiskInformation)
+      draftOasysRiskInformationService.deleteDraftOasysRiskInformation(referral.id)
+      val entity = draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)
+      Assertions.assertThat(entity).isNull()
+    }
+
+    @Test
+    fun `deleting non-existing oasys risk information is noop`() {
+      val referral = referralFactory.createDraft()
+      draftOasysRiskInformationService.deleteDraftOasysRiskInformation(referral.id)
+    }
+  }
 }

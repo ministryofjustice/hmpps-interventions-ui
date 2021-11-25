@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Ser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CancellationReasonFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ContractTypeFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DraftOasysRiskInformationFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFrameworkContractFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -67,6 +68,7 @@ class ReferralServiceUnitTest {
   private val supplierAssessmentService: SupplierAssessmentService = mock()
   private val hmppsAuthService: HMPPSAuthService = mock()
   private val telemetryService: TelemetryService = mock()
+  private val draftOasysRiskInformationService: DraftOasysRiskInformationService = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
@@ -75,6 +77,7 @@ class ReferralServiceUnitTest {
   private val contractTypeFactory = ContractTypeFactory()
   private val interventionFactory = InterventionFactory()
   private val dynamicFrameworkContractFactory = DynamicFrameworkContractFactory()
+  private val draftOasysRiskInformationFactory = DraftOasysRiskInformationFactory()
 
   private val referralService = ReferralService(
     referralRepository, authUserRepository, interventionRepository, referralConcluder,
@@ -82,7 +85,7 @@ class ReferralServiceUnitTest {
     deliverySessionRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
     serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,
     assessRisksAndNeedsService, communityAPIOffenderService, supplierAssessmentService, hmppsAuthService,
-    telemetryService,
+    telemetryService, draftOasysRiskInformationService
   )
 
   @Test
@@ -626,11 +629,74 @@ class ReferralServiceUnitTest {
     val authUser = authUserFactory.create()
 
     whenever(referralRepository.save(referral)).thenReturn(referral)
-    whenever(assessRisksAndNeedsService.createSupplementaryRisk(eq(referral.id), any(), any(), anyOrNull(), any()))
+    whenever(assessRisksAndNeedsService.createSupplementaryRisk(eq(referral.id), any(), any(), anyOrNull(), any(), anyOrNull()))
       .thenReturn(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
 
     val sentReferral = referralService.sendDraftReferral(referral, authUser)
     assertThat(sentReferral.supplementaryRiskId).isEqualTo(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+  }
+
+  @Nested
+  inner class PostingOasysRiskInformation {
+
+    val draftRisk = draftOasysRiskInformationFactory.create(
+      referralId = UUID.randomUUID(),
+      riskSummaryWhoIsAtRisk = "riskSummaryWhoIsAtRisk",
+      riskSummaryNatureOfRisk = "riskSummaryNatureOfRisk",
+      riskSummaryRiskImminence = "riskSummaryRiskImminence",
+      riskToSelfSuicide = "riskToSelfSuicide",
+      riskToSelfSelfHarm = "riskToSelfSelfHarm",
+      riskToSelfHostelSetting = "riskToSelfHostelSetting",
+      riskToSelfVulnerability = "riskToSelfVulnerability",
+      additionalInformation = "draftOasysAdditionalInformation",
+    )
+
+    @Test
+    fun `correct additional risk information is set if it exists as draft oasys risk information`() {
+      val referral = referralFactory.createDraft(additionalRiskInformation = "something")
+      val authUser = authUserFactory.create()
+
+      whenever(assessRisksAndNeedsService.canPostFullRiskInformation()).thenReturn(true)
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+      whenever(draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)).thenReturn(draftRisk)
+
+      whenever(assessRisksAndNeedsService.createSupplementaryRisk(eq(referral.id), any(), any(), anyOrNull(), eq("draftOasysAdditionalInformation"), any()))
+        .thenReturn(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+
+      val sentReferral = referralService.sendDraftReferral(referral, authUser)
+      assertThat(sentReferral.supplementaryRiskId).isEqualTo(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+    }
+
+    @Test
+    fun `no exception thrown on empty additional risk if draft risk information exists`() {
+      val referral = referralFactory.createDraft(additionalRiskInformation = null)
+      val authUser = authUserFactory.create()
+
+      whenever(assessRisksAndNeedsService.canPostFullRiskInformation()).thenReturn(true)
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+      whenever(draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)).thenReturn(draftRisk)
+
+      whenever(assessRisksAndNeedsService.createSupplementaryRisk(eq(referral.id), any(), any(), anyOrNull(), any(), any()))
+        .thenReturn(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+
+      val sentReferral = referralService.sendDraftReferral(referral, authUser)
+      assertThat(sentReferral.supplementaryRiskId).isEqualTo(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+    }
+
+    @Test
+    fun `only original additional risk information is posted if posting full risk information is disabled`() {
+      val referral = referralFactory.createDraft(additionalRiskInformation = "something")
+      val authUser = authUserFactory.create()
+
+      whenever(assessRisksAndNeedsService.canPostFullRiskInformation()).thenReturn(false)
+      whenever(referralRepository.save(referral)).thenReturn(referral)
+
+      whenever(assessRisksAndNeedsService.createSupplementaryRisk(eq(referral.id), any(), any(), anyOrNull(), eq("something"), anyOrNull()))
+        .thenReturn(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+
+      val sentReferral = referralService.sendDraftReferral(referral, authUser)
+      assertThat(sentReferral.supplementaryRiskId).isEqualTo(UUID.fromString("05320402-1e4b-4bdf-8db3-cde991359ba2"))
+    }
   }
 
   @Test

@@ -71,6 +71,7 @@ class ReferralService(
   val supplierAssessmentService: SupplierAssessmentService,
   val hmppsAuthService: HMPPSAuthService,
   val telemetryService: TelemetryService,
+  val draftOasysRiskInformationService: DraftOasysRiskInformationService,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -224,8 +225,31 @@ class ReferralService(
   }
 
   private fun submitAdditionalRiskInformation(referral: Referral, user: AuthUser) {
-    val riskInformation = referral.additionalRiskInformation
-      ?: throw ServerWebInputException("can't submit a referral without risk information")
+    // todo: throw exception once posting full risk to ARN feature is enabled, however allow some time for in-flight
+    //  make-referral requests to pass
+    var additionalRiskInformation = ""
+    var redactedRisk: RedactedRisk? = null
+    if (assessRisksAndNeedsService.canPostFullRiskInformation()) {
+      val draftOasysRiskInfo = draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)
+      draftOasysRiskInfo?.let {
+        additionalRiskInformation = it.additionalInformation ?: ""
+        redactedRisk = RedactedRisk(
+          riskWho = it.riskSummaryWhoIsAtRisk ?: "",
+          riskWhen = it.riskSummaryRiskImminence ?: "",
+          riskNature = it.riskSummaryNatureOfRisk ?: "",
+          concernsSelfHarm = it.riskToSelfSelfHarm ?: "",
+          concernsSuicide = it.riskToSelfSuicide ?: "",
+          concernsHostel = it.riskToSelfHostelSetting ?: "",
+          concernsVulnerability = it.riskToSelfVulnerability ?: "",
+        )
+      } ?: run {
+        additionalRiskInformation = referral.additionalRiskInformation
+          ?: throw ServerWebInputException("can't submit a referral without risk information")
+      }
+    } else {
+      additionalRiskInformation = referral.additionalRiskInformation
+        ?: throw ServerWebInputException("can't submit a referral without risk information")
+    }
 
     val riskSubmittedAt = referral.additionalRiskInformationUpdatedAt
       ?: run {
@@ -238,12 +262,14 @@ class ReferralService(
       referral.serviceUserCRN,
       user,
       riskSubmittedAt,
-      riskInformation,
+      additionalRiskInformation,
+      redactedRisk
     )
 
     referral.supplementaryRiskId = riskId
     // we do not store _any_ risk information in interventions once it has been sent to ARN
     referral.additionalRiskInformation = null
+    draftOasysRiskInformationService.deleteDraftOasysRiskInformation(referral.id)
   }
 
   fun createDraftReferral(

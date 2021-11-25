@@ -38,4 +38,10 @@ class DraftOasysRiskInformationService(
   fun getDraftOasysRiskInformation(id: UUID): DraftOasysRiskInformation? {
     return draftOasysRiskInformationRepository.findByIdOrNull(id)
   }
+
+  fun deleteDraftOasysRiskInformation(id: UUID) {
+    if (draftOasysRiskInformationRepository.existsById(id)) {
+      draftOasysRiskInformationRepository.deleteById(id)
+    }
+  }
 }
