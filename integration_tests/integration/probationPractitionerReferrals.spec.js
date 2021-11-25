@@ -228,7 +228,7 @@ describe('Probation practitioner referrals dashboard', () => {
             cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
             cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
-            cy.contains('Initial assessment appointment')
+            cy.contains('Supplier assessment appointment')
               .next()
               .contains('The appointment has been scheduled by the supplier')
               .next()
@@ -259,7 +259,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
             cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
 
-            cy.contains('Initial assessment appointment')
+            cy.contains('Supplier assessment appointment')
               .next()
               .contains('The appointment has been scheduled by the supplier')
               .next()
@@ -283,7 +283,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
           cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
@@ -306,7 +306,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
           cy.contains('This intervention is assigned to John Smith (john.smith@example.com)')
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
