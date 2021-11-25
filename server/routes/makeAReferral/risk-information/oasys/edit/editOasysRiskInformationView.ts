@@ -17,7 +17,7 @@ export default class EditOasysRiskInformationView {
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errors.summary)
 
   private get whoIsAtRiskTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.summary.whoIsAtRisk.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.summary.whoIsAtRisk.text || ''
     const whoIsAtRisk = this.draftOasysRiskInformation?.riskSummaryWhoIsAtRisk || oasysRiskInfoText
     return {
       name: 'who-is-at-risk',
@@ -31,7 +31,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get natureOfRiskTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.summary.natureOfRisk.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.summary.natureOfRisk.text || ''
     const natureOfRisk = this.draftOasysRiskInformation?.riskSummaryNatureOfRisk || oasysRiskInfoText
     return {
       name: 'nature-of-risk',
@@ -45,7 +45,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get riskImminenceTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.summary.riskImminence.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.summary.riskImminence.text || ''
     const riskImminence = this.draftOasysRiskInformation?.riskSummaryRiskImminence || oasysRiskInfoText
     return {
       name: 'risk-imminence',
@@ -59,7 +59,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get riskToSelfSelfHarmTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.riskToSelf.selfHarm.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.riskToSelf.selfHarm.text || ''
     const selfHarm = this.draftOasysRiskInformation?.riskToSelfSelfHarm || oasysRiskInfoText
     return {
       name: 'risk-to-self-self-harm',
@@ -73,7 +73,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get riskToSelfSuicideTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.riskToSelf.suicide.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.riskToSelf.suicide.text || ''
     const suicide = this.draftOasysRiskInformation?.riskToSelfSuicide || oasysRiskInfoText
     return {
       name: 'risk-to-self-suicide',
@@ -87,7 +87,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get riskToSelfHostelSettingTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.riskToSelf.hostelSetting.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.riskToSelf.hostelSetting.text || ''
     const hostelSetting = this.draftOasysRiskInformation?.riskToSelfHostelSetting || oasysRiskInfoText
     return {
       name: 'risk-to-self-hostel-setting',
@@ -101,7 +101,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get riskToSelfVulnerabilityTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.riskToSelf.vulnerability.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.riskToSelf.vulnerability.text || ''
     const vulnerability = this.draftOasysRiskInformation?.riskToSelfVulnerability || oasysRiskInfoText
     return {
       name: 'risk-to-self-vulnerability',
@@ -115,7 +115,7 @@ export default class EditOasysRiskInformationView {
   }
 
   private get additionalInformationTextareaArgs(): TextareaArgs {
-    const oasysRiskInfoText = this.riskSummaryView.riskInformation.additionalRiskInformation.text || ''
+    const oasysRiskInfoText = this.riskSummaryView.oasysRiskInformationArgs.additionalRiskInformation.text || ''
     const additionalInformation = this.draftOasysRiskInformation?.additionalInformation || oasysRiskInfoText
     return {
       name: 'additional-information',
@@ -148,7 +148,7 @@ export default class EditOasysRiskInformationView {
       'makeAReferral/editRiskInformationOasys',
       {
         errorSummaryArgs: this.errorSummaryArgs,
-        riskInformation: this.riskSummaryView.riskInformation,
+        riskInformation: this.riskSummaryView.oasysRiskInformationArgs,
         latestAssessment: this.presenter.latestAssessment,
         whoIsAtRiskTextareaArgs: this.whoIsAtRiskTextareaArgs,
         natureOfRiskTextareaArgs: this.natureOfRiskTextareaArgs,
