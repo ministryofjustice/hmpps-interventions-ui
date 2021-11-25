@@ -2143,7 +2143,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/referrals/${sentReferral.id}/progress`)
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
 
@@ -2220,7 +2220,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Return to progress').click()
           cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
             .next()
@@ -2264,7 +2264,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/referrals/${sentReferral.id}/progress`)
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
 
@@ -2368,7 +2368,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/referrals/${sentReferral.id}/progress`)
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
 
@@ -2479,7 +2479,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Return to progress').click()
           cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
 
-          cy.contains('Initial assessment appointment')
+          cy.contains('Supplier assessment appointment')
             .next()
             .contains('The initial assessment has been delivered and feedback added.')
 
