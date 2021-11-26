@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
@@ -29,6 +30,7 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   private val communityAPIService = CommunityAPIActionPlanAppointmentEventService(
     "http://baseUrl",
     "/probation-practitioner/referrals/{id}/appointment/{sessionNumber}/post-session-feedback",
+    true,
     "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",
     "commissioned-rehabilitation-services",
     communityAPIClient
@@ -80,6 +82,27 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
     communityAPIService.onApplicationEvent(appointmentEvent)
 
     verifyNotification(YES.name, true)
+  }
+
+  @Test
+  fun `does not notify when not enabled`() {
+
+    val communityAPIService = CommunityAPIActionPlanAppointmentEventService(
+      "http://baseUrl",
+      "/probation-practitioner/referrals/{id}/appointment/{sessionNumber}/post-session-feedback",
+      false,
+      "/secure/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",
+      "commissioned-rehabilitation-services",
+      communityAPIClient
+    )
+
+    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
+    appointmentEvent.deliverySession.currentAppointment!!.attended = YES
+    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = true
+
+    communityAPIService.onApplicationEvent(appointmentEvent)
+
+    verifyZeroInteractions(communityAPIClient)
   }
 
   private fun verifyNotification(attended: String, notifyPP: Boolean) {

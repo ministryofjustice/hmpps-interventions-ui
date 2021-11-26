@@ -190,6 +190,7 @@ class CommunityAPIActionPlanEventService(
 class CommunityAPIActionPlanAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.session-feedback}") private val ppSessionFeedbackLocation: String,
+  @Value("\${community-api.appointments.outcome.enabled}") private val outcomeNotificationEnabled: Boolean,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -199,6 +200,10 @@ class CommunityAPIActionPlanAppointmentEventService(
   override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     when (event.type) {
       SESSION_FEEDBACK_RECORDED -> {
+        if (!outcomeNotificationEnabled) {
+          return
+        }
+
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(ppSessionFeedbackLocation)
           .buildAndExpand(event.deliverySession.referral.id, event.deliverySession.sessionNumber)
@@ -228,6 +233,7 @@ class CommunityAPIActionPlanAppointmentEventService(
 class CommunityAPIAppointmentEventService(
   @Value("\${interventions-ui.baseurl}") private val interventionsUIBaseURL: String,
   @Value("\${interventions-ui.locations.probation-practitioner.supplier-assessment-feedback}") private val ppSessionFeedbackLocation: String,
+  @Value("\${community-api.appointments.outcome.enabled}") private val outcomeNotificationEnabled: Boolean,
   @Value("\${community-api.locations.appointment-outcome-request}") private val communityAPIAppointmentOutcomeLocation: String,
   @Value("\${community-api.integration-context}") private val integrationContext: String,
   private val communityAPIClient: CommunityAPIClient,
@@ -237,6 +243,10 @@ class CommunityAPIAppointmentEventService(
   override fun onApplicationEvent(event: AppointmentEvent) {
     when (event.type) {
       AppointmentEventType.SESSION_FEEDBACK_RECORDED -> {
+        if (!outcomeNotificationEnabled) {
+          return
+        }
+
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(ppSessionFeedbackLocation)
           .buildAndExpand(event.appointment.referral.id)
