@@ -135,7 +135,7 @@ export default class ShowReferralPresenter {
   }
 
   get canShowFullSupplementaryRiskInformation(): boolean {
-    if (this.userType === 'probation-practitioner') {
+    if (this.userType === 'probation-practitioner' || this.riskInformation.redactedRisk === undefined) {
       return false
     }
     return config.apis.assessRisksAndNeedsApi.riskSummaryEnabled

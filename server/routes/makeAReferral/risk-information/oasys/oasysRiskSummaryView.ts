@@ -114,13 +114,13 @@ export default class OasysRiskSummaryView {
     return {
       summary: {
         whoIsAtRisk: {
-          text: this.supplementaryRiskInformation?.redactedRisk.riskWho || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.riskWho || null,
         },
         natureOfRisk: {
-          text: this.supplementaryRiskInformation?.redactedRisk.riskNature || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.riskNature || null,
         },
         riskImminence: {
-          text: this.supplementaryRiskInformation?.redactedRisk.riskWhen || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.riskWhen || null,
         },
       },
       riskToSelf: {
@@ -129,28 +129,28 @@ export default class OasysRiskSummaryView {
             class: this.riskToSelfLabelClass(riskToSelf?.suicide),
             text: this.riskToSelfLabelText(riskToSelf?.suicide),
           },
-          text: this.supplementaryRiskInformation?.redactedRisk.concernsSuicide || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.concernsSuicide || null,
         },
         selfHarm: {
           label: {
             class: this.riskToSelfLabelClass(riskToSelf?.selfHarm),
             text: this.riskToSelfLabelText(riskToSelf?.selfHarm),
           },
-          text: this.supplementaryRiskInformation?.redactedRisk.concernsSelfHarm || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.concernsSelfHarm || null,
         },
         hostelSetting: {
           label: {
             class: this.riskToSelfLabelClass(riskToSelf?.hostelSetting),
             text: this.riskToSelfLabelText(riskToSelf?.hostelSetting),
           },
-          text: this.supplementaryRiskInformation?.redactedRisk.concernsHostel || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.concernsHostel || null,
         },
         vulnerability: {
           label: {
             class: this.riskToSelfLabelClass(riskToSelf?.vulnerability),
             text: this.riskToSelfLabelText(riskToSelf?.vulnerability),
           },
-          text: this.supplementaryRiskInformation?.redactedRisk.concernsVulnerability || null,
+          text: this.supplementaryRiskInformation?.redactedRisk?.concernsVulnerability || null,
         },
       },
       additionalRiskInformation: {
