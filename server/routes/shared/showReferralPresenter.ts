@@ -21,6 +21,7 @@ import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
+import config from '../../config'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -31,14 +32,14 @@ export default class ShowReferralPresenter {
     private readonly sentReferral: SentReferral,
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
-    private readonly riskInformation: SupplementaryRiskInformation,
+    readonly riskInformation: SupplementaryRiskInformation,
     private readonly sentBy: DeliusUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
     readonly userType: 'service-provider' | 'probation-practitioner',
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
-    private readonly riskSummary: RiskSummary | null,
+    readonly riskSummary: RiskSummary | null,
     private readonly responsibleOfficer: DeliusOffenderManager | null
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -131,6 +132,13 @@ export default class ShowReferralPresenter {
     })
 
     return items
+  }
+
+  get canShowFullSupplementaryRiskInformation(): boolean {
+    if (this.userType === 'probation-practitioner') {
+      return false
+    }
+    return config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
   }
 
   private getReferralDesiredOutcomesForServiceCategory(serviceCategory: ServiceCategory): DesiredOutcome[] {

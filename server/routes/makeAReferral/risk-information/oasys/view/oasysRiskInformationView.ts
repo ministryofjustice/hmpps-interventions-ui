@@ -88,7 +88,7 @@ export default class OasysRiskInformationView {
       {
         errorSummaryArgs: this.errorSummaryArgs,
         confirmEditActionHref: this.presenter.confirmEditOasysAction,
-        riskInformation: this.riskSummaryView.riskInformation,
+        riskInformation: this.riskSummaryView.oasysRiskInformationArgs,
         latestAssessment: this.presenter.latestAssessment,
         roshPanelPresenter: this.presenter.riskPresenter,
         roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
