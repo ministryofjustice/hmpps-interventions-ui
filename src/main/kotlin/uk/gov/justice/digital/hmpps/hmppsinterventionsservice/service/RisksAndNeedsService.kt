@@ -67,6 +67,7 @@ class RisksAndNeedsService(
   fun createSupplementaryRisk(referralId: UUID, crn: String, user: AuthUser, riskCreatedAt: OffsetDateTime, riskInformation: String, redactedRisk: RedactedRisk? = null): UUID {
 
     val request = if (canPostFullRiskInformation && redactedRisk != null) {
+      logger.debug("Sending full supplementary risk information to ARN")
       CreateFullSupplementaryRiskRequest(
         "INTERVENTION_REFERRAL",
         referralId,
