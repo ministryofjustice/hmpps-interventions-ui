@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.Appointmen
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
+import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
@@ -49,6 +50,7 @@ class DeliverySessionController(
   ): DeliverySessionDTO {
     val user = userMapper.fromToken(authentication)
     appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
+    val pastAppointment = updateAppointmentDTO.appointmentTime.isBefore(OffsetDateTime.now())
     val deliverySession = deliverySessionService.updateSessionAppointment(
       actionPlanId,
       sessionNumber,
@@ -59,6 +61,11 @@ class DeliverySessionController(
       updateAppointmentDTO.sessionType,
       updateAppointmentDTO.appointmentDeliveryAddress,
       updateAppointmentDTO.npsOfficeCode,
+      updateAppointmentDTO.appointmentAttendance?.attended,
+      updateAppointmentDTO.appointmentAttendance?.additionalAttendanceInformation,
+      updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
+      updateAppointmentDTO.appointmentBehaviour?.behaviourDescription,
+      pastAppointment
     )
     return DeliverySessionDTO.from(deliverySession)
   }

@@ -7,6 +7,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.lang.IllegalStateException
 import java.time.OffsetDateTime
@@ -32,15 +33,33 @@ class CommunityAPIBookingService(
 ) : CommunityAPIService {
   companion object : KLogging()
 
-  fun book(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int, appointmentType: AppointmentType, npsOfficeCode: String?): Long? {
+  fun book(
+    referral: Referral,
+    existingAppointment: Appointment?,
+    appointmentTime: OffsetDateTime,
+    durationInMinutes: Int,
+    appointmentType: AppointmentType,
+    npsOfficeCode: String?,
+    attended: Attended? = null,
+    notifyPPOfAttendanceBehaviour: Boolean? = null,
+  ): Long? {
     if (!bookingsEnabled) {
       return existingAppointment?.deliusAppointmentId
     }
 
-    return processingBooking(referral, existingAppointment, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
+    return processingBooking(referral, existingAppointment, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode, attended, notifyPPOfAttendanceBehaviour)
   }
 
-  private fun processingBooking(referral: Referral, existingAppointment: Appointment?, appointmentTime: OffsetDateTime, durationInMinutes: Int, appointmentType: AppointmentType, npsOfficeCode: String?): Long? {
+  private fun processingBooking(
+    referral: Referral,
+    existingAppointment: Appointment?,
+    appointmentTime: OffsetDateTime,
+    durationInMinutes: Int,
+    appointmentType: AppointmentType,
+    npsOfficeCode: String?,
+    attended: Attended?,
+    notifyPPOfAttendanceBehaviour: Boolean?,
+  ): Long? {
     return existingAppointment?.let {
       if (isDifferentTimings(existingAppointment, appointmentTime, durationInMinutes)) {
         val appointmentRequestDTO = buildAppointmentRescheduleRequestDTO(appointmentTime, durationInMinutes, npsOfficeCode ?: defaultOfficeLocation)
@@ -53,7 +72,7 @@ class CommunityAPIBookingService(
         return existingAppointment.deliusAppointmentId
       }
     } ?: run {
-      val appointmentRequestDTO = buildAppointmentCreateRequestDTO(referral, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode ?: defaultOfficeLocation)
+      val appointmentRequestDTO = buildAppointmentCreateRequestDTO(referral, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode ?: defaultOfficeLocation, attended, notifyPPOfAttendanceBehaviour)
       makeBooking(referral.serviceUserCRN, referral.relevantSentenceId!!, appointmentRequestDTO, communityApiBookAppointmentLocation)
     }
   }
@@ -69,7 +88,15 @@ class CommunityAPIBookingService(
     return response.appointmentId
   }
 
-  private fun buildAppointmentCreateRequestDTO(referral: Referral, appointmentTime: OffsetDateTime, durationInMinutes: Int, appointmentType: AppointmentType, npsOfficeCode: String): AppointmentCreateRequestDTO {
+  private fun buildAppointmentCreateRequestDTO(
+    referral: Referral,
+    appointmentTime: OffsetDateTime,
+    durationInMinutes: Int,
+    appointmentType: AppointmentType,
+    npsOfficeCode: String,
+    attended: Attended?,
+    notifyPPOfAttendanceBehaviour: Boolean?
+  ): AppointmentCreateRequestDTO {
     val resourceUrl = buildReferralResourceUrl(referral, appointmentType)
 
     return AppointmentCreateRequestDTO(
@@ -81,6 +108,8 @@ class CommunityAPIBookingService(
       officeLocationCode = npsOfficeCode,
       notes = getNotes(referral, resourceUrl, "${get(appointmentType, notesFieldQualifier)} Appointment"),
       countsTowardsRarDays = get(appointmentType, countsTowardsRarDays),
+      attended = attended?.toString(),
+      notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
     )
   }
 
@@ -136,6 +165,8 @@ data class AppointmentCreateRequestDTO(
   val officeLocationCode: String,
   val notes: String,
   val countsTowardsRarDays: Boolean,
+  val attended: String?,
+  val notifyPPOfAttendanceBehaviour: Boolean?,
 ) : AppointmentRequestDTO()
 
 data class AppointmentRescheduleRequestDTO(

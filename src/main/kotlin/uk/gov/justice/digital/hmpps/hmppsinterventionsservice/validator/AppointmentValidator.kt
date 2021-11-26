@@ -7,6 +7,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import java.time.OffsetDateTime
+import javax.validation.ValidationException
 
 @Component
 class AppointmentValidator {
@@ -30,6 +33,14 @@ class AppointmentValidator {
         }
       }
     }
+    if(updateAppointmentDTO.appointmentTime.isBefore(OffsetDateTime.now())){
+      verifyPastAppointmentFields(
+        updateAppointmentDTO.appointmentAttendance?.attended,
+        updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
+        updateAppointmentDTO.appointmentBehaviour?.behaviourDescription,
+        errors
+      )
+    }
     if (errors.isNotEmpty()) {
       throw ValidationError("invalid update session appointment request", errors)
     }
@@ -43,6 +54,23 @@ class AppointmentValidator {
       errors.add(FieldError(field = "appointmentDeliveryAddress.postCode", error = Code.CANNOT_BE_EMPTY))
     } else if (!postCodeRegex.matches(addressDTO.postCode)) {
       errors.add(FieldError(field = "appointmentDeliveryAddress.postCode", error = Code.INVALID_FORMAT))
+    }
+  }
+
+  private fun verifyPastAppointmentFields(
+    attended: Attended?,
+    notifyProbationPractitioner: Boolean?,
+    behaviourDescription: String?,
+    errors: MutableList<FieldError>
+  ){
+    if(attended == null){
+      errors.add(FieldError(field = "appointmentAttendance.attended", error = Code.CANNOT_BE_EMPTY))
+    }
+    if(notifyProbationPractitioner == null){
+      errors.add(FieldError(field = "appointmentBehaviour.notifyProbationPractitioner", error = Code.CANNOT_BE_EMPTY))
+    }
+    if(behaviourDescription == null){
+      errors.add(FieldError(field = "appointmentBehaviour.behaviourDescription", error = Code.CANNOT_BE_EMPTY))
     }
   }
 }

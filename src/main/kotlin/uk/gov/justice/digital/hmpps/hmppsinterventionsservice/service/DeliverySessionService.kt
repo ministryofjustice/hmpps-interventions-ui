@@ -24,6 +24,7 @@ import java.util.UUID
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
+import javax.validation.ValidationException
 
 @Service
 @Transactional
@@ -151,6 +152,11 @@ class DeliverySessionService(
     appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    notifyProbationPractitioner: Boolean?,
+    behaviourDescription: String?,
+    pastAppointment: Boolean = false
   ): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
@@ -162,7 +168,9 @@ class DeliverySessionService(
       appointmentTime,
       durationInMinutes,
       SERVICE_DELIVERY,
-      npsOfficeCode
+      npsOfficeCode,
+      attended,
+      notifyProbationPractitioner,
     )
     if (existingAppointment == null) {
       val appointment = Appointment(
@@ -174,6 +182,10 @@ class DeliverySessionService(
         deliusAppointmentId = deliusAppointmentId,
         referral = session.referral,
       )
+      if(pastAppointment) {
+        setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, updatedBy)
+        setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
+      }
       appointmentRepository.saveAndFlush(appointment)
       appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)

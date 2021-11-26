@@ -34,6 +34,8 @@ data class UpdateAppointmentDTO(
   val sessionType: AppointmentSessionType? = null,
   val appointmentDeliveryAddress: AddressDTO? = null,
   val npsOfficeCode: String? = null,
+  val appointmentAttendance: UpdateAppointmentAttendanceDTO? = null,
+  val appointmentBehaviour: RecordAppointmentBehaviourDTO? = null,
 )
 
 data class DeliverySessionAppointmentScheduleDetailsDTO(

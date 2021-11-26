@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.Appointmen
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SupplierAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @RestController
@@ -41,6 +42,7 @@ class SupplierAssessmentController(
     val user = userMapper.fromToken(authentication)
     val supplierAssessment = supplierAssessmentService.getSupplierAssessmentById(id)
     appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
+    val pastAppointment = updateAppointmentDTO.appointmentTime.isBefore(OffsetDateTime.now())
     return AppointmentDTO.from(
       supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(
         supplierAssessment,
@@ -51,6 +53,11 @@ class SupplierAssessmentController(
         updateAppointmentDTO.sessionType,
         updateAppointmentDTO.appointmentDeliveryAddress,
         updateAppointmentDTO.npsOfficeCode,
+        updateAppointmentDTO.appointmentAttendance?.attended,
+        updateAppointmentDTO.appointmentAttendance?.additionalAttendanceInformation,
+        updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
+        updateAppointmentDTO.appointmentBehaviour?.behaviourDescription,
+        pastAppointment
       )
     )
   }
