@@ -49,7 +49,6 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import OasysRiskInformationPresenter from './risk-information/oasys/view/oasysRiskInformationPresenter'
 import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInformationView'
 import config from '../../config'
-import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { RestClientError } from '../../data/restClient'
 import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
@@ -548,21 +547,7 @@ export default class MakeAReferralController {
   ) {
     const { accessToken } = res.locals.user.token
     const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
-    let supplementaryRiskInformation: SupplementaryRiskInformation | null
-    try {
-      supplementaryRiskInformation = await this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(
-        referral.serviceUser.crn,
-        accessToken
-      )
-    } catch (e) {
-      const restClientError = e as RestClientError
-      if (restClientError.status === 404) {
-        supplementaryRiskInformation = null
-      } else {
-        throw e
-      }
-    }
-    const presenter = new OasysRiskInformationPresenter(referral.id, supplementaryRiskInformation, riskSummary, error)
+    const presenter = new OasysRiskInformationPresenter(referral.id, riskSummary, error)
     const view = new OasysRiskInformationView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -627,18 +612,12 @@ export default class MakeAReferralController {
       }
     }
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
-    const [serviceUser, riskSummary, supplementaryRiskInformation] = await Promise.all([
+    const [serviceUser, riskSummary] = await Promise.all([
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken),
-      this.assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn(referral.serviceUser.crn, accessToken),
     ])
 
-    const presenter = new EditOasysRiskInformationPresenter(
-      supplementaryRiskInformation,
-      riskSummary,
-      draftOasysRiskInformation,
-      error
-    )
+    const presenter = new EditOasysRiskInformationPresenter(riskSummary, draftOasysRiskInformation, error)
     const view = new EditOasysRiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

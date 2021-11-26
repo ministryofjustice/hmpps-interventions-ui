@@ -10,7 +10,7 @@ export default class EditOasysRiskInformationView {
   private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null
 
   constructor(private readonly presenter: EditOasysRiskInformationPresenter) {
-    this.riskSummaryView = new OasysRiskSummaryView(presenter.supplementaryRiskInformation, presenter.riskSummary)
+    this.riskSummaryView = new OasysRiskSummaryView(presenter.riskSummary)
     this.draftOasysRiskInformation = presenter.draftOasysRiskInformation
   }
 

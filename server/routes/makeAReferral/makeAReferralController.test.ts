@@ -17,7 +17,6 @@ import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
-import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import draftOasysRiskInformation from '../../../testutils/factories/draftOasysRiskInformation'
 
 jest.mock('../../services/interventionsService')
@@ -305,19 +304,6 @@ describe('GET /referrals/:id/risk-information', () => {
       })
   })
 
-  it('renders an error when the get risk supplementary call for crn fails', async () => {
-    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
-    assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue(
-      new Error('failed to get risk supplementary info')
-    )
-    await request(app)
-      .get('/referrals/1/risk-information')
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('failed to get risk supplementary info')
-      })
-  })
-
   it('renders an error when the get referral call fails', async () => {
     interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
 
@@ -332,10 +318,6 @@ describe('GET /referrals/:id/risk-information', () => {
   describe('when risk information exists in OASys', () => {
     beforeEach(() => {
       const riskSummary = riskSummaryFactory.build()
-      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
-        riskSummaryComments: 'supplementary comments',
-      })
-      assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockResolvedValue(supplementaryRiskInformation)
       assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     })
 
@@ -345,23 +327,8 @@ describe('GET /referrals/:id/risk-information', () => {
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('OASys risk information')
-          expect(res.text).toContain('supplementary comments')
+          expect(res.text).toContain('physically aggressive')
         })
-    })
-
-    describe('when no supplementary risk information exists in OASys', () => {
-      beforeEach(() => {
-        assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue({ status: 404 })
-      })
-
-      it('renders an OASys risk information page', async () => {
-        await request(app)
-          .get('/referrals/1/risk-information')
-          .expect(200)
-          .expect(res => {
-            expect(res.text).toContain('OASys risk information')
-          })
-      })
     })
   })
 })
@@ -445,10 +412,6 @@ describe('GET /referrals/:id/edit-oasys-risk-information', () => {
   describe('when risk information exists in OASys', () => {
     beforeEach(() => {
       const riskSummary = riskSummaryFactory.build()
-      const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
-        riskSummaryComments: 'supplementary comments',
-      })
-      assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockResolvedValue(supplementaryRiskInformation)
       assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     })
 
@@ -458,23 +421,8 @@ describe('GET /referrals/:id/edit-oasys-risk-information', () => {
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('OASys risk information')
-          expect(res.text).toContain('supplementary comments')
+          expect(res.text).toContain('physically aggressive')
         })
-    })
-
-    describe('when no supplementary risk information exists in OASys', () => {
-      beforeEach(() => {
-        assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn.mockRejectedValue({ status: 404 })
-      })
-
-      it('renders an OASys risk information page', async () => {
-        await request(app)
-          .get('/referrals/1/risk-information')
-          .expect(200)
-          .expect(res => {
-            expect(res.text).toContain('OASys risk information')
-          })
-      })
     })
   })
 })

@@ -2,7 +2,6 @@ import EditOasysRiskInformationView from './editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './editOasysRiskInformationPresenter'
 import { DraftOasysRiskInformation } from '../../../../../models/draftOasysRiskInformation'
 import riskSummaryFactory from '../../../../../../testutils/factories/riskSummary'
-import supplementaryRiskInformationFactory from '../../../../../../testutils/factories/supplementaryRiskInformation'
 import { TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 
 describe('EditOasysRiskInformationView', () => {
@@ -21,15 +20,8 @@ describe('EditOasysRiskInformationView', () => {
           riskImminence: 'OAsysRiskImminence',
         },
       })
-      const additionalInformation = supplementaryRiskInformationFactory.build({
-        riskSummaryComments: 'OAsysAdditionalInformation',
-      })
       it('should show OAsys version for each textbox field when draft does not exist', () => {
-        const editOasysRiskInformationPresenter = new EditOasysRiskInformationPresenter(
-          additionalInformation,
-          riskSummary,
-          null
-        )
+        const editOasysRiskInformationPresenter = new EditOasysRiskInformationPresenter(riskSummary, null)
         const fields = new EditOasysRiskInformationView(editOasysRiskInformationPresenter).renderArgs[1]
         expect((fields.whoIsAtRiskTextareaArgs as TextareaArgs).value).toEqual('OAsysWhoIsAtRisk')
         expect((fields.natureOfRiskTextareaArgs as TextareaArgs).value).toEqual('OAsysNatureOfRisk')
@@ -38,7 +30,7 @@ describe('EditOasysRiskInformationView', () => {
         expect((fields.riskToSelfSelfHarmTextareaArgs as TextareaArgs).value).toEqual('OAsysSelfHarm')
         expect((fields.riskToSelfHostelSettingTextareaArgs as TextareaArgs).value).toEqual('OAsysHostelSetting')
         expect((fields.riskToSelfVulnerabilityTextareaArgs as TextareaArgs).value).toEqual('OAsysVulnerability')
-        expect((fields.additionalInformationTextareaArgs as TextareaArgs).value).toEqual('OAsysAdditionalInformation')
+        expect((fields.additionalInformationTextareaArgs as TextareaArgs).value).toEqual('')
       })
       it('should show draft version for each textbox field when draft exists', () => {
         const draftOasysRiskInformation: DraftOasysRiskInformation = {
@@ -52,7 +44,6 @@ describe('EditOasysRiskInformationView', () => {
           additionalInformation: 'draftAdditionalInformation',
         }
         const editOasysRiskInformationPresenter = new EditOasysRiskInformationPresenter(
-          additionalInformation,
           riskSummary,
           draftOasysRiskInformation
         )
