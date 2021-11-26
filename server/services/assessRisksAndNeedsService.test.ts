@@ -25,21 +25,6 @@ describe(AssessRisksAndNeedsService, () => {
     })
   })
 
-  describe('getSupplementaryRiskInformationForCrn', () => {
-    const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
-
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, true)
-
-    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-
-    it('makes a request to the Assess Risks and Needs API', async () => {
-      restClientMock.get.mockResolvedValue(supplementaryRiskInformation)
-      await assessRisksAndNeedsService.getSupplementaryRiskInformationForCrn('crn', 'token')
-
-      expect(restClientMock.get).toHaveBeenCalledWith({ path: `/risks/supplementary/crn/crn`, token: 'token' })
-    })
-  })
-
   describe('getRiskSummary', () => {
     const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
 
