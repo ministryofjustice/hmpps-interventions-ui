@@ -11,6 +11,7 @@ import supplementaryRiskInformationFactory from '../../../testutils/factories/su
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
+import config from '../../config'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -45,6 +46,67 @@ describe(ShowReferralPresenter, () => {
   const riskSummary = riskSummaryFactory.build()
   const responsibleOfficer = deliusOffenderManagerFactory.build()
 
+  describe('canShowFullSupplementaryRiskInformation', () => {
+    it("don't show full risk information if redacted risk not available", () => {
+      const referral = sentReferralFactory.build(referralParams)
+
+      const presenter = new ShowReferralPresenter(
+        referral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformationFactory.build({ redactedRisk: undefined }),
+        deliusUser,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        responsibleOfficer
+      )
+      expect(presenter.canShowFullSupplementaryRiskInformation).toBeFalsy()
+    })
+
+    it("don't show full risk information if probabation practitioner", () => {
+      const referral = sentReferralFactory.build(referralParams)
+
+      const presenter = new ShowReferralPresenter(
+        referral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformationFactory.build(),
+        deliusUser,
+        null,
+        null,
+        'probation-practitioner',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        responsibleOfficer
+      )
+      expect(presenter.canShowFullSupplementaryRiskInformation).toBeFalsy()
+    })
+
+    it('show full risk information if redacted risk is available and service provider', () => {
+      const referral = sentReferralFactory.build(referralParams)
+      config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
+      const presenter = new ShowReferralPresenter(
+        referral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformationFactory.build(),
+        deliusUser,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        responsibleOfficer
+      )
+      expect(presenter.canShowFullSupplementaryRiskInformation).toBeTruthy()
+    })
+  })
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the start assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)

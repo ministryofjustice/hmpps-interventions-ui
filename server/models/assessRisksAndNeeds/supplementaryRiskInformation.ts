@@ -1,6 +1,6 @@
 export interface SupplementaryRiskInformation {
   riskSummaryComments: string
-  redactedRisk: {
+  redactedRisk?: {
     riskWho: string
     riskWhen: string
     riskNature: string

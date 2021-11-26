@@ -219,6 +219,20 @@ describe('OasysRiskSummaryView', () => {
     })
 
     describe('summary', () => {
+      it('returns null text when undefined redactedRisk provided', () => {
+        const view = new OasysRiskSummaryView(
+          supplementaryRiskInformationFactory.build({ redactedRisk: undefined }),
+          null
+        )
+        expect(view.supplementaryRiskInformationArgs.summary.whoIsAtRisk.text).toBeNull()
+        expect(view.supplementaryRiskInformationArgs.summary.natureOfRisk.text).toBeNull()
+        expect(view.supplementaryRiskInformationArgs.summary.riskImminence.text).toBeNull()
+        expect(view.supplementaryRiskInformationArgs.riskToSelf.suicide.text).toBeNull()
+        expect(view.supplementaryRiskInformationArgs.riskToSelf.selfHarm.text).toBeNull()
+        expect(view.supplementaryRiskInformationArgs.riskToSelf.hostelSetting.text).toBeNull()
+        expect(view.supplementaryRiskInformationArgs.riskToSelf.vulnerability.text).toBeNull()
+      })
+
       it('returns null text and no label when no supplementary provided', () => {
         const view = new OasysRiskSummaryView(null, null)
         expect(view.supplementaryRiskInformationArgs.summary.whoIsAtRisk.text).toBeNull()
