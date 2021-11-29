@@ -297,6 +297,7 @@ workflows:
           env: "dev"
           slack_notification: true
           slack_channel_name: "interventions-dev-notifications"
+          helm_additional_args: "--set ingress.migration.colour=green"
           filters:
             branches:
               only:
