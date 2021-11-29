@@ -292,6 +292,26 @@ workflows:
             - vulnerability_scan_and_monitor
           context:
             - hmpps-common-vars
+      - hmpps/deploy_env:
+          name: deploy_dev_newcluster
+          env: "dev"
+          slack_notification: true
+          slack_channel_name: "interventions-dev-notifications"
+          helm_additional_args: "--set ingress.migration.colour=green"
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - validate
+            - validate_db
+            - publish_data
+            - build_and_publish_docker
+            - validate_helm
+            - vulnerability_scan_and_monitor
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-dev-deploy
       - tag_pact_version:
           name: "tag_pact_version_dev"
           tag: "deployed:dev"
