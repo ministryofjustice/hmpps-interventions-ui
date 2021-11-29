@@ -6,6 +6,7 @@ metadata:
   name: kpi-scripts
 data:
 {{ (.Files.Glob "reports/*.sh").AsConfig | indent 2 }}
+{{ (.Files.Glob "reports/team_kpi*.sql").AsConfig | indent 2 }}
 
 ---
 apiVersion: batch/v1beta1
@@ -20,10 +21,6 @@ spec:
         spec:
           restartPolicy: "Never"
           volumes:
-          - name: data-extractor-reports
-            configMap:
-              name: data-extractor-reports
-              defaultMode: 0755
           - name: kpi-scripts
             configMap:
               name: kpi-scripts
@@ -40,11 +37,11 @@ spec:
                 psql -v ON_ERROR_STOP=1 --pset="footer=off" --file=/reports/team_kpi_details_report.sql > 'export/team_kpi_details_report' \
                   && /scripts/send_to_slack.sh 'export/team_kpi_details_report'
             volumeMounts:
-            - name: data-extractor-reports
+            - name: kpi-scripts
               mountPath: /reports/team_kpi_report.sql
               readOnly: true
               subPath: team_kpi_report.sql
-            - name: data-extractor-reports
+            - name: kpi-scripts
               mountPath: /reports/team_kpi_details_report.sql
               readOnly: true
               subPath: team_kpi_details_report.sql
