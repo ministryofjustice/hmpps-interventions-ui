@@ -102,6 +102,8 @@ COMMENT ON COLUMN action_plan_activity.action_plan_id IS 'service user''s action
 COMMENT ON COLUMN action_plan_activity.description IS 'description of the activity';
 COMMENT ON COLUMN action_plan_activity.created_at IS 'when the service user''s action plan was created';
 
+COMMENT ON TABLE appointment IS 'person-on-probation appointment details (all kinds, assessments and delivery)';
+
 COMMENT ON TABLE appointment_delivery IS 'appointment delivery details';
 COMMENT ON COLUMN appointment_delivery.appointment_id IS 'appointment''s unique identifier';
 COMMENT ON COLUMN appointment_delivery.appointment_delivery_type IS 'type to denote how the appointment is delivered';
@@ -115,7 +117,6 @@ COMMENT ON COLUMN appointment_delivery_address.town_city IS 'town or city of app
 COMMENT ON COLUMN appointment_delivery_address.county IS 'county of appointment delivery address location';
 COMMENT ON COLUMN appointment_delivery_address.post_code IS 'postcode of appointment delivery address location';
 
-
 COMMENT ON TABLE case_note IS 'case note provided by officer for a referral';
 COMMENT ON COLUMN case_note.referral_id IS 'referral connected to this case note';
 COMMENT ON COLUMN case_note.subject IS 'subject of the case note';
@@ -127,6 +128,7 @@ COMMENT ON TABLE metadata IS 'defines metadata about the schema';
 COMMENT ON COLUMN metadata.table_name IS 'which table this record is describing';
 COMMENT ON COLUMN metadata.column_name IS 'which column this record is describing';
 COMMENT ON COLUMN metadata.sensitive IS '`true` means the contents should be obfuscated/anonymised in unsafe environments; `false` means it’s safe to see/copy';
+COMMENT ON COLUMN metadata.domain_data IS '`true` means the field hold operational/domain data; `false` means it is an internal structure that holds no operational data';
 
 COMMENT ON TABLE draft_oasys_risk_information IS 'holds draft OASYS risk information only for a DraftReferral. Discarded after referral is sent.';
 COMMENT ON COLUMN draft_oasys_risk_information.referral_id IS 'the id of the draft referral connected to risk information';
@@ -140,3 +142,27 @@ COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_self_harm IS 'OASYS 
 COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_hostel_setting IS 'OASYS Risk to Self - hostel setting';
 COMMENT ON COLUMN draft_oasys_risk_information.risk_to_self_vulnerability IS 'OASYS Risk to Self - vulnerability';
 COMMENT ON COLUMN draft_oasys_risk_information.additional_information IS 'OASYS Additional risk information';
+
+COMMENT ON TABLE deprecated_action_plan_appointment IS '**deprecated**; use `appointment`';
+COMMENT ON TABLE deprecated_action_plan_session IS '**deprecated**; use `delivery_session`';
+COMMENT ON TABLE deprecated_action_plan_session_appointment IS '**deprecated**; use `delivery_session_appointment`';
+COMMENT ON VIEW delivery_session_deprecated IS '**deprecated** view in favour of new table `delivery_session`';
+COMMENT ON VIEW delivery_session_appointment_deprecated IS '**deprecated** view in favour of new table `delivery_session_appointment`';
+
+COMMENT ON TABLE action_plan_session_appointment_pre_v1_78 IS '**backup** no longer in use; for up-to-date session appointment links, see `delivery_session_appointment`';
+COMMENT ON TABLE delivery_session IS 'session details for a referral';
+COMMENT ON TABLE delivery_session_appointment IS 'links between sessions and appointments for a referral';
+COMMENT ON TABLE supplier_assessment IS 'supplier assessment details for a referral';
+COMMENT ON TABLE supplier_assessment_appointment IS 'links between supplier assessments and their appointments for a referral';
+
+COMMENT ON TABLE cancellation_reason IS '**reference data** early end/cancellation reasons';
+COMMENT ON TABLE contract_type IS 'contract (service) types available for commissioned rehabilitative services';
+COMMENT ON TABLE contract_type_service_category IS 'configuration of selectable service categories for each contract type';
+COMMENT ON TABLE dynamic_framework_contract_sub_contractor IS 'sub-contractors for each commissioned rehabilitative services contract';
+
+COMMENT ON TABLE end_of_service_report IS 'end of service reports';
+COMMENT ON TABLE end_of_service_report_outcome IS 'outcome progress recorded in end of service reports';
+COMMENT ON TABLE referral_complexity_level_ids IS 'selected complexity levels for each referral';
+COMMENT ON TABLE referral_selected_service_category IS 'selected service categories for each referral';
+
+-- some definitions are in V1_34__document_contract_table.sql; needs lifting
