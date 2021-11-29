@@ -14,7 +14,7 @@ enum class ReferralEventType {
 
 class ReferralEvent(source: Any, val type: ReferralEventType, val referral: Referral, val detailUrl: String) : ApplicationEvent(source) {
   override fun toString(): String {
-    return "ReferralEvent(type=$type, referral=${referral.id}, detailUrl='$detailUrl', source=$source)"
+    return "ReferralEvent(type=$type, referralId=${referral.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 

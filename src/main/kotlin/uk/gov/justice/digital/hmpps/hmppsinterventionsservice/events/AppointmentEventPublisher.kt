@@ -25,7 +25,7 @@ class AppointmentEvent(
   val appointmentType: AppointmentType
 ) : ApplicationEvent(source) {
   override fun toString(): String {
-    return "AppointmentEvent(type=$type, appointment=${appointment.id}, detailUrl='$detailUrl', source=$source)"
+    return "AppointmentEvent(type=$type, appointmentId=${appointment.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 
