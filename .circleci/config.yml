@@ -74,11 +74,6 @@ jobs:
             flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
             flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration,src/main/resources/db/local"
       - run:
-          name: Run migrations and research seeds
-          command: |
-            flyway clean -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password"
-            flyway migrate -url="jdbc:postgresql://localhost:5432/$POSTGRES_DB" -user="postgres" -password="password" -locations="src/main/resources/db/migration,src/main/resources/db/research"
-      - run:
           name: Validate report SQLs
           command: |
             PGPASSWORD="$POSTGRES_PASSWORD" script/validate-report-sql.sh
@@ -321,17 +316,6 @@ workflows:
           type: approval
           requires:
             - deploy_dev
-      - hmpps/deploy_env:
-          name: deploy_research
-          env: "research"
-          show_changelog: true
-          slack_notification: true
-          slack_channel_name: "interventions-dev-notifications"
-          requires:
-            - approve_postdev
-          context:
-            - hmpps-common-vars
-            - hmpps-interventions-service-research
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
