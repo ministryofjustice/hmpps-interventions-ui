@@ -12,10 +12,6 @@ ingress:
     - host: hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
   migration:
     colour: blue
-    weights:
-      # total weight must be 100; green is the new EKS cluster
-      blue: 100
-      green: 0
 
 env_details:
   contains_live_data: true
