@@ -1,6 +1,7 @@
 generic-service:
   ingress:
     host: hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk
+    contextColour: green
   env:
     INGRESS_URL: "https://hmpps-interventions-ui-dev.apps.live-1.cloud-platform.service.justice.gov.uk"
     DEPLOYMENT_ENV: dev
