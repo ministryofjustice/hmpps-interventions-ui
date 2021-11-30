@@ -312,18 +312,13 @@ workflows:
           tag: "deployed:dev"
           requires: [deploy_dev]
           context: [hmpps-common-vars]
-      - approve_postdev:
-          type: approval
-          requires:
-            - deploy_dev
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
           show_changelog: true
           slack_notification: true
           slack_channel_name: "interventions-dev-notifications"
-          requires:
-            - approve_postdev
+          requires: [deploy_dev]
           context:
             - hmpps-common-vars
             - hmpps-interventions-service-preprod
