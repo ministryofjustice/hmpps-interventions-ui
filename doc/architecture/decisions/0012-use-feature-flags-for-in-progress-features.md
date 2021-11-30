@@ -27,9 +27,9 @@ features: {
 
 This can then be turned on for each environment by adding the environment variable (e.g. `FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS`) to the intended environment.
 
-We'll usually want to enable this for the development environment and test environment, possibly the user research and pre-prod environments but not the production environment.
+We'll usually want to enable this for the development environment and test environment, possibly the pre-prod environment but not the production environment.
 
-Before deploying the changes to the production environment, it's a good idea to double check the configuration is as expected e.g. by checking it's hidden in the user research environment.
+Before deploying the changes to the production environment, it's a good idea to double check the configuration is as expected e.g. by checking it's hidden in the pre-production environment.
 
 Once the feature is ready to be interacted with by users, we'll remove the feature flag from the UI configuration.
 
