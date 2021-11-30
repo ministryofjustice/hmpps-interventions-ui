@@ -278,7 +278,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain('Alex is low risk to others.')
         expect(res.text).toContain("service user's Risk of Serious Harm (ROSH) levels")
         expect(res.text).toContain('Children')
-        expect(res.text).toContain('HIGH')
+        expect(res.text).toContain('High')
         expect(res.text).toContain('07890 123456')
         expect(res.text).toContain('probation-team4692@justice.gov.uk')
       })

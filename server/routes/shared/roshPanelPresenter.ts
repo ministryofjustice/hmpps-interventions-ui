@@ -86,12 +86,32 @@ export default class RoshPanelPresenter {
   }
 
   get roshAnalysisRows(): RoshAnalysisTableRow[] {
+    // This defines the display order for known RoSH groups. Other groups not in this list will be rendered at the end.
+    const roshGroupsDisplayOrder = ['children', 'public', 'known adult', 'staff']
+
     if (this.riskSummary === null) return []
 
-    return Object.entries(this.riskSummary.summary.riskInCommunity).flatMap(([riskScore, riskGroups]) => {
-      return riskGroups.map(riskTo => {
-        return { riskTo, riskScore }
+    const unsortedRiskGroups = Object.entries(this.riskSummary.summary.riskInCommunity).flatMap(
+      ([riskScore, riskGroups]) => {
+        return riskGroups.map(riskTo => {
+          return { riskTo, riskScore }
+        })
+      }
+    )
+
+    const sortedRiskGroups: RoshAnalysisTableRow[] = []
+
+    roshGroupsDisplayOrder.forEach(group => {
+      // We get the index here and then push/splice using that index value to save having to `find` on the array twice
+      const matchingRoshGroupIndex = unsortedRiskGroups.findIndex(obj => {
+        return obj.riskTo === group
       })
+      if (matchingRoshGroupIndex !== -1) {
+        sortedRiskGroups.push(unsortedRiskGroups[matchingRoshGroupIndex])
+        unsortedRiskGroups.splice(matchingRoshGroupIndex, 1)
+      }
     })
+
+    return [...sortedRiskGroups, ...unsortedRiskGroups]
   }
 }

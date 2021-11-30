@@ -20,6 +20,26 @@ $refer-and-monitor-rosh-very-high-colour: #942514;
     margin-bottom: 5px;
   }
 
+  .rosh-analysis-table__risk-score {
+    font-weight: bold;
+  }
+
+  .rosh-analysis-table__risk-score__low {
+    color: $refer-and-monitor-rosh-low-colour;
+  }
+
+  .rosh-analysis-table__risk-score__medium {
+    color: $refer-and-monitor-rosh-medium-colour;
+  }
+
+  .rosh-analysis-table__risk-score__high {
+    color: $refer-and-monitor-rosh-high-colour;
+  }
+
+  .rosh-analysis-table__risk-score__very-high {
+    color: $refer-and-monitor-rosh-very-high-colour;
+  }
+
   &.rosh-analysis-table--low {
     border-color: $refer-and-monitor-rosh-low-colour;
 

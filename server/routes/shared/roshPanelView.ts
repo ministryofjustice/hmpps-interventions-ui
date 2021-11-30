@@ -1,6 +1,7 @@
-import { DetailsArgs, TableArgs, TagArgs } from '../../utils/govukFrontendTypes'
+import { DetailsArgs, TableArgs } from '../../utils/govukFrontendTypes'
 import utils from '../../utils/utils'
 import RoshPanelPresenter from './roshPanelPresenter'
+import logger from '../../../log'
 
 export default class RoshPanelView {
   constructor(
@@ -8,7 +9,7 @@ export default class RoshPanelView {
     private readonly userType: 'probation-practitioner' | 'service-provider'
   ) {}
 
-  roshAnalysisTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
+  roshAnalysisTableArgs(): TableArgs {
     return {
       head: this.presenter.roshAnalysisHeaders.map((header: string) => {
         return { text: header }
@@ -17,28 +18,48 @@ export default class RoshPanelView {
         return [
           { text: utils.convertToProperCase(row.riskTo) },
           {
-            text: tagMacro({
-              text: row.riskScore.replace('_', ' '),
-              classes: this.tagClassForRiskScore(row.riskScore),
-            }),
+            html: `<span class="rosh-analysis-table__risk-score ${this.classForRiskScore(
+              row.riskScore
+            )}">${this.stringForRiskScore(row.riskScore)}</span>`,
           },
         ]
       }),
     }
   }
 
-  private tagClassForRiskScore(riskScore: string): string {
+  private classForRiskScore(riskScore: string): string {
     switch (riskScore) {
       case 'LOW':
-        return 'govuk-tag--green'
+        return 'rosh-analysis-table__risk-score__low'
       case 'MEDIUM':
-        return 'govuk-tag--blue'
+        return 'rosh-analysis-table__risk-score__medium'
       case 'HIGH':
-        return 'govuk-tag--red'
+        return 'rosh-analysis-table__risk-score__high'
       case 'VERY_HIGH':
-        return 'govuk-tag--purple'
+        return 'rosh-analysis-table__risk-score__very-high'
       default:
         return ''
+    }
+  }
+
+  private stringForRiskScore(riskScore: string): string {
+    switch (riskScore) {
+      case 'LOW':
+        return 'Low'
+      case 'MEDIUM':
+        return 'Medium'
+      case 'HIGH':
+        return 'High'
+      case 'VERY_HIGH':
+        return 'Very high'
+      default: {
+        // If we encounter an unexpected risk level we should raise an error so it can be investigated, and return our best guess at a nicely formatted string.
+        logger.error({
+          err: `Encountered unexpected ROSH risk level "${riskScore}".`,
+        })
+        const lowerCasedRiskScore = riskScore.replace('_', ' ').toLowerCase()
+        return lowerCasedRiskScore.charAt(0).toUpperCase() + lowerCasedRiskScore.slice(1)
+      }
     }
   }
 
