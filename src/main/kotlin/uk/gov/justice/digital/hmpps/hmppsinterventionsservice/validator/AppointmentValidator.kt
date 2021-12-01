@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
-import javax.validation.ValidationException
 
 @Component
 class AppointmentValidator {
@@ -33,7 +32,7 @@ class AppointmentValidator {
         }
       }
     }
-    if(updateAppointmentDTO.appointmentTime.isBefore(OffsetDateTime.now())){
+    if (updateAppointmentDTO.appointmentTime.isBefore(OffsetDateTime.now())) {
       verifyPastAppointmentFields(
         updateAppointmentDTO.appointmentAttendance?.attended,
         updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
@@ -62,14 +61,14 @@ class AppointmentValidator {
     notifyProbationPractitioner: Boolean?,
     behaviourDescription: String?,
     errors: MutableList<FieldError>
-  ){
-    if(attended == null){
+  ) {
+    if (attended == null) {
       errors.add(FieldError(field = "appointmentAttendance.attended", error = Code.CANNOT_BE_EMPTY))
     }
-    if(notifyProbationPractitioner == null){
+    if (notifyProbationPractitioner == null) {
       errors.add(FieldError(field = "appointmentBehaviour.notifyProbationPractitioner", error = Code.CANNOT_BE_EMPTY))
     }
-    if(behaviourDescription == null){
+    if (behaviourDescription == null) {
       errors.add(FieldError(field = "appointmentBehaviour.behaviourDescription", error = Code.CANNOT_BE_EMPTY))
     }
   }

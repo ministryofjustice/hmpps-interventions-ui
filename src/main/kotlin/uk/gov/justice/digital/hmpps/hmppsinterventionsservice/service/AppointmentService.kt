@@ -48,10 +48,10 @@ class AppointmentService(
     appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
-    attended: Attended?,
-    additionalAttendanceInformation: String?,
-    notifyProbationPractitioner: Boolean?,
-    behaviourDescription: String?,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    notifyProbationPractitioner: Boolean? = null,
+    behaviourDescription: String? = null,
     pastAppointment: Boolean
   ): Appointment {
     val appointment = when {
@@ -149,14 +149,14 @@ class AppointmentService(
     attended: Attended?,
     notifyProbationPractitioner: Boolean?,
     behaviourDescription: String?
-  ){
-    if(attended == null){
+  ) {
+    if (attended == null) {
       throw ValidationException("Missing field 'attended' must be set for past appointment")
     }
-    if(notifyProbationPractitioner == null){
+    if (notifyProbationPractitioner == null) {
       throw ValidationException("Missing field 'notifyProbationPractitioner' must be set for past appointment")
     }
-    if(behaviourDescription == null){
+    if (behaviourDescription == null) {
       throw ValidationException("Missing field 'behaviourDescription' must be set for past appointment")
     }
   }
@@ -236,7 +236,7 @@ class AppointmentService(
     return appointment
   }
 
-   fun setAttendanceFields(
+  fun setAttendanceFields(
     appointment: Appointment,
     attended: Attended,
     additionalInformation: String?,
@@ -248,7 +248,7 @@ class AppointmentService(
     appointment.attendanceSubmittedBy = authUserRepository.save(submittedBy)
   }
 
-   fun setBehaviourFields(
+  fun setBehaviourFields(
     appointment: Appointment,
     behaviour: String,
     notifyProbationPractitioner: Boolean,
@@ -285,7 +285,7 @@ class AppointmentService(
       createdAt = OffsetDateTime.now(),
       referral = referral,
     )
-    if(pastAppointment){
+    if (pastAppointment) {
       setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, createdByUser)
       setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, createdByUser)
     }

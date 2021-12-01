@@ -24,7 +24,6 @@ import java.util.UUID
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
-import javax.validation.ValidationException
 
 @Service
 @Transactional
@@ -152,10 +151,10 @@ class DeliverySessionService(
     appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
-    attended: Attended?,
-    additionalAttendanceInformation: String?,
-    notifyProbationPractitioner: Boolean?,
-    behaviourDescription: String?,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    notifyProbationPractitioner: Boolean? = null,
+    behaviourDescription: String? = null,
     pastAppointment: Boolean = false
   ): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
@@ -182,7 +181,7 @@ class DeliverySessionService(
         deliusAppointmentId = deliusAppointmentId,
         referral = session.referral,
       )
-      if(pastAppointment) {
+      if (pastAppointment) {
         setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, updatedBy)
         setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
       }

@@ -79,7 +79,9 @@ internal class CommunityAPIBookingServiceTest {
       now.plusMinutes(120),
       "CRS0001",
       notes = notes,
-      true
+      true,
+      null,
+      null
     )
     val response = AppointmentResponseDTO(1234L)
 
@@ -107,7 +109,9 @@ internal class CommunityAPIBookingServiceTest {
       now.plusMinutes(120),
       "CRSEXTL",
       notes = notes,
-      true
+      true,
+      null,
+      null
     )
     val response = AppointmentResponseDTO(1234L)
 

@@ -73,7 +73,7 @@ class SupplierAssessmentControllerTest {
       whenever(userMapper.fromToken(token)).thenReturn(user)
       whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
       whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
-      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode)).thenReturn(supplierAssessment.currentAppointment)
+      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode, null, null, null, null, true)).thenReturn(supplierAssessment.currentAppointment)
 
       val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
       verify(appointmentValidator).validateUpdateAppointment(eq(update))

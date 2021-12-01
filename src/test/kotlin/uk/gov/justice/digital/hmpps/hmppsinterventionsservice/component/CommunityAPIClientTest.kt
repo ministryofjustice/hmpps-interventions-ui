@@ -270,5 +270,7 @@ class CommunityAPIClientTest {
     officeLocationCode = "CRSEXTL",
     notes = "http://backLink",
     countsTowardsRarDays = true,
+    attended = null,
+    notifyPPOfAttendanceBehaviour = null,
   )
 }

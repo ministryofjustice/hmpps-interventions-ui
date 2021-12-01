@@ -4,8 +4,14 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.*
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.SupplierAssessmentRepository
 import java.time.OffsetDateTime
@@ -42,10 +48,10 @@ class SupplierAssessmentService(
     appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
-    attended: Attended?,
-    additionalAttendanceInformation: String?,
-    notifyProbationPractitioner: Boolean?,
-    behaviourDescription: String?,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    notifyProbationPractitioner: Boolean? = null,
+    behaviourDescription: String? = null,
     pastAppointment: Boolean = false
   ): Appointment {
     val appointment = appointmentService.createOrUpdateAppointment(

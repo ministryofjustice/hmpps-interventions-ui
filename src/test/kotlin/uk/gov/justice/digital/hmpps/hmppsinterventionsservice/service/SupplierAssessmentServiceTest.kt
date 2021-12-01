@@ -86,6 +86,11 @@ class SupplierAssessmentServiceTest {
           eq(appointmentSessionType),
           isNull(),
           isNull(),
+          isNull(),
+          isNull(),
+          isNull(),
+          isNull(),
+          eq(false)
         )
       ).thenReturn(appointment)
       whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
@@ -117,6 +122,11 @@ class SupplierAssessmentServiceTest {
           eq(appointmentSessionType),
           isNull(),
           eq(npsOfficeCode),
+          isNull(),
+          isNull(),
+          isNull(),
+          isNull(),
+          eq(false)
         )
       ).thenReturn(appointment)
       whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)

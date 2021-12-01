@@ -68,7 +68,12 @@ internal class DeliverySessionControllerTest {
         AppointmentDeliveryType.PHONE_CALL,
         AppointmentSessionType.ONE_TO_ONE,
         null,
-        null
+        null,
+        null,
+        null,
+        null,
+        null,
+        true
       )
     ).thenReturn(deliverySession)
 
