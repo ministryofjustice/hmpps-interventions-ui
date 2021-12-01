@@ -214,9 +214,13 @@ class ReferralService(
      * This is a temporary solution until a robust asynchronous link is created between Interventions
      * and Delius/ARN. Once the asynchronous link is implemented, this feature can be turned off, and instead
      * Delius/ARN will be notified via the normal asynchronous route
+     *
+     * Order is important: ARN is more likely to fail via a timeout and thus when repeated by the user a
+     * duplicate NSI gets created in Delius as the Delius call is not idempotent. This order avoids creating
+     * duplicate NSIs in nDelius on user retry.
      */
-    communityAPIReferralService.send(referral)
     submitAdditionalRiskInformation(referral, user)
+    communityAPIReferralService.send(referral)
 
     val sentReferral = referralRepository.save(referral)
     eventPublisher.referralSentEvent(sentReferral)

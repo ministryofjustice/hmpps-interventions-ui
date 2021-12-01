@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -725,6 +726,25 @@ class ReferralServiceUnitTest {
     referralService.sendDraftReferral(referral, authUser)
     verify(assessRisksAndNeedsService, times(1))
       .createSupplementaryRisk(referral.id, referral.serviceUserCRN, authUser, timestamp, "something")
+  }
+
+  @Test
+  fun `referral is sent to assessRisksAndNeeds before communityApi`() {
+    val timestamp = OffsetDateTime.now()
+    val referral = referralFactory.createDraft(
+      additionalRiskInformation = "something",
+      additionalRiskInformationUpdatedAt = timestamp
+    )
+    val authUser = authUserFactory.create()
+
+    whenever(referralRepository.save(referral)).thenReturn(referral)
+
+    referralService.sendDraftReferral(referral, authUser)
+
+    val inOrder = inOrder(assessRisksAndNeedsService, communityAPIReferralService)
+    inOrder.verify(assessRisksAndNeedsService, times(1))
+      .createSupplementaryRisk(referral.id, referral.serviceUserCRN, authUser, timestamp, "something")
+    inOrder.verify(communityAPIReferralService, times(1)).send(referral)
   }
 
   @Test
