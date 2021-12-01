@@ -36,6 +36,16 @@ data class UpdateAppointmentDTO(
   val npsOfficeCode: String? = null,
 )
 
+data class DeliverySessionAppointmentScheduleDetailsDTO(
+  val sessionId: Int,
+  val appointmentTime: OffsetDateTime,
+  @JsonProperty(required = true) val durationInMinutes: Int,
+  val appointmentDeliveryType: AppointmentDeliveryType,
+  val sessionType: AppointmentSessionType,
+  val appointmentDeliveryAddress: AddressDTO? = null,
+  val npsOfficeCode: String? = null,
+)
+
 data class UpdateAppointmentAttendanceDTO(
   val attended: Attended,
   val additionalAttendanceInformation: String?

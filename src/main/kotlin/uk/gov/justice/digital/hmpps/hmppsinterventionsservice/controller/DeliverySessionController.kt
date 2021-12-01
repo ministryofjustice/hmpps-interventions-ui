@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.Refe
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionAppointmentDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionAppointmentScheduleDetailsDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
@@ -34,6 +36,8 @@ class DeliverySessionController(
   val referralAccessChecker: ReferralAccessChecker,
   val referralService: ReferralService,
 ) {
+
+  @Deprecated("superseded by scheduleNewDeliverySessionAppointment and rescheduleDeliverySessionAppointment")
   @PatchMapping("/action-plan/{id}/appointment/{sessionNumber}")
   fun updateSessionAppointment(
     @PathVariable(name = "id") actionPlanId: UUID,
@@ -160,5 +164,57 @@ class DeliverySessionController(
     referralAccessChecker.forUser(referral, user)
     return deliverySessionService.getSessions(referralId)
       .flatMap { session -> session.appointments.map { appointment -> DeliverySessionAppointmentDTO.from(session.sessionNumber, appointment) } }
+  }
+
+  @PostMapping("/referral/{referralId}/delivery-session-appointments")
+  fun scheduleNewDeliverySessionAppointment(
+    @PathVariable(name = "referralId") referralId: UUID,
+    @RequestBody newDeliverySessionAppointmentRequest: DeliverySessionAppointmentScheduleDetailsDTO,
+    authentication: JwtAuthenticationToken,
+  ): DeliverySessionAppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    val referral = referralService.getSentReferral(referralId) ?: throw ResponseStatusException(
+      HttpStatus.BAD_REQUEST, "sent referral not found [referralId=$referralId]"
+    )
+    referralAccessChecker.forUser(referral, user)
+    val deliverySession = deliverySessionService.scheduleNewDeliverySessionAppointment(
+      referralId,
+      newDeliverySessionAppointmentRequest.sessionId,
+      newDeliverySessionAppointmentRequest.appointmentTime,
+      newDeliverySessionAppointmentRequest.durationInMinutes,
+      user,
+      newDeliverySessionAppointmentRequest.appointmentDeliveryType,
+      newDeliverySessionAppointmentRequest.sessionType,
+      newDeliverySessionAppointmentRequest.appointmentDeliveryAddress,
+      newDeliverySessionAppointmentRequest.npsOfficeCode,
+    )
+    return DeliverySessionAppointmentDTO.from(deliverySession.sessionNumber, deliverySession.currentAppointment!!)
+  }
+
+  @PutMapping("/referral/{referralId}/delivery-session-appointments/{appointmentId}")
+  fun rescheduleDeliverySessionAppointment(
+    @PathVariable(name = "referralId") referralId: UUID,
+    @PathVariable(name = "appointmentId") appointmentId: UUID,
+    @RequestBody newDeliverySessionAppointmentRequest: DeliverySessionAppointmentScheduleDetailsDTO,
+    authentication: JwtAuthenticationToken,
+  ): DeliverySessionAppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    val referral = referralService.getSentReferral(referralId) ?: throw ResponseStatusException(
+      HttpStatus.BAD_REQUEST, "sent referral not found [referralId=$referralId]"
+    )
+    referralAccessChecker.forUser(referral, user)
+    val deliverySession = deliverySessionService.rescheduleDeliverySessionAppointment(
+      referralId,
+      newDeliverySessionAppointmentRequest.sessionId,
+      appointmentId,
+      newDeliverySessionAppointmentRequest.appointmentTime,
+      newDeliverySessionAppointmentRequest.durationInMinutes,
+      user,
+      newDeliverySessionAppointmentRequest.appointmentDeliveryType,
+      newDeliverySessionAppointmentRequest.sessionType,
+      newDeliverySessionAppointmentRequest.appointmentDeliveryAddress,
+      newDeliverySessionAppointmentRequest.npsOfficeCode,
+    )
+    return DeliverySessionAppointmentDTO.from(deliverySession.sessionNumber, deliverySession.currentAppointment!!)
   }
 }
