@@ -119,6 +119,7 @@ export default class ServiceProviderReferralsController {
 
   async showReferral(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
+
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
@@ -139,18 +140,16 @@ export default class ServiceProviderReferralsController {
         : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
 
     let formError: FormValidationError | null = null
-    if (assignee === null) {
-      const error = req.query.error as string
-      if (error !== undefined || error !== '') {
-        formError = {
-          errors: [
-            {
-              formFields: ['email'],
-              errorSummaryLinkedField: 'email',
-              message: error,
-            },
-          ],
-        }
+    const error = req.query.error as string
+    if (error !== undefined || error !== '') {
+      formError = {
+        errors: [
+          {
+            formFields: ['email'],
+            errorSummaryLinkedField: 'email',
+            message: error,
+          },
+        ],
       }
     }
 
